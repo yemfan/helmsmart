@@ -93,6 +93,11 @@
       "revoke_hint": "Disconnecting removes the token stored here. To fully revoke, remove access in your Google account settings.",
       "cta_connect": "Connect YouTube",
       "cta_reconnect": "Reconnect"
+    },
+    "health": {
+      "connected": "Connected",
+      "attention": "Needs attention",
+      "reconnect": "Reconnect"
     }
   },
   "campaigns": {

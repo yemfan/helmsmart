@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import GoogleCalendarConnectPanel from "@/components/dashboard/GoogleCalendarConnectPanel";
+import {
+  ConnectionNotice,
+  ConnectionPill,
+  connectionHealth,
+} from "@/components/connections/ConnectionHealth";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
@@ -316,6 +322,14 @@ export default function ConnectClient({
         </div>
       )}
 
+      {/* Google Calendar. It is a connected channel like any other, but its
+          status only ever appeared on the Calendar page and in Settings — so
+          the one screen an agent opens to answer "what am I connected to?"
+          was the one screen that didn't say. Same panel, rendered here too. */}
+      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        <GoogleCalendarConnectPanel />
+      </section>
+
       {/* Meta card */}
       <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
@@ -351,8 +365,9 @@ export default function ConnectClient({
             {metaConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -392,11 +407,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -414,6 +432,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/meta/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
@@ -461,8 +486,9 @@ export default function ConnectClient({
             {linkedinConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -498,11 +524,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -520,6 +549,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/linkedin/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
@@ -567,8 +603,9 @@ export default function ConnectClient({
             {threadsConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -606,11 +643,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -630,6 +670,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/threads/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
@@ -669,8 +716,9 @@ export default function ConnectClient({
             {pinterestConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -695,11 +743,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -717,6 +768,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/pinterest/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
@@ -752,8 +810,9 @@ export default function ConnectClient({
             {tiktokConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -777,11 +836,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -799,6 +861,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/tiktok/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
@@ -834,8 +903,9 @@ export default function ConnectClient({
             {youtubeConnections.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
+                className="rounded-lg border border-gray-200 bg-gray-50/40 px-3 py-2.5"
               >
+                <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {c.account_picture_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -857,11 +927,14 @@ export default function ConnectClient({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {c.status !== "connected" && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
-                      {c.status}
-                    </span>
-                  )}
+                  <ConnectionPill
+                    state={connectionHealth(c.status)}
+                    label={
+                      c.status === "connected"
+                        ? t("connect.health.connected")
+                        : t("connect.health.attention")
+                    }
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -879,6 +952,13 @@ export default function ConnectClient({
                       : t("connect.meta.disconnect")}
                   </button>
                 </div>
+                </div>
+                <ConnectionNotice
+                  state={connectionHealth(c.status)}
+                  message={c.last_error}
+                  reconnectHref="/api/leads-gen/connect/youtube/start"
+                  reconnectLabel={t("connect.health.reconnect")}
+                />
               </li>
             ))}
           </ul>
