@@ -4,13 +4,18 @@ import { getServerT } from "@/lib/i18n/server";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
+  const t = await getServerT("dashboard");
   const title = t("pages.dashboardTitles.tools", { ns: "dashboard" });
-  return {
-  title,
-  description: "Access calculators, analyzers, and AI-powered tools.",
-  keywords: ["tools", "calculators", "AI tools"],
-  robots: { index: false },
+  return {
+
+  title,
+
+  description: "Access calculators, analyzers, and AI-powered tools.",
+
+  keywords: ["tools", "calculators", "AI tools"],
+
+  robots: { index: false },
+
 };
 }
 
@@ -38,7 +43,7 @@ const tools = [
 ];
 
 export default async function ToolsPage() {
-  const serverT = await getServerT();
+  const serverT = await getServerT("dashboard");
   const tr = (key: string) => serverT(key, { ns: "dashboard" });
 
   return (

@@ -8,16 +8,22 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentAgentContext, getLeads } from "@/lib/dashboardService";
 import { getMobileReminders } from "@/lib/mobile/remindersMobile";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
+  const t = await getServerT("dashboard");
   const title = t("pages.dashboardTitles.notifications", { ns: "dashboard" });
-  return {
-  title,
-  description: "View alerts for new leads, tasks, and activity.",
-  keywords: ["notifications", "alerts", "activity feed"],
-  robots: { index: false },
+  return {
+
+  title,
+
+  description: "View alerts for new leads, tasks, and activity.",
+
+  keywords: ["notifications", "alerts", "activity feed"],
+
+  robots: { index: false },
+
 };
 }
 
@@ -126,7 +132,7 @@ function EmptyRow({ children }: { children: ReactNode }) {
 }
 
 export default async function NotificationsPage() {
-  const serverT = await getServerT();
+  const serverT = await getServerT("dashboard");
   const locale = intlLocale(await getServerLocale());
   // Named `tr` — task and follow-up rows below bind `t` in their .map().
   const tr = (key: string, o?: Record<string, unknown>) => serverT(key, { ns: "dashboard", ...o });
