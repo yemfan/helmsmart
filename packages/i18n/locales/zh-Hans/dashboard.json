@@ -141,6 +141,10 @@
     "added": "已添加！",
     "failed": "操作失败",
     "failedToAdd": "添加失败。",
+    "save": "保存",
+    "saving": "保存中…",
+    "saved": "已保存！",
+    "editingAppointment": "编辑预约",
     "priority": {
       "low": "低",
       "normal": "普通",
@@ -187,6 +191,7 @@
       "cancelTask": "取消任务",
       "editTask": "编辑任务",
       "cancelAppointment": "取消预约",
+      "editAppointment": "编辑预约",
       "reviewDraft": "审阅草稿",
       "moveLater": "改到更晚的日期",
       "moveTaskLater": "把任务改到更晚的日期"

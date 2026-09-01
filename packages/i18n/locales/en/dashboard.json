@@ -141,6 +141,10 @@
     "added": "Added!",
     "failed": "Failed",
     "failedToAdd": "Failed to add.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "editingAppointment": "Editing appointment",
     "priority": {
       "low": "Low",
       "normal": "Normal",
@@ -187,6 +191,7 @@
       "cancelTask": "Cancel task",
       "editTask": "Edit task",
       "cancelAppointment": "Cancel appointment",
+      "editAppointment": "Edit appointment",
       "reviewDraft": "Review draft",
       "moveLater": "Move to a later date",
       "moveTaskLater": "Move task to a later date"
