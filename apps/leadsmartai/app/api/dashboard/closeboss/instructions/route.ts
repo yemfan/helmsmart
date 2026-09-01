@@ -3,6 +3,7 @@ import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { processInstructionById } from "@/lib/closeboss/instructions";
 import { isBossV2Enabled, startBossRun, continueBossRun } from "@/lib/boss/runs/service";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -122,6 +123,8 @@ export async function POST(req: NextRequest) {
         objective: content,
         trigger: "command",
         instructionId,
+        // Max reports back in whatever language this dashboard is in.
+        locale: await getServerLocale(),
       });
       if ("runId" in started) {
         runId = started.runId;
