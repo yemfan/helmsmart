@@ -386,22 +386,41 @@ export async function dispatchMobileMissedCallPush(params: {
  * Deep link: `screen: "scheduled"` so the mobile app routes to the
  * scheduled-posts management screen.
  */
+/**
+ * Every platform a scheduled post can target. This used to be a four-way
+ * union with a ternary that fell through to "Facebook", while the publish cron
+ * passed it whatever `scheduled_posts.platform` held — so a failed Pinterest
+ * post told the agent their FACEBOOK post had failed. A total map means a new
+ * platform is a type error here rather than a wrong word on someone's phone.
+ */
+export type PushPlatform =
+  | "facebook"
+  | "instagram"
+  | "linkedin"
+  | "threads"
+  | "pinterest"
+  | "tiktok"
+  | "youtube";
+
+const PLATFORM_LABEL: Record<PushPlatform, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  threads: "Threads",
+  pinterest: "Pinterest",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+};
+
 export async function dispatchMobilePublishFailurePush(params: {
   agentId: string;
   scheduledPostId: string;
-  platform: "facebook" | "instagram" | "linkedin" | "threads";
+  platform: PushPlatform;
   errorMessage: string;
 }): Promise<boolean> {
   if (mobilePushGloballyDisabled()) return false;
 
-  const platformLabel =
-    params.platform === "linkedin"
-      ? "LinkedIn"
-      : params.platform === "instagram"
-        ? "Instagram"
-        : params.platform === "threads"
-          ? "Threads"
-          : "Facebook";
+  const platformLabel = PLATFORM_LABEL[params.platform];
   const title = `⚠️ ${platformLabel} post failed`;
   const body =
     params.errorMessage.slice(0, 140) ||
@@ -593,7 +612,7 @@ export async function dispatchMobilePostMilestonePush(params: {
   agentId: string;
   leadPostId: string;
   threshold: number;
-  platform: "facebook" | "instagram" | "linkedin" | "threads";
+  platform: PushPlatform;
   caption: string;
 }): Promise<boolean> {
   if (mobilePushGloballyDisabled()) return false;
@@ -601,14 +620,7 @@ export async function dispatchMobilePostMilestonePush(params: {
   const prefs = await getAgentNotificationPreferences(params.agentId);
   const skipPush = !prefs.push_post_milestone;
 
-  const platformLabel =
-    params.platform === "linkedin"
-      ? "LinkedIn"
-      : params.platform === "instagram"
-        ? "Instagram"
-        : params.platform === "threads"
-          ? "Threads"
-          : "Facebook";
+  const platformLabel = PLATFORM_LABEL[params.platform];
   // First-engagement push reads differently from the bigger ones —
   // "someone engaged" is the celebration moment; the milestones
   // beyond that are progress-tracking.
