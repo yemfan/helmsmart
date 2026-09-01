@@ -65,13 +65,35 @@ type CmaQuota = {
   resetDate: string;
 };
 
+/**
+ * `null` was the only value treated as missing, so a stored 0 rendered as
+ * "US$0" — a confident-looking price on a report the detail page refuses to
+ * show, email, or export. There is one such row in production, written
+ * 2026-06-22, before `isCredibleCmaValuation` guarded the write path.
+ *
+ * Nothing can create another, but the ones already saved still list, and a
+ * seller-facing figure of zero is the worst possible way to render "we don't
+ * know". Non-positive is missing here, matching the rule every other CMA
+ * surface already applies.
+ */
 function formatMoney(n: number | null | undefined, locale: string): string {
-  if (n == null) return "—";
+  if (n == null || !Number.isFinite(n) || n <= 0) return "—";
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+/**
+ * The same rule `isCredibleCmaValuation` applies to a snapshot, read off the
+ * denormalized columns the list actually has. The list never loads
+ * `snapshot_json`, so it cannot call that helper directly — but it must not
+ * disagree with it, or a row shows a price the report itself won't stand behind.
+ */
+function credible(r: { estimatedValue: number | null; lowEstimate: number | null; highEstimate: number | null }): boolean {
+  const positive = (n: number | null) => typeof n === "number" && Number.isFinite(n) && n > 0;
+  return positive(r.estimatedValue) && positive(r.lowEstimate) && positive(r.highEstimate);
 }
 
 function formatDate(iso: string, locale: string): string {
@@ -298,12 +320,26 @@ function CmaListInner() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-base font-bold tabular-nums text-slate-900">
-                    {formatMoney(r.estimatedValue, locale)}
-                  </p>
-                  <p className="text-[11px] text-slate-500 tabular-nums">
-                    {formatMoney(r.lowEstimate, locale)} – {formatMoney(r.highEstimate, locale)}
-                  </p>
+                  {credible(r) ? (
+                    <>
+                      <p className="text-base font-bold tabular-nums text-slate-900">
+                        {formatMoney(r.estimatedValue, locale)}
+                      </p>
+                      <p className="text-[11px] text-slate-500 tabular-nums">
+                        {formatMoney(r.lowEstimate, locale)} – {formatMoney(r.highEstimate, locale)}
+                      </p>
+                    </>
+                  ) : (
+                    /*
+                     * Say why there is no number. Three dashes stacked in the
+                     * price column reads as a loading state; the row opens onto
+                     * a detail page that explains the report is unsendable, and
+                     * the list should agree with it at a glance.
+                     */
+                    <p className="text-xs font-medium text-rose-700">
+                      {t("pages.cma.valuationUnavailable")}
+                    </p>
+                  )}
                 </div>
               </Link>
             </li>

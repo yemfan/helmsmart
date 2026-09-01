@@ -2097,7 +2097,7 @@
       "couldntLoad": "Couldn't load this CMA: {{reason}}",
       "notFound": "not found",
       "savedLine": "Saved {{date}} · {{count}} comps",
-      "confidenceSuffix": " · confidence {{score}}",
+      "confidenceSuffix": " · confidence {{score}}%",
       "comparableSales": "Comparable sales ({{count}})",
       "sourcesN": "Sources ({{count}})"
     },
@@ -3396,7 +3396,8 @@
       "quotaTitle": "Resets {{date}}",
       "unlimited": "Unlimited",
       "remaining": "{{remaining}} of {{limit}} left",
-      "metaTitle": "CMA reports"
+      "metaTitle": "CMA reports",
+      "valuationUnavailable": "Valuation unavailable"
     },
     "calls": {
       "heading": "Call log",
