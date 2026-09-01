@@ -12,6 +12,11 @@
     "./prompt": "./src/prompt.ts",
     "./brain": "./src/brain.ts",
     "./datetime": "./src/datetime.ts",
-    "./scheduling": "./src/scheduling.ts"
+    "./scheduling": "./src/scheduling.ts",
+    "./appointmentTypes": "./src/appointmentTypes.ts",
+    "./tools": "./src/tools.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
   }
 }

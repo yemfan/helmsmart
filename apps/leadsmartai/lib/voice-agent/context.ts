@@ -9,6 +9,8 @@ import {
 import {
   describeHours,
   defaultBusinessHours,
+  safeTimezone,
+  todayInTimezone,
   type ReceptionistContext,
 } from "@repo/voice";
 
@@ -25,19 +27,6 @@ import {
  * Additive — LeadSmart's existing Twilio/OpenAI-Realtime voice is untouched.
  */
 
-/** Validate a user-entered IANA timezone; fall back if invalid (e.g. a typo). */
-function safeTimezone(tz: string | undefined | null): string {
-  const v = (tz || "").trim();
-  if (v) {
-    try {
-      new Intl.DateTimeFormat("en-US", { timeZone: v });
-      return v;
-    } catch {
-      /* invalid tz (e.g. "America/Los_Angles") — fall through to default */
-    }
-  }
-  return "America/New_York";
-}
 
 export async function loadReceptionistContext(
   agentId: string,
@@ -60,18 +49,7 @@ export async function loadReceptionistContext(
   // AI answering with their personal name instead of their business.
   const orgName = await getReceptionistBusinessName(agentId);
   const timezone = safeTimezone(cfg.timezone);
-  const todayISO = new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  }).format(new Date());
+  const { iso: todayISO, label: todayLabel } = todayInTimezone(timezone);
 
   return {
     orgId: agentId,

@@ -4,8 +4,15 @@ import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/boo
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
 import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
 import twilio from "twilio";
+import { twilioSender } from "@/lib/twilio-sender";
 import type { ReceptionistContext } from "@repo/voice/prompt";
-import { speakTime } from "@repo/voice/datetime";
+import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
+import { phoneLast10 } from "@repo/voice/phone";
+import {
+  NO_UPCOMING_APPOINTMENT_TEXT,
+  UNSUPPORTED_TOOL_TEXT,
+  existingAppointmentsText,
+} from "@repo/voice/tools";
 
 /**
  * The receptionist's shared brain — transport-agnostic.
@@ -30,9 +37,11 @@ export async function loadReceptionistContext(db: ServiceClient, orgId: string):
     db.from("knowledge_base").select("title, content").eq("organization_id", orgId).eq("active", true).order("sort"),
   ]);
 
-  const timezone = (org?.timezone as string) || "America/New_York";
-  const todayISO = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-  const todayLabel = new Intl.DateTimeFormat("en-US", { timeZone: timezone, weekday: "long", month: "long", day: "numeric" }).format(new Date());
+  // safeTimezone, not `|| default`: a typo saved in Settings ("America/Los_Angles")
+  // makes every Intl call below throw, and on the inbound hot path that means the
+  // caller gets no prompt at all.
+  const timezone = safeTimezone(org?.timezone as string | null);
+  const { iso: todayISO, label: todayLabel } = todayInTimezone(timezone);
 
   const typesText = (types ?? []).length
     ? (types as AppointmentType[]).map((t) => `- ${t.name} (${t.duration_minutes} min)${t.description ? `: ${t.description}` : ""}`).join("\n")
@@ -98,9 +107,9 @@ export type InboundOrg = { id: string; voiceAgentEnabled: boolean };
 export async function resolveInboundOrg(db: ServiceClient, toNumber: string): Promise<InboundOrg | null> {
   if (!toNumber) return null;
 
-  const last10 = toNumber.replace(/\D/g, "").slice(-10);
+  const last10 = phoneLast10(toNumber);
   const query = db.from("organizations").select("id, voice_agent_enabled");
-  const { data: rows } = await (last10.length === 10
+  const { data: rows } = await (last10
     ? query.ilike("twilio_number", `%${last10}`)
     : query.eq("twilio_number", toNumber)
   )
@@ -144,8 +153,8 @@ async function upcomingForCaller(
   orgId: string,
   fromNumber: string
 ): Promise<{ title: string | null; start_at: string }[]> {
-  const last10 = (fromNumber || "").replace(/\D/g, "").slice(-10);
-  if (last10.length !== 10) return [];
+  const last10 = phoneLast10(fromNumber);
+  if (!last10) return [];
 
   const { data: clients } = await db
     .from("clients")
@@ -235,37 +244,15 @@ export async function runReceptionistTool(name: string, input: unknown, ctx: Too
   // appointment to stand in for the one it could not see.
   if (name === "lookup_appointment") {
     const rows = await upcomingForCaller(ctx.db, ctx.orgId, ctx.fromNumber);
-    if (rows.length === 0) {
-      return {
-        text:
-          "No upcoming appointment on file for this caller. Say so plainly. If they are sure they " +
-          "have one, do NOT book a new one to cover it — take a message with create_callback so " +
-          "someone can check.",
-      };
-    }
+    if (rows.length === 0) return { text: NO_UPCOMING_APPOINTMENT_TEXT };
+
     const { data: org } = await ctx.db.from("organizations").select("timezone").eq("id", ctx.orgId).maybeSingle();
-    const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: (org?.timezone as string) || "America/New_York",
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-    const list = rows
-      .map((r) => `${speakTime(fmt.format(new Date(r.start_at)))}${r.title ? ` (${r.title})` : ""}`)
-      .join("; ");
-    return {
-      text:
-        `This caller already has: ${list}. Confirm that back to them. Do NOT book another ` +
-        "appointment unless they clearly want an ADDITIONAL one — if they want this one moved or " +
-        "cancelled, say the team will take care of it and use create_callback.",
-    };
+    // "the team" — HelmSmart is industry-agnostic, so there is no Realtor to
+    // name. The only word that differs from CloseBoss's copy of this answer.
+    return { text: existingAppointmentsText(rows, safeTimezone(org?.timezone as string | null), "the team") };
   }
 
-  // Never "Done." for a tool we don't implement: that reads to the agent as a
-  // completed action, and it carries on as though the thing happened.
-  return { text: "Unsupported request — take a message instead." };
+  return { text: UNSUPPORTED_TOOL_TEXT };
 }
 
 // ─── Booking side-effects (shared by both transports) ─────────────────────────────
@@ -290,21 +277,25 @@ export async function notifyBooking(
     link: "/calendar",
   });
 
-  if (org.twilioNumber && booked.bookedLabel && callerNumber) {
+  // Not gated on org.twilioNumber any more: with a Messaging Service configured
+  // the send doesn't need one, and the receptionist may well be answering on a
+  // voice-only number.
+  const sender = twilioSender(org.twilioNumber);
+  if (sender && booked.bookedLabel && callerNumber) {
     try {
       const link = booked.rescheduleToken ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/reschedule/${booked.rescheduleToken}` : "";
       const body =
         `You're confirmed for ${booked.bookedLabel}. See you then! — ${org.orgName}` +
         `\nReply CANCEL to cancel${link ? ` · reschedule: ${link}` : ""}.`;
       const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-      const sms = await client.messages.create({ from: org.twilioNumber, to: callerNumber, body });
+      const sms = await client.messages.create({ ...sender, to: callerNumber, body });
       const clientId = await matchOrCreateClient(org.orgId, callerNumber);
       await db.from("messages").insert({
         organization_id: org.orgId,
         client_id: clientId,
         channel: "sms",
         direction: "outbound",
-        from_address: org.twilioNumber,
+        from_address: org.twilioNumber ?? "messaging-service",
         to_address: callerNumber,
         body,
         read: true,

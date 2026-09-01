@@ -9,22 +9,10 @@ import {
   buildReceptionistDynamicVariables,
   callerKind,
   describeAppointmentTypes,
+  formatPhoneForSpeech,
   offerableAppointmentTypes,
   type ReceptionistContext,
 } from "@repo/voice";
-
-/** Format a caller's E.164 number for SPEECH, e.g. "+16266255055" ->
- *  "6 2 6, 6 2 5, 5 0 5 5". This value is only ever read aloud, and the
- *  written form "(626) 625-5055" is spoken by TTS as a quantity — "six
- *  hundred twenty-six, six hundred twenty-five..." — which is unusable as a
- *  phone number. Spaced digits force digit-by-digit; the commas give the
- *  grouping pauses a person would make. Falls back to the raw input. */
-function formatCallerNumber(e164: string): string {
-  const d = (e164 || "").replace(/\D/g, "").slice(-10);
-  if (d.length !== 10) return e164 || "";
-  const spell = (chunk: string) => chunk.split("").join(" ");
-  return `${spell(d.slice(0, 3))}, ${spell(d.slice(3, 6))}, ${spell(d.slice(6))}`;
-}
 
 /**
  * Follow-up text to the caller when we do NOT answer — the out-of-minutes
@@ -113,7 +101,7 @@ export async function POST(req: NextRequest) {
 
         // Give Lucy the caller's own number so she can confirm it as the callback
         // number (and catch a mistyped/different number the caller dictates).
-        ctx.callerNumber = formatCallerNumber(fromNumber);
+        ctx.callerNumber = formatPhoneForSpeech(fromNumber);
         // Recognize returning callers (matched by caller ID): greet them by name
         // and confirm — rather than re-ask — what we already know. Best-effort;
         // stays undefined (generic greeting) for unknown callers or on error.
