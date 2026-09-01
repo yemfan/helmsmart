@@ -26,7 +26,7 @@ import TimingPanel from "@/components/dashboard/TimingPanel";
 import MlsCsvImportClient from "./MlsCsvImportClient";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
+  const t = await getServerT("dashboard");
   const title = t("pages.dashboardTitles.settings", { ns: "dashboard" });
   return {
   title,
@@ -37,8 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SettingsPage() {
-  const t = await getServerT();
-  const serverT = await getServerT();
+  const t = await getServerT("dashboard");
+  const serverT = await getServerT("dashboard");
   const tr = (key: string) => serverT(key, { ns: "dashboard" });
   const ctx = await getCurrentAgentContext();
   const widgetAgentKey = ctx.agentId || ctx.userId;

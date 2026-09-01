@@ -3387,7 +3387,8 @@
       "confidence": "{{score}}% confidence",
       "quotaTitle": "Resets {{date}}",
       "unlimited": "Unlimited",
-      "remaining": "{{remaining}} of {{limit}} left"
+      "remaining": "{{remaining}} of {{limit}} left",
+      "metaTitle": "CMA reports"
     },
     "calls": {
       "heading": "Call log",
@@ -3405,7 +3406,9 @@
       "transcript": "Transcript",
       "recording": "Recording",
       "noDetails": "No summary or transcript for this call.",
-      "empty": "No calls yet."
+      "empty": "No calls yet.",
+      "metaTitle": "Call log",
+      "metaDescription": "Every call your AI receptionist answered, with the summary and outcome."
     },
     "contractReview": {
       "needFile": "Choose a PDF or paste the contract text first.",
@@ -3424,7 +3427,9 @@
       "keyTerms": "Key terms",
       "blanks": "Blanks and missing items",
       "confirm": "Confirm before you sign",
-      "breadcrumb": "Contract review"
+      "breadcrumb": "Contract review",
+      "metaTitle": "Contract review",
+      "metaDescription": "Upload a contract and get the dates, terms and obligations pulled out."
     },
     "playbookRunDetail": {
       "optimizeHeading": "Optimize this run",
@@ -3433,7 +3438,18 @@
       "optimize": "Optimize",
       "running": "Running…",
       "approveRun": "Approve and run",
-      "openTaskBoard": "Open task board →"
+      "openTaskBoard": "Open task board →",
+      "howTeamRuns": "How your team runs this",
+      "deliverables": "What you get",
+      "marketingPlan": "Marketing plan",
+      "searchPlan": "Search plan",
+      "customAds": "Custom ads",
+      "criteria": "Criteria",
+      "channel": "Channel",
+      "cadence": "Cadence",
+      "optimizationHistory": "What changed along the way",
+      "ranAutonomously": "Ran on its own",
+      "noTasks": "Nothing queued yet."
     },
     "labels": {
       "call": "Call",
@@ -3593,7 +3609,9 @@
       "colDup": "Duplicate",
       "step4": "Step 4 — Done",
       "history": "Past imports",
-      "noImports": "No imports yet."
+      "noImports": "No imports yet.",
+      "metaTitle": "Import contacts",
+      "metaDescription": "Bring your sphere in from a CSV or another CRM."
     },
     "uploadListing": {
       "f": {
@@ -3622,7 +3640,8 @@
       "review": "Check the details before saving",
       "warnings": "Worth a second look",
       "saving": "Saving…",
-      "save": "Save listing"
+      "save": "Save listing",
+      "metaTitle": "Upload a listing"
     },
     "marketing": {
       "shareLinks": "Share links, track email follow-ups, and manage campaign status.",
@@ -3632,7 +3651,25 @@
       "openSmartLinks": "Open Smart Link Generator",
       "plansBlurb": "Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.",
       "openPlans": "Open Marketing Plans",
-      "autoSend": "Emails are sent automatically on schedule."
+      "autoSend": "Emails are sent automatically on schedule.",
+      "metaTitle": "Marketing",
+      "metaDescription": "Your traffic, your links, and what they turned into.",
+      "heading": "Marketing",
+      "traffic": "Traffic",
+      "pageViews": "Page views",
+      "conversions": "Conversions",
+      "conversionRate": "Conversion rate",
+      "topSources": "Top sources",
+      "noTraffic": "No traffic yet. Share a link and it will show up here.",
+      "shareableLinks": "Shareable links",
+      "shareableIntro": "Send these anywhere. Anyone who fills one in lands in your CRM, attributed to the link they came from.",
+      "homeValueLink": "Home value link",
+      "smartPropertyLinks": "Smart property links",
+      "marketingPlans": "Marketing plans",
+      "followUpAutomation": "Follow-up automation",
+      "status": "Status",
+      "sent": "Sent",
+      "pending": "Pending"
     },
     "addContact": {
       "viewAll": "View all",
@@ -3650,7 +3687,9 @@
       "saving": "Saving…",
       "save": "Save contact",
       "unnamed": "Unnamed",
-      "noDetails": "No details"
+      "noDetails": "No details",
+      "metaTitle": "Add a contact",
+      "metaDescription": "Add someone to your CRM by hand."
     },
     "leadProfile": {
       "assistantHandling": "AI Sales Assistant handling follow-ups",
@@ -3729,7 +3768,9 @@
       "colPrice": "Price",
       "colAction": "Action",
       "buying": "Buying…",
-      "buy": "Buy lead"
+      "buy": "Buy lead",
+      "metaTitle": "Opportunities",
+      "metaDescription": "Live deals and the ones worth chasing next."
     },
     "send": {
       "blurb": "Generate a personalized home value link you can paste into emails, texts, or social posts.",
@@ -3746,7 +3787,9 @@
       "tagSource": "Tag this link so you can tell where the lead came from.",
       "generating": "Generating…",
       "generate": "Generate link",
-      "copy": "Copy link"
+      "copy": "Copy link",
+      "metaTitle": "Send a message",
+      "metaDescription": "Call, text or email a contact, now or scheduled."
     },
     "transactionDetail": {
       "transactions": "Transactions",
@@ -3811,7 +3854,9 @@
       "waive": "Waive",
       "coverLetter": "Cover letter",
       "saving": "Saving…",
-      "saveDraft": "Save as draft"
+      "saveDraft": "Save as draft",
+      "metaTitle": "Build an offer",
+      "metaDescription": "Put an offer together and send it for signature."
     },
     "transactionsList": {
       "sub": "Every deal from mutual acceptance through close — deadlines, tasks, counterparties in one place.",
@@ -3847,7 +3892,8 @@
       "colZip": "ZIP coverage",
       "colPriority": "Priority",
       "colLastAssigned": "Last assigned",
-      "anyZip": "Any ZIP"
+      "anyZip": "Any ZIP",
+      "metaTitle": "Lead routing"
     },
     "accountant": {
       "ready": "Your AI Accountant is ready — when a deal goes under contract, its expected commission shows up here.",
@@ -3887,7 +3933,9 @@
       "colProperty": "Property",
       "colCreated": "Created",
       "open": "Open",
-      "openArrow": "Open →"
+      "openArrow": "Open →",
+      "metaTitle": "Seller presentations",
+      "metaDescription": "Listing presentations built from your CMAs."
     },
     "showingsList": {
       "visitsFor": "Showing visits for",
@@ -3915,7 +3963,9 @@
       "review": "Check the details before saving",
       "saving": "Saving…",
       "save": "Save contact",
-      "saved": "Contact saved."
+      "saved": "Contact saved.",
+      "metaTitle": "Scan a business card",
+      "metaDescription": "Photograph a card and we read the details into a new contact."
     },
     "generateLeads": {
       "isNew": "New",
@@ -3958,7 +4008,8 @@
       "recurring": "Part of a recurring series",
       "series": "Series",
       "empty": "No open houses yet.",
-      "noMatch": "No open houses match this filter."
+      "noMatch": "No open houses match this filter.",
+      "metaTitle": "Open houses"
     },
     "playbooksPage": {
       "cancelled": "Cancelled",
@@ -3994,7 +4045,9 @@
       "emptyHint": "New shared leads land here for the whole team to claim.",
       "claiming": "Claiming…",
       "claim": "Claim",
-      "openContact": "Open contact →"
+      "openContact": "Open contact →",
+      "metaTitle": "Lead queue",
+      "metaDescription": "Unclaimed leads waiting for an agent to pick them up."
     },
     "openHouseQr": {
       "printBefore": "Print these QR codes for each property. Scanning opens the mobile sign-up form and records the visitor as an",
@@ -4005,7 +4058,10 @@
       "signupLink": "Sign-in link",
       "copied": "Copied",
       "copyLink": "Copy link",
-      "open": "Open"
+      "open": "Open",
+      "metaTitle": "Open house sign-in code",
+      "metaDescription": "A QR code visitors scan to sign in at the door.",
+      "loadFailed": "Could not load your sign-in code. Refresh to try again."
     },
     "optimizePanel": {
       "intro": "Note how it’s going (showings, feedback, what the buyer liked). The AI proposes prioritized adjustments and files an approval task — nothing changes until you approve it.",
@@ -4017,7 +4073,8 @@
       "noInput": "This skill runs without any input.",
       "output": "Output",
       "copied": "Copied",
-      "copy": "Copy"
+      "copy": "Copy",
+      "backToSkills": "Back to skills"
     },
     "tasksPage": {
       "clickSlice": "Click a slice for details",
@@ -4042,7 +4099,15 @@
       "openCount_one": "{{count}} open",
       "openCount_other": "{{count}} open",
       "allStage": "{{done}}/{{total}} across the deal",
-      "closingOn": "Closes {{date}}"
+      "closingOn": "Closes {{date}}",
+      "metaTitle": "Transaction coordinator",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "yesterday": "yesterday",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "daysOverdue_one": "{{count}} day overdue",
+      "daysOverdue_other": "{{count}} days overdue"
     },
     "branding": {
       "signatureHint": "HTML format. Leave blank to use the default signature (name, brand, email, phone, photo, logo — composed from your profile).",
@@ -4080,7 +4145,9 @@
       "generate": "Generate report",
       "upgradeForMore": "Upgrade for more →",
       "crunching": "Crunching value, comps, affordability, deal rating, schools, and the map…",
-      "unlimitedReports": "Unlimited reports"
+      "unlimitedReports": "Unlimited reports",
+      "metaTitle": "Deep report",
+      "heading": "Deep report"
     },
     "listingOfferDetail": {
       "cancel": "Cancel",
@@ -7273,7 +7340,9 @@
       "k3Body": "for up to 30 days after deletion, after which they are overwritten on the normal backup-rotation schedule.",
       "timing": "Timing",
       "timingBody": "Your account is locked and your credentials revoked immediately when you confirm deletion in the app (or when we verify an email request). Hard deletion of the underlying data completes within 30 days. After that, no copy of your CRM data remains outside the retention categories listed above.",
-      "seeAlso": "See also our"
+      "seeAlso": "See also our",
+      "confirmByTyping": "Confirm by typing",
+      "andTapping": "and tapping"
     },
     "capRateValue": {
       "intro": "Cap rate is more than just a return metric. It is also one of the most important drivers of property value in income-producing real estate. When you understand how cap rate and net operating income (NOI) interact, you can see why small operational improvements or market shifts can create big changes in value.",

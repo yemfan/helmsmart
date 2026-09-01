@@ -9,12 +9,16 @@ import { SkillsManager, type SkillRow } from "./SkillsManager";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
+  const t = await getServerT("dashboard");
   const title = t("pages.dashboardTitles.skillsLibrary", { ns: "dashboard" });
-  return {
-  title,
-  description: "The Realtor AI skills library — assign skills to each assistant with state-aware compliance built in.",
-  robots: { index: false },
+  return {
+
+  title,
+
+  description: "The Realtor AI skills library — assign skills to each assistant with state-aware compliance built in.",
+
+  robots: { index: false },
+
 };
 }
 
@@ -27,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 import { getServerT } from "@/lib/i18n/server";
 
 export default async function SkillsPage() {
-  const serverT = await getServerT();
+  const serverT = await getServerT("dashboard");
   const tr = (key: string, o?: Record<string, unknown>) => serverT(key, { ns: "dashboard", ...o });
   const ctx = await getCurrentAgentContext();
   const h = await headers();

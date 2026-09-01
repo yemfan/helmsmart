@@ -3387,7 +3387,8 @@
       "confidence": "置信度 {{score}}%",
       "quotaTitle": "{{date}} 重置",
       "unlimited": "不限次数",
-      "remaining": "剩余 {{remaining}} / {{limit}}"
+      "remaining": "剩余 {{remaining}} / {{limit}}",
+      "metaTitle": "市场比较分析报告"
     },
     "calls": {
       "heading": "通话记录",
@@ -3405,7 +3406,9 @@
       "transcript": "通话文字记录",
       "recording": "录音",
       "noDetails": "这通电话没有摘要或文字记录。",
-      "empty": "还没有通话记录。"
+      "empty": "还没有通话记录。",
+      "metaTitle": "通话记录",
+      "metaDescription": "AI 前台接听的每一通电话，含摘要与结果。"
     },
     "contractReview": {
       "needFile": "请先选择 PDF 或粘贴合同文本。",
@@ -3424,7 +3427,9 @@
       "keyTerms": "关键条款",
       "blanks": "空白与缺失项",
       "confirm": "签字前请确认",
-      "breadcrumb": "合同审阅"
+      "breadcrumb": "合同审阅",
+      "metaTitle": "合同审阅",
+      "metaDescription": "上传合同，自动提取关键日期、条款与义务。"
     },
     "playbookRunDetail": {
       "optimizeHeading": "优化这次执行",
@@ -3433,7 +3438,18 @@
       "optimize": "优化",
       "running": "执行中…",
       "approveRun": "批准并执行",
-      "openTaskBoard": "打开任务看板 →"
+      "openTaskBoard": "打开任务看板 →",
+      "howTeamRuns": "您的团队如何执行",
+      "deliverables": "您将获得",
+      "marketingPlan": "营销计划",
+      "searchPlan": "找房计划",
+      "customAds": "定制广告",
+      "criteria": "筛选条件",
+      "channel": "渠道",
+      "cadence": "频率",
+      "optimizationHistory": "过程中的调整",
+      "ranAutonomously": "自主执行",
+      "noTasks": "暂无待办事项。"
     },
     "labels": {
       "call": "电话",
@@ -3593,7 +3609,9 @@
       "colDup": "重复",
       "step4": "第 4 步 —— 完成",
       "history": "历史导入",
-      "noImports": "还没有导入记录。"
+      "noImports": "还没有导入记录。",
+      "metaTitle": "导入联系人",
+      "metaDescription": "从 CSV 或其他客户管理系统导入您的人脉。"
     },
     "uploadListing": {
       "f": {
@@ -3622,7 +3640,8 @@
       "review": "保存前请核对信息",
       "warnings": "以下几项建议再确认一下",
       "saving": "保存中…",
-      "save": "保存房源"
+      "save": "保存房源",
+      "metaTitle": "上传房源"
     },
     "marketing": {
       "shareLinks": "分享链接、跟踪邮件回访，并管理营销活动状态。",
@@ -3632,7 +3651,25 @@
       "openSmartLinks": "打开智能链接生成器",
       "plansBlurb": "为您的客源创建多步骤自动营销流程——短信、邮件、待办和提醒。",
       "openPlans": "打开营销计划",
-      "autoSend": "邮件会按排期自动发送。"
+      "autoSend": "邮件会按排期自动发送。",
+      "metaTitle": "营销",
+      "metaDescription": "您的流量、链接，以及它们带来的成果。",
+      "heading": "营销",
+      "traffic": "流量",
+      "pageViews": "页面浏览量",
+      "conversions": "转化数",
+      "conversionRate": "转化率",
+      "topSources": "主要来源",
+      "noTraffic": "暂无流量。分享一个链接后，数据会显示在这里。",
+      "shareableLinks": "可分享链接",
+      "shareableIntro": "随处分享。任何人填写后都会进入您的客户管理系统，并标注来源链接。",
+      "homeValueLink": "房屋估值链接",
+      "smartPropertyLinks": "智能房源链接",
+      "marketingPlans": "营销计划",
+      "followUpAutomation": "自动跟进",
+      "status": "状态",
+      "sent": "已发送",
+      "pending": "待发送"
     },
     "addContact": {
       "viewAll": "查看全部",
@@ -3650,7 +3687,9 @@
       "saving": "保存中…",
       "save": "保存联系人",
       "unnamed": "未命名",
-      "noDetails": "暂无详情"
+      "noDetails": "暂无详情",
+      "metaTitle": "添加联系人",
+      "metaDescription": "手动将联系人添加到客户管理系统。"
     },
     "leadProfile": {
       "assistantHandling": "AI 销售助理正在负责跟进",
@@ -3729,7 +3768,9 @@
       "colPrice": "价格",
       "colAction": "操作",
       "buying": "购买中…",
-      "buy": "购买线索"
+      "buy": "购买线索",
+      "metaTitle": "商机",
+      "metaDescription": "进行中的交易，以及下一步值得跟进的机会。"
     },
     "send": {
       "blurb": "生成一条个性化的房屋估值链接，可以直接粘贴到邮件、短信或社交帖子里。",
@@ -3746,7 +3787,9 @@
       "tagSource": "给链接打标签，方便您分辨线索来自哪里。",
       "generating": "生成中…",
       "generate": "生成链接",
-      "copy": "复制链接"
+      "copy": "复制链接",
+      "metaTitle": "发送消息",
+      "metaDescription": "通过电话、短信或邮件联系客户 — 立即发送或定时发送。"
     },
     "transactionDetail": {
       "transactions": "交易",
@@ -3811,7 +3854,9 @@
       "waive": "放弃",
       "coverLetter": "随附信",
       "saving": "保存中…",
-      "saveDraft": "存为草稿"
+      "saveDraft": "存为草稿",
+      "metaTitle": "制作报价",
+      "metaDescription": "整理报价并发送签署。"
     },
     "transactionsList": {
       "sub": "从双方接受到成交的每一笔交易——截止日期、待办事项和对接方都集中在一处。",
@@ -3847,7 +3892,8 @@
       "colZip": "邮编覆盖",
       "colPriority": "优先级",
       "colLastAssigned": "最近分配",
-      "anyZip": "不限邮编"
+      "anyZip": "不限邮编",
+      "metaTitle": "线索分配"
     },
     "accountant": {
       "ready": "AI 会计已就绪——交易一旦签约，预计佣金就会显示在这里。",
@@ -3887,7 +3933,9 @@
       "colProperty": "房产",
       "colCreated": "创建时间",
       "open": "打开",
-      "openArrow": "打开 →"
+      "openArrow": "打开 →",
+      "metaTitle": "卖房方案",
+      "metaDescription": "基于您的市场比较分析生成的挂牌方案。"
     },
     "showingsList": {
       "visitsFor": "带看记录——",
@@ -3915,7 +3963,9 @@
       "review": "保存前请核对信息",
       "saving": "保存中…",
       "save": "保存联系人",
-      "saved": "联系人已保存。"
+      "saved": "联系人已保存。",
+      "metaTitle": "扫描名片",
+      "metaDescription": "拍下名片，系统会自动读取信息并创建联系人。"
     },
     "generateLeads": {
       "isNew": "新功能",
@@ -3958,7 +4008,8 @@
       "recurring": "属于一个周期性系列",
       "series": "系列",
       "empty": "还没有开放日。",
-      "noMatch": "没有符合该筛选条件的开放日。"
+      "noMatch": "没有符合该筛选条件的开放日。",
+      "metaTitle": "开放日"
     },
     "playbooksPage": {
       "cancelled": "已取消",
@@ -3994,7 +4045,9 @@
       "emptyHint": "新的共享线索会出现在这里，供全团队认领。",
       "claiming": "认领中…",
       "claim": "认领",
-      "openContact": "打开联系人 →"
+      "openContact": "打开联系人 →",
+      "metaTitle": "线索池",
+      "metaDescription": "尚未认领、等待经纪人跟进的线索。"
     },
     "openHouseQr": {
       "printBefore": "为每套房源打印这些二维码。扫码会打开手机版登记表，并把来访者记为",
@@ -4005,7 +4058,10 @@
       "signupLink": "登记链接",
       "copied": "已复制",
       "copyLink": "复制链接",
-      "open": "打开"
+      "open": "打开",
+      "metaTitle": "开放日签到二维码",
+      "metaDescription": "访客在门口扫码即可签到。",
+      "loadFailed": "无法加载签到二维码，请刷新后重试。"
     },
     "optimizePanel": {
       "intro": "记下目前的进展（带看情况、反馈、买家喜欢什么）。AI 会按优先级提出调整建议，并生成一条待审批任务——您批准之前不会有任何改动。",
@@ -4017,7 +4073,8 @@
       "noInput": "这个技能无需输入即可运行。",
       "output": "输出",
       "copied": "已复制",
-      "copy": "复制"
+      "copy": "复制",
+      "backToSkills": "返回技能列表"
     },
     "tasksPage": {
       "clickSlice": "点击扇区查看明细",
@@ -4042,7 +4099,15 @@
       "openCount_one": "{{count}} 项待办",
       "openCount_other": "{{count}} 项待办",
       "allStage": "整笔交易 {{done}}/{{total}}",
-      "closingOn": "{{date}} 过户"
+      "closingOn": "{{date}} 过户",
+      "metaTitle": "交易协调",
+      "today": "今天",
+      "tomorrow": "明天",
+      "yesterday": "昨天",
+      "inDays_one": "{{count}} 天后",
+      "inDays_other": "{{count}} 天后",
+      "daysOverdue_one": "逾期 {{count}} 天",
+      "daysOverdue_other": "逾期 {{count}} 天"
     },
     "branding": {
       "signatureHint": "使用 HTML 格式。留空则使用默认签名（姓名、品牌、邮箱、电话、照片、Logo——都取自您的个人资料）。",
@@ -4080,7 +4145,9 @@
       "generate": "生成报告",
       "upgradeForMore": "升级以获得更多 →",
       "crunching": "正在测算估值、可比成交、负担能力、交易评级、学区和地图…",
-      "unlimitedReports": "报告不限次数"
+      "unlimitedReports": "报告不限次数",
+      "metaTitle": "深度报告",
+      "heading": "深度报告"
     },
     "listingOfferDetail": {
       "cancel": "取消",
@@ -7273,7 +7340,9 @@
       "k3Body": "在删除后最多保留 30 天，之后会按常规的备份轮换计划被覆盖。",
       "timing": "时间安排",
       "timingBody": "当您在 App 中确认删除（或我们核验了您的邮件请求）时，您的账户会被立即锁定、凭据被立即吊销。底层数据的彻底删除会在 30 天内完成。在那之后，除上述保留类别之外，不会再留有您 CRM 数据的任何副本。",
-      "seeAlso": "另请参阅我们的"
+      "seeAlso": "另请参阅我们的",
+      "confirmByTyping": "输入以下内容确认",
+      "andTapping": "然后点击"
     },
     "capRateValue": {
       "intro": "资本化率（Cap Rate）不只是一个回报指标，它也是收益型房地产中最重要的价值驱动因素之一。搞清楚资本化率和净营运收入（NOI）怎样相互作用，您就会明白：为什么运营上很小的改善，或者市场上的一点变化，能带来价值上很大的变动。",

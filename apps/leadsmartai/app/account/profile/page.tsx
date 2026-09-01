@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AccountProfilePage() {
-  const t = await getServerT();
+  const t = await getServerT("dashboard");
   const tr = (key: string) => t(key, { ns: "dashboard" });
 
   return (
