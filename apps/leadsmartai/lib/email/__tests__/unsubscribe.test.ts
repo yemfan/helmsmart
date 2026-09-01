@@ -163,4 +163,13 @@ describe("environment fallbacks", () => {
   it("always yields some mailto, so the header's second arm is never empty", () => {
     expect(unsubscribeMailto()).toMatch(/@/);
   });
+
+  it("defaults to a mailbox that actually receives", () => {
+    // `unsubscribe@closebossai.com` does not exist. Defaulting to it meant
+    // opt-outs sent to the mailto arm bounced instead of being honoured —
+    // worse than offering no mailto at all, because the recipient believes
+    // they unsubscribed and reports spam when the next message arrives.
+    // `contact@` is the only mailbox on this domain that receives.
+    expect(unsubscribeMailto()).toBe("contact@closebossai.com");
+  });
 });

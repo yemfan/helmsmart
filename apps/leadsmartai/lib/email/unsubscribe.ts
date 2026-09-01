@@ -71,13 +71,19 @@ export function unsubscribeUrl(token: string | null | undefined): string | null 
 /**
  * The mailto arm of List-Unsubscribe. Some mail clients prefer it, and RFC 8058
  * wants a second route that does not depend on our web tier being up.
+ *
+ * The default MUST be a mailbox that actually receives. `unsubscribe@` does not
+ * exist on this domain; `contact@` is the one that does. Defaulting to an
+ * address nobody reads means the opt-outs sent there bounce rather than being
+ * honoured — worse than offering no mailto arm at all, because the recipient
+ * believes they have unsubscribed and reports spam when the next one arrives.
  */
 export function unsubscribeMailto(): string {
   return (
     process.env.OUTREACH_UNSUBSCRIBE_MAILTO?.trim() ||
     process.env.NEWSLETTER_UNSUBSCRIBE_MAILTO?.trim() ||
     process.env.RESEND_REPLY_TO?.trim() ||
-    "unsubscribe@closebossai.com"
+    "contact@closebossai.com"
   );
 }
 

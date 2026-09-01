@@ -62,11 +62,20 @@ export function newsletterMailingAddress(): string {
   return "CloseBoss — [set NEWSLETTER_MAILING_ADDRESS to your physical postal address]";
 }
 
-/** mailto target for the List-Unsubscribe header's mailto arm. */
+/**
+ * mailto target for the List-Unsubscribe header's mailto arm.
+ *
+ * The default MUST be a mailbox that actually receives. This defaulted to
+ * `unsubscribe@closebossai.com`, which does not exist — and since neither env
+ * var is set, that dead address has been going out on every newsletter. Some
+ * clients prefer the mailto arm over the URL, so those unsubscribes bounced
+ * instead of being honoured, and a bouncing opt-out address costs sender
+ * reputation on the one verified domain every app here sends from.
+ */
 export function newsletterUnsubscribeMailto(): string {
   const addr =
     process.env.NEWSLETTER_UNSUBSCRIBE_MAILTO?.trim() ||
     process.env.RESEND_REPLY_TO?.trim() ||
-    "unsubscribe@closebossai.com";
+    "contact@closebossai.com";
   return addr;
 }
