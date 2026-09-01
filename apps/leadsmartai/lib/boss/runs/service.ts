@@ -1,6 +1,8 @@
 import "server-only";
 
 import { cachedSystem, readCacheUsage } from "@leadsmart/shared/utils/promptCache";
+
+import { languageDirective } from "./languageDirective";
 import { cacheHitRatio, totalContextTokens } from "./tokenAccounting";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
@@ -107,6 +109,28 @@ function realModelClient(): ModelClient {
 
 // ── system prompt ────────────────────────────────────────────────────
 
+/**
+ * The last locale this agent actually used, for runs that start without a
+ * request behind them.
+ *
+ * The overnight cron is the case: it fires at 6am with no cookies, and
+ * defaulting it to English would hand a Chinese-speaking realtor an English
+ * mission report every single morning — the one report they are most likely to
+ * read cold. Their previous run is the best evidence available of what they
+ * read in.
+ */
+async function lastLocaleForAgent(agentId: string): Promise<string | null> {
+  const { data } = await supabaseAdmin
+    .from("boss_runs")
+    .select("locale")
+    .eq("agent_id", agentId)
+    .not("locale", "is", null)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as { locale?: string | null } | null)?.locale ?? null;
+}
+
 async function buildSystemPrompt(run: BossRunRow): Promise<string> {
   const [{ data: agentRow }, matrix, globalAuto] = await Promise.all([
     supabaseAdmin
@@ -162,7 +186,7 @@ Handling ANY request — including ones that don't match a tool name (you're a s
 - If it needs the realtor personally (moving money, signing, account/billing/security), is out of scope, stayed unclear after you asked, or the team simply has no tool for it yet — call hand_off_to_agent with the right category. Use "capability_gap" when it's something the team should be able to do but can't yet, so we learn what to build. NEVER invent a result or claim a tool exists — honest handoff beats bluffing.
 
 Autopilot (global auto-send: ${globalAuto ? "ON" : "OFF"}; per-channel overrides):
-${matrixLines}
+${matrixLines}${languageDirective(run.locale)}
 
 The realtor's command follows as the first user message.`;
 }
@@ -177,6 +201,15 @@ export async function startBossRun(args: {
   trigger?: "command" | "overnight" | "retry";
   instructionId?: string | null;
   maxToolCalls?: number;
+  /**
+   * The UI locale of the agent starting this run, from `getServerLocale()`.
+   * It has to be captured HERE: the prompt is built later, in a worker with no
+   * request behind it, where `cookies()` does not exist.
+   *
+   * Omitted by callers with no request of their own (the overnight cron), which
+   * fall back to the last locale this agent used — see `lastLocaleForAgent`.
+   */
+  locale?: string | null;
 }): Promise<{ runId: string } | { error: string; code?: string }> {
   // Monthly quota: each run consumes one ai_action (bonus wallet first),
   // same rails as every other AI feature (HANDOFF PR-6).
@@ -198,6 +231,7 @@ export async function startBossRun(args: {
       instruction_id: args.instructionId ?? null,
       objective: args.objective.slice(0, 4000),
       status: "planning",
+      locale: args.locale ?? (await lastLocaleForAgent(args.agentId)),
       ...(args.maxToolCalls ? { max_tool_calls: args.maxToolCalls } : {}),
     })
     .select("id")

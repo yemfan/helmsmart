@@ -34,6 +34,12 @@ export type BossRunRow = {
   output_tokens: number;
   token_budget: number;
   verify_done: boolean;
+  /**
+   * UI locale of the agent who started the run ("zh-Hans"), or null for
+   * English. Decides the language of the report Max writes back -- never the
+   * language of a message to a contact, which follows the contact.
+   */
+  locale?: string | null;
   finished_at?: string | null;
 };
 
