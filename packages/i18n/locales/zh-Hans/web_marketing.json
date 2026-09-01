@@ -507,6 +507,7 @@
     }
   },
   "hub": {
+    "backToHub": "返回全部帖子",
     "comingSoonBody": "此页面正在设置中，请稍后再来查看。",
     "comingSoonTitle": "即将上线",
     "consentLabel": "同意接收关于我咨询内容的短信。可能产生信息和数据费用。回复 STOP 可退订。同意并非任何购买的前提条件。",
@@ -534,11 +535,14 @@
     "licenseLabel": "执照编号",
     "notFoundBody": "该链接与任何经纪人不匹配。请检查拼写后重试。",
     "notFoundTitle": "未找到该经纪人",
+    "postNotFound": "未找到该帖子",
     "poweredBy": "由 CloseBoss AI 提供技术支持",
+    "related": "该经纪人的更多内容",
     "servingAreas": "服务区域",
     "submit": "发送",
     "submitting": "发送中",
     "thanksBody": "我已收到您的信息，会尽快与您联系。",
-    "thanksTitle": "感谢您的留言"
+    "thanksTitle": "感谢您的留言",
+    "topics": "话题"
   }
 }

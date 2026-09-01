@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
 import {
   applyFeedView,
   platformsIn,
@@ -30,9 +32,12 @@ const CONTROL =
 
 export default function HubFeed({
   items,
+  username,
   labels,
 }: {
   items: FeedItem[];
+  /** The agent's handle, for building content-page links. */
+  username: string;
   labels: {
     all: string;
     newest: string;
@@ -134,9 +139,28 @@ export default function HubFeed({
                 <p className="text-xs uppercase tracking-wide text-slate-400">
                   {postedAgo(item.postedAt)}
                 </p>
-                {item.caption ? (
-                  <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-slate-700">
-                    {item.caption}
+                {/*
+                  The title is the card's own link, and the only one that stays
+                  on this site. The network links below it leave for Facebook or
+                  Threads; a reader who wants to read the post rather than visit
+                  a social network needs somewhere here to go.
+                */}
+                <h3 className="mt-1 text-base font-semibold leading-snug">
+                  <Link
+                    href={`/@${username}/p/${slugFor(item)}`}
+                    className="text-slate-900 hover:text-blue-700 hover:underline"
+                  >
+                    {titleOf(item)}
+                  </Link>
+                </h3>
+
+                {/*
+                  A preview of the BODY, not the caption — the caption's first
+                  line is the title directly above it.
+                */}
+                {contentBody(item) ? (
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-700">
+                    {contentBody(item)}
                   </p>
                 ) : null}
 

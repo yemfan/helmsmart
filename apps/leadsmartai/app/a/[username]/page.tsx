@@ -232,6 +232,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         </h2>
         <HubFeed
           items={hub.feed}
+          username={hub.username}
           labels={{
             all: t("hub.feedAll", { ns: "web_marketing" }),
             newest: t("hub.feedOrderNewest", { ns: "web_marketing" }),
