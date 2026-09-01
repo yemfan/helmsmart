@@ -22,7 +22,8 @@
     "update_failed": "Update failed",
     "deleted_one": "Deleted {{count}} contact.",
     "deleted_other": "Deleted {{count}} contacts.",
-    "delete_failed": "Couldn't delete. Please try again."
+    "delete_failed": "Couldn't delete. Please try again.",
+    "dismiss": "Dismiss"
   },
   "add_menu": {
     "button": "Add…",

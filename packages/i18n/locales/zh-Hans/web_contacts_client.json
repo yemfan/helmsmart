@@ -22,7 +22,8 @@
     "update_failed": "更新失败",
     "deleted_one": "已删除 {{count}} 位联系人。",
     "deleted_other": "已删除 {{count}} 位联系人。",
-    "delete_failed": "删除失败，请重试。"
+    "delete_failed": "删除失败，请重试。",
+    "dismiss": "关闭"
   },
   "add_menu": {
     "button": "添加……",

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -18,6 +19,8 @@ import {
   Download,
   UserPlus,
   Mail,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { CallButton } from "@/components/contacts/CallButton";
@@ -131,6 +134,55 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
   );
 }
 
+type ActionMsg = { text: string; tone: "ok" | "error" };
+
+/**
+ * The outcome of an action, in a colour that matches the outcome.
+ *
+ * `role="alert"` on the failure case so a screen reader announces it — the
+ * previous markup was a plain div, which meant a blind user got no signal at
+ * all that their save had failed.
+ */
+function ActionBanner({
+  msg,
+  onDismiss,
+  dismissLabel,
+}: {
+  msg: ActionMsg;
+  onDismiss: () => void;
+  dismissLabel: string;
+}) {
+  const bad = msg.tone === "error";
+  return (
+    <div
+      role={bad ? "alert" : "status"}
+      aria-live={bad ? "assertive" : "polite"}
+      className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-sm ${
+        bad
+          ? "border-red-200 bg-red-50 text-red-800"
+          : "border-emerald-200 bg-emerald-50 text-emerald-800"
+      }`}
+    >
+      {bad ? (
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      ) : (
+        <Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      )}
+      <span className="flex-1">{msg.text}</span>
+      {bad ? (
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label={dismissLabel}
+          className="shrink-0 rounded p-0.5 text-red-500 hover:bg-red-100 hover:text-red-700"
+        >
+          <X className="h-4 w-4" aria-hidden />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 type SortKey = "name" | "email" | "rating" | "last_contacted_at" | "created_at";
 
 /** Heat order for the rating sort — hot leads first (not alphabetical). */
@@ -138,7 +190,15 @@ const RATING_RANK: Record<string, number> = { hot: 0, warm: 1, cold: 2 };
 
 export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow[] }) {
   const { t } = useTranslation("web_contacts_client");
+  const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
+  /*
+   * Follow the server. `useState(initialLeads)` seeds once and then ignores
+   * the prop, so a router.refresh() would fetch new rows that never appeared.
+   * Server data is the fresher of the two whenever it changes, so it wins —
+   * including over the optimistic edits made below.
+   */
+  useEffect(() => { setLeads(initialLeads); }, [initialLeads]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [search, setSearch] = useState("");
   const [ratingFilter, setRatingFilter] = useState<string>("all");
@@ -174,7 +234,28 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
   const [addFields, setAddFields] = useState({ name: "", email: "", phone: "", property_address: "", notes: "" });
   const [addErrors, setAddErrors] = useState<Record<string, string[]>>({});
   const [actionLoading, setActionLoading] = useState(false);
-  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  /**
+   * Every outcome on this page used to land in one blue box. "Contact added"
+   * and "Phone number already in use" were the same colour, in the same place,
+   * with the same weight — so a failed save read as a successful one.
+   *
+   * Worse, the success half was unreachable: `addContact` set the message and
+   * then called `window.location.reload()` on the very next line, so the ONLY
+   * banner a user could ever actually see was an error styled as information.
+   */
+  const [actionMsg, setActionMsg] = useState<ActionMsg | null>(null);
+  const succeeded = (text: string) => setActionMsg({ text, tone: "ok" });
+  const failed = (text: string) => setActionMsg({ text, tone: "error" });
+  /*
+   * Confirmations clear themselves; failures do not. A success banner that
+   * lingers makes the page look stuck, but a failure the user has not read yet
+   * is the whole reason the banner exists — that one waits to be dismissed.
+   */
+  useEffect(() => {
+    if (actionMsg?.tone !== "ok") return;
+    const id = window.setTimeout(() => setActionMsg(null), 5000);
+    return () => window.clearTimeout(id);
+  }, [actionMsg]);
   const [postcardTarget, setPostcardTarget] = useState<{
     contactId: string;
     name: string;
@@ -217,10 +298,16 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       }
       setAddFields({ name: "", email: "", phone: "", property_address: "", notes: "" });
       setShowAddForm(false);
-      setActionMsg(t("messages.added"));
-      // Refresh page data
-      window.location.reload();
-    } catch (e) { setActionMsg(e instanceof Error ? e.message : t("messages.default_error")); }
+      succeeded(t("messages.added"));
+      /*
+       * `window.location.reload()` used to sit here. It threw away the React
+       * state one line after we set it, so the confirmation never rendered —
+       * and it cost a full document load to show one new row. router.refresh()
+       * re-runs the server component and hands down fresh `leads`; the effect
+       * below copies them into state, and the banner survives.
+       */
+      router.refresh();
+    } catch (e) { failed(e instanceof Error ? e.message : t("messages.default_error")); }
     finally { setActionLoading(false); }
   }
 
@@ -236,8 +323,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       if (!res.ok) throw new Error(body.error ?? t("messages.update_failed"));
       setLeads((prev) => prev.map((l) => l.id === id ? { ...l, ...editFields } as LeadRow : l));
       setEditingId(null);
-      setActionMsg(t("messages.updated"));
-    } catch (e) { setActionMsg(e instanceof Error ? e.message : t("messages.default_error")); }
+      succeeded(t("messages.updated"));
+    } catch (e) { failed(e instanceof Error ? e.message : t("messages.default_error")); }
     finally { setActionLoading(false); }
   }
 
@@ -252,9 +339,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       });
       if (!res.ok) throw new Error(t("messages.update_failed"));
       setLeads((prev) => prev.map((l) => l.id === id ? { ...l, last_contacted_at: now } : l));
-      setActionMsg(t("messages.marked_contacted"));
+      succeeded(t("messages.marked_contacted"));
       loadStats();
-    } catch (e) { setActionMsg(e instanceof Error ? e.message : t("messages.default_error")); }
+    } catch (e) { failed(e instanceof Error ? e.message : t("messages.default_error")); }
     finally { setActionLoading(false); }
   }
 
@@ -276,13 +363,12 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
         setSelectedIds(new Set());
         loadStats();
       }
-      setActionMsg(
-        deletedSet.size < ids.length
-          ? t("messages.delete_failed")
-          : t("messages.deleted", { count: deletedSet.size }),
-      );
+      // A partial delete is a failure, not a quieter success: some of what the
+      // user selected is still there, and they need to see which colour it is.
+      if (deletedSet.size < ids.length) failed(t("messages.delete_failed"));
+      else succeeded(t("messages.deleted", { count: deletedSet.size }));
     } catch {
-      setActionMsg(t("messages.delete_failed"));
+      failed(t("messages.delete_failed"));
     } finally {
       setDeleting(false);
       setDeleteConfirmOpen(false);
@@ -378,7 +464,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           Replaces the previous four-button row (Enter Contact / Scan
           Card / Upload CSV / Download Template). Same actions live
           inside the dropdown menu. */}
-      {actionMsg && <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">{actionMsg}</div>}
+      {actionMsg && <ActionBanner msg={actionMsg} onDismiss={() => setActionMsg(null)} dismissLabel={t("messages.dismiss")} />}
       <div className="flex justify-end">
         <div ref={addMenuRef} className="relative inline-block">
           <button
@@ -499,6 +585,15 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.notes?.length ? "border-red-400" : "border-gray-300"}`} />
             {addErrors.notes?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.notes.join(" ")}</p> : null}
           </label>
+          {/*
+            * The banner at the top of the page is ~120 lines of markup above
+            * this button — far off-screen once the form is open. A failed save
+            * announced up there looks like nothing happened at all, so the
+            * failure is repeated right where the click was.
+            */}
+          {actionMsg?.tone === "error" ? (
+            <ActionBanner msg={actionMsg} onDismiss={() => setActionMsg(null)} dismissLabel={t("messages.dismiss")} />
+          ) : null}
           <button type="button" onClick={() => void addContact()} disabled={actionLoading || !addFields.name}
             className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
             {actionLoading ? t("add_form.saving") : t("add_form.submit")}
@@ -880,7 +975,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           onClose={() => setPostcardTarget(null)}
           target={postcardTarget}
           onSent={() => {
-            setActionMsg(t("messages.postcard_sent"));
+            succeeded(t("messages.postcard_sent"));
           }}
         />
       ) : null}
@@ -898,7 +993,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               phone: c.phone,
             }))}
           onSent={() => {
-            setActionMsg(t("messages.postcards_sent", { count: selectedIds.size }));
+            succeeded(t("messages.postcards_sent", { count: selectedIds.size }));
             setSelectedIds(new Set());
           }}
         />
