@@ -11,6 +11,7 @@ import {
   defaultBusinessHours,
   safeTimezone,
   todayInTimezone,
+  REAL_ESTATE_PROFILE,
   type ReceptionistContext,
 } from "@repo/voice";
 
@@ -53,6 +54,11 @@ export async function loadReceptionistContext(
 
   return {
     orgId: agentId,
+    // CloseBoss's tenants are licensed real-estate agents, so the receptionist
+    // speaks their trade: what it may not advise on, what "ready to book" sounds
+    // like, which claims need the licensee. The engine is shared; this names the
+    // vertical it should wear. Without it the prompt comes out generic.
+    profile: REAL_ESTATE_PROFILE,
     orgName,
     // No separate Chinese brand name exists in branding, so Chinese callers
     // hear the same one. Better than a stale second copy going out of date.

@@ -11,3 +11,4 @@ export * from "./datetime";
 export * from "./scheduling";
 export * from "./appointmentTypes";
 export * from "./tools";
+export * from "./vertical";

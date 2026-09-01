@@ -14,7 +14,8 @@
     "./datetime": "./src/datetime.ts",
     "./scheduling": "./src/scheduling.ts",
     "./appointmentTypes": "./src/appointmentTypes.ts",
-    "./tools": "./src/tools.ts"
+    "./tools": "./src/tools.ts",
+    "./vertical": "./src/vertical.ts"
   },
   "scripts": {
     "test": "vitest run"

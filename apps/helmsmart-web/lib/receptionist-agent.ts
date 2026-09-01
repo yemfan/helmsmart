@@ -8,6 +8,7 @@ import { twilioSender } from "@/lib/twilio-sender";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
 import { phoneLast10 } from "@repo/voice/phone";
+import { GENERAL_BUSINESS_PROFILE } from "@repo/voice/vertical";
 import {
   NO_UPCOMING_APPOINTMENT_TEXT,
   UNSUPPORTED_TOOL_TEXT,
@@ -71,6 +72,12 @@ export async function loadReceptionistContext(db: ServiceClient, orgId: string):
 
   return {
     orgId,
+    // HelmSmart is industry-agnostic — its tenants are plumbers, clinics, firms.
+    // The neutral profile keeps the receptionist from telling a plumbing caller
+    // it cannot say what a home is worth. It is also the package default; naming
+    // it here is documentation, and the swap point when a pack or an org setting
+    // starts choosing the vertical (see verticalProfile()).
+    profile: GENERAL_BUSINESS_PROFILE,
     orgName: displayName,
     orgNameZh: displayNameZh,
     agentName: ((org?.voice_agent_name as string) || "").trim(),
