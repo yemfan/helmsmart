@@ -152,6 +152,13 @@ export const SETTINGS_CARDS: ReadonlyArray<SettingsCard> = [
     image: "/help/settings/social-auto-posting.png",
   },
   {
+    card: "TikTok posting",
+    tab: "Channels & Compliance",
+    guide: "tiktok-posting",
+    summary: "Who can see your TikTok posts, and the commercial-content declaration TikTok requires.",
+    image: "/help/settings/tiktok-posting.png",
+  },
+  {
     card: "Weekly post schedule",
     tab: "Channels & Compliance",
     guide: "weekly-social-schedule",

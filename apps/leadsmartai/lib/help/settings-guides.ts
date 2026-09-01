@@ -338,6 +338,30 @@ export const SETTINGS_GUIDES: ReadonlyArray<HelpGuide> = [
     ],
   },
   {
+    slug: "tiktok-posting",
+    title: "Choose how your TikTok posts go out",
+    description:
+      "TikTok requires the account holder to pick the audience and declare commercial content. Until you do, scheduled TikTok posts are skipped.",
+    readTime: "3 min",
+    category: "marketing",
+    body: [
+      "TikTok is stricter than the other networks. Its rules say the account holder — not the app — chooses who can see a post and whether it is commercial. CloseBoss publishes on a schedule with nobody present, so you make that choice once here and it is used on every post.",
+      "Nothing is preselected, deliberately. Until you pick an audience and save, scheduled TikTok posts are skipped rather than sent to a default you never chose.",
+    ],
+    steps: [
+      "Connect TikTok first, at Settings → Channels & Compliance → Connected social accounts.",
+      "On the same tab, find TikTok posting.",
+      "Choose who can see these posts. Only the audiences TikTok currently offers your account are listed — if the one you want is missing, that is a setting on TikTok's side, not here.",
+      "Set the interaction options. A box that is checked and greyed out is already switched off in your TikTok account settings; CloseBoss cannot re-enable it, and would not be allowed to.",
+      "Declare commercial content if it applies: promoting your own business, a paid partnership, or both. TikTok does not allow a paid partnership on a private post — pick a different audience if you need both.",
+      "Read the disclosure line and save. Your choice is re-checked against your TikTok account on every post, so if TikTok later withdraws an audience the post fails with a reason instead of going out wrong.",
+    ],
+    related: [
+      { label: "Connect your social accounts", href: "/help/guides/connect-social-accounts" },
+      { label: "Schedule a specific week of social posts", href: "/help/guides/weekly-social-schedule" },
+    ],
+  },
+  {
     slug: "weekly-social-schedule",
     title: "Schedule a specific week of social posts",
     description:

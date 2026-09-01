@@ -161,7 +161,6 @@ export default async function SettingsPage() {
             </Card>
             <Card
               title={tr("tips.weeklySchedule")}
-              description="Pick the weekdays you want a post. For each, set a time, channels, and a topic — AI researches the topic and publishes on schedule."
             >
               <WeeklyScheduleController />
             </Card>
