@@ -82,9 +82,16 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   // The form lives at the top of the page and the pencil that opens it sits on
   // a row that can be thousands of pixels further down. Without this the form
   // opened off-screen and clicking edit looked like it did nothing at all.
+  //
+  // NOT behavior:"smooth". The dashboard scrolls inside a nested flex
+  // container (main.min-h-0.flex-1.overflow-y-auto), and a smooth scroll
+  // request against it is silently dropped — measured on production, the
+  // scroller sat at 2502 for five seconds and never moved, while the same call
+  // with the default behaviour jumped it to 0 immediately. Choosing the
+  // prettier option cost the whole feature.
   useEffect(() => {
     if (!editingEventId) return;
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    formRef.current?.scrollIntoView({ block: "center" });
   }, [editingEventId]);
   const [showEvents, setShowEvents] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
