@@ -248,7 +248,15 @@ const linkedinAdapter: OAuthAdapter = {
 };
 
 // ─── Pinterest ───────────────────────────────────────────────────────────────
-const PINTEREST_SCOPES = ["boards:read", "pins:read", "pins:write"];
+/**
+ * boards:write is NOT optional. POST /v5/pins writes INTO a board, so
+ * Pinterest bills Pin creation against the board scope rather than pins:write
+ * alone — without it every Pin comes back 403 "Missing: ['boards:write']".
+ * The same omission in CloseBoss silently failed 21 scheduled Pins over a
+ * month before anyone traced it. Scopes are fixed at authorize time, so any
+ * connection made before this needs to reconnect.
+ */
+const PINTEREST_SCOPES = ["boards:read", "boards:write", "pins:read", "pins:write"];
 
 const pinterestAdapter: OAuthAdapter = {
   key: "pinterest",
