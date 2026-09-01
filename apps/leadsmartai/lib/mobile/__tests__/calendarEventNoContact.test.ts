@@ -17,13 +17,22 @@ vi.mock("server-only", () => ({}));
 const calls = {
   inserted: null as Record<string, unknown> | null,
   contactsQueried: 0,
+  /** Every value list handed to .in() on the contacts table. */
+  contactsInValues: [] as unknown[][],
 };
 
-function makeChain(result: unknown) {
+function makeChain(result: unknown, table?: string) {
   const chain: Record<string, unknown> = {};
   for (const m of ["select", "eq", "is", "update", "order", "limit"]) {
     chain[m] = () => chain;
   }
+  chain.in = (_col: string, values: unknown[]) => {
+    if (table === "contacts") calls.contactsInValues.push(values);
+    return chain;
+  };
+  chain.gte = () => chain;
+  chain.lte = () => chain;
+  chain.then = undefined;
   chain.maybeSingle = async () => ({ data: result, error: null });
   chain.single = async () => ({ data: result, error: null });
   chain.insert = (row: Record<string, unknown>) => {
@@ -38,7 +47,7 @@ vi.mock("@/lib/supabase/admin", () => ({
     from(table: string) {
       if (table === "contacts") {
         calls.contactsQueried += 1;
-        return makeChain({ id: "contact-1", name: "Dana Reyes" });
+        return makeChain({ id: "contact-1", name: "Dana Reyes" }, "contacts");
       }
       return makeChain({
         id: "event-1",
@@ -51,11 +60,14 @@ vi.mock("@/lib/supabase/admin", () => ({
   },
 }));
 
-const { createMobileCalendarEvent } = await import("../calendarMobile");
+const { createMobileCalendarEvent, contactIdsForLookup } = await import(
+  "../calendarMobile"
+);
 
 beforeEach(() => {
   calls.inserted = null;
   calls.contactsQueried = 0;
+  calls.contactsInValues = [];
 });
 
 describe("createMobileCalendarEvent without a contact", () => {
@@ -102,5 +114,44 @@ describe("createMobileCalendarEvent with a contact", () => {
     });
     expect(calls.inserted?.contact_id).toBe("contact-1");
     expect(calls.contactsQueried).toBeGreaterThan(0);
+  });
+});
+
+describe("contactIdsForLookup", () => {
+  it("drops nulls instead of stringifying them", () => {
+    // The regression: String(null) === "null", which Postgres rejects as a
+    // uuid, so ONE contactless appointment 500'd the whole list query and the
+    // calendar showed "Nothing scheduled this month" for every event the agent
+    // had. Allowing contactless events made this reachable for the first time.
+    expect(contactIdsForLookup([{ contact_id: null }])).toEqual([]);
+    expect(contactIdsForLookup([{ contact_id: null }])).not.toContain("null");
+  });
+
+  it("keeps real ids alongside contactless rows", () => {
+    expect(
+      contactIdsForLookup([
+        { contact_id: "11111111-1111-1111-1111-111111111111" },
+        { contact_id: null },
+        { contact_id: "22222222-2222-2222-2222-222222222222" },
+      ]),
+    ).toEqual([
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+    ]);
+  });
+
+  it("de-duplicates", () => {
+    const id = "11111111-1111-1111-1111-111111111111";
+    expect(contactIdsForLookup([{ contact_id: id }, { contact_id: id }])).toEqual([id]);
+  });
+
+  it("ignores undefined and blank values", () => {
+    expect(
+      contactIdsForLookup([{ contact_id: undefined }, { contact_id: "" }, { contact_id: "  " }, {}]),
+    ).toEqual([]);
+  });
+
+  it("returns nothing for no rows", () => {
+    expect(contactIdsForLookup([])).toEqual([]);
   });
 });
