@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, Check, Eye, Pencil, X } from "lucide-react";
 import GoogleCalendarConnectPanel from "@/components/dashboard/GoogleCalendarConnectPanel";
 
@@ -77,6 +77,15 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   const [addMsg, setAddMsg] = useState<string | null>(null);
   // When set, the form is editing this appointment instead of creating one.
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
+
+  // The form lives at the top of the page and the pencil that opens it sits on
+  // a row that can be thousands of pixels further down. Without this the form
+  // opened off-screen and clicking edit looked like it did nothing at all.
+  useEffect(() => {
+    if (!editingEventId) return;
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [editingEventId]);
   const [showEvents, setShowEvents] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
   const [showFollowups, setShowFollowups] = useState(true);
@@ -428,7 +437,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
 
       {/* Add form */}
       {showAdd && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
+        <div ref={formRef} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
           {editingEventId ? (
             <p className="text-xs font-medium text-gray-500">{tr("calendar.editingAppointment")}</p>
           ) : (
