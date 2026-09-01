@@ -74,8 +74,8 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
       <div className="mt-4 space-y-4">
         <ChannelBlock
           badge="SMS"
-          value={s.sms.number ?? "No number configured"}
-          subtitle="Your sending number"
+          value={s.sms.number ?? t("pages.channelsCard.noNumber")}
+          subtitle={t("pages.channelsCard.smsSubtitle")}
           rows={[
             {
               state: s.sms.verified === true ? "ok" : s.sms.verified === false ? "warn" : "pending",
@@ -107,8 +107,8 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
         <ChannelBlock
           badge="@"
           badgeTone="email"
-          value={s.email.address ?? "No email configured"}
-          subtitle="Your sending address"
+          value={s.email.address ?? t("pages.channelsCard.noEmail")}
+          subtitle={t("pages.channelsCard.emailSubtitle")}
           rows={[
             {
               state: s.email.verified === true ? "ok" : s.email.verified === false ? "warn" : "pending",

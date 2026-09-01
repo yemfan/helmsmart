@@ -14,7 +14,7 @@ export default async function CompliancePage() {
     <ComingSoon
       icon={ShieldCheck}
       title={t("pages.financialServices.navCompliance", { ns: "dashboard" })}
-      description="Your compliance hub — license status, AML training, supervised-review queue, and audit-ready communications archive."
+      description={t("pages.financialServices.descCompliance", { ns: "dashboard" })}
       availability="Pilot week 1"
       bulletPoints={[
         "State license status + CE credit tracking (NIPR sync in phase 2)",

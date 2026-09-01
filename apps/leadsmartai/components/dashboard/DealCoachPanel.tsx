@@ -275,7 +275,7 @@ export default function DealCoachPanel() {
             </div>
 
             {/* Action plan */}
-            <SectionCard title={t("pages.dealCoachPanel.doNext")} subtitle="Prioritized — top items first.">
+            <SectionCard title={t("pages.dealCoachPanel.doNext")} subtitle={t("pages.dealCoachPanel.doNextSub")}>
               <ol className="space-y-2">
                 {report.actionPlan.actions.map((a) => (
                   <li
@@ -328,7 +328,7 @@ export default function DealCoachPanel() {
             {report.negotiation ? (
               <SectionCard
                 title={t("pages.dealCoachPanel.scripts")}
-                subtitle="Three scenarios — adapt the wording to your buyer's voice."
+                subtitle={t("pages.dealCoachPanel.scriptsSub")}
               >
                 <div className="space-y-4">
                   {NEGOTIATION_SECTIONS.map(({ key, label }) => {

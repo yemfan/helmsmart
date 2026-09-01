@@ -34,7 +34,7 @@ export default function LoanBrokerDashboardClient() {
   return (
     <DashboardShell
       title={t("pages.loanBroker.dashboard")}
-      subtitle="Borrower flow from inquiry to funded, with AI finance tools on-demand."
+      subtitle={t("pages.loanBroker.dashboardSub")}
       kpis={brokerKpis.map((k) => (
         <KpiCard key={k.label} label={k.label} value={k.value} subtext={kpiSubtext(k)} />
       ))}

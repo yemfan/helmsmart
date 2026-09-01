@@ -14,7 +14,7 @@ export default async function PolicyholdersPage() {
     <ComingSoon
       icon={Briefcase}
       title={t("pages.financialServices.navPolicyholders", { ns: "dashboard" })}
-      description="Your book of business — every active policy, carrier, anniversary, and beneficiary in one place."
+      description={t("pages.financialServices.descPolicyholders", { ns: "dashboard" })}
       availability="Pilot week 4"
       bulletPoints={[
         "Active policies grouped by client (carrier, product, face amount, premium)",

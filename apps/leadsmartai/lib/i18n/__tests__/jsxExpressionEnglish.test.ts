@@ -38,6 +38,16 @@ const ROOT = join(__dirname, "..", "..", "..");
 const SCAN = ["app", "components"];
 
 /** Attributes whose value is read by a person rather than by the browser. */
+/**
+ * Attributes a PERSON reads, never one the BROWSER reads.
+ *
+ * The second group are props on our own components rather than HTML
+ * attributes, and both scans here were blind to them until a QA pass found the
+ * approval-policy setting — the control deciding whether an agent's AI texts
+ * clients unsupervised — explained only in English via `sublabel`. Kept in step
+ * with the same list in residualEnglish.test.ts, which catches the plain-string
+ * form; this one catches the expression form.
+ */
 const COPY_ATTRS = new Set([
   "title",
   "placeholder",
@@ -45,6 +55,21 @@ const COPY_ATTRS = new Set([
   "aria-label",
   "aria-description",
   "label",
+  "sublabel",
+  "description",
+  "subtitle",
+  "hint",
+  "helpText",
+  "tooltip",
+  "note",
+  "caption",
+  "summary",
+  "heading",
+  "emptyText",
+  "confirmLabel",
+  "cancelLabel",
+  "ctaLabel",
+  "badge",
 ]);
 
 /**

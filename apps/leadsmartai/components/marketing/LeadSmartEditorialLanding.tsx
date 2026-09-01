@@ -232,12 +232,12 @@ function DemoSection() {
         <ProofChip
           number="<60s"
           label={t("pages.editorialLanding.firstReply")}
-          hint="Median first-reply time across 30-day trial users."
+          hint={t("pages.editorialLanding.firstReplyHint")}
         />
         <ProofChip
           number="+42%"
           label={t("pages.editorialLanding.replyLift")}
-          hint="Measured against the agent's prior 30-day average."
+          hint={t("pages.editorialLanding.replyLiftHint")}
         />
         <ProofChip number="Zillow · FUB · IDX" label={t("pages.editorialLanding.yourStack")} />
       </div>

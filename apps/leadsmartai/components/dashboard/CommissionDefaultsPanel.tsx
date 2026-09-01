@@ -77,7 +77,7 @@ export function CommissionDefaultsPanel() {
           onBlur={(v) => void save({ commissionBuyerPct: v })}
           disabled={saving}
           max={15}
-          hint="Typical buyer-side commission is 2.5–3.0%, negotiated as offer of cooperation."
+          hint={t("pages.commissionDefaults.buyerSideHint")}
         />
         <PctInput
           label={t("pages.commissionDefaults.listingSide")}
@@ -85,7 +85,7 @@ export function CommissionDefaultsPanel() {
           onBlur={(v) => void save({ commissionListingPct: v })}
           disabled={saving}
           max={15}
-          hint="Typical listing commission is 2.5–3.0%."
+          hint={t("pages.commissionDefaults.listingSideHint")}
         />
         <PctInput
           label={t("pages.commissionDefaults.brokerageSplit")}
@@ -93,7 +93,7 @@ export function CommissionDefaultsPanel() {
           onBlur={(v) => void save({ brokerageSplitPct: v })}
           disabled={saving}
           max={100}
-          hint="70 = 70/30 favoring you. 100 if solo on your own license."
+          hint={t("pages.commissionDefaults.brokerageSplitHint")}
         />
         <PctInput
           label={t("pages.commissionDefaults.referralFee")}
@@ -101,7 +101,7 @@ export function CommissionDefaultsPanel() {
           onBlur={(v) => void save({ referralFeePct: v })}
           disabled={saving}
           max={100}
-          hint="Usually 0. Set if you owe a fixed referrer. Applied off the TOP before split."
+          hint={t("pages.commissionDefaults.referralFeeHint")}
         />
       </div>
 

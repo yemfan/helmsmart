@@ -54,13 +54,34 @@ const ALLOWED = new Set([
   "Signature",
   "Team",
   "PDF",
+  // A channel badge, sitting next to the "@" that marks the email one. The
+  // acronym is what a Chinese-speaking agent reads on their own phone too.
+  "SMS",
   // The key cap, not a word: it is printed on the keyboard the same way here.
   "Esc",
   // Max is an AI employee on the team, not the adjective.
   "Max",
 ]);
 
-const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;
+/**
+ * Attributes a PERSON reads.
+ *
+ * The second half of this list is the one that matters. `sublabel`, `hint`,
+ * `description` and friends are not HTML attributes — they are props on our own
+ * components, and every scan here was blind to them. A QA pass found the
+ * approval-policy setting explained only in English:
+ *
+ *     sublabel="Safer. Every triggered message becomes a draft…"
+ *
+ * That is the control deciding whether an agent's AI texts their clients
+ * unsupervised, and the sentence explaining the choice was in a language the
+ * reader may not have. 70 strings across 36 files were hiding in this shape.
+ *
+ * A prop is on this list when its value is read by a human. `variant`, `size`,
+ * `icon` and `href` are read by the browser and stay off it.
+ */
+const COPY_ATTRS =
+  /\b(?:placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge)="([^"]+)"/g;
 /**
  * A JSX text node is bounded by a tag *or* an interpolation on either side —
  * four combinations, of which `>text<` is one. Matching only that one hid

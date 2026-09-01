@@ -2408,7 +2408,9 @@
       "cancel": "取消",
       "readingOfferPdf": "正在读取报价 PDF…",
       "uploadOfferPdfOptional": "上传报价 PDF（可选）",
-      "dropASignedRpa": "把已签署的购房合同 PDF 拖到这里，或点击选择——我们会用 Claude 提取价格、附加条件和日期。文件不会被保存。"
+      "dropASignedRpa": "把已签署的购房合同 PDF 拖到这里，或点击选择——我们会用 Claude 提取价格、附加条件和日期。文件不会被保存。",
+      "concessionsHint": "买方要求在交割时给予的抵扣",
+      "buyerCommissionHint": "支付给买方经纪公司的佣金"
     },
     "showingDetail": {
       "metaTitle": "带看",
@@ -2825,7 +2827,11 @@
       "openMetaAdsManager": "在 Meta 广告管理工具中打开 →",
       "connectAPage": "连接一个主页 →",
       "estimating": "估算中…",
-      "settingsBranding": "设置 → 品牌"
+      "settingsBranding": "设置 → 品牌",
+      "whereItRunsSub": "选择一个已连接的 Facebook 主页和广告账户。",
+      "whoSeesItSub": "房地产广告被 Meta 列为「住房类」受限广告 — 仅允许宽泛的地域与年龄定向。",
+      "budgetLaunchSub": "每日预算上限与投放时长。",
+      "whatItSaysSub": "广告正文、图片、标题，以及留资表单要收集的信息。"
     },
     "dealCoachPanel": {
       "dealContext": "交易背景",
@@ -2867,7 +2873,9 @@
         "counter": "应对还价",
         "multiple": "多方竞价",
         "pushback": "卖方异议"
-      }
+      },
+      "doNextSub": "已排序 — 最重要的排在前面。",
+      "scriptsSub": "三种情境 — 请按您客户的语气调整措辞。"
     },
     "savedSearches": {
       "heading": "已保存的搜索",
@@ -4157,7 +4165,11 @@
       "you": "您"
     },
     "settingsPage": {
-      "manageConnected": "管理已连接的账号"
+      "manageConnected": "管理已连接的账号",
+      "connectedSocialDesc": "Facebook、Instagram、LinkedIn 与 Threads 在同一处连接。",
+      "socialAutopostingDesc": "您的 AI 团队负责撰写并发布动态。此处决定发什么、发到哪、多久发一次，以及由谁审核。",
+      "tcNotificationsDesc": "交易提醒的接收方式：每日逾期事项邮件摘要，以及临近交割时的电汇诈骗防范短信提醒。",
+      "commissionDefaultsDesc": "适用于新交易及业绩分析页的收入统计。单笔交易的单独设置不受影响。"
     },
     "skillsManager": {
       "validators": "校验规则 + 人工把关",
@@ -4661,7 +4673,19 @@
       "meansAutosend": "每条消息在触发的那一刻就直接发出。您可以事后在历史记录里看到。",
       "sphere": "人脉圈：",
       "recommended": "推荐",
-      "loading": "正在加载评价策略…"
+      "loading": "正在加载评价策略…",
+      "reviewEachSub": "更稳妥。每条触发的消息都会先进入待审核队列，不会自动发出。",
+      "reviewEachNote": "建议在最初 30 天使用，或在您暂停一段时间后重新开始时使用。",
+      "autosendAllSub": "更快捷。触发后消息立即发出，您可在历史记录中查看。",
+      "autosendAllNote": "当您确认模板的措辞符合您的风格后，再使用此项。",
+      "perCategorySub": "按类型分别设置 — 人脉维护需审核，看房确认自动发送。",
+      "catSphere": "人脉 · 老客户",
+      "catSphereDesc": "购房周年、房产增值提醒、沉睡客户唤醒、推荐致谢。",
+      "catLead": "线索响应 · 新咨询",
+      "catLeadDesc": "首次联系、未回复跟进、看房确认。这里响应速度很关键。",
+      "catLifecycle": "生命周期 · 来自 CloseBoss",
+      "catLifecycleDesc": "关于您账户的产品邮件 — 试用到期、功能更新。",
+      "catLifecycleLocked": "生命周期邮件由 CloseBoss 发出，而非以您的名义，始终自动发送。"
     },
     "sendRecommendations": {
       "title": "发送房源",
@@ -4984,7 +5008,11 @@
       "listingSide": "卖方佣金",
       "brokerageSplit": "与经纪公司分成（您的比例）",
       "referralFee": "默认转介费",
-      "loadingPreferences": "正在加载偏好设置…"
+      "loadingPreferences": "正在加载偏好设置…",
+      "buyerSideHint": "买方佣金通常为 2.5–3.0%，作为合作报酬协商确定。",
+      "listingSideHint": "挂牌佣金通常为 2.5–3.0%。",
+      "brokerageSplitHint": "填 70 表示 70/30 分成、您占大头；若以自己的执照独立执业则填 100。",
+      "referralFeeHint": "通常为 0。若需支付固定推荐费则填写，该费用在分成前从总额中先行扣除。"
     },
     "compliance": {
       "title": "合规",
@@ -5219,7 +5247,9 @@
       "footerFreeTools": "免费工具",
       "footerCompany": "公司",
       "footerLegal": "法律",
-      "madeForAgents": "为在成交的经纪人打造"
+      "madeForAgents": "为在成交的经纪人打造",
+      "firstReplyHint": "30 天试用用户首次回复时间的中位数。",
+      "replyLiftHint": "与该经纪人此前 30 天的平均值相比。"
     },
     "salesModelDashboard": {
       "title": "销售模式",
@@ -5238,7 +5268,11 @@
     "channelsCard": {
       "title": "渠道",
       "sub": "您的联系人看到的电话号码和邮箱地址。必须完成验证才能保证送达率。",
-      "readOnly": "只读。发件方验证由 CloseBoss 统一管理——如需更换已验证的号码或地址，请联系客服。"
+      "readOnly": "只读。发件方验证由 CloseBoss 统一管理——如需更换已验证的号码或地址，请联系客服。",
+      "smsSubtitle": "您的发送号码",
+      "emailSubtitle": "您的发送邮箱",
+      "noNumber": "尚未配置号码",
+      "noEmail": "尚未配置邮箱"
     },
     "favorites": {
       "title": "收藏的房源",
@@ -5666,7 +5700,10 @@
       "skippedNoTasks": "已跳过（没有待办）",
       "tasks": "待办数",
       "overdue": "逾期",
-      "upcoming": "即将到期"
+      "upcoming": "即将到期",
+      "stuckCronsHint": "未在预期时间窗内运行",
+      "platformOverviewSub": "PropertyToolsAI 与 LeadSmart AI 的整体经营表现。",
+      "portalDesc": "平台管理与运维工具。日常工作请打开完整控制台。"
     },
     "supportDash": {
       "title": "系统客服工作台",
@@ -5697,7 +5734,9 @@
       "resolve": "解决",
       "tag": "打标签",
       "typeReply": "输入回复…",
-      "send": "发送"
+      "send": "发送",
+      "subtitle": "工单分流、进行中的对话处理与团队运营，集中于一个视图。",
+      "pageSubtitle": "更快解决问题，保障平台稳定运行。"
     },
     "financialServices": {
       "cohortFeedback": "试点第 1–2 周的用户反馈将决定这项功能的最终形态。",
@@ -5738,7 +5777,21 @@
       "navProduction": "业绩",
       "navProfile": "个人资料",
       "navProspects": "潜在客户",
-      "navSitDowns": "面谈"
+      "navSitDowns": "面谈",
+      "descAnnualReviews": "提前 30 天自动提醒、为每位客户预先整理的 AI 简报，以及回访会议模板。",
+      "descBpms": "创业说明会 — 安排、邀请并跟进潜在合伙人。",
+      "descCompliance": "合规中心 — 执照状态、反洗钱培训、督导审核队列，以及可供审计的通讯存档。",
+      "descDials": "外呼队列，含 AI 通话准备要点、一键拨号，以及通话后的结果记录。",
+      "descDownline": "完整团队层级 — 您旗下每位伙伴的客户管道、业绩与执照状态。",
+      "descFieldTraining": "新伙伴入职与考照路径 — 跟踪每位新人从创业说明会到首单成交的进度。",
+      "descInbox": "短信与邮件统一收件箱。常规回复由 AI 处理，重要的留给您。",
+      "descIntegrations": "连接您现有的保险公司门户、计划书工具、电子投保系统与日历，让系统融入您已有的工作流程。",
+      "descOverrides": "层级管理津贴 — 已赚取、已预支、已扣回，以及根据团队业绩预估的部分。",
+      "descPolicyholders": "您的保单簿 — 所有生效保单、承保公司、周年日与受益人集中呈现。",
+      "descProduction": "团队业绩 — 已递交、已核保、已生效 — 按层级汇总并显示月度趋势。",
+      "descProfile": "您的业务员档案、个人品牌、机构层级、保险公司委任与通知偏好。",
+      "descProspects": "来自各渠道的所有线索，含 AI 培育状态、意向评分与下一步建议。",
+      "descSitDowns": "面谈约访 — 已预约、已确认，并附财务需求分析，让您有备而去。"
     },
     "fsMarketing": {
       "howItWorks": "如何运作",
@@ -5916,7 +5969,8 @@
       "settingsSoon": "个人资料、品牌设置和通知偏好将在这里提供。",
       "pricingTitle": "面向贷款经纪的 CloseBoss",
       "pricingSub": "升级后可获得更顺畅的借款人流程、更强的进度管理工具，以及更好用的融资工作台。",
-      "popular": "热门"
+      "popular": "热门",
+      "dashboardSub": "从咨询到放款的借款人全流程，并随时可调用 AI 金融工具。"
     },
     "carrierIntegration": {
       "brief": "保险公司系统对接说明——已针对打印或另存为 PDF 优化。",
@@ -7097,7 +7151,9 @@
       "loadingLeads": "正在加载客户线索…",
       "noAddress": "无地址",
       "generateCma": "生成 CMA",
-      "saveToReports": "保存到报告"
+      "saveToReports": "保存到报告",
+      "paywallMessage": "您已达到使用上限，升级后可继续使用。",
+      "paywallCta": "立即升级"
     },
     "capRateMistakes": {
       "intro": "资本化率（Cap Rate）算起来简单，但很容易被误用。假设上的小偏差，能让一处房产看起来远比实际好——或者远比实际差。搞清楚投资人在资本化率上最常犯的错误，您就能避开代价高昂的失误，像专业人士那样使用这个指标。",
@@ -7308,7 +7364,8 @@
       "cocModest": "现金回报率一般。请考虑增值空间或改造提升是否足以支撑这笔投资。",
       "verifyLocally": "在做出任何最终决定之前，投资人都应当自行核实当地的租赁需求、房屋状况和市场走势。",
       "confirmByTyping": "输入",
-      "andTapping": "并点击红色确认按钮。"
+      "andTapping": "并点击红色确认按钮。",
+      "totalMonthlyHint": "含运营支出与房贷还款。"
     },
     "deleteAccount": {
       "h1": "删除您的 CloseBoss 账户",
@@ -7644,7 +7701,8 @@
       "recentActivity": "最近动态",
       "act1": "买家打开了房产对比报告",
       "act2": "卖家申请了最新估值",
-      "act3": "San Gabriel 咨询的线索评分上升"
+      "act3": "San Gabriel 咨询的线索评分上升",
+      "subtitle": "聚焦意向最强的线索，更快成交。"
     },
     "openHouseSignin": {
       "thanks": "感谢您签到！",
@@ -8054,7 +8112,8 @@
       "errGeneric": "分析这个链接时出了问题。可以试试「刷新最新数据」或换一个链接。",
       "errRefreshFailed": "房源刷新失败。",
       "errUnsupportedShort": "不支持该链接。",
-      "errRefreshData": "数据刷新失败。"
+      "errRefreshData": "数据刷新失败。",
+      "roiYear1Tip": "约略投资回报率，含现金流与简单增值估算。"
     },
     "compareRentVsBuy": {
       "intro": "该租还是该买，是多数人一生中最大的财务决定之一。这份指南会教您怎样用切合实际的假设，配合租买对比计算器，把租房和持有并排比较。",

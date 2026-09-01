@@ -19,7 +19,7 @@ export default async function SupportDashboardPage() {
   return (
     <DashboardShell
       title={t("pages.supportDash.title", { ns: "dashboard" })}
-      subtitle="Resolve issues faster and keep the platform running smoothly."
+      subtitle={t("pages.supportDash.pageSubtitle", { ns: "dashboard" })}
       kpis={
         <>
           <KpiCard label={t("pages.supportDash.openTickets", { ns: "dashboard" })} value="24" subtext="+4 today" />

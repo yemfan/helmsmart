@@ -116,22 +116,22 @@ export default function ReviewPolicyPanel() {
       <div className="space-y-2">
         <ChoiceItem
           label={t("pages.reviewPolicy.reviewEach")}
-          sublabel="Safer. Every triggered message becomes a draft in your approval queue. Nothing sends silently."
-          note="Recommended for your first 30 days, or if you're coming back after a break."
+          sublabel={t("pages.reviewPolicy.reviewEachSub")}
+          note={t("pages.reviewPolicy.reviewEachNote")}
           recommended={onboardingGate}
           active={state.reviewPolicy === "review"}
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "review" }))}
         />
         <ChoiceItem
           label={t("pages.reviewPolicy.autosendAll")}
-          sublabel="Faster. Messages go out the moment triggers fire. You'll see them in the history log."
-          note="Best once you trust how the templates read in your voice."
+          sublabel={t("pages.reviewPolicy.autosendAllSub")}
+          note={t("pages.reviewPolicy.autosendAllNote")}
           active={state.reviewPolicy === "autosend"}
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "autosend" }))}
         />
         <ChoiceItem
           label={t("pages.reviewPolicy.perCategory")}
-          sublabel="Different rules for different types — review sphere outreach, autosend tour confirmations."
+          sublabel={t("pages.reviewPolicy.perCategorySub")}
           active={state.reviewPolicy === "per_category"}
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "per_category" }))}
         />
@@ -141,8 +141,8 @@ export default function ReviewPolicyPanel() {
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
           <div className="text-xs font-semibold text-gray-700">{t("pages.reviewPolicy.policyByCategory")}</div>
           <CategoryRow
-            title="Sphere · past clients"
-            description="Home anniversaries, equity updates, dormant re-engage, referral thank-yous."
+            title={t("pages.reviewPolicy.catSphere")}
+            description={t("pages.reviewPolicy.catSphereDesc")}
             value={state.reviewPolicyByCategory.sphere}
             onChange={(v) =>
               setState((s) => ({
@@ -152,8 +152,8 @@ export default function ReviewPolicyPanel() {
             }
           />
           <CategoryRow
-            title="Lead response · new inquiries"
-            description="First-touch, no-reply follow-ups, tour confirmations. Speed matters here."
+            title={t("pages.reviewPolicy.catLead")}
+            description={t("pages.reviewPolicy.catLeadDesc")}
             value={state.reviewPolicyByCategory.lead_response}
             onChange={(v) =>
               setState((s) => ({
@@ -163,12 +163,12 @@ export default function ReviewPolicyPanel() {
             }
           />
           <CategoryRow
-            title="Lifecycle · from CloseBoss"
-            description="Product emails about your account — trial ending, feature updates."
+            title={t("pages.reviewPolicy.catLifecycle")}
+            description={t("pages.reviewPolicy.catLifecycleDesc")}
             value="autosend"
             onChange={() => {}}
             locked
-            lockedReason="Lifecycle emails come from CloseBoss, not from you. They always send automatically."
+            lockedReason={t("pages.reviewPolicy.catLifecycleLocked")}
           />
         </div>
       )}

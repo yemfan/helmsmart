@@ -21,9 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const title = t("routeMeta.agentDashboard.title", { ns: "web_marketing" });
   const description = t("routeMeta.agentDashboard.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
+  return {
+
+  title,
+
+  description,
+
 };
 }
 
@@ -34,7 +37,7 @@ export default async function AgentDashboardPage() {
   return (
     <DashboardShell
       title={t("pages.agentDashboardMock.dashboardAria", { ns: "dashboard" })}
-      subtitle="Focus on the highest-intent leads and close faster."
+      subtitle={t("pages.agentDashboardMock.subtitle", { ns: "dashboard" })}
       kpis={
         <>
           <KpiCard label={t("pages.agentDashboardMock.newLeads", { ns: "dashboard" })} value="12" subtext="+3 from yesterday" />

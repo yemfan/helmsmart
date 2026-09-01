@@ -14,7 +14,7 @@ export default async function OverridesPage() {
     <ComingSoon
       icon={Coins}
       title={t("pages.financialServices.navOverrides", { ns: "dashboard" })}
-      description="Hierarchical override commissions — earned, advanced, charged back, and projected from your downline's production."
+      description={t("pages.financialServices.descOverrides", { ns: "dashboard" })}
       availability="Phase 2 (post-pilot)"
       bulletPoints={[
         "Carrier-statement CSV ingestion (Transamerica, Nationwide, Foresters)",

@@ -582,7 +582,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
               <MetricCard
                 label={t("pages.linkAnalyzer.roiYear1")}
                 value={`${metrics.roi.toFixed(1)}%`}
-                tooltip="Approximate ROI including cash flow plus simple appreciation."
+                tooltip={t("pages.linkAnalyzer.roiYear1Tip")}
               />
             </div>
           </div>

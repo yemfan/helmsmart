@@ -36,7 +36,7 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
           label={t("pages.adminPages.stuckCrons")}
           value={stuckCrons.length}
           tone={stuckCrons.length > 0 ? "red" : "green"}
-          hint="no run in expected window"
+          hint={t("pages.adminPages.stuckCronsHint")}
         />
       </div>
 

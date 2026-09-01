@@ -549,7 +549,7 @@ export default function AdCampaignWizardClient() {
       <Section
         n={1}
         title={t("pages.adWizard.whereItRuns")}
-        subtitle="Pick a connected Facebook Page and an ad account."
+        subtitle={t("pages.adWizard.whereItRunsSub")}
       >
         {connectionsLoading ? (
           <p className="text-sm text-gray-500">{t("pages.adWizard.loadingConnections")}</p>
@@ -617,7 +617,7 @@ export default function AdCampaignWizardClient() {
         <Section
           n={2}
           title={t("pages.adWizard.whoSeesIt")}
-          subtitle="Real-estate ads are HOUSING-restricted by Meta — only broad geo + age targeting allowed."
+          subtitle={t("pages.adWizard.whoSeesItSub")}
         >
           <div>
             <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.zips")}</label>
@@ -719,7 +719,7 @@ export default function AdCampaignWizardClient() {
         <Section
           n={3}
           title={t("pages.adWizard.whatItSays")}
-          subtitle="The ad's body, image, headline, and what the lead form asks for."
+          subtitle={t("pages.adWizard.whatItSaysSub")}
         >
           <div className="space-y-3">
             <div>
@@ -911,7 +911,7 @@ export default function AdCampaignWizardClient() {
         <Section
           n={4}
           title={t("pages.adWizard.budgetLaunch")}
-          subtitle="Daily spend cap and how long the campaign runs."
+          subtitle={t("pages.adWizard.budgetLaunchSub")}
         >
           <div className="space-y-3">
             <div>

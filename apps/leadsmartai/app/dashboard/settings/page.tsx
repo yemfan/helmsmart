@@ -140,7 +140,7 @@ export default async function SettingsPage() {
                 to the real thing. */}
             <Card
               title={tr("tips.connectedSocial")}
-              description="Facebook, Instagram, LinkedIn and Threads are connected in one place."
+              description={t("pages.settingsPage.connectedSocialDesc")}
             >
               <a
                 href="/dashboard/leads/generate/connect"
@@ -149,7 +149,7 @@ export default async function SettingsPage() {
             </Card>
             <Card
               title={tr("tips.socialAutoposting")}
-              description="Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off."
+              description={t("pages.settingsPage.socialAutopostingDesc")}
             >
               <SocialAutopilotController />
             </Card>
@@ -167,13 +167,13 @@ export default async function SettingsPage() {
             <LeadRoutingSettingsPanel />
             <Card
               title={tr("tips.tcNotifications")}
-              description="Delivery preferences for deal-level nudges: daily email digest of overdue tasks, plus a closing-window wire-fraud SMS escalation."
+              description={t("pages.settingsPage.tcNotificationsDesc")}
             >
               <TransactionNotificationsPanel />
             </Card>
             <Card
               title={tr("tips.commissionDefaults")}
-              description="Applied to new transactions + revenue analytics on /dashboard/performance. Per-deal overrides stay intact."
+              description={t("pages.settingsPage.commissionDefaultsDesc")}
             >
               <CommissionDefaultsPanel />
             </Card>

@@ -14,7 +14,7 @@ export default async function SitDownsPage() {
     <ComingSoon
       icon={Calendar}
       title={t("pages.financialServices.navSitDowns", { ns: "dashboard" })}
-      description="Kitchen-table appointments — booked, confirmed, prepped with an FNA so you walk in ready to present."
+      description={t("pages.financialServices.descSitDowns", { ns: "dashboard" })}
       availability="Pilot week 1"
       bulletPoints={[
         "Calendar booking for prospects (Calendly-style, agent-branded)",

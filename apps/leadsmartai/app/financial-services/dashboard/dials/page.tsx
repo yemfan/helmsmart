@@ -14,7 +14,7 @@ export default async function DialsPage() {
     <ComingSoon
       icon={Phone}
       title={t("pages.financialServices.navDials", { ns: "dashboard" })}
-      description="Outbound call queue with AI prep notes, click-to-dial, and post-call disposition logging."
+      description={t("pages.financialServices.descDials", { ns: "dashboard" })}
       availability="Pilot week 3"
       bulletPoints={[
         "Daily dial list sorted by intent score + last-touch recency",

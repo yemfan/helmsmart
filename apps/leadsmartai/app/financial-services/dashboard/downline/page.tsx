@@ -14,7 +14,7 @@ export default async function DownlinePage() {
     <ComingSoon
       icon={Users}
       title={t("pages.financialServices.navDownline", { ns: "dashboard" })}
-      description="Your full hierarchy — every associate under you, their pipeline, their production, their licensing status."
+      description={t("pages.financialServices.descDownline", { ns: "dashboard" })}
       availability="Pilot week 2"
       bulletPoints={[
         "Tree view of your downline (frontline + deep)",

@@ -14,7 +14,7 @@ export default async function InboxPage() {
     <ComingSoon
       icon={Inbox}
       title={t("pages.financialServices.navInbox", { ns: "dashboard" })}
-      description="Unified SMS + email inbox. AI handles routine replies; you handle the ones that matter."
+      description={t("pages.financialServices.descInbox", { ns: "dashboard" })}
       availability="Pilot week 1"
       bulletPoints={[
         "SMS + email threaded per prospect / client",
