@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+
+import { mediaKind } from "@/lib/marketing-hub/mediaKind";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
@@ -166,7 +168,20 @@ export default async function HubContentPage({ params, searchParams }: Props) {
         <h1 className="text-2xl font-semibold leading-snug sm:text-3xl">{titleOf(item)}</h1>
         <p className="mt-2 text-sm text-slate-500">{postedAgo(item.postedAt)}</p>
 
-        {item.imageUrl ? (
+        {/*
+          `imageUrl` is not always an image. A reel or a rendered video ad puts
+          its MP4 in the same column, and an MP4 in an <img> draws the
+          broken-image icon — the post read as broken while the video was fine.
+        */}
+        {mediaKind(item.imageUrl) === "video" && item.imageUrl ? (
+          <video
+            src={item.imageUrl}
+            controls
+            playsInline
+            preload="metadata"
+            className="mt-6 w-full rounded-xl bg-black"
+          />
+        ) : item.imageUrl ? (
           <Image
             src={item.imageUrl}
             alt=""

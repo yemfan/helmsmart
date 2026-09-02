@@ -56,15 +56,6 @@ const NOT_FOUND: Hub = {
   tracking: { metaPixelId: null, gaMeasurementId: null, pixelSuppressedBy: null },
 };
 
-/** Storage paths are stored bare; public URLs are absolute. Only build one for a path. */
-function publicStorageUrl(path: string | null): string | null {
-  const p = (path ?? "").trim();
-  if (!p) return null;
-  if (/^https?:\/\//i.test(p)) return p;
-  const base = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim().replace(/\/+$/, "");
-  return base ? `${base}/storage/v1/object/public/${p.replace(/^\/+/, "")}` : null;
-}
-
 function stringList(value: unknown): string[] {
   if (Array.isArray(value)) {
     return value.map((v) => String(v ?? "").trim()).filter(Boolean);
@@ -208,7 +199,29 @@ export async function loadHubByUsername(
       bio,
       specialties: stringList(row.specialties),
       serviceAreas: serviceAreasOf(row),
-      portraitUrl: publicStorageUrl(String(row.dt_portrait_path ?? "")) ?? agent.photoUrl,
+      /*
+       * The agent's profile photo, and only that.
+       *
+       * This used to prefer `dt_portrait_path`, built into
+       * `/object/public/<path>`. Two things were wrong with that and it could
+       * never have rendered: the path is bucket-RELATIVE (it lives in
+       * `lead-media` under a `digital-twin/` prefix, so the first segment was
+       * being read as a bucket name that does not exist), and `lead-media` is
+       * private -- the upload route says "never public" and hands the twin
+       * processor a short-lived signed URL instead.
+       *
+       * Because it produced a well-formed string rather than null, the `??`
+       * fallback never fired and the working profile photo was shadowed. The
+       * hub rendered a broken <img>, which shows its alt text -- so the page
+       * displayed the agent's NAME spilling out of the portrait circle.
+       *
+       * Not fixed by signing that URL: the digital-twin portrait is likeness
+       * material held behind a consent gate in a deliberately private bucket.
+       * A public marketing page is not the place for it. The profile photo is
+       * already public, already chosen by the agent, and already what the
+       * dashboard header shows.
+       */
+      portraitUrl: agent.photoUrl,
       introVideoUrl: String(row.dt_avatar_video_url ?? "").trim() || null,
       feed,
       indexable: isIndexable({ published, bio, feedCount: feed.length }),

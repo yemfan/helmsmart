@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+
+import { mediaKind } from "@/lib/marketing-hub/mediaKind";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
@@ -125,7 +127,20 @@ export default function HubFeed({
               key={item.id}
               className="overflow-hidden rounded-xl bg-white ring-1 ring-slate-200"
             >
-              {item.imageUrl ? (
+              {/*
+                Same column, two media types — see mediaKind. `preload
+                ="metadata"` gets the first frame as the card's still without
+                pulling the whole file for a feed the visitor may never play.
+              */}
+              {mediaKind(item.imageUrl) === "video" && item.imageUrl ? (
+                <video
+                  src={item.imageUrl}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="aspect-square w-full bg-black object-cover"
+                />
+              ) : item.imageUrl ? (
                 <Image
                   src={item.imageUrl}
                   alt=""
