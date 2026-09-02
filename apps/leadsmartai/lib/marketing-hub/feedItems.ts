@@ -29,6 +29,8 @@
  * database.
  */
 
+import { postMediaKind, type MediaKind } from "./mediaKind";
+
 /** What a feed entry is, which decides how it renders. */
 export type FeedKind = "post" | "carousel" | "reel";
 
@@ -45,8 +47,14 @@ export type FeedItem = {
   kind: FeedKind;
   /** The words. Trimmed; may be empty for an image-only post. */
   caption: string;
-  /** Cover image. Null renders as a text card rather than a broken frame. */
+  /** Cover media. Null renders as a text card rather than a broken frame. */
   imageUrl: string | null;
+  /**
+   * Whether `imageUrl` is a still or a video. The column is called image_url
+   * and holds both — a rendered reel puts its MP4 there — so a renderer that
+   * assumes "image" from the name draws a broken frame over a working video.
+   */
+  mediaKind: MediaKind;
   /**
    * When this content FIRST went public, across every network it reached.
    * Earliest rather than latest: it answers "when did the agent publish this",
@@ -116,6 +124,7 @@ type Draft = {
   kind: FeedKind;
   caption: string;
   imageUrl: string | null;
+  mediaKind: MediaKind;
   postedAt: string;
   platform: string;
   url: string | null;
@@ -133,6 +142,10 @@ function toDraft(row: RawRow, kind: FeedKind): Draft | null {
     kind,
     caption: firstString(row, ["caption", "title"]),
     imageUrl: firstString(row, ["image_url", "cover_url", "thumbnail_url"]) || null,
+    mediaKind: postMediaKind({
+      url: firstString(row, ["image_url", "cover_url", "thumbnail_url"]) || null,
+      subjectKind: str(row.subject_kind),
+    }),
     postedAt: when,
     platform: str(row.platform),
     url: firstString(row, ["external_post_url", "post_url", "permalink"]) || null,
@@ -201,6 +214,7 @@ export function buildFeed(
         kind: d.kind,
         caption: d.caption,
         imageUrl: d.imageUrl,
+        mediaKind: d.mediaKind,
         postedAt: d.postedAt,
         links: d.platform ? [{ platform: d.platform, url: d.url, postedAt: d.postedAt }] : [],
         topics: [...d.topics],
