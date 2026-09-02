@@ -293,6 +293,14 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       if (!res.ok || !body.ok) {
         if (res.status === 400 && body.details && typeof body.details === "object") {
           setAddErrors(body.details as Record<string, string[]>);
+          /*
+           * The API answers a validation failure with the English string
+           * "Validation failed", and echoing it put an English banner on a
+           * Chinese page directly under a Chinese form. The banner is ours to
+           * word: the server's per-field detail is already rendered inline
+           * beside each input, so the banner only has to point at it.
+           */
+          throw new Error(t("messages.check_fields"));
         }
         throw new Error(body.error ?? t("messages.add_failed"));
       }
