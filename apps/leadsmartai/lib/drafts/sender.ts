@@ -5,7 +5,7 @@ import {
   unsubscribeHeaders,
   withUnsubscribeFooter,
 } from "@/lib/email/unsubscribe";
-import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
+import { sendOutboundEmail } from "@/lib/ai-email/send";
 import { loadAgentSignatureProfile } from "@/lib/signatures/loadProfile";
 import {
   appendHtmlSignature,
@@ -252,35 +252,30 @@ async function processOne(
         text,
         token: contact.email_unsubscribe_token,
       });
-      const sent = await sendEmail({
+      // ONE DOOR for contact mail. This used to call `sendEmail` and hand-roll
+      // the Inbox write beside it, which is how approved drafts went out
+      // without ever appearing in the conversation. `sendOutboundEmail` sends
+      // and records in one place, so the two cannot drift apart again.
+      //
+      // Sending it also picks up three things this path never did: a
+      // `message_logs` row, a `log_lead_event` entry on the contact's
+      // timeline, and `markContactActivity`, which closes any stale
+      // "follow up with this contact" task — the agent just did.
+      //
+      // Errors still propagate: the surrounding catch marks the draft failed,
+      // which is the behaviour that stops a silent non-send.
+      await sendOutboundEmail({
+        leadId: String(contact.id),
         to: contact.email!,
         subject: row.subject ?? "(no subject)",
-        text: withFooter.text,
+        // Delivered WITH the compliance footer …
+        body: withFooter.text,
+        // … stored WITHOUT it. A thread should read like the conversation.
+        storedBody: text,
         headers: unsubscribeHeaders(contact.email_unsubscribe_token),
+        agentId: row.agent_id ? String(row.agent_id) : null,
+        actorType: "agent",
       });
-
-      // Thread it into the Inbox, which reads `email_messages`. Approved
-      // drafts went out without ever appearing there, so an agent could send a
-      // message and then find no trace of it in the conversation.
-      //
-      // Best-effort: the mail is already delivered, and throwing here would
-      // mark a sent draft as failed and invite a duplicate send.
-      try {
-        await logEmailMessage({
-          leadId: String(contact.id),
-          direction: "outbound",
-          subject: row.subject ?? "(no subject)",
-          // The words as written, without the compliance footer.
-          body: text,
-          agentId: row.agent_id ? String(row.agent_id) : null,
-          externalMessageId: sent?.id ? String(sent.id) : null,
-        });
-      } catch (e) {
-        console.warn("[drafts/sender] inbox log failed", {
-          draftId,
-          error: e instanceof Error ? e.message : e,
-        });
-      }
     }
     await markSent(draftId);
 
@@ -290,6 +285,12 @@ async function processOne(
     // though they had been neglected, and the automation crons — which select
     // on a stale last_contacted_at — queued another "it's been a while" touch
     // at someone we had just spoken to.
+    //
+    // The EMAIL path now writes `last_contacted_at` twice: once inside
+    // `sendOutboundEmail` and once here, milliseconds apart with the same
+    // value. Harmless — the update is idempotent — and this one stays because
+    // the SMS path has no equivalent helper and still needs it, along with
+    // `sms_last_outbound_at`, which nothing else sets.
     try {
       const touchedAt = new Date().toISOString();
       const touch: Record<string, unknown> = { last_contacted_at: touchedAt };
