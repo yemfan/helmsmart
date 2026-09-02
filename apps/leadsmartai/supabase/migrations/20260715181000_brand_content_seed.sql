@@ -1,4 +1,4 @@
--- Move the RealtyBoss brand onto the agent social engine.
+-- Move the CloseBoss brand onto the agent social engine.
 --
 -- The brand poster used to be a hardcoded TypeScript array (BRAND_POSTS) walked
 -- by two bespoke crons. That design had a terminal flaw: it published the first
@@ -35,7 +35,7 @@ begin
   values
     -- ── Founder voice (first person) ────────────────────────────────────────
     (v_agent, 'brand', 'brand:founder_origin',
-     $t$I'm a realtor. Before RealtyBoss, I tried everything to automate my business.$t$,
+     $t$I'm a realtor. Before CloseBoss, I tried everything to automate my business.$t$,
      $t$ChatGPT, Claude, DeepSeek, Grok. I even built my own AI agent.
 
 And it still broke. Automations failed silently. I'd miss a call in the middle of a showing. I was hand-translating messages between my English- and Chinese-speaking clients. I was spending hours on the work that was supposed to save me hours.
@@ -43,7 +43,7 @@ And it still broke. Automations failed silently. I'd miss a call in the middle o
 Then it hit me: every realtor is fighting this exact battle — and none of us should have to build the tools ourselves.
 
 So I built the thing I wished existed. An AI team that just works, made for real estate.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','AI'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','Realtor','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_broker_crm',
      $t$I talked to a broker with over 1,000 agents.$t$,
@@ -53,8 +53,8 @@ Almost nobody logged in.
 
 That's the real problem in real estate tech: the tools exist, but they make YOU do the work. A CRM reminds you to follow up. It doesn't actually follow up.
 
-That's the whole idea behind RealtyBoss — an AI team that does the work, not another dashboard you'll ignore.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','CRM','PropTech'], 'active'),
+That's the whole idea behind CloseBoss — an AI team that does the work, not another dashboard you'll ignore.$t$,
+     $t$closebossai.com$t$, array['RealEstate','CRM','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_missed_call',
      $t$The deal I lost that changed everything:$t$,
@@ -63,23 +63,23 @@ That's the whole idea behind RealtyBoss — an AI team that does the work, not a
 A missed call is a missed commission. I never wanted that to happen again.
 
 Now an AI receptionist answers every one of my calls, 24/7 — and texts back the ones it can't get to. That alone paid for itself.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_bilingual',
      $t$A lot of my clients speak Chinese. A lot speak English. I speak both — so I became the translator in every transaction.$t$,
      $t$Rewriting texts. Re-explaining disclosures. Twice the work on every deal.
 
-So I made sure RealtyBoss works natively in English AND Chinese — calls, texts, listings, disclosures. Not google-translated. Actually localized.
+So I made sure CloseBoss works natively in English AND Chinese — calls, texts, listings, disclosures. Not google-translated. Actually localized.
 
 If you serve immigrant buyers and sellers, you know how much this matters.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_ai_team',
      $t$I couldn't afford to hire an ISA, a transaction coordinator, and a marketing person.$t$,
      $t$Most agents can't. So we end up doing all three jobs ourselves, badly, at 10pm.
 
-I built RealtyBoss so I'd have a team without the payroll — a receptionist, a sales assistant, a marketing assistant, a transaction coordinator, and an accountant. All AI. All working while I sleep.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
+I built CloseBoss so I'd have a team without the payroll — a receptionist, a sales assistant, a marketing assistant, a transaction coordinator, and an accountant. All AI. All working while I sleep.$t$,
+     $t$closebossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_followup',
      $t$Confession: I was terrible at follow-up.$t$,
@@ -88,96 +88,96 @@ I built RealtyBoss so I'd have a team without the payroll — a receptionist, a 
 So I stopped relying on willpower and handed the job to AI. Real calls, real texts, every lead, on cadence — while I focus on the ones ready to move.
 
 My pipeline stopped leaking.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_build_vs_use',
      $t$I spent months tuning prompts and stitching together AI tools to run my real estate business.$t$,
      $t$Then I realized: no realtor should have to do this. You should be selling homes, not debugging automations.
 
 So everything I figured out the hard way is now just… built in. You talk to it like a person, and the work gets done.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','AI'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','Realtor','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_speed',
      $t$I used to think I was fast at responding to leads. Then I looked at the data.$t$,
      $t$Respond in 5 minutes and your odds of connecting multiply. Respond in an hour and the lead is basically gone.
 
 No human is glued to their phone 24/7. That's the one thing AI is genuinely better at — so I let it answer and qualify every lead the second it comes in.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_compliance',
      $t$The scariest part of marketing at scale as a realtor? One wrong phrase in a listing and you've got a Fair Housing problem.$t$,
-     $t$I didn't want to hand my clients AI-written content that could get them in trouble. So everything RealtyBoss writes for the public runs through a compliance check first.
+     $t$I didn't want to hand my clients AI-written content that could get them in trouble. So everything CloseBoss writes for the public runs through a compliance check first.
 
 Market aggressively. Sleep at night.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','FairHousing','Realtor'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','FairHousing','Realtor'], 'active'),
 
     (v_agent, 'brand', 'brand:founder_free_skills',
      $t$I just made our entire 59-skill Realtor AI library free. No signup.$t$,
      $t$Why give it away? Because I remember spending nights figuring out the right prompt to write a decent listing description or a CMA. Every realtor is reinventing the same wheel.
 
 Here's the wheel — listing copy, CMAs, objection scripts, farm campaigns, each with a Fair-Housing-safe prompt built in.$t$,
-     $t$realtybossai.com/skills-library$t$, array['RealEstate','Realtor','AI'], 'active'),
+     $t$closebossai.com/skills-library$t$, array['RealEstate','Realtor','AI'], 'active'),
 
     -- ── Brand voice (third person) ──────────────────────────────────────────
     (v_agent, 'brand', 'brand:skills_library',
      $t$We made our entire 59-skill Realtor AI Skills Library free. 🎁$t$,
      $t$Listing descriptions, CMAs, farm campaigns, objection scripts, buyer consults — each with a Fair-Housing-safe prompt built in. No signup.$t$,
-     $t$Grab it → realtybossai.com/skills-library$t$, array['RealEstateMarketing','Realtor','AI'], 'active'),
+     $t$Grab it → closebossai.com/skills-library$t$, array['RealEstateMarketing','Realtor','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:missed_call',
      $t$📞 A missed call is a missed commission.$t$,
-     $t$RealtyBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back and keeps calling until it connects. You never lose a lead to voicemail again.$t$,
-     $t$See it → realtybossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
+     $t$CloseBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back and keeps calling until it connects. You never lose a lead to voicemail again.$t$,
+     $t$See it → closebossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:playbooks',
      $t$What if your listing marketed itself?$t$,
-     $t$Sign a listing → RealtyBoss builds the marketing plan, writes the ads, launches, and optimizes weekly. Buyers too: consult → search plan → matches on autopilot. Your AI team runs the whole engagement.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
+     $t$Sign a listing → CloseBoss builds the marketing plan, writes the ads, launches, and optimizes weekly. Buyers too: consult → search plan → matches on autopilot. Your AI team runs the whole engagement.$t$,
+     $t$closebossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:hire_ai_team',
      $t$You don't need to hire an ISA, a TC, and a marketing coordinator.$t$,
-     $t$RealtyBoss is an AI real estate team — Receptionist, Sales, Marketing, Transaction, and Accounting assistants — for a fraction of one salary. Close more without growing payroll.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
+     $t$CloseBoss is an AI real estate team — Receptionist, Sales, Marketing, Transaction, and Accounting assistants — for a fraction of one salary. Close more without growing payroll.$t$,
+     $t$closebossai.com$t$, array['RealEstate','PropTech','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:follow_up',
      $t$The fortune's in the follow-up — but who has time to call and text every lead?$t$,
-     $t$RealtyBoss's AI Sales Assistant does it for you: real voice calls + texts to every lead, on cadence, until they book. You just take the appointments.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
+     $t$CloseBoss's AI Sales Assistant does it for you: real voice calls + texts to every lead, on cadence, until they book. You just take the appointments.$t$,
+     $t$closebossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:compliance_gate',
      $t$Fair Housing violations start with one bad phrase in a listing.$t$,
-     $t$Everything RealtyBoss writes for the public passes a built-in compliance gate — Fair Housing + advertising — before it reaches a client. Market at scale, without the license risk.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','FairHousing','Realtor'], 'active'),
+     $t$Everything CloseBoss writes for the public passes a built-in compliance gate — Fair Housing + advertising — before it reaches a client. Market at scale, without the license risk.$t$,
+     $t$closebossai.com$t$, array['RealEstate','FairHousing','Realtor'], 'active'),
 
     (v_agent, 'brand', 'brand:bilingual',
      $t$Serving Chinese-speaking buyers and sellers?$t$,
-     $t$RealtyBoss works in English AND Chinese — calls, texts, listings, and disclosures, localized (not just translated). A moat most tools can't match.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
+     $t$CloseBoss works in English AND Chinese — calls, texts, listings, and disclosures, localized (not just translated). A moat most tools can't match.$t$,
+     $t$closebossai.com$t$, array['RealEstate','Realtor','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:crm_dead',
-     $t$Your CRM reminds you to follow up. RealtyBoss actually does it.$t$,
+     $t$Your CRM reminds you to follow up. CloseBoss actually does it.$t$,
      $t$Real calls. Real texts. Every lead. That's the difference between a database and a team.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','CRM','PropTech'], 'active'),
+     $t$closebossai.com$t$, array['RealEstate','CRM','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:cma',
      $t$Winning the listing starts with the price conversation.$t$,
-     $t$RealtyBoss builds a data-backed CMA with real comps — a defensible value range that makes you the expert before you walk in the door.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','CMA'], 'active'),
+     $t$CloseBoss builds a data-backed CMA with real comps — a defensible value range that makes you the expert before you walk in the door.$t$,
+     $t$closebossai.com$t$, array['RealEstate','Realtor','CMA'], 'active'),
 
     (v_agent, 'brand', 'brand:deadlines',
      $t$Missed deadlines kill deals — and create liability.$t$,
-     $t$RealtyBoss's Transaction Assistant tracks every contingency and closing milestone, and flags what's due before it's late. Nothing falls through the cracks.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','TransactionCoordinator','PropTech'], 'active'),
+     $t$CloseBoss's Transaction Assistant tracks every contingency and closing milestone, and flags what's due before it's late. Nothing falls through the cracks.$t$,
+     $t$closebossai.com$t$, array['RealEstate','TransactionCoordinator','PropTech'], 'active'),
 
     (v_agent, 'brand', 'brand:speed_to_lead',
      $t$Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.$t$,
-     $t$RealtyBoss answers portal leads instantly — day or night — and qualifies them on the spot.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
+     $t$CloseBoss answers portal leads instantly — day or night — and qualifies them on the spot.$t$,
+     $t$closebossai.com$t$, array['RealEstate','LeadGeneration','AI'], 'active'),
 
     (v_agent, 'brand', 'brand:net_sheet',
      $t$The #1 seller question: "What do I actually walk away with?"$t$,
-     $t$RealtyBoss builds a clear net sheet in seconds — gross to net, reconciled to the dollar. Trust, built on transparency.$t$,
-     $t$realtybossai.com$t$, array['RealEstate','Realtor','HomeSelling'], 'active')
+     $t$CloseBoss builds a clear net sheet in seconds — gross to net, reconciled to the dollar. Trust, built on transparency.$t$,
+     $t$closebossai.com$t$, array['RealEstate','Realtor','HomeSelling'], 'active')
   on conflict (agent_id, title) do nothing;
 
   get diagnostics v_seeded = row_count;

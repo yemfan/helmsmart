@@ -6,7 +6,7 @@
 -- unsubscribe link, no List-Unsubscribe header, and no opt-out check at all.
 -- The SMS branch of the very same loop refuses to send without `sms_opt_in`;
 -- the email branch simply sent. CAN-SPAM requires a working opt-out mechanism
--- on commercial email, and reputation damage lands on `realtybossai.com` —
+-- on commercial email, and reputation damage lands on `closebossai.com` —
 -- the only verified sending domain, shared by every app here.
 --
 -- WHY A TOKEN AND NOT THE CONTACT ID. The unsubscribe URL travels in the clear
