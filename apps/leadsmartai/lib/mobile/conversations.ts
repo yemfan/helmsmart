@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { MobileEmailMessageDto, MobileSmsMessageDto } from "@leadsmart/shared";
+import { OWN_MESSAGES_FILTER } from "@/lib/email/ownMessages";
 
 const RECENT_SMS_LIMIT = 120;
 const RECENT_EMAIL_LIMIT = 120;
@@ -47,6 +48,7 @@ export async function fetchRecentEmailForLead(leadId: string): Promise<MobileEma
     .from("email_messages")
     .select("id,subject,message,direction,created_at")
     .eq("contact_id", leadId)
+    .or(OWN_MESSAGES_FILTER)
     .order("created_at", { ascending: false })
     .limit(RECENT_EMAIL_LIMIT);
 

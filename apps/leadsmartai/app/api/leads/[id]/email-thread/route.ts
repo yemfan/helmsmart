@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { OWN_MESSAGES_FILTER } from "@/lib/email/ownMessages";
 
 export const runtime = "nodejs";
 
@@ -32,6 +33,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       .from("email_messages")
       .select("id,subject,message,direction,created_at")
       .eq("contact_id", leadId)
+      .or(OWN_MESSAGES_FILTER)
       .order("created_at", { ascending: true })
       .limit(200);
     if (msgErr) throw msgErr;

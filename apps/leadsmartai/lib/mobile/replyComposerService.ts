@@ -9,6 +9,7 @@ import {
 import { fetchRecentEmailForLead, fetchRecentSmsForLead } from "@/lib/mobile/conversations";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { MobileEmailMessageDto, MobileSmsMessageDto } from "@leadsmart/shared";
+import { OWN_MESSAGES_FILTER } from "@/lib/email/ownMessages";
 
 const LEAD_REPLY_SELECT =
   "id,agent_id,name,email,phone,property_address,search_location,price_min,price_max,intent,rating,source,lead_status";
@@ -98,6 +99,7 @@ async function fetchLatestOutboundEmail(leadId: string): Promise<MobileEmailMess
     .select("id,subject,message,direction,created_at")
     .eq("contact_id", leadId)
     .eq("direction", "outbound")
+    .or(OWN_MESSAGES_FILTER)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

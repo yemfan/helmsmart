@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { MobileInboxThreadDto } from "@leadsmart/shared";
+import { OWN_MESSAGES_FILTER } from "@/lib/email/ownMessages";
 
 const PREVIEW_LEN = 160;
 const MAX_LEADS = 400;
@@ -98,6 +99,8 @@ async function fetchEmailForLeads(leadIds: string[]): Promise<MsgRow[]> {
       .from("email_messages")
       .select("id,contact_id,subject,message,direction,created_at")
       .in("contact_id", part as unknown as number[])
+      // CloseBoss shows CloseBoss's conversations — see lib/email/ownMessages.
+      .or(OWN_MESSAGES_FILTER)
       .order("created_at", { ascending: false })
       .limit(MESSAGES_PER_LEAD_CHUNK);
     // email_messages is currently absent in prod (migration drift). The
