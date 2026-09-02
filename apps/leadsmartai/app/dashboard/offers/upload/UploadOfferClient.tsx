@@ -438,7 +438,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
           <div>
             <h2 className="text-sm font-semibold text-slate-900">{t("pages.uploadOffer.extracted")}</h2>
             <p className="mt-1 text-[11px] text-slate-500">
-              Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those.
+              {t("pages.uploadOffer.extractedHelp")}
             </p>
           </div>
 

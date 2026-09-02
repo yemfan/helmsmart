@@ -139,7 +139,7 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
             {STEPS[step]}
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            {step === 0 && "Pick the state, county, and city you serve so we can match you with local leads. Check \u201Call cities\u201D if you cover the whole county."}
+            {step === 0 && t("pages.setupWizard.pickYourArea")}
             {step === 1 && t("pages.setupWizard.setYourBrandName")}
             {step === 2 && t("pages.setupWizard.configureHowYourAi")}
             {step === 3 && t("pages.setupWizard.chooseWhichMobilePush")}

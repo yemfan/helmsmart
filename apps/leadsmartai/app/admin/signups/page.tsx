@@ -55,8 +55,7 @@ export default async function AdminSignupsPage() {
         </p>
         <h1 className="text-2xl font-bold text-slate-900">{t("pages.adminPages.signupsBySource", { ns: "dashboard" })}</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Where new agent accounts come from. Attribution is captured going
-          forward — accounts created before tracking show as “Unknown”.
+          {t("pages.adminPages.signupsIntro", { ns: "dashboard" })}
         </p>
       </header>
 

@@ -668,7 +668,7 @@ export default function OnboardingFunnel({
               </li>
               <li className="flex items-start gap-2">
                 <BrandCheck tone="accent" />
-                <span>Simulated live “incoming lead” stream</span>
+                <span>{t("pages.onboardingFunnel.simulatedLeadStream")}</span>
               </li>
             </ul>
           </div>

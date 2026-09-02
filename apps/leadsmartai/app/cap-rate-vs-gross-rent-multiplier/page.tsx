@@ -126,7 +126,7 @@ export default function CapRateVsGrossRentMultiplierPage() {
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.faqTitle")}</h2>
         <h3 className="text-lg font-semibold text-gray-900">
-          Is there a “good” GRM like there is a “good” cap rate?
+          {t("pages.capRateVsGrm.q1")}
         </h3>
         <p>{t("pages.capRateVsGrm.a1")}</p>
         <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsGrm.q2")}</h3>
