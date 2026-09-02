@@ -9,6 +9,9 @@ import {
 import {
   describeHours,
   defaultBusinessHours,
+  safeTimezone,
+  todayInTimezone,
+  REAL_ESTATE_PROFILE,
   type ReceptionistContext,
 } from "@repo/voice";
 
@@ -25,19 +28,6 @@ import {
  * Additive — LeadSmart's existing Twilio/OpenAI-Realtime voice is untouched.
  */
 
-/** Validate a user-entered IANA timezone; fall back if invalid (e.g. a typo). */
-function safeTimezone(tz: string | undefined | null): string {
-  const v = (tz || "").trim();
-  if (v) {
-    try {
-      new Intl.DateTimeFormat("en-US", { timeZone: v });
-      return v;
-    } catch {
-      /* invalid tz (e.g. "America/Los_Angles") — fall through to default */
-    }
-  }
-  return "America/New_York";
-}
 
 export async function loadReceptionistContext(
   agentId: string,
@@ -60,21 +50,15 @@ export async function loadReceptionistContext(
   // AI answering with their personal name instead of their business.
   const orgName = await getReceptionistBusinessName(agentId);
   const timezone = safeTimezone(cfg.timezone);
-  const todayISO = new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  }).format(new Date());
+  const { iso: todayISO, label: todayLabel } = todayInTimezone(timezone);
 
   return {
     orgId: agentId,
+    // CloseBoss's tenants are licensed real-estate agents, so the receptionist
+    // speaks their trade: what it may not advise on, what "ready to book" sounds
+    // like, which claims need the licensee. The engine is shared; this names the
+    // vertical it should wear. Without it the prompt comes out generic.
+    profile: REAL_ESTATE_PROFILE,
     orgName,
     // No separate Chinese brand name exists in branding, so Chinese callers
     // hear the same one. Better than a stale second copy going out of date.

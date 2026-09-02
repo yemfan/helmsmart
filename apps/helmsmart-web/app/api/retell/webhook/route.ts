@@ -22,6 +22,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { findOrgIdByNumber } from "@/lib/receptionist-agent";
 import { matchOrCreateClient } from "@/lib/booking";
 import { normalizePhoneE164 } from "@/lib/phone";
+import { twilioSender } from "@/lib/twilio-sender";
 import { attributeCallToEmma } from "@/lib/workforce-attribution";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { classifyMissed } from "@/lib/missed-call";
@@ -139,8 +140,13 @@ async function maybeTextBackMissedCall(
     if (count) return;
 
     const replyBody = org.auto_reply_msg;
+    // Through the Messaging Service when one is configured: the number the call
+    // came in on may be voice-only, and a bare `from` send is filtered as
+    // unregistered (30034) — silently, since this whole path is best-effort.
+    const sender = twilioSender(args.toNumber);
+    if (!sender) return;
     const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-    await client.messages.create({ from: args.toNumber, to: caller.value, body: replyBody });
+    await client.messages.create({ ...sender, to: caller.value, body: replyBody });
 
     await db.from("messages").insert({
       organization_id: args.orgId,

@@ -7,17 +7,34 @@
  * (mark the session, notify the owner, text the caller) run in after() so the
  * agent is never kept waiting.
  *
- * Gate: Authorization: Bearer <RETELL_FUNCTION_SECRET> — configure this as a
- * custom header on each Retell custom function.
+ * Gate (when RETELL_FUNCTION_SECRET is set) — either form works, so configure
+ * whichever Retell's custom-function UI makes easier:
+ *   ?k=<RETELL_FUNCTION_SECRET>                  on the function URL, or
+ *   Authorization: Bearer <RETELL_FUNCTION_SECRET>  as a custom header.
+ *
+ * This gate was documented but never written: the route accepted anonymous POSTs
+ * and identified the tenant purely from `to_number`, so anyone who knew a
+ * business's phone number could book into its calendar, raise tasks against it,
+ * and make it send confirmation texts. /api/retell/inbound has always been gated;
+ * this is the endpoint with the side effects.
  */
 
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { runReceptionistTool, notifyBooking, findOrgIdByNumber } from "@/lib/receptionist-agent";
 
+/** True when the request carries the shared secret, or none is configured. */
+function authorized(req: NextRequest): boolean {
+  const secret = process.env.RETELL_FUNCTION_SECRET;
+  if (!secret) return true;
+  if (req.nextUrl.searchParams.get("k") === secret) return true;
+  return (req.headers.get("authorization") ?? "") === `Bearer ${secret}`;
+}
+
 export async function POST(req: NextRequest) {
-  // Bearer token is optional — we identify the org by phone number (to_number)
-  // If RETELL_FUNCTION_SECRET is set, you can add Bearer auth header, but it's not required
+  if (!authorized(req)) {
+    return NextResponse.json({ result: "Unauthorized." }, { status: 401 });
+  }
 
   let name = "";
   let args: Record<string, unknown> = {};

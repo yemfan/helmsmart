@@ -8,6 +8,72 @@
 
 import { DAY_KEYS, type DayKey } from "./brain";
 
+/** Fallback when a tenant has no timezone set, or set an invalid one. */
+export const DEFAULT_VOICE_TIMEZONE = "America/New_York";
+
+/**
+ * Validate a user-entered IANA timezone, falling back rather than throwing.
+ *
+ * A typo ("America/Los_Angles") makes every Intl call in the booking flow throw
+ * a RangeError, which on the inbound hot path means the caller gets no prompt at
+ * all. One bad character in a settings field should not take the receptionist
+ * off the air.
+ */
+export function safeTimezone(tz: string | undefined | null): string {
+  const v = (tz || "").trim();
+  if (v) {
+    try {
+      new Intl.DateTimeFormat("en-US", { timeZone: v });
+      return v;
+    } catch {
+      /* invalid tz — fall through to the default */
+    }
+  }
+  return DEFAULT_VOICE_TIMEZONE;
+}
+
+/**
+ * "Today" in the tenant's timezone, in both forms the prompt needs: the ISO date
+ * the agent does date math against, and the spoken label it reads out.
+ */
+export function todayInTimezone(timeZone: string, now: Date = new Date()): { iso: string; label: string } {
+  return {
+    iso: new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(now),
+    label: new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }).format(now),
+  };
+}
+
+/**
+ * A spoken-friendly instant, e.g. "Tuesday, June 10 at 2 PM".
+ *
+ * `speakTime` drops the ":00" so TTS says "two PM" rather than "two zero zero
+ * PM". Every place that reads an appointment time back to a caller — booking
+ * confirmations, availability, the existing-appointment lookup — must produce
+ * the identical string, or the same appointment gets described two ways in one
+ * call.
+ */
+export function spokenDateTimeLabel(when: Date | number | string, timeZone: string): string {
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  return speakTime(fmt.format(new Date(when)));
+}
+
 /** Offset (ms) of `timeZone` at instant `at`, DST-aware (no external lib). */
 function tzOffsetMs(timeZone: string, at: Date): number {
   const dtf = new Intl.DateTimeFormat("en-US", {

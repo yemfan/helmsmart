@@ -57,3 +57,17 @@ jobs:
       # `boss:evals` script) and self-skip here, so no API keys are needed.
       - name: Run vitest
         run: pnpm --filter leadsmartai run test
+
+      # @repo/voice is the receptionist core BOTH leadsmartai and helmsmart-web
+      # build on — phone matching, timezone handling, availability math, the
+      # tool result text. Its tests ran nowhere until now: every app's vitest
+      # include is scoped to `lib/**` inside that app, so the one package they
+      # all share was the one with no gate.
+      #
+      # It runs as a step of THIS job rather than a job of its own on purpose:
+      # this job's name is a required status check on main, and a new job would
+      # need adding to the required list by hand before it could block anything.
+      # A step here gates immediately, and a break in the shared core surfaces
+      # against the app most likely to have caused it.
+      - name: Run @repo/voice tests
+        run: pnpm --filter @repo/voice run test

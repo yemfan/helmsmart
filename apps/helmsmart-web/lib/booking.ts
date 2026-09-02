@@ -1,7 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { getGoogleFreeBusy, upsertGoogleEvent, deleteGoogleEvent, type BusyInterval } from "@/lib/google-calendar";
-import { type BusinessHours } from "@/lib/receptionist";
-import { speakTime, zonedToUtc, normalizeDateStr, resolveStartMs } from "@repo/voice/datetime";
+import { defaultBusinessHours, type BusinessHours } from "@/lib/receptionist";
+import { zonedToUtc, normalizeDateStr, resolveStartMs, safeTimezone, spokenDateTimeLabel, todayInTimezone } from "@repo/voice/datetime";
 import {
   overlapsBusy,
   nextOpenDay,
@@ -17,15 +17,19 @@ import { DEFAULT_APPOINTMENT_MINUTES, splitCallerName, appointmentTitle } from "
 // Re-exported so existing `@/lib/booking` importers of these keep working.
 export { normalizeDateStr, resolveStartMs };
 
-const DEFAULT_TZ = "America/New_York";
 const SLOT_STEP_MS = 30 * 60_000;
 
-async function loadOrg(orgId: string): Promise<{ timezone: string; hours: BusinessHours | null }> {
+async function loadOrg(orgId: string): Promise<{ timezone: string; hours: BusinessHours }> {
   const db = await createServiceClient();
   const { data } = await db.from("organizations").select("timezone, business_hours").eq("id", orgId).single();
   return {
-    timezone: (data?.timezone as string) || DEFAULT_TZ,
-    hours: (data?.business_hours as BusinessHours | null) ?? null,
+    timezone: safeTimezone(data?.timezone as string | null),
+    // Never null. `nextOpenDay(date, null)` returns null, which check_availability
+    // reports as "closed" — for every date, forever — while validateBookingTime
+    // treats null hours as "always ok" and books anyway. An org that had not filled
+    // in its hours got exactly that split: told it was closed, booked regardless.
+    // Defaulting to Mon–Fri 9–5 makes both halves agree.
+    hours: (data?.business_hours as BusinessHours | null) ?? defaultBusinessHours(),
   };
 }
 
@@ -76,9 +80,7 @@ export async function getAvailability(orgId: string, appointmentTypeName: string
   // Normalize whatever the agent sent (weekday name, natural date, …) to a real
   // calendar date, then roll forward past closed days (weekends/holidays) to the
   // next open day so the caller is always offered real times.
-  const todayISO = new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(new Date());
+  const todayISO = todayInTimezone(timezone).iso;
   // Normalize the requested date, then roll forward to the next open day so the
   // caller is always offered real times (shared @repo/voice/scheduling core).
   const date0 = normalizeDateStr(dateStr, todayISO);
@@ -137,9 +139,6 @@ export async function bookAppointment(
   const startISO = new Date(startMs).toISOString();
   const endISO = new Date(endMs).toISOString();
   const db = await createServiceClient();
-  const fmtLabel = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone, weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit",
-  });
 
   // Idempotency: the agent (or Retell) sometimes calls book_appointment more than
   // once in a call. If THIS caller already holds this exact slot, treat the repeat
@@ -152,7 +151,7 @@ export async function bookAppointment(
       .eq("client_id", input.clientId)
       .eq("start_at", startISO)
       .maybeSingle();
-    if (dupe) return { ok: true, startISO, label: speakTime(fmtLabel.format(new Date(startMs))), eventId: dupe.id as string, title, rescheduleToken: dupe.reschedule_token as string | undefined };
+    if (dupe) return { ok: true, startISO, label: spokenDateTimeLabel(startMs, timezone), eventId: dupe.id as string, title, rescheduleToken: dupe.reschedule_token as string | undefined };
   }
 
   const busy = await busyIntervals(orgId, new Date(startMs - 1), new Date(endMs + 1));
@@ -190,7 +189,7 @@ export async function bookAppointment(
         .maybeSingle();
       // Same caller racing themselves → return the booking they wanted (idempotent).
       if (held && held.client_id === (input.clientId ?? null)) {
-        return { ok: true, startISO, label: speakTime(fmtLabel.format(new Date(startMs))), eventId: held.id as string, title, rescheduleToken: held.reschedule_token as string | undefined };
+        return { ok: true, startISO, label: spokenDateTimeLabel(startMs, timezone), eventId: held.id as string, title, rescheduleToken: held.reschedule_token as string | undefined };
       }
       return { ok: false, reason: "That time was just taken." };
     }
@@ -204,7 +203,7 @@ export async function bookAppointment(
     await db.from("events").update({ google_event_id: googleEventId }).eq("id", evt.id);
   }
 
-  return { ok: true, startISO, label: speakTime(fmtLabel.format(new Date(startMs))), eventId: evt?.id, title, rescheduleToken: evt?.reschedule_token as string | undefined };
+  return { ok: true, startISO, label: spokenDateTimeLabel(startMs, timezone), eventId: evt?.id, title, rescheduleToken: evt?.reschedule_token as string | undefined };
 }
 
 /** Match a caller to a client by phone, creating a lightweight one if new. */
@@ -235,14 +234,6 @@ export async function matchOrCreateClient(orgId: string, phone: string, name?: s
 }
 
 // ─── Cancel / reschedule (service-role; callable from webhooks + public links) ──
-
-/** A spoken-friendly label like "Tuesday, June 10 at 2:00 PM" for an instant. */
-function spokenLabel(startMs: number, timezone: string): string {
-  const fmt = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone, weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit",
-  });
-  return speakTime(fmt.format(new Date(startMs)));
-}
 
 type ApptRow = {
   id: string;
@@ -299,7 +290,7 @@ export async function cancelAppointment(
   if (!appt) return { ok: false, reason: "No upcoming appointment found." };
 
   const { timezone } = await loadOrg(orgId);
-  const label = spokenLabel(new Date(appt.start_at).getTime(), timezone);
+  const label = spokenDateTimeLabel(new Date(appt.start_at).getTime(), timezone);
 
   const { error } = await db.from("events").delete().eq("organization_id", orgId).eq("id", appt.id);
   if (error) return { ok: false, reason: "Couldn't cancel that — please try again." };
@@ -362,7 +353,7 @@ export async function rescheduleAppointment(
     await db.from("events").update({ google_event_id: googleEventId }).eq("id", appt.id);
   }
 
-  return { ok: true, startISO, label: spokenLabel(startMs, timezone), eventId: appt.id, title: appt.title ?? undefined };
+  return { ok: true, startISO, label: spokenDateTimeLabel(startMs, timezone), eventId: appt.id, title: appt.title ?? undefined };
 }
 
 export type UpcomingAppointment = { eventId: string; startISO: string; label: string; rescheduleToken: string | null };
@@ -377,7 +368,7 @@ export async function getUpcomingAppointment(orgId: string, clientId: string): P
   return {
     eventId: appt.id,
     startISO: appt.start_at,
-    label: spokenLabel(new Date(appt.start_at).getTime(), timezone),
+    label: spokenDateTimeLabel(new Date(appt.start_at).getTime(), timezone),
     rescheduleToken: appt.reschedule_token,
   };
 }
@@ -386,8 +377,7 @@ export async function getUpcomingAppointment(orgId: string, clientId: string): P
  *  reschedule page, which knows the appointment's duration but not its type. */
 export async function getRescheduleAvailability(orgId: string, durationMinutes: number, dateStr: string): Promise<AvailabilityResult> {
   const { timezone, hours } = await loadOrg(orgId);
-  const todayISO = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-  const date0 = normalizeDateStr(dateStr, todayISO);
+  const date0 = normalizeDateStr(dateStr, todayInTimezone(timezone).iso);
   const open = nextOpenDay(date0, hours);
   if (!open) return { closed: true, durationMinutes, slots: [] };
   const openUtc = zonedToUtc(open.date, open.open, timezone);

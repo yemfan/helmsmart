@@ -16,7 +16,14 @@ import {
   overlapsBusy,
   normalizeDateStr,
   resolveStartMs,
-  speakTime,
+  safeTimezone,
+  spokenDateTimeLabel,
+  todayInTimezone,
+  phoneLast10,
+  appointmentListText,
+  NO_UPCOMING_APPOINTMENT_TEXT,
+  UNSUPPORTED_TOOL_TEXT,
+  existingAppointmentsText,
   zonedToUtc,
   type BusinessHours,
   type BusyInterval,
@@ -33,21 +40,8 @@ import {
  * agent's timezone comes from its receptionist config.
  */
 
-const DEFAULT_TZ = "America/New_York";
 const DEFAULT_DURATION_MIN = 30;
 
-function safeTimezone(tz: string | undefined | null): string {
-  const v = (tz || "").trim();
-  if (v) {
-    try {
-      new Intl.DateTimeFormat("en-US", { timeZone: v });
-      return v;
-    } catch {
-      /* invalid tz — fall through */
-    }
-  }
-  return DEFAULT_TZ;
-}
 
 async function loadBookingOrg(agentId: string): Promise<{ timezone: string; hours: BusinessHours }> {
   const cfg = await getReceptionistConfig(agentId);
@@ -80,12 +74,7 @@ export type AvailabilityResult = {
 export async function getAvailability(agentId: string, dateStr: string): Promise<AvailabilityResult> {
   const { timezone, hours } = await loadBookingOrg(agentId);
   const duration = DEFAULT_DURATION_MIN;
-  const todayISO = new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
+  const todayISO = todayInTimezone(timezone).iso;
   const date0 = normalizeDateStr(dateStr, todayISO);
   const open = nextOpenDay(date0, hours);
   if (!open) return { closed: true, durationMinutes: duration, slots: [] };
@@ -149,15 +138,7 @@ export async function bookAppointment(
   // agent's own words either way.
   const bookedType = normalizeAppointmentType(input.typeName);
   const title = `${(input.typeName || "Appointment").trim()}${input.callerName ? ` — ${input.callerName}` : ""}`;
-  const fmtLabel = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-  const label = speakTime(fmtLabel.format(new Date(startMs)));
+  const label = spokenDateTimeLabel(startMs, timezone);
 
   const busy = await busyIntervals(agentId, new Date(startMs - 1), new Date(endMs + 1));
   if (overlapsBusy(startMs, endMs, busy)) {
@@ -296,15 +277,14 @@ async function upcomingForCaller(
     .order("start_at", { ascending: true })
     .limit(50);
 
-  const digits = (v: string | null | undefined) => (v ?? "").replace(/\D/g, "").slice(-10);
-  const mine = digits(fromPhone);
+  const mine = phoneLast10(fromPhone);
   return ((data ?? []) as {
     title: string | null;
     start_at: string;
     contact_id: string | null;
     caller_phone: string | null;
   }[]).filter(
-    (r) => (contactId && r.contact_id === contactId) || (!!mine && digits(r.caller_phone) === mine),
+    (r) => (contactId && r.contact_id === contactId) || (!!mine && phoneLast10(r.caller_phone) === mine),
   );
 }
 
@@ -336,31 +316,10 @@ export async function runReceptionistTool(
       /* best-effort — fall back to phone matching */
     }
     const rows = await upcomingForCaller(ctx.agentId, ctx.fromPhone, contactId);
-    if (!rows.length) {
-      return {
-        text:
-          "No upcoming appointment on file for this caller. Say so plainly. If they are sure they " +
-          "have one, do NOT book a new one to cover it — take a message with create_callback so " +
-          "someone can check.",
-      };
-    }
-    const fmt = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-    const list = rows
-      .map((r) => `${speakTime(fmt.format(new Date(r.start_at)))}${r.title ? ` (${r.title})` : ""}`)
-      .join("; ");
-    return {
-      text:
-        `This caller already has: ${list}. Confirm that back to them. Do NOT book another ` +
-        "appointment unless they clearly want an ADDITIONAL one — if they want this one moved or " +
-        "cancelled, say the Realtor will take care of it and use create_callback.",
-    };
+    if (!rows.length) return { text: NO_UPCOMING_APPOINTMENT_TEXT };
+    // "the Realtor" — CloseBoss's tenants are licensed agents; HelmSmart passes
+    // "the team". The only word that differs between the two apps' answers.
+    return { text: existingAppointmentsText(rows, timezone, "the Realtor") };
   }
 
   if (name === "book_appointment") {
@@ -404,5 +363,5 @@ export async function runReceptionistTool(
     return { text: "Noted a callback request. Tell the caller someone will call them back." };
   }
 
-  return { text: "Unsupported request — take a message instead." };
+  return { text: UNSUPPORTED_TOOL_TEXT };
 }
