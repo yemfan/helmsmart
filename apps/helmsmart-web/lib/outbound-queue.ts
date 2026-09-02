@@ -14,6 +14,7 @@ import {
 } from "@/lib/receptionist-agent";
 import { normalizePhoneE164 } from "@/lib/phone";
 import twilio from "twilio";
+import { twilioSender } from "@/lib/twilio-sender";
 
 type ServiceClient = Awaited<ReturnType<typeof createServiceClient>>;
 type QueueClient = { id: string; first_name: string; last_name: string | null; phone: string | null };
@@ -366,7 +367,7 @@ export async function drainSmsReminderQueue(
       const toResult = normalizePhoneE164(client.phone);
       if (!toResult.ok) throw new Error(`Invalid phone: ${toResult.error}`);
 
-      const sms = await twilioClient.messages.create({ from: twilioNumber, to: toResult.value, body });
+      const sms = await twilioClient.messages.create({ ...(twilioSender(twilioNumber) ?? { from: twilioNumber }), to: toResult.value, body });
 
       await db.from("messages").insert({
         organization_id: orgId,

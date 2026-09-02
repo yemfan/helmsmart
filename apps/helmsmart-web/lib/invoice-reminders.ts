@@ -1,5 +1,6 @@
 import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
+import { twilioSender } from "@/lib/twilio-sender";
 import { localizeOutbound, type Lang } from "@/lib/language";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -135,7 +136,7 @@ export async function sendReminderForInvoice(
     const smsBody = lang === "en" ? smsEnglish : await localizeOutbound(smsEnglish, lang, assist);
     try {
       const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-      await twilioClient.messages.create({ from: smsFrom, to: client.phone, body: smsBody });
+      await twilioClient.messages.create({ ...(twilioSender(smsFrom) ?? { from: smsFrom }), to: client.phone, body: smsBody });
       await db.from("messages").insert({
         organization_id: inv.organization_id,
         client_id: inv.client_id,
