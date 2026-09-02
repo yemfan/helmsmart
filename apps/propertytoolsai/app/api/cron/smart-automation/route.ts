@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { sendEmail } from "@/lib/email";
+import {
+  emailSuppression,
+  unsubscribeHeaders,
+  withUnsubscribeFooter,
+} from "@/lib/email/unsubscribe";
 import { generateAutomationMessage } from "@/lib/automationAI";
 
 function hoursAgoIso(h: number) {
@@ -32,6 +37,29 @@ export async function GET() {
       .limit(200);
     if (leadsErr) throw leadsErr;
 
+    // Opt-out state lives on `contacts`. The `leads` view exposes
+    // `do_not_contact_email` but not `contact_opt_out_email` or the
+    // unsubscribe token, and widening a view a CI guard watches is a bigger
+    // change than reading the two columns directly. One batched query, not one
+    // per contact.
+    const leadIds = ((leads as any[]) ?? []).map((l) => String(l.id ?? "")).filter(Boolean);
+    const optOutById = new Map<
+      string,
+      { contact_opt_out_email: boolean | null; email_unsubscribe_token: string | null }
+    >();
+    if (leadIds.length > 0) {
+      const { data: optRows } = await supabaseServer
+        .from("contacts")
+        .select("id, contact_opt_out_email, email_unsubscribe_token")
+        .in("id", leadIds);
+      for (const r of (optRows as any[]) ?? []) {
+        optOutById.set(String(r.id), {
+          contact_opt_out_email: r.contact_opt_out_email ?? null,
+          email_unsubscribe_token: r.email_unsubscribe_token ?? null,
+        });
+      }
+    }
+
     let processed = 0;
     let sent = 0;
     let skipped = 0;
@@ -47,6 +75,22 @@ export async function GET() {
       const email = String(lead?.email ?? "");
       const method = String(lead.contact_method ?? "email");
       if (!email || (method !== "email" && method !== "both")) {
+        skipped++;
+        continue;
+      }
+
+      // Do not email someone who asked us to stop. This cron sent automated
+      // marketing to shared contacts with NO opt-out check at all — a contact
+      // who unsubscribed via CloseBoss kept receiving these, because the flag
+      // is on the row both apps read and only one app was reading it.
+      const optOut = optOutById.get(contactId);
+      const suppressed = emailSuppression({
+        email,
+        contact_opt_out_email: optOut?.contact_opt_out_email ?? null,
+        do_not_contact_email: lead.do_not_contact_email ?? null,
+      });
+      if (suppressed) {
+        console.info("[smart-automation] suppressed", { contactId, reason: suppressed });
         skipped++;
         continue;
       }
@@ -145,11 +189,32 @@ export async function GET() {
       });
 
       try {
-        await sendEmail({
+        const subject = recentReportView
+          ? "Quick question about your report"
+          : "Quick follow-up";
+
+        // Every recipient gets a way out: the visible footer plus the RFC 8058
+        // header pair that renders Gmail's native Unsubscribe button. The
+        // header alone is not enough — it is invisible to the reader, and
+        // someone who cannot find a way out clicks "spam" instead, which costs
+        // the sending domain far more than the unsubscribe would have.
+        const token = optOut?.email_unsubscribe_token ?? null;
+        const withFooter = withUnsubscribeFooter({ html: "", text: message, token });
+
+        const result = await sendEmail({
           to: email,
-          subject: recentReportView ? "Quick question about your report" : "Quick follow-up",
-          text: message,
+          subject,
+          text: withFooter.text,
+          headers: unsubscribeHeaders(token),
         });
+
+        // `sendEmail` returns null on rejection rather than throwing. Recording
+        // "sent" regardless is how a 403 from an unverified domain became
+        // indistinguishable from delivery.
+        if (!result) {
+          failed++;
+          continue;
+        }
 
         await supabaseServer.from("automation_logs").insert({
           agent_id: lead.agent_id ?? null,
@@ -168,6 +233,23 @@ export async function GET() {
           type: "email",
           status: "sent",
           content: message,
+          created_at: nowIso,
+        } as never);
+
+        // Thread it. `contacts` is shared with CloseBoss, whose Inbox reads
+        // `email_messages` — messages this cron sent were absent from the
+        // conversation until 159 of them were recovered by hand. `source`
+        // records which app wrote it, so one thread can still say who spoke.
+        // Stored WITHOUT the footer: a thread should read like the
+        // conversation, not the envelope.
+        await supabaseServer.from("email_messages").insert({
+          contact_id: contactId,
+          agent_id: lead.agent_id ?? null,
+          subject,
+          message,
+          direction: "outbound",
+          external_message_id: result.id,
+          source: "propertytoolsai",
           created_at: nowIso,
         } as never);
 

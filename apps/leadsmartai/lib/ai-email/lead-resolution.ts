@@ -84,6 +84,13 @@ export async function getRecentEmailMessages(leadId: string, limit = 8) {
     }));
 }
 
+/**
+ * Which app this code belongs to. `contacts` is shared with PropertyTools AI,
+ * which emails the same people from the same domain, so every row says who
+ * wrote it — see `email_messages.source`.
+ */
+const THIS_APP = "closeboss";
+
 export async function logEmailMessage(params: {
   leadId: string;
   direction: "inbound" | "outbound";
@@ -91,6 +98,8 @@ export async function logEmailMessage(params: {
   body: string;
   agentId?: string | null;
   externalMessageId?: string | null;
+  /** Overrides the sending app. Defaults to this one; there is rarely a reason. */
+  source?: string;
 }) {
   const { error } = await supabaseAdmin.from("email_messages").insert({
     contact_id: params.leadId,
@@ -99,6 +108,7 @@ export async function logEmailMessage(params: {
     message: params.body,
     direction: params.direction,
     external_message_id: params.externalMessageId ?? null,
+    source: params.source ?? THIS_APP,
   } as Record<string, unknown>);
 
   if (error) throw error;

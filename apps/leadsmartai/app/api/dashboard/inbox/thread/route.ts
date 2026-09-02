@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { OWN_MESSAGES_FILTER } from "@/lib/email/ownMessages";
 
 export async function GET(req: Request) {
   try {
@@ -45,6 +46,7 @@ export async function GET(req: Request) {
         .from("email_messages")
         .select("id, subject, message, direction, created_at")
         .eq("contact_id", leadId as unknown as number)
+        .or(OWN_MESSAGES_FILTER)
         .order("created_at", { ascending: true })
         .limit(100);
       messages.push(...(emails ?? []).map((m: any) => ({ ...m, channel: "email" })));
