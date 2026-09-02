@@ -38,9 +38,24 @@ export function normalizeCityState(inputCity: string, inputState?: string) {
   const rawState = String(inputState ?? "").trim();
   if (!rawCity) return { city: "", state: "" };
 
-  if (rawCity.includes(",") && !rawState) {
+  /*
+   * Split an inline "City, ST" WHETHER OR NOT a state was also passed.
+   *
+   * The `&& !rawState` this used to carry meant that supplying both -- which
+   * the get_market_snapshot schema openly invites, with a city described as
+   * "City name, optionally 'City, ST'" beside an optional state -- skipped the
+   * split entirely and looked up the literal string "Walnut, Ca". No row
+   * matches that, so the tool reported "no cached market data yet" for a city
+   * whose row was sitting right there. A false "we have nothing" is worse than
+   * a lookup miss: it sends the agent off to do work already done.
+   *
+   * The explicit argument wins when the two disagree; it was chosen
+   * deliberately, whereas the suffix is often just how someone typed it.
+   */
+  if (rawCity.includes(",")) {
     const [c, s] = rawCity.split(",").map((v) => v.trim());
-    return { city: toTitleCase(c), state: String(s ?? "").toUpperCase() };
+    const state = (rawState || s || "").toUpperCase();
+    return { city: toTitleCase(c), state };
   }
 
   const matched = TRAFFIC_CITIES.find(
