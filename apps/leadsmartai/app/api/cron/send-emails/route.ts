@@ -6,6 +6,7 @@ import {
   unsubscribeHeaders,
   withUnsubscribeFooter,
 } from "@/lib/email/unsubscribe";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { sendSMS } from "@/lib/twilioSms";
 
 export const runtime = "nodejs";
@@ -289,13 +290,42 @@ export async function GET(req: Request) {
               senderName: agentName,
             });
 
-            await sendEmail({
+            const sent = await sendEmail({
               to: String(lead.email),
               subject,
               text: withFooter.text,
               html: withFooter.html,
               headers: unsubscribeHeaders(token),
             });
+
+            // Thread it into the Inbox. The Inbox reads `email_messages`; this
+            // loop only ever wrote `message_logs`, so every drip email the
+            // system has sent was invisible there while SMS threaded fine —
+            // the Twilio webhook writes `sms_messages` in both directions.
+            //
+            // Best-effort on purpose: the mail is already delivered by this
+            // point, and failing the run over a logging insert would strand the
+            // sequence and re-send on the next tick.
+            try {
+              await logEmailMessage({
+                leadId: leadId,
+                direction: "outbound",
+                subject,
+                // The stored copy is the words the agent wrote, without the
+                // compliance footer or the tracking pixel — a thread should
+                // read like the conversation, not the envelope.
+                body: rendered,
+                // `agentId` above is scoped to the agent-name try block; read
+                // it off the contact row instead.
+                agentId: lead.agent_id ? String(lead.agent_id) : null,
+                externalMessageId: sent?.id ? String(sent.id) : null,
+              });
+            } catch (e) {
+              console.warn("[send-emails] inbox log failed", {
+                contactId: leadId,
+                error: e instanceof Error ? e.message : e,
+              });
+            }
           }
         } else if (channel === "sms") {
           const smsOptIn = Boolean((lead as any).sms_opt_in);
