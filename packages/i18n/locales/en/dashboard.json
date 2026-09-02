@@ -1569,7 +1569,10 @@
     "now": "now",
     "minutesAgo": "{{count}}m",
     "hoursAgo": "{{count}}h",
-    "daysAgo": "{{count}}d"
+    "daysAgo": "{{count}}d",
+    "loadFailed": "Couldn't load your conversations. Retrying automatically — check your connection if this persists.",
+    "threadFailed": "Couldn't open this conversation, so replying is unavailable. Select it again to retry.",
+    "noEmailOnFile": "This contact has no email address on file, so the reply can't be sent."
   },
   "listings": {
     "metaTitle": "Listings",
