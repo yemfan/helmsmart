@@ -1,6 +1,7 @@
 import "server-only";
 
 import { sendEmail } from "@/lib/email";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import {
   appendHtmlSignature,
   appendTextSignature,
@@ -24,6 +25,13 @@ export type SendBuyerListingsOpts = {
   /** The buyer's brief, echoed so the email has context. */
   query: string;
   agentId?: string | number | null;
+  /**
+   * The buyer's contact id, so the send threads into their Inbox.
+   * Optional because this helper takes a bare address: the cron knows the
+   * contact, an ad-hoc send may not, and guessing would file the message
+   * under the wrong conversation.
+   */
+  contactId?: string | null;
   /** Optional agent note prepended above the listings. */
   note?: string | null;
 };
@@ -148,12 +156,33 @@ export async function sendBuyerListings(
     }
   }
 
-  return sendEmail({
+  const sent = await sendEmail({
     to,
     subject: `${count} that match what you're looking for`,
     text: finalText,
     html: finalHtml,
   });
+
+  // Thread into the Inbox when the caller told us who this is.
+  if (opts.contactId) {
+    try {
+      await logEmailMessage({
+        leadId: String(opts.contactId),
+        direction: "outbound",
+        subject: `${count} that match what you're looking for`,
+        body: finalText,
+        agentId: opts.agentId != null ? String(opts.agentId) : null,
+        externalMessageId: sent?.id ? String(sent.id) : null,
+      });
+    } catch (err) {
+      console.warn("[house-search] inbox log failed", {
+        contactId: opts.contactId,
+        error: err instanceof Error ? err.message : err,
+      });
+    }
+  }
+
+  return sent;
 }
 
 function escapeHtml(s: string): string {

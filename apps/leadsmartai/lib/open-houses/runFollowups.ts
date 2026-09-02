@@ -1,6 +1,7 @@
 import "server-only";
 
 import { sendEmail } from "@/lib/email";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { sendSMS } from "@/lib/twilioSms";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { OpenHouseRow, OpenHouseVisitorRow } from "./types";
@@ -140,7 +141,29 @@ async function processQueue(ctx: {
           continue;
         }
         const { subject, text, html } = renderThankYou({ visitor: v, openHouse: oh, agentFirstName });
-        await sendEmail({ to: v.email, subject, text, html });
+        const sent = await sendEmail({ to: v.email, subject, text, html });
+
+        // Thread into the Inbox only when this visitor is a contact.
+        // `open_house_visitors.contact_id` is nullable — a walk-in who never
+        // became a contact has none, and inventing one would attach the
+        // message to somebody else's conversation.
+        if (v.contact_id) {
+          try {
+            await logEmailMessage({
+              leadId: String(v.contact_id),
+              direction: "outbound",
+              subject,
+              body: text,
+              agentId: v.agent_id ? String(v.agent_id) : null,
+              externalMessageId: sent?.id ? String(sent.id) : null,
+            });
+          } catch (err) {
+            console.warn("[open-houses] inbox log failed", {
+              contactId: v.contact_id,
+              error: err instanceof Error ? err.message : err,
+            });
+          }
+        }
         await stampSent(v.id, sentColumn);
         result.thankYousSent += 1;
       } else {
