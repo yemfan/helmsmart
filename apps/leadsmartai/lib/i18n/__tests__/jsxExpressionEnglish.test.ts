@@ -128,7 +128,7 @@ function isCopy(raw: string): boolean {
   if (/\b(?:px|py|mt|mb|ml|mr|pt|pb|pl|pr|gap|rounded|bg|text|border|flex|grid|w|h)-/.test(t)) {
     return false;
   }
-  if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+…→—–-]*$/.test(t)) return false;
+  if (!/^[A-Za-z][A-Za-z0-9 ,.'’“”!?:;%()/&+…→—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   return words >= 2 || t.length >= 4;
 }

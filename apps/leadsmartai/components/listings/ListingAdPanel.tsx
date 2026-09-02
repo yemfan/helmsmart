@@ -432,7 +432,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             inputMode="url"
           />
           <p className="mt-1 text-[11px] text-slate-400">
-            Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below.
+            {t("pages.listingAd.urlHelp")}
           </p>
         </div>
 

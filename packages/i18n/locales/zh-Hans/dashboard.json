@@ -2068,7 +2068,8 @@
       "cancel": "取消",
       "draftBefore": "保存后会创建一份状态为",
       "draftWord": "草稿",
-      "draftAfter": "的报价。您可以在下一页修改任意字段，之后再改为“已提交”。"
+      "draftAfter": "的报价。您可以在下一页修改任意字段，之后再改为“已提交”。",
+      "extractedHelp": "请逐项核对。附带条件行显示的是合同原文 — 「WAIVED」表示合同放弃该项附带条件。未读取到的字段显示为「—」，新报价将对这些字段使用表单默认值。"
     },
     "cmaDetail": {
       "metaTitle": "市场比较分析报告",
@@ -3095,7 +3096,8 @@
       "selectPhotosAboveTo": "在上方选择照片以确定时长",
       "addVoiceover": "添加配音",
       "narratedInAProfessional": "由专业配音朗读。",
-      "narratedInYourCloned": "由您的克隆声音朗读。"
+      "narratedInYourCloned": "由您的克隆声音朗读。",
+      "urlHelp": "建议使用您自己的房源页面。图片从该页面获取；若门户网站阻止抓取，请使用下方的「+ 上传图片」。"
     },
     "contactHealth": {
       "heading": "联系人资料完整度",
@@ -3344,7 +3346,8 @@
       "comparePlans": "对比套餐并解锁 →",
       "contactSales": "联系销售 →",
       "readyCreateAccount": "我准备好了——创建我的经纪人账户 →",
-      "loadingConversation": "正在加载对话…"
+      "loadingConversation": "正在加载对话…",
+      "simulatedLeadStream": "模拟的「新线索入口」实时流"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -3678,7 +3681,8 @@
       "followUpAutomation": "自动跟进",
       "status": "状态",
       "sent": "已发送",
-      "pending": "待发送"
+      "pending": "待发送",
+      "smartPropertyLinksHelp": "为特定客户与地址生成可追踪的「打开报告」链接。"
     },
     "addContact": {
       "viewAll": "查看全部",
@@ -4338,7 +4342,8 @@
       "chooseWhichMobilePush": "选择您希望接收哪些手机推送通知。",
       "skip": "跳过",
       "skipFinish": "跳过并完成",
-      "finishSetup": "完成设置"
+      "finishSetup": "完成设置",
+      "pickYourArea": "选择您服务的州、县与城市，以便为您匹配当地线索。若您服务整个县，请勾选「全部城市」。"
     },
     "coaching": {
       "brand": "CloseBoss 教练",
@@ -5428,7 +5433,8 @@
       "updated": "更新房源：",
       "soldInserted": "写入成交快照：",
       "soldSkipped": "跳过成交快照：",
-      "skippedRows": "跳过的行："
+      "skippedRows": "跳过的行：",
+      "intro": "上传 MLS 导出文件（已成交 + 在售房源）。系统会更新房源信息，并将成交价作为「已成交」快照保存，供可比房源与估值工具使用。"
     },
     "coachingPage": {
       "title": "教练",
@@ -5704,7 +5710,8 @@
       "upcoming": "即将到期",
       "stuckCronsHint": "未在预期时间窗内运行",
       "platformOverviewSub": "PropertyToolsAI 与 LeadSmart AI 的整体经营表现。",
-      "portalDesc": "平台管理与运维工具。日常工作请打开完整控制台。"
+      "portalDesc": "平台管理与运维工具。日常工作请打开完整控制台。",
+      "signupsIntro": "新经纪人账号的来源。归因从启用跟踪后开始记录 — 在此之前创建的账号显示为「未知」。"
     },
     "supportDash": {
       "title": "系统客服工作台",
@@ -7224,7 +7231,8 @@
       "q3": "评估师和贷款机构更看重哪个指标？",
       "a3": "评估师和贷款机构通常更看重资本化率和 NOI，因为它们反映的是扣除开支之后房产真实的收入。不过在一些市场分析里 GRM 仍会出现，尤其是针对较小的住宅类收益房产。",
       "ctaTitle": "两个指标一起用，图景才更清楚",
-      "ctaBody": "资本化率和租金乘数不是对手——它们是为分析的不同阶段设计的工具。只知道租金时用 GRM 快速扫一遍；等您把开支摸清楚、想更准确地看收入和价值时，就用资本化率。"
+      "ctaBody": "资本化率和租金乘数不是对手——它们是为分析的不同阶段设计的工具。只知道租金时用 GRM 快速扫一遍；等您把开支摸清楚、想更准确地看收入和价值时，就用资本化率。",
+      "q1": "像资本化率一样，租金乘数也有「好」的标准吗？"
     },
     "banksCapRate": {
       "intro": "当您为一处出租房产申请贷款时，银行看的不只是您的信用分。对产生收入的房地产，贷款机构会把很大一部分注意力放在房产本身——它的净营运收入（NOI），以及市场给这份收入定的资本化率。搞清楚银行怎么用资本化率给房产估值，能帮您把项目准备得更扎实，也能避免在贷款审核时被打个措手不及。",

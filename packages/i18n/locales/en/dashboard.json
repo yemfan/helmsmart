@@ -2068,7 +2068,8 @@
       "cancel": "Cancel",
       "draftBefore": "Saving creates an offer in",
       "draftWord": "draft",
-      "draftAfter": ". You can edit any field on the next page before flipping to “submitted.”"
+      "draftAfter": ". You can edit any field on the next page before flipping to “submitted.”",
+      "extractedHelp": "Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those."
     },
     "cmaDetail": {
       "metaTitle": "CMA Report",
@@ -3095,7 +3096,8 @@
       "selectPhotosAboveTo": "Select photos above to set the length",
       "addVoiceover": "Add voiceover",
       "narratedInAProfessional": "Narrated in a professional voice.",
-      "narratedInYourCloned": "Narrated in your cloned voice."
+      "narratedInYourCloned": "Narrated in your cloned voice.",
+      "urlHelp": "Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below."
     },
     "contactHealth": {
       "heading": "Contact health",
@@ -3344,7 +3346,8 @@
       "comparePlans": "Compare plans & unlock →",
       "contactSales": "Contact sales →",
       "readyCreateAccount": "I&apos;m ready — create my agent account →",
-      "loadingConversation": "Loading conversation…"
+      "loadingConversation": "Loading conversation…",
+      "simulatedLeadStream": "Simulated live “incoming lead” stream"
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -3678,7 +3681,8 @@
       "followUpAutomation": "Follow-up automation",
       "status": "Status",
       "sent": "Sent",
-      "pending": "Pending"
+      "pending": "Pending",
+      "smartPropertyLinksHelp": "Generate trackable “open report” links for specific clients and addresses."
     },
     "addContact": {
       "viewAll": "View all",
@@ -4338,7 +4342,8 @@
       "chooseWhichMobilePush": "Choose which mobile push notifications you want to receive.",
       "skip": "Skip",
       "skipFinish": "Skip & Finish",
-      "finishSetup": "Finish Setup"
+      "finishSetup": "Finish Setup",
+      "pickYourArea": "Pick the state, county, and city you serve so we can match you with local leads. Check “all cities” if you cover the whole county."
     },
     "coaching": {
       "brand": "CloseBoss Coaching",
@@ -5428,7 +5433,8 @@
       "updated": "Properties updated:",
       "soldInserted": "Sold snapshots inserted:",
       "soldSkipped": "Sold snapshots skipped:",
-      "skippedRows": "Skipped rows:"
+      "skippedRows": "Skipped rows:",
+      "intro": "Upload an MLS export (sold + active listings). We’ll upsert properties and store sold prices as “sold” snapshots for comps and valuation tools."
     },
     "coachingPage": {
       "title": "Coaching",
@@ -5704,7 +5710,8 @@
       "upcoming": "Upcoming",
       "stuckCronsHint": "no run in expected window",
       "platformOverviewSub": "Business performance across PropertyToolsAI and LeadSmart AI.",
-      "portalDesc": "Platform administration and operational tools. Open the full dashboard for day-to-day work."
+      "portalDesc": "Platform administration and operational tools. Open the full dashboard for day-to-day work.",
+      "signupsIntro": "Where new agent accounts come from. Attribution is captured going forward — accounts created before tracking show as “Unknown”."
     },
     "supportDash": {
       "title": "System Support Dashboard",
@@ -7224,7 +7231,8 @@
       "q3": "Which metric do appraisers and lenders care about more?",
       "a3": "Appraisers and lenders typically focus more on cap rates and NOI, because they reflect the property's true income after expenses. However, GRM can still appear in some market analyses, especially for smaller residential income properties.",
       "ctaTitle": "Use both metrics to build a clearer picture",
-      "ctaBody": "Cap rate and gross rent multiplier are not enemies—they are tools designed for different stages of analysis. Use GRM for fast scans when you only know rents, and cap rate once you have a handle on expenses and want a more accurate view of income and value."
+      "ctaBody": "Cap rate and gross rent multiplier are not enemies—they are tools designed for different stages of analysis. Use GRM for fast scans when you only know rents, and cap rate once you have a handle on expenses and want a more accurate view of income and value.",
+      "q1": "Is there a “good” GRM like there is a “good” cap rate?"
     },
     "banksCapRate": {
       "intro": "When you apply for a loan on a rental property, the bank is not just looking at your credit score. For income-producing real estate, lenders focus heavily on the property itself—its net operating income (NOI) and the cap rate the market assigns to that income. Understanding how banks use cap rate to value property helps you prepare stronger deals and avoid surprises during underwriting.",

@@ -55,8 +55,7 @@ export default function MlsCsvImportClient() {
     <div className="space-y-3">
       <div className="text-sm font-semibold text-brand-text">{t("pages.mlsImport.title")}</div>
       <p className="text-xs text-brand-text/80">
-        Upload an MLS export (sold + active listings). We’ll upsert properties and
-        store sold prices as “sold” snapshots for comps and valuation tools.
+        {t("pages.mlsImport.intro")}
       </p>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">

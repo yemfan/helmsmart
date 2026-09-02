@@ -103,7 +103,7 @@ export default async function MarketingPage() {
             <div>
               <div className="text-xs font-semibold text-slate-700 mb-1">{t("pages.marketing.smartPropertyLinks", { ns: "dashboard" })}</div>
               <div className="text-xs text-slate-600">
-                Generate trackable “open report” links for specific clients and addresses.
+                {t("pages.marketing.smartPropertyLinksHelp", { ns: "dashboard" })}
               </div>
               <div className="mt-2">
                 <Link
