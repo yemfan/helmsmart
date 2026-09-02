@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-
-import { mediaKind } from "@/lib/marketing-hub/mediaKind";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
@@ -173,7 +171,7 @@ export default async function HubContentPage({ params, searchParams }: Props) {
           its MP4 in the same column, and an MP4 in an <img> draws the
           broken-image icon — the post read as broken while the video was fine.
         */}
-        {mediaKind(item.imageUrl) === "video" && item.imageUrl ? (
+        {item.mediaKind === "video" && item.imageUrl ? (
           <video
             src={item.imageUrl}
             controls

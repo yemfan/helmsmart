@@ -149,7 +149,9 @@ export async function loadHubByUsername(
       supabaseAdmin
         .from("scheduled_posts")
         .select(
-          "id, platform, caption, image_url, hashtags, status, published_at, created_at, lead_posts:published_lead_post_id (external_post_url)",
+          // subject_kind rides along so the feed can tell a rendered reel (an MP4 in
+          // image_url) from a photo without guessing at the file extension.
+          "id, platform, caption, image_url, subject_kind, hashtags, status, published_at, created_at, lead_posts:published_lead_post_id (external_post_url)",
         )
         .eq("agent_id", agentId as never)
         .eq("status", "posted")

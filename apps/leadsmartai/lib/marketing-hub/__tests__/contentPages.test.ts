@@ -49,6 +49,7 @@ const stub = (over: Partial<FeedItem>): FeedItem => ({
   kind: "post",
   caption: "",
   imageUrl: null,
+  mediaKind: "none",
   postedAt: "2026-08-01T00:00:00Z",
   links: [],
   topics: [],

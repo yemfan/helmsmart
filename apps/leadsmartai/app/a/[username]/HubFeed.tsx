@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-
-import { mediaKind } from "@/lib/marketing-hub/mediaKind";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
@@ -132,7 +130,7 @@ export default function HubFeed({
                 ="metadata"` gets the first frame as the card's still without
                 pulling the whole file for a feed the visitor may never play.
               */}
-              {mediaKind(item.imageUrl) === "video" && item.imageUrl ? (
+              {item.mediaKind === "video" && item.imageUrl ? (
                 <video
                   src={item.imageUrl}
                   controls

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { publishCarouselPost } from "@/lib/leads-gen/carousel-post";
 import { publishPost } from "@/lib/leads-gen/publish";
+import { postMediaKind } from "@/lib/marketing-hub/mediaKind";
 import { runReelRenderTick } from "@/lib/social/enqueueReels";
 import {
   DRAIN_BUDGET_MS,
@@ -341,8 +342,15 @@ export async function POST(req: Request) {
             hashtags: row.hashtags,
             mediaItemId: row.media_library_id,
             imageUrl: row.image_url,
-            // Reel rows carry a rendered MP4 in image_url — publish as video.
-            mediaKind: row.subject_kind === "social_reel" ? "video" : "image",
+            /*
+             * Reel rows carry a rendered MP4 in image_url. This used to be an
+             * inline ternary here and nowhere else, so the public hub — which
+             * renders the same rows — had no way to know, and drew a broken
+             * <img> over a working video. Same rule, one definition now.
+             */
+            mediaKind: postMediaKind({ url: row.image_url, subjectKind: row.subject_kind }) as
+              | "image"
+              | "video",
             trigger: row.trigger_kind,
             subjectKind: row.subject_kind,
             subjectRefId: row.subject_ref_id,
