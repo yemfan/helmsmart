@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import { canEmailThread } from "@/lib/inbox/replyTarget";
 import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
 import { intlLocale } from "@/lib/i18n/locale";
 
@@ -74,6 +76,8 @@ export default function InboxClient() {
   const [search, setSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<{ leadId: string; channel: string } | null>(null);
   const [lead, setLead] = useState<LeadInfo | null>(null);
+  /** Set when the thread LIST fails, so an error can't read as an empty inbox. */
+  const [listError, setListError] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [threadLoading, setThreadLoading] = useState(false);
   const [replyText, setReplyText] = useState("");
@@ -90,8 +94,16 @@ export default function InboxClient() {
     try {
       const res = await fetch("/api/dashboard/inbox");
       const body = await res.json().catch(() => ({}));
-      if (body.ok) setThreads(body.threads ?? []);
-    } catch { /* silent */ } finally { setLoading(false); }
+      if (!res.ok || !body.ok) throw new Error(body.error ?? t("inbox.loadFailed"));
+      setThreads(body.threads ?? []);
+      setListError(null);
+    } catch (e) {
+      // An empty inbox and an inbox that failed to load looked identical: both
+      // rendered the "no conversations yet" state. This polls every 15s, so a
+      // blip self-heals -- but a persistent failure now says so instead of
+      // telling the agent they have no messages.
+      setListError(e instanceof Error ? e.message : t("inbox.loadFailed"));
+    } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { loadThreads(); const i = setInterval(loadThreads, 15000); return () => clearInterval(i); }, [loadThreads]);
@@ -101,19 +113,45 @@ export default function InboxClient() {
     setSelectedLead({ leadId, channel });
     setReplyText("");
     setSendMsg(null);
+    /*
+     * Clear the previous contact BEFORE fetching the next one.
+     *
+     * `lead` used to be assigned only inside `if (body.ok)`, so a failed load
+     * left the PREVIOUSLY selected contact sitting in state while
+     * `selectedLead` had already moved on. The email reply path reads
+     * `lead.email` -- so a failed thread load followed by an email reply
+     * addressed that reply to the contact the agent had been looking at
+     * before, under the agent's own name. Stale identity is worse than no
+     * identity, so it goes first and only comes back if the fetch proves it.
+     */
+    setLead(null);
+    setMessages([]);
     try {
       const res = await fetch(`/api/dashboard/inbox/thread?leadId=${leadId}&channel=all`);
       const body = await res.json().catch(() => ({}));
-      if (body.ok) {
-        setLead(body.lead);
-        setMessages(body.messages ?? []);
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      if (!res.ok || !body.ok || !body.lead) {
+        throw new Error(body.error ?? t("inbox.threadFailed"));
       }
-    } catch { /* silent */ } finally { setThreadLoading(false); }
+      setLead(body.lead);
+      setMessages(body.messages ?? []);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    } catch (e) {
+      setSendMsg({ ok: false, text: e instanceof Error ? e.message : t("inbox.threadFailed") });
+    } finally { setThreadLoading(false); }
   }
 
   async function sendReply() {
-    if (!replyText.trim() || !selectedLead || !lead) return;
+    if (!replyText.trim() || !selectedLead) return;
+    /*
+     * This used to be part of the guard above: no `lead`, silent return. The
+     * button is enabled whenever there is text, so the agent typed a reply,
+     * pressed Send, and nothing happened at all -- no spinner, no error, the
+     * text still sitting there. Say why instead.
+     */
+    if (!lead) {
+      setSendMsg({ ok: false, text: t("inbox.threadFailed") });
+      return;
+    }
     setSending(true); setSendMsg(null);
     try {
       const channel = selectedLead.channel === "email" ? "email" : "sms";
@@ -126,6 +164,15 @@ export default function InboxClient() {
         const body = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(body.error ?? t("inbox.sendFailed"));
       } else {
+        /*
+         * Only send to an address that belongs to the thread on screen. The
+         * SMS path addresses by leadId and cannot drift; this one addresses by
+         * a value held in separate state, so it checks that the two still
+         * agree before putting the agent's name on a message.
+         */
+        if (!canEmailThread(lead, selectedLead.leadId)) {
+          throw new Error(t("inbox.noEmailOnFile"));
+        }
         const res = await fetch("/api/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -207,9 +254,22 @@ export default function InboxClient() {
 
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 ? (
-            <div className="p-6 text-center text-sm text-gray-400">
-              {search ? t("inbox.emptySearch") : t("inbox.empty")}
-            </div>
+            listError && !search ? (
+              // Grey "no conversations yet" is what an agent sees when nobody
+              // has written to them. It must not also be what they see when
+              // the inbox failed to load -- one is good news about a quiet
+              // day, the other is the app not working.
+              <div
+                role="alert"
+                className="m-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+              >
+                {listError}
+              </div>
+            ) : (
+              <div className="p-6 text-center text-sm text-gray-400">
+                {search ? t("inbox.emptySearch") : t("inbox.empty")}
+              </div>
+            )
           ) : (
             filtered.map((t) => {
               const isSelected = selectedLead?.leadId === t.leadId && selectedLead?.channel === t.channel;

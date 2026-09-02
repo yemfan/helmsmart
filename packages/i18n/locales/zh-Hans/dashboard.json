@@ -1569,7 +1569,10 @@
     "now": "刚刚",
     "minutesAgo": "{{count}} 分钟前",
     "hoursAgo": "{{count}} 小时前",
-    "daysAgo": "{{count}} 天前"
+    "daysAgo": "{{count}} 天前",
+    "loadFailed": "无法加载对话列表，系统正在自动重试。若持续出现，请检查网络连接。",
+    "threadFailed": "无法打开此对话，因此暂时无法回复。请重新选择该对话重试。",
+    "noEmailOnFile": "此联系人未登记邮箱地址，无法发送回复。"
   },
   "listings": {
     "metaTitle": "房源",
