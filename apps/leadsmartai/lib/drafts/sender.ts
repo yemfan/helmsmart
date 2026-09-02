@@ -5,6 +5,7 @@ import {
   unsubscribeHeaders,
   withUnsubscribeFooter,
 } from "@/lib/email/unsubscribe";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { loadAgentSignatureProfile } from "@/lib/signatures/loadProfile";
 import {
   appendHtmlSignature,
@@ -251,12 +252,35 @@ async function processOne(
         text,
         token: contact.email_unsubscribe_token,
       });
-      await sendEmail({
+      const sent = await sendEmail({
         to: contact.email!,
         subject: row.subject ?? "(no subject)",
         text: withFooter.text,
         headers: unsubscribeHeaders(contact.email_unsubscribe_token),
       });
+
+      // Thread it into the Inbox, which reads `email_messages`. Approved
+      // drafts went out without ever appearing there, so an agent could send a
+      // message and then find no trace of it in the conversation.
+      //
+      // Best-effort: the mail is already delivered, and throwing here would
+      // mark a sent draft as failed and invite a duplicate send.
+      try {
+        await logEmailMessage({
+          leadId: String(contact.id),
+          direction: "outbound",
+          subject: row.subject ?? "(no subject)",
+          // The words as written, without the compliance footer.
+          body: text,
+          agentId: row.agent_id ? String(row.agent_id) : null,
+          externalMessageId: sent?.id ? String(sent.id) : null,
+        });
+      } catch (e) {
+        console.warn("[drafts/sender] inbox log failed", {
+          draftId,
+          error: e instanceof Error ? e.message : e,
+        });
+      }
     }
     await markSent(draftId);
 

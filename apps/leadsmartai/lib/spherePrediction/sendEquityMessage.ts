@@ -1,6 +1,7 @@
 import "server-only";
 
 import { sendEmail } from "@/lib/email";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { appendMessages, getOrCreateConversation } from "@/lib/leadConversationHelpers";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { sendSMS } from "@/lib/twilioSms";
@@ -147,11 +148,31 @@ export async function sendEquityMessage(args: SendEquityArgs): Promise<SendEquit
       };
     }
     try {
-      await sendEmail({
+      const sent = await sendEmail({
         to: view.email ?? "",
         subject: emailSubject ?? "",
         text: body,
       });
+
+      // Thread it into the Inbox, which reads `email_messages`. The timeline
+      // append below records it on the Boss conversation, which is a different
+      // surface — without this the message was absent from the contact's email
+      // thread entirely.
+      try {
+        await logEmailMessage({
+          leadId: contactId,
+          direction: "outbound",
+          subject: emailSubject ?? "",
+          body,
+          agentId: agentId ? String(agentId) : null,
+          externalMessageId: sent?.id ? String(sent.id) : null,
+        });
+      } catch (err) {
+        console.warn("[sendEquityMessage] inbox log failed", {
+          contactId,
+          error: err instanceof Error ? err.message : err,
+        });
+      }
     } catch (e) {
       const reason = e instanceof Error ? e.message : "send_error";
       return { ok: false, code: "send_failed", reason };
