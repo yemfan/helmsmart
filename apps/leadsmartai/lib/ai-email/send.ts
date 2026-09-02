@@ -24,7 +24,18 @@ export async function sendOutboundEmail(params: {
    * Inbox three separate times.
    */
   headers?: Record<string, string>;
+  /**
+   * What to STORE on the thread and in `message_logs`, when that should differ
+   * from what was delivered. Defaults to `body`.
+   *
+   * Marketing mail carries a compliance footer and an unsubscribe URL that the
+   * recipient must receive but the agent does not need to reread on every line
+   * of a conversation. A thread should read like the conversation, not the
+   * envelope.
+   */
+  storedBody?: string;
 }) {
+  const storedBody = params.storedBody ?? params.body;
   const deliver = params.deliver !== false;
   let externalId: string | null = null;
   let delivered = false;
@@ -48,7 +59,7 @@ export async function sendOutboundEmail(params: {
     leadId: params.leadId,
     direction: "outbound",
     subject: params.subject,
-    body: params.body,
+    body: storedBody,
     agentId: params.agentId ?? null,
     externalMessageId: externalId,
   });
@@ -58,7 +69,7 @@ export async function sendOutboundEmail(params: {
       contact_id: params.leadId,
       type: "email",
       status: delivered ? "sent" : "queued",
-      content: `${params.subject}\n\n${params.body}`,
+      content: `${params.subject}\n\n${storedBody}`,
     } as Record<string, unknown>);
   } catch {
     // optional
