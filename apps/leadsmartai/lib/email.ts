@@ -37,6 +37,29 @@ type SendEmailParams = {
   headers?: Record<string, string>;
 };
 
+/**
+ * Send one email. THIS IS THE LOW-LEVEL DOOR — it delivers and nothing else.
+ *
+ * BEFORE USING IT, ASK WHO THE RECIPIENT IS:
+ *
+ *   Writing to a CONTACT (a lead, buyer, seller — anyone in `contacts`)?
+ *     Use `sendOutboundEmail` from `@/lib/ai-email/send` instead. It sends AND
+ *     threads the message into the agent's Inbox, which reads `email_messages`.
+ *     It accepts `html` and `headers` too, so there is no longer a reason to
+ *     drop down here for a rich body or List-Unsubscribe.
+ *
+ *   Writing to the AGENT or an outside party (digests, welcome mail, renewal
+ *   reminders, alerts about a contact, a co-op agent)?
+ *     `sendEmail` is correct. Do NOT thread these — showing an agent a message
+ *     they never sent to a client is worse than not showing it at all.
+ *
+ * WHY THIS NOTE EXISTS. Calling `sendEmail` directly for contact mail left sent
+ * messages out of the Inbox three separate times: the drip rail, approved
+ * drafts, and equity messages all delivered fine while the conversation stayed
+ * empty. SMS never had the problem because the Twilio webhook is the only way
+ * in and it always writes `sms_messages`. Email has no such chokepoint, so the
+ * choice is yours to get right — hence the sign.
+ */
 export async function sendEmail({
   to,
   subject,

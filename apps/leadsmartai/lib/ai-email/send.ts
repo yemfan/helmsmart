@@ -12,6 +12,18 @@ export async function sendOutboundEmail(params: {
   actorName?: string | null;
   /** When false, only persist to CRM (no Resend). */
   deliver?: boolean;
+  /**
+   * Optional HTML body. Text is still required — it is what gets stored on the
+   * thread, and a mail client without HTML still needs something to show.
+   */
+  html?: string;
+  /**
+   * Extra SMTP headers, e.g. the RFC 8058 List-Unsubscribe pair on marketing
+   * mail. Present so a contact-facing sender never has to drop to `sendEmail`
+   * to get them — bypassing this helper is what left sent mail out of the
+   * Inbox three separate times.
+   */
+  headers?: Record<string, string>;
 }) {
   const deliver = params.deliver !== false;
   let externalId: string | null = null;
@@ -23,6 +35,10 @@ export async function sendOutboundEmail(params: {
       to: params.to.trim(),
       subject: params.subject,
       text: params.body,
+      ...(params.html ? { html: params.html } : {}),
+      ...(params.headers && Object.keys(params.headers).length > 0
+        ? { headers: params.headers }
+        : {}),
     });
     externalId = result?.id ? String(result.id) : null;
     delivered = true;
