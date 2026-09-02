@@ -171,7 +171,7 @@ export default async function CmaShareView({
 
       {snapshot.disclaimer ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-          {snapshot.disclaimer}
+          {t("disclaimers.aiCma")}
         </p>
       ) : null}
     </div>

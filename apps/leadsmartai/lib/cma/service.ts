@@ -117,8 +117,17 @@ export async function createCmaForAgent(
     return {
       ok: false,
       status: 422,
+      /*
+       * "or enter the value manually" described a feature that does not exist:
+       * there is no manual-value path on a CMA anywhere in the product, so the
+       * one piece of advice offered to an agent whose report just failed was
+       * for something they could not do. What actually helps is the thing the
+       * generator itself asks for -- a full address -- plus an honest word
+       * about the case no address will fix, which is a property with too few
+       * recent public comps to value.
+       */
       error:
-        "We couldn't produce a reliable valuation for this address. Double-check the address details and try again, or enter the value manually.",
+        "We couldn't value this address confidently. Try the full address including city, state and ZIP — that resolves most failures. If it still fails, there probably aren't enough recent comparable sales published for this property yet; a nearby comparable address will usually work.",
     };
   }
 

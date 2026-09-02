@@ -530,7 +530,7 @@ export function ListingOffersCompareClient({
                   <p className="mt-1 text-sm text-slate-700">{summary.sellerNote}</p>
                 </div>
               ) : null}
-              <p className="text-[10px] italic text-slate-400">{summary.disclaimer}</p>
+              <p className="text-[10px] italic text-slate-400">{t("disclaimers.offerCompare")}</p>
             </div>
           ) : (
             <p className="mt-2 text-xs text-slate-500">{t("pages.offersCompare.aiReadNote")}</p>

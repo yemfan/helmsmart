@@ -9370,5 +9370,13 @@
       "usernameTaken": "That username is taken.",
       "viewHub": "View my hub"
     }
+  },
+  "disclaimers": {
+    "aiCma": "AI-generated estimate from public web data (recent comparable sales). This is an opinion of value, not an appraisal — verify the comps and pricing before relying on it.",
+    "buildOffer": "AI-suggested terms to support your strategy — not legal or financial advice. Confirm price, contingencies, and dates with your buyer and broker before submitting.",
+    "contractReview": "This is an AI summary to help you spot issues — it is NOT legal advice and is not a substitute for review by your broker or a real-estate attorney. Verify every term, date, and dollar figure against the document before relying on it.",
+    "deepReport": "AI-generated estimate from public web data. Value, rent, affordability, and deal metrics are opinions for planning only — not an appraisal, loan approval, or investment advice. Verify figures and consult a lender / advisor before deciding.",
+    "houseSearch": "AI-generated results from public web data. Listings, prices, and availability may be out of date — verify each on its source site before sharing or relying on it.",
+    "offerCompare": "AI summary to support your judgment — not legal or financial advice. Verify each offer's terms and the net figures before advising the seller."
   }
 }
