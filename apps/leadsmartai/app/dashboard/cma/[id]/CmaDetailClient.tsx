@@ -205,7 +205,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       {cma.snapshot.disclaimer ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
           <span className="font-semibold">{t("pages.cmaDetail.aiEstimate")}</span>
-          {cma.snapshot.disclaimer}
+          {t("disclaimers.aiCma")}
         </div>
       ) : null}
 

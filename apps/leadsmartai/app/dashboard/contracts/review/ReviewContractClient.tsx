@@ -232,7 +232,7 @@ export function ReviewContractClient() {
           ) : null}
 
           <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[11px] italic text-slate-500">
-            {review.disclaimer}
+            {t("disclaimers.contractReview")}
           </p>
         </div>
       ) : null}
