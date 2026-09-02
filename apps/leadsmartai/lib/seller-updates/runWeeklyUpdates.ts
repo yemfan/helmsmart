@@ -2,6 +2,7 @@ import "server-only";
 
 import { isAnthropicConfigured } from "@/lib/anthropic";
 import { sendEmail } from "@/lib/email";
+import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { TransactionRow } from "@/lib/transactions/types";
 import { gatherListingActivity } from "./gatherActivity";
@@ -171,8 +172,27 @@ export async function runWeeklySellerUpdates(opts: {
         agentBrokerage: agent?.brokerage_name ?? null,
       });
 
-      await sendEmail({ to: seller.email, subject, text, html });
+      const sent = await sendEmail({ to: seller.email, subject, text, html });
       result.sentEmails += 1;
+
+      // Thread into the Inbox. `seller` is a contacts row — it was loaded by
+      // id off `tx.contact_id` — so this is a real conversation, not a
+      // notification about one. Best-effort: the mail has already gone.
+      try {
+        await logEmailMessage({
+          leadId: String(tx.contact_id),
+          direction: "outbound",
+          subject,
+          body: text,
+          agentId: tx.agent_id ? String(tx.agent_id) : null,
+          externalMessageId: sent?.id ? String(sent.id) : null,
+        });
+      } catch (err) {
+        console.warn("[seller-updates] inbox log failed", {
+          contactId: tx.contact_id,
+          error: err instanceof Error ? err.message : err,
+        });
+      }
 
       // Stamp last_sent_at. Failure here is annoying but non-fatal —
       // next cron run would simply re-send.

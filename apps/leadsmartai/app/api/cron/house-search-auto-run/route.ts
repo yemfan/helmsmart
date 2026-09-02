@@ -61,6 +61,7 @@ export async function GET(req: Request) {
             listings: fresh,
             query: s.query,
             agentId: s.agentId,
+            contactId: s.contactId ? String(s.contactId) : null,
             note: "New matches since your last update:",
           });
           sent += 1;
