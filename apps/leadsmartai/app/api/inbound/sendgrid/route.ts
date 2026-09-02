@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getInboundDomain } from "@/lib/inbound/aliases";
+import { isWeakSecret, MIN_SECRET_LEN, secretMatches } from "@/lib/inbound/secret";
 import type { InboundAttachmentMeta } from "@/lib/inbound/deliveries";
 import { processInboundEmail } from "@/lib/inbound/processInbound";
 
@@ -65,7 +66,16 @@ export async function POST(req: Request) {
     console.error("[inbound/sendgrid] INBOUND_PARSE_SECRET not configured");
     return NextResponse.json({ ok: false, error: "not configured" }, { status: 500 });
   }
-  if (new URL(req.url).searchParams.get("k") !== secret) {
+  if (isWeakSecret(secret)) {
+    // Warn rather than refuse: rejecting here would take inbound down for a
+    // weak-but-working secret. This value is guessable at leisure — the
+    // endpoint is public and the secret never rotates on its own — so it
+    // wants to be long and random, not memorable.
+    console.warn(
+      `[inbound/sendgrid] INBOUND_PARSE_SECRET is ${secret.length} chars; use at least ${MIN_SECRET_LEN} random ones`,
+    );
+  }
+  if (!secretMatches(new URL(req.url).searchParams.get("k") ?? "", secret)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
