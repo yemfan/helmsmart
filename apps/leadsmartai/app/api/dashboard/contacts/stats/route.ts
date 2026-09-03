@@ -64,26 +64,38 @@ export async function GET() {
       if (key in monthCounts) monthCounts[key]++;
     }
 
+    /*
+     * `month` only — no `label`. This used to format the label here with a
+     * hardcoded "en-US", so a Chinese-speaking agent's growth chart was
+     * labelled Jan/Feb/Mar. A month name is display copy, and this route has
+     * no idea what language the reader is in; the client formats it with the
+     * locale it is already rendering in.
+     */
     const growth = Object.entries(monthCounts).map(([month, count]) => ({
       month,
-      // Append a time so "YYYY-MM-01" parses as LOCAL midnight, not UTC (else the label is a month early behind UTC).
-      label: new Date(month + "-01T00:00:00").toLocaleDateString("en-US", { month: "short", year: "2-digit" }),
       count,
     }));
 
     return NextResponse.json({
       ok: true,
+      /*
+       * `key`, not `name`. These are chart legend labels, and returning them
+       * as English words made the contacts page render a `Hot / Warm / Cold`
+       * legend next to a table whose own rating pills said 热门 / 一般 / 冷淡 —
+       * the same three values, in two languages, six inches apart. The client
+       * holds the translations; the API returns what the slice IS.
+       */
       rating: [
-        { name: "Hot", value: ratingCounts.hot, color: "#ef4444" },
-        { name: "Warm", value: ratingCounts.warm, color: "#f59e0b" },
-        { name: "Cold", value: ratingCounts.cold, color: "#6b7280" },
+        { key: "hot", value: ratingCounts.hot, color: "#ef4444" },
+        { key: "warm", value: ratingCounts.warm, color: "#f59e0b" },
+        { key: "cold", value: ratingCounts.cold, color: "#6b7280" },
       ],
       lastContacted: [
-        { name: "Last 30 days", value: lastContacted.within30d, color: "#22c55e" },
-        { name: "6 months", value: lastContacted.within6m, color: "#3b82f6" },
-        { name: "1 year", value: lastContacted.within1y, color: "#f59e0b" },
-        { name: "Over 1 year", value: lastContacted.over1y, color: "#ef4444" },
-        { name: "Never", value: lastContacted.never, color: "#e5e7eb" },
+        { key: "within30d", value: lastContacted.within30d, color: "#22c55e" },
+        { key: "within6m", value: lastContacted.within6m, color: "#3b82f6" },
+        { key: "within1y", value: lastContacted.within1y, color: "#f59e0b" },
+        { key: "over1y", value: lastContacted.over1y, color: "#ef4444" },
+        { key: "never", value: lastContacted.never, color: "#e5e7eb" },
       ],
       growth,
       total: rows.length,

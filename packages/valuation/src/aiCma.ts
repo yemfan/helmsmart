@@ -10,6 +10,7 @@ import {
   str,
   httpUrl,
 } from "./jsonExtract";
+import { noCompsMessage } from "./noCompsMessage";
 import { isCredibleCmaValuation } from "./types";
 import type {
   ValuationInput,
@@ -183,8 +184,7 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
     return {
       ok: false,
       status: 422,
-      error:
-        "Couldn't find enough real comparable sales to value this address confidently. Try a more complete address (include city, state, and ZIP).",
+      error: noCompsMessage(address),
     };
   }
   return { ok: true, snapshot };

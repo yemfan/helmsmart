@@ -10,6 +10,7 @@ import {
   resources,
   type SupportedLocale,
 } from "./config";
+import { interpolate, resolveKey } from "./resolveKey";
 
 /**
  * Server-side locale resolution for Server Components + Route
@@ -46,12 +47,25 @@ export async function getServerLocale(): Promise<SupportedLocale> {
 /**
  * Synchronous `t()` for Server Components. We don't spin up an
  * i18next instance on the server — just key into the bundled
- * resources directly. Falls back to the key itself when a
- * translation is missing so missing-string regressions are
- * visible at runtime.
+ * resources directly.
  *
  * Interpolation: simple `{{name}}` substitution. Matches i18next's
  * default behavior so the same string keys work on client + server.
+ *
+ * RESOLUTION ORDER, and why it is not just "the key". This used to return the
+ * key on any miss, on the reasoning that a visible `pages.cma.metaTitle`
+ * makes a regression obvious. It does — to us. To a Chinese-speaking agent it
+ * is a broken page, and the miss it exposes is usually a gap in the zh-Hans
+ * bundle alone, where perfectly good English was sitting one lookup away.
+ * (`useTranslation` on the client has always done this: `fallbackLng` plus
+ * `defaultValue`. The server half silently didn't, so the same call rendered
+ * differently either side of the boundary.)
+ *
+ * So: the requested locale, then `defaultValue` if the caller passed one,
+ * then the default-locale bundle, and only then the key. That order lives in
+ * `./resolveKey`, pure and unit-tested, because this module is `server-only`
+ * and reads `next/headers` — the order is the part worth pinning, and it
+ * cannot be exercised from here.
  *
  * `defaultNs` mirrors `useTranslation(ns)` on the client, and exists because
  * the asymmetry was a live bug: a component moved from the hook to this
@@ -66,32 +80,17 @@ export async function getServerT(
   const locale = await getServerLocale();
   return (key, opts) => {
     const ns = (opts?.ns as string | undefined) ?? defaultNs;
-    const bundle = resources[locale]?.[ns as keyof (typeof resources)[typeof locale]];
-    if (!bundle) return key;
-    const value = lookup(bundle, key);
-    if (typeof value !== "string") return key;
-    return interpolate(value, opts ?? {});
+    type Ns = keyof (typeof resources)[typeof locale];
+
+    const resolved = resolveKey(key, {
+      bundle: resources[locale]?.[ns as Ns],
+      // Undefined when we're already on English — nothing to fall back to.
+      fallbackBundle:
+        locale === DEFAULT_LOCALE ? undefined : resources[DEFAULT_LOCALE]?.[ns as Ns],
+      defaultValue: opts?.defaultValue,
+    });
+
+    // Null means no bundle in any language has it: render the key, loudly.
+    return resolved == null ? key : interpolate(resolved, opts ?? {});
   };
-}
-
-function lookup(bundle: Record<string, unknown>, key: string): unknown {
-  if (key in bundle) return bundle[key];
-  // Dotted-path support — settings.json uses nested objects.
-  const segments = key.split(".");
-  let current: unknown = bundle;
-  for (const seg of segments) {
-    if (current && typeof current === "object" && seg in (current as object)) {
-      current = (current as Record<string, unknown>)[seg];
-    } else {
-      return undefined;
-    }
-  }
-  return current;
-}
-
-function interpolate(template: string, vars: Record<string, unknown>): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, name) => {
-    const v = vars[name];
-    return v == null ? "" : String(v);
-  });
 }

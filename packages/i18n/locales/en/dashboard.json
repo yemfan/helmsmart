@@ -2105,7 +2105,16 @@
       "savedLine": "Saved {{date}} · {{count}} comps",
       "confidenceSuffix": " · confidence {{score}}%",
       "comparableSales": "Comparable sales ({{count}})",
-      "sourcesN": "Sources ({{count}})"
+      "sourcesN": "Sources ({{count}})",
+      "backToAll": "← All CMAs",
+      "regenerate": "↻ Regenerate CMA",
+      "generateReport": "📄 Generate Report",
+      "subjectLine": "{{beds}} bed / {{baths}} bath / {{sqft}} sqft",
+      "lotSuffix": " · lot {{lot}}",
+      "hoaSuffix": " · HOA {{hoa}}",
+      "builtSuffix": " · built {{year}}",
+      "emailSubject": "Comparative Market Analysis — {{address}}",
+      "resourceLabel": "the CMA for {{address}}"
     },
     "adComposer": {
       "metaTitle": "Ad Composer",
@@ -5581,7 +5590,44 @@
       "addToDeal": "Add to deal",
       "edit": "Edit",
       "sandbox": "Sandbox workspace",
-      "calendarSubtitle": "This week · {{events}} upcoming events · {{deals}} active deals"
+      "calendarSubtitle": "This week · {{events}} upcoming events · {{deals}} active deals",
+      "alertEscalatedDrafts": "{{n}} escalated AI drafts need you",
+      "alertUnread": "{{n}} unread messages",
+      "alertUrgentTasks": "{{n}} urgent tasks",
+      "kpiSubNewLeads": "5 from Zillow / 2 from Facebook",
+      "kpiSubHotLeads": "A-scored, action required",
+      "kpiSubMessagesSent": "34 AI · 4 you",
+      "kpiSubQuietLeads": "7+ days inactive",
+      "secondsUnit": "sec",
+      "responseDelta": "↓ 12s vs last week",
+      "toursSub": "5 booked by AI; 4 by you. 1 conversion to offer.",
+      "voiceCallsSub": "8 qualified · 3 callbacks booked · 0 dropped to voicemail",
+      "trialFinePrint": "14-day free trial, no credit card. Bring your own contacts via CSV import — or let us migrate for you.",
+      "stageLead": "Lead",
+      "stageNurture": "Nurture",
+      "stageAppointment": "Appointment",
+      "stageActiveClient": "Active client",
+      "stagePastClient": "Past client",
+      "chipSpherePastClient": "Sphere · past client",
+      "inboxCount": "{{total}} conversations · {{unread}} unread",
+      "sourceScore": "Source: {{source}} · Score: {{score}}",
+      "aiSuggestionReady": "AI suggestion · ready when you are",
+      "draftsCount": "{{n}} drafts awaiting your review · Clear in ~4 minutes",
+      "draftedAgo": "drafted {{ago}} ago",
+      "agoMinutes": "{{n}}m",
+      "agoHours": "{{n}}h",
+      "agoDays": "{{n}}d",
+      "metaInboxTitle": "Demo workspace · Inbox",
+      "metaInboxDescription": "See CloseBoss's inbox in action — sub-minute AI follow-up, escalation rules, and voice-AI call summaries in one feed.",
+      "metaContactsTitle": "Demo workspace · Contacts",
+      "metaContactsDescription": "Browse a sample CloseBoss contacts list — 50 contacts with AI lead scoring, lifecycle stage, source attribution, and last-activity context.",
+      "metaDraftsTitle": "Demo workspace · AI Drafts",
+      "metaDraftsDescription": "See the CloseBoss drafts queue — every drafted reply shows the AI's reasoning, the message, and approve / edit / discard controls. This is what AI follow-up looks like with a human in the loop.",
+      "metaCalendarTitle": "Demo workspace · Calendar",
+      "metaCalendarDescription": "Sample CloseBoss calendar — tours, listing presentations, callbacks, and closing calls, with linked deals and contact context.",
+      "dealNextInOne": "· in {{days}} day",
+      "dealNextInMany": "· in {{days}} days",
+      "contactsCount": "{{total}} total · {{hot}} hot · {{escalated}} escalated to you"
     },
     "adminCommon": {
       "admin": "Admin",
@@ -9373,6 +9419,310 @@
       "usernameLabel": "Your address",
       "usernameTaken": "That username is taken.",
       "viewHub": "View my hub"
+    },
+    "demoContent": {
+      "senders": {
+        "you": "You"
+      },
+      "briefings": {
+        "br-001": {
+          "title": "AI handled 14 lead replies overnight",
+          "body": "Median response time: 47 seconds. 3 leads booked tours; 2 are waiting on your input.",
+          "actionLabel": "Review AI drafts"
+        },
+        "br-002": {
+          "title": "Voice AI answered 4 inbound calls",
+          "body": "All transcribed + summarized. One caller (Lily Zhang) requested a Tuesday callback.",
+          "actionLabel": "View call summaries"
+        },
+        "br-003": {
+          "title": "Vanessa Crowe is at peak sphere score",
+          "body": "5 years since close + 35% equity growth + life event signal. Auto-draft is in your queue.",
+          "actionLabel": "Review sphere outreach"
+        }
+      },
+      "tasks": {
+        "t-001": {
+          "title": "Confirm Saturday 11am tour with listing agent",
+          "dueLabel": "Today, 4:00pm"
+        },
+        "t-002": {
+          "title": "Reply to Eve — price negotiation question (AI escalated)",
+          "dueLabel": "Today, 5:30pm"
+        },
+        "t-003": {
+          "title": "Send CMA — listing presentation Tue 2pm",
+          "dueLabel": "Tomorrow, 10am"
+        },
+        "t-004": {
+          "title": "Closing call with Karen Larson",
+          "dueLabel": "Tomorrow, 10am"
+        },
+        "t-005": {
+          "title": "Listing prep walkthrough with Natalie",
+          "dueLabel": "Mon, 4pm"
+        }
+      },
+      "events": {
+        "e-001": {
+          "title": "Tour — 4456 Maple Ave with Sarah Chen",
+          "when": "Sat 11:00am"
+        },
+        "e-002": {
+          "title": "Listing presentation — Mark Davis",
+          "when": "Tue 2:00pm"
+        },
+        "e-003": {
+          "title": "Closing call — Karen Larson",
+          "when": "Tomorrow 10:00am"
+        },
+        "e-004": {
+          "title": "Callback — Lily Zhang",
+          "when": "Tue 10:00am"
+        },
+        "e-005": {
+          "title": "Listing prep — Natalie Bowers",
+          "when": "Mon 4:00pm"
+        }
+      },
+      "contacts": {
+        "c-001": {
+          "lastActivity": "AI replied 2 min ago — buyer ready to tour",
+          "interest": "3-bed condo · downtown · max $850K",
+          "tag": "Hot · Tour Saturday"
+        },
+        "c-002": {
+          "lastActivity": "AI sent first-touch SMS 15 min ago",
+          "interest": "First-time buyer · pre-approved $620K",
+          "tag": "First-time · pre-approved"
+        },
+        "c-003": {
+          "lastActivity": "Signed in at 4456 Maple Ave open house",
+          "interest": "Open-house lead · upgrading from condo",
+          "tag": "Same-day open house"
+        },
+        "c-004": {
+          "lastActivity": "Replied yesterday — wants to talk Tuesday",
+          "interest": "Investor · multifamily focus"
+        },
+        "c-005": {
+          "lastActivity": "CMA delivered · listing presentation Tue 2pm",
+          "interest": "Selling — $1.2M est",
+          "tag": "Listing presentation Tue"
+        },
+        "c-006": {
+          "lastActivity": "AI sequence step 2 sent 1h ago"
+        },
+        "c-007": {
+          "lastActivity": "Browsing /homes — 4 properties this week"
+        },
+        "c-008": {
+          "lastActivity": "Submitted home-value request"
+        },
+        "c-009": {
+          "lastActivity": "AI text-back fired · waiting on reply"
+        },
+        "c-010": {
+          "lastActivity": "Tour booked Wed 5pm — 8124 Pine St"
+        },
+        "c-011": {
+          "lastActivity": "Anniversary check-in sent · responded warmly",
+          "interest": "Closed Mar 2022 · sphere candidate"
+        },
+        "c-012": {
+          "lastActivity": "Opened email · no click"
+        },
+        "c-013": {
+          "lastActivity": "Open-house sign-in · 2 days ago"
+        },
+        "c-014": {
+          "lastActivity": "AI follow-up: replied within 38 sec"
+        },
+        "c-015": {
+          "lastActivity": "Offer accepted — under contract",
+          "tag": "Under contract"
+        },
+        "c-016": {
+          "lastActivity": "Quarterly check-in queued"
+        },
+        "c-017": {
+          "lastActivity": "Saved-search alert dispatched"
+        },
+        "c-018": {
+          "lastActivity": "AI sequence step 3 sent · awaiting reply"
+        },
+        "c-019": {
+          "lastActivity": "Visited /mortgage-calculator twice this week"
+        },
+        "c-020": {
+          "lastActivity": "Buyer tour scheduled Sat 11am",
+          "tag": "Tour Saturday"
+        },
+        "c-021": {
+          "lastActivity": "Bot-filtered — flagged as low-intent"
+        },
+        "c-022": {
+          "lastActivity": "Showing feedback received — strong interest"
+        },
+        "c-023": {
+          "lastActivity": "Sphere score: high (equity + life event)",
+          "interest": "Closed Jun 2020 · likely seller"
+        },
+        "c-024": {
+          "lastActivity": "Newsletter open · clicked listing"
+        },
+        "c-025": {
+          "lastActivity": "Mid-funnel drip · day 14 of 30"
+        },
+        "c-026": {
+          "lastActivity": "Single-page visit · no engagement signal"
+        },
+        "c-027": {
+          "lastActivity": "Open-house sign-in · viewed twice"
+        },
+        "c-028": {
+          "lastActivity": "Replied to Q3 ad — wants new construction"
+        },
+        "c-029": {
+          "lastActivity": "Consultation booked — Thu 3pm"
+        },
+        "c-030": {
+          "lastActivity": "Sphere score: very high · 5 yrs since close",
+          "interest": "Closed Jun 2020 · 35% equity growth"
+        },
+        "c-031": {
+          "lastActivity": "Saved 3 properties — Cap Hill"
+        },
+        "c-032": {
+          "lastActivity": "Voice-AI call answered · 4-min convo",
+          "tag": "Voice AI conversion"
+        },
+        "c-033": {
+          "lastActivity": "Auto-replied · no engagement back"
+        },
+        "c-034": {
+          "lastActivity": "Cold reader · monthly newsletter only"
+        },
+        "c-035": {
+          "lastActivity": "Open-house lead · tour Sat afternoon"
+        },
+        "c-036": {
+          "lastActivity": "Listing prep walkthrough Mon 4pm",
+          "tag": "Seller — listing prep"
+        },
+        "c-037": {
+          "lastActivity": "Birthday card auto-sent · responded"
+        },
+        "c-038": {
+          "lastActivity": "Mortgage calculator share · sent to fiancé"
+        },
+        "c-039": {
+          "lastActivity": "Multi-portal lead · dedupe-merged"
+        },
+        "c-040": {
+          "lastActivity": "AI follow-up step 2 sent"
+        },
+        "c-041": {
+          "lastActivity": "Replied yesterday — interested in new builds"
+        },
+        "c-042": {
+          "lastActivity": "Inspection scheduled · 7124 Aspen Ct",
+          "tag": "Under contract"
+        },
+        "c-043": {
+          "lastActivity": "Newsletter open — first in 6 mo"
+        },
+        "c-044": {
+          "lastActivity": "Voice-AI · request callback Tue morning"
+        },
+        "c-045": {
+          "lastActivity": "AI text-back: 19 sec response time",
+          "tag": "Sub-minute response"
+        },
+        "c-046": {
+          "lastActivity": "Browsing /homes — 2 pages"
+        },
+        "c-047": {
+          "lastActivity": "Sign-in 5 days ago · drip step 3"
+        },
+        "c-048": {
+          "lastActivity": "Closing call tomorrow 10am",
+          "tag": "Closing tomorrow"
+        },
+        "c-049": {
+          "lastActivity": "Equity letter delivered — 38% appreciation",
+          "interest": "Closed Feb 2019 · investor lead potential"
+        },
+        "c-050": {
+          "lastActivity": "AI escalated · price negotiation question",
+          "tag": "Escalated · needs you"
+        }
+      },
+      "dealStages": {
+        "under_contract": "Under contract",
+        "inspection": "Inspection",
+        "appraisal": "Appraisal",
+        "clear_to_close": "Clear to close",
+        "closed": "Closed",
+        "active_showing": "Active showing"
+      },
+      "deals": {
+        "d-001": {
+          "nextMilestone": "Inspection scheduled"
+        },
+        "d-002": {
+          "nextMilestone": "Appraisal due"
+        },
+        "d-003": {
+          "nextMilestone": "Closing call tomorrow"
+        },
+        "d-004": {
+          "nextMilestone": "2nd showing booked"
+        }
+      },
+      "drafts": {
+        "dr-001": {
+          "reasoning": "David asked about Tuesday — proposing two specific time slots based on your calendar availability."
+        },
+        "dr-002": {
+          "reasoning": "30-day sphere check-in trigger fired (closed Jun 2020). Adding equity stat from recent comp pulls."
+        },
+        "dr-003": {
+          "reasoning": "Following up on Tuesday 10am callback that's now 36 hours out. Adding three matched properties to the message."
+        },
+        "dr-004": {
+          "reasoning": "Sphere score very high (5 yrs since close, 35% equity growth, life event: new child). Soft seller-prospecting nudge."
+        },
+        "dr-005": {
+          "reasoning": "24h reminder before Saturday tour. Including parking + access notes pulled from the listing."
+        }
+      },
+      "conversations": {
+        "conv-001": {
+          "preview": "AI: \"Saturday 11am works — let me confirm with the listing agent.\""
+        },
+        "conv-002": {
+          "preview": "AI: \"What's your move-in window? I can pull a few options that fit your $620K budget.\""
+        },
+        "conv-003": {
+          "preview": "AI escalated — pricing question outside auto-reply scope"
+        },
+        "conv-004": {
+          "preview": "AI: \"Got it — emailing comps for the 6300 block of Redmond Way now.\""
+        },
+        "conv-005": {
+          "preview": "Voice AI call · 4 min summary attached to contact"
+        },
+        "conv-006": {
+          "preview": "AI replied in 38 sec · awaiting Hannah's response"
+        }
+      },
+      "sources": {
+        "open_house": "Open house",
+        "referral": "Referral",
+        "idx_website": "IDX website",
+        "past_client": "Past client"
+      }
     }
   },
   "disclaimers": {

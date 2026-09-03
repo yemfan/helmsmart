@@ -8,6 +8,8 @@ import {
   isBossActionType,
   type BossActionType,
 } from "@/lib/closeboss/actions/registry";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
+import { languageDirective } from "@/lib/i18n/languageDirective";
 
 /**
  * Boss Assistant instruction channel.
@@ -101,7 +103,17 @@ Only include the params relevant to the chosen action (e.g. open_house → addre
  *  input) a single clarifying question with no tasks. */
 export type ParsedInstruction = { tasks: ParsedTask[]; clarify: string | null };
 
-export async function parseInstruction(content: string): Promise<ParsedInstruction> {
+/**
+ * @param locale The language the Realtor reads, from `agentUiLocale()`. Task
+ *   titles, details and the clarifying question all land on their dashboard,
+ *   so leaving this out shipped English cards into a Chinese workspace —
+ *   Chinese labels (任务完成。/ 交付人) wrapped around English AI text. Null
+ *   means English, which is what the base prompt already is.
+ */
+export async function parseInstruction(
+  content: string,
+  locale?: string | null,
+): Promise<ParsedInstruction> {
   const client = getAnthropicClient();
   // Give the planner today's date so it can resolve "this Saturday" → YYYY-MM-DD
   // for date-bearing actions (open house, showings).
@@ -109,7 +121,7 @@ export async function parseInstruction(content: string): Promise<ParsedInstructi
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1500,
-    system: `${SYSTEM_PROMPT}\n\nToday's date is ${today}.`,
+    system: `${SYSTEM_PROMPT}\n\nToday's date is ${today}.${languageDirective(locale)}`,
     messages: [{ role: "user", content: `The Realtor's instructions:\n\n${content.slice(0, 4000)}` }],
   });
   const textBlock = response.content.find((b) => b.type === "text");
@@ -258,7 +270,14 @@ async function processInstructionRow(
   if (!claimed || claimed.length === 0) return null;
 
   try {
-      const parsed = await parseInstruction(row.content);
+      /*
+       * This runs from a cron, so there is no cookie to read the language
+       * from — `agentUiLocale` is the durable copy of the agent's pick.
+       */
+      const parsed = await parseInstruction(
+        row.content,
+        await agentUiLocale(agentId),
+      );
 
       // Vague/non-actionable input: store ONE clarifying question and create NO
       // tasks (no "Review note" card, no junk crm_task). The Boss dashboard

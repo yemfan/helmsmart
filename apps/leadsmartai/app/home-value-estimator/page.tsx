@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+/**
+ * Hard ceiling on a single estimate request. The server path is bounded by the
+ * Vercel function timeout (300s), which is far longer than any consumer will
+ * wait — aborting at 90s lets us say something honest instead of leaving the
+ * spinner up until the platform kills the request.
+ */
+const ESTIMATE_TIMEOUT_MS = 90_000;
 
 type Comparable = {
   address: string;
@@ -73,6 +81,30 @@ export default function HomeValueEstimatorPage() {
   const [reviewStatus, setReviewStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [reviewError, setReviewError] = useState<string | null>(null);
 
+  /*
+   * Say how long this is taking, because a cold lookup takes a while.
+   *
+   * An address we've never seen goes out to the AI property lookup, which was
+   * measured at 35s and has been seen to run past two minutes. A spinner that
+   * sits there saying nothing for that long is indistinguishable from a broken
+   * page — a field tester waited 138 seconds and concluded the page was dead,
+   * which is the correct conclusion to draw from no feedback at all. Same
+   * treatment the Zillow/Redfin analyzer already got.
+   */
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!loading) {
+      setElapsed(0);
+      return;
+    }
+    const started = Date.now();
+    const id = setInterval(
+      () => setElapsed(Math.floor((Date.now() - started) / 1000)),
+      1000,
+    );
+    return () => clearInterval(id);
+  }, [loading]);
+
   const handleEstimate = async () => {
     if (!address.trim()) {
       setError(t("error_no_address"));
@@ -82,14 +114,24 @@ export default function HomeValueEstimatorPage() {
     setLoading(true);
     setResult(null);
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), ESTIMATE_TIMEOUT_MS);
+
     try {
       // Server-side hybrid engine + comps (warehouse / MLS CSV sold history).
       const res = await fetch("/api/property/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           address: address.trim(),
-          refresh: true,
+          /*
+           * Deliberately NOT `refresh: true`. Forcing a refresh skipped the
+           * 180-day `properties_cache` on every single lookup, so the same
+           * address paid the full AI property lookup (measured 35s cold) every
+           * time instead of the ~1s a cache hit costs. A home value does not
+           * move enough in 180 days to be worth two minutes of a frozen tab.
+           */
           includeComps: true,
         }),
       });
@@ -164,8 +206,13 @@ export default function HomeValueEstimatorPage() {
 
       setResult(data);
     } catch (err: any) {
-      setError(err.message || t("error_unexpected"));
+      setError(
+        err?.name === "AbortError"
+          ? t("error_timeout")
+          : err.message || t("error_unexpected"),
+      );
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   };
@@ -216,6 +263,13 @@ export default function HomeValueEstimatorPage() {
             {loading ? t("estimating") : t("estimate_button")}
           </button>
         </div>
+        {loading ? (
+          <p className="mt-3 text-xs text-brand-text/60" aria-live="polite">
+            {elapsed < 6
+              ? t("estimating_progress")
+              : t("estimating_progress_slow", { seconds: elapsed })}
+          </p>
+        ) : null}
         {error ? <p className="mt-3 text-xs font-medium text-red-600">{error}</p> : null}
       </div>
 

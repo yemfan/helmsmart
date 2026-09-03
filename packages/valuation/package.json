@@ -7,7 +7,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./server": "./src/server.ts"
+    "./server": "./src/server.ts",
+    "./noCompsMessage": "./src/noCompsMessage.ts"
   },
   "scripts": {
     "lint": "echo skip"

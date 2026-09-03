@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_DEALS, DEMO_EVENTS } from "@/lib/demo/data";
+import { localizeDeal, localizeEvent } from "@/lib/demo/localize";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Demo workspace · Calendar",
-  description:
-    "Sample CloseBoss calendar — tours, listing presentations, callbacks, and closing calls, with linked deals and contact context.",
-  alternates: { canonical: "/demo/calendar" },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.demoPages.metaCalendarTitle", { ns: "dashboard" }),
+    description: t("pages.demoPages.metaCalendarDescription", { ns: "dashboard" }),
+    alternates: { canonical: "/demo/calendar" },
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function DemoCalendar() {
   const t = await getServerT();
@@ -36,7 +39,7 @@ export default async function DemoCalendar() {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoPages.upcomingEvents", { ns: "dashboard" })}</h2>
           <ul className="mt-3 space-y-3">
-            {DEMO_EVENTS.map((event) => (
+            {DEMO_EVENTS.map(localizeEvent.bind(null, t)).map((event) => (
               <li
                 key={event.id}
                 className="flex items-start gap-3 rounded-xl border border-slate-100 px-4 py-3 dark:border-slate-800"
@@ -64,7 +67,7 @@ export default async function DemoCalendar() {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoPages.activeDeals", { ns: "dashboard" })}</h2>
           <ul className="mt-3 space-y-3">
-            {DEMO_DEALS.map((deal) => (
+            {DEMO_DEALS.map(localizeDeal.bind(null, t)).map((deal) => (
               <li
                 key={deal.id}
                 className="rounded-xl border border-slate-100 px-4 py-3 dark:border-slate-800"
@@ -82,8 +85,12 @@ export default async function DemoCalendar() {
                 </p>
                 <p className="mt-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">{t("pages.dashFragments.next", { ns: "dashboard" })} {deal.nextMilestone}{" "}
                   <span className="text-slate-400">
-                    · in {deal.daysToMilestone} day
-                    {deal.daysToMilestone === 1 ? "" : "s"}
+                    {t(
+                      deal.daysToMilestone === 1
+                        ? "pages.demoPages.dealNextInOne"
+                        : "pages.demoPages.dealNextInMany",
+                      { ns: "dashboard", days: deal.daysToMilestone },
+                    )}
                   </span>
                 </p>
               </li>

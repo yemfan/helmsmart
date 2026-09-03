@@ -22,6 +22,14 @@
  *
  * Pure and free of `server-only` so the rule can be tested directly — the same
  * reason `tokenAccounting.ts` sits beside `service.ts` rather than inside it.
+ *
+ * Lives under `lib/i18n` rather than beside the Boss run that first needed it:
+ * "the AI writes in the language the reader speaks" is not a Boss-run detail,
+ * and every generator that reaches an agent's screen wants the same paragraph.
+ * Pair it with `agentUiLocale()` when there is no request to read a cookie
+ * from — a cron has no cookies, and defaulting those to English is how a
+ * Chinese-speaking agent ends up with an English dashboard full of English
+ * task cards.
  */
 
 /**

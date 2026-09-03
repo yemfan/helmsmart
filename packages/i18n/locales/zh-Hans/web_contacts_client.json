@@ -120,5 +120,12 @@
   },
   "bulk_postcard": {
     "recipient_fallback_name": "朋友"
+  },
+  "contactedBucket": {
+    "within30d": "近 30 天",
+    "within6m": "6 个月内",
+    "within1y": "1 年内",
+    "over1y": "超过 1 年",
+    "never": "从未联系"
   }
 }
