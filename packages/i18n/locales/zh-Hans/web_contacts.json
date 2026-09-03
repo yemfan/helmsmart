@@ -26,7 +26,8 @@
       "errors": {
         "update_failed": "更新失败",
         "delete_failed": "删除失败",
-        "create_failed": "创建失败"
+        "create_failed": "创建失败",
+        "unavailable": "此账户尚未启用自定义列表，未保存任何内容。"
       }
     }
   }

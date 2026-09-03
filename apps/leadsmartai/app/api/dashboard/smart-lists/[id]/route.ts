@@ -3,6 +3,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import {
   deleteSmartList,
   updateSmartList,
+  SmartListsUnavailableError,
 } from "@/lib/contacts/smart-lists";
 import type { ContactFilterConfig } from "@/lib/contacts/types";
 
@@ -43,6 +44,14 @@ export async function PATCH(
     });
     return NextResponse.json({ ok: true, list });
   } catch (e: unknown) {
+    // Same contract as POST — see the comment there.
+    if (e instanceof SmartListsUnavailableError) {
+      console.error("smart-lists/[id] PATCH: table missing — migration not applied");
+      return NextResponse.json(
+        { ok: false, error: "smart_lists_unavailable" },
+        { status: 503 },
+      );
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     console.error("smart-lists/[id] PATCH", e);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
