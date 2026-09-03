@@ -127,7 +127,7 @@ function PhoneMockup() {
           <div className="ed-sms-avatar">SM</div>
           <div className="ed-sms-sender-name">Sarah M. · Zillow lead · 2 min ago</div>
           <div className="ed-sms-sender-sub">
-            3 bed / 2 bath in Lakewood <span className="ed-dot">·</span> max $850k
+            {t("pages.editorialLanding.demoSenderSub")} <span className="ed-dot">·</span> max $850k
           </div>
         </div>
         <div className="ed-sms-messages" ref={messagesRef}>

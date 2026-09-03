@@ -2954,7 +2954,8 @@
       "colGross": "佣金总额",
       "colNet": "净收入（您）",
       "colDays": "天数",
-      "deal_one": "笔交易"
+      "deal_one": "笔交易",
+      "downloadCsv": "下载 CSV"
     },
     "timingPanel": {
       "quietStart": "免打扰开始时间",
@@ -3361,7 +3362,8 @@
       "contactSales": "联系销售 →",
       "readyCreateAccount": "我准备好了——创建我的经纪人账户 →",
       "loadingConversation": "正在加载对话…",
-      "simulatedLeadStream": "模拟的「新线索入口」实时流"
+      "simulatedLeadStream": "模拟的「新线索入口」实时流",
+      "moreQueued": "你的区域里还有 2 段对话在排队"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -5269,7 +5271,8 @@
       "footerLegal": "法律",
       "madeForAgents": "为在成交的经纪人打造",
       "firstReplyHint": "30 天试用用户首次回复时间的中位数。",
-      "replyLiftHint": "与该经纪人此前 30 天的平均值相比。"
+      "replyLiftHint": "与该经纪人此前 30 天的平均值相比。",
+      "demoSenderSub": "Lakewood 三室两卫"
     },
     "salesModelDashboard": {
       "title": "销售模式",
@@ -5439,7 +5442,8 @@
       "goodMorning": "早上好",
       "goodAfternoon": "下午好",
       "goodEvening": "晚上好",
-      "noDueDate": "无截止日期"
+      "noDueDate": "无截止日期",
+      "quietLeadsHint": "7 天以上未互动"
     },
     "mlsImport": {
       "title": "MLS CSV 导入",
@@ -5795,7 +5799,9 @@
       "typeReply": "输入回复…",
       "send": "发送",
       "subtitle": "工单分流、进行中的对话处理与团队运营，集中于一个视图。",
-      "pageSubtitle": "更快解决问题，保障平台稳定运行。"
+      "pageSubtitle": "更快解决问题，保障平台稳定运行。",
+      "homeValueReports": "今天有 4 条关于房价估值工具的反馈",
+      "billingIssues": "自上次发版以来有 2 起账单问题"
     },
     "financialServices": {
       "cohortFeedback": "试点第 1–2 周的用户反馈将决定这项功能的最终形态。",
@@ -5960,7 +5966,8 @@
       "confidentialFor": "机密文件——专为",
       "leadershipSuffix": "管理层准备。",
       "sizeWith": "尺寸，配合",
-      "forBestFit": "以获得最佳排版效果。请确认"
+      "forBestFit": "以获得最佳排版效果。请确认",
+      "activeProducers": "3,400 多位在职销售顾问"
     },
     "loanBroker": {
       "dashboard": "贷款经纪工作台",
@@ -6182,7 +6189,9 @@
       "spreadsheetsA": "因为用 WhatsApp 做获客营销并不符合 TCPA，依赖它的营销员实际上背着真实的法律责任风险。我们给你们表格的速度，配上企业级 CRM 的合规姿态。",
       "carrierPortalA": "不是，而且我们不建议任何机构这么做。险企门户在它们擅长的事情上做得非常好。我们负责的是投保之前的那一层——找到潜在客户、做出 FNA、约到面谈。",
       "confidentialFor": "机密文件——专为",
-      "positioning": "保险公司门户负责保单管理，AgencyBloc 负责后台事务，Salesforce 只要给它一年时间和六位数预算，几乎能配置成任何样子，而表格只能应付今天。但没有一个是围绕金融服务直销的实际流程打造的：获客 → 5 分钟内跟进 → 60 秒生成需求分析 → 面对面洽谈 → 成交 → 招募。这个循环正是 {{partner}} 增长的引擎，也正是我们围绕着搭建的循环。"
+      "positioning": "保险公司门户负责保单管理，AgencyBloc 负责后台事务，Salesforce 只要给它一年时间和六位数预算，几乎能配置成任何样子，而表格只能应付今天。但没有一个是围绕金融服务直销的实际流程打造的：获客 → 5 分钟内跟进 → 60 秒生成需求分析 → 面对面洽谈 → 成交 → 招募。这个循环正是 {{partner}} 增长的引擎，也正是我们围绕着搭建的循环。",
+      "win2Body": "14 套预审模板、按州自动插入披露条款、人工复核队列。",
+      "win3Body": "6 阶段增员漏斗 + 匹配度评分 + 推荐人归因 + 下线视图，均为一等公民。"
     },
     "articles": {
       "backHome": "返回首页"
@@ -6325,7 +6334,12 @@
       "q4": "短期翻新转售也该看资本化率吗？",
       "a4": "资本化率是为长期持有、产生租金收入的房产设计的。做短期翻新转售时，投资人更关注买入价、翻新成本、修缮后价值（ARV）和整个项目的 ROI，而不是资本化率。",
       "ctaTitle": "几分钟算清您的下一笔投资",
-      "ctaBody": "资本化率是评估收租房产的有力起点，但最好的判断来自把资本化率与详细的现金流和 ROI 分析结合起来。用下面的工具，把您下一处出租房的账整个算一遍。"
+      "ctaBody": "资本化率是评估收租房产的有力起点，但最好的判断来自把资本化率与详细的现金流和 ROI 分析结合起来。用下面的工具，把您下一处出租房的账整个算一遍。",
+      "step1Title": "1. 估算租金毛收入",
+      "step2Title": "2. 扣除空置与坏账损失",
+      "step3Title": "3. 估算运营支出",
+      "step4Title": "4. 计算净营业收入",
+      "step5Title": "5. 套用资本化率公式"
     },
     "capRateFormula": {
       "intro": "刚开始做房地产投资，资本化率听起来可能有点唬人。好消息是，它的公式很简单，只要把每一部分弄明白，您几分钟就能用它筛完一批房源。这份入门指南会一步步带您走完整个公式，并配上清楚的例子。",
@@ -6797,7 +6811,8 @@
       "deletionLogged": "我们已经记录了您的请求。与您 Facebook 账户关联的、由 CloseBoss 保存的数据，将在 30 天内删除，具体见我们的",
       "deletionSettings": "设置中重试，或通过以下方式联系我们：",
       "deletionQuestions": "还有疑问？请发邮件至",
-      "deletionWithCode": "，并附上您的查询编号。"
+      "deletionWithCode": "，并附上您的查询编号。",
+      "trendsHeading": "13 个月趋势——你的定价背后的故事"
     },
     "warehouseMetrics": {
       "zhvi": {
@@ -7380,7 +7395,10 @@
       "q3": "利率上行会怎样改变「好的资本化率」这个标准？",
       "a3": "利率上行时，投资人往往要求更高的资本化率，以便相对于借贷成本保住一定的利差。这会对价格形成下行压力。同时盯住资本化率和融资条件，能帮您在利率变动的环境里避免买贵。",
       "ctaTitle": "定一个符合您自己策略的资本化率目标",
-      "ctaBody": "与其去追一个放之四海而皆准的「好」资本化率，不如定出与您的目标、风险承受度和目标市场相匹配的区间。然后用计算器快速看出每一个潜在项目相对于这些目标的位置。"
+      "ctaBody": "与其去追一个放之四海而皆准的「好」资本化率，不如定出与您的目标、风险承受度和目标市场相匹配的区间。然后用计算器快速看出每一个潜在项目相对于这些目标的位置。",
+      "lowLabel": "3%–5% 资本化率：",
+      "midLabel": "5%–8% 资本化率：",
+      "highLabel": "8% 以上资本化率："
     },
     "dealAnalyzer": {
       "h1": "AI 房产投资分析器",
@@ -8017,7 +8035,9 @@
       "seeAllGuides": "查看全部迁移指南",
       "relatedContext": "相关阅读 →",
       "readGuide": "阅读迁移指南 →",
-      "helpRegardless": "——不管是哪一家，我们都会帮您。"
+      "helpRegardless": "——不管是哪一家，我们都会帮您。",
+      "s4Label": "30 分钟上手通话。",
+      "guaranteeLabel": "5 个工作日上线保证。"
     },
     "seoCityPages": {
       "hvTitle": "{{city}}（{{state}}）免费房屋估价",
@@ -8081,7 +8101,8 @@
       "maximizeProceeds": "怎样把净收益做到最大？",
       "maximizeProceedsA": "用一套与需求趋势和每周买家活跃度挂钩的定价策略。",
       "sellIn": "在这里卖房：",
-      "sellCta": "行动号召：领取您的免费卖房策略和预估挂牌价区间。"
+      "sellCta": "行动号召：领取您的免费卖房策略和预估挂牌价区间。",
+      "oneYearChange": "一年涨跌"
     },
     "openHouseSignup": {
       "leaveInfo": "留下您的联系方式，我们会把开放日的最新情况发给您。",
@@ -8189,7 +8210,10 @@
       "ctaTitle": "跑一遍属于您自己的租买对比",
       "ctaBody": "没有放之四海而皆准的答案。正确的选择取决于您的预算、工作稳定性、生活方式和本地市场状况。关键是把数字并排比较，而不是依赖经验法则。",
       "openRentVsBuy": "打开租买对比计算器",
-      "openAffordability": "打开购房承受力计算器"
+      "openAffordability": "打开购房承受力计算器",
+      "step1Title": "1. 比较全部实付成本，而不只是月供",
+      "step2Title": "2. 选择一个现实的持有年限",
+      "step3Title": "3. 把维护费、税费和机会成本算进去"
     },
     "smsOptIn": {
       "h1": "接收来自 CloseBoss 的短信通知",
@@ -8275,7 +8299,8 @@
       "readyForReal": "准备好真正用起来了吗？",
       "startTrial": "开始免费试用",
       "migrateFrom": "从别的 CRM 迁移过来",
-      "openTour": "开始导览 →"
+      "openTour": "开始导览 →",
+      "trialNote": "14 天免费试用。若你正从其他 CRM 迁移，可用 CSV 导入或交由我们代为搬迁。无需信用卡。"
     },
     "propertyReport": {
       "h1": "房产报告",
@@ -8360,7 +8385,9 @@
       "sellerFocusedFor": "面向卖方的本地页面：",
       "marketSnapshot": "市场快照",
       "medianTimeOnMarket": "在售时长中位数：",
-      "currentDirection": "当前走向："
+      "currentDirection": "当前走向：",
+      "oneYearTrend": "一年走势",
+      "oneYearValueTrend": "一年房价走势："
     },
     "newsletterIssue": {
       "weeklyNewsletter": "每周简报",
@@ -8399,7 +8426,10 @@
       "sideBySide": "，就能并排看到 NOI 和资本化率。这能帮您把这处房产和目标市场里的其他机会做比较。",
       "s3": "当一处房产在不加杠杆的情况下看着不错之后，再用切合实际的贷款条件来分析它。用",
       "feedInto": "算清每月的本息还款额，然后把它代入",
-      "ctaTitle": "分析您的下一个出租房项目"
+      "ctaTitle": "分析您的下一个出租房项目",
+      "step1Title": "1. 从毛收入和运营支出开始",
+      "step2Title": "2. 计算 NOI 与资本化率",
+      "step3Title": "3. 再叠加贷款与长期回报"
     },
     "onboardingPage": {
       "getStarted": "开始使用 CloseBoss",
@@ -8548,7 +8578,17 @@
       "cfUseThe": "用",
       "cfToPlug": "把这些数字填进去，就能看到年收入、年开支，以及偿还贷款前后的年度现金流。",
       "cfFinancing": "如果这处房产要贷款，请把本金和利息的还款额也纳入分析。请使用",
-      "cfCtaTitle": "评估您下一个项目的现金流"
+      "cfCtaTitle": "评估您下一个项目的现金流",
+      "calcStep1Title": "1. 理解净营业收入（NOI）",
+      "calcStep2Title": "2. 套用资本化率公式",
+      "calcStep3Title": "3. 用资本化率做横向比较，而不是追求精确",
+      "buyStep1Title": "1. 明确你的投资目标",
+      "buyStep2Title": "2. 给备选房源快速算一笔账",
+      "buyStep3Title": "3. 对贷款与支出做压力测试",
+      "buyStep4Title": "4. 与本地专业人士合作",
+      "cfStep1Title": "1. 估算切合实际的租金收入",
+      "cfStep2Title": "2. 计入全部运营支出与空置损失",
+      "cfStep3Title": "3. 加上房贷月供，并测试不同情景"
     },
     "voiceTestDrive": {
       "q1": "演示号码那头真的是 AI 吗？",
@@ -8887,7 +8927,8 @@
       "channelEmail": "邮件",
       "scoreOutOf": "评分 {{score}}/100",
       "warmWishesTo": "顺祝安好，{{name}}",
-      "friend": "朋友"
+      "friend": "朋友",
+      "onePerDaySpread": "1（全天分散发布）"
     },
     "founderDashboard": {
       "loadingMetrics": "正在加载指标…",

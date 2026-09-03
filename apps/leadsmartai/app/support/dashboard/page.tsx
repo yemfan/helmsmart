@@ -85,8 +85,8 @@ export default async function SupportDashboardPage() {
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <SectionCard title={t("pages.supportDash.issueTrends", { ns: "dashboard" })}>
           <ul className="space-y-3 text-sm text-gray-700">
-            <li>4 reports for Home Value tool today</li>
-            <li>2 billing issues since last deploy</li>
+            <li>{t("pages.supportDash.homeValueReports", { ns: "dashboard" })}</li>
+            <li>{t("pages.supportDash.billingIssues", { ns: "dashboard" })}</li>
             <li>{t("pages.supportDash.loginFlat", { ns: "dashboard" })}</li>
           </ul>
         </SectionCard>

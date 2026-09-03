@@ -37,7 +37,7 @@ export default function HowToEvaluateRentalCashFlowPage() {
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          1. Estimate realistic rental income
+          {t("pages.howToGuides.cfStep1Title")}
         </h2>
         <p>{t("pages.howToGuides.cfRent")}</p>
         <p>{t("pages.howToGuides.cfAnnual")}</p>
@@ -45,7 +45,7 @@ export default function HowToEvaluateRentalCashFlowPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          2. Include all operating expenses and vacancy
+          {t("pages.howToGuides.cfStep2Title")}
         </h2>
         <p>{t("pages.howToGuides.cfExpenses")}</p>
         <p>{t("pages.howToGuides.cfUseThe")}{" "}
@@ -54,7 +54,7 @@ export default function HowToEvaluateRentalCashFlowPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          3. Add mortgage payments and test different scenarios
+          {t("pages.howToGuides.cfStep3Title")}
         </h2>
         <p>{t("pages.howToGuides.cfFinancing")}{" "}
           <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}

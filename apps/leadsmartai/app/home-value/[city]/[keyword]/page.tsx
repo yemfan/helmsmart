@@ -68,7 +68,7 @@ export default async function HomeValueKeywordPage({
           )}
           {market.yoyChangePct !== null && (
             <Metric
-              label="1-Year Trend"
+              label={t("pages.keywordPages.oneYearTrend", { ns: "dashboard" })}
               value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
             />
           )}

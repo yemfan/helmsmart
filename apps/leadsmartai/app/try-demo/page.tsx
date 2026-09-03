@@ -204,8 +204,7 @@ export default async function TryDemoPage() {
         <section className="mt-12 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center md:p-8 dark:border-slate-800 dark:bg-slate-900/40">
           <h2 className="text-lg font-semibold tracking-tight text-slate-900 md:text-xl dark:text-white">{t("pages.tryDemo.readyForReal", { ns: "dashboard" })}</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-            14-day free trial. CSV import or concierge migration if
-            you&apos;re leaving another CRM. No credit card.
+            {t("pages.tryDemo.trialNote", { ns: "dashboard" })}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link

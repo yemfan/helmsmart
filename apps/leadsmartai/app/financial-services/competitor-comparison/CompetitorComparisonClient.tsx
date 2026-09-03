@@ -304,8 +304,8 @@ export default function CompetitorComparisonClient() {
             <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-emerald-800">{t("pages.competitorComparison.whereWeWin")}</h2>
             <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-[9.5pt] text-slate-800">
               <li><strong>{t("pages.competitorComparison.win1Label")}</strong>{t("pages.competitorComparison.win1")}</li>
-              <li><strong>{t("pages.competitorComparison.win2")}</strong> 14 pre-approved templates, state-disclosure injection, supervised review queue.</li>
-              <li><strong>{t("pages.competitorComparison.win3")}</strong> 6-stage MLM funnel + fit-scoring + sponsor attribution + downline view, first-class.</li>
+              <li><strong>{t("pages.competitorComparison.win2")}</strong>{" "}{t("pages.competitorComparison.win2Body")}</li>
+              <li><strong>{t("pages.competitorComparison.win3")}</strong>{" "}{t("pages.competitorComparison.win3Body")}</li>
               <li><strong>{t("pages.competitorComparison.win4Label")}</strong>{t("pages.competitorComparison.win4")}</li>
             </ol>
           </div>

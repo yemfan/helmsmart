@@ -248,7 +248,7 @@ export default function OnePagerClient() {
             <div>
               <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.whyUsWhyNow")}</h2>
               <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">{t("pages.fsMarketing.platformPowers")}{" "}
-                <strong>3,400+ active producers</strong> {t("pages.fsMarketing.adjacentVerticals")} {partnerLabel} {t("pages.fsMarketing.firstAgency")}</p>
+                <strong>{t("pages.fsMarketing.activeProducers")}</strong> {t("pages.fsMarketing.adjacentVerticals")} {partnerLabel} {t("pages.fsMarketing.firstAgency")}</p>
             </div>
             <div>
               <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.nextStep")}</h2>

@@ -2954,7 +2954,8 @@
       "colPrice": "Price",
       "colGross": "Gross",
       "colNet": "Net (you)",
-      "colDays": "Days"
+      "colDays": "Days",
+      "downloadCsv": "Download CSV"
     },
     "timingPanel": {
       "quietStart": "Quiet hours begin",
@@ -3361,7 +3362,8 @@
       "contactSales": "Contact sales →",
       "readyCreateAccount": "I&apos;m ready — create my agent account →",
       "loadingConversation": "Loading conversation…",
-      "simulatedLeadStream": "Simulated live “incoming lead” stream"
+      "simulatedLeadStream": "Simulated live “incoming lead” stream",
+      "moreQueued": "2 more conversations are queued in your territory"
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -5269,7 +5271,8 @@
       "footerLegal": "Legal",
       "madeForAgents": "Made for agents who close",
       "firstReplyHint": "Median first-reply time across 30-day trial users.",
-      "replyLiftHint": "Measured against the agent's prior 30-day average."
+      "replyLiftHint": "Measured against the agent's prior 30-day average.",
+      "demoSenderSub": "3 bed / 2 bath in Lakewood"
     },
     "salesModelDashboard": {
       "title": "Sales Model",
@@ -5439,7 +5442,8 @@
       "goodMorning": "Good morning",
       "goodAfternoon": "Good afternoon",
       "goodEvening": "Good evening",
-      "noDueDate": "No due date"
+      "noDueDate": "No due date",
+      "quietLeadsHint": "7+ days inactive"
     },
     "mlsImport": {
       "title": "MLS CSV Import",
@@ -5795,7 +5799,9 @@
       "typeReply": "Type reply…",
       "send": "Send",
       "subtitle": "Queue triage, active conversation handling, and team operations in a single view.",
-      "pageSubtitle": "Resolve issues faster and keep the platform running smoothly."
+      "pageSubtitle": "Resolve issues faster and keep the platform running smoothly.",
+      "homeValueReports": "4 reports for Home Value tool today",
+      "billingIssues": "2 billing issues since last deploy"
     },
     "financialServices": {
       "cohortFeedback": "Cohort feedback during weeks 1-2 of the pilot shapes the final spec for this feature.",
@@ -5960,7 +5966,8 @@
       "confidentialFor": "Confidential — prepared exclusively for",
       "leadershipSuffix": "leadership.",
       "sizeWith": "size with",
-      "forBestFit": "for best fit. Make sure"
+      "forBestFit": "for best fit. Make sure",
+      "activeProducers": "3,400+ active producers"
     },
     "loanBroker": {
       "dashboard": "Loan broker dashboard",
@@ -6182,7 +6189,9 @@
       "spreadsheetsA": "Because WhatsApp marketing for prospecting isn't TCPA-compliant, and producers who lean on it carry real liability risk. We give you the speed of spreadsheets with the compliance posture of an enterprise CRM.",
       "carrierPortalA": "No, and we don't recommend any agency that does. Carrier portals are excellent at what they do. We handle the layer before the application — finding the prospect, building the FNA, booking the sit.",
       "confidentialFor": "Confidential — prepared for",
-      "positioning": "Carrier portals handle policy admin. AgencyBloc handles back-office. Salesforce can be customized to almost anything with a year and a six-figure budget. Spreadsheets handle today. None of them were built around the MLM-financial-services flow: capture → 5-minute nurture → FNA in 60 seconds → kitchen-table sit → close → recruit. That cycle is the engine of {{partner}}&apos;s growth, and it&apos;s the cycle we built around."
+      "positioning": "Carrier portals handle policy admin. AgencyBloc handles back-office. Salesforce can be customized to almost anything with a year and a six-figure budget. Spreadsheets handle today. None of them were built around the MLM-financial-services flow: capture → 5-minute nurture → FNA in 60 seconds → kitchen-table sit → close → recruit. That cycle is the engine of {{partner}}&apos;s growth, and it&apos;s the cycle we built around.",
+      "win2Body": "14 pre-approved templates, state-disclosure injection, supervised review queue.",
+      "win3Body": "6-stage MLM funnel + fit-scoring + sponsor attribution + downline view, first-class."
     },
     "articles": {
       "backHome": "Back to Home"
@@ -6325,7 +6334,12 @@
       "q4": "Should I use cap rate for short-term flips?",
       "a4": "Cap rate is designed for income-producing, buy-and-hold properties. For short-term flips, investors focus more on purchase price, rehab costs, after-repair value (ARV), and total project ROI rather than cap rate.",
       "ctaTitle": "Analyze your next deal in minutes",
-      "ctaBody": "Cap rate is a powerful starting point for evaluating income properties, but the best decisions come from combining cap rate with detailed cash flow and ROI analysis. Use the tools below to run complete numbers on your next rental property."
+      "ctaBody": "Cap rate is a powerful starting point for evaluating income properties, but the best decisions come from combining cap rate with detailed cash flow and ROI analysis. Use the tools below to run complete numbers on your next rental property.",
+      "step1Title": "1. Estimate gross rental income",
+      "step2Title": "2. Account for vacancy and credit loss",
+      "step3Title": "3. Estimate operating expenses",
+      "step4Title": "4. Calculate net operating income",
+      "step5Title": "5. Apply the cap rate formula"
     },
     "capRateFormula": {
       "intro": "If you are new to real estate investing, cap rate can sound intimidating. The good news is that the cap rate formula is simple, and once you understand each piece, you can use it to screen deals in minutes. This beginner-friendly guide walks through the formula step by step, with clear examples.",
@@ -6797,7 +6811,8 @@
       "deletionLogged": "We have logged your request. Any CloseBoss-held data linked to your Facebook account will be removed within 30 days, as described in our",
       "deletionSettings": "settings, or contact us at",
       "deletionQuestions": "Questions? Email",
-      "deletionWithCode": "with your reference code."
+      "deletionWithCode": "with your reference code.",
+      "trendsHeading": "13-month trends — the story behind your pricing"
     },
     "warehouseMetrics": {
       "zhvi": {
@@ -7380,7 +7395,10 @@
       "q3": "How do rising interest rates affect what is “good” for cap rate?",
       "a3": "As interest rates rise, investors often demand higher cap rates to maintain a spread over borrowing costs. That can put downward pressure on prices. Monitoring both cap rates and financing terms helps you avoid overpaying in changing rate environments.",
       "ctaTitle": "Set cap rate targets that fit your strategy",
-      "ctaBody": "Rather than chasing a universal “good” cap rate, define ranges that match your goals, risk tolerance, and target markets. Then use calculators to quickly see where each potential deal sits relative to those targets."
+      "ctaBody": "Rather than chasing a universal “good” cap rate, define ranges that match your goals, risk tolerance, and target markets. Then use calculators to quickly see where each potential deal sits relative to those targets.",
+      "lowLabel": "3%–5% cap rate:",
+      "midLabel": "5%–8% cap rate:",
+      "highLabel": "8%+ cap rate:"
     },
     "dealAnalyzer": {
       "h1": "AI Real Estate Deal Analyzer",
@@ -8017,7 +8035,9 @@
       "seeAllGuides": "See all migration guides",
       "relatedContext": "Related context →",
       "readGuide": "Read the migration guide →",
-      "helpRegardless": "— we'll help regardless."
+      "helpRegardless": "— we'll help regardless.",
+      "s4Label": "30-minute onboarding call.",
+      "guaranteeLabel": "5-business-day guarantee."
     },
     "seoCityPages": {
       "hvTitle": "Free Home Value Estimate in {{city}}, {{state}}",
@@ -8081,7 +8101,8 @@
       "maximizeProceeds": "How do I maximize net proceeds?",
       "maximizeProceedsA": "Use a pricing strategy tied to demand trend and buyer activity by week.",
       "sellIn": "Sell in",
-      "sellCta": "CTA: Get your free selling strategy and estimated listing range."
+      "sellCta": "CTA: Get your free selling strategy and estimated listing range.",
+      "oneYearChange": "1-Year Change"
     },
     "openHouseSignup": {
       "leaveInfo": "Leave your info and we will follow up with open house updates.",
@@ -8189,7 +8210,10 @@
       "ctaTitle": "Run your own rent vs buy comparison",
       "ctaBody": "There is no one-size-fits-all answer. The right choice depends on your budget, job stability, lifestyle, and local market conditions. The key is to compare numbers side by side instead of relying on rules of thumb.",
       "openRentVsBuy": "Open Rent vs Buy Calculator",
-      "openAffordability": "Open Affordability Calculator"
+      "openAffordability": "Open Affordability Calculator",
+      "step1Title": "1. Compare total out-of-pocket costs, not just payments",
+      "step2Title": "2. Choose a realistic time horizon",
+      "step3Title": "3. Factor in maintenance, taxes, and opportunity cost"
     },
     "smsOptIn": {
       "h1": "Get text updates from CloseBoss",
@@ -8275,7 +8299,8 @@
       "readyForReal": "Ready to use it for real?",
       "startTrial": "Start free trial",
       "migrateFrom": "Migrate from another CRM",
-      "openTour": "Open tour →"
+      "openTour": "Open tour →",
+      "trialNote": "14-day free trial. CSV import or concierge migration if you're leaving another CRM. No credit card."
     },
     "propertyReport": {
       "h1": "Property Report",
@@ -8360,7 +8385,9 @@
       "sellerFocusedFor": "Seller-focused local page for",
       "marketSnapshot": "Market snapshot",
       "medianTimeOnMarket": "Median time on market:",
-      "currentDirection": "Current direction:"
+      "currentDirection": "Current direction:",
+      "oneYearTrend": "1-Year Trend",
+      "oneYearValueTrend": "1-year value trend:"
     },
     "newsletterIssue": {
       "weeklyNewsletter": "Weekly Newsletter",
@@ -8399,7 +8426,10 @@
       "sideBySide": "to see NOI and cap rate side by side. This helps you compare the property to other opportunities in your target market.",
       "s3": "Once a property looks good on an unlevered basis, analyze it with realistic loan terms. Use the",
       "feedInto": "to understand your monthly principal and interest payment, then feed that into the",
-      "ctaTitle": "Analyze your next rental deal"
+      "ctaTitle": "Analyze your next rental deal",
+      "step1Title": "1. Start with gross income and operating expenses",
+      "step2Title": "2. Calculate NOI and cap rate",
+      "step3Title": "3. Layer in financing and long‑term returns"
     },
     "onboardingPage": {
       "getStarted": "Get started with CloseBoss",
@@ -8548,7 +8578,17 @@
       "cfUseThe": "Use the",
       "cfToPlug": "to plug in these numbers and see annual income, annual expenses, and annual cash flow before and after debt service.",
       "cfFinancing": "If you are financing the property, include principal and interest payments in your analysis. Use the",
-      "cfCtaTitle": "Evaluate cash flow on your next deal"
+      "cfCtaTitle": "Evaluate cash flow on your next deal",
+      "calcStep1Title": "1. Understand net operating income (NOI)",
+      "calcStep2Title": "2. Use the cap rate formula",
+      "calcStep3Title": "3. Use cap rate for comparison, not perfection",
+      "buyStep1Title": "1. Define your investment goals",
+      "buyStep2Title": "2. Run quick numbers on potential deals",
+      "buyStep3Title": "3. Stress‑test financing and expenses",
+      "buyStep4Title": "4. Work with local professionals",
+      "cfStep1Title": "1. Estimate realistic rental income",
+      "cfStep2Title": "2. Include all operating expenses and vacancy",
+      "cfStep3Title": "3. Add mortgage payments and test different scenarios"
     },
     "voiceTestDrive": {
       "q1": "Is this really an AI on the live demo number?",
@@ -8887,7 +8927,8 @@
       "channelEmail": "email",
       "scoreOutOf": "Score {{score}}/100",
       "warmWishesTo": "Warm wishes, {{name}}",
-      "friend": "friend"
+      "friend": "friend",
+      "onePerDaySpread": "1 (spread out)"
     },
     "founderDashboard": {
       "loadingMetrics": "Loading metrics…",

@@ -101,7 +101,8 @@
     "allSix": "All six assistants, working together",
     "answers": "Answers + cold-calls + qualifies + follows up",
     "coordinates": "Coordinates deals + keeps the books",
-    "trained": "Trained on top-agent playbooks"
+    "trained": "Trained on top-agent playbooks",
+    "alwaysOn": "24/7 — no payroll, benefits, or turnover"
   },
   "routeMeta": {
     "aiCmaAnalyzer": {

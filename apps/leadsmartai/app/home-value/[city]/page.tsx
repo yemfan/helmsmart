@@ -89,7 +89,7 @@ export default async function HomeValueCityPage({
           )}
           {market.yoyChangePct !== null && (
             <Metric
-              label="1-Year Change"
+              label={t("pages.seoCityPages.oneYearChange", { ns: "dashboard" })}
               value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
             />
           )}

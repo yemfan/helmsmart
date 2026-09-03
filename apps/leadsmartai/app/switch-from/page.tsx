@@ -157,7 +157,7 @@ export default async function SwitchFromIndex() {
               </span>
               <span>
                 <span className="font-semibold text-slate-900 dark:text-white">
-                  30-minute onboarding call.
+                  {t("pages.switchFromPages.s4Label", { ns: "dashboard" })}
                 </span>{" "}{t("pages.switchFromPages.s4Body", { ns: "dashboard" })}</span>
             </li>
             <li className="flex gap-3">
@@ -169,7 +169,7 @@ export default async function SwitchFromIndex() {
               </span>
               <span>
                 <span className="font-semibold text-slate-900 dark:text-white">
-                  5-business-day guarantee.
+                  {t("pages.switchFromPages.guaranteeLabel", { ns: "dashboard" })}
                 </span>{" "}{t("pages.switchFromPages.guarantee", { ns: "dashboard" })}</span>
             </li>
           </ol>

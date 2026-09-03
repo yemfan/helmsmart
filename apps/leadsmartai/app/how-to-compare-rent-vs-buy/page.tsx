@@ -35,7 +35,7 @@ export default function HowToCompareRentVsBuyPage() {
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          1. Compare total out-of-pocket costs, not just payments
+          {t("pages.compareRentVsBuy.step1Title")}
         </h2>
         <p>{t("pages.compareRentVsBuy.s1")}</p>
         <p>{t("pages.compareRentVsBuy.the")}{" "}
@@ -47,7 +47,7 @@ export default function HowToCompareRentVsBuyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          2. Choose a realistic time horizon
+          {t("pages.compareRentVsBuy.step2Title")}
         </h2>
         <p>{t("pages.compareRentVsBuy.s2")}</p>
         <p>{t("pages.compareRentVsBuy.s2b")}</p>
@@ -55,7 +55,7 @@ export default function HowToCompareRentVsBuyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          3. Factor in maintenance, taxes, and opportunity cost
+          {t("pages.compareRentVsBuy.step3Title")}
         </h2>
         <p>{t("pages.compareRentVsBuy.s3")}</p>
         <p>{t("pages.compareRentVsBuy.useTogether")}{" "}

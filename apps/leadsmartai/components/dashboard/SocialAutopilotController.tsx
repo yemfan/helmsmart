@@ -311,7 +311,7 @@ export default function SocialAutopilotController() {
               }
               className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
             >
-              <option value="">1 (spread out)</option>
+              <option value="">{t("pages.dashFragments.onePerDaySpread")}</option>
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
                   {n} {t("pages.dashFragments.perDay")}</option>

@@ -150,7 +150,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
           <Link href="/dashboard/leads?filter=inactive" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition">
             <p className="text-xs text-gray-500">{t("pages.overview.quietLeads")}</p>
             <p className="mt-1 text-2xl font-bold text-amber-600">{stats.inactiveLeads}</p>
-            <p className="text-[10px] text-gray-400">7+ days inactive</p>
+            <p className="text-[10px] text-gray-400">{t("pages.overview.quietLeadsHint")}</p>
           </Link>
         </div>
       )}

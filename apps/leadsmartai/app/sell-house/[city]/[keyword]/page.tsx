@@ -66,7 +66,7 @@ export default async function SellHouseKeywordPage({
             )}
             {market.yoyChangePct !== null && (
               <li>
-                1-year value trend: {market.yoyChangePct > 0 ? "+" : ""}
+                {t("pages.keywordPages.oneYearValueTrend", { ns: "dashboard" })} {market.yoyChangePct > 0 ? "+" : ""}
                 {market.yoyChangePct}%
               </li>
             )}

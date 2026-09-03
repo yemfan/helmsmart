@@ -123,7 +123,7 @@ export function RevenuePanel() {
           href={csvHref}
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
-          ↓ Download CSV
+          ↓ {t("pages.revenuePanel.downloadCsv")}
         </a>
       </div>
 

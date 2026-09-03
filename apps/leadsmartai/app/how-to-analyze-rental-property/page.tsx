@@ -37,7 +37,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          1. Start with gross income and operating expenses
+          {t("pages.analyzeRental.step1Title")}
         </h2>
         <p>{t("pages.analyzeRental.s1")}</p>
         <p>{t("pages.analyzeRental.useThe")}{" "}
@@ -46,7 +46,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          2. Calculate NOI and cap rate
+          {t("pages.analyzeRental.step2Title")}
         </h2>
         <p>{t("pages.analyzeRental.s2")}</p>
         <p>{t("pages.analyzeRental.plugSame")}{" "}
@@ -55,7 +55,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          3. Layer in financing and long‑term returns
+          {t("pages.analyzeRental.step3Title")}
         </h2>
         <p>{t("pages.analyzeRental.s3")}{" "}
           <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.analyzeRental.feedInto")}{" "}
