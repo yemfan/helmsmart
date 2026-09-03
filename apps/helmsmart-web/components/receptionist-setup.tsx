@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Copy, Check, PhoneCall, ShieldCheck, Loader2 } from "lucide-react";
-import { ReceptionistNumberWizard } from "@/components/receptionist-number-wizard";
+import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
 import { verifyNumberWiring } from "@/lib/actions/voice-setup";
 
 export type SetupStatus = {
@@ -92,15 +92,20 @@ export function ReceptionistSetup({ status }: { status: SetupStatus }) {
       </div>
       <p className="text-xs text-slate-500 mb-4">Everything below must be set for the agent to answer and book.</p>
 
-      {/* No number yet → guided buy/import that auto-wires Retell */}
-      {!status.numberOk && <ReceptionistNumberWizard />}
+      {/*
+        Enter the number you already own — the CloseBoss shape. The buy/import
+        wizard is kept in the repo for when per-tenant numbers come back; see
+        receptionist-number-simple.tsx for why it was set aside rather than
+        deleted.
+      */}
+      {!status.numberOk && <ReceptionistNumberSimple current={status.number} />}
 
       {/* What the app controls */}
       <ul className="divide-y divide-slate-100 mb-5">
         <Item
           ok={status.numberOk}
           label={status.numberOk ? `Phone number connected — ${status.number}` : "Phone number not set"}
-          fix="Use “Buy a number” or “Connect existing” above — it wires everything for you."
+          fix="Enter the number callers dial in the box above, then point that number at us in your carrier console."
         />
         <Item
           ok={status.hoursOk}
