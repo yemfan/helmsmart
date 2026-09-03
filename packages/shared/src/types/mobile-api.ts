@@ -11,7 +11,12 @@ import type { MobilePipelineSlug } from "../constants/mobile-pipeline";
 
 export type MobileInboxThreadDto = {
   leadId: LeadId;
-  channel: "sms" | "email";
+  /**
+   * "call" threads carry the AI call summary as their preview. Anything
+   * switching on this must handle all three — a binary sms/email ternary
+   * silently labels a call as an email.
+   */
+  channel: "sms" | "email" | "call";
   leadName: string | null;
   preview: string;
   lastMessageAt: string;

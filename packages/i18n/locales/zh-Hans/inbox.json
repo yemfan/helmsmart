@@ -1,7 +1,8 @@
 {
   "channel": {
     "sms": "短信",
-    "email": "邮件"
+    "email": "邮件",
+    "call": "通话"
   },
   "direction": {
     "inbound": "收件",

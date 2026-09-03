@@ -50,7 +50,14 @@ function ThreadRowInner({
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = useTranslation("inbox");
-  const channel = item.channel === "sms" ? t("channel.sms") : t("channel.email");
+  // Three-way on purpose. This was a binary ternary, so once the inbox
+  // started carrying call threads anything not "sms" would have read "Email".
+  const channel =
+    item.channel === "sms"
+      ? t("channel.sms")
+      : item.channel === "call"
+        ? t("channel.call")
+        : t("channel.email");
   const hot = item.isHotLead;
   const leadName = item.leadName?.trim() || t("row.lead_fallback", { id: item.leadId });
   const directionLabel = item.lastDirection === "inbound" ? t("direction.inbound") : t("direction.outbound");

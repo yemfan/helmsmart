@@ -1,7 +1,8 @@
 {
   "channel": {
     "sms": "SMS",
-    "email": "Email"
+    "email": "Email",
+    "call": "Call"
   },
   "direction": {
     "inbound": "Inbound",
