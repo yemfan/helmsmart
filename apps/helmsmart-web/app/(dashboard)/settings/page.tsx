@@ -41,7 +41,7 @@ export default async function SettingsPage() {
   const [{ data: org }, { data: bankAccounts }, { data: coaAccounts }] = await Promise.all([
     supabase
       .from("organizations")
-      .select("id, slug, name, entity_type, accounting_basis, currency, timezone, default_hourly_rate, default_labor_cost_rate, weekly_digest_enabled, owner_english_assist, plan, subscription_status, trial_ends_at, twilio_number, auto_reply, auto_reply_msg, npi, slack_webhook_url, slack_notify_new_lead, slack_notify_approval, slack_notify_missed_call, slack_notify_form_submission, auto_send_reminders, reminder_days_intervals, reminder_max_count")
+      .select("id, name, entity_type, accounting_basis, currency, timezone, default_hourly_rate, default_labor_cost_rate, weekly_digest_enabled, owner_english_assist, plan, subscription_status, trial_ends_at, twilio_number, auto_reply, auto_reply_msg, npi, slack_webhook_url, slack_notify_new_lead, slack_notify_approval, slack_notify_missed_call, slack_notify_form_submission, auto_send_reminders, reminder_days_intervals, reminder_max_count")
       .eq("id", orgId)
       .single(),
     supabase
@@ -221,89 +221,6 @@ export default async function SettingsPage() {
                 notifyFormSubmission={org?.slack_notify_form_submission ?? true}
               />
             </section>
-
-            <section>
-            <h2 className="text-sm font-semibold text-slate-700 mb-1 pb-2 border-b border-slate-200">
-              Integrations & webhooks
-            </h2>
-            <p className="text-xs text-slate-500 mb-4">
-              Configure these in your service dashboards so external events reach your app.
-            </p>
-            <div className="space-y-4">
-              {/* Stripe */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold text-slate-700 mb-3">Stripe</p>
-                <div className="space-y-2">
-                  {[
-                    { label: "Webhook endpoint", path: "/api/stripe/webhook", note: "Events: checkout.session.completed" },
-                  ].map(({ label, path, note }) => (
-                    <div key={path}>
-                      <p className="text-xs text-slate-500 mb-1">{label}</p>
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 text-indigo-700 font-mono truncate">
-                          {process.env.NEXT_PUBLIC_APP_URL}{path}
-                        </code>
-                      </div>
-                      {note && <p className="text-[11px] text-slate-400 mt-1">{note}</p>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Twilio */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold text-slate-700 mb-3">Twilio</p>
-                <div className="space-y-2">
-                  {[
-                    { label: "Voice — A call comes in", path: "/api/twilio/voice" },
-                    { label: "Messaging — A message comes in", path: "/api/twilio/sms" },
-                  ].map(({ label, path }) => (
-                    <div key={path}>
-                      <p className="text-xs text-slate-500 mb-1">{label}</p>
-                      <code className="block text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 text-indigo-700 font-mono truncate">
-                        {process.env.NEXT_PUBLIC_APP_URL}{path}
-                      </code>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Email (Resend inbound) */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold text-slate-700 mb-3">Email (Resend inbound)</p>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xs text-slate-500 mb-1">Webhook endpoint — event: email.received</p>
-                    <code className="block text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 text-indigo-700 font-mono truncate">
-                      {process.env.NEXT_PUBLIC_APP_URL}/api/resend/inbound
-                    </code>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 mb-1">Forward your inbox to this address</p>
-                    <code className="block text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 text-indigo-700 font-mono truncate">
-                      {process.env.INBOUND_EMAIL_DOMAIN
-                        ? `${org?.slug ?? "your-org"}@${process.env.INBOUND_EMAIL_DOMAIN}`
-                        : "Set INBOUND_EMAIL_DOMAIN to enable inbound email"}
-                    </code>
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    In Gmail: Settings → Forwarding → add this address, then forward incoming mail to it. Set <code className="bg-slate-200 px-1 py-0.5 rounded text-[11px]">RESEND_INBOUND_WEBHOOK_SECRET</code> to verify inbound webhooks.
-                  </p>
-                </div>
-              </div>
-
-              {/* Vercel Cron */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-4">
-                <p className="text-xs font-semibold text-slate-700 mb-1">Vercel Cron</p>
-                <p className="text-xs text-slate-500 mt-0.5 mb-2">
-                  Set <code className="bg-slate-200 px-1 py-0.5 rounded text-[11px]">CRON_SECRET</code> in your Vercel environment variables to secure the cron endpoints.
-                </p>
-                <code className="block text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-600 font-mono">
-                  GET {process.env.NEXT_PUBLIC_APP_URL}/api/cron/voice/reminders
-                </code>
-              </div>
-            </div>
-          </section>
           </>
         }
       />
