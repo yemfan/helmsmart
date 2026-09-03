@@ -3,6 +3,13 @@ import { refreshAllCitiesDaily } from "@/lib/cityDataEngine";
 import { verifyCronRequest } from "@/lib/cronAuth";
 
 export const runtime = "nodejs";
+/*
+ * Each market is an AI web-search call, and the plan now covers every row in
+ * city_market_data rather than a fixed 117. Ask for the ceiling and let the
+ * engine stop itself just under it, so a long run reports what it did instead
+ * of being killed mid-flight.
+ */
+export const maxDuration = 300;
 
 export async function GET(req: Request) {
   if (!verifyCronRequest(req)) {
