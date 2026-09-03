@@ -9732,5 +9732,118 @@
     "deepReport": "AI-generated estimate from public web data. Value, rent, affordability, and deal metrics are opinions for planning only — not an appraisal, loan approval, or investment advice. Verify figures and consult a lender / advisor before deciding.",
     "houseSearch": "AI-generated results from public web data. Listings, prices, and availability may be out of date — verify each on its source site before sharing or relying on it.",
     "offerCompare": "AI summary to support your judgment — not legal or financial advice. Verify each offer's terms and the net figures before advising the seller."
+  },
+  "tools": {
+    "bugs": {
+      "logged": "Logged it, opened a support ticket, and emailed support — we're on it (ref {{ref}})."
+    },
+    "contacts": {
+      "imported": "Imported contacts from {{file}}."
+    },
+    "crm": {
+      "taskCreated": "Task created: {{title}}",
+      "eventCreated": "Calendar event created: {{title}} at {{at}}",
+      "pipeline_one": "Pipeline: {{count}} contact.",
+      "pipeline_other": "Pipeline: {{count}} contacts.",
+      "hotLeads_one": "{{count}} hot lead.",
+      "hotLeads_other": "{{count}} hot leads.",
+      "hotLeadsStale_one": "{{count}} stale hot lead.",
+      "hotLeadsStale_other": "{{count}} stale hot leads.",
+      "overdueTasks_one": "{{count}} overdue task.",
+      "overdueTasks_other": "{{count}} overdue tasks.",
+      "closingSoon_one": "{{count}} transaction closing in the next 30 days.",
+      "closingSoon_other": "{{count}} transactions closing in the next 30 days.",
+      "contactsMatching_one": "{{count}} contact matching “{{query}}”.",
+      "contactsMatching_other": "{{count}} contacts matching “{{query}}”."
+    },
+    "handoff": {
+      "handedToYou": "Handed to you — {{label}}: {{detail}}"
+    },
+    "houseSearch": {
+      "ranUnsaved_one": "House search ran — {{count}} match (not saved to a contact).",
+      "ranUnsaved_other": "House search ran — {{count}} matches (not saved to a contact).",
+      "saved_one": "Saved a home search for {{who}} — {{count}} match.",
+      "saved_other": "Saved a home search for {{who}} — {{count}} matches.",
+      "savedAutoRun_one": "Saved a home search for {{who}} — {{count}} match; emailing new ones {{frequency}}.",
+      "savedAutoRun_other": "Saved a home search for {{who}} — {{count}} matches; emailing new ones {{frequency}}."
+    },
+    "listings": {
+      "pulledPhotos_one": "Pulled {{count}} photo and the property facts for {{address}}.",
+      "pulledPhotos_other": "Pulled {{count}} photos and the property facts for {{address}}.",
+      "noPhotos": "Saved the facts for {{address}}, but that page exposed no photos — upload them on the listing to make a video ad.",
+      "videoAdReady_one": "Video ad ready for {{address}} — {{count}} clip merged into a tour. Review it on the listing, then publish.",
+      "videoAdReady_other": "Video ad ready for {{address}} — {{count}} clips merged into a tour. Review it on the listing, then publish."
+    },
+    "market": {
+      "noData": "No cached market data for {{city}}, {{state}} yet.",
+      "noMedian": "No median price on file for {{city}}, {{state}}. Don't quote a price for this market from cached data.",
+      "noMedianWithTrend": "No median price on file for {{city}}, {{state}} (trend {{trend}}). Don't quote a price for this market from cached data.",
+      "snapshot": "{{city}}, {{state}}: median ${{median}}, trend {{trend}} (as of {{days}}d ago).",
+      "snapshotStale": "{{city}}, {{state}}: median ${{median}}, trend {{trend}} — {{days}} days old, so treat it as out of date and prefer live comps."
+    },
+    "messaging": {
+      "drafted": "Drafted a {{channel}} to {{recipient}}.",
+      "deferredWindow": "Send deferred ({{reason}}) — it will go out when the window opens.",
+      "deferredQueued": "Send deferred ({{reason}}) — queued for {{when}}.",
+      "sent": "Sent the {{channel}} to {{recipient}}.",
+      "draftForApproval": "Draft ready for your approval: “{{excerpt}}”"
+    },
+    "playbooks": {
+      "openHouse_one": "Open house arranged for {{address}} on {{when}} — {{count}} task scheduled.",
+      "openHouse_other": "Open house arranged for {{address}} on {{when}} — {{count}} tasks scheduled.",
+      "openHouseWithCma_one": "Open house arranged for {{address}} on {{when}} — pricing CMA plus {{count}} task scheduled.",
+      "openHouseWithCma_other": "Open house arranged for {{address}} on {{when}} — pricing CMA plus {{count}} tasks scheduled.",
+      "closingTimeline_one": "Closing timeline arranged for {{address}} — {{count}} milestone scheduled to {{close}}.",
+      "closingTimeline_other": "Closing timeline arranged for {{address}} — {{count}} milestones scheduled to {{close}}."
+    },
+    "reads": {
+      "pipeline_one": "Pipeline: {{count}} contact — {{hot}} hot, {{warm}} warm, {{cold}} cold.",
+      "pipeline_other": "Pipeline: {{count}} contacts — {{hot}} hot, {{warm}} warm, {{cold}} cold.",
+      "pipelineCooling_one": "Pipeline: {{count}} contact — {{hot}} hot, {{warm}} warm, {{cold}} cold; {{cooling}} cooling off (no activity 14+ days).",
+      "pipelineCooling_other": "Pipeline: {{count}} contacts — {{hot}} hot, {{warm}} warm, {{cold}} cold; {{cooling}} cooling off (no activity 14+ days).",
+      "deals_one": "{{count}} active deal; {{deadlines}} deadlines in the next {{horizon}} days.",
+      "deals_other": "{{count}} active deals; {{deadlines}} deadlines in the next {{horizon}} days.",
+      "dealsHighRisk_one": "{{count}} active deal; {{deadlines}} deadlines in the next {{horizon}} days ({{highRisk}} at high risk — due within 3 days).",
+      "dealsHighRisk_other": "{{count}} active deals; {{deadlines}} deadlines in the next {{horizon}} days ({{highRisk}} at high risk — due within 3 days).",
+      "commission_one": "Commission pipeline {{pipeline}} across {{count}} in-flight deal; {{closed}} closed YTD. Expenses this month {{expenses}}.",
+      "commission_other": "Commission pipeline {{pipeline}} across {{count}} in-flight deals; {{closed}} closed YTD. Expenses this month {{expenses}}.",
+      "appointments_one": "{{count}} appointment today; {{upcoming}} in the next {{horizon}} days.",
+      "appointments_other": "{{count}} appointments today; {{upcoming}} in the next {{horizon}} days.",
+      "sphereSignals_one": "{{count}} active sphere signal — e.g. {{examples}}.",
+      "sphereSignals_other": "{{count}} active sphere signals — e.g. {{examples}}.",
+      "sphereSignalsNone": "No active sphere signals right now.",
+      "business_one": "{{count}} lead in the CRM, {{deals}} deals in flight, and {{closed}} closed this year.",
+      "business_other": "{{count}} leads in the CRM, {{deals}} deals in flight, and {{closed}} closed this year.",
+      "businessWithVolume_one": "{{count}} lead in the CRM, {{deals}} deals in flight, and {{closed}} closed this year ({{volume}} in volume).",
+      "businessWithVolume_other": "{{count}} leads in the CRM, {{deals}} deals in flight, and {{closed}} closed this year ({{volume}} in volume)."
+    },
+    "reports": {
+      "cmaReady": "CMA ready for {{address}}",
+      "deepReportReady": "Deep report ready for {{address}}"
+    },
+    "skills": {
+      "ran": "{{who}} ran “{{title}}”.",
+      "ranGated": "{{who}} ran “{{title}}” — some steps need your approval."
+    },
+    "social": {
+      "published": "Published to {{platform}}: “{{excerpt}}”",
+      "drafted": "{{platform}} post drafted: “{{excerpt}}”",
+      "draftedWithPhoto": "{{platform}} post drafted, with photo: “{{excerpt}}”",
+      "publishedAll": "Published to {{posted}}.",
+      "publishedPartial": "Published to {{posted}}. Didn't go out on {{failed}}.",
+      "draftedAll_one": "Post drafted for {{targets}}: “{{excerpt}}” — approve once and it goes to {{count}} channel.",
+      "draftedAll_other": "Post drafted for {{targets}}: “{{excerpt}}” — approve once and it goes to all {{count}}.",
+      "draftedAllWithPhoto_one": "Post drafted for {{targets}}, with photo: “{{excerpt}}” — approve once and it goes to {{count}} channel.",
+      "draftedAllWithPhoto_other": "Post drafted for {{targets}}, with photo: “{{excerpt}}” — approve once and it goes to all {{count}}.",
+      "scheduled": "{{platform}} post scheduled for {{when}}.",
+      "scheduledAwaitingApproval": "{{platform}} post for {{when}} awaiting your approval: “{{excerpt}}”",
+      "avatarPosted_one": "Avatar video posted to {{count}} account — “{{topic}}”",
+      "avatarPosted_other": "Avatar video posted to {{count}} accounts — “{{topic}}”",
+      "avatarScriptDrafted": "Avatar video about “{{topic}}” — script drafted; approve to render and post (rendering spends credits)."
+    },
+    "voice": {
+      "callQueued": "AI call queued to {{name}} for {{when}} — {{objective}}",
+      "callProposed": "Proposed AI call to {{name}}: {{objective}}"
+    }
   }
 }

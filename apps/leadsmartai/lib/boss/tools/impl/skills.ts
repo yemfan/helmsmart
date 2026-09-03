@@ -53,7 +53,13 @@ export const runSkill = defineTool({
       : "";
     return {
       status: "completed",
+      // ASSIGNEE_LABEL is a teammate NAME (Chris, Ruby) rather than a word to
+      // translate; gateNote is our own English tail, so it gets its own key.
       summary: `${ASSIGNEE_LABEL[res.assignee]} ran "${title}"${gateNote}.`,
+      display: {
+        key: gateNote ? "skills.ranGated" : "skills.ran",
+        params: { who: ASSIGNEE_LABEL[res.assignee], title },
+      },
       artifactUrl: `/dashboard/skills/runs/${res.runId}`,
       data: { skillId: route.skillId, gate: res.gate?.status ?? null },
     };

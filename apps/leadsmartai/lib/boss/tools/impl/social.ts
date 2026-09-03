@@ -153,6 +153,12 @@ export const publishSocialPost = defineTool({
     return {
       status: "completed",
       summary: `Published to ${input.platform}: "${c.caption.slice(0, 60)}…"`,
+      // The platform is a brand name and the caption is the agent's own
+      // words — both travel as params, neither gets translated.
+      display: {
+        key: "social.published",
+        params: { platform: input.platform, excerpt: c.caption.slice(0, 60) },
+      },
       data: { lead_post_id: res.leadPostId, url: res.externalPostUrl },
     };
   },
@@ -162,6 +168,10 @@ export const publishSocialPost = defineTool({
     return {
       status: "pending_approval",
       summary: `${input.platform} post drafted${input.image_url ? " (with photo)" : ""}: "${c.caption.slice(0, 80)}…"`,
+      display: {
+        key: input.image_url ? "social.draftedWithPhoto" : "social.drafted",
+        params: { platform: input.platform, excerpt: c.caption.slice(0, 80) },
+      },
       proposal: { platform: input.platform, caption: c.caption, hashtags: c.hashtags, image_url: input.image_url ?? null },
     };
   },
@@ -259,6 +269,14 @@ export const publishPostEverywhere = defineTool({
       summary:
         `Published to ${posted.join(", ")}` +
         (failed.length ? `. Didn't go out on ${failed.join("; ")}.` : "."),
+      // A partial fan-out is the case worth reading carefully, so it says
+      // plainly which networks did not take it rather than trailing a clause.
+      display: failed.length
+        ? {
+            key: "social.publishedPartial",
+            params: { posted: posted.join(", "), failed: failed.join(", ") },
+          }
+        : { key: "social.publishedAll", params: { posted: posted.join(", ") } },
       data: { posted, failed },
     };
   },
@@ -280,6 +298,14 @@ export const publishPostEverywhere = defineTool({
     return {
       status: "pending_approval",
       summary: `Post drafted for ${targets.join(", ")}${input.image_url ? " (with photo)" : ""}: "${c.caption.slice(0, 80)}…" — approve once and it goes to all ${targets.length}.`,
+      display: {
+        key: input.image_url ? "social.draftedAllWithPhoto" : "social.draftedAll",
+        params: {
+          count: targets.length,
+          targets: targets.join(", "),
+          excerpt: c.caption.slice(0, 80),
+        },
+      },
       proposal: { platforms: targets, caption: c.caption, hashtags: c.hashtags, image_url: input.image_url ?? null },
     };
   },
@@ -324,12 +350,24 @@ export const scheduleSocialPost = defineTool({
     return {
       status: "completed",
       summary: `${input.platform} post scheduled for ${input.publish_at}.`,
+      display: {
+        key: "social.scheduled",
+        params: { platform: input.platform, when: input.publish_at },
+      },
       data: { scheduled_post_id: (data as { id: string }).id },
     };
   },
   propose: async (_ctx, input) => ({
     status: "pending_approval",
     summary: `Scheduled ${input.platform} post (for ${input.publish_at}) awaiting approval: "${input.caption.slice(0, 60)}…"`,
+    display: {
+      key: "social.scheduledAwaitingApproval",
+      params: {
+        platform: input.platform,
+        when: input.publish_at,
+        excerpt: input.caption.slice(0, 60),
+      },
+    },
     proposal: {
       platform: input.platform,
       caption: input.caption,
@@ -389,6 +427,10 @@ export const createAvatarVideo = defineTool({
     return {
       status: "completed",
       summary: `Avatar video posted to ${pub.scheduled} account${pub.scheduled === 1 ? "" : "s"} — "${input.topic}"`,
+        display: {
+          key: "social.avatarPosted",
+          params: { count: pub.scheduled, topic: input.topic },
+        },
       artifactUrl: videoUrl,
       data: { accounts: pub.scheduled },
     };
@@ -400,6 +442,7 @@ export const createAvatarVideo = defineTool({
     return {
       status: "pending_approval",
       summary: `Avatar video about "${input.topic}" — script drafted; approve to render + post (rendering spends credits).`,
+      display: { key: "social.avatarScriptDrafted", params: { topic: input.topic } },
       proposal: { topic: input.topic, script: script.slice(0, 1200) },
     };
   },

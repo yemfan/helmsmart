@@ -41,6 +41,7 @@ export const runCma = defineTool({
     return {
       status: "completed",
       summary: `CMA ready for ${input.address}`,
+      display: { key: "reports.cmaReady", params: { address: input.address } },
       artifactUrl: `/dashboard/cma/${res.cma.id}`,
       data: { cma_id: res.cma.id },
     };
@@ -127,6 +128,7 @@ export const generateDeepReportTool = defineTool({
     return {
       status: "completed",
       summary: `Deep report ready for ${input.address}`,
+      display: { key: "reports.deepReportReady", params: { address: input.address } },
       artifactUrl: id ? `/deep-report/${id}` : null,
       data: { report_id: id },
     };

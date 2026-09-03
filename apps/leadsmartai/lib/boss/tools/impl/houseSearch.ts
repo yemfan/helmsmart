@@ -35,6 +35,7 @@ export const houseSearch = defineTool({
       return {
         status: "completed",
         summary: `House search ran — ${count} match${count === 1 ? "" : "es"} (not saved to a contact).`,
+      display: { key: "houseSearch.ranUnsaved", params: { count } },
         artifactUrl: "/dashboard/house-search",
         data: { listings: search.result.listings.slice(0, 10) },
       };
@@ -72,6 +73,10 @@ export const houseSearch = defineTool({
       summary: `Saved a home search for ${who} — ${count} match${count === 1 ? "" : "es"}${
         input.auto_run_frequency ? `; emailing new ones ${input.auto_run_frequency}` : ""
       }.`,
+      display: {
+        key: input.auto_run_frequency ? "houseSearch.savedAutoRun" : "houseSearch.saved",
+        params: { count, who, frequency: input.auto_run_frequency ?? "" },
+      },
       artifactUrl: "/dashboard/house-search",
       data: { search_id: saved.id, matches: count },
     };

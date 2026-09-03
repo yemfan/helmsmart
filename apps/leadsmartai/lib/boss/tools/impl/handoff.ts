@@ -87,7 +87,11 @@ export const handOffToAgent = defineTool({
             : "handed to you to action";
     return {
       status: "completed",
+      // `input.summary` is the model's own words, already in the realtor's
+      // language because the system prompt told it to write in that language.
+      // Only the framing around it is ours to translate.
       summary: `Handed to you — ${label}: ${input.summary}`,
+      display: { key: "handoff.handedToYou", params: { label, detail: input.summary } },
       data: { category: input.category, owner },
     };
   },

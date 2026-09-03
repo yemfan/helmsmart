@@ -141,6 +141,7 @@ Output ONLY a JSON object: { "subject": ${input.channel === "email" ? '"string"'
     return {
       status: "completed",
       summary: `Drafted ${input.channel} to ${recipient ?? "contact"}: "${body.slice(0, 80)}${body.length > 80 ? "…" : ""}"`,
+      display: { key: "messaging.drafted", params: { channel: input.channel, recipient: recipient ?? "" } },
       data: { draft_id: (draft as { id: string }).id, subject, body },
     };
   },
@@ -236,6 +237,7 @@ export const sendMessage = defineTool({
       return {
         status: "completed",
         summary: `Send deferred (${outcome.reason}) — the dispatcher will send it when the window opens.`,
+        display: { key: "messaging.deferredWindow", params: { reason: outcome.reason } },
       };
     }
 
@@ -268,6 +270,7 @@ export const sendMessage = defineTool({
         return {
           status: "completed",
           summary: `Send deferred (${blocked}) — queued for ${sendAfter.toISOString()}.`,
+        display: { key: "messaging.deferredQueued", params: { reason: blocked, when: sendAfter.toISOString() } },
         };
       }
     }
@@ -313,6 +316,7 @@ export const sendMessage = defineTool({
     return {
       status: "completed",
       summary: `Sent the ${input.channel} to ${contact.name ?? "the contact"}.`,
+      display: { key: "messaging.sent", params: { channel: input.channel, recipient: contact.name ?? "" } },
     };
   },
   propose: async (ctx, input) => {
@@ -330,6 +334,7 @@ export const sendMessage = defineTool({
     return {
       status: "pending_approval",
       summary: `Draft ready for your approval: "${draft.body.slice(0, 80)}${draft.body.length > 80 ? "…" : ""}"`,
+      display: { key: "messaging.draftForApproval", params: { excerpt: draft.body.slice(0, 80) } },
       proposal: { draft_id: draft.id, channel: input.channel, contact_id: input.contact_id },
     };
   },

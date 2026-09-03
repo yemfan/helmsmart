@@ -116,6 +116,10 @@ export const importListingFromUrl = defineTool({
         photoCount > 0
           ? `Pulled ${photoCount} photo${photoCount === 1 ? "" : "s"} and the property facts for ${address}.`
           : `Saved the facts for ${address}, but that page exposed no photos — upload them on the listing to make a video ad.`,
+      display:
+        photoCount > 0
+          ? { key: "listings.pulledPhotos", params: { count: photoCount, address } }
+          : { key: "listings.noPhotos", params: { address } },
       artifactUrl: `/dashboard/listings/${listingId}`,
       data: { listing_id: listingId, address, photos: photoCount, confidence: facts.confidence },
     };
@@ -178,6 +182,7 @@ export const createListingVideoAd = defineTool({
     return {
       status: "completed",
       summary: `Video ad ready for ${listing.property_address} — ${clips.length} clip${clips.length === 1 ? "" : "s"} merged into a tour with a caption. Review it on the listing, then publish when you're happy.`,
+      display: { key: "listings.videoAdReady", params: { count: clips.length, address: listing.property_address } },
       artifactUrl: `/dashboard/listings/${match.id}`,
       data: { listing_id: match.id, clips: clips.length },
     };

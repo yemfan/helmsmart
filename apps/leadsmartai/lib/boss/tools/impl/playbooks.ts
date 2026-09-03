@@ -145,7 +145,11 @@ export const setupOpenHouse = defineTool({
 
     return {
       status: "completed",
-      summary: `Open house arranged for ${address} on ${when} — ${cmaUrl ? "pricing CMA + " : ""}${scheduled} tasks scheduled.`,
+      summary: `Open house arranged for ${address} on ${when} — ${cmaUrl ? "pricing CMA + " : ""}${scheduled} task${scheduled === 1 ? "" : "s"} scheduled.`,
+      display: {
+        key: cmaUrl ? "playbooks.openHouseWithCma" : "playbooks.openHouse",
+        params: { count: scheduled, address, when },
+      },
       artifactUrl: cmaUrl,
       data: { scheduled, cmaUrl },
     };
@@ -185,7 +189,8 @@ export const coordinateClosing = defineTool({
     }
     return {
       status: "completed",
-      summary: `Closing timeline arranged for ${address} — ${scheduled} milestones scheduled to ${close}.`,
+      summary: `Closing timeline arranged for ${address} — ${scheduled} milestone${scheduled === 1 ? "" : "s"} scheduled to ${close}.`,
+      display: { key: "playbooks.closingTimeline", params: { count: scheduled, address, close } },
       data: { scheduled },
     };
   },
