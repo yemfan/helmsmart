@@ -1,11 +1,45 @@
 import path from "node:path";
 import { defineConfig } from "vitest/config";
 
-const I18N = path.resolve(__dirname, "..", "..", "packages", "i18n");
+const PACKAGES = path.resolve(__dirname, "..", "..", "packages");
+const I18N = path.join(PACKAGES, "i18n");
+
+/**
+ * Workspace packages laid out as `src/<subpath>.ts`, pinned to THIS tree for
+ * the same reason as `@leadsmart/i18n` below.
+ *
+ * The symlink in node_modules is an ABSOLUTE path into the parent checkout, so
+ * every worktree resolves these out of whatever branch that checkout happens to
+ * be sitting on. Adding `./noCompsMessage` to @repo/valuation's exports map and
+ * running its test from a worktree failed with `Missing "./noCompsMessage"
+ * specifier` — green in CI, red locally — because the export existed here and
+ * the package.json being read was over there.
+ *
+ * `@repo/ui` is deliberately absent: it exports `./navigation/index.ts`, not a
+ * `src/` path, so this rule would point it at a file that does not exist. Add a
+ * package here only after checking its exports map really is `src/`-shaped.
+ */
+const SRC_PACKAGES = ["valuation", "voice", "growth"];
+
+const srcPackageAliases = SRC_PACKAGES.flatMap((name) => {
+  const root = path.join(PACKAGES, name);
+  return [
+    // Subpath first — a bare-name rule would otherwise never be reached.
+    {
+      find: new RegExp(`^@repo/${name}/(.+)$`),
+      replacement: path.join(root, "src", "$1.ts"),
+    },
+    {
+      find: new RegExp(`^@repo/${name}$`),
+      replacement: path.join(root, "src", "index.ts"),
+    },
+  ];
+});
 
 export default defineConfig({
   resolve: {
     alias: [
+      ...srcPackageAliases,
       /*
        * Pin @leadsmart/i18n to THIS tree's locale files.
        *
