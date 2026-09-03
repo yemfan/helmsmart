@@ -46,12 +46,26 @@ export async function getServerLocale(): Promise<SupportedLocale> {
 /**
  * Synchronous `t()` for Server Components. We don't spin up an
  * i18next instance on the server — just key into the bundled
- * resources directly. Falls back to the key itself when a
- * translation is missing so missing-string regressions are
- * visible at runtime.
+ * resources directly.
  *
  * Interpolation: simple `{{name}}` substitution. Matches i18next's
  * default behavior so the same string keys work on client + server.
+ *
+ * RESOLUTION ORDER, and why it is not just "the key". This used to return the
+ * key on any miss, on the reasoning that a visible `pages.cma.metaTitle`
+ * makes a regression obvious. It does — to us. To a Chinese-speaking agent it
+ * is a broken page, and the miss it exposes is usually a gap in the zh-Hans
+ * bundle alone, where perfectly good English was sitting one lookup away.
+ * (`useTranslation` on the client has always done this: `fallbackLng` plus
+ * `defaultValue`. The server half silently didn't, so the same call rendered
+ * differently either side of the boundary.)
+ *
+ * So: the requested locale, then `defaultValue` if the caller passed one,
+ * then the default-locale bundle, and only then the key. The loud signal for
+ * a key that exists in NO bundle is unchanged; what's gone is shipping a key
+ * path to a reader when a translation exists in another language. CI carries
+ * the rest — `missingKeys` walks every call site into the English bundle and
+ * `navLabels` holds the two locales to the same key set.
  *
  * `defaultNs` mirrors `useTranslation(ns)` on the client, and exists because
  * the asymmetry was a live bug: a component moved from the hook to this
@@ -66,12 +80,31 @@ export async function getServerT(
   const locale = await getServerLocale();
   return (key, opts) => {
     const ns = (opts?.ns as string | undefined) ?? defaultNs;
-    const bundle = resources[locale]?.[ns as keyof (typeof resources)[typeof locale]];
-    if (!bundle) return key;
-    const value = lookup(bundle, key);
-    if (typeof value !== "string") return key;
-    return interpolate(value, opts ?? {});
+    type Ns = keyof (typeof resources)[typeof locale];
+
+    const hit = lookupIn(resources[locale]?.[ns as Ns], key);
+    if (hit != null) return interpolate(hit, opts ?? {});
+
+    const fallback = opts?.defaultValue;
+    if (typeof fallback === "string") return interpolate(fallback, opts ?? {});
+
+    if (locale !== DEFAULT_LOCALE) {
+      const english = lookupIn(resources[DEFAULT_LOCALE]?.[ns as Ns], key);
+      if (english != null) return interpolate(english, opts ?? {});
+    }
+
+    return key;
   };
+}
+
+/** The string at `key`, or null when the bundle is absent or the key isn't a string. */
+function lookupIn(
+  bundle: Record<string, unknown> | undefined,
+  key: string,
+): string | null {
+  if (!bundle) return null;
+  const value = lookup(bundle, key);
+  return typeof value === "string" ? value : null;
 }
 
 function lookup(bundle: Record<string, unknown>, key: string): unknown {

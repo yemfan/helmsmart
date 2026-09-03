@@ -48,6 +48,26 @@ export function initClientI18n(initialLocale: SupportedLocale): typeof i18n {
  * picks up the choice on the next navigation, then flips the
  * client instance so the current page re-renders.
  */
+/**
+ * Mirror the pick into `user_profiles.ui_language`.
+ *
+ * The cookie only exists inside this browser, so anything running without a
+ * request — the overnight Boss run, the instruction cron, every scheduled
+ * generator — had no way to know the agent reads Chinese, and wrote English
+ * into a Chinese dashboard. See `app/api/dashboard/ui-language/route.ts`.
+ *
+ * Fire-and-forget: signed-out visitors get a 401 and that is fine, the cookie
+ * has already done the visible work.
+ */
+function persistLocale(locale: SupportedLocale): void {
+  void fetch("/api/dashboard/ui-language", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ locale }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 export function setLocaleCookie(locale: SupportedLocale): void {
   if (typeof document === "undefined") return;
   const maxAge = I18N_COOKIE_MAX_AGE_SECONDS;
@@ -62,6 +82,7 @@ export function setLocaleCookie(locale: SupportedLocale): void {
     .filter(Boolean)
     .join("; ");
   void i18n.changeLanguage(locale);
+  persistLocale(locale);
 }
 
 /**

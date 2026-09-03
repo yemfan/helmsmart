@@ -2103,7 +2103,16 @@
       "savedLine": "保存于 {{date}} · {{count}} 套可比房源",
       "confidenceSuffix": " · 置信度 {{score}}%",
       "comparableSales": "可比成交（{{count}}）",
-      "sourcesN": "数据来源（{{count}}）"
+      "sourcesN": "数据来源（{{count}}）",
+      "backToAll": "← 全部 CMA",
+      "regenerate": "↻ 重新生成 CMA",
+      "generateReport": "📄 生成报告",
+      "subjectLine": "{{beds}} 卧 / {{baths}} 卫 / {{sqft}} 平方英尺",
+      "lotSuffix": " · 地块 {{lot}}",
+      "hoaSuffix": " · 物业费 {{hoa}}",
+      "builtSuffix": " · 建于 {{year}}",
+      "emailSubject": "市场比较分析报告 — {{address}}",
+      "resourceLabel": "{{address}} 的 CMA 报告"
     },
     "adComposer": {
       "metaTitle": "广告编辑器",
@@ -5579,7 +5588,44 @@
       "addToDeal": "加入交易",
       "edit": "编辑",
       "sandbox": "沙盒工作区",
-      "calendarSubtitle": "本周 · {{events}} 个日程 · {{deals}} 笔进行中的交易"
+      "calendarSubtitle": "本周 · {{events}} 个日程 · {{deals}} 笔进行中的交易",
+      "alertEscalatedDrafts": "{{n}} 条升级的 AI 草稿需要你处理",
+      "alertUnread": "{{n}} 条未读消息",
+      "alertUrgentTasks": "{{n}} 项紧急任务",
+      "kpiSubNewLeads": "5 条来自 Zillow / 2 条来自 Facebook",
+      "kpiSubHotLeads": "A 级评分，需要行动",
+      "kpiSubMessagesSent": "AI 34 条 · 你 4 条",
+      "kpiSubQuietLeads": "7 天以上无互动",
+      "secondsUnit": "秒",
+      "responseDelta": "↓ 比上周快 12 秒",
+      "toursSub": "AI 约了 5 场；你约了 4 场。1 场转为报价。",
+      "voiceCallsSub": "8 通已筛选合格 · 3 通已约回电 · 0 通转入语音留言",
+      "trialFinePrint": "14 天免费试用，无需信用卡。通过 CSV 导入你自己的联系人——或者交给我们帮你迁移。",
+      "stageLead": "客源",
+      "stageNurture": "培育中",
+      "stageAppointment": "已约",
+      "stageActiveClient": "现有客户",
+      "stagePastClient": "老客户",
+      "chipSpherePastClient": "人脉 · 老客户",
+      "inboxCount": "{{total}} 个会话 · {{unread}} 个未读",
+      "sourceScore": "来源：{{source}} · 评分：{{score}}",
+      "aiSuggestionReady": "AI 建议 · 你随时可以采用",
+      "draftsCount": "{{n}} 条草稿待你审核 · 约 4 分钟即可清空",
+      "draftedAgo": "{{ago}}前起草",
+      "agoMinutes": "{{n}} 分钟",
+      "agoHours": "{{n}} 小时",
+      "agoDays": "{{n}} 天",
+      "metaInboxTitle": "演示工作区 · 收件箱",
+      "metaInboxDescription": "看看 CloseBoss 的收件箱如何运作——一分钟内的 AI 跟进、升级规则，以及语音 AI 通话摘要，全部汇总在一个信息流里。",
+      "metaContactsTitle": "演示工作区 · 联系人",
+      "metaContactsDescription": "浏览一份 CloseBoss 联系人示例列表——50 位联系人，含 AI 客源评分、生命周期阶段、来源归因与最近动态。",
+      "metaDraftsTitle": "演示工作区 · AI 草稿",
+      "metaDraftsDescription": "看看 CloseBoss 的草稿队列——每条草拟回复都会展示 AI 的判断依据、消息内容，以及批准／编辑／丢弃控件。这就是有人把关的 AI 跟进。",
+      "metaCalendarTitle": "演示工作区 · 日历",
+      "metaCalendarDescription": "CloseBoss 日历示例——看房、挂牌洽谈、回电与成交电话，并关联对应的交易与联系人背景。",
+      "dealNextInOne": "· 还有 {{days}} 天",
+      "dealNextInMany": "· 还有 {{days}} 天",
+      "contactsCount": "共 {{total}} 位 · {{hot}} 位热门 · {{escalated}} 位已升级给你"
     },
     "adminCommon": {
       "admin": "管理后台",
@@ -9372,6 +9418,310 @@
       "usernameLabel": "您的地址",
       "usernameTaken": "该用户名已被占用。",
       "viewHub": "查看我的主页"
+    },
+    "demoContent": {
+      "senders": {
+        "you": "你"
+      },
+      "briefings": {
+        "br-001": {
+          "title": "AI 昨夜处理了 14 条客源回复",
+          "body": "响应时间中位数 47 秒。3 位客户已预约看房；2 位在等你决定。",
+          "actionLabel": "查看 AI 草稿"
+        },
+        "br-002": {
+          "title": "语音 AI 接听了 4 通来电",
+          "body": "全部已转写并生成摘要。其中一位来电者（Lily Zhang）希望周二回电。",
+          "actionLabel": "查看通话摘要"
+        },
+        "br-003": {
+          "title": "Vanessa Crowe 的人脉分已达峰值",
+          "body": "成交已满 5 年 + 房产净值上涨 35% + 出现人生阶段信号。自动草稿已在你的队列中。",
+          "actionLabel": "查看人脉维护外联"
+        }
+      },
+      "tasks": {
+        "t-001": {
+          "title": "与挂牌经纪确认周六上午 11 点的看房",
+          "dueLabel": "今天 下午 4:00"
+        },
+        "t-002": {
+          "title": "回复 Eve——议价问题（AI 已升级）",
+          "dueLabel": "今天 下午 5:30"
+        },
+        "t-003": {
+          "title": "发送 CMA——周二下午 2 点挂牌洽谈",
+          "dueLabel": "明天 上午 10:00"
+        },
+        "t-004": {
+          "title": "与 Karen Larson 的成交电话",
+          "dueLabel": "明天 上午 10:00"
+        },
+        "t-005": {
+          "title": "与 Natalie 一起做挂牌前房屋检视",
+          "dueLabel": "周一 下午 4:00"
+        }
+      },
+      "events": {
+        "e-001": {
+          "title": "看房——4456 Maple Ave，陪同 Sarah Chen",
+          "when": "周六 11:00"
+        },
+        "e-002": {
+          "title": "挂牌洽谈——Mark Davis",
+          "when": "周二 14:00"
+        },
+        "e-003": {
+          "title": "成交电话——Karen Larson",
+          "when": "明天 10:00"
+        },
+        "e-004": {
+          "title": "回电——Lily Zhang",
+          "when": "周二 10:00"
+        },
+        "e-005": {
+          "title": "挂牌准备——Natalie Bowers",
+          "when": "周一 16:00"
+        }
+      },
+      "contacts": {
+        "c-001": {
+          "lastActivity": "AI 2 分钟前已回复——买家可以看房了",
+          "interest": "3 卧公寓 · 市中心 · 预算上限 85 万美元",
+          "tag": "热门 · 周六看房"
+        },
+        "c-002": {
+          "lastActivity": "AI 15 分钟前已发出首次触达短信",
+          "interest": "首次购房 · 已获 62 万美元预批",
+          "tag": "首次购房 · 已预批"
+        },
+        "c-003": {
+          "lastActivity": "在 4456 Maple Ave 的开放日签到",
+          "interest": "开放日客源 · 想从公寓换大房",
+          "tag": "当天开放日"
+        },
+        "c-004": {
+          "lastActivity": "昨天已回复——希望周二再谈",
+          "interest": "投资客 · 关注多户住宅"
+        },
+        "c-005": {
+          "lastActivity": "CMA 已送达 · 周二下午 2 点挂牌洽谈",
+          "interest": "打算出售——估价 120 万美元",
+          "tag": "周二挂牌洽谈"
+        },
+        "c-006": {
+          "lastActivity": "AI 序列第 2 步已于 1 小时前发出"
+        },
+        "c-007": {
+          "lastActivity": "正在浏览 /homes——本周看了 4 套房"
+        },
+        "c-008": {
+          "lastActivity": "已提交房屋估值申请"
+        },
+        "c-009": {
+          "lastActivity": "AI 短信回拨已触发 · 等待回复"
+        },
+        "c-010": {
+          "lastActivity": "已约周三下午 5 点看房——8124 Pine St"
+        },
+        "c-011": {
+          "lastActivity": "已发送周年问候 · 回应热情",
+          "interest": "2022 年 3 月成交 · 人脉维护对象"
+        },
+        "c-012": {
+          "lastActivity": "已打开邮件 · 未点击"
+        },
+        "c-013": {
+          "lastActivity": "开放日签到 · 2 天前"
+        },
+        "c-014": {
+          "lastActivity": "AI 跟进：38 秒内即回复"
+        },
+        "c-015": {
+          "lastActivity": "报价已被接受——进入合约阶段",
+          "tag": "合约中"
+        },
+        "c-016": {
+          "lastActivity": "季度问候已排队"
+        },
+        "c-017": {
+          "lastActivity": "已发送收藏搜索提醒"
+        },
+        "c-018": {
+          "lastActivity": "AI 序列第 3 步已发出 · 等待回复"
+        },
+        "c-019": {
+          "lastActivity": "本周两次访问 /mortgage-calculator"
+        },
+        "c-020": {
+          "lastActivity": "已约周六上午 11 点买方看房",
+          "tag": "周六看房"
+        },
+        "c-021": {
+          "lastActivity": "已被机器人过滤——标记为低意向"
+        },
+        "c-022": {
+          "lastActivity": "已收到看房反馈——意向强烈"
+        },
+        "c-023": {
+          "lastActivity": "人脉分：高（房产净值 + 人生阶段信号）",
+          "interest": "2020 年 6 月成交 · 有出售可能"
+        },
+        "c-024": {
+          "lastActivity": "打开了新闻邮件 · 点击了房源"
+        },
+        "c-025": {
+          "lastActivity": "中段培育邮件 · 第 14 天 / 共 30 天"
+        },
+        "c-026": {
+          "lastActivity": "只访问了一个页面 · 无互动信号"
+        },
+        "c-027": {
+          "lastActivity": "开放日签到 · 看过两次"
+        },
+        "c-028": {
+          "lastActivity": "回复了第三季度广告——想要新建房"
+        },
+        "c-029": {
+          "lastActivity": "已约咨询——周四下午 3 点"
+        },
+        "c-030": {
+          "lastActivity": "人脉分：极高 · 距成交已 5 年",
+          "interest": "2020 年 6 月成交 · 房产净值上涨 35%"
+        },
+        "c-031": {
+          "lastActivity": "收藏了 3 套房——Cap Hill"
+        },
+        "c-032": {
+          "lastActivity": "语音 AI 已接通 · 通话 4 分钟",
+          "tag": "语音 AI 转化"
+        },
+        "c-033": {
+          "lastActivity": "已自动回复 · 对方未再互动"
+        },
+        "c-034": {
+          "lastActivity": "冷读者 · 仅接收月度新闻邮件"
+        },
+        "c-035": {
+          "lastActivity": "开放日客源 · 周六下午看房"
+        },
+        "c-036": {
+          "lastActivity": "周一下午 4 点挂牌前房屋检视",
+          "tag": "卖方——挂牌准备"
+        },
+        "c-037": {
+          "lastActivity": "生日贺卡已自动发出 · 已回复"
+        },
+        "c-038": {
+          "lastActivity": "分享了房贷计算器 · 发给未婚伴侣"
+        },
+        "c-039": {
+          "lastActivity": "多平台重复客源 · 已合并去重"
+        },
+        "c-040": {
+          "lastActivity": "AI 跟进第 2 步已发出"
+        },
+        "c-041": {
+          "lastActivity": "昨天已回复——对新建房有兴趣"
+        },
+        "c-042": {
+          "lastActivity": "已安排验房 · 7124 Aspen Ct",
+          "tag": "合约中"
+        },
+        "c-043": {
+          "lastActivity": "打开了新闻邮件——6 个月来第一次"
+        },
+        "c-044": {
+          "lastActivity": "语音 AI · 要求周二上午回电"
+        },
+        "c-045": {
+          "lastActivity": "AI 短信回拨：响应时间 19 秒",
+          "tag": "一分钟内响应"
+        },
+        "c-046": {
+          "lastActivity": "正在浏览 /homes——看了 2 个页面"
+        },
+        "c-047": {
+          "lastActivity": "5 天前签到 · 培育邮件第 3 步"
+        },
+        "c-048": {
+          "lastActivity": "明天上午 10 点成交电话",
+          "tag": "明天成交"
+        },
+        "c-049": {
+          "lastActivity": "净值报告已送达——增值 38%",
+          "interest": "2019 年 2 月成交 · 有转为投资客源的潜力"
+        },
+        "c-050": {
+          "lastActivity": "AI 已升级 · 议价问题",
+          "tag": "已升级 · 需你处理"
+        }
+      },
+      "dealStages": {
+        "under_contract": "合约中",
+        "inspection": "验房",
+        "appraisal": "估价",
+        "clear_to_close": "可以过户",
+        "closed": "已成交",
+        "active_showing": "正在看房"
+      },
+      "deals": {
+        "d-001": {
+          "nextMilestone": "已安排验房"
+        },
+        "d-002": {
+          "nextMilestone": "估价即将到期"
+        },
+        "d-003": {
+          "nextMilestone": "明天成交电话"
+        },
+        "d-004": {
+          "nextMilestone": "已约第二次看房"
+        }
+      },
+      "drafts": {
+        "dr-001": {
+          "reasoning": "David 问到周二——根据你日历上的空档，提出了两个具体时间。"
+        },
+        "dr-002": {
+          "reasoning": "30 天人脉问候已触发（2020 年 6 月成交）。已补上近期可比成交得出的净值数据。"
+        },
+        "dr-003": {
+          "reasoning": "跟进周二上午 10 点的回电，距今还有 36 小时。已在消息中附上三套匹配房源。"
+        },
+        "dr-004": {
+          "reasoning": "人脉分极高（距成交 5 年、房产净值上涨 35%、人生阶段：家中添丁）。以温和方式试探出售意向。"
+        },
+        "dr-005": {
+          "reasoning": "周六看房前 24 小时提醒。已附上从房源信息中提取的停车与进门说明。"
+        }
+      },
+      "conversations": {
+        "conv-001": {
+          "preview": "AI：“周六上午 11 点可以——我来跟挂牌经纪确认。”"
+        },
+        "conv-002": {
+          "preview": "AI：“你打算什么时候入住？我可以按你 62 万美元的预算找几套。”"
+        },
+        "conv-003": {
+          "preview": "AI 已升级——定价问题超出自动回复范围"
+        },
+        "conv-004": {
+          "preview": "AI：“收到——正在把 Redmond Way 6300 号段的可比成交发到你邮箱。”"
+        },
+        "conv-005": {
+          "preview": "语音 AI 通话 · 4 分钟摘要已附在联系人上"
+        },
+        "conv-006": {
+          "preview": "AI 在 38 秒内回复 · 等待 Hannah 回应"
+        }
+      },
+      "sources": {
+        "open_house": "开放日",
+        "referral": "转介绍",
+        "idx_website": "IDX 网站",
+        "past_client": "老客户"
+      }
     }
   },
   "disclaimers": {

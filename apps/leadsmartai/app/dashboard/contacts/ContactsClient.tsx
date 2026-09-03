@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Plus,
@@ -57,8 +58,17 @@ type LeadRow = {
   offer_won?: number;
 };
 
-type ChartItem = { name: string; value: number; color: string };
-type GrowthItem = { month: string; label: string; count: number };
+/**
+ * A pie slice as the API returns it: what the slice IS, plus its colour.
+ *
+ * `key` rather than `name` — the legend used to render whatever English the
+ * stats route put in `name`, so the Chinese contacts page showed a
+ * `Hot / Warm / Cold` legend beside a table of 热门 / 温和 / 冷淡 pills. The
+ * display word is resolved here, where the locale is known.
+ */
+type ChartItem = { key: string; value: number; color: string };
+/** `month` is "YYYY-MM"; the axis label is formatted per-locale at render. */
+type GrowthItem = { month: string; count: number };
 
 type Stats = {
   rating: ChartItem[];
@@ -103,7 +113,15 @@ const RATING_COLORS: Record<string, string> = {
   cold: "bg-gray-100 text-gray-600",
 };
 
-function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
+function MiniPie({
+  data,
+  title,
+  labelFor,
+}: {
+  data: ChartItem[];
+  title: string;
+  labelFor: (key: string) => string;
+}) {
   const total = data.reduce((s, d) => s + d.value, 0);
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -121,9 +139,9 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
         </div>
         <div className="space-y-1 text-xs">
           {data.map((d) => (
-            <div key={d.name} className="flex items-center gap-2">
+            <div key={d.key} className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-              <span className="text-gray-600">{d.name}</span>
+              <span className="text-gray-600">{labelFor(d.key)}</span>
               <span className="font-semibold text-gray-900">{d.value}</span>
               {total > 0 && <span className="text-gray-400">({Math.round((d.value / total) * 100)}%)</span>}
             </div>
@@ -189,7 +207,7 @@ type SortKey = "name" | "email" | "rating" | "last_contacted_at" | "created_at";
 const RATING_RANK: Record<string, number> = { hot: 0, warm: 1, cold: 2 };
 
 export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow[] }) {
-  const { t } = useTranslation("web_contacts_client");
+  const { t, i18n } = useTranslation("web_contacts_client");
   const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
   /*
@@ -270,6 +288,24 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
   /** Confirm gate for the (irreversible) bulk delete. */
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  /*
+   * Month labels for the growth chart. The stats route used to format these
+   * with a hardcoded "en-US", so the Chinese dashboard's growth axis read
+   * Jan/Feb/Mar. Appending a time keeps "YYYY-MM-01" parsing as LOCAL
+   * midnight — parsed as UTC it lands a month early west of Greenwich.
+   */
+  const growthWithLabels = useMemo(
+    () =>
+      (stats?.growth ?? []).map((g) => ({
+        ...g,
+        label: new Date(`${g.month}-01T00:00:00`).toLocaleDateString(
+          intlLocale(i18n.language),
+          { month: "short", year: "2-digit" },
+        ),
+      })),
+    [stats?.growth, i18n.language],
+  );
 
   const loadStats = useCallback(async () => {
     try {
@@ -448,14 +484,22 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       {/* Charts */}
       {stats && (
         <div className="grid gap-3 md:grid-cols-3">
-          <MiniPie data={stats.rating} title={t("charts.rating")} />
-          <MiniPie data={stats.lastContacted} title={t("charts.last_contacted")} />
+          <MiniPie
+            data={stats.rating}
+            title={t("charts.rating")}
+            labelFor={(key) => t(`rating.${key}`, { defaultValue: key })}
+          />
+          <MiniPie
+            data={stats.lastContacted}
+            title={t("charts.last_contacted")}
+            labelFor={(key) => t(`contactedBucket.${key}`, { defaultValue: key })}
+          />
 
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
             <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("charts.growth")}</h3>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.growth} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+                <BarChart data={growthWithLabels} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
                   <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="#9ca3af" interval={1} />
                   <YAxis tick={{ fontSize: 9 }} stroke="#9ca3af" allowDecimals={false} />

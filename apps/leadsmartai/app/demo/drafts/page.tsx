@@ -2,26 +2,35 @@ import type { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_DRAFTS } from "@/lib/demo/data";
+import { localizeDraft } from "@/lib/demo/localize";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Demo workspace · AI Drafts",
-  description:
-    "See the CloseBoss drafts queue — every drafted reply shows the AI's reasoning, the message, and approve / edit / discard controls. This is what AI follow-up looks like with a human in the loop.",
-  alternates: { canonical: "/demo/drafts" },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.demoPages.metaDraftsTitle", { ns: "dashboard" }),
+    description: t("pages.demoPages.metaDraftsDescription", { ns: "dashboard" }),
+    alternates: { canonical: "/demo/drafts" },
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function DemoDrafts() {
   const t = await getServerT();
+  const agoLabel = (min: number) =>
+    min < 60
+      ? t("pages.demoPages.agoMinutes", { ns: "dashboard", n: min })
+      : t("pages.demoPages.agoHours", { ns: "dashboard", n: Math.floor(min / 60) });
   return (
     <DemoShell active="/demo/drafts">
       <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.aiDrafts", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {DEMO_DRAFTS.length} drafts awaiting your review · Clear in
-            ~4 minutes
+            {t("pages.demoPages.draftsCount", {
+              ns: "dashboard",
+              n: DEMO_DRAFTS.length,
+            })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -41,7 +50,7 @@ export default async function DemoDrafts() {
       </section>
 
       <ul className="mt-5 space-y-4">
-        {DEMO_DRAFTS.map((draft) => (
+        {DEMO_DRAFTS.map(localizeDraft.bind(null, t)).map((draft) => (
           <li
             key={draft.id}
             className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
@@ -52,10 +61,11 @@ export default async function DemoDrafts() {
                   {draft.contactName}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {draft.channel === "sms" ? "SMS" : t("pages.drafts.email", { ns: "dashboard" })} · drafted{" "}
-                  {draft.ago < 60
-                    ? `${draft.ago}m ago`
-                    : `${Math.floor(draft.ago / 60)}h ago`}
+                  {draft.channel === "sms" ? "SMS" : t("pages.drafts.email", { ns: "dashboard" })} ·{" "}
+                  {t("pages.demoPages.draftedAgo", {
+                    ns: "dashboard",
+                    ago: agoLabel(draft.ago),
+                  })}
                 </p>
               </div>
               <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">

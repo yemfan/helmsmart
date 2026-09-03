@@ -8,6 +8,11 @@ import {
   DEMO_KPIS,
   DEMO_TASKS,
 } from "@/lib/demo/data";
+import {
+  localizeBriefing,
+  localizeEvent,
+  localizeTask,
+} from "@/lib/demo/localize";
 import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 
@@ -44,13 +49,13 @@ export default async function DemoOverview() {
         {/* Priority alerts */}
         <div className="flex flex-wrap gap-2">
           <span className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300">
-            2 escalated AI drafts need you
+            {t("pages.demoPages.alertEscalatedDrafts", { ns: "dashboard", n: 2 })}
           </span>
           <span className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
-            3 unread messages
+            {t("pages.demoPages.alertUnread", { ns: "dashboard", n: 3 })}
           </span>
           <span className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300">
-            2 urgent tasks
+            {t("pages.demoPages.alertUrgentTasks", { ns: "dashboard", n: 2 })}
           </span>
         </div>
 
@@ -58,7 +63,7 @@ export default async function DemoOverview() {
         <section>
           <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoPages.thisMorning", { ns: "dashboard" })}</h2>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
-            {DEMO_BRIEFINGS.map((b) => (
+            {DEMO_BRIEFINGS.map(localizeBriefing.bind(null, t)).map((b) => (
               <article
                 key={b.id}
                 className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
@@ -86,25 +91,25 @@ export default async function DemoOverview() {
             label={t("pages.demoPages.newLeadsToday", { ns: "dashboard" })}
             value={DEMO_KPIS.newLeadsToday.toString()}
             tone="blue"
-            sub="5 from Zillow / 2 from Facebook"
+            sub={t("pages.demoPages.kpiSubNewLeads", { ns: "dashboard" })}
           />
           <KpiTile
             label={t("pages.demoPages.hotLeads", { ns: "dashboard" })}
             value={DEMO_KPIS.hotLeads.toString()}
             tone="orange"
-            sub="A-scored, action required"
+            sub={t("pages.demoPages.kpiSubHotLeads", { ns: "dashboard" })}
           />
           <KpiTile
             label={t("pages.demoPages.messagesSent", { ns: "dashboard" })}
             value={DEMO_KPIS.messagesSent.toString()}
             tone="violet"
-            sub="34 AI · 4 you"
+            sub={t("pages.demoPages.kpiSubMessagesSent", { ns: "dashboard" })}
           />
           <KpiTile
             label={t("pages.demoPages.quietLeads", { ns: "dashboard" })}
             value={DEMO_KPIS.quietLeads.toString()}
             tone="amber"
-            sub="7+ days inactive"
+            sub={t("pages.demoPages.kpiSubQuietLeads", { ns: "dashboard" })}
           />
         </section>
 
@@ -115,11 +120,14 @@ export default async function DemoOverview() {
               <Clock className="h-3.5 w-3.5" aria-hidden />{t("pages.demoPages.medianResponse", { ns: "dashboard" })}</div>
             <p className="mt-2 font-heading text-3xl font-bold text-slate-900 dark:text-white">
               {DEMO_KPIS.weeklyResponseTimeSec}
-              <span className="text-base font-medium text-slate-500"> sec</span>
+              <span className="text-base font-medium text-slate-500">
+                {" "}
+                {t("pages.demoPages.secondsUnit", { ns: "dashboard" })}
+              </span>
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t("pages.dashFragments.thisWeekCombined", { ns: "dashboard" })}{" "}
               <span className="font-semibold text-emerald-600">
-                ↓ 12s vs last week
+                {t("pages.demoPages.responseDelta", { ns: "dashboard" })}
               </span>
             </p>
           </article>
@@ -130,7 +138,7 @@ export default async function DemoOverview() {
               {DEMO_KPIS.weeklyTours}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              5 booked by AI; 4 by you. 1 conversion to offer.
+              {t("pages.demoPages.toursSub", { ns: "dashboard" })}
             </p>
           </article>
           <article className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
@@ -140,7 +148,7 @@ export default async function DemoOverview() {
               11
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              8 qualified · 3 callbacks booked · 0 dropped to voicemail
+              {t("pages.demoPages.voiceCallsSub", { ns: "dashboard" })}
             </p>
           </article>
         </section>
@@ -158,7 +166,7 @@ export default async function DemoOverview() {
               </Link>
             </div>
             <ul className="mt-3 space-y-2">
-              {DEMO_EVENTS.slice(0, 5).map((event) => (
+              {DEMO_EVENTS.slice(0, 5).map(localizeEvent.bind(null, t)).map((event) => (
                 <li
                   key={event.id}
                   className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800/40"
@@ -185,7 +193,7 @@ export default async function DemoOverview() {
               <DemoDisabledButton label={t("pages.demoPages.addTask", { ns: "dashboard" })} variant="ghost" />
             </div>
             <ul className="mt-3 space-y-2">
-              {DEMO_TASKS.map((task) => (
+              {DEMO_TASKS.map(localizeTask.bind(null, t)).map((task) => (
                 <li
                   key={task.id}
                   className="rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800"
@@ -263,8 +271,7 @@ async function CtaFooter() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">{t("pages.demoPages.likeIt", { ns: "dashboard" })}</p>
           <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.demoPages.dayOne", { ns: "dashboard" })}</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-            14-day free trial, no credit card. Bring your own contacts via
-            CSV import — or let us migrate for you.
+            {t("pages.demoPages.trialFinePrint", { ns: "dashboard" })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

@@ -2,19 +2,23 @@ import type { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_CONVERSATIONS } from "@/lib/demo/data";
+import { localizeConversation, localizeSource } from "@/lib/demo/localize";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Demo workspace · Inbox",
-  description:
-    "See CloseBoss's inbox in action — sub-minute AI follow-up, escalation rules, and voice-AI call summaries in one feed.",
-  alternates: { canonical: "/demo/inbox" },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.demoPages.metaInboxTitle", { ns: "dashboard" }),
+    description: t("pages.demoPages.metaInboxDescription", { ns: "dashboard" }),
+    alternates: { canonical: "/demo/inbox" },
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function DemoInbox() {
   const t = await getServerT();
-  const focused = DEMO_CONVERSATIONS[0];
+  const conversations = DEMO_CONVERSATIONS.map(localizeConversation.bind(null, t));
+  const focused = conversations[0];
 
   return (
     <DemoShell active="/demo/inbox">
@@ -22,8 +26,11 @@ export default async function DemoInbox() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.inbox", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {DEMO_CONVERSATIONS.length} conversations ·{" "}
-            {DEMO_CONVERSATIONS.filter((c) => c.unread).length} unread
+            {t("pages.demoPages.inboxCount", {
+              ns: "dashboard",
+              total: conversations.length,
+              unread: conversations.filter((c) => c.unread).length,
+            })}
           </p>
         </div>
         <DemoDisabledButton label={t("pages.demoPages.compose", { ns: "dashboard" })} />
@@ -37,7 +44,7 @@ export default async function DemoInbox() {
             <p className="text-[10px] font-medium text-slate-400">{t("pages.demoPages.autoSorted", { ns: "dashboard" })}</p>
           </div>
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-            {DEMO_CONVERSATIONS.map((conv, i) => (
+            {conversations.map((conv, i) => (
               <li
                 key={conv.id}
                 className={`px-4 py-3 ${
@@ -61,14 +68,14 @@ export default async function DemoInbox() {
                       ) : null}
                     </div>
                     <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                      {conv.contactCity} · {conv.source}
+                      {conv.contactCity} · {localizeSource(t, conv.source)}
                     </p>
                     <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
                       {conv.preview}
                     </p>
                   </div>
                   <p className="shrink-0 text-[10px] font-medium text-slate-400">
-                    {formatAgo(conv.ago)}
+                    {formatAgo(t, conv.ago)}
                   </p>
                 </div>
               </li>
@@ -85,8 +92,12 @@ export default async function DemoInbox() {
                   {focused.contactName}
                 </h2>
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  {focused.contactCity} · Source: {focused.source} · Score:{" "}
-                  {focused.score}
+                  {focused.contactCity} ·{" "}
+                  {t("pages.demoPages.sourceScore", {
+                    ns: "dashboard",
+                    source: focused.source,
+                    score: focused.score,
+                  })}
                 </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -99,7 +110,7 @@ export default async function DemoInbox() {
 
           <div className="space-y-4 px-5 py-5">
             {focused.messages.map((m) => (
-              <Message key={m.id} message={m} />
+              <Message key={m.id} message={m} agoLabel={formatAgo(t, m.ago)} />
             ))}
           </div>
 
@@ -110,7 +121,7 @@ export default async function DemoInbox() {
               </div>
               <div className="flex-1">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                  AI suggestion · ready when you are
+                  {t("pages.demoPages.aiSuggestionReady", { ns: "dashboard" })}
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-700 dark:text-slate-200">
                   &ldquo;Sarah — confirmed Saturday 11am with the listing
@@ -134,8 +145,10 @@ export default async function DemoInbox() {
 
 function Message({
   message,
+  agoLabel,
 }: {
   message: (typeof DEMO_CONVERSATIONS)[number]["messages"][number];
+  agoLabel: string;
 }) {
   const isOutbound = message.direction === "outbound";
   const aligned = isOutbound ? "items-end" : "items-start";
@@ -155,7 +168,7 @@ function Message({
         <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {message.fromLabel} · {message.channel.toUpperCase()}
         </p>
-        <p className="text-[10px] text-slate-400">{formatAgo(message.ago)}</p>
+        <p className="text-[10px] text-slate-400">{agoLabel}</p>
       </div>
       <p className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-6 ${bubble}`}>
         {message.body}
@@ -179,10 +192,17 @@ function ScoreBadge({ score }: { score: "A" | "B" | "C" }) {
   );
 }
 
-function formatAgo(min: number): string {
-  if (min < 60) return `${min}m`;
+/**
+ * Relative age. The m/h/d suffixes are the app talking, not a fixture, so they
+ * are keys: "38m" is not how a Chinese-speaking reader writes 38 minutes.
+ */
+function formatAgo(
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  min: number,
+): string {
+  if (min < 60) return t("pages.demoPages.agoMinutes", { ns: "dashboard", n: min });
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h`;
+  if (hr < 24) return t("pages.demoPages.agoHours", { ns: "dashboard", n: hr });
   const day = Math.floor(hr / 24);
-  return `${day}d`;
+  return t("pages.demoPages.agoDays", { ns: "dashboard", n: day });
 }

@@ -1,39 +1,49 @@
 import type { Metadata } from "next";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_CONTACTS, type DemoLeadScore } from "@/lib/demo/data";
+import { localizeContact, localizeSource } from "@/lib/demo/localize";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Demo workspace · Contacts",
-  description:
-    "Browse a sample CloseBoss contacts list — 50 contacts with AI lead scoring, lifecycle stage, source attribution, and last-activity context.",
-  alternates: { canonical: "/demo/contacts" },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.demoPages.metaContactsTitle", { ns: "dashboard" }),
+    description: t("pages.demoPages.metaContactsDescription", { ns: "dashboard" }),
+    alternates: { canonical: "/demo/contacts" },
+    robots: { index: false, follow: true },
+  };
+}
 
-const STAGE_LABEL: Record<string, { label: string; className: string }> = {
+/*
+ * Stage chips: the COLOUR is fixed per stage, the WORD is not. This map used
+ * to carry both, and a module-scope label map is exactly the shape that looks
+ * internationalised from the call site and renders English anyway — the same
+ * trap that left the dashboard's own chips in English. The label now comes
+ * from a key resolved per request.
+ */
+const STAGE_STYLE: Record<string, { labelKey: string; className: string }> = {
   lead: {
-    label: "Lead",
+    labelKey: "stageLead",
     className:
       "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300",
   },
   nurture: {
-    label: "Nurture",
+    labelKey: "stageNurture",
     className:
       "bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300",
   },
   appointment: {
-    label: "Appointment",
+    labelKey: "stageAppointment",
     className:
       "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
   },
   active_client: {
-    label: "Active client",
+    labelKey: "stageActiveClient",
     className:
       "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-300",
   },
   past_client: {
-    label: "Past client",
+    labelKey: "stagePastClient",
     className:
       "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   },
@@ -53,7 +63,13 @@ export default async function DemoContacts() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.contacts", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {total} total · {hot} hot · {escalated} {t("pages.dashFragments.escalatedToYou", { ns: "dashboard" })}</p>
+            {t("pages.demoPages.contactsCount", {
+              ns: "dashboard",
+              total,
+              hot,
+              escalated,
+            })}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <DemoDisabledButton label={t("pages.demoPages.importCsv", { ns: "dashboard" })} variant="ghost" />
@@ -74,7 +90,7 @@ export default async function DemoContacts() {
           count={DEMO_CONTACTS.filter((c) => c.source === "Open House").length}
         />
         <Chip
-          label="Sphere · past client"
+          label={t("pages.demoPages.chipSpherePastClient", { ns: "dashboard" })}
           count={
             DEMO_CONTACTS.filter((c) => c.stage === "past_client").length
           }
@@ -98,7 +114,7 @@ export default async function DemoContacts() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-            {DEMO_CONTACTS.map((c) => (
+            {DEMO_CONTACTS.map(localizeContact.bind(null, t)).map((c) => (
               <tr
                 key={c.id}
                 className="transition hover:bg-slate-50 dark:hover:bg-slate-800/40"
@@ -114,16 +130,18 @@ export default async function DemoContacts() {
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${STAGE_LABEL[c.stage].className}`}
+                    className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${STAGE_STYLE[c.stage].className}`}
                   >
-                    {STAGE_LABEL[c.stage].label}
+                    {t(`pages.demoPages.${STAGE_STYLE[c.stage].labelKey}`, {
+                      ns: "dashboard",
+                    })}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <ScoreBadge score={c.score} />
                 </td>
                 <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
-                  {c.source}
+                  {localizeSource(t, c.source)}
                 </td>
                 <td className="px-4 py-3">
                   <p className="text-xs leading-5 text-slate-700 dark:text-slate-200">

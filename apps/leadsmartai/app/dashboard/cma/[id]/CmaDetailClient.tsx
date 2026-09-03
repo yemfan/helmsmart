@@ -153,7 +153,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
             href="/dashboard/cma"
             className="text-xs font-semibold text-slate-500 hover:text-slate-700"
           >
-            ← All CMAs
+            {t("pages.cmaDetail.backToAll")}
           </Link>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
             {cma.title || cma.subjectAddress}
@@ -177,13 +177,17 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
               href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/report`}
               className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
             >
-              📄 Generate Report
+              {t("pages.cmaDetail.generateReport")}
             </a>
             <ShareReport
               shareUrl={shareUrl}
               downloadHref={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
-              subject={`Comparative Market Analysis — ${cma.subjectAddress}`}
-              resourceLabel={`the CMA for ${cma.subjectAddress}`}
+              subject={t("pages.cmaDetail.emailSubject", {
+                address: cma.subjectAddress,
+              })}
+              resourceLabel={t("pages.cmaDetail.resourceLabel", {
+                address: cma.subjectAddress,
+              })}
             />
             <CmaEmailToSellerButton cmaId={cma.id} defaultRecipient={null} />
           </div>
@@ -192,7 +196,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
             href="/dashboard/cma"
             className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
-            ↻ Regenerate CMA
+            {t("pages.cmaDetail.regenerate")}
           </Link>
         )}
       </div>
@@ -218,13 +222,23 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           <ValueCell label={t("pages.cmaDetail.high")} value={cma.highEstimate} tone="text-slate-700" />
         </div>
         <p className="mt-3 text-[11px] text-slate-500">
-          {subject.beds} bed / {subject.baths} bath / {subject.sqft.toLocaleString()} sqft
+          {t("pages.cmaDetail.subjectLine", {
+            beds: subject.beds,
+            baths: subject.baths,
+            sqft: subject.sqft.toLocaleString(),
+          })}
           {subject.propertyType ? ` · ${subject.propertyType}` : ""}
           {!isCondo(subject.propertyType) && formatLot(subject.lotSizeSqft, subject.propertyType) !== "—"
-            ? ` · lot ${formatLot(subject.lotSizeSqft, subject.propertyType)}`
+            ? t("pages.cmaDetail.lotSuffix", {
+                lot: formatLot(subject.lotSizeSqft, subject.propertyType),
+              })
             : ""}
-          {formatHoa(subject.hoaMonthly) !== "—" ? ` · HOA ${formatHoa(subject.hoaMonthly)}` : ""}
-          {subject.yearBuilt ? ` · built ${subject.yearBuilt}` : ""}
+          {formatHoa(subject.hoaMonthly) !== "—"
+            ? t("pages.cmaDetail.hoaSuffix", { hoa: formatHoa(subject.hoaMonthly) })
+            : ""}
+          {subject.yearBuilt
+            ? t("pages.cmaDetail.builtSuffix", { year: subject.yearBuilt })
+            : ""}
           {subject.condition ? ` · ${subject.condition}` : ""}
         </p>
       </section>

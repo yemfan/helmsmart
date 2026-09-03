@@ -61,7 +61,12 @@ export default function HomeValueLandingPage() {
       const res = await fetch("/api/property/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: address.trim(), refresh: true }),
+        /*
+         * No `refresh: true` — see the note in the home-value-estimator page.
+         * Forcing a refresh bypassed the 180-day property cache on every
+         * lookup, so a repeat visit re-paid the full ~35s AI property lookup.
+         */
+        body: JSON.stringify({ address: address.trim() }),
       });
 
       const json = (await res.json().catch(() => ({}))) as any;

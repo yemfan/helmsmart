@@ -2,7 +2,8 @@ import "server-only";
 
 import { cachedSystem, readCacheUsage } from "@leadsmart/shared/utils/promptCache";
 
-import { languageDirective } from "./languageDirective";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
+import { languageDirective } from "@/lib/i18n/languageDirective";
 import { cacheHitRatio, totalContextTokens } from "./tokenAccounting";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
@@ -109,28 +110,6 @@ function realModelClient(): ModelClient {
 
 // ── system prompt ────────────────────────────────────────────────────
 
-/**
- * The last locale this agent actually used, for runs that start without a
- * request behind them.
- *
- * The overnight cron is the case: it fires at 6am with no cookies, and
- * defaulting it to English would hand a Chinese-speaking realtor an English
- * mission report every single morning — the one report they are most likely to
- * read cold. Their previous run is the best evidence available of what they
- * read in.
- */
-async function lastLocaleForAgent(agentId: string): Promise<string | null> {
-  const { data } = await supabaseAdmin
-    .from("boss_runs")
-    .select("locale")
-    .eq("agent_id", agentId)
-    .not("locale", "is", null)
-    .order("started_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return (data as { locale?: string | null } | null)?.locale ?? null;
-}
-
 async function buildSystemPrompt(run: BossRunRow): Promise<string> {
   const [{ data: agentRow }, matrix, globalAuto] = await Promise.all([
     supabaseAdmin
@@ -231,7 +210,14 @@ export async function startBossRun(args: {
       instruction_id: args.instructionId ?? null,
       objective: args.objective.slice(0, 4000),
       status: "planning",
-      locale: args.locale ?? (await lastLocaleForAgent(args.agentId)),
+      /*
+       * No request means no cookie: the overnight cron fires at 6am and would
+       * otherwise hand a Chinese-speaking realtor an English mission report
+       * every morning — the one report they are most likely to read cold.
+       * `agentUiLocale` resolves their saved pick (and falls back to the
+       * locale of their last run).
+       */
+      locale: args.locale ?? (await agentUiLocale(args.agentId)),
       ...(args.maxToolCalls ? { max_tool_calls: args.maxToolCalls } : {}),
     })
     .select("id")
