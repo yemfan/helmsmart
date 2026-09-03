@@ -28,6 +28,18 @@ export function AssistantHeader({
     avatar_id: string;
     avatar_url: string | null;
   } | null>(null);
+  /**
+   * The skills this agent actually has switched on, and the catalog that gives
+   * them names and descriptions.
+   *
+   * The header used to chip out assistant.skills — the ROSTER default — so an
+   * agent who turned a skill off still saw it advertised here, while
+   * getAssistantVoiceSettings built the real call behaviour from
+   * ai_assistants.enabled_skills. Two answers to "what can Emma do", and the
+   * one on screen was the wrong one. Same endpoint, one more field.
+   */
+  const [enabledSkills, setEnabledSkills] = useState<string[] | null>(null);
+  const [catalog, setCatalog] = useState<Record<string, { name: string; description: string }>>({});
   useEffect(() => {
     let active = true;
     fetch("/api/dashboard/closeboss/team")
@@ -36,7 +48,25 @@ export function AssistantHeader({
         if (!active || !res?.ok) return;
         const row = (res.assistants ?? []).find(
           (a: { type?: string }) => a.type === assistant.type,
-        ) as { name?: string; avatar_id?: string; avatar_url?: string | null } | undefined;
+        ) as {
+          name?: string;
+          avatar_id?: string;
+          avatar_url?: string | null;
+          enabled_skills?: unknown;
+        } | undefined;
+        const cat: Record<string, { name: string; description: string }> = {};
+        for (const sk of (res.skills ?? []) as { key?: unknown; name?: unknown; description?: unknown }[]) {
+          if (typeof sk.key === "string") {
+            cat[sk.key] = {
+              name: typeof sk.name === "string" ? sk.name : sk.key,
+              description: typeof sk.description === "string" ? sk.description : "",
+            };
+          }
+        }
+        setCatalog(cat);
+        if (Array.isArray(row?.enabled_skills)) {
+          setEnabledSkills(row.enabled_skills.filter((v): v is string => typeof v === "string"));
+        }
         if (row) {
           setCustom({
             name: row.name || assistant.displayName,
@@ -52,6 +82,9 @@ export function AssistantHeader({
   }, [assistant.type, assistant.name]);
 
   const name = assistant.displayName;
+  // Roster defaults until the agent's own row arrives, so the card never
+  // flashes empty and never claims a skill the agent switched off.
+  const skills = enabledSkills ?? [...assistant.skills];
   const avatarId = custom?.avatar_id || defaultAvatarForType(assistant.type);
   const avatarUrl = custom?.avatar_url ?? null;
 
@@ -64,30 +97,79 @@ export function AssistantHeader({
           <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{name}</h1>
           <p className="text-sm font-medium text-gray-600">{t(`roster.${assistant.type}.name`, { defaultValue: assistant.name })}</p>
           <p className="text-xs text-gray-400">{t(`assistants.personality.${assistant.type}`, { defaultValue: assistant.personality })}</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {assistant.skills.map((s) => (
-              <span key={s} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
-                {t(`assistants.skills.${s}`, { defaultValue: s.replace(/_/g, " ") })}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
-      {actions && actions.length > 0 && (
-        <div className="flex shrink-0 gap-2">
-          {actions.map((a) =>
-            a.href ? (
-              <Link key={a.label} href={a.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                {a.label}
-              </Link>
-            ) : (
-              <button key={a.label} type="button" onClick={a.onClick} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                {a.label}
-              </button>
-            ),
-          )}
-        </div>
-      )}
+      <div className="flex shrink-0 flex-col items-stretch gap-2 sm:w-72">
+        <AssistantSkillsCard skills={skills} catalog={catalog} />
+        {actions && actions.length > 0 && (
+          <div className="flex flex-wrap justify-end gap-2">
+            {actions.map((a) =>
+              a.href ? (
+                <Link key={a.label} href={a.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                  {a.label}
+                </Link>
+              ) : (
+                <button key={a.label} type="button" onClick={a.onClick} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                  {a.label}
+                </button>
+              ),
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * What this assistant can do, as a panel rather than a chip row.
+ *
+ * Six pills wrapped under the personality line and pushed the KPI cards down
+ * the page, so the first thing the eye met was a run of grey lozenges. As a
+ * card it balances the header, and it has room to say what each skill IS —
+ * the catalog carries a one-line description per skill and none of it was
+ * reaching the screen.
+ */
+function AssistantSkillsCard({
+  skills,
+  catalog,
+}: {
+  skills: string[];
+  catalog: Record<string, { name: string; description: string }>;
+}) {
+  const { t } = useTranslation("dashboard");
+  if (skills.length === 0) return null;
+
+  /** Catalog name first, then a translated key, then the humanised key. */
+  function labelFor(key: string): string {
+    const fromCatalog = catalog[key]?.name;
+    if (fromCatalog) return fromCatalog;
+    return t(`assistants.skills.${key}`, { defaultValue: key.replace(/_/g, " ") });
+  }
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+          {t("assistants.skillsHeading", { defaultValue: "Skills" })}
+        </p>
+        <span className="text-[10px] font-medium text-gray-400">{skills.length}</span>
+      </div>
+      <ul className="mt-2 space-y-1">
+        {skills.map((key) => {
+          const description = catalog[key]?.description;
+          return (
+            <li key={key} className="flex items-start gap-1.5 text-xs text-gray-700">
+              <span aria-hidden className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+              {/* The description is the useful half; kept in the title so the
+                  card stays a card rather than a wall of prose. */}
+              <span className="capitalize" title={description || undefined}>
+                {labelFor(key)}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
