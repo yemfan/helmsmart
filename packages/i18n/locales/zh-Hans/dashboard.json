@@ -1549,6 +1549,7 @@
     "filterUnread": "未读（{{count}}）",
     "filterSms": "短信",
     "filterEmail": "邮件",
+    "filterCall": "通话",
     "empty": "暂无对话。",
     "emptySearch": "没有符合搜索条件的对话。",
     "leadFallback": "客户 #{{id}}",

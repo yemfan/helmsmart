@@ -1549,6 +1549,7 @@
     "filterUnread": "Unread ({{count}})",
     "filterSms": "SMS",
     "filterEmail": "Email",
+    "filterCall": "Calls",
     "empty": "No conversations.",
     "emptySearch": "No conversations match your search.",
     "leadFallback": "Lead #{{id}}",

@@ -11,7 +11,8 @@ export async function GET() {
     const { data: agent } = await supabase.from("agents").select("id").eq("auth_user_id", userData.user.id).maybeSingle();
     if (!agent?.id) return NextResponse.json({ ok: false, error: "Agent not found" }, { status: 403 });
 
-    const threads = await getMobileInbox(String(agent.id));
+    // The web Conversations view threads calls alongside SMS and email.
+    const threads = await getMobileInbox(String(agent.id), { includeCalls: true });
 
     return NextResponse.json({ ok: true, threads });
   } catch (e: unknown) {

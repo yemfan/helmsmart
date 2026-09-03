@@ -9,7 +9,7 @@ import { intlLocale } from "@/lib/i18n/locale";
 
 type Thread = {
   leadId: string;
-  channel: "sms" | "email";
+  channel: "sms" | "email" | "call";
   leadName: string | null;
   preview: string;
   lastMessageAt: string;
@@ -24,6 +24,10 @@ type Message = {
   direction: "inbound" | "outbound";
   channel: string;
   created_at: string;
+  /** Calls only — length in seconds, rendered as m:ss beside the timestamp. */
+  durationSeconds?: number | null;
+  /** Calls only — completed, missed, no_answer, in_progress. */
+  status?: string | null;
 };
 
 type LeadInfo = {
@@ -35,7 +39,15 @@ type LeadInfo = {
   property_address: string | null;
 };
 
-const CHANNEL_ICON: Record<string, string> = { sms: "💬", email: "✉️" };
+const CHANNEL_ICON: Record<string, string> = { sms: "💬", email: "✉️", call: "📞" };
+
+/** Call length as m:ss. Locale-neutral, so it needs no translated string. */
+function callLength(seconds: number | null | undefined): string | null {
+  if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) return null;
+  const m = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
 
 /**
  * These three used to hardcode "en-US", so a Chinese thread list still read
@@ -72,7 +84,7 @@ export default function InboxClient() {
   const tr = t;
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "unread" | "sms" | "email">("all");
+  const [filter, setFilter] = useState<"all" | "unread" | "sms" | "email" | "call">("all");
   const [search, setSearch] = useState("");
   const [selectedLead, setSelectedLead] = useState<{ leadId: string; channel: string } | null>(null);
   const [lead, setLead] = useState<LeadInfo | null>(null);
@@ -193,6 +205,7 @@ export default function InboxClient() {
     if (filter === "unread" && t.lastDirection !== "inbound") return false;
     if (filter === "sms" && t.channel !== "sms") return false;
     if (filter === "email" && t.channel !== "email") return false;
+    if (filter === "call" && t.channel !== "call") return false;
     if (search.trim()) {
       const s = search.toLowerCase();
       if (!(t.leadName ?? "").toLowerCase().includes(s) && !t.preview.toLowerCase().includes(s)) return false;
@@ -232,7 +245,7 @@ export default function InboxClient() {
             className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm"
           />
           <div className="flex gap-1">
-            {(["all", "unread", "sms", "email"] as const).map((f) => (
+            {(["all", "unread", "sms", "email", "call"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -246,7 +259,9 @@ export default function InboxClient() {
                     ? t("inbox.filterSms")
                     : f === "email"
                       ? t("inbox.filterEmail")
-                      : t("inbox.filterAll")}
+                      : f === "call"
+                        ? t("inbox.filterCall")
+                        : t("inbox.filterAll")}
               </button>
             ))}
           </div>
@@ -362,6 +377,10 @@ export default function InboxClient() {
                             <div className={`flex items-center gap-1.5 mt-1 ${isOutbound ? "justify-end" : ""}`}>
                               <span className="text-[10px] opacity-50">{CHANNEL_ICON[m.channel] ?? ""}</span>
                               <span className="text-[10px] opacity-50">{formatTime(m.created_at, locale)}</span>
+                              {/* Only calls have a length; m:ss needs no translation. */}
+                              {callLength(m.durationSeconds) && (
+                                <span className="text-[10px] opacity-50">{callLength(m.durationSeconds)}</span>
+                              )}
                             </div>
                           </div>
                         </div>
