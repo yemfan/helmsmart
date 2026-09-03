@@ -26,7 +26,8 @@
       "errors": {
         "update_failed": "Update failed",
         "delete_failed": "Delete failed",
-        "create_failed": "Create failed"
+        "create_failed": "Create failed",
+        "unavailable": "Custom lists aren’t switched on for this account yet — nothing was saved."
       }
     }
   }

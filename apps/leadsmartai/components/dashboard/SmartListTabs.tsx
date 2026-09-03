@@ -91,6 +91,33 @@ function SmartListManager({
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
 
+  /**
+   * The reason a request failed, in the reader's language.
+   *
+   * Every handler here used to throw an Error whose message was the HTTP
+   * status, then render it with `e instanceof Error ? e.message : t(fallback)`.
+   * Because it always threw an Error, the translated fallback was unreachable
+   * dead code and a failed save displayed the bare string "500" — which is
+   * exactly what an agent saw on trying to add a list. The route explains
+   * itself in the response body; this reads that, translates the codes it
+   * knows, and leaves the untranslated detail in the console for whoever is
+   * debugging rather than in the face of whoever is working.
+   */
+  async function failureMessage(res: Response, fallbackKey: string): Promise<string> {
+    let code: string | null = null;
+    try {
+      const body = (await res.json()) as { error?: unknown };
+      if (typeof body?.error === "string") code = body.error;
+    } catch {
+      // No JSON body — the translated fallback below still applies.
+    }
+    if (code) console.error("[smart-lists]", res.status, code);
+    if (code === "smart_lists_unavailable") {
+      return t("smart_lists.manager.errors.unavailable");
+    }
+    return t(fallbackKey);
+  }
+
   async function toggleHidden(list: SmartList) {
     setPendingId(list.id);
     setError(null);
@@ -100,10 +127,13 @@ function SmartListManager({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isHidden: !list.isHidden }),
       });
-      if (!res.ok) throw new Error(`${res.status}`);
+      if (!res.ok) {
+        setError(await failureMessage(res, "smart_lists.manager.errors.update_failed"));
+        return;
+      }
       router.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("smart_lists.manager.errors.update_failed"));
+    } catch {
+      setError(t("smart_lists.manager.errors.update_failed"));
     } finally {
       setPendingId(null);
     }
@@ -117,10 +147,13 @@ function SmartListManager({
       const res = await fetch(`/api/dashboard/smart-lists/${list.id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error(`${res.status}`);
+      if (!res.ok) {
+        setError(await failureMessage(res, "smart_lists.manager.errors.delete_failed"));
+        return;
+      }
       router.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("smart_lists.manager.errors.delete_failed"));
+    } catch {
+      setError(t("smart_lists.manager.errors.delete_failed"));
     } finally {
       setPendingId(null);
     }
@@ -140,12 +173,15 @@ function SmartListManager({
           filterConfig: {},
         }),
       });
-      if (!res.ok) throw new Error(`${res.status}`);
+      if (!res.ok) {
+        setError(await failureMessage(res, "smart_lists.manager.errors.create_failed"));
+        return;
+      }
       setNewName("");
       setCreating(false);
       router.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("smart_lists.manager.errors.create_failed"));
+    } catch {
+      setError(t("smart_lists.manager.errors.create_failed"));
     } finally {
       setPendingId(null);
     }
