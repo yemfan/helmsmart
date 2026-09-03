@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { updateOrg } from "@/lib/actions/org-update";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { createRetellNumber, importRetellNumber, getRetellNumber } from "@/lib/retell";
 
@@ -44,9 +45,21 @@ async function currentOrg(): Promise<{ id: string; name: string; twilio_number: 
   return (data as { id: string; name: string; twilio_number: string | null } | null) ?? null;
 }
 
+/**
+ * Records a number against the org. THROWS on failure, deliberately.
+ *
+ * This runs after a number has been provisioned — money has already been spent
+ * and the number exists at the provider. Silently failing to record it leaves
+ * an org paying for a line the app does not know about and cannot route, which
+ * is worse than surfacing the error to whoever just clicked Buy.
+ */
 async function storeNumber(orgId: string, e164: string): Promise<void> {
-  const supabase = await createClient();
-  await supabase.from("organizations").update({ twilio_number: e164 }).eq("id", orgId);
+  const saved = await updateOrg(orgId, { twilio_number: e164 }, "storeNumber");
+  if (!saved.ok) {
+    throw new Error(
+      `Number ${e164} was provisioned but could not be saved to the organization: ${saved.error}`,
+    );
+  }
   revalidatePath("/voice");
   revalidatePath("/reception");
 }

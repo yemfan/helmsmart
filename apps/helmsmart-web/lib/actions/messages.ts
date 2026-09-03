@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { updateOrg, type OrgUpdateResult } from "@/lib/actions/org-update";
 // Aliased: this module exports its own `sendEmail` server action.
 import { sendEmail as sendEmailViaResend, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
@@ -144,28 +145,20 @@ export async function markThreadRead(clientId: string | null, address?: string |
 
 // ─── Toggle auto-reply ────────────────────────────────────────────────────────
 
-export async function toggleAutoReply(enabled: boolean) {
+export async function toggleAutoReply(enabled: boolean): Promise<OrgUpdateResult> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return;
+  if (!orgId) return { ok: false, error: "No organization selected." };
 
-  const supabase = await createClient();
-  await supabase
-    .from("organizations")
-    .update({ auto_reply: enabled })
-    .eq("id", orgId);
+  return updateOrg(orgId, { auto_reply: enabled }, "toggleAutoReply");
 }
 
-export async function saveAutoReplyMsg(msg: string) {
+export async function saveAutoReplyMsg(msg: string): Promise<OrgUpdateResult> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return;
+  if (!orgId) return { ok: false, error: "No organization selected." };
 
-  const supabase = await createClient();
-  await supabase
-    .from("organizations")
-    .update({ auto_reply_msg: msg })
-    .eq("id", orgId);
+  return updateOrg(orgId, { auto_reply_msg: msg }, "saveAutoReplyMsg");
 }
 
 export async function saveTwilioNumber(
@@ -175,11 +168,10 @@ export async function saveTwilioNumber(
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
   if (!orgId) return { ok: false, error: "No organization selected." };
 
-  const supabase = await createClient();
-
   // Blank clears the number (lets a user save other settings without one).
   if (!number.trim()) {
-    await supabase.from("organizations").update({ twilio_number: null }).eq("id", orgId);
+    const cleared = await updateOrg(orgId, { twilio_number: null }, "saveTwilioNumber:clear");
+    if (!cleared.ok) return { ok: false, error: cleared.error };
     return { ok: true, value: "" };
   }
 
@@ -187,7 +179,8 @@ export async function saveTwilioNumber(
   const result = normalizePhoneE164(number);
   if (!result.ok) return { ok: false, error: result.error };
 
-  await supabase.from("organizations").update({ twilio_number: result.value }).eq("id", orgId);
+  const saved = await updateOrg(orgId, { twilio_number: result.value }, "saveTwilioNumber");
+  if (!saved.ok) return { ok: false, error: saved.error };
   return { ok: true, value: result.value };
 }
 
