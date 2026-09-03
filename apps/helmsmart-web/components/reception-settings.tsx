@@ -17,24 +17,40 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
   const [msg, setMsg]         = useState(autoReplyMsg);
   const [saved, setSaved]     = useState(false);
   const [numberError, setNumberError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [isPending, start]    = useTransition();
 
   function handleToggle() {
     const next = !enabled;
     setEnabled(next);
-    start(() => toggleAutoReply(next));
+    setSaveError(null);
+    start(async () => {
+      const res = await toggleAutoReply(next);
+      if (!res.ok) {
+        // Put the switch back. Leaving it flipped after a refused write is the
+        // whole bug this is fixing — a control that shows a state the database
+        // does not hold.
+        setEnabled(!next);
+        setSaveError(res.error);
+      }
+    });
   }
 
   function handleSave() {
     start(async () => {
       setNumberError(null);
+      setSaveError(null);
       const res = await saveTwilioNumber(number);
       if (!res.ok) {
         setNumberError(res.error ?? "Invalid phone number.");
         return; // fix the number before saving the rest
       }
       if (res.value !== undefined) setNumber(res.value); // reflect the normalized form
-      await saveAutoReplyMsg(msg);
+      const msgRes = await saveAutoReplyMsg(msg);
+      if (!msgRes.ok) {
+        setSaveError(msgRes.error);
+        return;
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     });
@@ -121,6 +137,17 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
         <Save className="w-4 h-4" />
         {saved ? "Saved!" : "Save changes"}
       </button>
+
+      {/*
+        A refused write has to say so. Without this the button still reads
+        "Saved!" while the database is unchanged, which is exactly how a missing
+        Twilio number went unnoticed until the voice agent refused to work.
+      */}
+      {saveError ? (
+        <p className="text-xs text-rose-600" role="alert">
+          {saveError}
+        </p>
+      ) : null}
     </div>
   );
 }
