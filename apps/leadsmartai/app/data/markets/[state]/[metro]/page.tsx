@@ -271,7 +271,7 @@ export default async function MetroPage({ params }: Props) {
 
         <section aria-label={t("pages.dataCenterPages.chartsAria", { ns: "dashboard" })} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
-            13-month trends — the story behind your pricing
+            {t("pages.dataCenterPages.trendsHeading", { ns: "dashboard" })}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {CHART_METRICS.map((metric) => {

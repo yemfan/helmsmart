@@ -65,11 +65,11 @@ export default function WhatIsAGoodCapRateForRentalPropertyPage() {
         <p>{t("pages.goodCapRate.s2Intro")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">3%–5% cap rate:</span> {t("pages.goodCapRate.lowBody")}</li>
+            <span className="font-semibold">{t("pages.goodCapRate.lowLabel")}</span> {t("pages.goodCapRate.lowBody")}</li>
           <li>
-            <span className="font-semibold">5%–8% cap rate:</span> {t("pages.goodCapRate.midBody")}</li>
+            <span className="font-semibold">{t("pages.goodCapRate.midLabel")}</span> {t("pages.goodCapRate.midBody")}</li>
           <li>
-            <span className="font-semibold">8%+ cap rate:</span> {t("pages.goodCapRate.highBody")}</li>
+            <span className="font-semibold">{t("pages.goodCapRate.highLabel")}</span> {t("pages.goodCapRate.highBody")}</li>
         </ul>
         <p>{t("pages.goodCapRate.s2Close")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.goodCapRate.s2CloseTail")}</p>

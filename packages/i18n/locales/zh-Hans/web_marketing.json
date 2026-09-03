@@ -101,7 +101,8 @@
     "allSix": "六位助理协同工作",
     "answers": "接听来电、外拨陌生电话、评估资格并持续跟进",
     "coordinates": "协调交易并管理账目",
-    "trained": "以顶尖经纪人的实战打法训练而成"
+    "trained": "以顶尖经纪人的实战打法训练而成",
+    "alwaysOn": "7×24 小时在岗——没有工资、福利，也不会离职"
   },
   "routeMeta": {
     "aiCmaAnalyzer": {

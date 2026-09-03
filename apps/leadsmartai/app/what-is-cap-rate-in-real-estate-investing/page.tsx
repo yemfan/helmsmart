@@ -81,7 +81,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.whatIsCapRate.stepByStep")}</h2>
         <p>{t("pages.articleLinks.sameStepsInside")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.inCloseBoss")}</p>
-        <h3 className="text-lg font-semibold text-gray-900">1. Estimate gross rental income</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.whatIsCapRate.step1Title")}</h3>
         <p>
           Start with how much rent the property will collect in one year. For example, if the
           property rents for $2,000 per month:
@@ -91,26 +91,26 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
         </p>
         <p>{t("pages.whatIsCapRate.step1")}</p>
         <h3 className="text-lg font-semibold text-gray-900">
-          2. Account for vacancy and credit loss
+          {t("pages.whatIsCapRate.step2Title")}
         </h3>
         <p>{t("pages.whatIsCapRate.step2")}</p>
         <p>
           If your total gross income is $25,080 and you assume 5% vacancy and credit loss, you
           would subtract $1,254 to get effective gross income of $23,826.
         </p>
-        <h3 className="text-lg font-semibold text-gray-900">3. Estimate operating expenses</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.whatIsCapRate.step3Title")}</h3>
         <p>{t("pages.whatIsCapRate.step3")}</p>
         <p>
           For example, you might have $4,500 in property taxes, $1,200 in insurance, $1,800 in
           maintenance, $1,906 for property management, $1,000 in utilities, and $1,200 in HOA fees
           for a total of $11,606 in annual operating expenses.
         </p>
-        <h3 className="text-lg font-semibold text-gray-900">4. Calculate net operating income</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.whatIsCapRate.step4Title")}</h3>
         <p>{t("pages.whatIsCapRate.step4")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           $23,826 (effective income) – $11,606 (expenses) = $12,220 NOI
         </p>
-        <h3 className="text-lg font-semibold text-gray-900">5. Apply the cap rate formula</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.whatIsCapRate.step5Title")}</h3>
         <p>
           Finally, divide NOI by the property&apos;s purchase price or current market value. If the
           property costs $250,000, the cap rate would be:

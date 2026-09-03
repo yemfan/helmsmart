@@ -37,7 +37,7 @@ export default function HowToBuyInvestmentPropertyPage() {
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          1. Define your investment goals
+          {t("pages.howToGuides.buyStep1Title")}
         </h2>
         <p>
           Before you look at any listings, get clear on what you want the property to
@@ -55,7 +55,7 @@ export default function HowToBuyInvestmentPropertyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          2. Run quick numbers on potential deals
+          {t("pages.howToGuides.buyStep2Title")}
         </h2>
         <p>{t("pages.howToGuides.buyScreen")}</p>
         <ul className="list-disc list-inside space-y-1">
@@ -87,7 +87,7 @@ export default function HowToBuyInvestmentPropertyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          3. Stress‑test financing and expenses
+          {t("pages.howToGuides.buyStep3Title")}
         </h2>
         <p>
           Once you find a property that looks promising, stress‑test it with different
@@ -101,7 +101,7 @@ export default function HowToBuyInvestmentPropertyPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          4. Work with local professionals
+          {t("pages.howToGuides.buyStep4Title")}
         </h2>
         <p>{t("pages.howToGuides.buyLocal")}</p>
         <p>{t("pages.howToGuides.buyBring")}</p>

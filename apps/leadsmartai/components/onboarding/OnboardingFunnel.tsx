@@ -652,7 +652,7 @@ export default function OnboardingFunnel({
         <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-b from-rose-950/80 to-slate-950/90 p-6 shadow-2xl sm:p-8">
           <p className="text-center text-xs font-bold uppercase tracking-widest text-rose-300">{t("pages.onboardingFunnel.leadsWaiting")}</p>
           <h1 className="mt-3 text-center font-heading text-2xl font-bold leading-tight sm:text-3xl">
-            2 more conversations are queued in your territory
+            {t("pages.onboardingFunnel.moreQueued")}
           </h1>
           <p className="mx-auto mt-4 max-w-md text-center text-sm text-rose-100/90">{t("pages.onboardingFunnel.provedSpeed")}</p>
           <div className="mx-auto mt-8 max-w-sm rounded-xl border border-white/10 bg-black/30 p-4 text-sm text-slate-200">

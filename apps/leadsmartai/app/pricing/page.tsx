@@ -166,7 +166,7 @@ export default async function ConsumerPricingPage() {
                 <li>{t("pricingCompare.answers", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.coordinates", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.trained", { ns: "web_marketing" })}</li>
-                <li>24/7 — no payroll, benefits, or turnover</li>
+                <li>{t("pricingCompare.alwaysOn", { ns: "web_marketing" })}</li>
               </ul>
               <p className="mt-5 text-3xl font-extrabold text-[#0072ce]">
                 From $79<span className="text-base font-semibold text-slate-500">/mo</span>

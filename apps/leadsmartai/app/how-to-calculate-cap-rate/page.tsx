@@ -37,7 +37,7 @@ export default function HowToCalculateCapRatePage() {
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          1. Understand net operating income (NOI)
+          {t("pages.howToGuides.calcStep1Title")}
         </h2>
         <p>{t("pages.howToGuides.calcNoi")}</p>
         <p>
@@ -48,7 +48,7 @@ export default function HowToCalculateCapRatePage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          2. Use the cap rate formula
+          {t("pages.howToGuides.calcStep2Title")}
         </h2>
         <p>{t("pages.howToGuides.calcFormula")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
@@ -66,7 +66,7 @@ export default function HowToCalculateCapRatePage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
-          3. Use cap rate for comparison, not perfection
+          {t("pages.howToGuides.calcStep3Title")}
         </h2>
         <p>
           Cap rate is most useful for comparing properties to each other, not for

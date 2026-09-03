@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
  * module-scope JSX constant in the sidebar itself.
  *
  * The check covers JSX text nodes and copy-carrying attributes. It has been
- * widened three times, each time after the narrower version reported a page
+ * widened five times, each time after the narrower version reported a page
  * clean that was still visibly English:
  *
  *   - one-word copy (Save, Cancel, Done) — 42 strings the two-word rule hid;
@@ -19,13 +19,27 @@ import { describe, expect, it } from "vitest";
  *   - text nodes adjacent to an interpolation — 390 strings, and the worst of
  *     the three. A sentence with a `{value}` in the middle is two text nodes,
  *     and only the half between two tags was ever checked, so the pages that
- *     failed were the ones that say something specific to the reader.
+ *     failed were the ones that say something specific to the reader;
+ *   - copy that does not open with a letter — 47 strings across 24 files. The
+ *     anchor was `[A-Za-z]`, so a numbered step ("1. Understand net operating
+ *     income (NOI)"), a span of hours ("24/7 — no payroll, benefits, or
+ *     turnover") and a sublabel ("7+ days inactive") were all invisible. Every
+ *     how-to guide on this site numbers its steps, so each article's headings
+ *     were exempt by accident while the paragraphs between them were checked,
+ *     which is the half-Chinese page again in a different costume;
+ *   - the `sub` prop — 3 strings, every one of them a KpiTile sublabel. A
+ *     small number for a hole with no floor: `sub` was missing from
+ *     COPY_ATTRS only because it is spelled shorter than `sublabel`, and any
+ *     component that names its sublabel that way inherited the blind spot.
  *
  * The cost of widening is false positives, so each widening is paid for by a
  * specific guard: capitalisation for single words, a `[^=]` lookbehind for
- * arrow functions, and — once a `}` can open a match — rejection of cast
- * tails, resumed statements, and calls. A scan that cries wolf gets ignored,
- * and then it protects nothing.
+ * arrow functions, rejection of cast tails, resumed statements and calls once
+ * a `}` can open a match, and rejection of a numeric literal resuming a
+ * statement once a digit can. The example addresses the digit anchor also
+ * surfaced are named in ALLOWED, for the same reason the company's postal
+ * address is. A scan that cries wolf gets ignored, and then it protects
+ * nothing.
  */
 
 const ROOT = join(__dirname, "..", "..", "..");
@@ -38,6 +52,7 @@ const SCAN = ["app", "components"];
  */
 const ALLOWED = new Set([
   "MAXY Investment Inc.",
+  "6511 Parkriver Crossing",
   "Sugar Land, TX 77479",
   "United States",
   "CloseBoss",
@@ -61,6 +76,17 @@ const ALLOWED = new Set([
   "Esc",
   // Max is an AI employee on the team, not the adjective.
   "Max",
+  /*
+   * Example addresses in address fields. Same reasoning as the postal address
+   * above: the placeholder shows the reader the SHAPE the field wants, and the
+   * field is read by a US address geocoder. "洛杉矶主街 123 号" is the correct
+   * Chinese for those words and the wrong thing to type into the box.
+   */
+  "123 Main St, Los Angeles, CA",
+  "123 Main St Los Angeles CA",
+  "123 Main St, Austin, TX 78701",
+  "123 Main St, City, State",
+  "456 Oak Ave, City",
 ]);
 
 /**
@@ -78,10 +104,12 @@ const ALLOWED = new Set([
  * reader may not have. 70 strings across 36 files were hiding in this shape.
  *
  * A prop is on this list when its value is read by a human. `variant`, `size`,
- * `icon` and `href` are read by the browser and stay off it.
+ * `icon` and `href` are read by the browser and stay off it. `sub` is the same
+ * prop as `sublabel` with a shorter name — the KpiTile row on the demo
+ * dashboard uses it — so the two live or die together.
  */
 const COPY_ATTRS =
-  /\b(?:placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge)="([^"]+)"/g;
+  /\b(?:placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|sub|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge)="([^"]+)"/g;
 /**
  * A JSX text node is bounded by a tag *or* an interpolation on either side —
  * four combinations, of which `>text<` is one. Matching only that one hid
@@ -201,13 +229,31 @@ function isCopy(raw: string): boolean {
   if (/^(?:return|const|let|var|function|else|try|await|typeof)\b/.test(t)) return false;
   if (/^[a-z][A-Za-z0-9]*\(/.test(t)) return false;
   /*
+   * The price of letting a match open with a digit: a numeric literal resuming
+   * a statement. Both hits were real, not hypothetical — `0 ? Math.ceil(
+   * closingCosts / monthlySavings) : 0; return` (the `>` came from
+   * `monthlySavings >`) and `0).length ?? 0; return` (a call's closing paren).
+   * Copy that opens with a number puts a word or a unit after it — "3 bed",
+   * "24/7", "1. Understand", "1 (spread out)" — never a ternary `?` or a `)`.
+   */
+  if (/^\d+\s*[?)]/.test(t)) return false;
+  /*
    * A statement boundary: `> horizon) continue; alerts.push(`. Prose uses
    * semicolons too, but a prose semicolon is followed by a word — never by an
    * identifier that immediately calls or dereferences something.
    */
   if (/;\s*[a-z_$][\w$]*[.(]/.test(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
-  if (!/^[A-Za-z][A-Za-z0-9 ,.'’“”!?:;%()/&+…→—–-]*$/.test(t)) return false;
+  /*
+   * The anchor accepts a digit or an arrow, not just a letter. Copy opens with
+   * a number whenever it counts something — "3 bed / 2 bath in Lakewood",
+   * "1. Estimate gross rental income", "5-business-day guarantee." — and with
+   * an arrow whenever it points at a delta: "↓ 12s vs last week". A person
+   * reads all of it. `↓↑` and no further glyphs on purpose: an arrow carries
+   * meaning the way a word does, while `·` and `—` are separators, and
+   * anchoring on those would drag in the fragments they separate.
+   */
+  if (!/^[A-Za-z0-9↓↑][A-Za-z0-9 ,.'’“”!?:;%()/&+…→—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,
