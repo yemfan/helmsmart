@@ -7,7 +7,7 @@ import {
   DollarSign, TrendingUp, TrendingDown, FileText,
   Users, Plus, ArrowRight, Building2,
   CheckSquare, Clock, CalendarDays, AlertCircle,
-  FolderOpen, Timer, Wallet, AlertTriangle, Sparkles,
+  FolderOpen, Timer, Wallet, AlertTriangle,
   GitBranch, FileInput,
 } from "lucide-react";
 import { RevenueChart, type ChartMonth } from "@/components/revenue-chart";
@@ -424,12 +424,34 @@ export default async function HomePage() {
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{greeting} 👋</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             {activeClients} active client{activeClients !== 1 ? "s" : ""} · {totalClients} total
           </p>
+
+          {/*
+            The daily briefing, as text.
+
+            It used to be a full-width card in an indigo-to-violet gradient with
+            white type — the only element on the page painted that way, so the
+            eye landed first on a sentence that most days reports nothing needs
+            doing. It read as decoration rather than information. Under the
+            client counts it says the same thing in the page's own voice, and
+            the KPI cards below it get to be what the page leads with.
+          */}
+          <p className="text-sm text-slate-600 mt-3 max-w-2xl">{briefing.headline}</p>
+          {briefing.actions.length > 0 && (
+            <ul className="mt-2 space-y-1 max-w-2xl">
+              {briefing.actions.map((a, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-500">
+                  <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-slate-300 flex-shrink-0" />
+                  <span>{a}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Quick actions */}
@@ -449,25 +471,6 @@ export default async function HomePage() {
             Clients
           </Link>
         </div>
-      </div>
-
-      {/* ── Daily briefing ── */}
-      <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl p-5 text-white">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-4 h-4 text-indigo-100" />
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-100">Your day</p>
-        </div>
-        <p className="text-sm font-medium">{briefing.headline}</p>
-        {briefing.actions.length > 0 && (
-          <ul className="mt-3 space-y-1.5">
-            {briefing.actions.map((a, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-indigo-50">
-                <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-indigo-200 flex-shrink-0" />
-                <span>{a}</span>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       {/* ── KPI cards ── */}
