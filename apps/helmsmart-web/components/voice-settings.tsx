@@ -25,9 +25,13 @@ interface Props {
   twilioNumber: string | null;
   /** Vertical-tailored example for the Business-context field (placeholder + "Use this template"). */
   contextExample?: string;
+  /** How many OTHER accounts claim this same number. */
+  sharedWith?: number;
+  /** Whether calls to it are actually answered as this account. */
+  answersThisOrg?: boolean;
 }
 
-export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample }: Props) {
+export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true }: Props) {
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [agentNameText, setAgentName] = useState(agentName ?? "");
   const [businessNameText, setBusinessName] = useState(businessName ?? "");
@@ -89,9 +93,39 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           <ReceptionistNumberSimple current={null} />
         </div>
       ) : (
-        <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 flex items-center gap-2">
-          <Zap className="w-3.5 h-3.5 text-emerald-600" />
-          <span className="text-sm text-emerald-700">Connected to <strong>{twilioNumber}</strong></span>
+        <div className="space-y-2">
+          {/*
+            "Connected" only earns the green when calls to this number are
+            actually answered as this account. A number can be claimed by
+            several accounts, and the receptionist serves exactly one of them —
+            so a confident green tick over someone else's receptionist is the
+            same lie as a toggle that saves nothing.
+          */}
+          {answersThisOrg ? (
+            <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-sm text-emerald-700">Connected to <strong>{twilioNumber}</strong></span>
+            </div>
+          ) : (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+              <p className="text-sm font-medium text-amber-800">
+                Calls to <strong>{twilioNumber}</strong> are not answered by your receptionist
+              </p>
+              <p className="text-xs text-amber-700 mt-1">
+                This number is shared with {sharedWith === 1 ? "another account" : `${sharedWith} other accounts`},
+                and one of those answers it — so callers hear that business, not yours. Your settings
+                below are saved, but they will not be used until this number is yours alone.
+              </p>
+            </div>
+          )}
+
+          {answersThisOrg && sharedWith > 0 && (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-4 py-2">
+              Heads up: this number is also used by{" "}
+              {sharedWith === 1 ? "another account" : `${sharedWith} other accounts`}. Calls are
+              answered as your business today, but that can change if their settings change.
+            </p>
+          )}
         </div>
       )}
 
