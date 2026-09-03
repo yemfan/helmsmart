@@ -52,10 +52,43 @@ export type ToolContext = {
   overnight?: boolean;
 };
 
+/**
+ * How a step is described to the AGENT, as a key rather than a sentence.
+ *
+ * `summary` is written for the MODEL: it goes back into the tool loop as the
+ * result Claude reasons over, and the prompt is English. The same string was
+ * also rendered to the realtor under Max's report — so an agent running the
+ * app in Chinese read a Chinese mission report with English detail beneath it.
+ *
+ * Translating `summary` would have been the wrong repair: it changes what the
+ * model reads mid-loop, and a tool result is an input to its next decision.
+ * So the two audiences get two fields and only this one is localised —
+ * `summary` is untouched, and the loop behaves exactly as before.
+ *
+ * The tool names WHAT HAPPENED (a key plus its values) and never learns the
+ * locale; RunCard, which already knows it, renders the sentence. That is what
+ * keeps this change out of all 31 tool implementations.
+ */
+export type ToolDisplay = {
+  /** Key under `tools.` in the dashboard bundle. */
+  key: string;
+  /**
+   * Interpolation values, incl. `count` to select a plural form.
+   *
+   * `undefined` is permitted because two branches of one tool infer different
+   * param shapes and TypeScript unions them into optional members. i18next
+   * ignores an undefined value, so the alternative would be a cast at every
+   * such call site to buy nothing.
+   */
+  params?: Record<string, string | number | undefined>;
+};
+
 export type ToolOutcome =
   | {
       status: "completed";
       summary: string;
+      /** Localised rendering of `summary`. Absent on steps written before this existed. */
+      display?: ToolDisplay;
       /** Dashboard link to the produced artifact, when one exists. */
       artifactUrl?: string | null;
       /** Structured result handed back to the model on the next loop turn. */
@@ -64,6 +97,7 @@ export type ToolOutcome =
   | {
       status: "pending_approval";
       summary: string;
+      display?: ToolDisplay;
       /** What was prepared (draft id, proposed action) — surfaced for approval. */
       proposal?: unknown;
     }

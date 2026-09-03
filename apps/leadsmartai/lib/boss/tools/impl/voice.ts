@@ -69,6 +69,14 @@ export const scheduleVoiceCall = defineTool({
     return {
       status: "completed",
       summary: `AI call queued to ${contact.name ?? "the contact"} for ${scheduledFor.toISOString()} — ${input.objective.slice(0, 80)}`,
+      display: {
+        key: "voice.callQueued",
+        params: {
+          name: contact.name ?? "",
+          when: scheduledFor.toISOString(),
+          objective: input.objective.slice(0, 80),
+        },
+      },
       data: { contact_id: contact.id, scheduled_for: scheduledFor.toISOString() },
     };
   },
@@ -84,6 +92,10 @@ export const scheduleVoiceCall = defineTool({
     return {
       status: "pending_approval",
       summary: `Proposed AI call to ${contact.name ?? "contact"}: ${input.objective.slice(0, 100)}`,
+      display: {
+        key: "voice.callProposed",
+        params: { name: contact.name ?? "", objective: input.objective.slice(0, 100) },
+      },
       proposal: { contact_id: contact.id, objective: input.objective },
     };
   },

@@ -63,6 +63,16 @@ export const getPipeline = defineTool({
       summary: `Pipeline: ${rows.length} contacts — ${hot.length} hot, ${warm.length} warm, ${cold.length} cold${
         cooling.length ? `; ${cooling.length} cooling off (no activity 14+ days)` : ""
       }.`,
+      display: {
+        key: cooling.length ? "reads.pipelineCooling" : "reads.pipeline",
+        params: {
+          count: rows.length,
+          hot: hot.length,
+          warm: warm.length,
+          cold: cold.length,
+          cooling: cooling.length,
+        },
+      },
       artifactUrl: "/dashboard/contacts",
       data: { total: rows.length, hot: hot.length, warm: warm.length, cold: cold.length, cooling: cooling.length, topHot },
     };
@@ -131,6 +141,10 @@ export const getDeals = defineTool({
       summary: `${deals.length} active deal${deals.length === 1 ? "" : "s"}; ${alerts.length} deadline${
         alerts.length === 1 ? "" : "s"
       } in the next ${horizon} days${highRisk ? ` (${highRisk} at high risk — due within 3 days)` : ""}.`,
+      display: {
+        key: highRisk ? "reads.dealsHighRisk" : "reads.deals",
+        params: { count: deals.length, deadlines: alerts.length, horizon, highRisk },
+      },
       artifactUrl: "/dashboard/transactions",
       data: {
         deals: deals.map((d) => ({ property: d.property_address, status: d.status, closing: d.closing_date })),
@@ -208,6 +222,15 @@ export const getFinancials = defineTool({
       }; ${fmt(closedNet)} closed YTD. ${
         nextPayout ? `Next payout ~${fmt(nextPayout.net)} at ${nextPayout.property} (closes ${nextPayout.closing}). ` : ""
       }Expenses this month ${fmt(expensesMonth)}.`,
+      display: {
+        key: "reads.commission",
+        params: {
+          count: inflight.length,
+          pipeline: fmt(pipelineNet),
+          closed: fmt(closedNet),
+          expenses: fmt(expensesMonth),
+        },
+      },
       artifactUrl: "/dashboard/ai-accountant",
       data: { pipelineGross, pipelineNet, closedNet, expensesMonth, nextPayout, inflightCount: inflight.length },
     };
@@ -257,6 +280,7 @@ export const getCalendar = defineTool({
     return {
       status: "completed",
       summary: `${todayCount} appointment${todayCount === 1 ? "" : "s"} today; ${rows.length} in the next ${horizon} days.`,
+      display: { key: "reads.appointments", params: { count: todayCount, upcoming: rows.length, horizon } },
       artifactUrl: "/dashboard/calendar",
       data: { todayCount, total: rows.length, events },
     };
@@ -304,6 +328,15 @@ export const getSphereSignals = defineTool({
             .map((s) => `${s.contact} (${s.label ?? s.type})`)
             .join(", ")}.`
         : "No active sphere signals right now.",
+      display: rows.length
+        ? {
+            key: "reads.sphereSignals",
+            params: {
+              count: rows.length,
+              examples: signals.slice(0, 3).map((s) => s.contact).join(", "),
+            },
+          }
+        : { key: "reads.sphereSignalsNone" },
       artifactUrl: "/dashboard/sphere/signals",
       data: { count: rows.length, signals },
     };
@@ -348,6 +381,15 @@ export const getPerformance = defineTool({
       summary: `${leads} lead${leads === 1 ? "" : "s"} in the CRM, ${active} deal${
         active === 1 ? "" : "s"
       } in flight, and ${closedCount} closed this year${closedVolume ? ` (${fmt(closedVolume)} in volume)` : ""}.`,
+      display: {
+        key: closedVolume ? "reads.businessWithVolume" : "reads.business",
+        params: {
+          count: leads,
+          deals: active,
+          closed: closedCount,
+          volume: closedVolume ? fmt(closedVolume) : "",
+        },
+      },
       artifactUrl: "/dashboard/boss",
       data: { leads, activeDeals: active, closedYtd: closedCount, closedVolumeYtd: closedVolume },
     };

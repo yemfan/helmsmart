@@ -9382,5 +9382,118 @@
     "deepReport": "由 AI 依据公开网络数据生成的估算。估值、租金、可负担性与交易指标仅为规划参考的意见 — 并非评估、贷款批复或投资建议。决策前请核实数据并咨询贷款机构／顾问。",
     "houseSearch": "由 AI 依据公开网络数据生成的结果。房源、价格与在售状态可能已过时 — 分享或采用前请在原始网站逐条核实。",
     "offerCompare": "AI 摘要仅供辅助判断 — 并非法律或财务意见。向卖方提供建议前，请核实每份报价的条款与净收益数字。"
+  },
+  "tools": {
+    "bugs": {
+      "logged": "已记录并创建支持工单，同时已通知支持团队 — 我们正在处理（编号 {{ref}}）。"
+    },
+    "contacts": {
+      "imported": "已从 {{file}} 导入联系人。"
+    },
+    "crm": {
+      "taskCreated": "已创建任务：{{title}}",
+      "eventCreated": "已创建日程：{{title}}，时间 {{at}}",
+      "pipeline_one": "客户管道：{{count}} 位联系人。",
+      "pipeline_other": "客户管道：{{count}} 位联系人。",
+      "hotLeads_one": "{{count}} 条热门线索。",
+      "hotLeads_other": "{{count}} 条热门线索。",
+      "hotLeadsStale_one": "{{count}} 条久未跟进的热门线索。",
+      "hotLeadsStale_other": "{{count}} 条久未跟进的热门线索。",
+      "overdueTasks_one": "{{count}} 项逾期任务。",
+      "overdueTasks_other": "{{count}} 项逾期任务。",
+      "closingSoon_one": "未来 30 天内有 {{count}} 笔交易交割。",
+      "closingSoon_other": "未来 30 天内有 {{count}} 笔交易交割。",
+      "contactsMatching_one": "找到 {{count}} 位匹配「{{query}}」的联系人。",
+      "contactsMatching_other": "找到 {{count}} 位匹配「{{query}}」的联系人。"
+    },
+    "handoff": {
+      "handedToYou": "已交由您处理 — {{label}}：{{detail}}"
+    },
+    "houseSearch": {
+      "ranUnsaved_one": "已执行找房搜索 — {{count}} 个匹配结果（未保存到联系人）。",
+      "ranUnsaved_other": "已执行找房搜索 — {{count}} 个匹配结果（未保存到联系人）。",
+      "saved_one": "已为 {{who}} 保存找房搜索 — {{count}} 个匹配结果。",
+      "saved_other": "已为 {{who}} 保存找房搜索 — {{count}} 个匹配结果。",
+      "savedAutoRun_one": "已为 {{who}} 保存找房搜索 — {{count}} 个匹配结果；新房源将按 {{frequency}} 邮件发送。",
+      "savedAutoRun_other": "已为 {{who}} 保存找房搜索 — {{count}} 个匹配结果；新房源将按 {{frequency}} 邮件发送。"
+    },
+    "listings": {
+      "pulledPhotos_one": "已获取 {{address}} 的 {{count}} 张图片与房源资料。",
+      "pulledPhotos_other": "已获取 {{address}} 的 {{count}} 张图片与房源资料。",
+      "noPhotos": "已保存 {{address}} 的房源资料，但该页面未提供图片 — 请在房源中上传图片以制作视频广告。",
+      "videoAdReady_one": "{{address}} 的视频广告已就绪 — {{count}} 个片段已合成看房短片。请在房源中查看后发布。",
+      "videoAdReady_other": "{{address}} 的视频广告已就绪 — {{count}} 个片段已合成看房短片。请在房源中查看后发布。"
+    },
+    "market": {
+      "noData": "暂无 {{city}}, {{state}} 的缓存市场数据。",
+      "noMedian": "暂无 {{city}}, {{state}} 的中位价数据。请勿使用缓存数据报价。",
+      "noMedianWithTrend": "暂无 {{city}}, {{state}} 的中位价数据（趋势：{{trend}}）。请勿使用缓存数据报价。",
+      "snapshot": "{{city}}, {{state}}：中位价 ${{median}}，趋势 {{trend}}（{{days}} 天前的数据）。",
+      "snapshotStale": "{{city}}, {{state}}：中位价 ${{median}}，趋势 {{trend}} — 数据已有 {{days}} 天，请视为过时，优先使用实时可比房源。"
+    },
+    "messaging": {
+      "drafted": "已为 {{recipient}} 起草 {{channel}} 消息。",
+      "deferredWindow": "发送已延后（{{reason}}）— 将在允许时段开放后发出。",
+      "deferredQueued": "发送已延后（{{reason}}）— 已排入队列，预计 {{when}}。",
+      "sent": "已向 {{recipient}} 发送 {{channel}} 消息。",
+      "draftForApproval": "草稿已准备好，等待您审核：「{{excerpt}}」"
+    },
+    "playbooks": {
+      "openHouse_one": "已安排 {{address}} 于 {{when}} 的开放日 — 已排定 {{count}} 项任务。",
+      "openHouse_other": "已安排 {{address}} 于 {{when}} 的开放日 — 已排定 {{count}} 项任务。",
+      "openHouseWithCma_one": "已安排 {{address}} 于 {{when}} 的开放日 — 含定价市场分析，并排定 {{count}} 项任务。",
+      "openHouseWithCma_other": "已安排 {{address}} 于 {{when}} 的开放日 — 含定价市场分析，并排定 {{count}} 项任务。",
+      "closingTimeline_one": "已为 {{address}} 安排交割时间表 — 至 {{close}} 共排定 {{count}} 个节点。",
+      "closingTimeline_other": "已为 {{address}} 安排交割时间表 — 至 {{close}} 共排定 {{count}} 个节点。"
+    },
+    "reads": {
+      "pipeline_one": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}。",
+      "pipeline_other": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}。",
+      "pipelineCooling_one": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}；{{cooling}} 位正在降温（14 天以上无互动）。",
+      "pipelineCooling_other": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}；{{cooling}} 位正在降温（14 天以上无互动）。",
+      "deals_one": "{{count}} 笔进行中的交易；未来 {{horizon}} 天内有 {{deadlines}} 个截止日期。",
+      "deals_other": "{{count}} 笔进行中的交易；未来 {{horizon}} 天内有 {{deadlines}} 个截止日期。",
+      "dealsHighRisk_one": "{{count}} 笔进行中的交易；未来 {{horizon}} 天内有 {{deadlines}} 个截止日期（其中 {{highRisk}} 个高风险 — 3 天内到期）。",
+      "dealsHighRisk_other": "{{count}} 笔进行中的交易；未来 {{horizon}} 天内有 {{deadlines}} 个截止日期（其中 {{highRisk}} 个高风险 — 3 天内到期）。",
+      "commission_one": "佣金管道 {{pipeline}}，来自 {{count}} 笔进行中的交易；年初至今已成交 {{closed}}。本月支出 {{expenses}}。",
+      "commission_other": "佣金管道 {{pipeline}}，来自 {{count}} 笔进行中的交易；年初至今已成交 {{closed}}。本月支出 {{expenses}}。",
+      "appointments_one": "今天有 {{count}} 个预约；未来 {{horizon}} 天内有 {{upcoming}} 个。",
+      "appointments_other": "今天有 {{count}} 个预约；未来 {{horizon}} 天内有 {{upcoming}} 个。",
+      "sphereSignals_one": "{{count}} 个活跃的人脉信号 — 例如 {{examples}}。",
+      "sphereSignals_other": "{{count}} 个活跃的人脉信号 — 例如 {{examples}}。",
+      "sphereSignalsNone": "目前没有活跃的人脉信号。",
+      "business_one": "客户管理系统中有 {{count}} 条线索，{{deals}} 笔交易进行中，今年已成交 {{closed}} 笔。",
+      "business_other": "客户管理系统中有 {{count}} 条线索，{{deals}} 笔交易进行中，今年已成交 {{closed}} 笔。",
+      "businessWithVolume_one": "客户管理系统中有 {{count}} 条线索，{{deals}} 笔交易进行中，今年已成交 {{closed}} 笔（成交额 {{volume}}）。",
+      "businessWithVolume_other": "客户管理系统中有 {{count}} 条线索，{{deals}} 笔交易进行中，今年已成交 {{closed}} 笔（成交额 {{volume}}）。"
+    },
+    "reports": {
+      "cmaReady": "{{address}} 的市场比较分析已就绪",
+      "deepReportReady": "{{address}} 的深度报告已就绪"
+    },
+    "skills": {
+      "ran": "{{who}} 执行了「{{title}}」。",
+      "ranGated": "{{who}} 执行了「{{title}}」— 部分步骤需要您审核。"
+    },
+    "social": {
+      "published": "已发布到 {{platform}}：「{{excerpt}}」",
+      "drafted": "已起草 {{platform}} 帖子：「{{excerpt}}」",
+      "draftedWithPhoto": "已起草 {{platform}} 帖子（含图片）：「{{excerpt}}」",
+      "publishedAll": "已发布到 {{posted}}。",
+      "publishedPartial": "已发布到 {{posted}}。未能发布到 {{failed}}。",
+      "draftedAll_one": "已为 {{targets}} 起草帖子：「{{excerpt}}」— 审核一次即可发布到 {{count}} 个渠道。",
+      "draftedAll_other": "已为 {{targets}} 起草帖子：「{{excerpt}}」— 审核一次即可发布到全部 {{count}} 个渠道。",
+      "draftedAllWithPhoto_one": "已为 {{targets}} 起草帖子（含图片）：「{{excerpt}}」— 审核一次即可发布到 {{count}} 个渠道。",
+      "draftedAllWithPhoto_other": "已为 {{targets}} 起草帖子（含图片）：「{{excerpt}}」— 审核一次即可发布到全部 {{count}} 个渠道。",
+      "scheduled": "{{platform}} 帖子已定于 {{when}} 发布。",
+      "scheduledAwaitingApproval": "定于 {{when}} 发布的 {{platform}} 帖子等待您审核：「{{excerpt}}」",
+      "avatarPosted_one": "数字分身视频已发布到 {{count}} 个账户 — 「{{topic}}」",
+      "avatarPosted_other": "数字分身视频已发布到 {{count}} 个账户 — 「{{topic}}」",
+      "avatarScriptDrafted": "关于「{{topic}}」的数字分身视频 — 脚本已起草；审核通过后将渲染并发布（渲染会消耗额度）。"
+    },
+    "voice": {
+      "callQueued": "已为 {{name}} 排定 AI 通话，时间 {{when}} — {{objective}}",
+      "callProposed": "建议致电 {{name}}：{{objective}}"
+    }
   }
 }
