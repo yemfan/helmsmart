@@ -93,17 +93,6 @@ function Hero() {
           <a href="#demo" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.ctaDemo")}</a>
         </div>
         <div className="ed-trust-line">{t("pages.editorialLanding.noCard")}<span className="ed-sep">·</span>{t("pages.editorialLanding.worksWith")}</div>
-        <div className="ed-logo-strip">
-          <div className="ed-logo-strip-label">
-            {/* TODO: swap wordmarks for permissioned SVGs */}{t("pages.dashFragments.brokeragesUse")}</div>
-          <div className="ed-logo-strip-logos">
-            {["Windermere", "Compass", "Keller Williams", "eXp", "Redfin"].map((b) => (
-              <span key={b} className="ed-brokerage-logo">
-                {b}
-              </span>
-            ))}
-          </div>
-        </div>
       </div>
       <div className="ed-phone-stage">
         <PhoneMockup />
@@ -894,10 +883,6 @@ function EditorialStyles() {
       .ed-cta-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
       .ed-trust-line { font-size:13px; color:var(--muted); margin-bottom:48px; }
       .ed-trust-line .ed-sep { margin:0 10px; color:var(--rule); }
-      .ed-logo-strip { border-top:1px solid var(--rule); padding-top:24px; }
-      .ed-logo-strip-label { font-family:'JetBrains Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.2em; color:var(--muted); margin-bottom:12px; }
-      .ed-logo-strip-logos { display:flex; flex-wrap:wrap; gap:24px 36px; align-items:center; }
-      .ed-brokerage-logo { font-family:'Fraunces', serif; font-weight:400; font-size:18px; color:var(--ink); opacity:0.65; }
 
       /* HERO PHONE */
       .ed-phone-stage { position:relative; justify-self:center; }
