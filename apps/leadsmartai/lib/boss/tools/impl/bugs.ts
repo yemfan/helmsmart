@@ -93,6 +93,7 @@ export const reportBug = defineTool({
     return {
       status: "completed",
       summary: `Logged it, opened a support ticket, and emailed the support team — we're on it (ref ${ref}). Thanks for flagging it.`,
+      display: { key: "bugs.logged", params: { ref } },
       data: { bugId, ref, severity },
     };
   },

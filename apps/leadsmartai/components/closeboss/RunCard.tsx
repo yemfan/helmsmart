@@ -24,6 +24,11 @@ type RunStep = {
   output_json: {
     status?: string;
     summary?: string;
+    /**
+     * The localised form of `summary`. `summary` itself is written for the
+     * MODEL and stays English; this is the one a person reads.
+     */
+    display?: { key?: string; params?: Record<string, string | number> };
     artifactUrl?: string | null;
     reason?: string;
     error?: string;
@@ -329,7 +334,19 @@ function StepRow({
             {duration && <span className="ml-auto shrink-0 text-[10px] font-medium text-gray-400">{duration}</span>}
           </div>
           {persona && <p className="mt-0.5 text-[11px] font-medium text-gray-700">{label}</p>}
-          {out?.summary && <p className="text-[11px] text-gray-500">{out.summary}</p>}
+          {/*
+            Prefer the localised form. Steps recorded before `display` existed
+            have only `summary`, and English is a better answer there than a
+            blank line — the alternative would hide history from anyone who
+            switched language after the fact.
+          */}
+          {(out?.display?.key || out?.summary) && (
+            <p className="text-[11px] text-gray-500">
+              {out?.display?.key
+                ? t(`tools.${out.display.key}`, { ...(out.display.params ?? {}), defaultValue: out.summary ?? "" })
+                : out?.summary}
+            </p>
+          )}
           {out?.reason && step.status === "rejected" && (
             <p className="text-[11px] text-gray-400">{out.reason}</p>
           )}

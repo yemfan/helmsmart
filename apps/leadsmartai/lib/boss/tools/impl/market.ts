@@ -32,6 +32,7 @@ export const getMarketSnapshot = defineTool({
       return {
         status: "completed",
         summary: `No cached market data for ${city}, ${state} yet.`,
+        display: { key: "market.noData", params: { city, state } },
         data: { found: false, city, state },
       };
     }
@@ -54,6 +55,10 @@ export const getMarketSnapshot = defineTool({
           `No median price on file for ${city}, ${state}` +
           (row.trend ? ` (trend ${row.trend}).` : ".") +
           " Do not quote a price for this market from cached data.",
+        display: {
+          key: row.trend ? "market.noMedianWithTrend" : "market.noMedian",
+          params: { city, state, trend: row.trend ?? "" },
+        },
         data: { found: true, medianPriceAvailable: false, snapshot: data },
       };
     }
@@ -72,6 +77,18 @@ export const getMarketSnapshot = defineTool({
       summary:
         `Market snapshot for ${city}, ${state}: median $${verdict.medianPrice.toLocaleString()}, ` +
         `trend ${row.trend ?? "n/a"} (${age}).${caveat}`,
+      // The staleness caveat is the half a person most needs, so it gets its
+      // own key rather than being appended as an untranslated tail.
+      display: {
+        key: verdict.stale ? "market.snapshotStale" : "market.snapshot",
+        params: {
+          city,
+          state,
+          median: verdict.medianPrice.toLocaleString(),
+          trend: row.trend ?? "n/a",
+          days: verdict.ageDays ?? -1,
+        },
+      },
       data: {
         found: true,
         medianPriceAvailable: true,

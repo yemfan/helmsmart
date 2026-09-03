@@ -31,6 +31,7 @@ export const createCrmTask = defineTool({
     return {
       status: "completed",
       summary: `Task created: ${input.title}`,
+      display: { key: "crm.taskCreated", params: { title: input.title } },
       data: { task_id: task.id },
     };
   },
@@ -79,6 +80,7 @@ export const createCalendarEvent = defineTool({
     return {
       status: "completed",
       summary: `Calendar event created: ${input.title} at ${input.starts_at}`,
+      display: { key: "crm.eventCreated", params: { title: input.title, at: input.starts_at } },
       data: { event_id: (data as { id: string }).id },
     };
   },
@@ -124,7 +126,8 @@ export const queryCrm = defineTool({
         }
         return {
           status: "completed",
-          summary: `Pipeline: ${rows.length} contacts across ${Object.keys(byStage).length} stages.`,
+          summary: `Pipeline: ${rows.length} contacts across ${Object.keys(byStage).length} stage${Object.keys(byStage).length === 1 ? "" : "s"}.`,
+          display: { key: "crm.pipeline", params: { count: rows.length } },
           data: { total: rows.length, by_stage: byStage, by_rating: byRating },
         };
       }
@@ -151,6 +154,7 @@ export const queryCrm = defineTool({
         return {
           status: "completed",
           summary: `${rows.length} ${stale ? "stale " : ""}hot lead${rows.length === 1 ? "" : "s"}.`,
+          display: { key: stale ? "crm.hotLeadsStale" : "crm.hotLeads", params: { count: rows.length } },
           data: { leads: rows },
         };
       }
@@ -168,6 +172,7 @@ export const queryCrm = defineTool({
         return {
           status: "completed",
           summary: `${rows.length} overdue task${rows.length === 1 ? "" : "s"}.`,
+          display: { key: "crm.overdueTasks", params: { count: rows.length } },
           data: { tasks: rows },
         };
       }
@@ -190,6 +195,7 @@ export const queryCrm = defineTool({
         return {
           status: "completed",
           summary: `${rows.length} transaction${rows.length === 1 ? "" : "s"} closing in the next 30 days.`,
+          display: { key: "crm.closingSoon", params: { count: rows.length } },
           data: { transactions: rows },
         };
       }
@@ -208,6 +214,7 @@ export const queryCrm = defineTool({
         return {
           status: "completed",
           summary: `${rows.length} contact${rows.length === 1 ? "" : "s"} matching "${name}".`,
+          display: { key: "crm.contactsMatching", params: { count: rows.length, query: name } },
           data: { contacts: rows },
         };
       }

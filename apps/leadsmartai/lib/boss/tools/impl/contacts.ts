@@ -121,6 +121,9 @@ export const importContactsFromFile = defineTool({
     return {
       status: "completed",
       summary: `Imported contacts from ${input.file_name ?? "your file"}: ${bits.join(", ")}.`,
+      // `bits` is already-composed English detail; the headline is what a
+      // person skimming the step list actually needs.
+      display: { key: "contacts.imported", params: { file: input.file_name ?? "" } },
       data: { inserted, merged, skipped, errors },
     };
   },
