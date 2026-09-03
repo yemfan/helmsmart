@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Mic, Save, Zap } from "lucide-react";
+import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
 import { saveVoiceSettings } from "@/lib/actions/social";
 
 // Generic small-business example, shown when the active pack doesn't supply its own.
@@ -54,18 +55,38 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           <h2 className="text-sm font-semibold text-slate-800">AI Voice Agent</h2>
           <p className="text-xs text-slate-500">Answers your calls with Claude when you're unavailable</p>
         </div>
+        {/*
+          Disabled without a number. It was switchable either way, so the screen
+          could show a confident blue "on" beside a warning that the agent
+          cannot answer — a control asserting a state the system does not hold.
+        */}
         <button
           onClick={() => setIsEnabled((v) => !v)}
-          className={`ml-auto relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isEnabled ? "bg-indigo-600" : "bg-slate-200"}`}
+          disabled={!twilioNumber}
+          title={twilioNumber ? undefined : "Add a phone number first — the agent has nothing to answer on."}
+          className={`ml-auto relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${isEnabled ? "bg-indigo-600" : "bg-slate-200"}`}
         >
           <span className={`inline-block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${isEnabled ? "translate-x-6" : "translate-x-1"}`} />
         </button>
       </div>
 
-      {/* Phone number check */}
+      {/*
+        Phone number check.
+
+        This used to say "Set your Twilio number in Reception → Settings" —
+        pointing at a tab that does not exist. The settings tabs are General,
+        Financial, Marketing, Voice AI and Operations; the number field lives
+        under Operations. Rather than correct the directions, put the field
+        here: this is where the need is discovered, and sending someone to
+        another tab to unblock the screen they are already on is a detour, not
+        an instruction.
+      */}
       {!twilioNumber ? (
-        <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-sm text-amber-700">
-          ⚠ Set your Twilio number in <strong>Reception → Settings</strong> first to enable the voice agent.
+        <div className="space-y-3">
+          <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-sm text-amber-700">
+            ⚠ The voice agent needs a phone number before it can answer calls.
+          </div>
+          <ReceptionistNumberSimple current={null} />
         </div>
       ) : (
         <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 flex items-center gap-2">
