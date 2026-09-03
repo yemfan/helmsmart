@@ -805,6 +805,40 @@ export async function logInboundCallStart(args: {
  * advance an outbound call from "initiated" to its real outcome with duration
  * and an optional AI summary note. Best-effort; returns false on any error.
  */
+/**
+ * Attach a call to a contact, but never re-point one that already has one.
+ *
+ * A call is matched to a contact once, when it starts — and at that moment a
+ * first-time caller is not a contact yet, so contact_id is null and correctly
+ * so. The receptionist then goes on to CREATE that contact from the call
+ * (lead-capture.ts), and nothing ever went back to stamp the call row. The call
+ * that produced the contact was the one call not attached to it.
+ *
+ * That is why the Calls list read "Unknown caller" for people the CRM knows:
+ * Hong Yang rang five times on 2026-08-25 about buying in Alhambra, the contact
+ * was created off those calls, and all five stayed orphaned.
+ *
+ * The `is("contact_id", null)` guard is the load-bearing part. Re-linking only
+ * fills a blank; it can never move a call from one contact to another, so a
+ * later name-disambiguated match cannot be silently overwritten by a
+ * phone-only one.
+ */
+export async function linkCallToContact(
+  providerCallId: string,
+  contactId: string,
+): Promise<void> {
+  try {
+    const { error } = await supabaseAdmin
+      .from("call_logs")
+      .update({ contact_id: contactId })
+      .eq("twilio_call_sid", providerCallId)
+      .is("contact_id", null);
+    if (error) console.error("[missed-call] linkCallToContact failed:", error.message);
+  } catch (e) {
+    console.error("[missed-call] linkCallToContact threw:", e);
+  }
+}
+
 export async function finalizeCallByProviderId(args: {
   providerCallId: string;
   status: string;
@@ -812,6 +846,31 @@ export async function finalizeCallByProviderId(args: {
   note?: string | null;
 }): Promise<boolean> {
   const patch: Record<string, unknown> = { status: args.status };
+
+  /*
+   * Last look before the row goes cold.
+   *
+   * lead-capture links the call as soon as it has a contact, which covers the
+   * normal path. This is the safety net for every other way a contact can come
+   * into being mid-call — a manual add while the phone is still ringing, an
+   * import, a different capture path added later. Once the call is finalized
+   * nothing looks at it again, so if the link is not made here it is not made.
+   */
+  try {
+    const { data: row } = await supabaseAdmin
+      .from("call_logs")
+      .select("agent_id, from_phone, contact_id")
+      .eq("twilio_call_sid", args.providerCallId)
+      .maybeSingle();
+    const r = row as { agent_id?: unknown; from_phone?: unknown; contact_id?: unknown } | null;
+    if (r && !r.contact_id && typeof r.from_phone === "string" && r.from_phone) {
+      const contact = await findContactByPhone(String(r.agent_id), r.from_phone);
+      if (contact) patch.contact_id = contact.id;
+    }
+  } catch (e) {
+    // Best-effort: a failed re-match must not stop status and duration landing.
+    console.warn("[missed-call] finalize re-match skipped:", e);
+  }
   if (args.durationSeconds != null && Number.isFinite(args.durationSeconds)) {
     patch.duration_seconds = Math.max(0, Math.round(args.durationSeconds));
   }
