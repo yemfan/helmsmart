@@ -3,7 +3,7 @@ import { callerSpokenScript } from "@/lib/voice-agent/callerScript";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getOpenAIConfig } from "@/lib/ai/openaiClient";
-import { findContactByPhone, toUsDisplayPhone } from "@/lib/missed-call/service";
+import { findContactByPhone, linkCallToContact, toUsDisplayPhone } from "@/lib/missed-call/service";
 import { hasOpenVoiceFollowUpForCall } from "@/lib/ai-call/hot-call-task";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 
@@ -337,6 +337,21 @@ export async function captureLeadFromInboundCall(args: {
   }
 
   if (!contactId) return { contactId: null, taskId: null, created: false };
+
+  /*
+   * Attach this call to the contact it just resolved or created.
+   *
+   * The call row was written at call start, when a first-time caller was not
+   * yet a contact, so its contact_id is null. By here we either matched an
+   * existing contact or inserted a new one — and until now nothing carried
+   * that back, which is why the Calls list said "Unknown caller" for people
+   * the CRM had a full record of, created from these very calls.
+   *
+   * Deliberately placed BEFORE the "actionable" gate below. A three-second
+   * wrong number from a known contact still belongs on their timeline; only
+   * the follow-up TASK should require a real lead signal.
+   */
+  await linkCallToContact(args.providerCallId, contactId);
 
   // 2. Follow-up task — ONLY for calls that captured an actionable lead.
   // A greeting, a wrong number, or a quick disconnect is already in the call

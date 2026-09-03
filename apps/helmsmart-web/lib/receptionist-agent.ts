@@ -142,6 +142,77 @@ export async function findOrgIdByNumber(db: ServiceClient, toNumber: string): Pr
   return (await resolveInboundOrg(db, toNumber))?.id ?? null;
 }
 
+export type NumberSharing = {
+  /** The org's own number, or null when it has none. */
+  number: string | null;
+  /** How many OTHER organizations claim the same number. */
+  sharedWith: number;
+  /** Whether an inbound call to it would actually be served as THIS org. */
+  answersThisOrg: boolean;
+};
+
+/**
+ * Whether this org's number is really its own — and whether calls to it are
+ * answered as this org at all.
+ *
+ * A phone number is the only routing information an inbound call carries, so
+ * when several organizations claim the same one, resolveInboundOrg has to pick:
+ * voice-enabled first, then the oldest row. That pick is deterministic and it
+ * is also invisible. An owner who typed their business details into Settings
+ * and saw a green "Connected to +1 626 888 8685" had no way to learn that calls
+ * to it were being answered as a different business, with that business's
+ * appointment types and knowledge base. The only way to find out was to phone
+ * in and listen — which is exactly how it was found.
+ *
+ * The count is reported but the other businesses are NOT named: the owner needs
+ * to know their number is shared and whether they are the one answering, and
+ * neither of those requires disclosing another tenant's identity. The server
+ * log in /api/retell/inbound names the org for whoever is operating the
+ * platform.
+ *
+ * Deliberately mirrors resolveInboundOrg's ordering. If the two ever disagree,
+ * this reassures an owner about behaviour the call path does not actually have.
+ */
+export async function describeNumberSharing(
+  db: ServiceClient,
+  orgId: string,
+): Promise<NumberSharing> {
+  const { data: mine } = await db
+    .from("organizations")
+    .select("twilio_number")
+    .eq("id", orgId)
+    .maybeSingle();
+
+  const number = ((mine as { twilio_number?: string | null } | null)?.twilio_number ?? "").trim() || null;
+  if (!number) return { number: null, sharedWith: 0, answersThisOrg: false };
+
+  const last10 = phoneLast10(number);
+  const query = db.from("organizations").select("id, voice_agent_enabled");
+  const { data: rows } = await (last10
+    ? query.ilike("twilio_number", `%${last10}`)
+    : query.eq("twilio_number", number)
+  )
+    .order("voice_agent_enabled", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: true })
+    // resolveInboundOrg caps at 5 because it only needs the winner. Here the
+    // count is the point, so allow for more before it stops being countable.
+    .limit(50);
+
+  const claimants = (rows ?? []) as { id: string }[];
+  if (claimants.length === 0) {
+    // Our own row should always match. If it does not, the number is stored in
+    // a shape phoneLast10 cannot read, which is its own problem — say "not
+    // shared" rather than invent a warning.
+    return { number, sharedWith: 0, answersThisOrg: true };
+  }
+
+  return {
+    number,
+    sharedWith: Math.max(0, claimants.length - 1),
+    answersThisOrg: claimants[0].id === orgId,
+  };
+}
+
 // ─── Tools ────────────────────────────────────────────────────────────────────────
 
 export type ToolResult = { text: string; bookedEventId?: string; bookedNote?: string; bookedLabel?: string; bookedRescheduleToken?: string };

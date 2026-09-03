@@ -6,6 +6,7 @@ import { createBrowserClient } from "@supabase/ssr";
 import { MessageSquarePlus, Send, Mail, MessageSquare, RefreshCw, Sparkles, UserPlus } from "lucide-react";
 import { markThreadRead, sendEmail, sendSms, draftReply, createClientFromConversation } from "@/lib/actions/messages";
 import { InboxCompose } from "./inbox-compose";
+import { InboxForwardingAddress } from "./inbox-forwarding-address";
 import { browserConnForHost } from "@/lib/pack-host";
 
 type Channel = "all" | "email" | "sms";
@@ -47,6 +48,8 @@ interface Props {
   threads: Thread[];
   clients: Client[];
   orgId: string;
+  /** Where to forward a mailbox, or null when inbound email is not configured. */
+  inboundAddress: string | null;
 }
 
 function timeAgo(iso: string) {
@@ -69,7 +72,7 @@ function deriveClientName(address: string): string {
     : local;
 }
 
-export function InboxClient({ threads: initialThreads, clients, orgId }: Props) {
+export function InboxClient({ threads: initialThreads, clients, orgId, inboundAddress }: Props) {
   const router = useRouter();
   const [threads, setThreads] = useState(initialThreads);
   const [channel, setChannel] = useState<Channel>("all");
@@ -301,6 +304,13 @@ export function InboxClient({ threads: initialThreads, clients, orgId }: Props) 
               ))
             )}
           </div>
+
+          {/*
+            Where mail comes in, shown where mail arrives. This used to sit on
+            the Settings page under "Integrations & webhooks", surrounded by
+            Stripe and Twilio endpoints the owner cannot act on.
+          */}
+          {inboundAddress && <InboxForwardingAddress address={inboundAddress} />}
         </div>
 
         {/* ── Thread view ── */}

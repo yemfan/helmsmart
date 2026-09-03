@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { InboxClient } from "@/components/inbox-client";
+import { inboundAddressFor } from "@/lib/inboundAddress";
 
 export const metadata: Metadata = { title: "Inbox" };
 
@@ -9,6 +10,15 @@ export default async function InboxPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+
+  // The forwarding address is resolved here, on the server: INBOUND_EMAIL_DOMAIN
+  // is not a NEXT_PUBLIC variable, so it does not exist in the client bundle.
+  const { data: orgRow } = await supabase
+    .from("organizations")
+    .select("slug")
+    .eq("id", orgId)
+    .maybeSingle();
+  const inboundAddress = inboundAddressFor(orgRow?.slug);
 
   // Load all messages for this org
   const { data: rawMessages } = await supabase
@@ -112,6 +122,7 @@ export default async function InboxPage() {
       threads={threads}
       clients={(clients ?? []) as { id: string; first_name: string | null; last_name: string | null; email: string | null; phone: string | null }[]}
       orgId={orgId}
+      inboundAddress={inboundAddress}
     />
   );
 }

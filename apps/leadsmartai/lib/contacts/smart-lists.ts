@@ -24,6 +24,22 @@ function mapSmartListRow(row: Record<string, unknown>): SmartList {
   };
 }
 
+/**
+ * Thrown when the smart_lists table is not in the database.
+ *
+ * listSmartLists already swallowed this condition and returned [], so the read
+ * path degraded quietly and the page rendered its three seeded defaults. The
+ * write path did not, so "Add" threw the raw PostgREST error and the route
+ * turned it into a 500 — a feature that looks alive until you use it. Naming
+ * the condition lets the route answer with something true.
+ */
+export class SmartListsUnavailableError extends Error {
+  constructor() {
+    super("smart_lists table is not present in this database");
+    this.name = "SmartListsUnavailableError";
+  }
+}
+
 function isMissingRelationError(err: unknown): boolean {
   if (!err || typeof err !== "object") return false;
   const e = err as { code?: string; message?: string };
@@ -92,7 +108,10 @@ export async function createSmartList(
     } as never)
     .select("*")
     .single();
-  if (error) throw error;
+  if (error) {
+    if (isMissingRelationError(error)) throw new SmartListsUnavailableError();
+    throw error;
+  }
   return mapSmartListRow(data as Record<string, unknown>);
 }
 
@@ -125,7 +144,10 @@ export async function updateSmartList(
     .eq("agent_id", agentId as never)
     .select("*")
     .single();
-  if (error) throw error;
+  if (error) {
+    if (isMissingRelationError(error)) throw new SmartListsUnavailableError();
+    throw error;
+  }
   return mapSmartListRow(data as Record<string, unknown>);
 }
 

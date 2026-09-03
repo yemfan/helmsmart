@@ -256,13 +256,12 @@ export default function LeadSmartLandingV2() {
           </div>
           <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2 md:gap-12 md:py-28">
             <div className="max-w-xl lg:max-w-2xl">
-              {/* Trust line — names brokerages whose agents use
-                  the platform. Phrased as "Trusted by [Brokerage]
-                  agents" (modifying "agents") rather than "Trusted
-                  by [Brokerage]" (which would imply brokerage-
-                  level endorsement we don't have). Layer in a
-                  customer count once we have one: "Trusted by
-                  200+ RE/MAX agents, Coldwell Banker agents, …". */}
+              {/* Trust line. Deliberately names no brokerage: the logo
+                  strip that did was removed because we cannot substantiate
+                  it. If a named brokerage goes back on this page it needs a
+                  real customer behind it, and nominative phrasing —
+                  "Trusted by [Brokerage] agents", modifying "agents" — not
+                  "Trusted by [Brokerage]", which claims an endorsement. */}
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                 {t("hero.trust_line")}
               </p>
@@ -542,28 +541,6 @@ export default function LeadSmartLandingV2() {
                 </div>
               ))}
             </dl>
-          </div>
-        </section>
-
-        {/* ── BROKERAGE LOGO STRIP ───
-            Social-proof row: brokerage names whose agents use the
-            platform, framed as nominative reference ("Trusted by
-            agents at …") not endorsement. Wordmarks are styled in
-            grayscale via the BrokerageWordmark component below.
-            Swap each <BrokerageWordmark> for a real <Image> or
-            inline SVG once we pull official logos from each
-            brokerage's brand kit. */}
-        <section className="border-b border-slate-200/80 bg-slate-50/50 px-6 py-10 dark:border-slate-800 dark:bg-slate-900/30 md:py-12">
-          <div className="mx-auto max-w-6xl">
-            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-              {t("brokerage_strip.eyebrow")}
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-14">
-              <BrokerageWordmark name="RE/MAX" logoSrc="/images/brokerages/Remax.png" />
-              <BrokerageWordmark name="COLDWELL BANKER" logoSrc="/images/brokerages/ColdwellBanker.svg" />
-              <BrokerageWordmark name="KELLER WILLIAMS" logoSrc="/images/brokerages/KW.png" />
-              <BrokerageWordmark name="CENTURY 21" logoSrc="/images/brokerages/Century21.png" />
-            </div>
           </div>
         </section>
 
@@ -1263,45 +1240,6 @@ function FaqSection() {
  * Sub-components + content tables
  * ──────────────────────────────────────────────────────────────────── */
 
-/**
- * Brokerage wordmark — renders a real logo image when one exists in
- * `public/images/brokerages/`, falls back to a text wordmark
- * otherwise. The image render is grayscaled by default with a
- * full-color hover state so the row reads as a uniform "logo wall."
- *
- * To add a new brokerage: drop the logo PNG/SVG into
- * `public/images/brokerages/<filename>` and pass `logoSrc` to this
- * component. Keep image heights uniform (~32px) so the row stays
- * visually balanced.
- */
-function BrokerageWordmark({
-  name,
-  logoSrc,
-}: {
-  name: string;
-  /** Optional. Public path to a logo file, e.g. "/images/brokerages/Remax.png". */
-  logoSrc?: string;
-}) {
-  if (logoSrc) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={logoSrc}
-        alt={name}
-        loading="lazy"
-        className="h-8 w-auto max-w-[160px] select-none object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0 md:h-10"
-      />
-    );
-  }
-  return (
-    <span
-      aria-label={name}
-      className="select-none text-base font-bold uppercase tracking-[0.18em] text-slate-500 opacity-70 transition hover:opacity-100 dark:text-slate-400 md:text-lg"
-    >
-      {name}
-    </span>
-  );
-}
 
 function DashStat({ n, l, tone }: { n: string; l: string; tone: "blue" | "green" | "violet" }) {
   const palette = {

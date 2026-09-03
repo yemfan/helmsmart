@@ -114,6 +114,50 @@ async function fetchEmailForLeads(leadIds: string[]): Promise<MsgRow[]> {
   return acc;
 }
 
+type CallRow = {
+  id: string;
+  contact_id: unknown;
+  direction: string;
+  status: string | null;
+  duration_seconds: number | null;
+  notes: string | null;
+  created_at: string;
+};
+
+/**
+ * Calls belong in the conversation list because they are a conversation.
+ *
+ * call_logs.notes holds the AI call summary — "The user called to inquire about
+ * buying a home in Alhambra with a budget of…" — which is often the most
+ * informative thing anyone said to this agent all week, and until now it was
+ * only visible on the Calls page, never threaded beside that contact's texts
+ * and email.
+ *
+ * Only calls carrying a contact_id can thread. Roughly a quarter of call_logs
+ * rows have none (the receptionist could not match the caller to a contact),
+ * and those stay invisible here — that gap belongs to the call-to-contact
+ * pipeline, not to this view.
+ */
+async function fetchCallsForLeads(leadIds: string[]): Promise<CallRow[]> {
+  const acc: CallRow[] = [];
+  for (const part of chunk(leadIds, LEAD_ID_CHUNK)) {
+    const { data, error } = await supabaseAdmin
+      .from("call_logs")
+      .select("id,contact_id,direction,status,duration_seconds,notes,created_at")
+      .in("contact_id", part as unknown as number[])
+      .order("created_at", { ascending: false })
+      .limit(MESSAGES_PER_LEAD_CHUNK);
+    // Same defence as the other two fetches: one bad channel must not empty
+    // the whole conversations view.
+    if (error) {
+      console.warn("[mobile/inbox] call fetch", error.message);
+      continue;
+    }
+    for (const row of data ?? []) acc.push(row as unknown as CallRow);
+  }
+  return acc;
+}
+
 function isHotLeadForThread(
   leadId: string,
   meta: LeadInboxMeta | undefined,
@@ -127,7 +171,15 @@ function isHotLeadForThread(
 /**
  * Latest SMS + email activity per lead for this agent (DB-scoped by lead id batches).
  */
-export async function getMobileInbox(agentId: string): Promise<MobileInboxThreadDto[]> {
+export async function getMobileInbox(
+  agentId: string,
+  /**
+   * Calls are opt-in so the mobile endpoint keeps returning exactly what the
+   * shipped app expects. The web dashboard passes true; /api/mobile/inbox does
+   * not, until the app has a call row to render.
+   */
+  options: { includeCalls?: boolean } = {},
+): Promise<MobileInboxThreadDto[]> {
   const { data: leadRows, error: leadErr } = await supabaseAdmin
     .from("contacts")
     .select("id")
@@ -146,7 +198,11 @@ export async function getMobileInbox(agentId: string): Promise<MobileInboxThread
   ]);
   const leadIdSet = new Set(leadIds);
 
-  const [smsRows, emailRows] = await Promise.all([fetchSmsForLeads(leadIds), fetchEmailForLeads(leadIds)]);
+  const [smsRows, emailRows, callRows] = await Promise.all([
+    fetchSmsForLeads(leadIds),
+    fetchEmailForLeads(leadIds),
+    options.includeCalls ? fetchCallsForLeads(leadIds) : Promise.resolve([] as CallRow[]),
+  ]);
 
   smsRows.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   emailRows.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -192,6 +248,28 @@ export async function getMobileInbox(agentId: string): Promise<MobileInboxThread
       lastMessageAt: r.created_at,
       lastDirection: r.direction === "inbound" ? "inbound" : "outbound",
       messageId: r.id,
+      isHotLead: isHotLeadForThread(lid, meta, hotNurture),
+    });
+  }
+
+  const seenCall = new Set<string>();
+  for (const row of callRows) {
+    const lid = String(row.contact_id);
+    if (!leadIdSet.has(lid)) continue;
+    const key = `${lid}:call`;
+    if (seenCall.has(key)) continue;
+    seenCall.add(key);
+    const meta = metaByLead.get(lid);
+    threads.push({
+      leadId: lid,
+      channel: "call",
+      leadName: meta?.name ?? null,
+      // The summary, or nothing. A call with no summary gets an empty preview
+      // rather than invented filler describing a call nobody transcribed.
+      preview: previewText(row.notes || ""),
+      lastMessageAt: row.created_at,
+      lastDirection: row.direction === "inbound" ? "inbound" : "outbound",
+      messageId: row.id,
       isHotLead: isHotLeadForThread(lid, meta, hotNurture),
     });
   }

@@ -675,6 +675,7 @@
       }
     },
     "yourAiTeam": "您的 AI 团队",
+    "skillsHeading": "技能",
     "personality": {
       "boss_assistant": "沉稳的领导者，有策略，始终掌控全局。",
       "receptionist": "亲切热情，从不漏接任何一通电话。",
@@ -1549,6 +1550,7 @@
     "filterUnread": "未读（{{count}}）",
     "filterSms": "短信",
     "filterEmail": "邮件",
+    "filterCall": "通话",
     "empty": "暂无对话。",
     "emptySearch": "没有符合搜索条件的对话。",
     "leadFallback": "客户 #{{id}}",
@@ -8740,7 +8742,6 @@
       "sVideo": "秒视频",
       "firstAgentWins": "第一个回复的经纪人，大约有一半的概率赢下客户。第二个只剩四分之一。排在后面的，就只能抢残羹了。",
       "fourteenDaysFree": "14 天免费。不用信用卡。15 分钟完成设置。如果第一个月它没把自己的价钱挣回来，您也没有任何损失。",
-      "brokeragesUse": "这些经纪公司的经纪人正在使用 CloseBoss",
       "leads": "线索：",
       "cmaToday": "今日 CMA：",
       "proLeadCap": "Pro 套餐的线索上限是",

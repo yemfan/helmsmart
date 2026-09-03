@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { describeNumberSharing } from "@/lib/receptionist-agent";
 import { VoiceSettings } from "@/components/voice-settings";
 import { ReceptionistConfig } from "@/components/receptionist-config";
 import { ReceptionistSetup } from "@/components/receptionist-setup";
@@ -36,6 +37,18 @@ export async function VoiceAgentSettingsSection() {
       .eq("organization_id", orgId)
       .order("sort"),
   ]);
+
+  /*
+   * Is this number actually ours?
+   *
+   * Read with the SERVICE client on purpose: the point is to count rows in
+   * OTHER organizations, which the RLS-scoped client cannot see — and a check
+   * that silently sees only your own org would always report "not shared",
+   * which is the reassurance that made this invisible in the first place.
+   * Only a count and a yes/no leave this function; no other tenant is named.
+   */
+  const serviceDb = await createServiceClient();
+  const sharing = await describeNumberSharing(serviceDb, orgId);
 
   const googleConfigured = isGoogleCalendarConfigured();
   const [googleConnected, googleEmail] = googleConfigured
@@ -77,6 +90,8 @@ export async function VoiceAgentSettingsSection() {
         greeting={org?.voice_agent_greeting ?? "Hello! Thank you for calling. How can I help you today?"}
         prompt={org?.voice_agent_prompt ?? ""}
         twilioNumber={org?.twilio_number ?? null}
+        sharedWith={sharing.sharedWith}
+        answersThisOrg={sharing.answersThisOrg}
       />
 
       <ReceptionistConfig

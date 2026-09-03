@@ -52,6 +52,28 @@ export async function GET(req: Request) {
       messages.push(...(emails ?? []).map((m: any) => ({ ...m, channel: "email" })));
     }
 
+    if (channel === "call" || channel === "all") {
+      const { data: calls } = await supabaseAdmin
+        .from("call_logs")
+        .select("id, notes, direction, status, duration_seconds, created_at")
+        .eq("contact_id", leadId as unknown as number)
+        .order("created_at", { ascending: true })
+        .limit(100);
+      // Shaped like a message so the thread renders it with no special case:
+      // the AI summary is the body, duration and status ride alongside.
+      messages.push(
+        ...(calls ?? []).map((c: any) => ({
+          id: c.id,
+          message: c.notes ?? "",
+          direction: c.direction,
+          created_at: c.created_at,
+          channel: "call",
+          durationSeconds: c.duration_seconds,
+          status: c.status,
+        })),
+      );
+    }
+
     // Sort all messages by time
     messages.sort((a, b) => {
       const ta = new Date(String(a.created_at)).getTime();

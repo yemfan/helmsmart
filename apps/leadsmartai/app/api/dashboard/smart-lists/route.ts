@@ -3,6 +3,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import {
   createSmartList,
   listSmartLists,
+  SmartListsUnavailableError,
 } from "@/lib/contacts/smart-lists";
 import type { ContactFilterConfig } from "@/lib/contacts/types";
 
@@ -49,6 +50,16 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ ok: true, list });
   } catch (e: unknown) {
+    // A machine code, not prose. The client turns it into a translated
+    // sentence; a raw driver message is neither in the reader's language nor
+    // about anything they can act on.
+    if (e instanceof SmartListsUnavailableError) {
+      console.error("smart-lists POST: table missing — migration not applied");
+      return NextResponse.json(
+        { ok: false, error: "smart_lists_unavailable" },
+        { status: 503 },
+      );
+    }
     const msg = e instanceof Error ? e.message : "Server error";
     console.error("smart-lists POST", e);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
