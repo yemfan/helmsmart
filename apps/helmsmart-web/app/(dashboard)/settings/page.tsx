@@ -29,11 +29,6 @@ const TIMEZONES = [
   "Pacific/Honolulu",
 ];
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
 const SECTION_H2 = "text-sm font-semibold text-slate-700 mb-4 pb-2 border-b border-slate-200";
 
 export default async function SettingsPage() {
@@ -46,7 +41,7 @@ export default async function SettingsPage() {
   const [{ data: org }, { data: bankAccounts }, { data: coaAccounts }] = await Promise.all([
     supabase
       .from("organizations")
-      .select("id, slug, name, entity_type, accounting_basis, currency, timezone, fiscal_year_end_month, default_hourly_rate, default_labor_cost_rate, weekly_digest_enabled, owner_english_assist, plan, subscription_status, trial_ends_at, twilio_number, auto_reply, auto_reply_msg, npi, slack_webhook_url, slack_notify_new_lead, slack_notify_approval, slack_notify_missed_call, slack_notify_form_submission, auto_send_reminders, reminder_days_intervals, reminder_max_count")
+      .select("id, slug, name, entity_type, accounting_basis, currency, timezone, default_hourly_rate, default_labor_cost_rate, weekly_digest_enabled, owner_english_assist, plan, subscription_status, trial_ends_at, twilio_number, auto_reply, auto_reply_msg, npi, slack_webhook_url, slack_notify_new_lead, slack_notify_approval, slack_notify_missed_call, slack_notify_form_submission, auto_send_reminders, reminder_days_intervals, reminder_max_count")
       .eq("id", orgId)
       .single(),
     supabase
@@ -90,7 +85,6 @@ export default async function SettingsPage() {
               <OrgSettingsForm
                 org={org}
                 timezones={TIMEZONES}
-                months={MONTHS}
                 weeklyDigestEnabled={org?.weekly_digest_enabled ?? true}
                 ownerEnglishAssist={org?.owner_english_assist ?? true}
               />
