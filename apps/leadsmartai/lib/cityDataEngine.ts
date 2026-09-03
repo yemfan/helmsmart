@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
+import { planRefreshTargets } from "@/lib/market/refreshPlan";
 
 export type CityDataTrend = "up" | "down" | "stable";
 
@@ -292,27 +293,75 @@ export async function getCityData(options: {
   return saved as CityMarketData;
 }
 
-export async function refreshAllCitiesDaily() {
+/**
+ * Refresh the markets we hold data for, oldest first, within a time budget.
+ *
+ * This used to walk TRAFFIC_CITIES and nothing else. Those 117 metros were
+ * immaculate — and the other 277 rows in `city_market_data` had never been
+ * refreshed once, because `getCityData` writes a row for any market an agent
+ * asks about and nothing ever came back for it. 267 of them were over 90 days
+ * old while every seed city was under 30. The markets an agent looks up are
+ * the ones they work in, so the data most likely to be quoted to a seller was
+ * the data guaranteed to rot.
+ *
+ * `planRefreshTargets` merges the seed list with the table and sorts by
+ * staleness. The budget then matters: 394 AI web-search calls do not fit in
+ * one invocation, and a run that always started at the top of a fixed list
+ * would refresh the same prefix forever. Oldest-first makes a partial run
+ * progress rather than churn — what this run leaves behind is next week's
+ * head of the queue.
+ */
+export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {}) {
+  // Leave headroom under the route's maxDuration so the last city in flight
+  // can finish and the response still gets written; a killed invocation
+  // reports nothing at all, which is how this went unnoticed for months.
+  const budgetMs = Math.max(10_000, options.budgetMs ?? 240_000);
+  const startedAt = Date.now();
+
+  const { data: rows } = await supabaseServer
+    .from("city_market_data")
+    .select("city,state,last_fetched_at");
+
+  const targets = planRefreshTargets(
+    TRAFFIC_CITIES.map((c) => ({ city: c.city, state: c.state })),
+    ((rows ?? []) as Array<{ city: string; state: string; last_fetched_at: string | null }>).map(
+      (r) => ({ city: r.city, state: r.state, lastFetchedAt: r.last_fetched_at }),
+    ),
+  );
+
   let processed = 0;
   let failed = 0;
   const errors: Array<{ city: string; state: string; error: string }> = [];
-  for (const city of TRAFFIC_CITIES) {
+
+  for (const target of targets) {
+    if (Date.now() - startedAt > budgetMs) break;
     processed += 1;
     try {
       await getCityData({
-        city: city.city,
-        state: city.state,
+        city: target.city,
+        state: target.state,
         forceRefresh: true,
         maxAgeHours: 24,
       });
     } catch (e: any) {
       failed += 1;
       errors.push({
-        city: city.city,
-        state: city.state,
+        city: target.city,
+        state: target.state,
         error: String(e?.message ?? "Unknown error"),
       });
     }
   }
-  return { processed, failed, succeeded: processed - failed, errors };
+
+  return {
+    processed,
+    failed,
+    succeeded: processed - failed,
+    // `remaining` is the number to watch: while it stays above zero the
+    // schedule is not keeping up with the table, and saying so in the cron's
+    // own response is cheaper than noticing months later in a bug report.
+    remaining: Math.max(0, targets.length - processed),
+    total: targets.length,
+    errors: errors.slice(0, 20),
+  };
 }
