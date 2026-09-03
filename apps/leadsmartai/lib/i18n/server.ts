@@ -10,6 +10,7 @@ import {
   resources,
   type SupportedLocale,
 } from "./config";
+import { interpolate, resolveKey } from "./resolveKey";
 
 /**
  * Server-side locale resolution for Server Components + Route
@@ -61,11 +62,10 @@ export async function getServerLocale(): Promise<SupportedLocale> {
  * differently either side of the boundary.)
  *
  * So: the requested locale, then `defaultValue` if the caller passed one,
- * then the default-locale bundle, and only then the key. The loud signal for
- * a key that exists in NO bundle is unchanged; what's gone is shipping a key
- * path to a reader when a translation exists in another language. CI carries
- * the rest — `missingKeys` walks every call site into the English bundle and
- * `navLabels` holds the two locales to the same key set.
+ * then the default-locale bundle, and only then the key. That order lives in
+ * `./resolveKey`, pure and unit-tested, because this module is `server-only`
+ * and reads `next/headers` — the order is the part worth pinning, and it
+ * cannot be exercised from here.
  *
  * `defaultNs` mirrors `useTranslation(ns)` on the client, and exists because
  * the asymmetry was a live bug: a component moved from the hook to this
@@ -82,49 +82,15 @@ export async function getServerT(
     const ns = (opts?.ns as string | undefined) ?? defaultNs;
     type Ns = keyof (typeof resources)[typeof locale];
 
-    const hit = lookupIn(resources[locale]?.[ns as Ns], key);
-    if (hit != null) return interpolate(hit, opts ?? {});
+    const resolved = resolveKey(key, {
+      bundle: resources[locale]?.[ns as Ns],
+      // Undefined when we're already on English — nothing to fall back to.
+      fallbackBundle:
+        locale === DEFAULT_LOCALE ? undefined : resources[DEFAULT_LOCALE]?.[ns as Ns],
+      defaultValue: opts?.defaultValue,
+    });
 
-    const fallback = opts?.defaultValue;
-    if (typeof fallback === "string") return interpolate(fallback, opts ?? {});
-
-    if (locale !== DEFAULT_LOCALE) {
-      const english = lookupIn(resources[DEFAULT_LOCALE]?.[ns as Ns], key);
-      if (english != null) return interpolate(english, opts ?? {});
-    }
-
-    return key;
+    // Null means no bundle in any language has it: render the key, loudly.
+    return resolved == null ? key : interpolate(resolved, opts ?? {});
   };
-}
-
-/** The string at `key`, or null when the bundle is absent or the key isn't a string. */
-function lookupIn(
-  bundle: Record<string, unknown> | undefined,
-  key: string,
-): string | null {
-  if (!bundle) return null;
-  const value = lookup(bundle, key);
-  return typeof value === "string" ? value : null;
-}
-
-function lookup(bundle: Record<string, unknown>, key: string): unknown {
-  if (key in bundle) return bundle[key];
-  // Dotted-path support — settings.json uses nested objects.
-  const segments = key.split(".");
-  let current: unknown = bundle;
-  for (const seg of segments) {
-    if (current && typeof current === "object" && seg in (current as object)) {
-      current = (current as Record<string, unknown>)[seg];
-    } else {
-      return undefined;
-    }
-  }
-  return current;
-}
-
-function interpolate(template: string, vars: Record<string, unknown>): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, name) => {
-    const v = vars[name];
-    return v == null ? "" : String(v);
-  });
 }
