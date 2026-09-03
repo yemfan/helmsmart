@@ -96,6 +96,20 @@ export async function POST(req: NextRequest) {
 
   const dynamic_variables = buildReceptionistDynamicVariables(ctx);
 
+  /*
+   * Name the org we are answering AS.
+   *
+   * One number can legitimately be claimed by several organizations —
+   * resolveInboundOrg picks deterministically (voice-enabled first, then the
+   * oldest) and warns. What it could not tell you is which one won, so a caller
+   * hearing the wrong business's context had no trail back to the cause: the
+   * owner who just typed their details into Settings is not necessarily the org
+   * that answers their number.
+   */
+  console.info(
+    `[retell/inbound] answering as org ${org.id} ("${ctx.orgName}") on ${toNumber}`,
+  );
+
   // Capture the caller as a contact: match the caller ID to an existing client,
   // or create a lead if it's new — so every inbound caller becomes a follow-up-
   // able contact (and appears in outbound "Call all"). Runs in the background so
