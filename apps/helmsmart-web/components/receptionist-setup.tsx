@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Copy, Check, PhoneCall, ShieldCheck, Loader2 } from "lucide-react";
 import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
 import { verifyNumberWiring } from "@/lib/actions/voice-setup";
@@ -60,10 +60,39 @@ function Item({ ok, label, fix }: { ok: boolean; label: string; fix: string }) {
 }
 
 export function ReceptionistSetup({ status }: { status: SetupStatus }) {
+  /**
+   * Everything the APP controls. Necessary for the agent to work, and nowhere
+   * near sufficient: the number also has to exist in Retell, bound to our agent
+   * with the inbound webhook pointed here. None of that is visible from our own
+   * database.
+   */
   const appReady = status.numberOk && status.hoursOk && status.typesOk && status.agentEnabled;
 
   const [verifying, startVerify] = useTransition();
   const [verifyMsg, setVerifyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  /**
+   * "Ready" means a caller gets answered, and only the provider can confirm
+   * that. This badge read Ready off app state alone, so it sat green while
+   * Retell had never heard of the number — the agent would not have picked up a
+   * single call. Unverified is not the same as working, so it does not claim to
+   * be.
+   */
+  const badge = !appReady
+    ? { text: "Needs setup", cls: "text-amber-700 bg-amber-50" }
+    : verifyMsg === null
+      ? { text: "Not verified", cls: "text-slate-600 bg-slate-100" }
+      : verifyMsg.ok
+        ? { text: "Ready", cls: "text-emerald-700 bg-emerald-50" }
+        : { text: "Not answering", cls: "text-rose-700 bg-rose-50" };
+
+  // Check on load once the app-side boxes are ticked, so the badge is truthful
+  // without waiting for someone to press a button they have no reason to press.
+  useEffect(() => {
+    if (appReady && verifyMsg === null) handleVerify();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appReady]);
+
   function handleVerify() {
     setVerifyMsg(null);
     startVerify(async () => {
@@ -84,11 +113,9 @@ export function ReceptionistSetup({ status }: { status: SetupStatus }) {
       <div className="flex items-center gap-2 mb-1">
         <PhoneCall className="w-4 h-4 text-indigo-500" />
         <h3 className="text-sm font-semibold text-slate-800">Receptionist setup</h3>
-        {appReady ? (
-          <span className="ml-auto text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Ready</span>
-        ) : (
-          <span className="ml-auto text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Needs setup</span>
-        )}
+        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+          {verifying && verifyMsg === null ? "Checking…" : badge.text}
+        </span>
       </div>
       <p className="text-xs text-slate-500 mb-4">Everything below must be set for the agent to answer and book.</p>
 
