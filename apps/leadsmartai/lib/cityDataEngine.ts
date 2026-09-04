@@ -2,6 +2,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
 import { planRefreshTargets } from "@/lib/market/refreshPlan";
 import { runPooled } from "@/lib/market/refreshPool";
+import { stateCode } from "@/lib/market/stateCode";
 
 export type CityDataTrend = "up" | "down" | "stable";
 
@@ -35,6 +36,14 @@ function hashNumber(input: string) {
   return h;
 }
 
+/**
+ * A (city, state) pair in the one shape the table is keyed by.
+ *
+ * The state goes through `stateCode`, not `toUpperCase`. Uppercasing alone let
+ * "California" through as its own key beside "CA", and the unique constraint
+ * treated them as two markets: 21 cities carried two rows each, and the
+ * refresh paid an AI call for both halves of every pair.
+ */
 export function normalizeCityState(inputCity: string, inputState?: string) {
   const rawCity = String(inputCity ?? "").trim();
   const rawState = String(inputState ?? "").trim();
@@ -56,8 +65,7 @@ export function normalizeCityState(inputCity: string, inputState?: string) {
    */
   if (rawCity.includes(",")) {
     const [c, s] = rawCity.split(",").map((v) => v.trim());
-    const state = (rawState || s || "").toUpperCase();
-    return { city: toTitleCase(c), state };
+    return { city: toTitleCase(c), state: stateCode(rawState || s) };
   }
 
   const matched = TRAFFIC_CITIES.find(
@@ -68,11 +76,11 @@ export function normalizeCityState(inputCity: string, inputState?: string) {
   if (matched) {
     return {
       city: matched.city,
-      state: rawState ? rawState.toUpperCase() : matched.state,
+      state: rawState ? stateCode(rawState) : matched.state,
     };
   }
 
-  return { city: toTitleCase(rawCity), state: rawState.toUpperCase() };
+  return { city: toTitleCase(rawCity), state: stateCode(rawState) };
 }
 
 function deriveTrend(yoyPct: number): CityDataTrend {
