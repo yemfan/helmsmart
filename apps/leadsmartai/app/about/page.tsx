@@ -68,7 +68,7 @@ export default async function AboutLeadSmartAIPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button href="/signup">{ta("hero.cta_primary")}</Button>
+              <Button href="/agent-signup">{ta("hero.cta_primary")}</Button>
               <Button href="/contact" variant="outline">
                 {ta("hero.cta_secondary")}
               </Button>
@@ -200,7 +200,7 @@ export default async function AboutLeadSmartAIPage() {
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{ta("cta.h2")}</h2>
             <p className="mt-4 text-lg text-slate-600">{ta("cta.subtitle")}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button href="/signup">{ta("cta.primary")}</Button>
+              <Button href="/agent-signup">{ta("cta.primary")}</Button>
               <Button href="/pricing" variant="outline">
                 {ta("cta.secondary")}
               </Button>

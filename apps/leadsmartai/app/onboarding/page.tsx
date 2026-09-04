@@ -36,7 +36,7 @@ export default async function OnboardingPage() {
           <p className="text-slate-700 leading-relaxed mb-4">{t("pages.onboardingPage.noJsBody", { ns: "dashboard" })}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/signup"
+              href="/agent-signup"
               className="inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
             >{t("pages.onboardingPage.createAccount", { ns: "dashboard" })}</Link>
             <Link
@@ -63,7 +63,7 @@ export default async function OnboardingPage() {
             <p className="mt-5 text-lg leading-relaxed text-slate-600">{t("pages.onboardingPage.sub", { ns: "dashboard" })}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
-                href="/signup"
+                href="/agent-signup"
                 className="inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
               >{t("pages.onboardingPage.createAccount", { ns: "dashboard" })}</Link>
               <Link
