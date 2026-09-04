@@ -21,7 +21,7 @@ export const getMarketSnapshot = defineTool({
     const { data } = await supabaseAdmin
       .from("city_market_data")
       .select(
-        "city, state, median_price, price_per_sqft, trend, days_on_market, inventory, ai_market_summary, ai_seller_recommendation, last_fetched_at",
+        "city, state, median_price, price_per_sqft, trend, days_on_market, inventory, ai_market_summary, ai_seller_recommendation, last_fetched_at, source",
       )
       .ilike("city", city)
       .ilike("state", state)
@@ -40,8 +40,31 @@ export const getMarketSnapshot = defineTool({
       median_price: number | null;
       trend: string | null;
       last_fetched_at: string | null;
+      source: string | null;
     };
     const verdict = judgeSnapshot(row);
+
+    /*
+     * A placeholder is not a market. `median $0` was caught because zero is
+     * obviously wrong, but the seed rows carry plausible numbers — Los Angeles
+     * held the 955000 typed into `trafficSeo.ts` — stamped with today's date by
+     * the failed-fetch path. Age cannot catch that, so say what it actually is
+     * rather than quoting it with a caveat about how recent it is.
+     */
+    if (verdict.unmeasured) {
+      return {
+        status: "completed",
+        summary:
+          `The number on file for ${city}, ${state} is a placeholder, not a market lookup` +
+          (row.trend ? ` (trend ${row.trend}).` : ".") +
+          " Do not quote a price for this market.",
+        display: {
+          key: row.trend ? "market.placeholderWithTrend" : "market.placeholder",
+          params: { city, state, trend: row.trend ?? "" },
+        },
+        data: { found: true, measured: false, medianPriceAvailable: false, snapshot: data },
+      };
+    }
 
     /*
      * A null median used to print as `median $0` with `found: true` beside it,

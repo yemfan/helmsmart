@@ -240,9 +240,14 @@ export async function getCityData(options: {
   // and driven by the daily refreshAllCitiesDaily cron, so the AI cost is
   // bounded. The OpenAI market summary below is unaffected.
   let baseData = buildFallbackCityData(normalized.city, normalized.state);
+  let fetched = false;
+  let fetchError: string | null = null;
   try {
     const { aiMarketStats } = await import("@repo/valuation/server");
     const statsResult = await aiMarketStats(normalized.city, normalized.state);
+    if (!statsResult.ok) fetchError = statsResult.error ?? `status ${statsResult.status}`;
+    else if (statsResult.stats.medianPrice == null && statsResult.stats.pricePerSqft == null)
+      fetchError = "no median or price/sqft in response";
     if (
       statsResult.ok &&
       (statsResult.stats.medianPrice != null || statsResult.stats.pricePerSqft != null)
@@ -259,10 +264,40 @@ export async function getCityData(options: {
         source: "ai_web_search",
         raw_payload: stats as unknown,
       } as typeof baseData;
+      fetched = true;
     }
-  } catch {
-    // Any failure (not configured, network, parse) → keep the seed fallback.
+  } catch (e: any) {
+    fetchError = String(e?.message ?? "import or call threw");
   }
+
+  /*
+   * A failed fetch must not be written back as a fresh row.
+   *
+   * It used to be: the `catch` fell through to the seed constants, and the
+   * upsert below stamped them `last_fetched_at: now`. So a fetch that never
+   * happened produced a row indistinguishable from one that did — Los Angeles
+   * carrying the 955000 from `trafficSeo.ts`, dated today. Every one of the
+   * 394 rows was in that state and `source = 'ai_web_search'` had none, which
+   * is why nobody could see it: the failure manufactured its own evidence of
+   * success.
+   *
+   * Two shapes, and neither writes a timestamp it did not earn:
+   *
+   *   - a row already exists: leave it exactly as it is. Overwriting it with
+   *     seed numbers would also destroy a good earlier reading, and letting
+   *     its age keep growing is what makes the oldest-first plan and the
+   *     cron's `remaining` count mean something;
+   *   - no row exists: return the fallback without persisting it. The table
+   *     stops accumulating rows whose median is a hash of the city name.
+   */
+  if (!fetched) {
+    console.warn(
+      `[city-data] fetch failed for ${normalized.city}, ${normalized.state}: ${fetchError ?? "unknown"}`,
+    );
+    // An existing row keeps its own numbers, summary and age. Nothing to add.
+    if (existing) return existing as CityMarketData;
+  }
+
   const ai = await generateAIInsight(baseData);
 
   const upsertPayload = {
@@ -281,6 +316,13 @@ export async function getCityData(options: {
     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     updated_at: nowIso,
   };
+
+  /*
+   * Render it, but do not record it. The caller still gets a shaped object so
+   * the SEO pages have something to draw; what it does not get is a row in the
+   * table asserting that this city was looked up today.
+   */
+  if (!fetched) return upsertPayload as unknown as CityMarketData;
 
   const { data: saved, error: saveError } = await supabaseServer
     .from("city_market_data")
@@ -331,18 +373,27 @@ export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {})
 
   let processed = 0;
   let failed = 0;
+  let fellBack = 0;
   const errors: Array<{ city: string; state: string; error: string }> = [];
 
   for (const target of targets) {
     if (Date.now() - startedAt > budgetMs) break;
     processed += 1;
     try {
-      await getCityData({
+      const row = await getCityData({
         city: target.city,
         state: target.state,
         forceRefresh: true,
         maxAgeHours: 24,
       });
+      /*
+       * Not every non-throwing iteration fetched anything. `getCityData` falls
+       * back to seed constants when the AI lookup fails, and this loop used to
+       * count that as a success — which is how it reported `failed: 0` while
+       * 117 of 117 markets went unfetched for months. The row's own source is
+       * the only honest evidence that a lookup happened.
+       */
+      if (row?.source !== "ai_web_search") fellBack += 1;
     } catch (e: any) {
       failed += 1;
       errors.push({
@@ -356,6 +407,13 @@ export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {})
   return {
     processed,
     failed,
+    /*
+     * Fetched, not merely visited. `fellBack` above zero means the AI lookup
+     * is not working and the numbers behind it are placeholders, whatever the
+     * timestamps say.
+     */
+    fetched: processed - failed - fellBack,
+    fellBack,
     succeeded: processed - failed,
     // `remaining` is the number to watch: while it stays above zero the
     // schedule is not keeping up with the table, and saying so in the cron's
