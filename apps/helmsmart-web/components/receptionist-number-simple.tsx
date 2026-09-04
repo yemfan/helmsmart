@@ -71,12 +71,16 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
 
       <div className="flex flex-wrap items-center gap-2">
         {/*
-          The placeholder is a reserved 555 number, not a plausible one. It used
-          to read "+1 626 888 7170" — a real-looking line in the same range as
-          the number this product actually uses — and it was taken for one: it
-          got reported as "the only number that can send SMS", and cost a round
-          of Twilio investigation before the account turned out never to have
-          held it. A placeholder should be unmistakably an example.
+          The placeholder is a reserved 555 number, not a plausible one.
+
+          It used to read "+1 626 888 7170", which is worse than a real-looking
+          invention: that IS a real number — CloseBoss's registered SMS sender,
+          in a different Twilio account. A placeholder indistinguishable from
+          production config wastes everyone's time in both directions. It was
+          read as an example when it was real, and (by me) dismissed as an
+          example when someone correctly named it as the working sender.
+
+          A placeholder should be unmistakably an example.
         */}
         <input
           value={number}

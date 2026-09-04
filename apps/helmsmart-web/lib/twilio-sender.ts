@@ -28,6 +28,32 @@ export type TwilioSender = { messagingServiceSid: string } | { from: string };
 export function twilioSender(fromNumber: string | null | undefined): TwilioSender | null {
   const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID?.trim();
   if (messagingServiceSid) return { messagingServiceSid };
-  const from = (fromNumber || process.env.TWILIO_FROM_NUMBER || "").trim();
+
+  /*
+   * TWILIO_FROM_NUMBER wins over the number it was handed.
+   *
+   * The number passed in is the org's `twilio_number` — the line the
+   * receptionist ANSWERS on. That it can receive says nothing about whether it
+   * may send: it has to belong to the Twilio account these credentials open,
+   * and be registered to an A2P campaign. `+16268888685` satisfied neither, so
+   * every text from it came back 30034 (unregistered) while the account's own
+   * approved sender sat unused in the env.
+   *
+   * So when an account-level sender is configured, it is the answer.
+   * TWILIO_FROM_NUMBER is set deliberately, per deployment, by someone who
+   * knows which number that account may send from; an org's receiving line is
+   * just whatever number happens to be pointed at the product.
+   *
+   * The per-org number remains the fallback, which is what a future
+   * one-number-per-tenant setup wants — but it stops being a way to silently
+   * send from a number the account does not own.
+   */
+  // Trim each candidate BEFORE choosing, not after. "   " is truthy, so a
+  // whitespace-only env var would win the `||` and then trim to nothing —
+  // a stray blank pasted into Vercel silently stopping every message, which is
+  // the same invisible failure this function exists to prevent.
+  const envFrom = (process.env.TWILIO_FROM_NUMBER || "").trim();
+  const orgFrom = (fromNumber || "").trim();
+  const from = envFrom || orgFrom;
   return from ? { from } : null;
 }
