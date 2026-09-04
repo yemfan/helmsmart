@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -95,6 +96,12 @@ export default function WeeklyScheduleScreen() {
     patch(day.weekday, { postHour: Math.floor(total / 60), postMinute: total % 60 });
   }
 
+  // 1-5, the same clamp the server applies. The extras are spread through the
+  // day after the first post and finish by 9pm.
+  function stepPostsPerDay(day: MobileWeeklyDay, delta: number) {
+    patch(day.weekday, { postsPerDay: Math.min(5, Math.max(1, day.postsPerDay + delta)) });
+  }
+
   function setMediaType(day: MobileWeeklyDay, mediaType: MobileWeeklyMediaType) {
     patch(day.weekday, { mediaType, platforms: null });
   }
@@ -142,9 +149,10 @@ export default function WeeklyScheduleScreen() {
       <Stack.Screen options={{ title: "Weekly Schedule", headerBackTitle: "Back" }} />
 
       <Text style={styles.intro}>
-        Pick the days you want a post. For each, choose a content type, time, channels, and a topic — AI researches the
-        topic and posts automatically. Text → Facebook, LinkedIn, Threads. Image adds a branded card + Instagram &amp;
-        Pinterest. Video films your digital twin → TikTok, YouTube &amp; more.
+        Pick the days you want a post. For each, choose a content type, time, channels, and a topic — or let AI pick
+        the time and topic — and how many posts that day. AI researches the topic and posts automatically. Text →
+        Facebook, LinkedIn, Threads. Image adds a branded card + Instagram &amp; Pinterest. Video films your digital
+        twin → TikTok, YouTube &amp; more.
       </Text>
 
       {data && !data.configured ? (
@@ -181,16 +189,57 @@ export default function WeeklyScheduleScreen() {
                 {/* Time */}
                 <View style={styles.row}>
                   <Text style={styles.label}>Time</Text>
+                  {d.timeMode === "ai" ? (
+                    <Text style={styles.aiNote}>AI picks the best time each {WEEKDAYS[d.weekday]}</Text>
+                  ) : (
+                    <>
+                      <View style={styles.stepper}>
+                        <Pressable onPress={() => stepMinutes(d, -15)} style={styles.stepBtn} hitSlop={8}>
+                          <Ionicons name="remove" size={16} color={tokens.text} />
+                        </Pressable>
+                        <Text style={styles.timeText}>{fmtTime(d.postHour, d.postMinute)}</Text>
+                        <Pressable onPress={() => stepMinutes(d, 15)} style={styles.stepBtn} hitSlop={8}>
+                          <Ionicons name="add" size={16} color={tokens.text} />
+                        </Pressable>
+                      </View>
+                      <Text style={styles.tz}>{d.timezone}</Text>
+                    </>
+                  )}
+                </View>
+                <View style={styles.switchRow}>
+                  <Text style={styles.switchLabel}>Let AI pick the time</Text>
+                  <Switch
+                    value={d.timeMode === "ai"}
+                    onValueChange={(on) => patch(d.weekday, { timeMode: on ? "ai" : "fixed" })}
+                    accessibilityLabel="Let AI pick the time"
+                  />
+                </View>
+
+                {/* Posts per day */}
+                <View style={styles.row}>
+                  <Text style={styles.label}>Per day</Text>
                   <View style={styles.stepper}>
-                    <Pressable onPress={() => stepMinutes(d, -15)} style={styles.stepBtn} hitSlop={8}>
-                      <Ionicons name="remove" size={16} color={tokens.text} />
+                    <Pressable
+                      onPress={() => stepPostsPerDay(d, -1)}
+                      style={styles.stepBtn}
+                      hitSlop={8}
+                      disabled={d.postsPerDay <= 1}
+                      accessibilityLabel="Fewer posts per day"
+                    >
+                      <Ionicons name="remove" size={16} color={d.postsPerDay <= 1 ? tokens.textSubtle : tokens.text} />
                     </Pressable>
-                    <Text style={styles.timeText}>{fmtTime(d.postHour, d.postMinute)}</Text>
-                    <Pressable onPress={() => stepMinutes(d, 15)} style={styles.stepBtn} hitSlop={8}>
-                      <Ionicons name="add" size={16} color={tokens.text} />
+                    <Text style={styles.countText}>{d.postsPerDay}</Text>
+                    <Pressable
+                      onPress={() => stepPostsPerDay(d, 1)}
+                      style={styles.stepBtn}
+                      hitSlop={8}
+                      disabled={d.postsPerDay >= 5}
+                      accessibilityLabel="More posts per day"
+                    >
+                      <Ionicons name="add" size={16} color={d.postsPerDay >= 5 ? tokens.textSubtle : tokens.text} />
                     </Pressable>
                   </View>
-                  <Text style={styles.tz}>{d.timezone}</Text>
+                  {d.postsPerDay > 1 ? <Text style={styles.tz}>spread through the day, done by 9pm</Text> : null}
                 </View>
 
                 {/* Content type */}
@@ -235,27 +284,43 @@ export default function WeeklyScheduleScreen() {
                 </View>
 
                 {/* Topic */}
-                <View style={styles.chipsRow}>
-                  <Text style={styles.label}>Topic</Text>
-                  {(data?.topicPresets ?? []).map((topic) => (
-                    <Pressable
-                      key={topic}
-                      onPress={() => patch(d.weekday, { topic })}
-                      style={[styles.chip, d.topic === topic && styles.chipOn]}
-                    >
-                      <Text style={[styles.chipText, d.topic === topic && styles.chipTextOn]} numberOfLines={1}>
-                        {topic}
-                      </Text>
-                    </Pressable>
-                  ))}
+                <View style={styles.switchRow}>
+                  <Text style={styles.switchLabel}>Let AI pick the topic</Text>
+                  <Switch
+                    value={d.topicMode === "ai"}
+                    onValueChange={(on) => patch(d.weekday, { topicMode: on ? "ai" : "fixed" })}
+                    accessibilityLabel="Let AI pick the topic"
+                  />
                 </View>
-                <TextInput
-                  value={d.topic}
-                  onChangeText={(topic) => patch(d.weekday, { topic })}
-                  placeholder="…or type your own topic"
-                  placeholderTextColor={tokens.textSubtle}
-                  style={styles.topicInput}
-                />
+                {d.topicMode === "ai" ? (
+                  <Text style={styles.aiNote}>
+                    AI searches the web for what is timely and useful that day and writes about that.
+                  </Text>
+                ) : (
+                  <>
+                    <View style={styles.chipsRow}>
+                      <Text style={styles.label}>Topic</Text>
+                      {(data?.topicPresets ?? []).map((topic) => (
+                        <Pressable
+                          key={topic}
+                          onPress={() => patch(d.weekday, { topic })}
+                          style={[styles.chip, d.topic === topic && styles.chipOn]}
+                        >
+                          <Text style={[styles.chipText, d.topic === topic && styles.chipTextOn]} numberOfLines={1}>
+                            {topic}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                    <TextInput
+                      value={d.topic}
+                      onChangeText={(topic) => patch(d.weekday, { topic })}
+                      placeholder="…or type your own topic"
+                      placeholderTextColor={tokens.textSubtle}
+                      style={styles.topicInput}
+                    />
+                  </>
+                )}
               </View>
             ) : null}
           </View>
@@ -333,7 +398,11 @@ function createStyles(tokens: ThemeTokens) {
     },
     stepBtn: { padding: 4 },
     timeText: { fontSize: 14, fontWeight: "600", color: tokens.text, minWidth: 74, textAlign: "center" },
+    countText: { fontSize: 14, fontWeight: "600", color: tokens.text, minWidth: 28, textAlign: "center" },
     tz: { fontSize: 10, color: tokens.textSubtle },
+    aiNote: { flex: 1, fontSize: 12, lineHeight: 16, color: tokens.textSecondary },
+    switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
+    switchLabel: { flex: 1, fontSize: 13, color: tokens.textSecondary },
     segment: { flexDirection: "row", borderWidth: 1, borderColor: tokens.border, borderRadius: 10, overflow: "hidden" },
     segBtn: { paddingHorizontal: 14, paddingVertical: 6, backgroundColor: tokens.surface },
     segBtnOn: { backgroundColor: tokens.accent },

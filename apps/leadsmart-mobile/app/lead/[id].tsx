@@ -1,6 +1,7 @@
 import type {
   MobileBookingLinkDto,
   MobileCalendarEventDto,
+  MobileCallDto,
   MobileEmailMessageDto,
   MobileLeadPipelineDto,
   MobileLeadRecordDto,
@@ -98,17 +99,31 @@ function buildLeadSubtitle(
 
 function mergeConversation(
   sms: MobileSmsMessageDto[],
-  email: MobileEmailMessageDto[]
-): Array<{ key: string; kind: "sms" | "email"; m: MobileSmsMessageDto | MobileEmailMessageDto }> {
-  const rows: Array<{
-    key: string;
-    kind: "sms" | "email";
-    m: MobileSmsMessageDto | MobileEmailMessageDto;
-  }> = [];
+  email: MobileEmailMessageDto[],
+  calls: MobileCallDto[]
+): ThreadRow[] {
+  const rows: ThreadRow[] = [];
   for (const m of sms) rows.push({ key: `s-${m.id}`, kind: "sms", m });
   for (const m of email) rows.push({ key: `e-${m.id}`, kind: "email", m });
+  // Calls thread beside texts and email, as on the web: the AI summary is the
+  // body. Without them, tapping a call in the inbox opened a lead with no
+  // call on it.
+  for (const m of calls) rows.push({ key: `c-${m.id}`, kind: "call", m });
   rows.sort((a, b) => new Date(a.m.created_at).getTime() - new Date(b.m.created_at).getTime());
   return rows;
+}
+
+type ThreadRow =
+  | { key: string; kind: "sms"; m: MobileSmsMessageDto }
+  | { key: string; kind: "email"; m: MobileEmailMessageDto }
+  | { key: string; kind: "call"; m: MobileCallDto };
+
+/** Call length as m:ss. Locale-neutral, so it needs no translated string. */
+function callLength(seconds: number | null | undefined): string | null {
+  if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) return null;
+  const m = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return `${m}:${String(sec).padStart(2, "0")}`;
 }
 
 /**
@@ -249,26 +264,32 @@ function AiInsightsCard({
 }
 
 function MessageBubble({
-  m,
-  kind,
+  row,
   styles,
 }: {
-  m: MobileSmsMessageDto | MobileEmailMessageDto;
-  kind: "sms" | "email";
+  row: ThreadRow;
   styles: ReturnType<typeof createStyles>;
 }) {
   const { t } = useTranslation("lead_detail");
-  const inbound = m.direction === "inbound";
-  const subject = kind === "email" && "subject" in m && m.subject ? m.subject : null;
+  const inbound = row.m.direction === "inbound";
+  const subject = row.kind === "email" && row.m.subject ? row.m.subject : null;
   const channel =
-    kind === "sms" ? t("bubble.channel_sms") : t("bubble.channel_email");
+    row.kind === "sms"
+      ? t("bubble.channel_sms")
+      : row.kind === "call"
+        ? t("bubble.channel_call")
+        : t("bubble.channel_email");
+  // A call with no summary shows the empty marker, not invented filler.
+  const body = row.kind === "call" ? row.m.summary : row.m.message;
+  const length = row.kind === "call" ? callLength(row.m.duration_seconds) : null;
   return (
     <View style={[styles.bubbleWrap, inbound ? styles.bubbleInbound : styles.bubbleOutbound]}>
       <Text style={styles.bubbleChannel}>{channel}</Text>
       {subject ? <Text style={styles.bubbleSubject}>{subject}</Text> : null}
-      <Text style={styles.bubbleBody}>{m.message || t("bubble.empty_body")}</Text>
+      <Text style={styles.bubbleBody}>{body || t("bubble.empty_body")}</Text>
       <Text style={styles.bubbleMeta}>
-        {inbound ? t("bubble.inbound") : t("bubble.outbound")} · {formatShortDateTime(m.created_at)}
+        {inbound ? t("bubble.inbound") : t("bubble.outbound")} · {formatShortDateTime(row.m.created_at)}
+        {length ? ` · ${length}` : ""}
       </Text>
     </View>
   );
@@ -289,6 +310,7 @@ export default function LeadDetailScreen() {
   const [lead, setLead] = useState<MobileLeadRecordDto | null>(null);
   const [sms, setSms] = useState<MobileSmsMessageDto[]>([]);
   const [email, setEmail] = useState<MobileEmailMessageDto[]>([]);
+  const [calls, setCalls] = useState<MobileCallDto[]>([]);
   const [pipeline, setPipeline] = useState<MobileLeadPipelineDto>(emptyPipeline);
   const [pipelineStages, setPipelineStages] = useState<MobilePipelineStageOptionDto[]>([]);
   const [nextOpenTask, setNextOpenTask] = useState<MobileLeadTaskDto | null>(null);
@@ -316,6 +338,8 @@ export default function LeadDetailScreen() {
     next_open_task: MobileLeadTaskDto | null;
     next_appointment: MobileCalendarEventDto | null;
     booking_links: MobileBookingLinkDto[];
+    /** Missing from payloads cached by builds before 1.7.0. */
+    calls?: MobileCallDto[];
   };
 
   const detailFetcher = useCallback(async (): Promise<LeadDetailPayload | MobileApiFailure> => {
@@ -326,6 +350,7 @@ export default function LeadDetailScreen() {
       lead: res.lead,
       sms: res.conversations.sms,
       email: res.conversations.email,
+      calls: res.conversations.calls ?? [],
       pipeline: res.pipeline,
       pipeline_stages: res.pipeline_stages,
       next_open_task: res.next_open_task,
@@ -352,6 +377,7 @@ export default function LeadDetailScreen() {
       setLead(cachedDetail.lead);
       setSms(cachedDetail.sms);
       setEmail(cachedDetail.email);
+      setCalls(cachedDetail.calls ?? []);
       setPipeline(cachedDetail.pipeline);
       setPipelineStages(cachedDetail.pipeline_stages);
       setNextOpenTask(cachedDetail.next_open_task);
@@ -369,6 +395,7 @@ export default function LeadDetailScreen() {
     setLead(getDemoLeadRecord());
     setSms(getDemoSmsThread());
     setEmail([]);
+    setCalls([]);
     setPipeline(emptyPipeline);
     setPipelineStages([]);
     setNextOpenTask(null);
@@ -386,6 +413,7 @@ export default function LeadDetailScreen() {
     setLead(res.lead);
     setSms(res.conversations.sms);
     setEmail(res.conversations.email);
+    setCalls(res.conversations.calls ?? []);
     setPipeline(res.pipeline);
     setPipelineStages(res.pipeline_stages);
     setNextOpenTask(res.next_open_task);
@@ -501,7 +529,7 @@ export default function LeadDetailScreen() {
   const name = leadField(lead, "name") || t("lead_fallback", { id: lead.id });
   const subtitle = buildLeadSubtitle(lead, pipeline, t);
   const lastActivity = leadField(lead, "last_activity_at");
-  const mergedThread = mergeConversation(sms, email);
+  const mergedThread = mergeConversation(sms, email, calls);
 
   return (
     <KeyboardAvoidingView
@@ -647,7 +675,7 @@ export default function LeadDetailScreen() {
           </View>
         ) : (
           mergedThread.map((row) => (
-            <MessageBubble key={row.key} m={row.m} kind={row.kind} styles={styles} />
+            <MessageBubble key={row.key} row={row} styles={styles} />
           ))
         )}
       </ScrollView>

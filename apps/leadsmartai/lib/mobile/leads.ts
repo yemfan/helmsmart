@@ -3,7 +3,11 @@ import {
   CONTACT_SCORES_SELECT,
   unpackScoreRow,
 } from "@/lib/contactScores";
-import { fetchRecentEmailForLead, fetchRecentSmsForLead } from "@/lib/mobile/conversations";
+import {
+  fetchRecentCallsForLead,
+  fetchRecentEmailForLead,
+  fetchRecentSmsForLead,
+} from "@/lib/mobile/conversations";
 import type {
   MobileLeadDetailResponseDto,
   MobileLeadPipelineDto,
@@ -193,10 +197,11 @@ export async function getMobileLeadDetail(
   const row = lead as Record<string, unknown>;
   const psId = row.pipeline_stage_id != null ? String(row.pipeline_stage_id) : null;
 
-  const [sms, email, pipeline_stages, pipeline, next_open_task, next_appointment, booking_links] =
+  const [sms, email, calls, pipeline_stages, pipeline, next_open_task, next_appointment, booking_links] =
     await Promise.all([
       fetchRecentSmsForLead(leadId),
       fetchRecentEmailForLead(leadId),
+      fetchRecentCallsForLead(leadId),
       listMobilePipelineStages(agentId),
       loadPipelineBlockForLead(agentId, psId),
       fetchNextOpenTaskForLead(agentId, leadId),
@@ -206,7 +211,7 @@ export async function getMobileLeadDetail(
 
   return {
     lead,
-    conversations: { sms, email },
+    conversations: { sms, email, calls },
     pipeline,
     next_open_task,
     pipeline_stages: pipeline_stages as MobilePipelineStageOptionDto[],

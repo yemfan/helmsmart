@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -30,7 +30,9 @@ export async function POST(req: Request) {
    */
   let userId: string;
   try {
-    ({ userId } = await getCurrentAgentContext());
+    // Bearer-aware: the mobile app's language picker writes here too, and a
+    // mobile request has no cookie session to fall back on.
+    ({ userId } = await getAgentContextFromRequest(req));
   } catch {
     return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
   }

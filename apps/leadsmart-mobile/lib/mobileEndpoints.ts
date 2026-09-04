@@ -92,4 +92,7 @@ export const MOBILE_API_PATHS = {
   socialWeeklySchedule: "/api/mobile/social/weekly-schedule",
   uploadsSign: "/api/mobile/uploads/sign",
   digitalTwin: "/api/mobile/digital-twin",
+  // Dual-auth (Bearer-aware). Durable copy of the language picker's choice,
+  // for server work that has no request to read it from.
+  uiLanguage: "/api/dashboard/ui-language",
 } as const;

@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { patchMobileCalendarEvent } from "@/lib/mobile/calendarMobile";
+import {
+  patchMobileCalendarEvent,
+  VOICE_BOOKING_READ_ONLY,
+  VOICE_BOOKING_READ_ONLY_MESSAGE,
+} from "@/lib/mobile/calendarMobile";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { deleteGoogleEvent, syncEventToGoogle } from "@/lib/google-calendar/sync";
 import type { MobileCalendarEventStatus } from "@leadsmart/shared";
@@ -82,6 +86,9 @@ export async function PATCH(
     const msg = e instanceof Error ? e.message : "Server error";
     if (msg === "NOT_FOUND") {
       return NextResponse.json({ ok: false, error: "Event not found" }, { status: 404 });
+    }
+    if (msg === VOICE_BOOKING_READ_ONLY) {
+      return NextResponse.json({ ok: false, error: VOICE_BOOKING_READ_ONLY_MESSAGE }, { status: 400 });
     }
     console.error("dashboard calendar events PATCH", e);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });

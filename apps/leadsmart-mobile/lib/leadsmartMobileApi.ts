@@ -1,5 +1,6 @@
 import { apiFetch, apiFetchJson } from "@leadsmart/api-client";
 import Constants from "expo-constants";
+import i18n from "i18next";
 import { Platform } from "react-native";
 import type {
   DailyAgendaItem,
@@ -67,10 +68,20 @@ export type MobileLeadDetailSuccess = { ok: true } & MobileLeadDetailResponseDto
 export type MobileDashboardSuccess = { ok: true } & MobileDashboardResponse;
 
 function authHeaders(token: string): Record<string, string> {
-  return {
+  const headers: Record<string, string> = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
   };
+  // The server resolves the UI locale from its cookie, then Accept-Language.
+  // A Bearer request carries no cookie, so without this Ask Max answered in
+  // the phone's system language — or English — whatever the in-app picker
+  // said.
+  if (i18n.language) headers["Accept-Language"] = i18n.language;
+  // Lets the API keep an old payload shape for builds that cannot render the
+  // new one (see /api/mobile/inbox and call threads).
+  const appVersion = Constants.expoConfig?.version;
+  if (appVersion) headers["X-App-Version"] = appVersion;
+  return headers;
 }
 
 function parseMobileFailure(
@@ -1634,7 +1645,15 @@ export async function fetchBossTeam(): Promise<
 }
 
 export type MobileAutopilotChannel = "call" | "sms" | "email" | "social";
-export type MobileAutopilotCell = { assignee: string; channel: MobileAutopilotChannel; mode: "ask" | "auto" };
+/**
+ * ask      — the realtor approves it
+ * assisted — Max proofreads and risk-checks, escalating only when unsure
+ * auto     — it goes, subject to the usual compliance rails
+ * Three states since #1383; a client that only knows two shows "assisted" as
+ * off and, on tap, overwrites it.
+ */
+export type MobileAutopilotMode = "ask" | "assisted" | "auto";
+export type MobileAutopilotCell = { assignee: string; channel: MobileAutopilotChannel; mode: MobileAutopilotMode };
 export type MobileAutopilotChannels = { assignee: string; channels: MobileAutopilotChannel[] };
 
 type BossAutopilotJson = MobileJsonError & {
@@ -1658,12 +1677,24 @@ export async function fetchBossAutopilot(): Promise<
 }
 
 export async function patchBossAutopilot(
-  body: { global: boolean } | { assignee: string; channel: MobileAutopilotChannel; mode: "ask" | "auto" },
+  body: { global: boolean } | { assignee: string; channel: MobileAutopilotChannel; mode: MobileAutopilotMode },
 ): Promise<{ ok: true } | MobileApiFailure> {
   const res = await mobilePatch<MobileJsonError>(
     MOBILE_API_PATHS.bossAutopilot,
     body as Record<string, unknown>,
   );
+  if (res.ok === false) return res;
+  return { ok: true };
+}
+
+/**
+ * Persist the UI language server-side (`user_profiles.ui_language`) so work
+ * that runs with no request to read — the overnight Boss run, the instruction
+ * cron — is written in the language the agent reads. The app has already
+ * switched locally by the time this is called; this is the durable copy.
+ */
+export async function saveUiLanguage(locale: string): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePost<MobileJsonError>(MOBILE_API_PATHS.uiLanguage, { locale });
   if (res.ok === false) return res;
   return { ok: true };
 }
@@ -2690,12 +2721,18 @@ export type MobileWeeklyMediaType = "text" | "image" | "video";
 export type MobileWeeklyDay = {
   weekday: number; // 0=Sun..6=Sat
   enabled: boolean;
-  postHour: number;
+  postHour: number; // the FIRST post when timeMode is "fixed"
   postMinute: number;
   timezone: string;
   mediaType: MobileWeeklyMediaType;
   platforms: string[] | null; // null = all connected of this content type
   topic: string;
+  /** 1-5. Extras are spread through the day and finish by 9pm. */
+  postsPerDay: number;
+  /** "ai" asks the planner for that weekday's publish times. */
+  timeMode: "fixed" | "ai";
+  /** "ai" lets the generator choose what to write about; `topic` is then ignored. */
+  topicMode: "fixed" | "ai";
 };
 
 export type MobileWeeklyScheduleData = {
@@ -2716,7 +2753,15 @@ type MobileWeeklyScheduleJson = MobileJsonError & {
 
 function normalizeWeeklyResponse(data: MobileWeeklyScheduleJson): MobileWeeklyScheduleData {
   return {
-    days: (data.days ?? []).map((d) => ({ ...d, mediaType: d.mediaType ?? "text" })),
+    days: (data.days ?? []).map((d) => ({
+      ...d,
+      mediaType: d.mediaType ?? "text",
+      // Defaults match the server's: an untouched day is one post, at the
+      // time you set, on the topic you typed.
+      postsPerDay: Math.min(5, Math.max(1, Number(d.postsPerDay) || 1)),
+      timeMode: d.timeMode === "ai" ? "ai" : "fixed",
+      topicMode: d.topicMode === "ai" ? "ai" : "fixed",
+    })),
     topicPresets: data.topicPresets ?? [],
     platformsByMedia: {
       text: data.platformsByMedia?.text ?? [],
