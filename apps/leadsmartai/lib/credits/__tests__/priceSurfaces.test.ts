@@ -95,6 +95,19 @@ describe("plan price surfaces", () => {
     expect(CREDIT_TIERS.find((t) => t.id === "signature")?.setupFeeUsd).toBe(499);
   });
 
+  it("shows every tier it sells on the signup funnel", () => {
+    /*
+     * The funnel listed four plans against a five-tier catalogue, so Solo —
+     * the cheapest paid plan at $79 — did not exist in the signup flow at all.
+     * A prospect went straight from $0 to $159, and the $79 step was visible
+     * only on /plans. Prices being right is not the same as the ladder being
+     * whole.
+     */
+    const funnel = read("components/onboarding/OnboardingFunnel.tsx");
+    const missing = CREDIT_TIERS.filter((t) => !new RegExp(`"${t.id}"`).test(funnel));
+    expect(missing.map((t) => t.id)).toEqual([]);
+  });
+
   it("has no 'team' tier — retired", () => {
     expect(CREDIT_TIERS.map((t) => t.id)).not.toContain("team");
   });
