@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
 import { planRefreshTargets } from "@/lib/market/refreshPlan";
+import { runPooled } from "@/lib/market/refreshPool";
 
 export type CityDataTrend = "up" | "down" | "stable";
 
@@ -350,15 +351,29 @@ export async function getCityData(options: {
  * staleness. The budget then matters: 394 AI web-search calls do not fit in
  * one invocation, and a run that always started at the top of a fixed list
  * would refresh the same prefix forever. Oldest-first makes a partial run
- * progress rather than churn — what this run leaves behind is next week's
+ * progress rather than churn — what this run leaves behind is next run's
  * head of the queue.
+ *
+ * What that left unsaid was how long a cycle takes. A market is one AI
+ * web-search call; two measured against production took 25.9s and 40.7s. One
+ * at a time inside the budget is about seven markets a run, and against 394
+ * markets a weekly cron is a fifty-four WEEK cycle — for data the app calls
+ * stale after thirty days. The queue was draining two orders of magnitude
+ * slower than the threshold it is judged by, which no ordering can fix.
+ *
+ * So the run works four markets at once (see refreshPool.ts) and the cron
+ * moved to daily. Neither alone is enough: daily and sequential is still a
+ * ~54-day cycle. Together it is about a fortnight, inside the threshold with
+ * room for the calls that fail.
  */
-export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {}) {
+export async function refreshAllCitiesDaily(
+  options: { budgetMs?: number; concurrency?: number } = {},
+) {
   // Leave headroom under the route's maxDuration so the last city in flight
   // can finish and the response still gets written; a killed invocation
   // reports nothing at all, which is how this went unnoticed for months.
   const budgetMs = Math.max(10_000, options.budgetMs ?? 240_000);
-  const startedAt = Date.now();
+  const concurrency = Math.max(1, Math.min(8, options.concurrency ?? 4));
 
   const { data: rows } = await supabaseServer
     .from("city_market_data")
@@ -371,15 +386,12 @@ export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {})
     ),
   );
 
-  let processed = 0;
-  let failed = 0;
   let fellBack = 0;
   const errors: Array<{ city: string; state: string; error: string }> = [];
 
-  for (const target of targets) {
-    if (Date.now() - startedAt > budgetMs) break;
-    processed += 1;
-    try {
+  const report = await runPooled(
+    targets,
+    async (target) => {
       const row = await getCityData({
         city: target.city,
         state: target.state,
@@ -387,38 +399,43 @@ export async function refreshAllCitiesDaily(options: { budgetMs?: number } = {})
         maxAgeHours: 24,
       });
       /*
-       * Not every non-throwing iteration fetched anything. `getCityData` falls
-       * back to seed constants when the AI lookup fails, and this loop used to
-       * count that as a success — which is how it reported `failed: 0` while
-       * 117 of 117 markets went unfetched for months. The row's own source is
-       * the only honest evidence that a lookup happened.
+       * Not every non-throwing call fetched anything. `getCityData` falls back
+       * to seed constants when the AI lookup fails, and this used to count
+       * that as a success — which is how it reported `failed: 0` while 117 of
+       * 117 markets went unfetched for months. The row's own source is the
+       * only honest evidence that a lookup happened.
        */
       if (row?.source !== "ai_web_search") fellBack += 1;
-    } catch (e: any) {
-      failed += 1;
-      errors.push({
-        city: target.city,
-        state: target.state,
-        error: String(e?.message ?? "Unknown error"),
-      });
-    }
+    },
+    { concurrency, budgetMs, now: () => Date.now() },
+  );
+
+  for (const outcome of report.outcomes) {
+    if (outcome.ok) continue;
+    errors.push({
+      city: outcome.item.city,
+      state: outcome.item.state,
+      error: String((outcome.error as any)?.message ?? "Unknown error"),
+    });
   }
+  const failed = errors.length;
 
   return {
-    processed,
+    processed: report.processed,
     failed,
     /*
      * Fetched, not merely visited. `fellBack` above zero means the AI lookup
      * is not working and the numbers behind it are placeholders, whatever the
      * timestamps say.
      */
-    fetched: processed - failed - fellBack,
+    fetched: report.processed - failed - fellBack,
     fellBack,
-    succeeded: processed - failed,
+    succeeded: report.processed - failed,
+    concurrency,
     // `remaining` is the number to watch: while it stays above zero the
     // schedule is not keeping up with the table, and saying so in the cron's
     // own response is cheaper than noticing months later in a bug report.
-    remaining: Math.max(0, targets.length - processed),
+    remaining: report.remaining,
     total: targets.length,
     errors: errors.slice(0, 20),
   };
