@@ -46,7 +46,7 @@ export default function ClientNewsletterCard({
           <h2 className="text-sm font-semibold text-gray-900">{t("pages.clientNewsletter.title")}</h2>
         </div>
         <span className="shrink-0 rounded-full bg-[#0072ce]/10 px-2.5 py-1 text-xs font-semibold text-[#0072ce]">
-          {subscriberCount} subscriber{subscriberCount === 1 ? "" : "s"}
+          {t("pages.clientNewsletter.subscribers", { count: subscriberCount })}
         </span>
       </div>
 

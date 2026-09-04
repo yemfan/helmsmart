@@ -131,7 +131,7 @@ export default async function SwitchFromPage({
 
         <header>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
-            CRM Migration · {source.name} → CloseBoss
+            {t("pages.switchFrom.migrationEyebrow", { source: source.name, ns: "dashboard" })}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl dark:text-white">
             {t(source.heroHeadline, { ns: "dashboard" })}

@@ -206,8 +206,8 @@ function ForecastByMonthChart({ buckets }: { buckets: MonthlyBucket[] }) {
 
       {noDate ? (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          <span className="font-semibold">{noDate.count}</span> deal{noDate.count === 1 ? "" : "s"} {t("pages.dashFragments.noCloseDate")}{" "}
-          {formatMoney(noDate.grossCommission)} gross / {formatMoney(noDate.weightedGross)} {t("pages.dashFragments.weightedAdd")}</p>
+          {t("pages.pipelineForecast.dealsNoCloseDate", { count: noDate.count })}{" "}
+          {t("pages.pipelineForecast.grossWeighted", { gross: formatMoney(noDate.grossCommission), weighted: formatMoney(noDate.weightedGross) })}</p>
       ) : null}
     </div>
   );
@@ -247,12 +247,12 @@ function TypeBreakdownTable({
               <td className="px-4 py-2 text-right tabular-nums text-slate-900">{r.data.count}</td>
               <td className="px-4 py-2 text-right tabular-nums text-slate-700">
                 {formatMoney(r.data.gross)}
-                <span className="ml-1 text-[10px] text-slate-400">/ {formatMoney(r.data.net)} net</span>
+                <span className="ml-1 text-[10px] text-slate-400">{t("pages.pipelineForecast.slashNet", { net: formatMoney(r.data.net) })}</span>
               </td>
               <td className="px-4 py-2 text-right tabular-nums font-semibold text-emerald-700">
                 {formatMoney(r.data.weightedGross)}
                 <span className="ml-1 text-[10px] font-normal text-slate-400">
-                  / {formatMoney(r.data.weightedNet)} net
+                  {t("pages.pipelineForecast.slashNet", { net: formatMoney(r.data.weightedNet) })}
                 </span>
               </td>
             </tr>

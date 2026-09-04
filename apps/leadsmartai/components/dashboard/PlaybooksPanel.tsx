@@ -234,12 +234,12 @@ export function PlaybooksPanel({
           </button>
           {open > 0 ? (
             <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
-              {open} open
+              {t("pages.playbooksPanel.openCount", { count: open })}
             </span>
           ) : null}
           {done > 0 ? (
             <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-800">
-              {done} done
+              {t("pages.playbooksPanel.doneCount", { count: done })}
             </span>
           ) : null}
           <button
@@ -285,7 +285,7 @@ export function PlaybooksPanel({
                 <div className="text-xs font-semibold text-slate-700">
                   {batch.label}
                   <span className="ml-2 font-normal text-slate-500">
-                    · {batch.done}/{batch.total} done
+                    {t("pages.playbooksPanel.batchDone", { done: batch.done, total: batch.total })}
                   </span>
                 </div>
                 {batch.batchId ? (
@@ -605,7 +605,7 @@ export function PlaybookPickerModal({
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold text-slate-900">{p.title}</div>
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
-                      {p.itemCount} tasks
+                      {t("pages.playbooksPanel.taskCount", { count: p.itemCount })}
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-slate-600">{p.description}</p>

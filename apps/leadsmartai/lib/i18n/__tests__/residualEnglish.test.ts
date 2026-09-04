@@ -126,7 +126,7 @@ const COPY_ATTRS =
  * copy: an arrow function returning a generic — `(id: string) => Promise<void>`
  * — reads as `>Promise<` to a regex, and the calendar alone has a dozen.
  */
-const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
+const JSX_TEXT = /(?:^|[^=])([>}])([^<>{}]+)(?=([<{]))/g;
 
 /**
  * What a piece of copy may START with.
@@ -153,6 +153,21 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  * and the finding count would look plausibly unchanged. That is the exact
  * shape of failure this file exists to prevent.
  */
+/**
+ * Lone lowercase words that are JavaScript, not English.
+ *
+ * The price of letting a lone lowercase word count next to an interpolation:
+ * `} finally {` and `} catch {` are a brace, a bare keyword and a brace, which
+ * is structurally identical to `{beds} bed {unit}`. Those two alone were 507 of
+ * the first 647 findings — a scan that cries wolf, which is a scan that gets
+ * ignored.
+ *
+ * Only the ones that can stand ALONE between two braces belong here; `else`,
+ * `try`, `return` and friends are already rejected above by the
+ * declaration-keyword rules.
+ */
+const LONE_KEYWORDS = new Set(["catch", "finally", "do", "in", "of", "this", "new"]);
+
 const ANCHOR = /^(?:[A-Za-z0-9↓↑←→↻“]|\p{Extended_Pictographic})/u;
 
 /**
@@ -234,7 +249,7 @@ const blankCode = (s: string) =>
     // CSS in a <style> block is selectors, not sentences: `html, body {`.
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, (m) => m.replace(/[^\n]/g, " "));
 
-function isCopy(raw: string): boolean {
+function isCopy(raw: string, nextToInterpolation: boolean): boolean {
   // A wrapped paragraph carries its indentation with it; compare on one line.
   const t = raw.replace(/\s+/g, " ").trim();
   if (ALLOWED.has(t)) return false;
@@ -263,7 +278,13 @@ function isCopy(raw: string): boolean {
   // statement rejection demands the paren that a keyword would carry.
   if (/^(?:if|for|while|switch|catch)\s*\(/.test(t)) return false;
   if (/^(?:return|const|let|var|function|else|try|await|typeof)\b/.test(t)) return false;
-  if (/^[a-z][A-Za-z0-9]*\(/.test(t)) return false;
+  /*
+   * A call, including a dotted or optionally-chained one. `foo(` was already
+   * rejected; `agentsById.set(`, `pane.scrollTo(` and
+   * `rootRef.current?.scrollIntoView(` were not — and each reads as a lone
+   * lowercase "word" the moment one of those is allowed to count.
+   */
+  if (/^[a-z][\w$]*(?:\??\.[A-Za-z_$][\w$]*)*\(/.test(t)) return false;
   /*
    * The price of letting a match open with a digit: a numeric literal resuming
    * a statement. Both hits were real, not hypothetical — `0 ? Math.ceil(
@@ -300,11 +321,53 @@ function isCopy(raw: string): boolean {
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,
    * Done, Notes and Paid in the app — 42 of them, on pages that were otherwise
-   * fully translated. A single word only counts when it is capitalised, which
-   * is what separates a button label from an identifier in `=> value <`.
+   * fully translated.
+   *
+   * Capitalisation used to be the whole test, which is why the units in
+   * `{subject.beds} bed / {subject.baths} bath / {subject.sqft} sqft` sat in
+   * English on a page that was otherwise entirely Chinese, and why `{n} days`,
+   * `{n} visitors` and `{n} overdue` did the same on 54 others.
+   *
+   * Simply dropping the capital is not the fix: that gives 694 findings across
+   * 246 files — `finally`, `catch`, `days`, `subs`, `n/a` — and a scan that
+   * cries wolf protects nothing.
+   *
+   * So a lone LOWERCASE word counts only when it is a SIBLING of an
+   * interpolation. `{beds} bed` is a label beside a value the app is printing;
+   * `=> value <` is not, because there the `<` opens a generic rather than a
+   * tag. Adjacency is not enough — the discriminator is that one of this text
+   * node's own delimiters is a brace, which is why JSX_TEXT captures them.
    */
-  if (words === 1) return t.length >= 3 && /^[A-Z]/.test(t);
+  if (words === 1) {
+    if (t.length < 3) return false;
+    if (/^[A-Z]/.test(t)) return true;
+    return nextToInterpolation && !LONE_KEYWORDS.has(t);
+  }
   return words >= 2 && t.length >= 6;
+}
+
+/**
+ * Every piece of copy in one source, as `{ offset, text }`.
+ *
+ * Extracted so the scan the suite runs over the app is the SAME code the
+ * self-test pins. The two matchers are no longer interchangeable and no longer
+ * share a loop: JSX_TEXT captures its DELIMITERS as well as its text, because
+ * whether a text node touches an interpolation is what separates a label from
+ * an identifier. An attribute value has no such context — it is copy or it is
+ * nothing.
+ */
+function scan(body: string): Array<{ offset: number; text: string }> {
+  const out: Array<{ offset: number; text: string }> = [];
+  for (const m of body.matchAll(JSX_TEXT)) {
+    const [, opener, text, closer] = m;
+    if (isCopy(text, opener === "}" || closer === "{")) {
+      out.push({ offset: m.index ?? 0, text });
+    }
+  }
+  for (const m of body.matchAll(COPY_ATTRS)) {
+    if (isCopy(m[1], false)) out.push({ offset: m.index ?? 0, text: m[1] });
+  }
+  return out;
 }
 
 describe("copy anchor", () => {
@@ -351,7 +414,7 @@ describe("copy anchor", () => {
      * copy half is asserted alongside them.
      */
     for (const code of ["0 && !connectionId)", "0 || fallback)", "0 ? a : b", "0).length"]) {
-      expect(isCopy(code), code).toBe(false);
+      expect(isCopy(code, true), code).toBe(false);
     }
     for (const copy of [
       "3 bed / 2 bath",
@@ -359,7 +422,7 @@ describe("copy anchor", () => {
       "1. Estimate gross rental income",
       "7+ days inactive",
     ]) {
-      expect(isCopy(copy), copy).toBe(true);
+      expect(isCopy(copy, false), copy).toBe(true);
     }
   });
 
@@ -368,6 +431,53 @@ describe("copy anchor", () => {
     // drag in the fragments either side.
     expect(opens("· 4 active deals")).toBe(false);
     expect(opens("— pulled from the listing")).toBe(false);
+  });
+});
+
+describe("the scan itself", () => {
+  /**
+   * This is not ceremony, it is the test that would have caught me.
+   *
+   * Adding the delimiter captures to JSX_TEXT moved the text from `m[1]` to
+   * `m[2]`. For one run the scan therefore tested `isCopy(">")` against every
+   * text node in the app and pronounced the whole codebase clean — it went
+   * GREEN, which is the one outcome nobody investigates. A planted canary
+   * caught it; nothing else in this file would have.
+   *
+   * So the fixture carries one example of every shape the scan must see, and
+   * two it must not: a bare keyword between braces (`} finally {` is
+   * structurally identical to `{beds} bed {unit}`) and a dotted call.
+   */
+  it("finds each shape of copy, and no code", () => {
+    const found = scan(
+      [
+        "<span>← Arrow led</span>",
+        "<span>📄 Emoji led</span>",
+        "<span>“Quote led” and more</span>",
+        "<span>{n} widgets</span>",
+        '<p title="↻ Attribute copy" />',
+        "<span>Capitalised</span>",
+        "try { a(); } catch { b(); } finally { c(); }",
+        "{ items.forEach(( i ) => { pane.scrollTo( i ); }) }",
+      ].join("\n"),
+    ).map((f) => f.text.replace(/\s+/g, " ").trim());
+
+    expect(found).toEqual([
+      "← Arrow led",
+      "📄 Emoji led",
+      "“Quote led” and more",
+      "widgets",
+      "Capitalised",
+      "↻ Attribute copy",
+    ]);
+  });
+
+  it("counts a lone lowercase word only beside an interpolation", () => {
+    const beside = scan("<span>{beds} bed</span>").map((f) => f.text.trim());
+    expect(beside).toEqual(["bed"]);
+    // The same word between two tags is a word in a sentence fragment, not a
+    // label, and far more often an identifier.
+    expect(scan("<span>bed</span>")).toEqual([]);
   });
 });
 
@@ -386,14 +496,13 @@ describe("residual English", () => {
          */
         const body = blankCode(blankComments(src));
         const at = (offset: number) => body.slice(0, offset).split("\n").length;
-        for (const re of [JSX_TEXT, COPY_ATTRS]) {
-          for (const m of body.matchAll(re)) {
-            if (!isCopy(m[1])) continue;
-            const rel = relative(ROOT, file).split(sep).join("/");
-            findings.push(
-              `${rel}:${at(m.index ?? 0)}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`,
-            );
-          }
+        const rel = relative(ROOT, file).split(sep).join("/");
+        // Through `scan`, so the code pinned by the self-test above is the
+        // code that runs here. They drifted apart once and it went green.
+        for (const { offset, text } of scan(body)) {
+          findings.push(
+            `${rel}:${at(offset)}  ${text.replace(/\s+/g, " ").trim().slice(0, 80)}`,
+          );
         }
       }
     }

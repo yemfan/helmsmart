@@ -137,7 +137,7 @@ export default function RunCard({
         {/* budget meter */}
         <div className="flex items-center gap-2 text-[10px] text-gray-400" title={`${tokens.toLocaleString()} / ${run.token_budget.toLocaleString()} tokens`}>
           <span>
-            {run.tool_calls}/{run.max_tool_calls} tools
+            {t("pages.runCard.toolCalls", { used: run.tool_calls, max: run.max_tool_calls })}
           </span>
           <span className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-100">
             <span className="block h-full rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
@@ -220,7 +220,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
           </div>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500">
             <span className="font-medium text-emerald-700">
-              {done.length} step{done.length === 1 ? "" : "s"} complete
+              {t("pages.runCard.stepsComplete", { count: done.length })}
             </span>
             {total && <span>· ⏱ {total}</span>}
           </p>

@@ -597,7 +597,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                             {e.title}
                           </div>
                         ))}
-                        {entries.length > 2 && <div className="text-[9px] text-gray-400">+{entries.length - 2} more</div>}
+                        {entries.length > 2 && <div className="text-[9px] text-gray-400">{tr("pages.calendarPage.plusMore", { count: entries.length - 2 })}</div>}
                       </div>
                     )}
                   </>

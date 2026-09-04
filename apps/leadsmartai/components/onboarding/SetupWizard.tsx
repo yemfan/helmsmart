@@ -133,7 +133,7 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
         </div>
 
         <div className="p-6">
-          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">{t("pages.dashFragments.step")} {step + 1} of 4
+          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">{t("pages.setupWizard.stepOfFour", { step: step + 1 })}
           </p>
           <h2 className="text-xl font-bold text-gray-900 mb-1">
             {STEPS[step]}

@@ -254,7 +254,7 @@ export function FounderDashboardClient() {
           </SectionCard>
 
           <SectionCard title="Feature usage (usage_events)">
-            <p className="mb-4 text-xs text-gray-500">{t("pages.dashFragments.window")} {usage?.windowDays ?? "—"} days</p>
+            <p className="mb-4 text-xs text-gray-500">{t("pages.founder.windowDays", { count: Number(usage?.windowDays ?? 0), n: usage?.windowDays ?? "—" })}</p>
             {usage && usage.breakdown.length === 0 ? (
               <p className="text-sm text-gray-600">{t("pages.adminPages.noUsageEvents")}</p>
             ) : (
@@ -287,7 +287,7 @@ export function FounderDashboardClient() {
                     <span className="font-medium text-gray-800">{row.plan}</span>
                     <span className="text-gray-600">
                       {fmtMoney(row.mrr)}
-                      <span className="text-gray-400"> · {row.subscribers} subs</span>
+                      <span className="text-gray-400"> · {t("pages.founder.subscribers", { count: row.subscribers })}</span>
                     </span>
                   </li>
                 ))}

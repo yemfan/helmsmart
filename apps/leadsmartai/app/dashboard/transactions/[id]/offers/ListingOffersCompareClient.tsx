@@ -377,7 +377,7 @@ export function ListingOffersCompareClient({
                         </Link>
                         {o.buyer_agent_name ? (
                           <div className="text-[11px] text-slate-500">
-                            via {o.buyer_agent_name}
+                            {t("pages.offersCompare.viaAgent", { name: o.buyer_agent_name })}
                             {o.buyer_brokerage ? ` · ${o.buyer_brokerage}` : ""}
                           </div>
                         ) : null}
@@ -451,7 +451,7 @@ export function ListingOffersCompareClient({
                         </span>
                         {o.counter_count > 0 ? (
                           <div className="text-[10px] text-slate-500">
-                            {o.counter_count} counter{o.counter_count === 1 ? "" : "s"}
+                            {t("pages.offersCompare.counterCount", { count: o.counter_count })}
                           </div>
                         ) : null}
                       </td>

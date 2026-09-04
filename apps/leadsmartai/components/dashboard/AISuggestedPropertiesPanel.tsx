@@ -188,7 +188,7 @@ export default function AISuggestedPropertiesPanel({
         <>
           <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-gray-500">
             <span className="rounded bg-gray-50 px-1.5 py-0.5">
-              {state.context.favoriteCount} favorites
+              {t("pages.aiSuggestedProperties.favorites", { count: state.context.favoriteCount })}
             </span>
             <span className="rounded bg-gray-50 px-1.5 py-0.5">
               {state.context.savedSearchCount} {t("pages.dashFragments.savedSearches")}</span>
@@ -256,7 +256,7 @@ export default function AISuggestedPropertiesPanel({
               </ul>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-xs text-gray-500">
-                  {picked.size} selected
+                  {t("pages.aiSuggestedProperties.selected", { count: picked.size })}
                 </span>
                 <button
                   type="button"

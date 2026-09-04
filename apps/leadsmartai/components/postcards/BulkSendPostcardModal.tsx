@@ -224,7 +224,7 @@ export function BulkSendPostcardModal({
                   ))}
                   {recipients.length > 8 ? (
                     <span className="rounded-full bg-white px-2.5 py-0.5 text-[11px] text-slate-500 ring-1 ring-slate-200">
-                      +{recipients.length - 8} more
+                      {t("pages.bulkPostcard.plusMore", { count: recipients.length - 8 })}
                     </span>
                   ) : null}
                 </div>
@@ -254,7 +254,7 @@ export function BulkSendPostcardModal({
                       }
                       className="h-4 w-4 rounded border-slate-300"
                     />
-                    ✉️ Email{" "}
+                    {t("pages.bulkPostcard.channelEmail")}{" "}
                     <span className="text-[11px] text-slate-500">
                       {t("pages.bulkPostcard.haveEmail", { count: emailable })}
                     </span>
@@ -268,7 +268,7 @@ export function BulkSendPostcardModal({
                       }
                       className="h-4 w-4 rounded border-slate-300"
                     />
-                    💬 SMS{" "}
+                    {t("pages.bulkPostcard.channelSms")}{" "}
                     <span className="text-[11px] text-slate-500">
                       {t("pages.bulkPostcard.havePhone", { count: smsable })}
                     </span>

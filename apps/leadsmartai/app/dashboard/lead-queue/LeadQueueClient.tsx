@@ -120,7 +120,7 @@ export function LeadQueueClient() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">{t("pages.leadQueue.heading")}</h1>
           <p className="text-sm text-gray-500">
-            {total} {t("pages.dashFragments.unclaimedLead")}{total !== 1 ? "s" : ""} available
+            {t("pages.leadQueue.availableCount", { count: total })}
           </p>
         </div>
         <button

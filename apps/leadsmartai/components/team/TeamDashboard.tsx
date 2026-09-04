@@ -333,7 +333,7 @@ function InviteCard({
 
       {lastInvite ? (
         <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm">
-          <p className="font-medium text-emerald-800">{t("pages.dashFragments.inviteFor")} {lastInvite.email} ready
+          <p className="font-medium text-emerald-800">{t("pages.teamDashboard.inviteReady", { email: lastInvite.email })}
           </p>
           <p className="mt-1 text-xs text-emerald-700">{t("pages.team.copyLink")}</p>
           <code className="mt-2 block break-all rounded bg-white px-2 py-1.5 text-[11px] text-emerald-900 ring-1 ring-emerald-200">

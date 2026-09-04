@@ -151,7 +151,7 @@ export default async function FinancialServicesLandingPage() {
             <div className="lg:col-span-7">
               {theme.partnerName && (
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur">
-                  <BadgeCheck className="h-3.5 w-3.5" />{t("pages.dashFragments.builtFor", { ns: "dashboard" })} {theme.partnerName} producers
+                  <BadgeCheck className="h-3.5 w-3.5" />{t("pages.fsMarketing.builtForProducers", { partner: theme.partnerName, ns: "dashboard" })}
                 </div>
               )}
               <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">{t("pages.dashFragments.aiPlatformFor", { ns: "dashboard" })}{" "}

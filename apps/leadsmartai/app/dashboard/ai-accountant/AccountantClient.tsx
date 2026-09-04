@@ -174,7 +174,7 @@ export default function AccountantClient({
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                  {overdueReceivables.length} overdue
+                  {t("pages.accountant.overdueCount", { count: overdueReceivables.length })}
                 </span>
               )}
             </h2>

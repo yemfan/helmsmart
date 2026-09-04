@@ -77,7 +77,7 @@ export default function LoanBrokerDashboardClient() {
                 <div key={p.label}>
                   <div className="mb-1 flex items-center justify-between text-sm">
                     <span className="font-semibold text-slate-800">{p.label}</span>
-                    <span className="text-xs font-medium text-slate-500">{p.count} borrowers</span>
+                    <span className="text-xs font-medium text-slate-500">{t("pages.loanBrokerDashboard.borrowers", { count: p.count })}</span>
                   </div>
                   <div className="h-3 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200/80">
                     <div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-600" style={{ width: `${Math.min(100, Math.round((p.count / maxPipe) * 100))}%` }} />
