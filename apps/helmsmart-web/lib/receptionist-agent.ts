@@ -6,6 +6,7 @@ import { describeHours, defaultBusinessHours, type BusinessHours, type Appointme
 import twilio from "twilio";
 import { twilioSender } from "@/lib/twilio-sender";
 import { sendEmail } from "@/lib/email";
+import { orgOwnerEmails } from "@/lib/org-recipients";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
 import { phoneLast10 } from "@repo/voice/phone";
@@ -445,19 +446,9 @@ async function emailBookingAlert(
   bookedLabel: string,
 ): Promise<void> {
   try {
-    const { data: members } = await db
-      .from("organization_members")
-      .select("role, user:user_id(email)")
-      .eq("organization_id", org.orgId)
-      .in("role", ["owner", "admin"]);
-
-    const to = (members ?? [])
-      .map((m) => {
-        const u = Array.isArray(m.user) ? m.user[0] : m.user;
-        return (u as { email?: string | null } | null)?.email ?? null;
-      })
-      .filter((e): e is string => Boolean(e));
-
+    // orgOwnerEmails, not a join: organization_members has no email column and
+    // user_id lives in auth.users, which PostgREST cannot embed from public.
+    const to = await orgOwnerEmails(db, org.orgId);
     if (!to.length) return;
 
     const caller = callerNumber ? displayPhone(callerNumber) : "an unknown number";
