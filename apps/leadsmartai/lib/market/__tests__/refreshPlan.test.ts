@@ -132,4 +132,98 @@ describe("planRefreshTargets", () => {
     );
     expect(planRefreshTargets([], after, now).slice(0, 2).map((t) => t.city)).toEqual(["C", "D"]);
   });
+
+  /*
+   * Age alone put the 116 seed metros behind 227 April rows, because the
+   * failed-fetch path #1502 removed had stamped them 31 August. Their problem
+   * was never that they were old.
+   */
+  describe("priority", () => {
+    const measured = (city: string, fetched: string) => ({
+      city, state: "CA", lastFetchedAt: fetched, lastAttemptedAt: fetched,
+      source: "ai_web_search",
+    });
+    const placeholder = (city: string, fetched: string, attempted?: string) => ({
+      city, state: "CA", lastFetchedAt: fetched,
+      lastAttemptedAt: attempted ?? fetched, source: "seed",
+    });
+
+    it("puts a never-measured market ahead of an older measured one", () => {
+      const plan = planRefreshTargets(
+        [],
+        [measured("Old", daysAgo(200)), placeholder("New", daysAgo(4))],
+        now,
+      );
+      expect(plan.map((t) => t.city)).toEqual(["New", "Old"]);
+    });
+
+    it("puts an unmeasured metro ahead of an older unmeasured backwater", () => {
+      // Los Angeles (31 Aug, seed) vs an April county row. The real case.
+      const plan = planRefreshTargets(
+        [{ city: "Los Angeles", state: "CA" }],
+        [placeholder("Los Angeles", daysAgo(4)), placeholder("Bluewater", daysAgo(154))],
+        now,
+      );
+      expect(plan.map((t) => t.city)).toEqual(["Los Angeles", "Bluewater"]);
+    });
+
+    it("drops the metro priority once it is measured, so the tail is not starved", () => {
+      /*
+       * The guard on the whole idea. A permanent metro priority would refresh
+       * the same 116 every cycle and never reach the other 257 — the exact bug
+       * this file exists to prevent, reintroduced through a different door.
+       */
+      const plan = planRefreshTargets(
+        [{ city: "Los Angeles", state: "CA" }],
+        [measured("Los Angeles", daysAgo(0)), placeholder("Bluewater", daysAgo(154))],
+        now,
+      );
+      expect(plan.map((t) => t.city)).toEqual(["Bluewater", "Los Angeles"]);
+    });
+
+    it("orders by when a market was TRIED, not when it last succeeded", () => {
+      /*
+       * Athens has no published market data, so it fails every run and keeps
+       * its April fetch stamp. Without the attempt stamp it sits at the head of
+       * the queue forever, costing a call every run rather than one a cycle.
+       */
+      const plan = planRefreshTargets(
+        [],
+        [
+          placeholder("Athens", daysAgo(154), daysAgo(0)),
+          placeholder("Adelanto", daysAgo(154), daysAgo(154)),
+        ],
+        now,
+      );
+      expect(plan.map((t) => t.city)).toEqual(["Adelanto", "Athens"]);
+    });
+
+    it("falls back to the fetch stamp for a row written before the column existed", () => {
+      // Otherwise every pre-migration row reads as never-attempted and they all
+      // rush the front at once, losing the order the backfill preserves.
+      const plan = planRefreshTargets(
+        [],
+        [
+          { city: "Older", state: "CA", lastFetchedAt: daysAgo(90), source: "seed" },
+          { city: "Newer", state: "CA", lastFetchedAt: daysAgo(10), source: "seed" },
+        ],
+        now,
+      );
+      expect(plan.map((t) => t.city)).toEqual(["Older", "Newer"]);
+    });
+
+    it("still drains: a tried market moves behind the ones not yet tried", () => {
+      const rows = [
+        placeholder("A", daysAgo(100), daysAgo(100)),
+        placeholder("B", daysAgo(100), daysAgo(100)),
+        placeholder("C", daysAgo(100), daysAgo(100)),
+      ];
+      const first = planRefreshTargets([], rows, now).slice(0, 1).map((t) => t.city);
+      expect(first).toEqual(["A"]);
+      const after = rows.map((r) =>
+        first.includes(r.city) ? { ...r, lastAttemptedAt: daysAgo(0) } : r,
+      );
+      expect(planRefreshTargets([], after, now).map((t) => t.city)).toEqual(["B", "C", "A"]);
+    });
+  });
 });

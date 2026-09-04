@@ -303,8 +303,21 @@ export async function getCityData(options: {
     console.warn(
       `[city-data] fetch failed for ${normalized.city}, ${normalized.state}: ${fetchError ?? "unknown"}`,
     );
-    // An existing row keeps its own numbers, summary and age. Nothing to add.
-    if (existing) return existing as CityMarketData;
+    /*
+     * The row keeps its numbers, summary and age — but the attempt is recorded,
+     * or the plan sends us straight back here next run. Athens and Bluewater
+     * have no published market data, so they fail every time; without this they
+     * hold the head of the queue forever and cost a call a run rather than one
+     * a cycle.
+     */
+    if (existing) {
+      await supabaseServer
+        .from("city_market_data")
+        .update({ last_attempted_at: nowIso })
+        .eq("city", normalized.city)
+        .eq("state", normalized.state);
+      return existing as CityMarketData;
+    }
   }
 
   const ai = await generateAIInsight(baseData);
@@ -322,6 +335,7 @@ export async function getCityData(options: {
     ai_market_summary: ai.ai_market_summary,
     ai_seller_recommendation: ai.ai_seller_recommendation,
     last_fetched_at: nowIso,
+    last_attempted_at: nowIso,
     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     updated_at: nowIso,
   };
@@ -385,13 +399,25 @@ export async function refreshAllCitiesDaily(
 
   const { data: rows } = await supabaseServer
     .from("city_market_data")
-    .select("city,state,last_fetched_at");
+    .select("city,state,last_fetched_at,last_attempted_at,source");
 
   const targets = planRefreshTargets(
     TRAFFIC_CITIES.map((c) => ({ city: c.city, state: c.state })),
-    ((rows ?? []) as Array<{ city: string; state: string; last_fetched_at: string | null }>).map(
-      (r) => ({ city: r.city, state: r.state, lastFetchedAt: r.last_fetched_at }),
-    ),
+    (
+      (rows ?? []) as Array<{
+        city: string;
+        state: string;
+        last_fetched_at: string | null;
+        last_attempted_at: string | null;
+        source: string | null;
+      }>
+    ).map((r) => ({
+      city: r.city,
+      state: r.state,
+      lastFetchedAt: r.last_fetched_at,
+      lastAttemptedAt: r.last_attempted_at,
+      source: r.source,
+    })),
   );
 
   let fellBack = 0;
