@@ -78,7 +78,7 @@ export default function CmaEmailToSellerButton({
         }}
         className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
       >
-        ✉ Email to seller
+        {t("pages.cmaEmail.emailToSeller")}
       </button>
       {open ? (
         <div

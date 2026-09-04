@@ -209,7 +209,7 @@ export function OpenHouseDetailClient({
               href={`/dashboard/open-houses/flyer?openHouseId=${oh.id}`}
               className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
             >
-              🖨️ Print open-house flyer
+              {t("pages.openHouseDetail.printFlyer")}
             </Link>
             <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.flyerIncludes")}</p>
 
@@ -237,7 +237,7 @@ export function OpenHouseDetailClient({
               rel="noopener noreferrer"
               className="mt-2 block rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-center text-sm font-medium text-emerald-800 hover:bg-emerald-100"
             >
-              📱 Open iPad kiosk
+              {t("pages.openHouseDetail.openKiosk")}
             </a>
             <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.kioskNote")}</p>
           </div>
@@ -288,7 +288,7 @@ export function OpenHouseDetailClient({
             onClick={() => void onDelete()}
             className="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-red-700 hover:bg-red-50"
           >
-            🗑 Delete open house
+            {t("pages.openHouseDetail.deleteOpenHouse")}
           </button>
         </div>
 

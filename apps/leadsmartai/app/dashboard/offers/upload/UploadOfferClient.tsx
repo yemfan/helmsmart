@@ -379,7 +379,7 @@ export function UploadOfferClient() {
               disabled={parsing}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              📄 Choose PDF
+              {t("pages.uploadOffer.choosePdf")}
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (

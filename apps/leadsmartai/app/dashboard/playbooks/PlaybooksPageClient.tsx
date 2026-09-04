@@ -581,7 +581,7 @@ function AnchorChip({
         href={`/dashboard/open-houses/${task.anchor_id}`}
         className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-700 hover:underline"
       >
-        ↗ Open house
+        {tr("pages.playbooksPage.openHouse")}
       </a>
     );
   }

@@ -158,7 +158,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               href="/"
               className="text-xs font-medium text-slate-500 hover:text-slate-900"
             >
-              ← Back to home
+              {t("link.back_to_home")}
             </Link>
           </div>
         </header>

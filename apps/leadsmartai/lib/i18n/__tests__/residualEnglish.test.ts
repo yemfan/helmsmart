@@ -129,6 +129,42 @@ const COPY_ATTRS =
 const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
 
 /**
+ * What a piece of copy may START with.
+ *
+ * A letter, a digit, an arrow, an opening quote, or an emoji. Copy opens with
+ * a number whenever it counts something ("3 bed / 2 bath in Lakewood",
+ * "1. Estimate gross rental income"); with an arrow whenever it points
+ * somewhere ("← All CMAs", "↻ Regenerate CMA", "↓ 12s vs last week"); with an
+ * emoji whenever a button leads with its icon ("📄 Generate Report"); and with
+ * a quote whenever a sentence opens by quoting something.
+ *
+ * The arrow set is deliberately only the glyphs that carry meaning the way a
+ * word does. `·` and `—` stay out: they are separators, and anchoring on those
+ * would drag in the fragments they separate rather than any copy.
+ *
+ * `“` is here as well as in BODY on purpose. #1470 put the curly pair in the
+ * body class and closed the "sentence CONTAINING a quote" hole, but the anchor
+ * is a separate gate, so a sentence that OPENS with `“` stayed invisible — an
+ * easy thing to assume was already covered, and it was not.
+ *
+ * The `u` flag is load-bearing. Without it `\p{...}` is an identity escape, so
+ * this silently becomes a class of the literal letters in
+ * "Extended_Pictographic": it would not throw, it would not match an emoji,
+ * and the finding count would look plausibly unchanged. That is the exact
+ * shape of failure this file exists to prevent.
+ */
+const ANCHOR = /^(?:[A-Za-z0-9↓↑←→↻“]|\p{Extended_Pictographic})/u;
+
+/**
+ * What may follow the anchor. Variation selectors, ZWJ and skin-tone modifiers
+ * carry nothing a reader sees but sit inside real emoji sequences (▶️, 👍🏽),
+ * so the body has to tolerate them or those strings fail on their invisible
+ * halves rather than on their words.
+ */
+const BODY =
+  /^(?:[A-Za-z0-9 ,.'’“”!?:;%()/&+…←→↻—–-]|\p{Extended_Pictographic}|[\uFE0F\u200D]|[\u{1F3FB}-\u{1F3FF}])*$/u;
+
+/**
  * Files that stay English on purpose, with the reason.
  *
  * Distinct from PENDING: nothing here is waiting to be translated, so these
@@ -236,7 +272,7 @@ function isCopy(raw: string): boolean {
    * Copy that opens with a number puts a word or a unit after it — "3 bed",
    * "24/7", "1. Understand", "1 (spread out)" — never a ternary `?` or a `)`.
    */
-  if (/^\d+\s*[?)]/.test(t)) return false;
+  if (/^\d+\s*(?:[?)]|&&|\|\|)/.test(t)) return false;
   /*
    * A statement boundary: `> horizon) continue; alerts.push(`. Prose uses
    * semicolons too, but a prose semicolon is followed by a word — never by an
@@ -253,7 +289,13 @@ function isCopy(raw: string): boolean {
    * meaning the way a word does, while `·` and `—` are separators, and
    * anchoring on those would drag in the fragments they separate.
    */
-  if (!/^[A-Za-z0-9↓↑][A-Za-z0-9 ,.'’“”!?:;%()/&+…→—–-]*$/.test(t)) return false;
+  if (!ANCHOR.test(t)) return false;
+  /*
+   * Compare the remainder by CODE POINT, not `.slice(1)`. An emoji anchor is a
+   * surrogate pair, and slicing one in half leaves a lone surrogate that fails
+   * BODY for a reason that has nothing to do with the copy.
+   */
+  if (!BODY.test(t.slice([...t][0].length))) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,
@@ -264,6 +306,70 @@ function isCopy(raw: string): boolean {
   if (words === 1) return t.length >= 3 && /^[A-Z]/.test(t);
   return words >= 2 && t.length >= 6;
 }
+
+describe("copy anchor", () => {
+  /**
+   * The `u` flag on ANCHOR is the reason this test exists.
+   *
+   * Without it, `\p{Extended_Pictographic}` is an identity escape and the class
+   * silently becomes the literal letters of "Extended_Pictographic": no throw,
+   * no emoji match, and a finding count that looks plausibly unchanged. That is
+   * a green suite hiding a broken scan, which is the failure mode this whole
+   * file exists to prevent — so it gets asserted rather than assumed.
+   */
+  const opens = (t: string) =>
+    ANCHOR.test(t) && BODY.test(t.slice([...t][0].length));
+
+  it("accepts copy that opens with something other than a letter", () => {
+    for (const t of [
+      "← All CMAs",
+      "↻ Regenerate CMA",
+      "📄 Generate Report",
+      "🗑 Delete offer",
+      "“Reply STOP to unsubscribe” is added automatically.",
+      "2 urgent tasks",
+      "↓ 12s vs last week",
+      "Save changes",
+    ]) {
+      expect(opens(t), t).toBe(true);
+    }
+  });
+
+  it("tolerates the invisible halves of an emoji sequence", () => {
+    // A variation selector and a ZWJ carry nothing a reader sees, but a body
+    // class that rejects them fails the string on its punctuation.
+    expect(opens("🖨️ Print open-house flyer")).toBe(true);
+    expect(opens("🧑‍💼 Lifelike avatar")).toBe(true);
+  });
+
+  it("rejects a numeric literal resuming an expression, but not a count", () => {
+    /*
+     * The price of a digit anchor. These four are real false positives from
+     * the app, not hypotheses — a ternary tail, a logical tail, a closing
+     * paren. The malformed version of this alternation (`\|\` instead of
+     * `\|\|`) still passed the cases it was written for, which is why the
+     * copy half is asserted alongside them.
+     */
+    for (const code of ["0 && !connectionId)", "0 || fallback)", "0 ? a : b", "0).length"]) {
+      expect(isCopy(code), code).toBe(false);
+    }
+    for (const copy of [
+      "3 bed / 2 bath",
+      "24/7 — no payroll, benefits, or turnover",
+      "1. Estimate gross rental income",
+      "7+ days inactive",
+    ]) {
+      expect(isCopy(copy), copy).toBe(true);
+    }
+  });
+
+  it("still rejects a separator-led fragment", () => {
+    // `·` and `—` separate copy rather than being it; anchoring on them would
+    // drag in the fragments either side.
+    expect(opens("· 4 active deals")).toBe(false);
+    expect(opens("— pulled from the listing")).toBe(false);
+  });
+});
 
 describe("residual English", () => {
   it("does not linger in files that are already internationalised", () => {

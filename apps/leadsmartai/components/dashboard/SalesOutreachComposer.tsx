@@ -542,7 +542,7 @@ export default function SalesOutreachComposer({
         placeholder={messagePlaceholder}
       />
       {channel === "sms" && (
-        <p className="mb-4 text-[11px] text-slate-400">“Reply STOP to unsubscribe” is added automatically.</p>
+        <p className="mb-4 text-[11px] text-slate-400">{t("pages.outreachComposer.stopNoticeAuto")}</p>
       )}
       {channel !== "sms" && <div className="mb-4" />}
 

@@ -170,7 +170,7 @@ export function OfferDetailClient({
               href={`/dashboard/transactions/${offer.transaction_id}`}
               className="text-[12px] text-blue-600 hover:underline"
             >
-              → open deal
+              {t("pages.offerDetail.openDeal")}
             </Link>
           ) : null}
         </div>
@@ -287,7 +287,7 @@ export function OfferDetailClient({
                   onClick={() => convertToTransaction()}
                   className="block w-full rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-left text-sm font-medium text-green-800 hover:bg-green-100"
                 >
-                  ✅ Convert to transaction
+                  {t("pages.offerDetail.convertToTransaction")}
                   <div className="text-[11px] font-normal text-green-700">{t("pages.offerDetail.createsBuyerRep")}</div>
                 </button>
               ) : null}
@@ -297,7 +297,7 @@ export function OfferDetailClient({
                   href={`/dashboard/showings/${offer.showing_id}`}
                   className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
                 >
-                  ← Back to originating showing
+                  {t("pages.offerDetail.backToShowing")}
                 </Link>
               ) : null}
 
@@ -306,7 +306,7 @@ export function OfferDetailClient({
                 onClick={() => void onDelete()}
                 className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
-                🗑 Delete offer
+                {t("pages.offerDetail.deleteOffer")}
               </button>
             </div>
           </Card>

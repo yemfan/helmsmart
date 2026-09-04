@@ -26,7 +26,7 @@ export default async function SkillRunPage({ params }: { params: Promise<{ id: s
     <div className="mx-auto max-w-3xl space-y-6 p-4 sm:p-6">
       <div>
         <Link href="/dashboard/skills" className="text-sm text-blue-600 hover:underline dark:text-blue-400">
-          ← All skills
+          {t("pages.skillRunner.backToAll", { ns: "dashboard" })}
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{skill.title}</h1>

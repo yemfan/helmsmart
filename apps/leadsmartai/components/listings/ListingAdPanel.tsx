@@ -735,7 +735,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     rel="noopener noreferrer"
                     className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                   >
-                    Download ↗
+                    {t("pages.listingAd.download")}
                   </a>
                   {publishNote ? <span className="text-[11px] text-emerald-700">{publishNote}</span> : null}
                   {needsConnect ? (
@@ -819,7 +819,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                       rel="noopener noreferrer"
                       className="mt-1 inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50"
                     >
-                      Download ↗
+                      {t("pages.listingAd.download")}
                     </a>
                   </div>
                 </div>

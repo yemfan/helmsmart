@@ -1416,7 +1416,7 @@ function SettingsModal({
 
         <div className="mt-3 flex items-center justify-between rounded-xl border border-gray-200 p-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">Overnight mode 🌙</p>
+            <p className="text-sm font-medium text-gray-900">{tr("pages.boss.overnightMode")}</p>
             <p className="text-xs text-gray-500">
               The Boss works your pipeline at ~4am: research + tasks done, outbound drafted for your
               morning approval. Never calls, never sends overnight.
@@ -1456,7 +1456,7 @@ function SettingsModal({
             className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50"
             title={tr("boss.approvals.askFirstTitle")}
           >
-            ⏸ Pause all autonomy
+            {tr("pages.boss.pauseAllAutonomy")}
           </button>
           <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">{tr("tasks.status.done")}</button>
         </div>

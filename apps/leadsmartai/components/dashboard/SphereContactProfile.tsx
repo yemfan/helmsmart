@@ -45,7 +45,7 @@ export default async function SphereContactProfile({
           href="/dashboard/sphere"
           className="inline-flex text-sm font-medium text-gray-500 hover:text-gray-800"
         >
-          ← Back to Sphere
+          {t("pages.sphereProfile.backToSphere", { ns: "dashboard" })}
         </Link>
         <div className="flex items-center gap-2">
           <GenerateCmaButton

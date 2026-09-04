@@ -430,7 +430,7 @@ export default function HouseSearchClient() {
                           rel="noopener noreferrer"
                           className="mt-1 inline-block text-xs font-semibold text-emerald-700 hover:underline"
                         >
-                          View listing ↗
+                          {t("pages.houseSearch.viewListing")}
                         </a>
                       ) : null}
                     </div>
@@ -788,7 +788,7 @@ function EmailToBuyer({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
       >
-        ✉ Email to buyer
+        {t("pages.houseSearch.emailToBuyer")}
       </button>
     );
   }

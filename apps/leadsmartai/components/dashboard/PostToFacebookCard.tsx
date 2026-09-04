@@ -139,7 +139,7 @@ export default function PostToFacebookCard({
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="text-sm font-semibold text-slate-900">
-              📣 Post to Facebook
+              {t("pages.postToFacebook.postButton")}
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">{t("pages.postToFacebook.intro")}</p>
           </div>
@@ -184,7 +184,7 @@ export default function PostToFacebookCard({
                       rel="noopener noreferrer"
                       className="rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
                     >
-                      View on Facebook ↗
+                      {t("pages.postToFacebook.viewOnFacebook")}
                     </a>
                   ) : null}
                   <button

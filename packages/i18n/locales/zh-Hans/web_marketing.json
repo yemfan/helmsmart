@@ -85,7 +85,8 @@
     "home_value_leads": "房屋估值线索",
     "pricing": "价格",
     "privacy_policy": "隐私政策",
-    "terms_of_service": "服务条款"
+    "terms_of_service": "服务条款",
+    "back_to_home": "← 返回首页"
   },
   "aria": {
     "home": "CloseBoss 首页",

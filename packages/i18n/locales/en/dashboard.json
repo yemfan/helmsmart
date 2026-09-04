@@ -1761,7 +1761,8 @@
       "emailPhone": "Email / Phone",
       "warnings": "Warnings",
       "csvOptIn": "CSV indicated opt-in — still requires explicit confirmation",
-      "parseCsv": "Parse CSV"
+      "parseCsv": "Parse CSV",
+      "backToSphere": "← Back to Sphere"
     },
     "sphereContact": {
       "metaTitle": "Sphere contact"
@@ -2074,7 +2075,8 @@
       "draftBefore": "Saving creates an offer in",
       "draftWord": "draft",
       "draftAfter": ". You can edit any field on the next page before flipping to “submitted.”",
-      "extractedHelp": "Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those."
+      "extractedHelp": "Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those.",
+      "choosePdf": "📄 Choose PDF"
     },
     "cmaDetail": {
       "metaTitle": "CMA Report",
@@ -2114,7 +2116,8 @@
       "hoaSuffix": " · HOA {{hoa}}",
       "builtSuffix": " · built {{year}}",
       "emailSubject": "Comparative Market Analysis — {{address}}",
-      "resourceLabel": "the CMA for {{address}}"
+      "resourceLabel": "the CMA for {{address}}",
+      "backToCmas": "← Back to CMAs"
     },
     "adComposer": {
       "metaTitle": "Ad Composer",
@@ -2293,7 +2296,10 @@
       "optedInN": "{{count}} opted-in for follow-up",
       "yes": "Yes",
       "thankYouSent": "{{sent}}/{{total}} thank-you emails sent",
-      "checkInsSent": "{{sent}}/{{total}} day-3 check-ins sent"
+      "checkInsSent": "{{sent}}/{{total}} day-3 check-ins sent",
+      "printFlyer": "🖨️ Print open-house flyer",
+      "openKiosk": "📱 Open iPad kiosk",
+      "deleteOpenHouse": "🗑 Delete open house"
     },
     "marketingPlans": {
       "loading": "Loading…",
@@ -2378,7 +2384,10 @@
       "newPrice": "New price (optional)",
       "counterNotesPlaceholder": "Moved close to 30d, kept EMD…",
       "recordCounter": "Record counter",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "backToCompare": "← Back to compare view",
+      "downloadNetSheetPdf": "📄 Download net-to-seller PDF",
+      "deleteOffer": "🗑 Delete offer"
     },
     "newListingOffer": {
       "metaTitle": "Record offer",
@@ -2469,7 +2478,11 @@
       "markAfter": "once you've finished the visit — that unlocks the feedback form and makes the showing count toward your buyer's stats.",
       "feedbackBefore": "Mark this showing",
       "feedbackAfter": "to capture feedback.",
-      "clear": "Clear"
+      "clear": "Clear",
+      "createOffer": "📝 Create offer",
+      "thankListingAgent": "✉️ Thank listing agent",
+      "sendSummaryToBuyer": "📬 Send summary to buyer",
+      "deleteShowing": "🗑 Delete showing"
     },
     "flyer": {
       "metaTitle": "Open House Flyer Builder",
@@ -2767,7 +2780,8 @@
       "counterPrice": "Counter price",
       "openContractedDeal": "Open contracted deal →",
       "viewAllShowings": "View all showings →",
-      "unnamedBuyer": "Unnamed buyer"
+      "unnamedBuyer": "Unnamed buyer",
+      "openExternal": "Open ↗"
     },
     "adWizard": {
       "metaTitle": "New Lead Ad",
@@ -3112,7 +3126,8 @@
       "addVoiceover": "Add voiceover",
       "narratedInAProfessional": "Narrated in a professional voice.",
       "narratedInYourCloned": "Narrated in your cloned voice.",
-      "urlHelp": "Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below."
+      "urlHelp": "Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below.",
+      "download": "Download ↗"
     },
     "contactHealth": {
       "heading": "Contact health",
@@ -3182,7 +3197,8 @@
       "generatedAt": "Generated {{date}}",
       "intro": "Post-mortem on this closed deal — timeline, stall points, and what to repeat or change next time.",
       "generating": "Generating your deal review. This takes about 15 seconds the first time.",
-      "aiUnavailable": "AI unavailable — baseline rules used"
+      "aiUnavailable": "AI unavailable — baseline rules used",
+      "heading": "🧠 AI deal review"
     },
     "listingFeedback": {
       "agentName": "Buyer agent name",
@@ -3209,7 +3225,8 @@
       "loading": "Loading feedback…",
       "noEmailOnFile": "No email on file",
       "sendRequest": "Send request",
-      "addRequest": "Add request"
+      "addRequest": "Add request",
+      "heading": "💬 Buyer-agent feedback"
     },
     "missedCallLog": {
       "autoTextsSent": "Auto-texts sent",
@@ -3477,7 +3494,8 @@
       "cadence": "Cadence",
       "optimizationHistory": "What changed along the way",
       "ranAutonomously": "Ran on its own",
-      "noTasks": "Nothing queued yet."
+      "noTasks": "Nothing queued yet.",
+      "backToAll": "← All playbook runs"
     },
     "labels": {
       "call": "Call",
@@ -3541,7 +3559,9 @@
       "renderCreditsReturned": "Your credits were returned.",
       "generateVideoUsesCredits": "Generate video (uses credits)",
       "hitPreviewVoiceFree": "Hit Preview voice (free) first — Generate video unlocks once you've heard the take.",
-      "draftOrWriteA": "Draft or write a script, then Preview voice (free) to unlock Generate video."
+      "draftOrWriteA": "Draft or write a script, then Preview voice (free) to unlock Generate video.",
+      "sharperVideo": "✨ Sharper video",
+      "lifelikeAvatar": "🧑‍💼 Lifelike avatar"
     },
     "houseSearch": {
       "whatLookingFor": "What is your buyer looking for?",
@@ -3556,7 +3576,9 @@
       "quickLineToBuyer": "A quick line to your buyer…",
       "unlimitedSearches": "Unlimited searches",
       "saveSearch": "Save search",
-      "sendEmail": "Send email"
+      "sendEmail": "Send email",
+      "viewListing": "View listing ↗",
+      "emailToBuyer": "✉ Email to buyer"
     },
     "marketingAssistant": {
       "kbTitle": "Your Marketing Assistant's knowledge base",
@@ -3669,7 +3691,8 @@
       "warnings": "Worth a second look",
       "saving": "Saving…",
       "save": "Save listing",
-      "metaTitle": "Upload a listing"
+      "metaTitle": "Upload a listing",
+      "choosePdf": "📄 Choose PDF"
     },
     "marketing": {
       "shareLinks": "Share links, track email follow-ups, and manage campaign status.",
@@ -3728,7 +3751,8 @@
       "fullRecord": "Full record",
       "nothingOpen": "Nothing open — your AI team will flag the next touch.",
       "noInteractions": "No interactions yet — your AI team will log calls, texts, and follow-ups here.",
-      "gettingFullPicture": "Getting the full picture…"
+      "gettingFullPicture": "Getting the full picture…",
+      "backToLeads": "← Back to leads"
     },
     "pricing": {
       "theMath": "The math",
@@ -3763,7 +3787,9 @@
       "breakingIntoActions": "On it — breaking this into actions…",
       "draftsAwaiting_one": "1 draft needs your approval",
       "draftsAwaiting_other": "{{count}} drafts need your approval",
-      "scrollToEnd": "Scroll to latest"
+      "scrollToEnd": "Scroll to latest",
+      "overnightMode": "Overnight mode 🌙",
+      "pauseAllAutonomy": "⏸ Pause all autonomy"
     },
     "offersList": {
       "offersFor": "Offers for",
@@ -3898,7 +3924,8 @@
       "oneContact": "One contact",
       "aSegment": "A segment",
       "sendNow": "Send now",
-      "scheduleLater": "Schedule for later"
+      "scheduleLater": "Schedule for later",
+      "stopNoticeAuto": "“Reply STOP to unsubscribe” is added automatically."
     },
     "leadRouting": {
       "noAgents": "No agents in the routing pool yet.",
@@ -4008,7 +4035,11 @@
       "sellerToBuyer": "Seller → Buyer (they countered us)",
       "buyerToSeller": "Buyer → Seller (we countered them)",
       "counterExample": "Closing moved to 45d, EMD bumped to 40k…",
-      "offerIsClosedNo": "Offer is closed — no further counters."
+      "offerIsClosedNo": "Offer is closed — no further counters.",
+      "openDeal": "→ open deal",
+      "convertToTransaction": "✅ Convert to transaction",
+      "backToShowing": "← Back to originating showing",
+      "deleteOffer": "🗑 Delete offer"
     },
     "flyerBuilder": {
       "startOver": "Start Over",
@@ -4043,7 +4074,8 @@
     "playbooksPage": {
       "cancelled": "Cancelled",
       "tomorrow": "Tomorrow",
-      "nextWeek": "Next week"
+      "nextWeek": "Next week",
+      "openHouse": "↗ Open house"
     },
     "features": {
       "exploreTeam": "Explore the team",
@@ -4103,7 +4135,8 @@
       "output": "Output",
       "copied": "Copied",
       "copy": "Copy",
-      "backToSkills": "Back to skills"
+      "backToSkills": "Back to skills",
+      "backToAll": "← All skills"
     },
     "tasksPage": {
       "clickSlice": "Click a slice for details",
@@ -4389,7 +4422,9 @@
       "link": "Link",
       "linkHint": "Facebook auto-renders a card preview from this URL.",
       "captionPlaceholder": "Leave blank to auto-build from the listing details when you click Post.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "postButton": "📣 Post to Facebook",
+      "viewOnFacebook": "View on Facebook ↗"
     },
     "leadCapture": {
       "close": "Close",
@@ -4466,7 +4501,8 @@
       "inherits": "Inherits: {{status}}",
       "timelinePending": "Per-contact SMS / email history lands here once the send-log integration is wired. Pulls from",
       "scopedToContact": "scoped to this contact.",
-      "paidEquity": "Paid {{price}} · equity {{equity}}"
+      "paidEquity": "Paid {{price}} · equity {{equity}}",
+      "backToSphere": "← Back to Sphere"
     },
     "reelPanel": {
       "title": "Create a video reel",
@@ -4898,7 +4934,8 @@
       "repliesRoute": "Replies will route back to your inbox.",
       "close": "Close",
       "coverNote": "Cover note",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "emailToSeller": "✉ Email to seller"
     },
     "playbooksPanel": {
       "intro": "Apply a curated checklist to stay on track. Tick items as you go.",
@@ -4978,7 +5015,9 @@
       "tzHint": "IANA timezone — your briefing fires at the times above in this zone.",
       "saved": "Saved.",
       "otherTimezone": "Other timezone…",
-      "saveSchedule": "Save schedule"
+      "saveSchedule": "Save schedule",
+      "morningBlurb": "☀️ Start-of-day plan, hot leads, follow-ups.",
+      "eveningBlurb": "🌙 Recap, missed work, tomorrow preview."
     },
     "generateCma": {
       "button": "Generate CMA",
@@ -5352,7 +5391,8 @@
     "postcardAnimations": {
       "happyBirthday": "Happy Birthday,",
       "anotherYear": "Another year in your home,",
-      "thinkingOfYou": "Thinking of you,"
+      "thinkingOfYou": "Thinking of you,",
+      "anniversaryCongrats": "Congrats on the anniversary 🎊"
     },
     "salesModelBits": {
       "operatingIdentity": "Operating identity",
@@ -7227,7 +7267,8 @@
       "generateCma": "Generate CMA",
       "saveToReports": "Save to Reports",
       "paywallMessage": "You’ve reached your limit. Upgrade to continue.",
-      "paywallCta": "Upgrade Now"
+      "paywallCta": "Upgrade Now",
+      "almostOutOfFreeReports": "⚠️ You’re almost out of free CMA reports"
     },
     "capRateMistakes": {
       "intro": "Cap rate is simple to calculate, but easy to misuse. Small mistakes in your assumptions can make a property look far better—or worse—than it really is. By understanding the most common errors investors make with cap rate, you can avoid costly missteps and use this metric the way professionals do.",
@@ -8166,7 +8207,8 @@
       "youVeHitToday": "You've hit today's free searches.",
       "youVeUsedToday": "You've used today's free search.",
       "searchesTheLiveWeb": "Searches the live web — results take up to a minute.",
-      "searchHomes": "Search homes"
+      "searchHomes": "Search homes",
+      "viewListing": "View listing ↗"
     },
     "linkAnalyzer": {
       "h1": "AI Zillow / Redfin Link Analyzer",

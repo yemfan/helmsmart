@@ -1761,7 +1761,8 @@
       "emailPhone": "邮箱／电话",
       "warnings": "提示",
       "csvOptIn": "CSV 中标记为已同意——仍需您明确确认",
-      "parseCsv": "解析 CSV"
+      "parseCsv": "解析 CSV",
+      "backToSphere": "← 返回人脉圈"
     },
     "sphereContact": {
       "metaTitle": "人脉圈联系人"
@@ -2074,7 +2075,8 @@
       "draftBefore": "保存后会创建一份状态为",
       "draftWord": "草稿",
       "draftAfter": "的报价。您可以在下一页修改任意字段，之后再改为“已提交”。",
-      "extractedHelp": "请逐项核对。附带条件行显示的是合同原文 — 「WAIVED」表示合同放弃该项附带条件。未读取到的字段显示为「—」，新报价将对这些字段使用表单默认值。"
+      "extractedHelp": "请逐项核对。附带条件行显示的是合同原文 — 「WAIVED」表示合同放弃该项附带条件。未读取到的字段显示为「—」，新报价将对这些字段使用表单默认值。",
+      "choosePdf": "📄 选择 PDF"
     },
     "cmaDetail": {
       "metaTitle": "市场比较分析报告",
@@ -2114,7 +2116,8 @@
       "hoaSuffix": " · 物业费 {{hoa}}",
       "builtSuffix": " · 建于 {{year}}",
       "emailSubject": "市场比较分析报告 — {{address}}",
-      "resourceLabel": "{{address}} 的 CMA 报告"
+      "resourceLabel": "{{address}} 的 CMA 报告",
+      "backToCmas": "← 返回 CMA 列表"
     },
     "adComposer": {
       "metaTitle": "广告编辑器",
@@ -2293,7 +2296,10 @@
       "optedInN": "{{count}} 位同意后续联系",
       "yes": "是",
       "thankYouSent": "感谢邮件已发送 {{sent}}/{{total}}",
-      "checkInsSent": "第 3 天回访已发送 {{sent}}/{{total}}"
+      "checkInsSent": "第 3 天回访已发送 {{sent}}/{{total}}",
+      "printFlyer": "🖨️ 打印开放日宣传单",
+      "openKiosk": "📱 打开 iPad 签到台",
+      "deleteOpenHouse": "🗑 删除开放日"
     },
     "marketingPlans": {
       "loading": "加载中…",
@@ -2378,7 +2384,10 @@
       "newPrice": "新价格（可选）",
       "counterNotesPlaceholder": "例如：交割期改为 30 天，定金维持不变…",
       "recordCounter": "记录还价",
-      "saving": "保存中…"
+      "saving": "保存中…",
+      "backToCompare": "← 返回对比视图",
+      "downloadNetSheetPdf": "📄 下载卖方净收益 PDF",
+      "deleteOffer": "🗑 删除报价"
     },
     "newListingOffer": {
       "metaTitle": "登记报价",
@@ -2469,7 +2478,11 @@
       "markAfter": "——这样才会解锁反馈表单，并计入这位买家的带看统计。",
       "feedbackBefore": "把这次带看标记为",
       "feedbackAfter": "后才能填写反馈。",
-      "clear": "清空"
+      "clear": "清空",
+      "createOffer": "📝 创建报价",
+      "thankListingAgent": "✉️ 感谢挂牌经纪",
+      "sendSummaryToBuyer": "📬 把总结发给买家",
+      "deleteShowing": "🗑 删除带看记录"
     },
     "flyer": {
       "metaTitle": "开放日宣传单生成器",
@@ -2767,7 +2780,8 @@
       "counterPrice": "还价金额",
       "openContractedDeal": "打开已签约交易 →",
       "viewAllShowings": "查看全部带看 →",
-      "unnamedBuyer": "未命名买家"
+      "unnamedBuyer": "未命名买家",
+      "openExternal": "打开 ↗"
     },
     "adWizard": {
       "metaTitle": "新建引流广告",
@@ -3112,7 +3126,8 @@
       "addVoiceover": "添加配音",
       "narratedInAProfessional": "由专业配音朗读。",
       "narratedInYourCloned": "由您的克隆声音朗读。",
-      "urlHelp": "建议使用您自己的房源页面。图片从该页面获取；若门户网站阻止抓取，请使用下方的「+ 上传图片」。"
+      "urlHelp": "建议使用您自己的房源页面。图片从该页面获取；若门户网站阻止抓取，请使用下方的「+ 上传图片」。",
+      "download": "下载 ↗"
     },
     "contactHealth": {
       "heading": "联系人资料完整度",
@@ -3182,7 +3197,8 @@
       "generatedAt": "生成于 {{date}}",
       "intro": "对这笔已成交交易做复盘——时间线、卡住的环节，以及下次哪些该照做、哪些该改。",
       "generating": "正在生成交易复盘。第一次大约需要 15 秒。",
-      "aiUnavailable": "AI 暂时不可用——已改用基础规则"
+      "aiUnavailable": "AI 暂时不可用——已改用基础规则",
+      "heading": "🧠 AI 交易复盘"
     },
     "listingFeedback": {
       "agentName": "买方经纪人姓名",
@@ -3209,7 +3225,8 @@
       "loading": "正在加载反馈…",
       "noEmailOnFile": "档案中没有邮箱",
       "sendRequest": "发送请求",
-      "addRequest": "添加请求"
+      "addRequest": "添加请求",
+      "heading": "💬 买方经纪反馈"
     },
     "missedCallLog": {
       "autoTextsSent": "已发送自动短信",
@@ -3477,7 +3494,8 @@
       "cadence": "频率",
       "optimizationHistory": "过程中的调整",
       "ranAutonomously": "自主执行",
-      "noTasks": "暂无待办事项。"
+      "noTasks": "暂无待办事项。",
+      "backToAll": "← 全部剧本运行"
     },
     "labels": {
       "call": "电话",
@@ -3541,7 +3559,9 @@
       "renderCreditsReturned": "您的额度已退回。",
       "generateVideoUsesCredits": "生成视频（消耗额度）",
       "hitPreviewVoiceFree": "请先点「试听配音」（免费）——听过之后才能解锁生成视频。",
-      "draftOrWriteA": "先起草或撰写脚本，再点「试听配音」（免费）解锁生成视频。"
+      "draftOrWriteA": "先起草或撰写脚本，再点「试听配音」（免费）解锁生成视频。",
+      "sharperVideo": "✨ 更清晰的视频",
+      "lifelikeAvatar": "🧑‍💼 逼真的数字人形象"
     },
     "houseSearch": {
       "whatLookingFor": "您的买家在找什么样的房子？",
@@ -3556,7 +3576,9 @@
       "quickLineToBuyer": "给买家写一句话…",
       "unlimitedSearches": "搜索不限次数",
       "saveSearch": "保存搜索",
-      "sendEmail": "发送邮件"
+      "sendEmail": "发送邮件",
+      "viewListing": "查看房源 ↗",
+      "emailToBuyer": "✉ 发邮件给买家"
     },
     "marketingAssistant": {
       "kbTitle": "营销助理的知识库",
@@ -3669,7 +3691,8 @@
       "warnings": "以下几项建议再确认一下",
       "saving": "保存中…",
       "save": "保存房源",
-      "metaTitle": "上传房源"
+      "metaTitle": "上传房源",
+      "choosePdf": "📄 选择 PDF"
     },
     "marketing": {
       "shareLinks": "分享链接、跟踪邮件回访，并管理营销活动状态。",
@@ -3728,7 +3751,8 @@
       "fullRecord": "完整档案",
       "nothingOpen": "暂无待办——需要联系时，您的 AI 团队会提醒您。",
       "noInteractions": "还没有互动记录——通话、短信和跟进都会记录在这里。",
-      "gettingFullPicture": "正在了解完整情况…"
+      "gettingFullPicture": "正在了解完整情况…",
+      "backToLeads": "← 返回客源列表"
     },
     "pricing": {
       "theMath": "算一笔账",
@@ -3763,7 +3787,9 @@
       "breakingIntoActions": "收到——正在拆解成具体行动…",
       "draftsAwaiting_other": "有 {{count}} 条草稿等待您审批",
       "draftsAwaiting_one": "有 1 条草稿等待您审批",
-      "scrollToEnd": "滚动到最新"
+      "scrollToEnd": "滚动到最新",
+      "overnightMode": "夜间模式 🌙",
+      "pauseAllAutonomy": "⏸ 暂停所有自动执行"
     },
     "offersList": {
       "offersFor": "报价——",
@@ -3898,7 +3924,8 @@
       "oneContact": "单个联系人",
       "aSegment": "某个客户分组",
       "sendNow": "立即发送",
-      "scheduleLater": "稍后定时发送"
+      "scheduleLater": "稍后定时发送",
+      "stopNoticeAuto": "系统会自动加上“回复 STOP 退订”。"
     },
     "leadRouting": {
       "noAgents": "分配池中还没有经纪人。",
@@ -4008,7 +4035,11 @@
       "sellerToBuyer": "卖家 → 买家（对方还价）",
       "buyerToSeller": "买家 → 卖家（我方还价）",
       "counterExample": "过户改为 45 天，定金提高到 4 万…",
-      "offerIsClosedNo": "该报价已关闭，不能再还价。"
+      "offerIsClosedNo": "该报价已关闭，不能再还价。",
+      "openDeal": "→ 打开交易",
+      "convertToTransaction": "✅ 转为交易",
+      "backToShowing": "← 返回对应的带看记录",
+      "deleteOffer": "🗑 删除报价"
     },
     "flyerBuilder": {
       "startOver": "重新开始",
@@ -4043,7 +4074,8 @@
     "playbooksPage": {
       "cancelled": "已取消",
       "tomorrow": "明天",
-      "nextWeek": "下周"
+      "nextWeek": "下周",
+      "openHouse": "↗ 开放日"
     },
     "features": {
       "exploreTeam": "认识这支团队",
@@ -4103,7 +4135,8 @@
       "output": "输出",
       "copied": "已复制",
       "copy": "复制",
-      "backToSkills": "返回技能列表"
+      "backToSkills": "返回技能列表",
+      "backToAll": "← 全部技能"
     },
     "tasksPage": {
       "clickSlice": "点击扇区查看明细",
@@ -4389,7 +4422,9 @@
       "link": "链接",
       "linkHint": "Facebook 会根据这个网址自动生成卡片预览。",
       "captionPlaceholder": "留空则在点击发布时，根据房源信息自动生成。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "postButton": "📣 发布到 Facebook",
+      "viewOnFacebook": "在 Facebook 上查看 ↗"
     },
     "leadCapture": {
       "close": "关闭",
@@ -4466,7 +4501,8 @@
       "inherits": "继承自：{{status}}",
       "timelinePending": "接通发送日志之后，这位联系人的短信／邮件往来记录会显示在这里。数据来自",
       "scopedToContact": "，仅限这位联系人。",
-      "paidEquity": "买入价 {{price}} · 净值 {{equity}}"
+      "paidEquity": "买入价 {{price}} · 净值 {{equity}}",
+      "backToSphere": "← 返回人脉圈"
     },
     "reelPanel": {
       "title": "制作短视频",
@@ -4898,7 +4934,8 @@
       "repliesRoute": "对方回复会回到您的收件箱。",
       "close": "关闭",
       "coverNote": "附言",
-      "cancel": "取消"
+      "cancel": "取消",
+      "emailToSeller": "✉ 发邮件给卖家"
     },
     "playbooksPanel": {
       "intro": "套用一份精选清单，按部就班往下走。做完一项就勾一项。",
@@ -4978,7 +5015,9 @@
       "tzHint": "IANA 时区名称——简报会按这个时区在上面设定的时间发出。",
       "saved": "已保存。",
       "otherTimezone": "其他时区…",
-      "saveSchedule": "保存排期"
+      "saveSchedule": "保存排期",
+      "morningBlurb": "☀️ 一天的计划、热门客源与待跟进事项。",
+      "eveningBlurb": "🌙 当天回顾、遗漏事项与明日预览。"
     },
     "generateCma": {
       "button": "生成 CMA",
@@ -5352,7 +5391,8 @@
     "postcardAnimations": {
       "happyBirthday": "生日快乐，",
       "anotherYear": "又在这个家住满一年了，",
-      "thinkingOfYou": "想起你了，"
+      "thinkingOfYou": "想起你了，",
+      "anniversaryCongrats": "恭喜迎来这个纪念日 🎊"
     },
     "salesModelBits": {
       "operatingIdentity": "工作身份",
@@ -7227,7 +7267,8 @@
       "generateCma": "生成 CMA",
       "saveToReports": "保存到报告",
       "paywallMessage": "您已达到使用上限，升级后可继续使用。",
-      "paywallCta": "立即升级"
+      "paywallCta": "立即升级",
+      "almostOutOfFreeReports": "⚠️ 你的免费 CMA 报告次数快用完了"
     },
     "capRateMistakes": {
       "intro": "资本化率（Cap Rate）算起来简单，但很容易被误用。假设上的小偏差，能让一处房产看起来远比实际好——或者远比实际差。搞清楚投资人在资本化率上最常犯的错误，您就能避开代价高昂的失误，像专业人士那样使用这个指标。",
@@ -8166,7 +8207,8 @@
       "youVeHitToday": "今天的免费搜索次数已用完。",
       "youVeUsedToday": "今天的免费搜索已使用。",
       "searchesTheLiveWeb": "实时联网搜索——最多需要一分钟出结果。",
-      "searchHomes": "搜索房源"
+      "searchHomes": "搜索房源",
+      "viewListing": "查看房源 ↗"
     },
     "linkAnalyzer": {
       "h1": "AI Zillow／Redfin 链接分析器",
