@@ -70,10 +70,18 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
+        {/*
+          The placeholder is a reserved 555 number, not a plausible one. It used
+          to read "+1 626 888 7170" — a real-looking line in the same range as
+          the number this product actually uses — and it was taken for one: it
+          got reported as "the only number that can send SMS", and cost a round
+          of Twilio investigation before the account turned out never to have
+          held it. A placeholder should be unmistakably an example.
+        */}
         <input
           value={number}
           onChange={(e) => setNumber(e.target.value)}
-          placeholder="+1 626 888 7170"
+          placeholder="+1 555 010 0000"
           inputMode="tel"
           className="flex-1 min-w-[220px] px-3 py-2 border border-slate-200 rounded-lg text-sm"
         />
