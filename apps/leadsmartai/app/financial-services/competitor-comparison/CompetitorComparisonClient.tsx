@@ -365,14 +365,17 @@ export default function CompetitorComparisonClient() {
               <p className="font-semibold text-slate-900">CloseBoss AI</p>
               <p>closebossai.com · pilot inquiries welcome</p>
             </div>
-            <p className="text-right text-[7.5pt] text-slate-400">{t("pages.competitorComparison.confidentialFor")} {partnerLabel} leadership.
+            <p className="text-right text-[7.5pt] text-slate-400">{t("pages.competitorComparison.confidentialForLeadership", { partner: partnerLabel })}
             </p>
           </div>
         </footer>
       </article>
 
-      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.competitorComparison.printTip")}<strong>{t("pages.competitorComparison.letter")}</strong> with{" "}
-        <strong>{t("pages.competitorComparison.defaultMargins")}</strong> and <strong>{t("pages.competitorComparison.backgroundGraphics")}</strong>{t("pages.competitorComparison.keepColors")}</div>
+      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.competitorComparison.printTipFull", {
+          paper: t("pages.competitorComparison.letter"),
+          margins: t("pages.competitorComparison.defaultMargins"),
+          graphics: t("pages.competitorComparison.backgroundGraphics"),
+        })}</div>
     </>
   );
 }

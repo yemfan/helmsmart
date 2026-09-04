@@ -117,7 +117,7 @@ export default function PipelineClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{t("pages.loanBroker.pipelineTitle")}</h1>
-          <p className="text-sm text-gray-500">{total} application{total !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-gray-500">{t("pages.loanBrokerPipeline.applications", { count: total })}</p>
         </div>
         <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
           {showAdd ? t("common:actions.cancel") : "+ Add Borrower"}
@@ -240,7 +240,8 @@ function DetailPanel({ app, onClose, onSave, saving }: {
             <p><span className="text-gray-500">{t("pages.loanBroker.loanAmountLabel")}</span> <span className="font-semibold">{app.loan_amount ? `$${Number(app.loan_amount).toLocaleString(locale)}` : "—"}</span></p>
             <p><span className="text-gray-500">{t("pages.loanBroker.propertyLabel")}</span> {app.property_address ?? "—"}</p>
             <p><span className="text-gray-500">{t("pages.loanBroker.rateLabel")}</span> {app.interest_rate ? `${app.interest_rate}%` : "—"}</p>
-            <p><span className="text-gray-500">{t("pages.loanBroker.termLabel")}</span> {app.loan_term_years} years</p>
+            <p><span className="text-gray-500">{t("pages.loanBroker.termLabel")}</span>{" "}
+            {t("pages.loanBrokerPipeline.termYears", { count: app.loan_term_years })}</p>
             <p><span className="text-gray-500">{t("pages.loanBroker.sourceLabel")}</span> {(app.source ?? "manual").replace(/_/g, " ")}</p>
             <p><span className="text-gray-500">{t("pages.loanBroker.createdLabel")}</span> {new Date(app.created_at).toLocaleString(locale)}</p>
           </div>

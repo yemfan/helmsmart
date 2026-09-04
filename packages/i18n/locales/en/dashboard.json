@@ -1762,7 +1762,11 @@
       "warnings": "Warnings",
       "csvOptIn": "CSV indicated opt-in — still requires explicit confirmation",
       "parseCsv": "Parse CSV",
-      "backToSphere": "← Back to Sphere"
+      "backToSphere": "← Back to Sphere",
+      "insertedContacts_one": "✓ Inserted {{count}} contact.",
+      "insertedContacts_other": "✓ Inserted {{count}} contacts.",
+      "warningCount_one": "{{count}} warning",
+      "warningCount_other": "{{count}} warnings"
     },
     "sphereContact": {
       "metaTitle": "Sphere contact"
@@ -1795,7 +1799,9 @@
       "emptyState": "Fill in the deal context and run the coach to see strategy, risks, negotiation scripts, and a prioritized action plan.",
       "title": "AI Deal Coach",
       "talkingPoints": "Talking points",
-      "pitfalls": "Pitfalls"
+      "pitfalls": "Pitfalls",
+      "approxMinutes_one": "~{{count}} min",
+      "approxMinutes_other": "~{{count}} min"
     },
     "schedulerActivity": {
       "metaTitle": "Scheduler activity",
@@ -1989,7 +1995,8 @@
       "created": "Report created",
       "generate": "Generate report & AI content",
       "generating": "Generating report…",
-      "upgrade": "Upgrade to Pro or Premium to generate AI comparison reports."
+      "upgrade": "Upgrade to Pro or Premium to generate AI comparison reports.",
+      "sqftBedBath": "{{sqft}} sqft · {{beds}} bd / {{baths}} ba"
     },
     "growth": {
       "metaTitle": "Growth & Opportunities",
@@ -2076,7 +2083,8 @@
       "draftWord": "draft",
       "draftAfter": ". You can edit any field on the next page before flipping to “submitted.”",
       "extractedHelp": "Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those.",
-      "choosePdf": "📄 Choose PDF"
+      "choosePdf": "📄 Choose PDF",
+      "charCount": "{{used}} / {{max}} characters"
     },
     "cmaDetail": {
       "metaTitle": "CMA Report",
@@ -2560,7 +2568,12 @@
       "truncated": "showing the first {{shown}} of {{total}} found — save these, then split the file to import the rest",
       "saveN": "Save {{count}} contacts",
       "savedNofM": "Saved {{saved}} of {{total}} contacts",
-      "aFile": "file"
+      "aFile": "file",
+      "ofNContactsSelected_one": "of {{count}} contact selected",
+      "ofNContactsSelected_other": "of {{count}} contacts selected",
+      "fromSource": "from {{source}} ·",
+      "resultSummary_one": "{{inserted}} added · {{merged}} merged · {{skipped}} skipped · {{errors}} error",
+      "resultSummary_other": "{{inserted}} added · {{merged}} merged · {{skipped}} skipped · {{errors}} errors"
     },
     "newOffer": {
       "metaTitle": "New Offer",
@@ -2653,7 +2666,10 @@
       "accept": "Accept",
       "view": "View",
       "sellerNote": "Note for the seller",
-      "aiReadNote": "Get a plain-English read on which offer is strongest and why (net to seller, certainty of close, timeline) — plus a short note you can forward to the seller."
+      "aiReadNote": "Get a plain-English read on which offer is strongest and why (net to seller, certainty of close, timeline) — plus a short note you can forward to the seller.",
+      "viaAgent": "via {{name}}",
+      "counterCount_one": "{{count}} counter",
+      "counterCount_other": "{{count}} counters"
     },
     "newShowing": {
       "metaTitle": "Schedule Showing",
@@ -2781,7 +2797,10 @@
       "openContractedDeal": "Open contracted deal →",
       "viewAllShowings": "View all showings →",
       "unnamedBuyer": "Unnamed buyer",
-      "openExternal": "Open ↗"
+      "openExternal": "Open ↗",
+      "counterCount_one": "{{count}} counter",
+      "counterCount_other": "{{count}} counters",
+      "fromPrice": "from {{price}}"
     },
     "adWizard": {
       "metaTitle": "New Lead Ad",
@@ -3127,7 +3146,9 @@
       "narratedInAProfessional": "Narrated in a professional voice.",
       "narratedInYourCloned": "Narrated in your cloned voice.",
       "urlHelp": "Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below.",
-      "download": "Download ↗"
+      "download": "Download ↗",
+      "clipCount_one": "{{count}} clip × {{seconds}}s ≈",
+      "clipCount_other": "{{count}} clips × {{seconds}}s ≈"
     },
     "contactHealth": {
       "heading": "Contact health",
@@ -3235,7 +3256,8 @@
       "withAutoText": "With auto-text",
       "textSent": "Text sent",
       "noAutoText": "No auto-text",
-      "showBody": "Show auto-text body"
+      "showBody": "Show auto-text body",
+      "sentAt": "sent {{at}}"
     },
     "greetingAutomation": {
       "heading": "Greeting automation",
@@ -3380,7 +3402,9 @@
       "readyCreateAccount": "I&apos;m ready — create my agent account →",
       "loadingConversation": "Loading conversation…",
       "simulatedLeadStream": "Simulated live “incoming lead” stream",
-      "moreQueued": "2 more conversations are queued in your territory"
+      "moreQueued": "2 more conversations are queued in your territory",
+      "waitingCount_one": "{{count}} waiting",
+      "waitingCount_other": "{{count}} waiting"
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -3495,7 +3519,10 @@
       "optimizationHistory": "What changed along the way",
       "ranAutonomously": "Ran on its own",
       "noTasks": "Nothing queued yet.",
-      "backToAll": "← All playbook runs"
+      "backToAll": "← All playbook runs",
+      "dueOn": "due {{date}}",
+      "tasksOpen_one": "Tasks ({{count}} open)",
+      "tasksOpen_other": "Tasks ({{count}} open)"
     },
     "labels": {
       "call": "Call",
@@ -3578,7 +3605,15 @@
       "saveSearch": "Save search",
       "sendEmail": "Send email",
       "viewListing": "View listing ↗",
-      "emailToBuyer": "✉ Email to buyer"
+      "emailToBuyer": "✉ Email to buyer",
+      "selectedCount_one": "{{count}} selected",
+      "selectedCount_other": "{{count}} selected",
+      "runCount_one": "{{count}} run",
+      "runCount_other": "{{count}} runs",
+      "emailListingsToBuyer_one": "Email {{count}} listing to buyer",
+      "emailListingsToBuyer_other": "Email {{count}} listings to buyer",
+      "listingsSuffix_one": "{{count}} listing",
+      "listingsSuffix_other": "{{count}} listings"
     },
     "marketingAssistant": {
       "kbTitle": "Your Marketing Assistant's knowledge base",
@@ -3825,7 +3860,8 @@
       "buying": "Buying…",
       "buy": "Buy lead",
       "metaTitle": "Opportunities",
-      "metaDescription": "Live deals and the ones worth chasing next."
+      "metaDescription": "Live deals and the ones worth chasing next.",
+      "showingOf": "Showing {{shown}} of {{total}} opportunities"
     },
     "send": {
       "blurb": "Generate a personalized home value link you can paste into emails, texts, or social posts.",
@@ -3853,7 +3889,10 @@
       "add": "Add",
       "addCounterparty": "Add counterparty",
       "counterpartyHint": "Title, lender, inspector, insurance — add them here so you don't hunt through texts.",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "stageComplete": "{{done}}/{{total}} complete",
+      "overdueCount_one": "{{count}} overdue",
+      "overdueCount_other": "{{count}} overdue"
     },
     "credits": {
       "planUsage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
@@ -3955,12 +3994,16 @@
       "ready": "Your AI Accountant is ready — when a deal goes under contract, its expected commission shows up here.",
       "commissionMissing": "commission details missing",
       "noExpenses": "No expenses logged yet — track them and your AI Accountant keeps the categories clean for tax time.",
-      "nothingOutstanding": "Nothing outstanding — commissions are tracked in the pipeline above."
+      "nothingOutstanding": "Nothing outstanding — commissions are tracked in the pipeline above.",
+      "overdueCount_one": "{{count}} overdue",
+      "overdueCount_other": "{{count}} overdue"
     },
     "calendarPage": {
       "connect": "Connect",
       "all": "All",
-      "nothingScheduled": "Nothing scheduled this month."
+      "nothingScheduled": "Nothing scheduled this month.",
+      "plusMore_one": "+{{count}} more",
+      "plusMore_other": "+{{count}} more"
     },
     "comparisonBuilder": {
       "intro": "Build a client-ready comparison with executive summary, scores, and AI insights. Share a public link or download a PDF.",
@@ -4108,7 +4151,9 @@
       "claim": "Claim",
       "openContact": "Open contact →",
       "metaTitle": "Lead queue",
-      "metaDescription": "Unclaimed leads waiting for an agent to pick them up."
+      "metaDescription": "Unclaimed leads waiting for an agent to pick them up.",
+      "availableCount_one": "{{count}} unclaimed lead available",
+      "availableCount_other": "{{count}} unclaimed leads available"
     },
     "openHouseQr": {
       "printBefore": "Print these QR codes for each property. Scanning opens the mobile sign-up form and records the visitor as an",
@@ -4239,7 +4284,11 @@
       "replyToCustomer": "Reply to customer",
       "customer": "Customer",
       "support": "Support",
-      "noSubject": "No subject"
+      "noSubject": "No subject",
+      "openCount_one": "{{count}} open",
+      "openCount_other": "{{count}} open",
+      "urgentCount_one": "{{count}} urgent",
+      "urgentCount_other": "{{count}} urgent"
     },
     "adminBilling": {
       "title": "Subscription & Billing",
@@ -4392,7 +4441,8 @@
       "skip": "Skip",
       "skipFinish": "Skip & Finish",
       "finishSetup": "Finish Setup",
-      "pickYourArea": "Pick the state, county, and city you serve so we can match you with local leads. Check “all cities” if you cover the whole county."
+      "pickYourArea": "Pick the state, county, and city you serve so we can match you with local leads. Check “all cities” if you cover the whole county.",
+      "stepOfFour": "Step {{step}} of 4"
     },
     "coaching": {
       "brand": "CloseBoss Coaching",
@@ -4533,7 +4583,11 @@
       "sendingN": "Sending {{count}} postcards…",
       "sentNofM": "Sent {{ok}} of {{total}} postcards",
       "notDelivered": "Not delivered ({{count}})",
-      "sendN": "Send {{count}} postcards"
+      "sendN": "Send {{count}} postcards",
+      "plusMore_one": "+{{count}} more",
+      "plusMore_other": "+{{count}} more",
+      "channelEmail": "✉️ Email",
+      "channelSms": "💬 SMS"
     },
     "authModal": {
       "close": "Close",
@@ -4719,7 +4773,11 @@
       "type": "Type",
       "deals": "Deals",
       "ifAllClose": "If all close",
-      "expected": "Expected (weighted)"
+      "expected": "Expected (weighted)",
+      "dealsNoCloseDate_one": "{{count}} deal has no close date",
+      "dealsNoCloseDate_other": "{{count}} deals have no close date",
+      "grossWeighted": "{{gross}} gross / {{weighted}} weighted",
+      "slashNet": "/ {{net}} net"
     },
     "reviewPolicy": {
       "reviewEach": "Review each one",
@@ -4876,7 +4934,10 @@
       "copyLink": "Copy link",
       "share": "Share",
       "yourCode": "Your code:",
-      "loadingLink": "Loading your referral link…"
+      "loadingLink": "Loading your referral link…",
+      "tokensEarned": "{{n}} tokens",
+      "pendingCount_one": "{{count}} pending",
+      "pendingCount_other": "{{count}} pending"
     },
     "vsl": {
       "videoAlt": "CloseBoss demo video",
@@ -4949,7 +5010,14 @@
       "viewTasksList": "View Tasks list →",
       "reviewTasks": "Review tasks →",
       "addAContact": "Add a contact →",
-      "selectAContact": "Select a contact…"
+      "selectAContact": "Select a contact…",
+      "openCount_one": "{{count}} open",
+      "openCount_other": "{{count}} open",
+      "doneCount_one": "{{count}} done",
+      "doneCount_other": "{{count}} done",
+      "batchDone": "· {{done}}/{{total}} done",
+      "taskCount_one": "{{count}} task",
+      "taskCount_other": "{{count}} tasks"
     },
     "growthCapture": {
       "thanks": "Thanks — we'll follow up with next steps.",
@@ -4988,7 +5056,11 @@
       "recentlyPosted": "Recently posted",
       "loadingQueue": "Loading the queue…",
       "everythingHereIsApproved": "Everything here is approved and will publish at its scheduled time.",
-      "nothingQueuedNewPosts": "Nothing queued. New posts appear here when your weekly plan is generated."
+      "nothingQueuedNewPosts": "Nothing queued. New posts appear here when your weekly plan is generated.",
+      "awaitingOk_one": "{{count}} post waiting for your OK",
+      "awaitingOk_other": "{{count}} posts waiting for your OK",
+      "failedAfterAttempts_one": "Failed after {{count}} attempt",
+      "failedAfterAttempts_other": "Failed after {{count}} attempts"
     },
     "commandPalette": {
       "searchPlaceholder": "Search pages… (Esc to close)",
@@ -5005,7 +5077,9 @@
       "started": "Import started",
       "done": "Done",
       "clickToSelectA": "Click to select a CSV file",
-      "uploadImport": "Upload & Import"
+      "uploadImport": "Upload & Import",
+      "contactsBeingProcessed_one": "{{count}} contact is being processed",
+      "contactsBeingProcessed_other": "{{count}} contacts are being processed"
     },
     "briefingSchedule": {
       "morning": "Morning briefing",
@@ -5025,7 +5099,8 @@
       "sub": "The report will be saved and linked to this contact.",
       "subjectAddress": "Subject address",
       "limitReached": "Daily limit reached. Resets at midnight UTC.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "quotaLeft": "{{remaining}}/{{limit}} left"
     },
     "localSeoForm": {
       "intro": "Get a fast estimate and personalized next steps.",
@@ -5052,7 +5127,10 @@
       "edit": "Edit",
       "startingRun": "Starting the run…",
       "viewDeliverable": "View deliverable →",
-      "editBeforeSending": "Edit the message before sending…"
+      "editBeforeSending": "Edit the message before sending…",
+      "toolCalls": "{{used}}/{{max}} tools",
+      "stepsComplete_one": "{{count}} step complete",
+      "stepsComplete_other": "{{count}} steps complete"
     },
     "draftModal": {
       "buyerTitle": "AI buyer-outreach draft",
@@ -5218,7 +5296,11 @@
       "title": "AI-suggested properties",
       "sub": "Listings that match this contact's favorites, saved searches, and recent activity. Review + send with one click.",
       "rationale": "LLM rationale",
-      "empty": "No candidates to suggest yet — contact needs favorites or a saved search to seed the recommender."
+      "empty": "No candidates to suggest yet — contact needs favorites or a saved search to seed the recommender.",
+      "favorites_one": "{{count}} favorite",
+      "favorites_other": "{{count}} favorites",
+      "selected_one": "{{count}} selected",
+      "selected_other": "{{count}} selected"
     },
     "appointmentReminders": {
       "title": "Upcoming appointments",
@@ -5230,7 +5312,9 @@
       "title": "Voice calls",
       "sub": "AI-handled and outbound demo calls with this contact. Timeline collapses Twilio status transitions into one row per call.",
       "empty": "No voice calls logged for this contact yet.",
-      "recording": "Recording available"
+      "recording": "Recording available",
+      "stepCount_one": "{{count}} step",
+      "stepCount_other": "{{count}} steps"
     },
     "proGate": {
       "automationPro": "Automation is a Pro feature.",
@@ -5376,7 +5460,9 @@
     "clientNewsletter": {
       "title": "Your Client Newsletter",
       "copied": "Copied",
-      "copy": "Copy"
+      "copy": "Copy",
+      "subscribers_one": "{{count}} subscriber",
+      "subscribers_other": "{{count}} subscribers"
     },
     "voiceComparison": {
       "title": "Where it lands vs. the alternatives",
@@ -6007,7 +6093,8 @@
       "leadershipSuffix": "leadership.",
       "sizeWith": "size with",
       "forBestFit": "for best fit. Make sure",
-      "activeProducers": "3,400+ active producers"
+      "activeProducers": "3,400+ active producers",
+      "builtForProducers": "Built for {{partner}} producers"
     },
     "loanBroker": {
       "dashboard": "Loan broker dashboard",
@@ -6137,7 +6224,8 @@
       "transamerica": "Transamerica's internal tools (TransACT, their illustration platform) are theoretically more accessible to us through {{partner}}'s existing carrier relationship than they are to any random CRM vendor. If {{partner}}'s leadership has executive contacts inside Transamerica's tech relations team, they can request that CloseBoss AI be approved as an integration partner for {{partner}}-affiliated producers.",
       "verbatimAnswer": "“Yes — and the gating factor is vendor agreements, not code. We have a 3-phase plan: NIPR + iPipeline read-only in pilot Phase 2A, WinFlex illustration submission in 2B, and e-app in Phase 3. The Phase 2B and 3 work moves dramatically faster if {{partner}} introduces us to their Transamerica relationship — that's one of the things being a pilot partner actually gets you.”",
       "confidentialFor": "Confidential — prepared for {{partner}} leadership.",
-      "fnaChain": "The &quot;FNA → polished carrier illustration → kitchen-table presentation&quot; loop, end-to-end."
+      "fnaChain": "The &quot;FNA → polished carrier illustration → kitchen-table presentation&quot; loop, end-to-end.",
+      "printTipFull": "Printing: choose {{paper}} with {{margins}} and {{graphics}} to keep the colors."
     },
     "competitorComparison": {
       "brief": "Competitor comparison — optimized for print or save-as-PDF.",
@@ -6231,7 +6319,9 @@
       "confidentialFor": "Confidential — prepared for",
       "positioning": "Carrier portals handle policy admin. AgencyBloc handles back-office. Salesforce can be customized to almost anything with a year and a six-figure budget. Spreadsheets handle today. None of them were built around the MLM-financial-services flow: capture → 5-minute nurture → FNA in 60 seconds → kitchen-table sit → close → recruit. That cycle is the engine of {{partner}}&apos;s growth, and it&apos;s the cycle we built around.",
       "win2Body": "14 pre-approved templates, state-disclosure injection, supervised review queue.",
-      "win3Body": "6-stage MLM funnel + fit-scoring + sponsor attribution + downline view, first-class."
+      "win3Body": "6-stage MLM funnel + fit-scoring + sponsor attribution + downline view, first-class.",
+      "confidentialForLeadership": "Confidential — prepared for {{partner}} leadership.",
+      "printTipFull": "Printing: choose {{paper}} with {{margins}} and {{graphics}} to keep the colors."
     },
     "articles": {
       "backHome": "Back to Home"
@@ -7268,7 +7358,9 @@
       "saveToReports": "Save to Reports",
       "paywallMessage": "You’ve reached your limit. Upgrade to continue.",
       "paywallCta": "Upgrade Now",
-      "almostOutOfFreeReports": "⚠️ You’re almost out of free CMA reports"
+      "almostOutOfFreeReports": "⚠️ You’re almost out of free CMA reports",
+      "approxDays_one": "(≈{{count}} day)",
+      "approxDays_other": "(≈{{count}} days)"
     },
     "capRateMistakes": {
       "intro": "Cap rate is simple to calculate, but easy to misuse. Small mistakes in your assumptions can make a property look far better—or worse—than it really is. By understanding the most common errors investors make with cap rate, you can avoid costly missteps and use this metric the way professionals do.",
@@ -8037,7 +8129,8 @@
       "kvS7": "Optional: enable concierge migration (link below) and we'll do the import + sequence rebuild for you.",
       "kvQ0": "What if my brokerage controls my kvCORE access?",
       "kvA0": "Most brokerages allow agent-level data export on request. If your brokerage refuses, the agent's contact list is still legally the agent's — escalate to the broker / managing broker. As a fallback, you can rebuild your contact list from your email inbox and phone exports while we set up the new CRM.",
-      "wellMigrate": "We&apos;ll migrate for you →"
+      "wellMigrate": "We&apos;ll migrate for you →",
+      "migrationEyebrow": "CRM Migration · {{source}} → CloseBoss"
     },
     "switchFromPages": {
       "crmMigration": "CRM Migration",
@@ -8236,7 +8329,8 @@
       "errRefreshFailed": "Failed to refresh listing.",
       "errUnsupportedShort": "Unsupported URL.",
       "errRefreshData": "Failed to refresh data.",
-      "roiYear1Tip": "Approximate ROI including cash flow plus simple appreciation."
+      "roiYear1Tip": "Approximate ROI including cash flow plus simple appreciation.",
+      "priceBedsBathsSqft": "${{price}} • {{beds}} beds • {{baths}} baths • {{sqft}} sqft"
     },
     "compareRentVsBuy": {
       "intro": "Deciding whether to rent or buy is one of the biggest financial choices most people make. This guide shows you how to compare renting and owning side by side using realistic assumptions and the Rent vs Buy Calculator.",
@@ -8429,7 +8523,9 @@
       "medianTimeOnMarket": "Median time on market:",
       "currentDirection": "Current direction:",
       "oneYearTrend": "1-Year Trend",
-      "oneYearValueTrend": "1-year value trend:"
+      "oneYearValueTrend": "1-year value trend:",
+      "medianDaysOnMarket_one": "Median time on market: {{count}} day",
+      "medianDaysOnMarket_other": "Median time on market: {{count}} days"
     },
     "newsletterIssue": {
       "weeklyNewsletter": "Weekly Newsletter",
@@ -9075,13 +9171,17 @@
       "preparedByYourProducer": "Prepared by your producer"
     },
     "recruitPipeline": {
-      "search": "Search recruits…"
+      "search": "Search recruits…",
+      "viaYou": "via you",
+      "viaDownline": "via {{name}} (downline)"
     },
     "newsletter": {
       "fullData": "Full data →",
       "readSource": "Read source →",
       "subscribeOrBrowse": "Subscribe or browse past issues →",
-      "backToNewsletter": "Back to the newsletter →"
+      "backToNewsletter": "Back to the newsletter →",
+      "storyCount_one": "{{count}} story",
+      "storyCount_other": "{{count}} stories"
     },
     "offerExtend": {
       "openInCloseBoss": "Open offer in CloseBoss →",
@@ -9101,7 +9201,11 @@
       "result": "Result"
     },
     "platformOverview": {
-      "failedToLoadDashboard": "Failed to load dashboard"
+      "failedToLoadDashboard": "Failed to load dashboard",
+      "visitors_one": "{{n}} visitor",
+      "visitors_other": "{{n}} visitors",
+      "issues_one": "{{count}} issue",
+      "issues_other": "{{count}} issues"
     },
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "Analyze Listing",
@@ -9316,7 +9420,8 @@
       "manageBilling": "Manage billing",
       "viewPlans": "View plans",
       "createTeam": "Create team",
-      "generateInviteLink": "Generate invite link"
+      "generateInviteLink": "Generate invite link",
+      "inviteReady": "Invite for {{email}} ready"
     },
     "postcardScene": {
       "yourAgent": "Your agent"
@@ -9806,6 +9911,59 @@
         "idx_website": "IDX website",
         "past_client": "Past client"
       }
+    },
+    "founder": {
+      "windowDays_one": "Window: last {{n}} day",
+      "windowDays_other": "Window: last {{n}} days",
+      "subscribers_one": "{{count}} sub",
+      "subscribers_other": "{{count}} subs"
+    },
+    "leadRoutingAdmin": {
+      "agentCount_one": "{{count}} agent",
+      "agentCount_other": "{{count}} agents"
+    },
+    "blogPost": {
+      "readTime": "{{time}} read"
+    },
+    "fsDashboard": {
+      "recruits_one": "{{count}} recruit",
+      "recruits_other": "{{count}} recruits",
+      "daysInPipeline_one": "{{n}} day",
+      "daysInPipeline_other": "{{n}} days"
+    },
+    "loanBrokerDashboard": {
+      "borrowers_one": "{{count}} borrower",
+      "borrowers_other": "{{count}} borrowers"
+    },
+    "loanBrokerPipeline": {
+      "applications_one": "{{count}} application",
+      "applications_other": "{{count}} applications",
+      "termYears_one": "{{count}} year",
+      "termYears_other": "{{count}} years"
+    },
+    "resultPage": {
+      "views_one": "{{count}} view",
+      "views_other": "{{count}} views"
+    },
+    "draftsClient": {
+      "shownCount_one": "{{count}} shown",
+      "shownCount_other": "{{count}} shown",
+      "noDraftsOfStatus": "No {{status}} drafts."
+    },
+    "missedCallSettings": {
+      "callbackPlan_one": "call-back total ({{perDay}}/day × {{days}} days), {{interval}} minutes apart",
+      "callbackPlan_other": "call-backs total ({{perDay}}/day × {{days}} days), {{interval}} minutes apart"
+    },
+    "runScheduler": {
+      "showFirings_one": "Show {{count}} firing",
+      "showFirings_other": "Show {{count}} firings"
+    },
+    "aiSmsModal": {
+      "charsSegments_one": "{{chars}} chars · {{count}} segment",
+      "charsSegments_other": "{{chars}} chars · {{count}} segments"
+    },
+    "dailyActionPlan": {
+      "completedOf": "{{completed}} of {{total}} done"
     }
   },
   "disclaimers": {

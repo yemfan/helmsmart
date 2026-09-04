@@ -292,7 +292,8 @@ export default function HouseSearchClient() {
           {tracked ? (
             <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span>{t("pages.houseSearch.savedAs")}<strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
+                <span>{t("pages.houseSearch.savedAs")}<strong>{tracked.name}</strong>{" · "}
+              {t("pages.houseSearch.runCount", { count: tracked.runCount })}.
                   New searches &amp; refinements are added to its history.
                 </span>
                 <button
@@ -388,7 +389,7 @@ export default function HouseSearchClient() {
               <h2 className="text-sm font-semibold text-slate-900">
                 {result.listings.length} {result.listings.length === 1 ? "listing" : "listings"}
               </h2>
-              <span className="text-xs text-slate-500">{selected.size} selected</span>
+              <span className="text-xs text-slate-500">{t("pages.houseSearch.selectedCount", { count: selected.size })}</span>
             </header>
 
             {result.listings.length === 0 ? (
@@ -562,8 +563,10 @@ function SavedSearchesPanel({
                   {activeId === s.id ? " · open" : ""}
                 </p>
                 <p className="truncate text-xs text-slate-500">
-                  {s.runCount ?? 0} run{(s.runCount ?? 0) === 1 ? "" : "s"}
-                  {s.latestRun ? ` · ${s.latestRun.listingCount} listings` : ""}
+                  {t("pages.houseSearch.runCount", { count: s.runCount ?? 0 })}
+                  {s.latestRun
+                    ? ` · ${t("pages.houseSearch.listingsSuffix", { count: s.latestRun.listingCount })}`
+                    : ""}
                 </p>
               </div>
               <button
@@ -796,7 +799,7 @@ function EmailToBuyer({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.email")} {selectedListings.length} listing{selectedListings.length === 1 ? "" : "s"} {t("pages.dashFragments.toBuyer")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.houseSearch.emailListingsToBuyer", { count: selectedListings.length })}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}

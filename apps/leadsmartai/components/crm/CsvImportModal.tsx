@@ -136,7 +136,7 @@ export function CsvImportModal({
               <div className="rounded-xl bg-green-50 border border-green-200 p-4">
                 <p className="text-sm font-semibold text-green-800">{t("pages.csvImport.started")}</p>
                 <p className="text-sm text-green-700 mt-1">
-                  {result.rowCount} contact{result.rowCount !== 1 ? "s" : ""} {t("pages.dashFragments.beingProcessed")}</p>
+                  {t("pages.csvImport.contactsBeingProcessed", { count: result.rowCount })}</p>
                 <p className="text-xs text-green-600 mt-2">{t("pages.dashFragments.detectedColumns")} {result.headers.join(", ")}
                 </p>
               </div>

@@ -411,7 +411,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs leading-relaxed"
           />
           <p className="mt-1 text-[11px] text-slate-500">
-            {text.length.toLocaleString()} / {MAX_INPUT_CHARS.toLocaleString()} characters
+            {t("pages.uploadOffer.charCount", { used: text.length.toLocaleString(), max: MAX_INPUT_CHARS.toLocaleString() })}
           </p>
         </div>
 

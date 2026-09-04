@@ -497,7 +497,7 @@ export default function OnboardingFunnel({
             <div className="flex items-center justify-between gap-2">
               <h1 className="font-heading text-xl font-bold sm:text-2xl">{t("pages.onboardingFunnel.newLeads")}</h1>
               <span className="rounded-full bg-rose-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-200">
-                {demoLeads.length} waiting
+                {t("pages.onboardingFunnel.waitingCount", { count: demoLeads.length })}
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-400">{t("pages.onboardingFunnel.tapToRespond")}</p>

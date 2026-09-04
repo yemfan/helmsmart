@@ -560,19 +560,19 @@ function SmartCmaBuilderPageInner() {
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.aggressive)}
                 </span>{" "}
-                (≈{data.strategies.daysOnMarket.aggressive} days)
+                {t("pages.smartCmaBuilder.approxDays", { count: data.strategies.daysOnMarket.aggressive })}
               </p>
               <p className="text-xs text-gray-700">{t("pages.smartCmaBuilder.market")}{" "}
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.market)}
                 </span>{" "}
-                (≈{data.strategies.daysOnMarket.market} days)
+                {t("pages.smartCmaBuilder.approxDays", { count: data.strategies.daysOnMarket.market })}
               </p>
               <p className="text-xs text-gray-700">{t("pages.smartCmaBuilder.premium")}{" "}
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.premium)}
                 </span>{" "}
-                (≈{data.strategies.daysOnMarket.premium} days)
+                {t("pages.smartCmaBuilder.approxDays", { count: data.strategies.daysOnMarket.premium })}
               </p>
             </div>
           </div>

@@ -158,7 +158,7 @@ export default async function CallYourSpherePost() {
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
             <span className="inline-flex items-center rounded-full bg-blue-600/10 px-2.5 py-1 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">{t("pages.callYourSphere.category", { ns: "dashboard" })}</span>
             <span className="text-slate-500 dark:text-slate-400">
-              {post?.readTime ?? "5 min"} read
+              {t("pages.blogPost.readTime", { time: post?.readTime ?? "5 min", ns: "dashboard" })}
             </span>
           </div>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl dark:text-white">

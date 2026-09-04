@@ -58,7 +58,7 @@ export default async function SharedResultPage({ params }: Props) {
               <p className="text-slate-500">{t("pages.dashFragments.noStructuredFields", { ns: "dashboard" })}</p>
             )}
           </dl>
-          <p className="text-[11px] text-slate-400 mt-4">{row.view_count} views</p>
+          <p className="text-[11px] text-slate-400 mt-4">{t("pages.resultPage.views", { count: row.view_count, ns: "dashboard" })}</p>
         </section>
 
         <ProgressiveLeadCapture headline="Talk to an agent about these numbers" />

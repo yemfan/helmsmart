@@ -295,8 +295,11 @@ export default function CarrierIntegrationClient() {
         </footer>
       </article>
 
-      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.carrierIntegration.printTip")}<strong>{t("pages.carrierIntegration.letter")}</strong> with{" "}
-        <strong>{t("pages.carrierIntegration.defaultMargins")}</strong> and <strong>{t("pages.carrierIntegration.backgroundGraphics")}</strong>{t("pages.carrierIntegration.keepColors")}</div>
+      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.carrierIntegration.printTipFull", {
+          paper: t("pages.carrierIntegration.letter"),
+          margins: t("pages.carrierIntegration.defaultMargins"),
+          graphics: t("pages.carrierIntegration.backgroundGraphics"),
+        })}</div>
     </>
   );
 }

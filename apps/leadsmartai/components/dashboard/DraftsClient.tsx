@@ -90,7 +90,7 @@ export default function DraftsClient() {
               </button>
             ))}
           </div>
-          <span className="text-[11px] text-gray-400">{drafts.length} shown</span>
+          <span className="text-[11px] text-gray-400">{t("pages.draftsClient.shownCount", { count: drafts.length })}</span>
         </div>
         <div className="max-h-[75vh] overflow-y-auto">
           {loading ? (
@@ -145,7 +145,7 @@ function EmptyState({ filter }: { filter: DraftStatus | "all" }) {
   }
   return (
     <div className="p-8 text-center text-sm text-gray-500">
-      No {STATUS_LABELS[filter].toLowerCase()} drafts.
+      {t("pages.draftsClient.noDraftsOfStatus", { status: t(`pages.draftsClient.status.${filter}`).toLowerCase() })}
     </div>
   );
 }

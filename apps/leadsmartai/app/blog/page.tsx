@@ -130,7 +130,7 @@ async function FeaturedCard({ post, locale }: { post: BlogPost; locale: string }
                 •
               </span>
               <span className="text-slate-500 dark:text-slate-400">
-                {post.readTime} read
+                {t("pages.blogPost.readTime", { time: post.readTime, ns: "dashboard" })}
               </span>
             </div>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 group-hover:text-blue-700 md:text-3xl dark:text-white dark:group-hover:text-blue-300">

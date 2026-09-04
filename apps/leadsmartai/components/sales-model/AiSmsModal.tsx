@@ -636,6 +636,8 @@ function Bubble({ m }: { m: SmsMessage }) {
 }
 
 function CharCounter({ value }: { value: string }) {
+  // Its own hook: a sub-component inherits no translator from its parent.
+  const { t } = useTranslation("dashboard");
   const len = value.length;
   // Twilio segments at 160 chars (GSM-7) — once we cross that, the
   // SMS turns into multiple messages and the agent should know.
@@ -643,7 +645,7 @@ function CharCounter({ value }: { value: string }) {
   const tone = segments > 2 ? "text-amber-600" : segments > 1 ? "text-slate-600" : "text-slate-400";
   return (
     <span className={`text-[11px] tabular-nums ${tone}`}>
-      {len} chars · {segments} segment{segments > 1 ? "s" : ""}
+      {t("pages.aiSmsModal.charsSegments", { count: segments, chars: len })}
     </span>
   );
 }

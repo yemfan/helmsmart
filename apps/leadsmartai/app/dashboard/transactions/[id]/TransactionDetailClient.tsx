@@ -240,7 +240,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
             </div>
             {totals.overdue > 0 ? (
               <div className="mt-0.5 text-[11px] font-medium text-red-600">
-                {totals.overdue} overdue
+                {t("pages.transactionDetail.overdueCount", { count: totals.overdue })}
               </div>
             ) : null}
           </div>
@@ -495,7 +495,7 @@ function StageBlock({
               ) : null}
             </span>
             <span className="block text-[11px] text-slate-500">
-              {stageCompleted}/{tasks.length} complete
+              {tr("pages.transactionDetail.stageComplete", { done: stageCompleted, total: tasks.length })}
             </span>
           </span>
         </span>

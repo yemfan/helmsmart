@@ -224,7 +224,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                   <div>
                     <dt className="text-slate-500">{t("pages.comparisonReportView.size")}</dt>
                     <dd className="font-medium text-slate-900">
-                      {p.sqft.toLocaleString()} sqft · {p.beds} bd / {p.baths} ba
+                      {t("pages.comparisonReport.sqftBedBath", { sqft: p.sqft.toLocaleString(), beds: p.beds, baths: p.baths })}
                     </dd>
                   </div>
                   <div>

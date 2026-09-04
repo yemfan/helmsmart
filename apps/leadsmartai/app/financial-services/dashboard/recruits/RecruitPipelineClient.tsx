@@ -165,7 +165,9 @@ export default function RecruitPipelineClient() {
                       <div>
                         <p className="text-sm font-semibold text-slate-900">{r.name}</p>
                         <p className="mt-0.5 text-xs text-slate-500">
-                          via {r.referredBy === "You" ? "you" : `${r.referredBy} (downline)`}
+                          {r.referredBy === "You"
+                    ? t("pages.recruitPipeline.viaYou")
+                    : t("pages.recruitPipeline.viaDownline", { name: r.referredBy })}
                         </p>
                       </div>
                       <FitChip score={r.fitScore} />

@@ -119,8 +119,8 @@ export default function SupportDashboardClient() {
                 <li key={w.agent} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2.5">
                   <span className="text-sm font-semibold text-slate-900">{w.agent}</span>
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="text-slate-600">{w.open} open</span>
-                    <span className="rounded-full bg-rose-50 px-2 py-0.5 font-semibold text-rose-800 ring-1 ring-rose-100">{w.urgent} urgent</span>
+                    <span className="text-slate-600">{t("pages.supportDashboard.openCount", { count: w.open })}</span>
+                    <span className="rounded-full bg-rose-50 px-2 py-0.5 font-semibold text-rose-800 ring-1 ring-rose-100">{t("pages.supportDashboard.urgentCount", { count: w.urgent })}</span>
                   </div>
                 </li>
               ))}

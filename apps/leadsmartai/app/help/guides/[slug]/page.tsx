@@ -119,7 +119,7 @@ export default async function HelpGuidePage({
 
         <header>
           <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-600">
-            {guide.readTime} read
+            {t("pages.blogPost.readTime", { time: guide.readTime, ns: "dashboard" })}
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
             {guide.title}

@@ -503,8 +503,12 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
                 {property.address}
               </h2>
               <p className="text-sm text-gray-700 mb-1">
-                ${property.price.toLocaleString()} • {property.beds} beds •{" "}
-                {property.baths} baths • {property.sqft.toLocaleString()} sqft
+                {t("pages.linkAnalyzer.priceBedsBathsSqft", {
+                  price: property.price.toLocaleString(),
+                  beds: property.beds,
+                  baths: property.baths,
+                  sqft: property.sqft.toLocaleString(),
+                })}
               </p>
               <p className="text-xs text-gray-500">
                 {property.propertyType}

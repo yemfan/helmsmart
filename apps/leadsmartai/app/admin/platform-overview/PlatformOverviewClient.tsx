@@ -188,7 +188,7 @@ export function PlatformOverviewClient() {
                 {data.propertyTools.topPages.map((page) => (
                   <div key={page.page} className="flex items-center justify-between rounded-xl border p-4">
                     <div className="font-medium text-gray-900">{page.page}</div>
-                    <div className="text-sm text-gray-500">{page.visitors.toLocaleString()} visitors</div>
+                    <div className="text-sm text-gray-500">{t("pages.platformOverview.visitors", { count: page.visitors, n: page.visitors.toLocaleString() })}</div>
                   </div>
                 ))}
               </div>
@@ -266,7 +266,7 @@ export function PlatformOverviewClient() {
                 data.support.categories.map((item) => (
                   <div key={item.label} className="flex items-center justify-between rounded-xl border p-4">
                     <div className="font-medium text-gray-900">{item.label}</div>
-                    <div className="text-sm text-gray-500">{item.count} issues</div>
+                    <div className="text-sm text-gray-500">{t("pages.platformOverview.issues", { count: item.count })}</div>
                   </div>
                 ))
               )}

@@ -128,7 +128,7 @@ function CallRow({ entry }: { entry: VoiceCallEntry }) {
         className="shrink-0 text-[10px] tabular-nums text-slate-400"
         title={`${entry.transitionCount} status transitions for this call`}
       >
-        {entry.transitionCount} steps
+        {t("pages.voiceCallTimeline.stepCount", { count: entry.transitionCount })}
       </div>
     </div>
   );

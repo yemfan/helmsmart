@@ -114,7 +114,7 @@ export default function RunSchedulerButton() {
 
           {result.firings.length > 0 && (
             <details open={expanded} onToggle={(e) => setExpanded(e.currentTarget.open)}>
-              <summary className="cursor-pointer text-xs text-gray-600">{t("pages.dashFragments.show")} {result.firings.length} firings
+              <summary className="cursor-pointer text-xs text-gray-600">{t("pages.runScheduler.showFirings", { count: result.firings.length })}
               </summary>
               <div className="mt-2 max-h-80 overflow-auto rounded-lg border border-gray-200">
                 <table className="w-full text-[11px]">

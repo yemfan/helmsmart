@@ -77,7 +77,7 @@ export function DailyActionPlan({ model }: { model: SalesModel }) {
         <div className="min-w-0 flex-1">
           <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.actionPlan")}</h2>
           <p className="mt-0.5 text-xs text-slate-500 tabular-nums">
-            {completed} of {total} done
+            {t("pages.dailyActionPlan.completedOf", { completed, total })}
             {total > 0 ? ` · ${Math.round((completed / total) * 100)}%` : ""}
           </p>
         </div>

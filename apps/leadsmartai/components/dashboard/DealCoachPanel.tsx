@@ -291,7 +291,7 @@ export default function DealCoachPanel() {
                       <div className="text-sm font-semibold text-slate-900">{a.title}</div>
                       <p className="mt-0.5 text-xs leading-relaxed text-slate-600">{a.rationale}</p>
                       <div className="mt-1 text-[11px] text-slate-400">
-                        ~{a.estimatedMinutes} min
+                        {t("pages.dealCoach.approxMinutes", { count: a.estimatedMinutes })}
                       </div>
                     </div>
                   </li>
