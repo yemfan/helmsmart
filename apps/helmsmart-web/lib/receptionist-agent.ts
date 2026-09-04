@@ -65,12 +65,27 @@ export async function loadReceptionistContext(db: ServiceClient, orgId: string):
   const displayName = (org?.voice_agent_business_name as string)?.trim() || (org?.name as string) || "this business";
   const displayNameZh = (org?.voice_agent_business_name_zh as string)?.trim() || displayName;
 
-  // Deliver the opening greeting in English first, then a standard Chinese greeting,
-  // so bilingual callers are welcomed in both languages. The English half is the
-  // org's own "Opening greeting" (unchanged); {{business_name_zh}} resolves to the
-  // Chinese business name when one is defined, otherwise the English display name.
-  const englishGreeting = (org?.voice_agent_greeting as string)?.trim() || "Hello! Thank you for calling. How can I help you today?";
-  const greeting = `${englishGreeting} 您好，感谢致电{{business_name_zh}}，请问有什么可以帮您？`;
+  /*
+   * ONE greeting, in ONE language — the caller's.
+   *
+   * This used to append a fixed Chinese sentence to the org's greeting, so the
+   * template read "…How can I help you today? 您好，感谢致电Ken，请问有什么可以帮您？"
+   * and every caller got both halves. That fought the prompt rather than helped
+   * it. The spoken opening is already OPENING_HELLO — "Hello, 您好, Hola", a
+   * hello in each language and nothing more — and the prompt then says: note
+   * which language they answered in, and deliver THIS greeting translated into
+   * that language, "never mix two languages in one sentence".
+   *
+   * Handing it a pre-mixed bilingual string made that instruction unfollowable:
+   * the agent could either read the Chinese to an English speaker or drop half
+   * the text it was told to say. An English caller now hears the greeting in
+   * English, a Chinese caller hears it in Chinese, and neither hears both.
+   *
+   * The Chinese business name still reaches the agent as orgNameZh, which the
+   * prompt uses when it is speaking Chinese — so 感谢致电<中文名> still comes out
+   * right without being nailed into the template here.
+   */
+  const greeting = (org?.voice_agent_greeting as string)?.trim() || "Hello! Thank you for calling. How can I help you today?";
 
   return {
     orgId,
