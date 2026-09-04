@@ -359,29 +359,66 @@ export async function notifyBooking(
   // the send doesn't need one, and the receptionist may well be answering on a
   // voice-only number.
   const sender = twilioSender(org.twilioNumber);
-  if (sender && booked.bookedLabel && callerNumber) {
+  if (!sender || !booked.bookedLabel) return;
+
+  const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
+
+  /** Send one SMS and record it, without letting a failure end the booking. */
+  const send = async (to: string, body: string, clientId: string | null) => {
     try {
-      const link = booked.rescheduleToken ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/reschedule/${booked.rescheduleToken}` : "";
-      const body =
-        `You're confirmed for ${booked.bookedLabel}. See you then! — ${org.orgName}` +
-        `\nReply CANCEL to cancel${link ? ` · reschedule: ${link}` : ""}.`;
-      const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-      const sms = await client.messages.create({ ...sender, to: callerNumber, body });
-      const clientId = await matchOrCreateClient(org.orgId, callerNumber);
+      const sms = await client.messages.create({ ...sender, to, body });
       await db.from("messages").insert({
         organization_id: org.orgId,
         client_id: clientId,
         channel: "sms",
         direction: "outbound",
         from_address: org.twilioNumber ?? "messaging-service",
-        to_address: callerNumber,
+        to_address: to,
         body,
         read: true,
         external_id: sms.sid,
         sent_at: new Date().toISOString(),
       });
     } catch (e) {
-      console.error("[receptionist] confirmation SMS error:", e);
+      console.error("[receptionist] booking SMS error:", to, e);
     }
+  };
+
+  // ── The caller ──
+  if (callerNumber) {
+    const link = booked.rescheduleToken ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/reschedule/${booked.rescheduleToken}` : "";
+    // Give them a phone number, not only a link and a keyword. "Reply CANCEL"
+    // fails silently for anyone who deletes the text, and a reschedule link is
+    // useless to a caller who is driving. The number they just rang is the one
+    // they will think to ring again, and the receptionist can look the
+    // appointment up and move it.
+    const callBack = org.twilioNumber ? ` or call ${displayPhone(org.twilioNumber)}` : "";
+    const body =
+      `You're confirmed for ${booked.bookedLabel}. See you then! — ${org.orgName}` +
+      `\nTo reschedule or cancel, reply CANCEL${link ? `, use ${link}` : ""}${callBack}.`;
+    await send(callerNumber, body, await matchOrCreateClient(org.orgId, callerNumber));
   }
+
+  // ── The business ──
+  // The in-app notification above is only seen by someone looking at the app.
+  // An owner on a roof learned about an 11am appointment by arriving at 11am.
+  const { data: orgRow } = await db
+    .from("organizations")
+    .select("booking_alert_phone")
+    .eq("id", org.orgId)
+    .maybeSingle();
+  const alertTo = ((orgRow as { booking_alert_phone?: string | null } | null)?.booking_alert_phone ?? "").trim();
+  if (alertTo) {
+    const who = callerNumber ? ` Caller: ${displayPhone(callerNumber)}.` : "";
+    // client_id null on purpose: this is a message to the business about a
+    // client, not a message to that client. Threading it under the caller
+    // would put the owner's own alert in the caller's conversation.
+    await send(alertTo, `New appointment booked by your AI receptionist: ${booked.bookedLabel}.${who}`, null);
+  }
+}
+
+/** `+16268888685` → `(626) 888-8685`. For reading, not for TTS — see formatPhoneForSpeech. */
+function displayPhone(raw: string): string {
+  const d = raw.replace(/\D/g, "").slice(-10);
+  return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : raw;
 }

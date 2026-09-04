@@ -50,6 +50,27 @@ export async function VoiceAgentSettingsSection() {
   const serviceDb = await createServiceClient();
   const sharing = await describeNumberSharing(serviceDb, orgId);
 
+  /*
+   * Read on its own, deliberately.
+   *
+   * PostgREST fails the WHOLE select when one column is missing, so folding
+   * booking_alert_phone into the query above would blank every voice setting on
+   * this page in any environment where the migration has not run yet. This
+   * codebase has already paid for that lesson: asking contacts for a "type"
+   * column it does not have returned 42703 and silently emptied the caller
+   * memory the receptionist was reading — see the note in known-caller.ts.
+   */
+  let bookingAlertPhone = "";
+  {
+    const { data, error } = await supabase
+      .from("organizations")
+      .select("booking_alert_phone")
+      .eq("id", orgId)
+      .maybeSingle();
+    if (error) console.warn("[settings] booking_alert_phone unavailable:", error.message);
+    bookingAlertPhone = (data as { booking_alert_phone?: string | null } | null)?.booking_alert_phone ?? "";
+  }
+
   const googleConfigured = isGoogleCalendarConfigured();
   const [googleConnected, googleEmail] = googleConfigured
     ? await Promise.all([isGoogleCalendarConnected(orgId), getConnectedGoogleAccount(orgId)])
@@ -92,6 +113,7 @@ export async function VoiceAgentSettingsSection() {
         twilioNumber={org?.twilio_number ?? null}
         sharedWith={sharing.sharedWith}
         answersThisOrg={sharing.answersThisOrg}
+        bookingAlertPhone={bookingAlertPhone}
       />
 
       <ReceptionistConfig

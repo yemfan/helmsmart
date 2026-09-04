@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
@@ -397,19 +398,42 @@ export async function saveVoiceSettings(data: {
   businessName: string;
   greeting: string;
   prompt: string;
+  bookingAlertPhone?: string;
 }) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
   if (!orgId) throw new Error("No org");
 
+  // Store the alert number in E.164, because that is what Twilio is handed. A
+  // number typed as "(626) 888-8685" would be accepted here and then fail at
+  // send time, in a best-effort path that swallows the error — so the owner
+  // would believe they had turned booking alerts on. Blank clears it.
+  const rawAlert = (data.bookingAlertPhone ?? "").trim();
+  let bookingAlertPhone: string | null = null;
+  if (rawAlert) {
+    const parsed = normalizePhoneE164(rawAlert);
+    if (!parsed.ok) throw new Error("That doesn't look like a phone number we can text.");
+    bookingAlertPhone = parsed.value;
+  }
+
   const supabase = await createClient();
-  await supabase.from("organizations").update({
+  const { data: rows, error } = await supabase.from("organizations").update({
     voice_agent_enabled: data.enabled,
     voice_agent_name: data.agentName.trim(),
     voice_agent_business_name: data.businessName.trim(),
     voice_agent_greeting: data.greeting,
     voice_agent_prompt: data.prompt,
-  }).eq("id", orgId);
+    booking_alert_phone: bookingAlertPhone,
+  }).eq("id", orgId).select("id");
+
+  // Through the RLS-enforced client a refused update is not an error: it
+  // matches zero rows and reports success. Without asking for the rows back,
+  // "saved nothing" and "saved" are the same value.
+  if (error) throw new Error(error.message);
+  if (!rows || rows.length === 0) {
+    throw new Error("Couldn't save — you may not have permission for this organization.");
+  }
 
   revalidatePath("/voice");
+  revalidatePath("/settings");
 }
