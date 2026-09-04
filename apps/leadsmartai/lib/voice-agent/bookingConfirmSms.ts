@@ -29,6 +29,8 @@ export async function confirmBookingToCaller(input: {
   /** Fallback label if the timestamp can't be re-rendered. */
   label: string;
   contactId?: string | null;
+  /** Capability token for the public reschedule page. Omitted → no link. */
+  rescheduleToken?: string;
 }): Promise<void> {
   try {
     const digits = (input.toPhone || "").replace(/\D/g, "");
@@ -76,9 +78,23 @@ export async function confirmBookingToCaller(input: {
 
     // Opt-out language on every message: the caller phoned us, so this is
     // solicited, but it is still an automated text.
+    /*
+     * A link, not just "call us back".
+     *
+     * "Call us back if you need to change it" / "如需改期请回电" means the only
+     * way to move an appointment was to ring during business hours — the exact
+     * friction the AI receptionist exists to remove, reintroduced at the last
+     * step. A tappable link lets the caller move it at 11pm.
+     *
+     * Only included when a token exists, so an appointment booked before this
+     * shipped still gets a sensible message rather than a link to nowhere.
+     */
+    const base = (process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/+$/, "");
+    const link = input.rescheduleToken && base ? `${base}/reschedule/${input.rescheduleToken}` : "";
+
     const message = zh
-      ? `${brand ? `${brand}：` : ""}您的预约已确认，时间是${when}。如需改期请回电。回复 STOP 退订。`
-      : `Your appointment with ${brand || "us"} is confirmed for ${when}. Call us back if you need to change it. Reply STOP to opt out.`;
+      ? `${brand ? `${brand}：` : ""}您的预约已确认，时间是${when}。${link ? `如需改期请点击 ${link}` : "如需改期请回电"}。回复 STOP 退订。`
+      : `Your appointment with ${brand || "us"} is confirmed for ${when}. ${link ? `To reschedule: ${link}` : "Call us back if you need to change it."} Reply STOP to opt out.`;
 
     await sendSMS(to, message, input.contactId ?? undefined);
   } catch (e) {

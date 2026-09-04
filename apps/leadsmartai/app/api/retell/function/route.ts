@@ -70,7 +70,14 @@ export async function POST(req: NextRequest) {
             callerPhone: fromNumber,
             contactId,
           }),
-          confirmBookingToCaller({ agentId, toPhone: fromNumber, startISO, label, contactId }),
+          confirmBookingToCaller({
+            agentId,
+            toPhone: fromNumber,
+            startISO,
+            label,
+            contactId,
+            rescheduleToken: out.bookedRescheduleToken,
+          }),
         ]);
       });
     }
