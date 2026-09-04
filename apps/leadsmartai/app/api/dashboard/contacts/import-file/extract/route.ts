@@ -9,6 +9,7 @@ import { getDashboardAgentContext } from "@/lib/contact-intake/dashboardAgentCon
 import { findBestDuplicateMatchForAgent } from "@/lib/contact-intake/findDuplicateCandidates";
 import { toLeadLike } from "@/lib/contact-intake/leadLike";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 export const runtime = "nodejs";
 // Claude PDF / vision calls are slow on big inputs — give the function
@@ -136,7 +137,7 @@ export async function POST(req: Request) {
     if (mime === "application/pdf" || ext === "pdf") {
       sourceKind = "pdf";
       const bytes = new Uint8Array(await file.arrayBuffer());
-      contacts = await aiExtractContacts({ kind: "pdf", bytes });
+      contacts = await aiExtractContacts({ kind: "pdf", bytes }, await agentUiLocale(String(auth.agentId)));
     } else if (mime.startsWith("image/") || isImageExt(ext)) {
       const mediaType = asImageMediaType(mime) ?? imageMediaTypeFromExt(ext);
       if (!mediaType) {
@@ -151,7 +152,7 @@ export async function POST(req: Request) {
       }
       sourceKind = "image";
       const bytes = new Uint8Array(await file.arrayBuffer());
-      contacts = await aiExtractContacts({ kind: "image", bytes, mediaType });
+      contacts = await aiExtractContacts({ kind: "image", bytes, mediaType }, await agentUiLocale(String(auth.agentId)));
     } else if (mime.startsWith("text/") || isTextExt(ext)) {
       sourceKind = "text";
       const text = await file.text();

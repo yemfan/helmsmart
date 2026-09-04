@@ -112,3 +112,34 @@ Write ${agent} in ${name}: that is you talking to the realtor.
 Leave ${recipient} in the language of the message it belongs to. That text is sent to a CONTACT under the realtor's name, so translating it because the dashboard is in ${name} would deliver a message the recipient cannot read.
 Keep every key, and every fixed enum value the schema lists, exactly as specified in English.`;
 }
+
+/**
+ * For an EXTRACTOR: most of what it returns was lifted from a document.
+ *
+ * These prompts pull structured facts out of a PDF or an email — an address,
+ * a purchase price, buyer names, a requested date. Those values are data, and
+ * translating one corrupts it: a contract's `propertyAddress` rendered into
+ * Chinese no longer matches the property, and `buyerNames` no longer matches
+ * the people.
+ *
+ * But the same responses also carry a little prose written FOR the agent —
+ * `warnings` ("ambiguous date — 'next week' was used") and `notes`
+ * ("free-form context the agent should know"). Those are rendered straight
+ * onto the dashboard beside a translated label, so they are copy, and they
+ * were the only English left in an otherwise structured payload.
+ *
+ * So this names the prose and defends everything else, which is the opposite
+ * emphasis from the other three helpers.
+ */
+export function languageDirectiveForExtraction(
+  locale: string | null | undefined,
+  proseFields: string[],
+): string {
+  const name = LANGUAGE_NAMES[locale ?? ""];
+  if (!name) return "";
+  const prose = proseFields.map((f) => `"${f}"`).join(" and ");
+  return `
+
+Language — the realtor reads ${name}. Write ${prose} in ${name}: those are your own words to them.
+Everything else in the response is DATA you extracted from the document. Reproduce it exactly as it appears there — names, addresses, cities, dates, amounts and identifiers are never translated, transliterated or reformatted, whatever language the document is in. Keep every key exactly as the schema specifies.`;
+}

@@ -3,6 +3,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { extractContract, extractListingAgreement } from "@/lib/transactions/extractContract";
 import { isAnthropicConfigured } from "@/lib/anthropic";
 import { resolveUpload } from "@/lib/uploads/storageUpload";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 export const runtime = "nodejs";
 // PDF extraction can take 15-40s for complex contracts. Default 10s timeout
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
     const extraction =
       kind === "listing"
         ? await extractListingAgreement(src.bytes)
-        : await extractContract(src.bytes);
+        : await extractContract(src.bytes, await agentUiLocale(String(agentId)));
     await src.cleanup();
 
     return NextResponse.json({ ok: true, kind, extraction });

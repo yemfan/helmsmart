@@ -4,6 +4,7 @@ import {
   LANGUAGE_NAMES,
   languageDirective,
   languageDirectiveForJson,
+  languageDirectiveForExtraction,
   languageDirectiveForMixedJson,
 } from "../languageDirective";
 
@@ -147,5 +148,52 @@ describe("languageDirectiveForMixedJson", () => {
 
   it("is deterministic, so the cached prefix survives", () => {
     expect(mixed("zh-Hans")).toBe(mixed("zh-Hans"));
+  });
+});
+
+describe("languageDirectiveForExtraction", () => {
+  /**
+   * An extractor's response is mostly DATA pulled out of a document — an
+   * address, a purchase price, buyer names. Translating one corrupts the
+   * record: a `propertyAddress` rendered into Chinese no longer matches the
+   * property, and `buyerNames` no longer matches the people.
+   *
+   * The same response also carries a little prose written for the agent —
+   * `warnings` ("ambiguous date — 'next week' was used") and `notes` — which
+   * render straight onto the dashboard beside a translated label. Those were
+   * the only English left in an otherwise structured payload.
+   *
+   * So this helper's emphasis is the opposite of the others: it names the
+   * prose and defends everything else, and the defending half is what these
+   * cases pin.
+   */
+  const ex = (loc: string | null) => languageDirectiveForExtraction(loc, ["notes", "warnings"]);
+
+  it("says nothing for English", () => {
+    expect(ex("en")).toBe("");
+    expect(ex(null)).toBe("");
+  });
+
+  it("names the prose fields it may translate", () => {
+    expect(ex("zh-Hans")).toContain('"notes"');
+    expect(ex("zh-Hans")).toContain('"warnings"');
+  });
+
+  it("forbids touching the extracted data, by category", () => {
+    const d = ex("zh-Hans");
+    // Named individually, because "everything else" alone invites a model to
+    // decide an address is prose.
+    for (const kind of ["names", "addresses", "dates", "amounts"]) {
+      expect(d, kind).toContain(kind);
+    }
+    expect(d).toMatch(/never translated, transliterated or reformatted/i);
+  });
+
+  it("holds even when the document is in another language", () => {
+    expect(ex("zh-Hans")).toMatch(/whatever language the document is in/i);
+  });
+
+  it("is deterministic", () => {
+    expect(ex("zh-Hans")).toBe(ex("zh-Hans"));
   });
 });

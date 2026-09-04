@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { aiExtractContacts, type AiExtractInput, type ImageMediaType } from "@/lib/contact-intake/aiExtractContacts";
 import { runContactIngestion } from "@/lib/contact-intake/ingestionPipeline";
 import { defineTool } from "../types";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /** Fold company/title/notes into the single contacts.notes column (mirrors the
  *  import-file/save route). */
@@ -71,7 +72,7 @@ export const importContactsFromFile = defineTool({
 
     let drafts;
     try {
-      drafts = await aiExtractContacts(extractInput);
+      drafts = await aiExtractContacts(extractInput, await agentUiLocale(ctx.agentId));
     } catch (e) {
       return { status: "failed", error: `I couldn't read contacts from that file: ${e instanceof Error ? e.message : "extraction failed"}.` };
     }

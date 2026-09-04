@@ -1,5 +1,6 @@
 import "server-only";
 import { getAnthropicClient } from "@/lib/anthropic";
+import { languageDirectiveForExtraction } from "@/lib/i18n/languageDirective";
 
 /**
  * Showing-request extractor (Phase 2B-2).
@@ -85,9 +86,14 @@ ${text.slice(0, 8000)}
 
 ${SCHEMA_DESCRIPTION}`;
 
+/**
+ * @param locale The realtor's language. Governs `notes` and `warnings` only —
+ *   every other field was lifted out of the email and must stay verbatim.
+ */
 export async function extractShowingRequest(input: {
   subject: string | null;
   text: string;
+  locale?: string | null;
 }): Promise<ShowingRequestExtraction> {
   const client = getAnthropicClient();
 
@@ -98,7 +104,9 @@ export async function extractShowingRequest(input: {
   const response = await client.messages.create({
     model: "claude-haiku-4-5",
     max_tokens: 1024,
-    system: SYSTEM_PROMPT,
+    system:
+      SYSTEM_PROMPT +
+      languageDirectiveForExtraction(input.locale, ["notes", "warnings"]),
     messages: [
       { role: "user", content: USER_INSTRUCTION(input.subject, input.text) },
     ],
