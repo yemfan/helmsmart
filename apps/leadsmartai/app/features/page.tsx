@@ -206,8 +206,16 @@ export default async function FeaturesPage() {
               {tf("hero.cta_primary")}
               <ArrowRight size={18} aria-hidden />
             </Link>
+            {/*
+              "Hear it answer a call" has to actually let you hear it answer a
+              call. This pointed at /contact — a lead form — so the one CTA on
+              the page that offers proof instead of a claim delivered neither.
+              /voice-ai-test-drive is the live demo the label describes: it
+              rings your phone with the AI, no signup. It existed the whole
+              time, linked from two blog posts and nothing else.
+            */}
             <Link
-              href="/contact"
+              href="/voice-ai-test-drive"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               {tf("hero.cta_secondary")}
