@@ -77,7 +77,7 @@ function Shell({
       <div className="relative mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8 sm:max-w-xl sm:px-6 sm:py-12">
         <header className="mb-6 flex items-center justify-between gap-3 onboarding-fade-up">
           <Link href="/" className="flex items-center opacity-90 transition hover:opacity-100">
-            {/* tone="dark" means "drawn for a dark background" — it paints the
+            {/* The dark tone means "drawn FOR a dark background": it paints the
                 wordmark white, which on this page is an invisible logo. */}
             <CloseBossLogo compact tone="light" className="max-w-[240px]" />
           </Link>
