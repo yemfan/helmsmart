@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { summarizeOffers, type OfferForSummary } from "@/lib/listing-offers/compareSummary";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     }
     const listPrice = typeof body.listPrice === "number" ? body.listPrice : null;
 
-    const summary = await summarizeOffers({ listPrice, offers });
+    const summary = await summarizeOffers({ listPrice, offers, locale: await getServerLocale() });
     return NextResponse.json({ ok: true, summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";

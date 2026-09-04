@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient } from "@/lib/anthropic";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 import type { DealReview, DealReviewSnapshot } from "./types";
 
 /**
@@ -42,14 +43,20 @@ Schema (return JSON ONLY, no prose, no fences):
 
 At least one of whatWentWell + whereItStalled should be populated — the review is pointless if both are empty.`;
 
+/**
+ * @param locale The language the AGENT reads, from `agentUiLocale()`. This
+ *   debrief is written for them and nobody else, so it follows their UI
+ *   language. Null means English, which the base prompt already is.
+ */
 export async function generateDealReview(
   snapshot: DealReviewSnapshot,
+  locale?: string | null,
 ): Promise<DealReview> {
   const client = getAnthropicClient();
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 2048,
-    system: SYSTEM_PROMPT,
+    system: SYSTEM_PROMPT + languageDirectiveForJson(locale),
     messages: [
       {
         role: "user",

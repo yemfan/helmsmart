@@ -7,6 +7,7 @@ import {
   DEFAULT_NET_TO_SELLER_ASSUMPTIONS,
 } from "@/lib/listing-offers/netToSeller";
 import { summarizeOffers, type OfferForSummary } from "@/lib/listing-offers/compareSummary";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -110,7 +111,11 @@ export async function POST(req: Request) {
       };
     });
 
-    const summary = await summarizeOffers({ listPrice: listing.list_price, offers });
+    const summary = await summarizeOffers({
+      listPrice: listing.list_price,
+      offers,
+      locale: await getServerLocale(),
+    });
 
     return NextResponse.json({
       ok: true,

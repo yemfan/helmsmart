@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { reviewContract } from "@/lib/contracts/reviewContract";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 // Reading a multi-page contract PDF can take 20-50s.
@@ -19,7 +20,10 @@ const MAX_TEXT = 120_000;
  */
 export async function POST(req: Request) {
   try {
-    await getAgentContextFromRequest(req); // auth gate (dual: cookie + mobile bearer)
+    await getAgentContextFromRequest(req); // auth gate (dual: cookie + mobile bearer)
+    // The review explains the contract to the AGENT, so it follows their UI
+    // language. The contract's own text is untouched.
+    const locale = await getServerLocale();
 
     const contentType = req.headers.get("content-type") || "";
 
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: false, error: "PDF must be 8 MB or smaller." }, { status: 400 });
       }
       const pdfBytes = new Uint8Array(await file.arrayBuffer());
-      const review = await reviewContract({ kind: "pdf", pdfBytes });
+      const review = await reviewContract({ kind: "pdf", pdfBytes }, locale);
       return NextResponse.json({ ok: true, review });
     }
 
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
     if (!text.trim()) {
       return NextResponse.json({ ok: false, error: "Paste the contract text or attach a PDF." }, { status: 400 });
     }
-    const review = await reviewContract({ kind: "text", text: text.slice(0, MAX_TEXT) });
+    const review = await reviewContract({ kind: "text", text: text.slice(0, MAX_TEXT) }, locale);
     return NextResponse.json({ ok: true, review });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";

@@ -62,3 +62,22 @@ export function languageDirective(locale: string | null | undefined): string {
 Language — the realtor reads ${name}. Write everything they read in ${name}: your replies, your plan, your headline, and the final mission report. Keep tool names, links, and proper nouns as they are.
 This is about THEIR language, not their contacts'. Text destined for a contact — an SMS body, an email, a post caption — follows that contact's own preferred language, which the messaging tools already resolve. Never translate a client-facing message into ${name} just because the dashboard is in ${name}.`;
 }
+
+/**
+ * The same rule for a generator whose output is PARSED, not printed.
+ *
+ * Most of these prompts end in "return the JSON". Telling a model to write
+ * everything the reader sees in Chinese is, read literally, also an
+ * instruction to translate `"headline"` into `"标题"` — and the parser then
+ * finds none of its fields and the feature returns nothing. The failure is
+ * silent and total, and it only shows up in the one locale.
+ *
+ * So the JSON variant says which half is which: keys and enum values are a
+ * wire format, the human-readable strings inside them are copy.
+ */
+export function languageDirectiveForJson(locale: string | null | undefined): string {
+  const base = languageDirective(locale);
+  if (!base) return "";
+  return `${base}
+JSON shape is NOT copy. Keep every key, and every enumerated value the schema fixes (status codes, severities, types), EXACTLY as the schema specifies them in English. Translate only the human-readable string values a person reads.`;
+}

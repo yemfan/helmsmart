@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { gatherAgentGrowthSnapshot } from "./gatherSnapshot";
 import { generateOpportunities } from "./generateOpportunities";
 import type { GrowthOpportunity } from "./opportunityTypes";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Orchestration layer for the Growth & Opportunities feature.
@@ -57,7 +58,7 @@ export async function getOpportunities(
   }
 
   const snapshot = await gatherAgentGrowthSnapshot(agentId);
-  const opportunities = await generateOpportunities(snapshot);
+  const opportunities = await generateOpportunities(snapshot, await agentUiLocale(agentId));
   const generatedAtIso = new Date().toISOString();
   const expiresAtIso = new Date(Date.now() + CACHE_TTL_MS).toISOString();
 

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { LANGUAGE_NAMES, languageDirective } from "../languageDirective";
+import {
+  LANGUAGE_NAMES,
+  languageDirective,
+  languageDirectiveForJson,
+} from "../languageDirective";
 
 /**
  * The directive that makes Max answer in the realtor's language.
@@ -59,5 +63,40 @@ describe("languageDirective", () => {
 
   it("has no entry for English in the name table", () => {
     expect(LANGUAGE_NAMES).not.toHaveProperty("en");
+  });
+});
+
+describe("languageDirectiveForJson", () => {
+  /**
+   * Most of these generators end their prompt with "return the JSON", and their
+   * caller parses the result by field name. "Write everything the reader sees in
+   * Chinese" is, read literally, also an instruction to rename `"headline"` to
+   * `"标题"` — after which the parser finds none of its fields and the feature
+   * returns nothing at all.
+   *
+   * That failure is silent, total, and visible in one locale only, so the rule
+   * separating the wire format from the copy is asserted rather than trusted.
+   */
+  it("stays empty for English, like the base directive", () => {
+    expect(languageDirectiveForJson("en")).toBe("");
+    expect(languageDirectiveForJson(null)).toBe("");
+  });
+
+  it("keeps the whole base directive, including the contact-language split", () => {
+    const json = languageDirectiveForJson("zh-Hans");
+    expect(json.startsWith(languageDirective("zh-Hans"))).toBe(true);
+    // The split is the part that must survive: an agent reading Chinese must
+    // not start sending Chinese SMS to English-speaking buyers.
+    expect(json).toContain("contact");
+  });
+
+  it("tells the model the schema is not copy", () => {
+    const json = languageDirectiveForJson("zh-Hans");
+    expect(json).toMatch(/key/i);
+    expect(json).toMatch(/translate only the human-readable string values/i);
+  });
+
+  it("is deterministic, so it does not break the cached prefix", () => {
+    expect(languageDirectiveForJson("zh-Hans")).toBe(languageDirectiveForJson("zh-Hans"));
   });
 });

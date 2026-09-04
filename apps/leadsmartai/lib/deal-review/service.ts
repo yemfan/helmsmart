@@ -9,6 +9,7 @@ import {
   generateDealReview,
 } from "./generateReview";
 import type { DealReview } from "./types";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Orchestrator for AI deal reviews.
@@ -75,7 +76,7 @@ async function runGenerate(
   let usedFallback = false;
   if (aiConfigured) {
     try {
-      review = await generateDealReview(snapshot);
+      review = await generateDealReview(snapshot, await agentUiLocale(agentId));
     } catch (err) {
       console.warn(
         `[deal-review] Claude failed for tx=${tx.id} — using fallback:`,
