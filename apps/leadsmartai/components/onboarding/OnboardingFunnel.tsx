@@ -75,7 +75,7 @@ function Shell({
             <CloseBossLogo compact tone="dark" className="max-w-[240px]" />
           </Link>
           <Link
-            href="/agent/pricing"
+            href="/plans"
             className="text-xs font-semibold text-sky-300/90 underline-offset-2 hover:text-white hover:underline"
           >{t("pages.onboardingFunnel.pricing")}</Link>
         </header>
@@ -682,7 +682,7 @@ export default function OnboardingFunnel({
               {t("pages.onboardingFunnel.comparePlans")}
             </button>
             <Link
-              href={`/agent/pricing?from=onboarding&email=${encodeURIComponent(fullProfile.email)}`}
+              href={`/plans?from=onboarding&email=${encodeURIComponent(fullProfile.email)}`}
               className="rounded-xl border border-white/25 px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-white/5"
             >{t("pages.onboardingFunnel.openPricing")}</Link>
           </div>
@@ -804,14 +804,23 @@ export default function OnboardingFunnel({
       },
     ];
 
+    /*
+     * Where a chosen plan sends someone.
+     *
+     * This used to deep-link into /agent/pricing with `checkout_plan` so that
+     * storefront could open a checkout straight away. That storefront sold the
+     * retired feature-tier ladder and now redirects, which would drop these
+     * params anyway. More to the point, the credit ladder cannot be bought
+     * without an account — buying lives on the Credits page — so "pick a plan,
+     * pay now" is no longer a flow that exists.
+     *
+     * `plan` is kept so the destination can highlight the card they picked;
+     * nothing depends on it, and it costs nothing if unread.
+     */
     function deepLinkFor(slug: SoloPlan["slug"]): string {
-      const params = new URLSearchParams({
-        from: "onboarding",
-        checkout_plan: slug,
-        cadence,
-      });
+      const params = new URLSearchParams({ from: "onboarding", plan: slug });
       if (profile.email) params.set("email", profile.email.trim());
-      return `/agent/pricing?${params.toString()}`;
+      return `/plans?${params.toString()}`;
     }
 
     return (

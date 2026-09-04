@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -97,5 +97,55 @@ describe("plan price surfaces", () => {
 
   it("has no 'team' tier — retired", () => {
     expect(CREDIT_TIERS.map((t) => t.id)).not.toContain("team");
+  });
+});
+
+/**
+ * The retired feature-tier ladder must stay retired.
+ *
+ * It was already half-retired once: /api/stripe/checkout has carried a comment
+ * since 2026-08-30 saying the old catalogue is retired "and its pricing pages
+ * now redirect to /plans". The precedence change shipped; the redirect did
+ * not, and the old storefront kept selling at the wrong prices for five more
+ * weeks. A comment is not a guarantee — this is.
+ */
+describe("retired feature-tier ladder", () => {
+  const RETIRED_ROUTES = [
+    "app/api/billing/crm/checkout/route.ts",
+    "app/api/billing/crm-checkout/route.ts",
+    "app/api/billing/crm/change-cadence/route.ts",
+  ];
+
+  it("answers 410 from every retired checkout endpoint", () => {
+    for (const rel of RETIRED_ROUTES) {
+      const src = read(rel);
+      expect(src, `${rel} should refuse`).toContain("status: 410");
+      // If it can still reach Stripe it can still charge someone.
+      expect(src, `${rel} must not import Stripe`).not.toMatch(/from "@\/lib\/stripe/);
+    }
+  });
+
+  it("no longer ships the old storefront pages", () => {
+    // Their prices lived in these files; a redirect that still imports them
+    // has not retired anything.
+    for (const rel of [
+      "app/agent/pricing/page.client.tsx",
+      "app/start-free/agent/page.client.tsx",
+    ]) {
+      expect(existsSync(join(ROOT, rel)), `${rel} should be deleted`).toBe(false);
+    }
+  });
+
+  it("redirects the retired storefront routes", () => {
+    for (const rel of ["app/agent/pricing/page.tsx", "app/start-free/agent/page.tsx"]) {
+      expect(read(rel), `${rel} should redirect`).toMatch(/redirect\(/);
+    }
+  });
+
+  it("keeps the old catalogue readable for existing subscriptions", () => {
+    // Retiring it as a PRICE LIST is not deleting it as a DICTIONARY: a live
+    // crm_signature subscriber's features resolve through PLANS[sub.plan].
+    expect(existsSync(join(ROOT, "lib", "billing", "plans.ts"))).toBe(true);
+    expect(read("lib/billing/subscriptionAccess.ts")).toContain("PLANS[sub.plan]");
   });
 });

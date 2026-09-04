@@ -1,36 +1,22 @@
-import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getCurrentUserWithRole } from "@/lib/auth/getCurrentUser";
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { getActiveAgentEntitlement } from "@/lib/entitlements/getEntitlements";
-import StartFreeAgentClientPage from "./page.client";
-import { getServerT } from "@/lib/i18n/server";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
-  const title = t("routeMeta.startFreeAgent.title", { ns: "web_marketing" });
-  const description = t("routeMeta.startFreeAgent.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
-};
-}
-
-export default async function StartFreeAgentPage() {
-  const user = await getCurrentUserWithRole();
-
-  if (!user) {
-    redirect("/login?next=/start-free/agent");
-  }
-
-  const supabase = supabaseServerClient();
-  const entitlement = await getActiveAgentEntitlement(supabase, user.id).catch(() => null);
-  const activePlan = entitlement ? String((entitlement as { plan?: string }).plan ?? "") : null;
-
-  // Already has a plan — send to dashboard, not here.
-  if (activePlan) {
-    redirect("/agent/dashboard");
-  }
-
-  return <StartFreeAgentClientPage />;
+/**
+ * Retired conversion page for the feature-tier ladder.
+ *
+ * It offered a free agent workspace alongside paid cards priced at $49 / $99 /
+ * $249 — two repricings out of date, against real charges of $159 / $299 /
+ * $399 — and checked out through `/api/billing/crm/checkout`, which no longer
+ * sells anything.
+ *
+ * Its free half is redundant: `getCurrentAgentContext` calls
+ * `ensureFreeLeadsmartAccount`, so any signed-in user without an `agents` row
+ * is given one the moment they open the dashboard. That path is what quietly
+ * rescued the signups this page was supposed to catch. So the whole page
+ * reduces to "go to the dashboard".
+ *
+ * The route already required a session, so there is no anonymous case to
+ * handle — the dashboard sends those to login itself.
+ */
+export default function RetiredStartFreeAgentPage() {
+  redirect("/dashboard");
 }
