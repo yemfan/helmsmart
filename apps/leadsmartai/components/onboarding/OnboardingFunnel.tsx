@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { CREDIT_TIERS, annualUsd, approxCallMinutes, approxVideos } from "@/lib/credits/pricing";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
-import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
+import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
 import { LoadingText } from "@/components/ui/LoadingText";
 
 function effectiveProfile(p: Partial<OnboardingProfile>): OnboardingProfile {
@@ -41,7 +41,7 @@ function ProgressBar({ step }: { step: OnboardingStep }) {
   const pct = stepToProgress(step);
   return (
     <div className="mb-8">
-      <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
+      <div className="mb-2 flex items-center justify-between text-xs font-semibold text-gray-500">
         <span>
           {t("pages.onboardingFunnel.stepOfEight", { step })}
         </span>
@@ -53,7 +53,7 @@ function ProgressBar({ step }: { step: OnboardingStep }) {
           style={{ width: `${pct}%`, minWidth: step >= 1 ? "4%" : "0" }}
         />
       </div>
-      <p className="mt-1.5 text-[11px] text-slate-400">{t("pages.onboardingFunnel.previewBanner")}</p>
+      <p className="mt-1.5 text-[11px] text-gray-500">{t("pages.onboardingFunnel.previewBanner")}</p>
     </div>
   );
 }
@@ -67,16 +67,23 @@ function Shell({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,114,206,0.25),transparent)]" />
+    /* `relative` matters: the wash below is `absolute inset-0`, and without a
+       positioned ancestor it anchors to the body and stops one viewport down,
+       leaving a hard horizontal edge partway through a taller step. */
+    <div className="relative min-h-screen bg-gray-50 text-gray-900">
+      {/* Brand wash. Tuned at 0.25 against near-black; on a white ground that
+          reads as a printing error, so it drops to a hint of colour. */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,114,206,0.08),transparent)]" />
       <div className="relative mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8 sm:max-w-xl sm:px-6 sm:py-12">
         <header className="mb-6 flex items-center justify-between gap-3 onboarding-fade-up">
           <Link href="/" className="flex items-center opacity-90 transition hover:opacity-100">
-            <CloseBossLogo compact tone="dark" className="max-w-[240px]" />
+            {/* tone="dark" means "drawn for a dark background" — it paints the
+                wordmark white, which on this page is an invisible logo. */}
+            <CloseBossLogo compact tone="light" className="max-w-[240px]" />
           </Link>
           <Link
             href="/plans"
-            className="text-xs font-semibold text-sky-300/90 underline-offset-2 hover:text-white hover:underline"
+            className="text-xs font-semibold text-sky-600 underline-offset-2 hover:text-gray-900 hover:underline"
           >{t("pages.onboardingFunnel.pricing")}</Link>
         </header>
         <ProgressBar step={step} />
@@ -279,7 +286,7 @@ export default function OnboardingFunnel({
   if (!hydrated) {
     if (fallback) return <>{fallback}</>;
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-gray-500">
         <LoadingText />
       </div>
     );
@@ -289,10 +296,10 @@ export default function OnboardingFunnel({
   if (step === 1) {
     return (
       <Shell step={1}>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
-          <p className="text-xs font-bold uppercase tracking-wider text-sky-300/90">CloseBoss</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl backdrop-blur-md sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-wider text-sky-600">CloseBoss</p>
           <h1 className="mt-2 font-heading text-2xl font-bold leading-tight sm:text-3xl">{t("pages.onboardingFunnel.heroTitle")}</h1>
-          <p className="mt-3 text-sm text-slate-300">{t("pages.onboardingFunnel.heroSub")}</p>
+          <p className="mt-3 text-sm text-gray-600">{t("pages.onboardingFunnel.heroSub")}</p>
           <form
             className="mt-8 space-y-4"
             onSubmit={(e) => {
@@ -305,19 +312,19 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.fullName")}</label>
+              <label className="block text-xs font-semibold text-gray-600">{t("pages.onboardingFunnel.fullName")}</label>
               <input
                 name="fullName"
                 value={profile.fullName ?? ""}
                 onChange={(e) => setProfile((p) => ({ ...p, fullName: e.target.value }))}
                 required
                 autoComplete="name"
-                className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+                className="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                 placeholder={t("pages.onboardingFunnel.namePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.workEmail")}</label>
+              <label className="block text-xs font-semibold text-gray-600">{t("pages.onboardingFunnel.workEmail")}</label>
               <input
                 name="email"
                 type="email"
@@ -325,7 +332,7 @@ export default function OnboardingFunnel({
                 onChange={(e) => setProfile((p) => ({ ...p, email: e.target.value }))}
                 required
                 autoComplete="email"
-                className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+                className="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                 placeholder="you@brokerage.com"
               />
             </div>
@@ -336,7 +343,7 @@ export default function OnboardingFunnel({
               {t("pages.onboardingFunnel.continue")}
             </button>
           </form>
-          <p className="mt-6 text-center text-xs text-slate-500">
+          <p className="mt-6 text-center text-xs text-gray-500">
             {t("pages.onboardingFunnel.alreadyHaveAccount")}{" "}
             <Link href="/login?redirect=/dashboard" className="font-semibold text-sky-400 hover:underline">{t("pages.onboardingFunnel.logIn")}</Link>
           </p>
@@ -349,9 +356,9 @@ export default function OnboardingFunnel({
   if (step === 2) {
     return (
       <Shell step={2}>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl backdrop-blur-md sm:p-8">
           <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.quickSetup")}</h1>
-          <p className="mt-2 text-sm text-slate-300">{t("pages.onboardingFunnel.tuneDemo")}</p>
+          <p className="mt-2 text-sm text-gray-600">{t("pages.onboardingFunnel.tuneDemo")}</p>
           <form
             className="mt-8 space-y-6"
             onSubmit={(e) => {
@@ -366,22 +373,22 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.primaryCity")}</label>
+              <label className="block text-xs font-semibold text-gray-600">{t("pages.onboardingFunnel.primaryCity")}</label>
               <input
                 name="city"
                 defaultValue={profile.city ?? ""}
                 required
-                className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+                className="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                 placeholder={t("pages.onboardingFunnel.cityPlaceholder")}
               />
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.pipelineFocus")}</span>
+              <span className="block text-xs font-semibold text-gray-600">{t("pages.onboardingFunnel.pipelineFocus")}</span>
               <div className="mt-2 grid gap-2">
                 {FOCUS_OPTIONS.map((o) => (
                   <label
                     key={o.id}
-                    className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-slate-950/30 p-3 has-[:checked]:border-sky-500/60 has-[:checked]:bg-sky-500/10"
+                    className="flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-white p-3 has-[:checked]:border-sky-500/60 has-[:checked]:bg-sky-500/10"
                   >
                     <input
                       type="radio"
@@ -392,14 +399,14 @@ export default function OnboardingFunnel({
                     />
                     <span>
                       <span className="block text-sm font-semibold">{o.label}</span>
-                      <span className="text-xs text-slate-400">{o.hint}</span>
+                      <span className="text-xs text-gray-500">{o.hint}</span>
                     </span>
                   </label>
                 ))}
               </div>
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.dealSize")}</span>
+              <span className="block text-xs font-semibold text-gray-600">{t("pages.onboardingFunnel.dealSize")}</span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {PRICE_OPTIONS.map((o) => (
                   <label key={o.id} className="cursor-pointer">
@@ -410,7 +417,7 @@ export default function OnboardingFunnel({
                       defaultChecked={(profile.priceRangeId ?? "750-1500") === o.id}
                       className="peer sr-only"
                     />
-                    <span className="inline-flex rounded-full border border-white/15 bg-slate-950/40 px-4 py-2 text-xs font-semibold peer-checked:border-sky-500 peer-checked:bg-sky-500/20 peer-checked:text-white">
+                    <span className="inline-flex rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold peer-checked:border-sky-500 peer-checked:bg-sky-500/20 peer-checked:text-gray-900">
                       {o.label}
                     </span>
                   </label>
@@ -421,7 +428,7 @@ export default function OnboardingFunnel({
               <button
                 type="button"
                 onClick={() => go(1, "back")}
-                className="rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-white/5"
+                className="rounded-xl border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
               >{t("pages.onboardingFunnel.back")}</button>
               <button
                 type="submit"
@@ -493,14 +500,14 @@ export default function OnboardingFunnel({
               </div>
             ))}
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-xl backdrop-blur-md sm:p-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xl backdrop-blur-md sm:p-6">
             <div className="flex items-center justify-between gap-2">
               <h1 className="font-heading text-xl font-bold sm:text-2xl">{t("pages.onboardingFunnel.newLeads")}</h1>
-              <span className="rounded-full bg-rose-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-200">
+              <span className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-700">
                 {t("pages.onboardingFunnel.waitingCount", { count: demoLeads.length })}
               </span>
             </div>
-            <p className="mt-1 text-sm text-slate-400">{t("pages.onboardingFunnel.tapToRespond")}</p>
+            <p className="mt-1 text-sm text-gray-500">{t("pages.onboardingFunnel.tapToRespond")}</p>
             <ul className="mt-6 space-y-3">
               {demoLeads.map((lead) => (
                 <li key={lead.id}>
@@ -511,21 +518,21 @@ export default function OnboardingFunnel({
                       setEngagementPoints((n) => n + 1);
                       go(5, "lead_open");
                     }}
-                    className="flex w-full items-start gap-3 rounded-xl border border-white/10 bg-slate-950/50 p-4 text-left transition hover:border-sky-500/40 hover:bg-sky-500/5"
+                    className="flex w-full items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-sky-500/40 hover:bg-sky-500/5"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-[#0072ce] text-sm font-bold text-white">
                       {lead.initials}
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-white">{lead.name}</span>
-                        <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-sky-200">
+                        <span className="font-semibold text-gray-900">{lead.name}</span>
+                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">
                           {lead.intent}
                         </span>
-                        <span className="text-[10px] text-slate-500">{lead.channel}</span>
+                        <span className="text-[10px] text-gray-500">{lead.channel}</span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-400">{lead.snippet}</p>
-                      <p className="mt-1 text-[11px] font-medium text-amber-200/90">
+                      <p className="mt-1 text-xs text-gray-500">{lead.snippet}</p>
+                      <p className="mt-1 text-[11px] font-medium text-amber-700">
                         ⏱ First response wins · waiting {lead.waitingSinceMin}m
                       </p>
                     </div>
@@ -557,8 +564,8 @@ export default function OnboardingFunnel({
               </div>
             ))}
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-md">
-            <div className="border-b border-white/10 p-4 sm:p-5">
+          <div className="rounded-2xl border border-gray-200 bg-white shadow-xl backdrop-blur-md">
+            <div className="border-b border-gray-200 p-4 sm:p-5">
               <button
                 type="button"
                 onClick={() => go(4, "back_inbox")}
@@ -572,11 +579,11 @@ export default function OnboardingFunnel({
                 </span>
                 <div>
                   <h1 className="font-heading text-lg font-bold">{lead.name}</h1>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-500">
                     {lead.intent} · {lead.budget} · {lead.area}
                   </p>
                 </div>
-                <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-1 text-[10px] font-bold text-emerald-200">
+                <span className="ml-auto rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-700">
                   {t("pages.onboardingFunnel.scoreN", { score: lead.score })}
                 </span>
               </div>
@@ -591,7 +598,7 @@ export default function OnboardingFunnel({
                     className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                       m.from === "agent"
                         ? "bg-[#0072ce] text-white"
-                        : "border border-white/10 bg-slate-900/80 text-slate-100"
+                        : "border border-gray-200 bg-white text-gray-900"
                     }`}
                   >
                     {m.text}
@@ -601,7 +608,7 @@ export default function OnboardingFunnel({
               ))}
             </div>
             <form
-              className="border-t border-white/10 p-4 sm:p-5"
+              className="border-t border-gray-200 p-4 sm:p-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 const text = replyDraft.trim();
@@ -630,7 +637,7 @@ export default function OnboardingFunnel({
                 onChange={(e) => setReplyDraft(e.target.value)}
                 rows={2}
                 placeholder={t("pages.onboardingFunnel.writeFastReply")}
-                className="w-full resize-none rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+                className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
               />
               <button
                 type="submit"
@@ -638,7 +645,7 @@ export default function OnboardingFunnel({
               >
                 {t("pages.onboardingFunnel.sendReply")}
               </button>
-              <p className="mt-2 text-center text-[11px] text-slate-500">{t("pages.onboardingFunnel.draftOnPro")}</p>
+              <p className="mt-2 text-center text-[11px] text-gray-500">{t("pages.onboardingFunnel.draftOnPro")}</p>
             </form>
           </div>
         </div>
@@ -698,7 +705,11 @@ export default function OnboardingFunnel({
   if (step === 7) {
     type CardCadence = "monthly" | "annual";
     const cadence: CardCadence = onboardingCadence;
-    const annualMo = (annual: number) => Math.round((annual / 12) * 100) / 100;
+    /*
+     * Two decimals always. Rounding alone renders 1590/12 as "$132.5", which
+     * next to "$65.83" and "$249.17" reads as a glitch rather than a price.
+     */
+    const annualMo = (annual: number) => (annual / 12).toFixed(2);
     const formatHeadline = (m: number, a: number) =>
       cadence === "annual" ? `$${annualMo(a)}` : `$${m}`;
     const formatSubtext = (a: number, m: number) =>
@@ -866,30 +877,30 @@ export default function OnboardingFunnel({
         <div className="space-y-6">
           <div className="text-center">
             <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.chooseScale")}</h1>
-            <p className="mt-2 text-sm text-slate-400">{t("pages.onboardingFunnel.trialNote")}<br />
+            <p className="mt-2 text-sm text-gray-500">{t("pages.onboardingFunnel.trialNote")}<br />
               Available in English and 中文.
             </p>
           </div>
 
           {/* Cadence toggle */}
           <div className="flex justify-center">
-            <div className="inline-flex rounded-full border border-white/15 bg-white/5 p-1">
+            <div className="inline-flex rounded-full border border-gray-300 bg-white p-1">
               <button
                 type="button"
                 onClick={() => setOnboardingCadence("monthly")}
                 className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-                  cadence === "monthly" ? "bg-white text-slate-900" : "text-slate-300 hover:text-white"
+                  cadence === "monthly" ? "bg-[#0072ce] text-white" : "text-gray-600 hover:text-gray-900"
                 }`}
               >{t("pages.onboardingFunnel.monthly")}</button>
               <button
                 type="button"
                 onClick={() => setOnboardingCadence("annual")}
                 className={`ml-1 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-                  cadence === "annual" ? "bg-white text-slate-900" : "text-slate-300 hover:text-white"
+                  cadence === "annual" ? "bg-[#0072ce] text-white" : "text-gray-600 hover:text-gray-900"
                 }`}
               >{t("pages.onboardingFunnel.annual")}<span
                   className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
-                    cadence === "annual" ? "bg-emerald-500 text-white" : "bg-emerald-500/20 text-emerald-300"
+                    cadence === "annual" ? "bg-emerald-500 text-white" : "bg-emerald-100 text-emerald-700"
                   }`}
                 >{t("pages.onboardingFunnel.save17")}</span>
               </button>
@@ -901,15 +912,15 @@ export default function OnboardingFunnel({
             {soloPlans.map((p) => {
               const isSignature = !!p.signatureLook;
               const wrapClass = isSignature
-                ? "relative flex flex-col rounded-2xl border border-amber-300/50 bg-[#0b1e3f] p-5 shadow-xl shadow-amber-300/10"
+                ? "relative flex flex-col rounded-2xl border-2 border-amber-300 bg-amber-50/50 p-5 shadow-xl shadow-amber-300/20"
                 : p.primary
-                  ? "relative flex flex-col rounded-2xl border border-sky-500/50 bg-sky-500/10 p-5 shadow-lg shadow-sky-900/20"
-                  : "relative flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5";
+                  ? "relative flex flex-col rounded-2xl border-2 border-sky-500 bg-sky-50 p-5 shadow-lg shadow-sky-900/10"
+                  : "relative flex flex-col rounded-2xl border border-gray-200 bg-white p-5";
               const ctaClass = isSignature
                 ? "bg-amber-300 text-amber-950 hover:bg-amber-200"
                 : p.primary
                   ? "bg-[#0072ce] text-white hover:bg-[#005ca8]"
-                  : "border border-white/20 text-white hover:bg-white/5";
+                  : "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50";
               const badgeClass = isSignature
                 ? "absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-300 px-3 py-0.5 text-[10px] font-bold text-amber-950 whitespace-nowrap"
                 : "absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-[#0072ce] px-3 py-0.5 text-[10px] font-semibold text-white whitespace-nowrap";
@@ -917,31 +928,31 @@ export default function OnboardingFunnel({
               return (
                 <div key={p.slug} className={wrapClass}>
                   {p.badge && <span className={badgeClass}>{p.badge}</span>}
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{p.name}</p>
+                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500">{p.name}</p>
                   <div className="mt-2 flex items-baseline gap-1">
-                    <span className="text-2xl font-bold text-white">
+                    <span className="text-2xl font-bold text-gray-900">
                       {p.slug === "starter" ? "$0" : formatHeadline(p.monthly, p.annual ?? p.monthly * 10)}
                     </span>
-                    <span className="text-xs text-slate-400">{p.slug === "starter" ? "forever" : "/mo"}</span>
+                    <span className="text-xs text-gray-500">{p.slug === "starter" ? "forever" : "/mo"}</span>
                   </div>
                   {p.slug !== "starter" && p.annual && (
-                    <p className="mt-0.5 text-[10px] text-slate-400">
+                    <p className="mt-0.5 text-[10px] text-gray-500">
                       {formatSubtext(p.annual, p.monthly)}
                     </p>
                   )}
-                  <p className="mt-1.5 text-xs text-slate-400">{p.tagline}</p>
+                  <p className="mt-1.5 text-xs text-gray-500">{p.tagline}</p>
 
                   <ul className="mt-3 flex-1 space-y-1.5">
                     {p.features.map((f) => (
-                      <li key={f} className="flex items-start gap-1.5 text-xs text-slate-300">
-                        <svg className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
+                        <svg className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {f}
                       </li>
                     ))}
                     {(p.limits ?? []).map((l) => (
-                      <li key={l} className="flex items-start gap-1.5 text-xs text-slate-500">
+                      <li key={l} className="flex items-start gap-1.5 text-xs text-gray-500">
                         <span className="mt-0.5 inline-block h-3 w-3 shrink-0 text-center leading-3">—</span>
                         {l}
                       </li>
@@ -955,7 +966,7 @@ export default function OnboardingFunnel({
                     {p.cta}
                   </Link>
                   {p.trialNote && (
-                    <p className="mt-1.5 text-center text-[10px] text-slate-500">{p.trialNote}</p>
+                    <p className="mt-1.5 text-center text-[10px] text-gray-500">{p.trialNote}</p>
                   )}
                 </div>
               );
@@ -963,19 +974,19 @@ export default function OnboardingFunnel({
           </div>
 
           {/* Team CTA — own row, brokerage positioning */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-gray-900">
                   {t("pages.onboardingFunnel.teamPrice", { price: cadence === "annual" ? "$249/mo" : "$299/mo" })}
                 </p>
-                <p className="mt-0.5 text-xs text-slate-400">
+                <p className="mt-0.5 text-xs text-gray-500">
                   Up to 5 seats · round-robin routing · Top Producer Track for every member.
                 </p>
               </div>
               <Link
                 href="/contact?from=onboarding&topic=team"
-                className="rounded-xl border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/5"
+                className="rounded-xl border border-gray-300 px-4 py-2 text-xs font-semibold text-gray-900 hover:bg-gray-50"
               >
                 {t("pages.onboardingFunnel.contactSales")}
               </Link>
@@ -985,7 +996,7 @@ export default function OnboardingFunnel({
           <button
             type="button"
             onClick={() => go(8, "upgrade_flow")}
-            className="w-full rounded-xl border border-dashed border-white/20 py-3 text-sm font-semibold text-slate-300 hover:bg-white/5"
+            className="w-full rounded-xl border border-dashed border-gray-300 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-50"
           >
             {t("pages.onboardingFunnel.readyCreateAccount")}
           </button>
@@ -998,9 +1009,9 @@ export default function OnboardingFunnel({
   if (step === 8) {
     return (
       <Shell step={8}>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-xl backdrop-blur-md sm:p-10">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-xl backdrop-blur-md sm:p-10">
           <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.finishSetup")}</h1>
-          <p className="mx-auto mt-3 max-w-md text-sm text-slate-300">{t("pages.onboardingFunnel.createProfile")}</p>
+          <p className="mx-auto mt-3 max-w-md text-sm text-gray-600">{t("pages.onboardingFunnel.createProfile")}</p>
           <div className="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md">
             <Link
               href={`/agent-signup?${signupQuery}`}
@@ -1008,7 +1019,7 @@ export default function OnboardingFunnel({
             >{t("pages.onboardingFunnel.createAccount")}</Link>
             <Link
               href="/agent/pricing?from=onboarding#plans"
-              className="rounded-xl border border-white/20 py-3.5 text-sm font-semibold text-white hover:bg-white/5"
+              className="rounded-xl border border-gray-300 py-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50"
             >{t("pages.onboardingFunnel.viewPlans")}</Link>
             <Link href="/login?redirect=/dashboard" className="text-sm font-semibold text-sky-400 hover:underline">{t("pages.onboardingFunnel.alreadyRegistered")}</Link>
           </div>
@@ -1023,7 +1034,7 @@ export default function OnboardingFunnel({
               setPaywallSeen(false);
               setEngagementPoints(0);
             }}
-            className="mt-8 text-xs text-slate-500 underline-offset-2 hover:text-slate-300 hover:underline"
+            className="mt-8 text-xs text-gray-500 underline-offset-2 hover:text-gray-700 hover:underline"
           >{t("pages.onboardingFunnel.restart")}</button>
         </div>
       </Shell>
@@ -1034,7 +1045,7 @@ export default function OnboardingFunnel({
   if (step === 5 && !selectedLead) {
     return (
       <Shell step={5}>
-        <p className="text-center text-slate-400">{t("pages.onboardingFunnel.loadingConversation")}</p>
+        <p className="text-center text-gray-500">{t("pages.onboardingFunnel.loadingConversation")}</p>
       </Shell>
     );
   }
