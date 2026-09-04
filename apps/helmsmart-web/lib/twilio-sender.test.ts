@@ -24,7 +24,7 @@ describe("twilioSender", () => {
     expect(twilioSender(null)).toEqual({ messagingServiceSid: "MG0123456789abcdef" });
   });
 
-  it("falls back to the given number when no Messaging Service is configured", () => {
+  it("falls back to the given number when nothing else is configured", () => {
     expect(twilioSender("+16268888685")).toEqual({ from: "+16268888685" });
   });
 
@@ -32,6 +32,23 @@ describe("twilioSender", () => {
     process.env.TWILIO_FROM_NUMBER = "+16268887170";
     expect(twilioSender(null)).toEqual({ from: "+16268887170" });
     expect(twilioSender("")).toEqual({ from: "+16268887170" });
+  });
+
+  it("prefers TWILIO_FROM_NUMBER over the org's own receiving number", () => {
+    // The org number is the line the receptionist ANSWERS on. Being able to
+    // receive says nothing about being allowed to send: it must belong to this
+    // Twilio account and be A2P-registered. +16268888685 was neither, so every
+    // text from it returned 30034 while the account's approved sender sat
+    // unused in the env.
+    process.env.TWILIO_FROM_NUMBER = "+16268887170";
+    expect(twilioSender("+16268888685")).toEqual({ from: "+16268887170" });
+  });
+
+  it("still ignores a blank TWILIO_FROM_NUMBER", () => {
+    // An env var present but empty must not beat a usable org number, or a
+    // stray blank in Vercel silently stops every message.
+    process.env.TWILIO_FROM_NUMBER = "   ";
+    expect(twilioSender("+16268888685")).toEqual({ from: "+16268888685" });
   });
 
   it("returns null when nothing is configured, so the caller can skip the send", () => {
