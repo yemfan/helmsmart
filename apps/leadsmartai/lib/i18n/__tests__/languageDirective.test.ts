@@ -4,6 +4,7 @@ import {
   LANGUAGE_NAMES,
   languageDirective,
   languageDirectiveForJson,
+  languageDirectiveForMixedJson,
 } from "../languageDirective";
 
 /**
@@ -98,5 +99,53 @@ describe("languageDirectiveForJson", () => {
 
   it("is deterministic, so it does not break the cached prefix", () => {
     expect(languageDirectiveForJson("zh-Hans")).toBe(languageDirectiveForJson("zh-Hans"));
+  });
+});
+
+describe("languageDirectiveForMixedJson", () => {
+  /**
+   * One response, two readers. `maxReview` returns Max's `reason` for the
+   * realtor beside the corrected `body` that is sent to their CONTACT; the
+   * skills compliance gate returns an `issue` beside a `rewrite` of public
+   * copy.
+   *
+   * Neither of the other two directives can express that, and getting it
+   * wrong is not a cosmetic bug: it sends a Chinese SMS to an English-speaking
+   * buyer under the agent's own name. That is worse than the English-in-a-
+   * Chinese-dashboard problem this whole effort exists to fix, so the boundary
+   * is asserted.
+   */
+  const mixed = (loc: string | null) =>
+    languageDirectiveForMixedJson(loc, {
+      agentReads: ["reason"],
+      recipientReads: ["body"],
+    });
+
+  it("says nothing for English", () => {
+    expect(mixed("en")).toBe("");
+    expect(mixed(null)).toBe("");
+  });
+
+  it("names the agent's field as the one to translate", () => {
+    const d = mixed("zh-Hans");
+    expect(d).toContain('"reason"');
+    expect(d).toContain(LANGUAGE_NAMES["zh-Hans"]);
+  });
+
+  it("names the recipient's field as the one to leave alone", () => {
+    const d = mixed("zh-Hans");
+    expect(d).toContain('"body"');
+    // The reason has to travel with the rule: a model that knows WHY `body`
+    // stays put handles the field this list did not anticipate.
+    expect(d).toMatch(/sent to a CONTACT/i);
+    expect(d).toMatch(/cannot read/i);
+  });
+
+  it("still protects the schema itself", () => {
+    expect(mixed("zh-Hans")).toMatch(/keep every key/i);
+  });
+
+  it("is deterministic, so the cached prefix survives", () => {
+    expect(mixed("zh-Hans")).toBe(mixed("zh-Hans"));
   });
 });

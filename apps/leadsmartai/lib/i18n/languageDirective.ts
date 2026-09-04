@@ -81,3 +81,34 @@ export function languageDirectiveForJson(locale: string | null | undefined): str
   return `${base}
 JSON shape is NOT copy. Keep every key, and every enumerated value the schema fixes (status codes, severities, types), EXACTLY as the schema specifies them in English. Translate only the human-readable string values a person reads.`;
 }
+
+/**
+ * For one response that carries BOTH halves of the split.
+ *
+ * `maxReview` returns `{ verdict, body, reason }`: `reason` is Max explaining
+ * himself to the realtor, and `body` is the corrected message that goes to
+ * their CONTACT. The compliance gate in `skills/run` has the same shape — an
+ * `issue` for the realtor beside a `rewrite` of public copy.
+ *
+ * Neither directive above can express that. `languageDirective` would put the
+ * outbound message into the realtor's language, which is the failure it exists
+ * to prevent, and the JSON variant would do the same to every string value. So
+ * the fields are named, and the reason each one is named is in the prompt —
+ * a model that knows WHY `body` stays put handles the case the field list
+ * didn't anticipate.
+ */
+export function languageDirectiveForMixedJson(
+  locale: string | null | undefined,
+  fields: { agentReads: string[]; recipientReads: string[] },
+): string {
+  const name = LANGUAGE_NAMES[locale ?? ""];
+  if (!name) return "";
+  const agent = fields.agentReads.map((f) => `"${f}"`).join(", ");
+  const recipient = fields.recipientReads.map((f) => `"${f}"`).join(", ");
+  return `
+
+Language — the realtor reads ${name}, and this one response carries text for two different readers.
+Write ${agent} in ${name}: that is you talking to the realtor.
+Leave ${recipient} in the language of the message it belongs to. That text is sent to a CONTACT under the realtor's name, so translating it because the dashboard is in ${name} would deliver a message the recipient cannot read.
+Keep every key, and every fixed enum value the schema lists, exactly as specified in English.`;
+}
