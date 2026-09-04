@@ -2,6 +2,7 @@ import "server-only";
 
 import { getAnthropicClient } from "@/lib/anthropic";
 import type { PropertyAd } from "./types";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 
 /**
  * AI generators for the selling playbook. Both are self-contained Claude calls
@@ -32,9 +33,15 @@ function extractJson(text: string): unknown {
 export type MarketingPlanResult = { plan: string; channels: string[] };
 
 /** A concrete, timed marketing plan for a listing. */
+/**
+ * @param locale The language the AGENT reads. This plan is theirs to work
+ *   from — `generatePropertyAds` below is deliberately NOT given this,
+ *   because an ad is read by the public, not by the agent.
+ */
 export async function generateMarketingPlan(args: {
   address: string;
   priceContext?: string | null;
+  locale?: string | null;
 }): Promise<MarketingPlanResult> {
   const client = getAnthropicClient();
   const res = await client.messages.create({
@@ -44,7 +51,8 @@ export async function generateMarketingPlan(args: {
       "You are the Marketing Assistant on a real estate agent's AI team. Write a concrete, actionable listing marketing plan for the given property. " +
       "Structure it with short sections: Positioning, Channels (MLS/portals, social, email, paid, signage), Timeline (week 1 / week 2-3 / ongoing), and Open house cadence. " +
       "Keep it tight and skimmable — bullets over paragraphs. Use ONLY the address and any pricing context provided; never invent a price, comps, or facts. " +
-      "Output ONLY a JSON object: { \"plan\": string (the plan as markdown), \"channels\": string[] (the channels you'll use, short labels) }.",
+      "Output ONLY a JSON object: { \"plan\": string (the plan as markdown), \"channels\": string[] (the channels you'll use, short labels) }." +
+        languageDirectiveForJson(args.locale),
     messages: [
       {
         role: "user",

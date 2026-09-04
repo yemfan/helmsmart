@@ -9,6 +9,7 @@ import {
   type ControllablePlatform,
   type SocialAutopilotConfig,
 } from "./autopilotConfig";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 
 /**
  * Full AI automation: the AI decides the posting plan for the period.
@@ -32,6 +33,8 @@ export type AutopilotPlanInput = {
   connectedPlatforms: string[];
   /** Monday of the period being planned (YYYY-MM-DD). */
   weekOf: string;
+  /** The language the AGENT reads — only `reasoning` is prose they see. */
+  locale?: string | null;
 };
 
 type RawPlan = {
@@ -70,6 +73,7 @@ function buildPrompt(input: AutopilotPlanInput): string {
     "}",
     "",
     "post_days must have at least as many days as needed to fit posts_per_week at posts_per_day per day.",
+    languageDirectiveForJson(input.locale),
   ].join("\n");
 }
 
