@@ -9820,7 +9820,9 @@
       "noMedian": "No median price on file for {{city}}, {{state}}. Don't quote a price for this market from cached data.",
       "noMedianWithTrend": "No median price on file for {{city}}, {{state}} (trend {{trend}}). Don't quote a price for this market from cached data.",
       "snapshot": "{{city}}, {{state}}: median ${{median}}, trend {{trend}} (as of {{days}}d ago).",
-      "snapshotStale": "{{city}}, {{state}}: median ${{median}}, trend {{trend}} — {{days}} days old, so treat it as out of date and prefer live comps."
+      "snapshotStale": "{{city}}, {{state}}: median ${{median}}, trend {{trend}} — {{days}} days old, so treat it as out of date and prefer live comps.",
+      "placeholder": "The number on file for {{city}}, {{state}} is a placeholder, not a market lookup. Don't quote a price for this market.",
+      "placeholderWithTrend": "The number on file for {{city}}, {{state}} is a placeholder, not a market lookup (trend {{trend}}). Don't quote a price for this market."
     },
     "messaging": {
       "drafted": "Drafted a {{channel}} to {{recipient}}.",

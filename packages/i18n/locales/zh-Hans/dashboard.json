@@ -9820,7 +9820,9 @@
       "noMedian": "暂无 {{city}}, {{state}} 的中位价数据。请勿使用缓存数据报价。",
       "noMedianWithTrend": "暂无 {{city}}, {{state}} 的中位价数据（趋势：{{trend}}）。请勿使用缓存数据报价。",
       "snapshot": "{{city}}, {{state}}：中位价 ${{median}}，趋势 {{trend}}（{{days}} 天前的数据）。",
-      "snapshotStale": "{{city}}, {{state}}：中位价 ${{median}}，趋势 {{trend}} — 数据已有 {{days}} 天，请视为过时，优先使用实时可比房源。"
+      "snapshotStale": "{{city}}, {{state}}：中位价 ${{median}}，趋势 {{trend}} — 数据已有 {{days}} 天，请视为过时，优先使用实时可比房源。",
+      "placeholder": "{{city}}, {{state}} 现有的数字只是占位值，并非实时行情查询结果。请勿据此为该市场报价。",
+      "placeholderWithTrend": "{{city}}, {{state}} 现有的数字只是占位值，并非实时行情查询结果（趋势：{{trend}}）。请勿据此为该市场报价。"
     },
     "messaging": {
       "drafted": "已为 {{recipient}} 起草 {{channel}} 消息。",
