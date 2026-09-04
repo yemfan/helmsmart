@@ -6,6 +6,13 @@ import { placeOutboundCall } from "@/lib/voice-agent/outbound";
 import { normalizePhoneE164, type OutboundPurpose } from "@repo/voice";
 import { sendOutboundSms } from "@/lib/ai-sms/outbound";
 import { sendOutboundEmail } from "@/lib/ai-email/send";
+import {
+  DRAIN_BUDGET_MS,
+  STALE_SENDING_MS,
+  outOfDrainBudget,
+  outreachReapDecision,
+  type StaleSendingRow,
+} from "@/lib/outreach/reapQueue";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -40,10 +47,65 @@ type ContactRow = { id: string; name: string | null; phone: string | null; email
  *
  * Auth: Vercel cron signature OR Authorization: Bearer <CRON_SECRET> OR ?secret=.
  */
+/**
+ * Reclaim batches stranded in 'sending' by a run that died between claiming a
+ * row and recording its outcome.
+ *
+ * Always fails them, never requeues: the send loop walks contacts one at a
+ * time, so a batch that died halfway has already called or texted some of
+ * them, and putting it back to 'scheduled' would contact those people twice.
+ * See lib/outreach/reapQueue.ts.
+ */
+async function reapStaleSending(): Promise<{ failed: number }> {
+  const now = Date.now();
+  const staleBefore = new Date(now - STALE_SENDING_MS).toISOString();
+
+  const { data: rows, error } = await supabaseServer
+    .from("scheduled_actions")
+    .select("id,result,sent_at,created_at")
+    .eq("status", "sending")
+    .lte("created_at", staleBefore)
+    .limit(100);
+  if (error || !rows?.length) return { failed: 0 };
+
+  let failed = 0;
+  for (const raw of rows as Array<{ id: string; result: unknown; sent_at: string | null; created_at: string | null }>) {
+    const row: StaleSendingRow = {
+      id: raw.id,
+      // sent_at is stamped by the progress writes below, so it tracks the last
+      // sign of life; created_at is the fallback for a row that never got one.
+      claimed_at: raw.sent_at ?? raw.created_at,
+      result: (raw.result ?? null) as StaleSendingRow["result"],
+    };
+    const decision = outreachReapDecision(row, now);
+    if (decision.action !== "fail") continue;
+
+    const { error: updErr } = await supabaseServer
+      .from("scheduled_actions")
+      .update({
+        status: "failed",
+        result: {
+          ...(typeof raw.result === "object" && raw.result ? raw.result : {}),
+          interrupted: true,
+          message: decision.reason,
+        },
+      } as Record<string, unknown>)
+      .eq("id", row.id)
+      // Guard the write: if a live run finished in the meantime, its outcome
+      // wins and we must not overwrite it with a failure.
+      .eq("status", "sending");
+    if (!updErr) failed += 1;
+  }
+  return { failed };
+}
+
 export async function GET(req: Request) {
   if (!verifyCronRequest(req)) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
+
+  const startedAt = Date.now();
+  const reaped = await reapStaleSending();
 
   const nowIso = new Date().toISOString();
   const { data: due, error } = await supabaseServer
@@ -62,7 +124,18 @@ export async function GET(req: Request) {
   let sentTotal = 0;
   let failedTotal = 0;
 
+  let outOfTime = false;
   for (const row of (due ?? []) as Row[]) {
+    /*
+     * Stop before the platform does. A run killed mid-batch strands the row in
+     * 'sending' and has already contacted some of its people — the reaper can
+     * only report that, never undo it. Stopping early costs a 15-minute delay;
+     * being killed costs a batch.
+     */
+    if (outOfDrainBudget(startedAt, Date.now())) {
+      outOfTime = true;
+      break;
+    }
     // Claim the row so overlapping cron runs don't double-send.
     const { data: claimed } = await supabaseServer
       .from("scheduled_actions")
@@ -132,6 +205,26 @@ export async function GET(req: Request) {
       } catch (e) {
         results.push({ id, ok: false, error: e instanceof Error ? e.message : "Send failed." });
       }
+      /*
+       * Record progress as we go, not just at the end.
+       *
+       * The outcome used to be one write after the whole batch, so a run that
+       * died halfway left no trace of who had already been called or texted —
+       * and the agent could only be told "some contacts may have been reached".
+       * With progress on the row, an interrupted batch can say 5 of 12, which
+       * is the difference between a safe follow-up and contacting five people
+       * twice. One extra write per contact, on a loop that already sleeps
+       * 250ms between sends.
+       */
+      const okSoFar = results.filter((r) => r.ok).length;
+      await supabaseServer
+        .from("scheduled_actions")
+        .update({
+          result: { sent: okSoFar, failed: results.length - okSoFar, total: ids.length, results },
+          sent_at: new Date().toISOString(),
+        } as Record<string, unknown>)
+        .eq("id", row.id)
+        .eq("status", "sending");
       // Gentle pacing between sends.
       await new Promise((r) => setTimeout(r, 250));
     }
@@ -150,5 +243,16 @@ export async function GET(req: Request) {
     processed++;
   }
 
-  return NextResponse.json({ ok: true, processed, sent: sentTotal, failed: failedTotal });
+  return NextResponse.json({
+    ok: true,
+    processed,
+    sent: sentTotal,
+    failed: failedTotal,
+    // Non-zero means a previous run was killed mid-batch. Persistently
+    // non-zero means it keeps happening, and the budget needs a look.
+    reapedInterrupted: reaped.failed,
+    // True when this run stopped on its own terms with work still due; the
+    // next tick picks it up in 15 minutes.
+    stoppedForTime: outOfTime,
+  });
 }
