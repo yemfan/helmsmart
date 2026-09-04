@@ -29,21 +29,40 @@ interface Props {
   sharedWith?: number;
   /** Whether calls to it are actually answered as this account. */
   answersThisOrg?: boolean;
+  /** Where to text the owner when the receptionist books. Blank = don't. */
+  bookingAlertPhone?: string;
 }
 
-export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true }: Props) {
+export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true, bookingAlertPhone = "" }: Props) {
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [agentNameText, setAgentName] = useState(agentName ?? "");
   const [businessNameText, setBusinessName] = useState(businessName ?? "");
   const [greetingText, setGreeting] = useState(greeting);
   const [promptText, setPrompt] = useState(prompt ?? "");
+  const [alertPhone, setAlertPhone] = useState(bookingAlertPhone);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isPending, start] = useTransition();
   const example = contextExample || DEFAULT_CONTEXT_EXAMPLE;
 
   function handleSave() {
     start(async () => {
-      await saveVoiceSettings({ enabled: isEnabled, agentName: agentNameText, businessName: businessNameText, greeting: greetingText, prompt: promptText });
+      try {
+        await saveVoiceSettings({
+          enabled: isEnabled,
+          agentName: agentNameText,
+          businessName: businessNameText,
+          greeting: greetingText,
+          prompt: promptText,
+          bookingAlertPhone: alertPhone,
+        });
+      } catch (e) {
+        // A refused save has to say so. The button used to read "Saved!" over a
+        // rejected write, which is the same lie as a toggle that saves nothing.
+        setSaveError(e instanceof Error ? e.message : "Couldn't save those settings.");
+        return;
+      }
+      setSaveError(null);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     });
@@ -204,6 +223,25 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
         </div>
       </div>
 
+      {/* Text me when a booking happens */}
+      <div>
+        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+          Text me when an appointment is booked <span className="text-slate-400">(optional)</span>
+        </label>
+        <input
+          type="tel"
+          inputMode="tel"
+          value={alertPhone}
+          onChange={(e) => setAlertPhone(e.target.value)}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="+1 626 555 0147"
+        />
+        <p className="text-xs text-slate-400 mt-1">
+          Your own mobile. The receptionist texts you the appointment as soon as it books, so you
+          don&apos;t have to be watching the app. Leave blank for no text.
+        </p>
+      </div>
+
       <button
         onClick={handleSave}
         disabled={isPending}
@@ -212,6 +250,10 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
         <Save className="w-4 h-4" />
         {saved ? "Saved!" : "Save settings"}
       </button>
+
+      {saveError ? (
+        <p className="text-xs text-rose-600" role="alert">{saveError}</p>
+      ) : null}
     </div>
   );
 }
