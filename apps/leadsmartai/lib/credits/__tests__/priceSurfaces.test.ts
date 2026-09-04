@@ -1,0 +1,101 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+import { CREDIT_TIERS, annualUsd, annualPriceEnv } from "../pricing";
+
+/**
+ * No page may invent its own prices.
+ *
+ * Four surfaces each kept a private copy of the price list, and no two agreed:
+ *
+ *   OnboardingFunnel   Pro  $49   Premium  $99   Signature $249
+ *   /pricing           Pro  $49
+ *   /start-free/agent  Pro  $49   Premium  $99
+ *   /agent/pricing     Pro  $79   Premium $199   Team      $299
+ *   CREDIT_TIERS       Pro $159   Premium $299   Signature $399  <- what Stripe bills
+ *
+ * A brokerage manager was quoted $49 for a plan that charges $159 — on the
+ * funnel the landing page's own CTA leads to. Nothing failed; a hardcoded
+ * number does not throw, it just quietly misquotes a stranger by 3x.
+ *
+ * This guard is deliberately narrow: it checks that the tier prices actually
+ * on sale appear nowhere as literals in the marketing surfaces, so the next
+ * reprice cannot leave one page behind.
+ */
+
+const ROOT = join(__dirname, "..", "..", "..");
+
+/** Surfaces that display plan prices to a prospect. */
+const SURFACES = [
+  "components/onboarding/OnboardingFunnel.tsx",
+  "app/plans/page.client.tsx",
+];
+
+/** Prices from a RETIRED ladder. Seeing one again means a page regressed. */
+const DEAD_PRICES = [49, 99, 249, 199];
+
+function read(rel: string): string {
+  return readFileSync(join(ROOT, rel), "utf8");
+}
+
+describe("plan price surfaces", () => {
+  it("keeps the catalogue as the only place a tier price is written", () => {
+    // Each live monthly price, as a bare numeric literal (`monthly: 159`).
+    const live = CREDIT_TIERS.map((t) => t.priceUsd);
+    const offenders: string[] = [];
+    for (const rel of SURFACES) {
+      const src = read(rel);
+      for (const price of live) {
+        const re = new RegExp(`(monthly|price|priceUsd|amount)\\s*:\\s*${price}\\b`);
+        if (re.test(src)) offenders.push(`${rel} hardcodes ${price}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("has no retired price left on a marketing surface", () => {
+    const offenders: string[] = [];
+    for (const rel of SURFACES) {
+      const src = read(rel);
+      for (const dead of DEAD_PRICES) {
+        const re = new RegExp(`(monthly|price|priceUsd|amount)\\s*:\\s*${dead}\\b`);
+        if (re.test(src)) offenders.push(`${rel} still shows retired price ${dead}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("derives annual as ten months, for every tier", () => {
+    // Twelve for the price of ten — the convention every surface already used
+    // (79 -> 790). Derived so it cannot drift from the monthly figure.
+    for (const t of CREDIT_TIERS) {
+      expect(annualUsd(t.id)).toBe(t.priceUsd * 10);
+    }
+    expect(annualUsd("nonexistent" as never)).toBeNull();
+  });
+
+  it("names an annual price env per tier, so the UI can gate on it", () => {
+    // Annual must not be offered until its Stripe price exists — advertising
+    // an uncheckoutable cadence is the same bug in a different coat.
+    for (const t of CREDIT_TIERS) {
+      expect(annualPriceEnv(t.id)).toBe(`${t.priceEnv}_ANNUAL`);
+    }
+  });
+
+  it("still sells the four tiers at the agreed prices", () => {
+    // A canary on the catalogue itself: if these change, it should be because
+    // someone repriced deliberately, not because a merge went sideways.
+    expect(CREDIT_TIERS.map((t) => [t.id, t.priceUsd])).toEqual([
+      ["solo", 79],
+      ["pro", 159],
+      ["premium", 299],
+      ["signature", 399],
+    ]);
+    expect(CREDIT_TIERS.find((t) => t.id === "signature")?.setupFeeUsd).toBe(499);
+  });
+
+  it("has no 'team' tier — retired", () => {
+    expect(CREDIT_TIERS.map((t) => t.id)).not.toContain("team");
+  });
+});
