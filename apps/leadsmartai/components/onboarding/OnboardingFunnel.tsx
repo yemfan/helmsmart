@@ -6,6 +6,7 @@ import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CREDIT_TIERS, annualUsd } from "@/lib/credits/pricing";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
 import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
@@ -703,6 +704,22 @@ export default function OnboardingFunnel({
     const formatSubtext = (a: number, m: number) =>
       cadence === "annual" ? `$${a} billed yearly · save $${m * 2}` : "Billed monthly";
 
+    /** Look a tier up in the billing catalogue; the funnel shows a subset. */
+    const tierOf = (id: "pro" | "premium" | "signature") =>
+      CREDIT_TIERS.find((t) => t.id === id);
+    const tierName = (id: "pro" | "premium" | "signature") => tierOf(id)?.name ?? "";
+    const tierMonthly = (id: "pro" | "premium" | "signature") => tierOf(id)?.priceUsd ?? 0;
+    const tierAnnual = (id: "pro" | "premium" | "signature") => annualUsd(id);
+
+    /*
+     * Prices are READ FROM THE BILLING CATALOGUE, never written here.
+     *
+     * This block used to carry its own numbers — Pro $49, Premium $99,
+     * Signature $249 — from two repricings ago. Stripe charges $159, $299 and
+     * $399. A brokerage manager was quoted $49 on this exact screen. Four
+     * separate surfaces each had their own copy of the price list and no two
+     * agreed; the only cure is to have none of them own it.
+     */
     type SoloPlan = {
       slug: "starter" | "pro" | "premium" | "signature";
       name: string;
@@ -731,9 +748,9 @@ export default function OnboardingFunnel({
       },
       {
         slug: "pro",
-        name: "Pro",
-        monthly: 49,
-        annual: 490,
+        name: tierName("pro"),
+        monthly: tierMonthly("pro"),
+        annual: tierAnnual("pro"),
         cta: "Start 14-day trial",
         tagline: "For active agents closing deals consistently.",
         features: [
@@ -751,9 +768,9 @@ export default function OnboardingFunnel({
       },
       {
         slug: "premium",
-        name: "Premium",
-        monthly: 99,
-        annual: 990,
+        name: tierName("premium"),
+        monthly: tierMonthly("premium"),
+        annual: tierAnnual("premium"),
         cta: "Start 14-day trial",
         tagline: "For top producers running solo.",
         features: [
@@ -768,9 +785,9 @@ export default function OnboardingFunnel({
       },
       {
         slug: "signature",
-        name: "Signature",
-        monthly: 249,
-        annual: 2490,
+        name: tierName("signature"),
+        monthly: tierMonthly("signature"),
+        annual: tierAnnual("signature"),
         cta: "Start 14-day trial",
         tagline: "For relationship-driven agents serving high-value clients.",
         features: [

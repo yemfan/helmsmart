@@ -161,6 +161,40 @@ export const CREDIT_TIERS: ReadonlyArray<{
 ] as const;
 
 /**
+ * Annual price for a tier: twelve months for the price of ten.
+ *
+ * Derived rather than stored, so it cannot drift from the monthly figure the
+ * way four hand-written price lists drifted from each other. Ten months is the
+ * convention every existing surface already used (79 -> 790).
+ *
+ * NOTE: a Stripe recurring price for the annual cadence does not exist yet for
+ * these tiers. Surfaces must gate the annual toggle on `annualPriceConfigured`
+ * rather than on this number — advertising a cadence that cannot be bought is
+ * the same class of bug as advertising the wrong price.
+ */
+export function annualUsd(tierId: CreditTierId): number | null {
+  const tier = CREDIT_TIERS.find((t) => t.id === tierId);
+  return tier ? tier.priceUsd * 10 : null;
+}
+
+/** Env var holding a tier's ANNUAL Stripe price id, by convention. */
+export function annualPriceEnv(tierId: CreditTierId): string {
+  const tier = CREDIT_TIERS.find((t) => t.id === tierId);
+  return `${tier?.priceEnv ?? "STRIPE_PRICE_ID_CB_UNKNOWN"}_ANNUAL`;
+}
+
+/**
+ * Whether annual can actually be sold for this tier right now.
+ *
+ * Gates the UI on the Stripe price existing, so the annual toggle appears only
+ * where checkout can complete. Server-side only — env vars are not exposed to
+ * the browser — so surfaces receive this as a prop.
+ */
+export function annualPriceConfigured(tierId: CreditTierId): boolean {
+  return Boolean((process.env[annualPriceEnv(tierId)] ?? "").trim());
+}
+
+/**
  * Voice minutes a monthly grant buys at the CURRENT rate. Render display copy
  * from this rather than hardcoding minutes in a string.
  *
