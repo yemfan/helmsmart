@@ -6,7 +6,7 @@ import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CREDIT_TIERS, annualUsd } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, annualUsd, approxCallMinutes, approxVideos } from "@/lib/credits/pricing";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
 import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
@@ -705,11 +705,27 @@ export default function OnboardingFunnel({
       cadence === "annual" ? `$${a} billed yearly · save $${m * 2}` : "Billed monthly";
 
     /** Look a tier up in the billing catalogue; the funnel shows a subset. */
-    const tierOf = (id: "pro" | "premium" | "signature") =>
-      CREDIT_TIERS.find((t) => t.id === id);
-    const tierName = (id: "pro" | "premium" | "signature") => tierOf(id)?.name ?? "";
-    const tierMonthly = (id: "pro" | "premium" | "signature") => tierOf(id)?.priceUsd ?? 0;
-    const tierAnnual = (id: "pro" | "premium" | "signature") => annualUsd(id);
+    type PaidTier = "solo" | "pro" | "premium" | "signature";
+    const tierOf = (id: PaidTier) => CREDIT_TIERS.find((t) => t.id === id);
+    const tierName = (id: PaidTier) => tierOf(id)?.name ?? "";
+    const tierMonthly = (id: PaidTier) => tierOf(id)?.priceUsd ?? 0;
+    const tierAnnual = (id: PaidTier) => annualUsd(id);
+    /**
+     * What a tier's credits actually buy, in the catalogue's own terms.
+     *
+     * Written from CREDIT_COSTS rather than by hand because the blurbs drifted
+     * twice before — they were still quoting minute counts from an older
+     * per-minute rate long after it changed.
+     */
+    const tierCredits = (id: PaidTier) => {
+      const t = tierOf(id);
+      if (!t) return [] as string[];
+      return [
+        `${t.monthlyCredits.toLocaleString()} credits/mo`,
+        `≈ ${approxCallMinutes(t.monthlyCredits).toLocaleString()} AI call minutes`,
+        `≈ ${approxVideos(t.monthlyCredits, "twinAvatar").toLocaleString()} AI videos`,
+      ];
+    };
 
     /*
      * Prices are READ FROM THE BILLING CATALOGUE, never written here.
@@ -721,7 +737,7 @@ export default function OnboardingFunnel({
      * agreed; the only cure is to have none of them own it.
      */
     type SoloPlan = {
-      slug: "starter" | "pro" | "premium" | "signature";
+      slug: "starter" | "solo" | "pro" | "premium" | "signature";
       name: string;
       monthly: number;
       annual: number | null;
@@ -745,6 +761,28 @@ export default function OnboardingFunnel({
         tagline: "For new agents testing the platform.",
         features: ["5 leads · 50 contacts", "2 CMA reports/day", "AI SMS + email (basic)", "100 AI actions/mo"],
         limits: ["No SMS automation", "Limited AI"],
+      },
+      {
+        /*
+         * Solo was missing entirely. The funnel listed four plans against a
+         * five-tier catalogue, so the cheapest paid plan did not exist in the
+         * signup flow and a prospect went straight from $0 to $159 — the
+         * $79 step was only ever visible on /plans.
+         *
+         * Its copy is the catalogue's own blurb and credit maths, not invented
+         * feature bullets: under this pricing model every plan includes every
+         * feature and the tiers differ only by credit volume, so a
+         * feature-gated card for Solo would be describing a product we do not
+         * sell.
+         */
+        slug: "solo",
+        name: tierName("solo"),
+        monthly: tierMonthly("solo"),
+        annual: tierAnnual("solo"),
+        cta: "Start 14-day trial",
+        tagline: tierOf("solo")?.blurb ?? "",
+        features: tierCredits("solo"),
+        trialNote: "14-day free trial",
       },
       {
         slug: "pro",
