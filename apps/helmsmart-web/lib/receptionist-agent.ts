@@ -5,6 +5,7 @@ import { recordEmmaBooking } from "@/lib/workforce-attribution";
 import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
 import twilio from "twilio";
 import { twilioSender } from "@/lib/twilio-sender";
+import { sendEmail } from "@/lib/email";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
 import { phoneLast10 } from "@repo/voice/phone";
@@ -414,6 +415,66 @@ export async function notifyBooking(
     // client, not a message to that client. Threading it under the caller
     // would put the owner's own alert in the caller's conversation.
     await send(alertTo, `New appointment booked by your AI receptionist: ${booked.bookedLabel}.${who}`, null);
+  }
+
+  await emailBookingAlert(db, org, callerNumber, booked.bookedLabel);
+}
+
+/**
+ * Email the owners and admins that the receptionist booked someone.
+ *
+ * Not a nicety — for now it is the only alert that can actually arrive. This
+ * account cannot send SMS at all: the Messaging Service has no senders (Twilio
+ * error 21704) and sending from the bare number is rejected by carriers as
+ * unregistered A2P traffic (30034, confirmed by a test send on 2026-09-04 and
+ * by a failure from the same number back in June). Registering an A2P campaign
+ * is a review cycle, not a setting, so until it clears the text above is
+ * written and never delivered.
+ *
+ * Email has none of that: Resend is verified and sending today.
+ *
+ * Deliberately not behind a toggle. An appointment an AI committed you to,
+ * during a call you did not hear, is not something an owner opts into being
+ * told about. Recipients are owners and admins, the same audience as the weekly
+ * digest.
+ */
+async function emailBookingAlert(
+  db: ServiceClient,
+  org: { orgId: string; orgName: string },
+  callerNumber: string,
+  bookedLabel: string,
+): Promise<void> {
+  try {
+    const { data: members } = await db
+      .from("organization_members")
+      .select("role, user:user_id(email)")
+      .eq("organization_id", org.orgId)
+      .in("role", ["owner", "admin"]);
+
+    const to = (members ?? [])
+      .map((m) => {
+        const u = Array.isArray(m.user) ? m.user[0] : m.user;
+        return (u as { email?: string | null } | null)?.email ?? null;
+      })
+      .filter((e): e is string => Boolean(e));
+
+    if (!to.length) return;
+
+    const caller = callerNumber ? displayPhone(callerNumber) : "an unknown number";
+    await sendEmail({
+      to,
+      fromName: org.orgName,
+      subject: `New appointment: ${bookedLabel}`,
+      text:
+        `Your AI receptionist booked an appointment.\n\n` +
+        `When: ${bookedLabel}\n` +
+        `Caller: ${caller}\n\n` +
+        `It is on your calendar: ${process.env.NEXT_PUBLIC_APP_URL ?? ""}/calendar`,
+    });
+  } catch (e) {
+    // Best-effort, like every other notification here: the appointment is
+    // already booked and must not be undone by a mail failure.
+    console.error("[receptionist] booking alert email failed:", e);
   }
 }
 
