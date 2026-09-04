@@ -176,9 +176,7 @@ async function listVoiceAppointmentsAsEvents(params: {
 }): Promise<MobileCalendarEventDto[]> {
   let q = supabaseAdmin
     .from("voice_appointments")
-    .select(
-      "id,contact_id,caller_name,title,start_at,end_at,status,appointment_type,meeting_mode,created_at",
-    )
+    .select(VOICE_APPOINTMENT_SELECT)
     .eq("agent_id", params.agentId as never)
     .neq("status", "cancelled")
     .gte("start_at", params.from)
@@ -194,28 +192,92 @@ async function listVoiceAppointmentsAsEvents(params: {
     return [];
   }
 
-  return (data ?? []).map((raw) => {
-    const r = raw as Record<string, unknown>;
-    const mode = r.meeting_mode != null ? String(r.meeting_mode) : null;
-    return {
-      id: `voice:${String(r.id ?? "")}`,
-      contact_id: String(r.contact_id ?? ""),
-      lead_name: r.caller_name != null ? String(r.caller_name) : null,
-      title: String(r.title ?? "Appointment"),
-      // The mode is the one thing the title never carries, and it is what
-      // tells the agent whether to drive somewhere.
-      description: mode ? mode.replace("_", " ") : null,
-      starts_at: String(r.start_at ?? ""),
-      ends_at: r.end_at != null ? String(r.end_at) : null,
-      timezone: null,
-      status: "scheduled" as const,
-      calendar_provider: null,
-      external_event_id: null,
-      external_calendar_id: null,
-      created_at: String(r.created_at ?? ""),
-      updated_at: String(r.created_at ?? ""),
-    };
-  });
+  return (data ?? []).map((raw) =>
+    voiceAppointmentToEvent(raw as Record<string, unknown>, "scheduled"),
+  );
+}
+
+/** Receptionist bookings carry this id prefix so two tables can share one calendar. */
+const VOICE_EVENT_PREFIX = "voice:";
+
+const VOICE_APPOINTMENT_SELECT =
+  "id,contact_id,caller_name,title,start_at,end_at,status,appointment_type,meeting_mode,created_at";
+
+/**
+ * Thrown when a patch tries to change anything but the status of a
+ * receptionist booking. The title, time and meeting mode were agreed with the
+ * caller; `voice_appointments` is the record of that conversation and the
+ * calendar only surfaces it.
+ */
+export const VOICE_BOOKING_READ_ONLY = "VOICE_BOOKING_READ_ONLY";
+export const VOICE_BOOKING_READ_ONLY_MESSAGE =
+  "This appointment was booked on a call by your receptionist. You can cancel it here, but its time and details come from that call.";
+
+function voiceAppointmentToEvent(
+  r: Record<string, unknown>,
+  status: MobileCalendarEventStatus,
+): MobileCalendarEventDto {
+  const mode = r.meeting_mode != null ? String(r.meeting_mode) : null;
+  return {
+    id: `${VOICE_EVENT_PREFIX}${String(r.id ?? "")}`,
+    contact_id: String(r.contact_id ?? ""),
+    lead_name: r.caller_name != null ? String(r.caller_name) : null,
+    title: String(r.title ?? "Appointment"),
+    // The mode is the one thing the title never carries, and it is what
+    // tells the agent whether to drive somewhere.
+    description: mode ? mode.replace("_", " ") : null,
+    starts_at: String(r.start_at ?? ""),
+    ends_at: r.end_at != null ? String(r.end_at) : null,
+    timezone: null,
+    status,
+    calendar_provider: null,
+    external_event_id: null,
+    external_calendar_id: null,
+    created_at: String(r.created_at ?? ""),
+    updated_at: String(r.created_at ?? ""),
+  };
+}
+
+/**
+ * Cancel a receptionist booking.
+ *
+ * Both calendars list these beside manual events and offer the same Cancel
+ * control, but the patch went looking in `lead_calendar_events`, so pressing
+ * it answered "Event not found" about an appointment that was on screen.
+ * Cancelling writes `status = cancelled` to `voice_appointments` — the status
+ * the calendar already hides and the booking flow already treats as a freed
+ * slot. Nothing else about the booking is editable from here.
+ */
+async function cancelVoiceAppointment(params: {
+  agentId: string;
+  eventId: string;
+  status?: MobileCalendarEventStatus;
+  title?: string;
+  description?: string | null;
+  startsAt?: string;
+  endsAt?: string | null;
+}): Promise<MobileCalendarEventDto> {
+  const wantsEdit =
+    params.title != null ||
+    params.description !== undefined ||
+    params.startsAt != null ||
+    params.endsAt !== undefined;
+  if (params.status !== "cancelled" || wantsEdit) {
+    throw new Error(VOICE_BOOKING_READ_ONLY);
+  }
+
+  const id = params.eventId.slice(VOICE_EVENT_PREFIX.length);
+  const { data, error } = await supabaseAdmin
+    .from("voice_appointments")
+    .update({ status: "cancelled" } as never)
+    .eq("id", id as never)
+    .eq("agent_id", params.agentId as never)
+    .select(VOICE_APPOINTMENT_SELECT)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("NOT_FOUND");
+  return voiceAppointmentToEvent(data as Record<string, unknown>, "cancelled");
 }
 
 export async function fetchNextAppointmentForLead(
@@ -352,6 +414,11 @@ export async function patchMobileCalendarEvent(params: {
   startsAt?: string;
   endsAt?: string | null;
 }): Promise<MobileCalendarEventDto> {
+  // A `voice:` id names a row in voice_appointments, not here.
+  if (params.eventId.startsWith(VOICE_EVENT_PREFIX)) {
+    return cancelVoiceAppointment(params);
+  }
+
   const { data: existing, error: e0 } = await supabaseAdmin
     .from("lead_calendar_events")
     .select("id,contact_id")

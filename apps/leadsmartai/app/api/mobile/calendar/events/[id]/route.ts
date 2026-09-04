@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { patchMobileCalendarEvent } from "@/lib/mobile/calendarMobile";
+import {
+  patchMobileCalendarEvent,
+  VOICE_BOOKING_READ_ONLY,
+  VOICE_BOOKING_READ_ONLY_MESSAGE,
+} from "@/lib/mobile/calendarMobile";
 import { requireMobileAgent } from "@/lib/mobile/auth";
 import type { MobileCalendarEventStatus } from "@leadsmart/shared";
 
@@ -40,6 +44,12 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
     const msg = e instanceof Error ? e.message : "Server error";
     if (msg === "NOT_FOUND") {
       return NextResponse.json({ ok: false, success: false, error: "Event not found" }, { status: 404 });
+    }
+    if (msg === VOICE_BOOKING_READ_ONLY) {
+      return NextResponse.json(
+        { ok: false, success: false, error: VOICE_BOOKING_READ_ONLY_MESSAGE },
+        { status: 400 },
+      );
     }
     console.error("PATCH /api/mobile/calendar/events/[id]", e);
     return NextResponse.json({ ok: false, success: false, error: msg }, { status: 500 });

@@ -32,6 +32,7 @@ import {
   postBossInstruction,
   resolveBossRecommendation,
   type MobileAutopilotCell,
+  type MobileAutopilotMode,
   type MobileAutopilotChannel,
   type MobileAutopilotChannels,
   type MobileBossAssistant,
@@ -40,7 +41,7 @@ import {
   type MobileBossTask,
 } from "../../lib/leadsmartMobileApi";
 
-// Bossy's profile avatar — the CloseBoss mascot app icon.
+// Max's profile avatar — the CloseBoss app icon.
 const BOSS_AVATAR = require("../../assets/icon.png");
 
 /**
@@ -58,13 +59,35 @@ const ASSIGNEE_LABEL: Record<string, string> = {
   transaction_assistant: "Transaction Assistant",
   accountant: "Accountant",
   realtor: "For your review",
-  boss_assistant: "Bossy",
+  // Fallback only — the live name comes from the team roster (ai_assistants).
+  boss_assistant: "Max",
 };
 const CHANNEL_LABEL: Record<MobileAutopilotChannel, string> = {
   call: "Call",
   sms: "Text",
   email: "Email",
   social: "Social",
+};
+/**
+ * Tapping a cell walks outward one step — you approve → Max approves → it
+ * just goes — then back to the strictest. Same order and colour grammar as
+ * the web matrix: grey, amber, green, because the colour is really "how much
+ * am I handing over".
+ */
+const NEXT_MODE: Record<MobileAutopilotMode, MobileAutopilotMode> = {
+  ask: "assisted",
+  assisted: "auto",
+  auto: "ask",
+};
+const MODE_LABEL: Record<MobileAutopilotMode, string> = {
+  ask: "ask",
+  assisted: "Max approves",
+  auto: "auto",
+};
+const MODE_HINT: Record<MobileAutopilotMode, string> = {
+  ask: "You approve it before it goes.",
+  assisted: "Max proofreads and risk-checks it, and only asks you when he's unsure.",
+  auto: "It goes, subject to the usual compliance rails.",
 };
 const QUICK_COMMANDS = [
   "Text my hot leads a check-in",
@@ -95,7 +118,7 @@ export default function BossScreen() {
     for (const a of team) if (a.name) m[a.type] = a.name;
     return m;
   }, [team]);
-  const bossName = teamNames["boss_assistant"] || "Bossy";
+  const bossName = teamNames["boss_assistant"] || "Max";
 
   const loadConversation = useCallback(async () => {
     const res = await fetchBossConversation(8);
@@ -180,7 +203,7 @@ export default function BossScreen() {
     await patchBossAutopilot({ global: on });
   }, []);
 
-  const setCell = useCallback(async (assignee: string, channel: MobileAutopilotChannel, mode: "ask" | "auto") => {
+  const setCell = useCallback(async (assignee: string, channel: MobileAutopilotChannel, mode: MobileAutopilotMode) => {
     setCells((prev) => [...prev.filter((c) => !(c.assignee === assignee && c.channel === channel)), { assignee, channel, mode }]);
     await patchBossAutopilot({ assignee, channel, mode });
   }, []);
@@ -527,13 +550,17 @@ function SettingsModal({
   channels: MobileAutopilotChannels[];
   cells: MobileAutopilotCell[];
   onGlobal: (on: boolean) => void;
-  onCell: (assignee: string, channel: MobileAutopilotChannel, mode: "ask" | "auto") => void;
+  onCell: (assignee: string, channel: MobileAutopilotChannel, mode: MobileAutopilotMode) => void;
 }) {
-  const cellMode = (assignee: string, channel: MobileAutopilotChannel): "ask" | "auto" => {
+  const cellMode = (assignee: string, channel: MobileAutopilotChannel): MobileAutopilotMode => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
     if (c) return c.mode;
     return global ? "auto" : "ask";
   };
+  const pillStyle = (mode: MobileAutopilotMode) =>
+    mode === "auto" ? s.cellPillOn : mode === "assisted" ? s.cellPillAssisted : s.cellPillOff;
+  const pillColor = (mode: MobileAutopilotMode) =>
+    mode === "auto" ? tokens.successTextDark : mode === "assisted" ? tokens.warningText : tokens.textMuted;
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={s.modalBackdrop}>
@@ -544,7 +571,7 @@ function SettingsModal({
               <Ionicons name="close" size={22} color={tokens.textMuted} />
             </Pressable>
           </View>
-          <Text style={s.modalSub}>Choose where the Boss acts on its own and where it asks first — per assistant, per channel.</Text>
+          <Text style={s.modalSub}>Per assistant and channel: you approve, Max approves, or it just goes. Tap a cell to step through.</Text>
           <ScrollView style={{ maxHeight: 460 }}>
             <View style={s.globalRow}>
               <View style={{ flex: 1 }}>
@@ -559,15 +586,17 @@ function SettingsModal({
                 <View style={s.chipRow}>
                   {row.channels.map((ch) => {
                     const mode = cellMode(row.assignee, ch);
-                    const on = mode === "auto";
                     return (
                       <Pressable
                         key={ch}
-                        style={[s.cellPill, on ? s.cellPillOn : s.cellPillOff]}
-                        onPress={() => onCell(row.assignee, ch, on ? "ask" : "auto")}
+                        style={[s.cellPill, pillStyle(mode)]}
+                        onPress={() => onCell(row.assignee, ch, NEXT_MODE[mode])}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${CHANNEL_LABEL[ch]}: ${MODE_LABEL[mode]}`}
+                        accessibilityHint={MODE_HINT[mode]}
                       >
-                        <Text style={[s.cellPillText, { color: on ? tokens.successTextDark : tokens.textMuted }]}>
-                          {CHANNEL_LABEL[ch]}: {on ? "auto" : "ask"}
+                        <Text style={[s.cellPillText, { color: pillColor(mode) }]}>
+                          {CHANNEL_LABEL[ch]}: {MODE_LABEL[mode]}
                         </Text>
                       </Pressable>
                     );
@@ -667,6 +696,7 @@ const createStyles = (t: ThemeTokens) =>
     matrixRow: { borderWidth: 1, borderColor: t.border, borderRadius: 12, padding: 12, marginBottom: 8, gap: 8 },
     cellPill: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6 },
     cellPillOn: { backgroundColor: t.successBg },
+    cellPillAssisted: { backgroundColor: t.warningBg, borderWidth: 1, borderColor: t.warningBorder },
     cellPillOff: { backgroundColor: t.surface, borderWidth: 1, borderColor: t.border },
     cellPillText: { fontSize: 11, fontWeight: "600" },
   });

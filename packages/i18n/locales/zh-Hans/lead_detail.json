@@ -53,6 +53,7 @@
   "bubble": {
     "channel_sms": "短信",
     "channel_email": "邮件",
+    "channel_call": "通话",
     "inbound": "收件",
     "outbound": "发件",
     "empty_body": "—"

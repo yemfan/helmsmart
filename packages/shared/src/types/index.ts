@@ -82,6 +82,7 @@ export type {
   MobileCreateExpenseRequestDto,
   MobileFollowUpReminderDto,
   MobileInboxThreadDto,
+  MobileCallDto,
   MobileLeadConversationsDto,
   MobileLeadDetailResponseDto,
   MobileLeadPipelineDto,

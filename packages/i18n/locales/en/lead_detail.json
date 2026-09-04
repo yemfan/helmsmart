@@ -53,6 +53,7 @@
   "bubble": {
     "channel_sms": "SMS",
     "channel_email": "Email",
+    "channel_call": "Call",
     "inbound": "Inbound",
     "outbound": "Outbound",
     "empty_body": "—"

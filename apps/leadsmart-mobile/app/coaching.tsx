@@ -255,7 +255,7 @@ function UpgradeCard({
           <Text style={styles.upgradeTitle}>Coaching unlocks on Pro</Text>
           <Text style={styles.upgradeBody}>
             Producer Track auto-enrolls on Pro and above; Top Producer Track
-            is bundled with Premium and Team. Upgrade to start hitting
+            is bundled with Premium, Signature and Team. Upgrade to start hitting
             10–15 transactions a year with daily AI-driven plans.
           </Text>
           <Pressable

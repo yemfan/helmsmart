@@ -41,9 +41,23 @@ export type MobileEmailMessageDto = {
   created_at: string;
 };
 
+/** A call in a lead's thread: the AI summary is the body, the length rides beside it. */
+export type MobileCallDto = {
+  id: string;
+  /** From call_logs.notes. Empty when nobody transcribed the call — render it as such, never invent one. */
+  summary: string;
+  direction: "inbound" | "outbound";
+  /** completed, missed, no_answer, in_progress — raw, for clients that want it. */
+  status: string | null;
+  duration_seconds: number | null;
+  created_at: string;
+};
+
 export type MobileLeadConversationsDto = {
   sms: MobileSmsMessageDto[];
   email: MobileEmailMessageDto[];
+  /** Absent from payloads an app cached before 1.7.0 — treat missing as none. */
+  calls?: MobileCallDto[];
 };
 
 /** After `POST /api/mobile/leads/:id/sms/send` */

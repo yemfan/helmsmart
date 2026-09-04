@@ -4,7 +4,7 @@
     "slug": "leadsmart-mobile",
     "scheme": "leadsmart",
     "icon": "./assets/icon.png",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android"],

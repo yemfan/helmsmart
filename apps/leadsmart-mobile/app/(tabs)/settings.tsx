@@ -17,6 +17,7 @@ import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
 import {
   fetchMobileNotificationPreferences,
   patchMobileNotificationPreferences,
+  saveUiLanguage,
 } from "../../lib/leadsmartMobileApi";
 import { getSupabaseAuthClient } from "../../lib/supabaseAuthClient";
 import { setStoredLocale } from "../../lib/i18n";
@@ -57,7 +58,12 @@ export default function SettingsScreen() {
       await setStoredLocale(loc);
     } catch {
       hapticError();
+      return;
     }
+    // Durable copy for server work that has no request to read the language
+    // from — the overnight Boss run, the instruction cron — so Max writes in
+    // this language too. Best-effort: the app has already switched.
+    void saveUiLanguage(loc);
   }, [currentLocale]);
   const [digestMin, setDigestMin] = useState(15);
 
