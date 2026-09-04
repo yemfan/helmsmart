@@ -207,11 +207,11 @@ export default function SphereImportClient() {
             {commitError && <div className="mt-2 text-sm text-red-600">{commitError}</div>}
             {commitResult && (
               <div className="mt-2 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-900">
-                ✓ Inserted {commitResult.inserted} contact{commitResult.inserted === 1 ? "" : "s"}.
+                {t("pages.sphereImport.insertedContacts", { count: commitResult.inserted })}
                 {commitResult.errors.length > 0 && (
                   <details className="mt-1">
                     <summary className="cursor-pointer text-xs text-green-800">
-                      {commitResult.errors.length} warnings
+                      {t("pages.sphereImport.warningCount", { count: commitResult.errors.length })}
                     </summary>
                     <ul className="mt-1 list-disc pl-5 text-xs text-green-800">
                       {commitResult.errors.map((e, i) => (

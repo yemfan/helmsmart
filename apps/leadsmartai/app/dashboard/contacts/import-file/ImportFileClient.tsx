@@ -439,10 +439,10 @@ function ReviewTable(props: {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
           <span>
             <span className="font-medium text-gray-900">{selectedCount}</span> of{" "}
-            {rows.length} contact{rows.length === 1 ? "" : "s"} selected
+            {t("pages.importFile.ofNContactsSelected", { count: rows.length })}
           </span>
           <span className="text-gray-500">
-            from {sourceKind?.toUpperCase() ?? "file"} ·{" "}
+            {t("pages.importFile.fromSource", { source: sourceKind?.toUpperCase() ?? "file" })}{" "}
             <span className="font-medium">{fileName ?? "upload"}</span>
           </span>
           {duplicateCount > 0 && (
@@ -690,9 +690,13 @@ function DoneSummary({
             {t("pages.importFile.savedNofM", { saved: result.inserted + result.merged, total })}
           </p>
           <p className="text-xs text-gray-500">
-            {result.inserted} added · {result.merged} merged ·{" "}
-            {result.skipped} skipped · {result.errors} error
-            {result.errors === 1 ? "" : "s"}
+            {t("pages.importFile.resultSummary", {
+              count: result.errors,
+              inserted: result.inserted,
+              merged: result.merged,
+              skipped: result.skipped,
+              errors: result.errors,
+            })}
           </p>
         </div>
       </div>

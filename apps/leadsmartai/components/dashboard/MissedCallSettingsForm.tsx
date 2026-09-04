@@ -293,9 +293,12 @@ export default function MissedCallSettingsForm() {
               <span className="font-semibold text-slate-700">
                 {callbackPerDay * callbackDays}
               </span>{" "}
-              call-back{callbackPerDay * callbackDays === 1 ? "" : "s"} total
-              ({callbackPerDay}/day × {callbackDays} day
-              {callbackDays === 1 ? "" : "s"}), {callbackInterval} {t("pages.dashFragments.minutesApart")}</p>
+              {t("pages.missedCallSettings.callbackPlan", {
+                count: callbackPerDay * callbackDays,
+                perDay: callbackPerDay,
+                days: callbackDays,
+                interval: callbackInterval,
+              })}</p>
           </>
         )}
       </div>

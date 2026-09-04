@@ -696,7 +696,7 @@ export function ListingDetailClient({
                             </div>
                             {o.counter_count > 0 ? (
                               <div className="text-[11px] text-slate-500">
-                                {o.counter_count} counter{o.counter_count === 1 ? "" : "s"}
+                                {t("pages.listingDetail.counterCount", { count: o.counter_count })}
                               </div>
                             ) : null}
                           </td>
@@ -713,7 +713,7 @@ export function ListingDetailClient({
                             </div>
                             {o.current_price != null && o.current_price !== o.offer_price ? (
                               <div className="text-[11px] text-slate-500">
-                                from {formatMoney(o.offer_price, locale)}
+                                {t("pages.listingDetail.fromPrice", { price: formatMoney(o.offer_price, locale) })}
                               </div>
                             ) : null}
                           </td>

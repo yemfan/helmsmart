@@ -62,7 +62,7 @@ export default async function SellHouseKeywordPage({
           <h2 className="text-xl font-semibold text-slate-900">{t("pages.keywordPages.marketSnapshot", { ns: "dashboard" })}</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-700">
             {market.medianDaysOnMarket !== null && (
-              <li>{t("pages.keywordPages.medianTimeOnMarket", { ns: "dashboard" })} {Math.round(market.medianDaysOnMarket)} days</li>
+              <li>{t("pages.keywordPages.medianDaysOnMarket", { count: Math.round(market.medianDaysOnMarket), ns: "dashboard" })}</li>
             )}
             {market.yoyChangePct !== null && (
               <li>

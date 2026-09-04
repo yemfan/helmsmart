@@ -121,7 +121,7 @@ export default function GenerateCmaButton({
                         : "bg-slate-50 text-slate-700 ring-slate-200"
                   }`}
                 >
-                  {quota.remaining}/{quota.limit} left
+                  {t("pages.generateCma.quotaLeft", { remaining: quota.remaining, limit: quota.limit })}
                 </span>
               ) : null}
             </div>

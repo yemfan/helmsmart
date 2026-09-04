@@ -97,7 +97,7 @@ export default function FinancialServicesDashboardClient() {
               <div key={s.id}>
                 <div className="mb-1 flex items-center justify-between text-sm">
                   <span className="font-semibold text-slate-800">{s.label}</span>
-                  <span className="text-xs font-medium text-slate-500">{s.count} recruits</span>
+                  <span className="text-xs font-medium text-slate-500">{t("pages.fsDashboard.recruits", { count: s.count })}</span>
                 </div>
                 <div className="h-3 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200/80">
                   <div
@@ -147,7 +147,7 @@ export default function FinancialServicesDashboardClient() {
               { key: "name", header: "Recruit" },
               { key: "referredBy", header: "Referred by" },
               { key: "stage", header: "Stage", cell: (r) => <StatusBadge tone={recruitStageTone(String(r.stage))}>{String(r.stage)}</StatusBadge> },
-              { key: "joinedDaysAgo", header: "In pipeline", cell: (r) => <span className="text-xs text-slate-500">{String(r.joinedDaysAgo)} days</span> },
+              { key: "joinedDaysAgo", header: "In pipeline", cell: (r) => <span className="text-xs text-slate-500">{t("pages.fsDashboard.daysInPipeline", { count: Number(r.joinedDaysAgo), n: String(r.joinedDaysAgo) })}</span> },
               { key: "fitScore", header: "Fit", cell: (r) => <span className="font-semibold tabular-nums">{String(r.fitScore)}</span> },
             ]}
             rows={faRecruits as unknown as Record<string, unknown>[]}

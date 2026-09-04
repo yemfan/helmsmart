@@ -298,7 +298,7 @@ export default function OpportunitiesPage() {
       ) : null}
 
       <div className="flex items-center justify-between gap-3 pt-2">
-        <div className="text-xs text-slate-500">{t("pages.dashFragments.showing")} {opportunities.length} of {total} opportunities
+        <div className="text-xs text-slate-500">{t("pages.opportunities.showingOf", { shown: opportunities.length, total })}
         </div>
         <div className="flex items-center gap-2">
           <button

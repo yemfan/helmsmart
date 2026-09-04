@@ -283,7 +283,7 @@ function ZipCoverageGrid({
               ))}
             </span>
             <span className="text-[11px] text-slate-400">
-              {agentIds.length} agent{agentIds.length === 1 ? "" : "s"}
+              {t("pages.leadRoutingAdmin.agentCount", { count: agentIds.length })}
             </span>
           </li>
         ))}

@@ -654,7 +654,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             <span className="text-xs text-slate-500">
               {photosToAnimate.length > 0 ? (
                 <>
-                  {photosToAnimate.length} clip{photosToAnimate.length === 1 ? "" : "s"} × {clipSeconds}s ≈{" "}
+                  {t("pages.listingAd.clipCount", { count: photosToAnimate.length, seconds: clipSeconds })}{" "}
                   <span className="font-semibold text-slate-700">~{estSeconds}{t("pages.dashFragments.sVideo")}</span>
                 </>
               ) : (

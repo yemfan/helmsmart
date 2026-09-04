@@ -165,12 +165,12 @@ export function ReferAFriendCard() {
             {summary.completedCount > 0 ? (
               <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 font-medium text-emerald-800">
                 {summary.completedCount} signed up · earned{" "}
-                {summary.totalBonusEarned.toLocaleString()} tokens
+                {t("pages.referAFriend.tokensEarned", { n: summary.totalBonusEarned.toLocaleString() })}
               </span>
             ) : null}
             {summary.pendingCount > 0 ? (
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 font-medium text-amber-800">
-                {summary.pendingCount} pending
+                {t("pages.referAFriend.pendingCount", { count: summary.pendingCount })}
               </span>
             ) : null}
           </div>

@@ -106,7 +106,7 @@ export default async function NewsletterHubPage() {
                     <span className="rounded-full bg-[#0072ce]/10 px-2.5 py-1 font-semibold text-[#0072ce]">{t("pages.newsletterIndex.weekOf", { ns: "dashboard" })} {formatWeek(d.week_of, locale)}
                     </span>
                     <span className="text-slate-500">
-                      {Array.isArray(d.items) ? d.items.length : 0} stories
+                      {t("pages.newsletter.storyCount", { count: Array.isArray(d.items) ? d.items.length : 0, ns: "dashboard" })}
                     </span>
                   </div>
                   <h3 className="mt-3 text-lg font-semibold leading-snug tracking-tight text-slate-900">
