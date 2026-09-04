@@ -177,7 +177,7 @@ export default function SphereImportClient() {
           <div className="border-b border-gray-100 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-gray-700">
-                <strong>{stats.included}</strong> of {stats.total} rows included ·{" "}
+                {t("pages.sphereImport.rowsIncluded", { included: stats.included, total: stats.total })}{" "}
                 <strong>{stats.optIns}</strong> {t("pages.dashFragments.anniversaryOptIn")}{skipped > 0 && <> · {skipped} {t("pages.dashFragments.emptyRowsSkipped")}</>}
                 {stats.withErrors > 0 && (
                   <> · <span className="text-amber-700">{stats.withErrors} {t("pages.dashFragments.withWarnings")}</span></>

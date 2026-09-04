@@ -304,6 +304,8 @@ function OutcomeBadge({
   draftStatus: string | null;
   suppressedReason: string | null;
 }) {
+  // Its own hook: a sub-component inherits no translator from its parent.
+  const { t } = useTranslation("dashboard");
   if (draftId) {
     const label =
       draftStatus === "sent"
@@ -337,7 +339,7 @@ function OutcomeBadge({
         className="inline-flex rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
         title={suppressedReason}
       >
-        Suppressed · {suppressedReason.replace(/_/g, " ")}
+        {t("pages.schedulerActivity.suppressed", { reason: suppressedReason.replace(/_/g, " ") })}
       </span>
     );
   }

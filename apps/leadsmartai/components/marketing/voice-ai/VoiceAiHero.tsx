@@ -25,7 +25,7 @@ export default async function VoiceAiHero() {
 
       <div className="relative">
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300 ring-1 ring-emerald-400/30">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live demo · no signup
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {t("pages.voiceAiHero.liveDemo", { ns: "dashboard" })}
         </span>
         <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">{t("pages.voiceHero.headline", { ns: "dashboard" })}</h1>
         <p className="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">{t("pages.voiceHero.sub", { ns: "dashboard" })}</p>
@@ -39,7 +39,7 @@ export default async function VoiceAiHero() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.voiceHero.tapToCall", { ns: "dashboard" })}</span>
               <span className="text-2xl font-bold tabular-nums sm:text-3xl">{phone.display}</span>
               <span className="mt-0.5 text-xs text-slate-600 group-hover:text-slate-900">
-                Live AI · 24/7 · 30-second demo
+                {t("pages.voiceAiHero.liveAi", { ns: "dashboard" })}
               </span>
             </a>
           ) : (

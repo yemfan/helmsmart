@@ -157,7 +157,7 @@ export function BossOnboardingCard({ checklist }: Props) {
             <Sparkles className="h-4 w-4" aria-hidden />
           </span>
           <div>
-            <p className="text-sm font-semibold text-white">Boss · your AI chief of staff</p>
+            <p className="text-sm font-semibold text-white">{t("pages.bossOnboarding.tagline")}</p>
             <p className="text-xs text-slate-300">
               {checklist.doneCount} of {checklist.total} {t("pages.dashFragments.stepsSetUp")}</p>
           </div>

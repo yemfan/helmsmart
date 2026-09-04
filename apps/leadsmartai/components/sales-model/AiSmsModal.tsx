@@ -394,7 +394,7 @@ export function AiSmsModal({
         <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600">
-              AI SMS · {model.name}
+              {t("pages.aiSmsModal.eyebrow", { model: model.name })}
             </p>
             <h2 id="ai-sms-title" className="mt-0.5 text-lg font-semibold text-slate-900">
               {selectedContact?.name?.trim() || selectedContact?.phone || t("pages.aiSms.launchAnAiSms")}

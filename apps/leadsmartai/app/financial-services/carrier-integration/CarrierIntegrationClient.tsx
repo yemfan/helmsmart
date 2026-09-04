@@ -286,7 +286,7 @@ export default function CarrierIntegrationClient() {
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="font-semibold text-slate-900">CloseBoss AI</p>
-              <p>closebossai.com · pilot inquiries welcome</p>
+              <p>{t("pages.fsMarketing.domainPilotLine")}</p>
             </div>
             <p className="text-right text-[7.5pt] text-slate-400">
               {t("pages.carrierIntegration.confidentialFor", { partner: partnerLabel })}

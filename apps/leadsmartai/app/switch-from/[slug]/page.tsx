@@ -144,7 +144,7 @@ export default async function SwitchFromPage({
               href="/start-free"
               className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
-              Start free trial · 14 days
+              {t("pages.switchFrom.ctaTrial", { ns: "dashboard" })}
             </Link>
             <a
               href="#concierge"

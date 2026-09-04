@@ -243,7 +243,7 @@ export function ImportWizardClient() {
       {step === 2 && (
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step2")}</h2>
-          <p className="mt-1 text-sm text-gray-600">{rowCount.toLocaleString()} rows · job {jobId}</p>
+          <p className="mt-1 text-sm text-gray-600">{t("pages.importWizard.rowsJob", { rows: rowCount.toLocaleString(), job: jobId })}</p>
           <label className="mt-3 block text-sm">
             <span className="font-medium text-gray-700">{t("pages.importWizard.importingFrom")}</span>
             <select

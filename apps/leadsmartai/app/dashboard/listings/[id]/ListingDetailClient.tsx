@@ -159,18 +159,36 @@ function formatDate(iso: string | null, locale: string): string {
   });
 }
 
-function formatRelative(iso: string | null): string {
-  const { t, i18n } = useTranslation("dashboard");
-  const locale = intlLocale(i18n.language);
+/**
+ * Relative age, as a plain function.
+ *
+ * It used to call `useTranslation` in its own body — a hook inside something
+ * that is not a component, which `rules-of-hooks` reports as an error and
+ * which only worked because every caller happened to invoke it during render.
+ * The translator is a parameter now, which is what the rest of this codebase
+ * does with module-level helpers.
+ *
+ * Fixing that exposed the second half: the three fallbacks below were English
+ * template literals (`${days}d ago`) inside a function whose other branches
+ * were translated, so a Chinese listing page read "今天" for one row and
+ * "5d ago" for the next.
+ */
+function formatRelative(
+  iso: string | null,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  locale: string,
+): string {
   if (!iso) return "—";
   const then = new Date(iso).getTime();
   const days = Math.round((Date.now() - then) / 86_400_000);
   if (days === 0) return t("pages.listingDetail.today");
   if (days === 1) return t("pages.listingDetail.yesterday");
   if (days < 0) return formatDate(iso, locale);
-  if (days < 30) return `${days}d ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
+  if (days < 30) return t("pages.listingDetail.daysAgo", { count: days });
+  if (days < 365) {
+    return t("pages.listingDetail.monthsAgo", { count: Math.floor(days / 30) });
+  }
+  return t("pages.listingDetail.yearsAgo", { count: Math.floor(days / 365) });
 }
 
 /**
@@ -478,7 +496,7 @@ export function ListingDetailClient({
               ) : (
                 <span className="text-slate-400">{t("pages.listingDetail.sellerNotSet")}</span>
               )}
-              <span className="mx-1.5 text-slate-300">·</span>{t("pages.dashFragments.created")} {formatRelative(listing.created_at)}
+              <span className="mx-1.5 text-slate-300">·</span>{t("pages.dashFragments.created")} {formatRelative(listing.created_at, t, locale)}
             </p>
           </div>
           <span
@@ -589,7 +607,7 @@ export function ListingDetailClient({
         <Card title={t("pages.listingDetail.showings")}>
           <DetailRow label={t("pages.listingDetail.total")} value={String(listing.showings_total)} />
           <DetailRow label={t("pages.listingDetail.upcoming")} value={String(listing.showings_upcoming)} />
-          <DetailRow label={t("pages.listingDetail.last")} value={formatRelative(listing.last_showing_at)} />
+          <DetailRow label={t("pages.listingDetail.last")} value={formatRelative(listing.last_showing_at, t, locale)} />
           <div className="pt-1">
             <Link
               href={`/dashboard/showings?propertyAddress=${encodeURIComponent(listing.property_address)}`}

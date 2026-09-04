@@ -201,7 +201,7 @@ export default function CommandChainDiagram() {
           <p className="inline-flex items-center gap-2 font-heading text-sm font-bold text-violet-900 dark:text-violet-200">
             <House size={16} aria-hidden />{t("pages.commandChain.bossAssistant")}</p>
           <p className="text-[11px] text-violet-700/80 dark:text-violet-300/80">
-            plans it · assigns the right teammates · reports back
+            {t("pages.commandChain.steps")}
           </p>
         </div>
 

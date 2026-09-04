@@ -605,7 +605,7 @@ export function AiChatPanel() {
       <div
         onPointerDown={onHeaderPointerDown}
         onDoubleClick={resetPosition}
-        title="Drag to reposition · Double-click to reset position + size"
+        title={t("pages.aiChatPanel.dragHint")}
         className={`flex items-center justify-between gap-3 bg-blue-600 px-4 py-3 text-white touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         <div className="flex min-w-0 items-center gap-3">
