@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient } from "@/lib/anthropic";
+import { languageDirectiveForExtraction } from "@/lib/i18n/languageDirective";
 
 /**
  * Extracts structured deal facts from a ratified CAR RPA (California
@@ -77,10 +78,17 @@ Contingency day counts: paragraph 3 = loan contingency, paragraph 14 = inspectio
  * Extracts fields from a PDF buffer. The caller should pass raw bytes,
  * not base64 — we convert here so the API stays clean.
  */
-export async function extractContract(pdfBytes: Uint8Array): Promise<ContractExtraction> {
+/**
+ * @param locale The realtor's language. Governs `warnings` only — the contract's
+ *   own names, addresses, dates and amounts are reproduced exactly.
+ */
+export async function extractContract(
+  pdfBytes: Uint8Array,
+  locale?: string | null,
+): Promise<ContractExtraction> {
   return callExtractor({
     pdfBytes,
-    systemPrompt: SYSTEM_PROMPT,
+    systemPrompt: SYSTEM_PROMPT + languageDirectiveForExtraction(locale, ["warnings"]),
     userInstruction: `Extract the deal facts from this California RPA. ${EXTRACTION_SCHEMA_DESCRIPTION}`,
     parse: parseExtractionResponse,
   });

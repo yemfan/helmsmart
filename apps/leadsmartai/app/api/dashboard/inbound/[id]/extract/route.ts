@@ -6,6 +6,7 @@ import {
 } from "@/lib/inbound/deliveries";
 import { attemptExtraction } from "@/lib/inbound/extractFromAttachments";
 import { isAnthropicConfigured } from "@/lib/anthropic";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 export const runtime = "nodejs";
 // Same headroom as the /offers/parse-pdf endpoint — Claude PDF
@@ -50,6 +51,7 @@ export async function POST(
     }
 
     const result = await attemptExtraction({
+      locale: await agentUiLocale(String(agentId)),
       intent: delivery.intent,
       attachments: delivery.attachments_json ?? [],
       // Re-pass the stored subject + text-preview so retries on

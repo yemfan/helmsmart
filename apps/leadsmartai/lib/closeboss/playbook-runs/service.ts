@@ -16,6 +16,7 @@ import type {
   PlaybookTaskMeta,
   SellingPlan,
 } from "./types";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /** Days-from-now → ISO at 9am local, for task due dates. */
 function dueInDays(offsetDays: number, hour = 9): string {
@@ -174,7 +175,11 @@ async function startSelling(
   // Phase 2 — marketing plan (best-effort).
   const plan: SellingPlan = {};
   try {
-    const mp = await generateMarketingPlan({ address, priceContext });
+    const mp = await generateMarketingPlan({
+      address,
+      priceContext,
+      locale: await agentUiLocale(agentId),
+    });
     plan.marketingPlan = mp.plan;
     plan.channels = mp.channels;
     await appendArtifact(runId, { kind: "marketing_plan", title: "Marketing plan", url, createdAt: nowIso });

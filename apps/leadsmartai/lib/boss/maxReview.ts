@@ -3,6 +3,7 @@ import "server-only";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
 import { parseMaxVerdict, type MaxReview } from "@/lib/boss/maxVerdict";
+import { languageDirectiveForMixedJson } from "@/lib/i18n/languageDirective";
 
 /**
  * Max proofreads an outbound message before it goes.
@@ -27,6 +28,12 @@ import { parseMaxVerdict, type MaxReview } from "@/lib/boss/maxVerdict";
 export async function maxReviewDraft(input: {
   channel: "sms" | "email";
   body: string;
+  /**
+   * The language the REALTOR reads. It governs Max's `reason` only — the
+   * corrected `body` stays in the language of the message, because that one
+   * is sent to the contact.
+   */
+  locale?: string | null;
   /** What the message is meant to achieve, so Max can judge fit as well as form. */
   intent: string;
   recipientName?: string | null;
@@ -44,7 +51,10 @@ Answer with exactly one verdict:
 
 Bias: when in doubt, escalate. Waving through something you were unsure about is worse than asking.
 
-Output ONLY a JSON object: { "verdict": "approve" | "fix" | "escalate" | "reject", "body": string | null, "reason": "string" }`;
+Output ONLY a JSON object: { "verdict": "approve" | "fix" | "escalate" | "reject", "body": string | null, "reason": "string" }${languageDirectiveForMixedJson(
+    input.locale,
+    { agentReads: ["reason"], recipientReads: ["body"] },
+  )}`;
 
   const user = [
     `Channel: ${input.channel}`,

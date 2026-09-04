@@ -4,6 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 // time; none of that is needed to exercise the pure scheduling math.
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabaseServer", () => ({ supabaseServer: {} }));
+// Reached transitively via agentUiLocale, which recommend.ts now uses to
+// pick the language the plan's `reasoning` is written in.
+vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
 vi.mock("@/lib/newsletter/db", () => ({ getLatestDigest: vi.fn() }));
 vi.mock("@/lib/presentations/loadPresentationAgent", () => ({
   loadPresentationAgent: vi.fn(),

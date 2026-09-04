@@ -16,6 +16,7 @@ import {
 } from "@/lib/inbound/deliveries";
 import { attemptExtraction, summarizeExtraction } from "@/lib/inbound/extractFromAttachments";
 import { matchSenderToContact } from "@/lib/inbound/matchSenderContact";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Provider-agnostic inbound-email processor. Both webhook routes — Resend
@@ -87,6 +88,8 @@ export async function processInboundEmail(
   const extractionResult = await attemptExtraction({
     intent,
     attachments,
+    // Webhook path: no request cookie, so the agent's saved language.
+    locale: await agentUiLocale(String(alias.agent_id)),
     subject,
     text,
     pdfBytes: input.pdfBytes ?? null,

@@ -16,6 +16,7 @@ import {
   fixedSlotTimes,
   planSlotTimes,
 } from "@/lib/social/planWeeklySlot";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Weekly social schedule. The agent checks weekdays; each checked day carries a
@@ -502,6 +503,7 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
     const slotTimes =
       timeMode === "ai"
         ? await planSlotTimes({
+            locale: await agentUiLocale(String(r.agent_id)),
             weekdayLabel: WEEKDAY_LABELS[r.weekday] ?? "today",
             postsPerDay,
             platforms: r.platforms ?? platformsForMedia(normalizeMediaType(r.media_type)),

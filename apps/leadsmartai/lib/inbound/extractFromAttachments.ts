@@ -83,8 +83,10 @@ export async function attemptExtraction(input: {
    *  (SendGrid Inbound Parse) rather than as a signed URL (Resend).
    *  When present, used directly instead of fetching content_url. */
   pdfBytes?: Uint8Array | null;
+  /** The realtor's language, for the prose fields the extractors return. */
+  locale?: string | null;
 }): Promise<AttemptExtractionResult> {
-  const { intent, attachments, subject, text, pdfBytes } = input;
+  const { intent, attachments, subject, text, pdfBytes, locale } = input;
 
   // Unknown intent → no extractor. The agent reads the email body on
   // the review page and acts manually.
@@ -103,6 +105,7 @@ export async function attemptExtraction(input: {
       const data = await extractShowingRequest({
         subject: subject ?? null,
         text,
+        locale,
       });
       return { status: "extracted", payload: { kind: "showing_request", data } };
     } catch (e) {

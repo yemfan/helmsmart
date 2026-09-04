@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 
 /**
  * AI summary + recommendation over a listing's competing offers. The
@@ -67,6 +68,8 @@ Be concise and concrete. Use the numbers provided. Never invent terms that weren
 export async function summarizeOffers(input: {
   listPrice: number | null;
   offers: OfferForSummary[];
+  /** The language the AGENT reads — this analysis is for them, not the buyer. */
+  locale?: string | null;
 }): Promise<OfferCompareSummary> {
   if (!isAnthropicConfigured()) {
     throw new Error("AI summary is unavailable — ANTHROPIC_API_KEY is not configured.");
@@ -99,7 +102,7 @@ export async function summarizeOffers(input: {
   const res: any = await client.messages.create({
     model: MODEL,
     max_tokens: 1500,
-    system: SYSTEM_PROMPT,
+    system: SYSTEM_PROMPT + languageDirectiveForJson(input.locale),
     messages: [{ role: "user", content: userPrompt }],
   });
   for (const b of Array.isArray(res?.content) ? res.content : []) {

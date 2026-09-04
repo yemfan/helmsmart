@@ -3,6 +3,7 @@ import "server-only";
 import type { ContentBlock } from "@anthropic-ai/sdk/resources";
 
 import { getAnthropicClient } from "@/lib/anthropic";
+import { languageDirectiveForExtraction } from "@/lib/i18n/languageDirective";
 
 /**
  * AI extraction of one or more contacts from an unstructured source —
@@ -82,8 +83,13 @@ const USER_INSTRUCTION =
 
 const MODEL = "claude-sonnet-4-6";
 
+/**
+ * @param locale The realtor's language. Governs `notes` only — a name, an
+ *   address, a phone number and an email are data, not copy.
+ */
 export async function aiExtractContacts(
   input: AiExtractInput,
+  locale?: string | null,
 ): Promise<ContactDraft[]> {
   const client = getAnthropicClient();
 
@@ -96,7 +102,7 @@ export async function aiExtractContacts(
     // threshold where the SDK demands streaming. salvageContacts() recovers the
     // complete rows if an even larger roster still hits the ceiling.
     max_tokens: 16000,
-    system: SYSTEM_PROMPT,
+    system: SYSTEM_PROMPT + languageDirectiveForExtraction(locale, ["notes"]),
     messages: [{ role: "user", content: contentBlocks }],
   });
 

@@ -5,6 +5,7 @@ import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
 import { resolveApprovalMode } from "@/lib/closeboss/autopilot";
 import { maxReviewDraft } from "@/lib/boss/maxReview";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Title prefix for the briefing's inactive-lead task.
@@ -165,7 +166,9 @@ Output ONLY a JSON object: { "body": "string" }`;
       status = "approved";
     } else if (mode === "assisted") {
       const intent = `Re-open the conversation with a lead who has gone quiet for ${input.daysInactive} days.`;
+      const reviewLocale = await agentUiLocale(input.agentId);
       let verdict = await maxReviewDraft({
+        locale: reviewLocale,
         channel: "sms",
         body,
         intent,
@@ -181,6 +184,7 @@ Output ONLY a JSON object: { "body": "string" }`;
         if (retry) {
           body = retry.slice(0, 320);
           verdict = await maxReviewDraft({
+            locale: reviewLocale,
             channel: "sms",
             body,
             intent,

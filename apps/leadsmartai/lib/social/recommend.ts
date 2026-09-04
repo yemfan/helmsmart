@@ -28,6 +28,7 @@ import { renderCardPng, type BrandKit } from "@/lib/social/renderCard";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import { reviewOutboundPost } from "@/lib/social/reviewClaims";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Weekly Marketing Assistant social recommender (Phase 1).
@@ -502,6 +503,7 @@ export async function generateWeeklyRecommendations(
     const connected = await getConnectedSocialAccounts(agentId);
     config = await planAutopilotPeriod({
       config: baseConfig,
+      locale: await agentUiLocale(agentId),
       connectedPlatforms: [
         ...new Set(connected.map(platformForAccount).filter((p): p is PublishTargetPlatform => p !== null)),
       ],

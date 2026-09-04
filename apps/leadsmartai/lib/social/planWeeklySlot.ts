@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 
 /**
  * "Let the AI decide" for a weekly-schedule slot: publish times, and topics.
@@ -86,6 +87,8 @@ export async function planSlotTimes(input: {
   weekdayLabel: string;
   postsPerDay: number;
   platforms: readonly string[];
+  /** The language the AGENT reads — only `reasoning` is prose they see. */
+  locale?: string | null;
 }): Promise<number[]> {
   const count = clampPostsPerDay(input.postsPerDay);
   if (!isAnthropicConfigured()) return defaultAiSlotTimes(count);
@@ -98,7 +101,8 @@ export async function planSlotTimes(input: {
     count > 1 ? "Space them out across the day - do not bunch them together." : "",
     "Stay between 07:00 and 21:30.",
     "",
-    'Return ONLY JSON, no commentary: {"times": ["HH:MM", ...], "reasoning": "one short sentence"}',
+    'Return ONLY JSON, no commentary: {"times": ["HH:MM", ...], "reasoning": "one short sentence"}' +
+      languageDirectiveForJson(input.locale),
   ]
     .filter(Boolean)
     .join("\n");

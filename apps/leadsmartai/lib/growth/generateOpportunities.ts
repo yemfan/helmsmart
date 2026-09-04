@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient } from "@/lib/anthropic";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 import type { AgentGrowthSnapshot, GrowthOpportunity } from "./opportunityTypes";
 
 /**
@@ -76,15 +77,20 @@ const SCHEMA_INSTRUCTION = `Return JSON with this exact shape:
 
 Return ONLY that JSON. No prose, no markdown, no code fences. At most 5 opportunities.`;
 
+/**
+ * @param locale The language the AGENT reads, from `agentUiLocale()`. These
+ *   opportunities are coaching notes for them, not client-facing copy.
+ */
 export async function generateOpportunities(
   snapshot: AgentGrowthSnapshot,
+  locale?: string | null,
 ): Promise<GrowthOpportunity[]> {
   const client = getAnthropicClient();
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 2048,
-    system: SYSTEM_PROMPT,
+    system: SYSTEM_PROMPT + languageDirectiveForJson(locale),
     messages: [
       {
         role: "user",

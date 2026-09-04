@@ -10,6 +10,8 @@ import { sendOutboundEmail } from "@/lib/ai-email/send";
 import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
 import { quietHoursBlockReason, nextSendOpenAfter } from "@/lib/agent-messaging/sendWindow";
 import { defineTool } from "../types";
+import { resolveLeadOutboundLocale } from "@/lib/locales/resolveLocale";
+import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 
 /**
  * draft_message — writes a message_drafts row (status 'pending'). Drafting is
@@ -25,12 +27,13 @@ import { defineTool } from "../types";
 async function loadContact(agentId: string, contactId: string) {
   const { data } = await supabaseAdmin
     .from("contacts")
-    .select("id, name, first_name, phone, email, notes")
+    .select("id, name, first_name, phone, email, notes, preferred_language")
     .eq("id", contactId)
     .eq("agent_id", agentId)
     .maybeSingle();
   return data as {
     id: string;
+    preferred_language?: string | null;
     name: string | null;
     first_name: string | null;
     phone: string | null;
@@ -75,6 +78,19 @@ export const draftMessage = defineTool({
     const agentName = (agentRow as { brand_name?: string | null } | null)?.brand_name ?? null;
     const recipient = contact.first_name ?? contact.name ?? null;
 
+    /*
+     * The RECIPIENT's language, not the realtor's.
+     *
+     * `ai-sms` and the inactive-lead nudge both already do this, so an
+     * inbound-triggered reply to this same contact came back in their
+     * language while anything the realtor asked Max to send them arrived
+     * in English. Same product, same contact, two answers.
+     */
+    const agentAi = await getAgentAiSettings(ctx.agentId);
+    const outboundLocale = resolveLeadOutboundLocale({
+      leadPreferredLanguage: contact.preferred_language ?? null,
+      agentDefaultOutboundLanguage: agentAi.defaultLanguage,
+    });
     const client = getAnthropicClient();
     const system = `You draft outbound messages for a real estate professional's AI team. Write in FIRST PERSON as the Realtor${agentName ? ` (${agentName})` : ""} — warm, professional, concise, never pushy.
 
@@ -82,6 +98,9 @@ Rules:
 - ${input.channel === "sms" ? "SMS: max 300 characters, plain text, no subject, 0-1 emoji." : "Email: a short subject and a 3-6 sentence body, plain text."}
 - Use ONLY the facts provided. Never invent prices, dates, addresses, or amounts.
 - Address the recipient by first name when known.
+- ${outboundLocale === "zh"
+    ? "Write the message in Simplified Chinese — it is this contact's preferred language."
+    : "Write the message in English."} This is the RECIPIENT's language and has nothing to do with the language the realtor's dashboard is in.
 
 Output ONLY a JSON object: { "subject": ${input.channel === "email" ? '"string"' : "null"}, "body": "string" }`;
     const user = [

@@ -8,6 +8,8 @@ import { parseServiceAreas, serviceAreaLabel } from "@/lib/geo/serviceArea";
 import { GLOBAL_PREAMBLE, getSkill, type Skill, type SkillAssignee } from "./catalog";
 import { compliancePlaceholders } from "./compliance";
 import { getAgentStateCompliance, getResolvedSkills } from "./service";
+import { languageDirective, languageDirectiveForMixedJson } from "@/lib/i18n/languageDirective";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 /**
  * Skill execution (Phase 2). Resolves a skill's prompt from the catalog +
@@ -82,13 +84,25 @@ function producesPublicContent(skill: Skill): boolean {
 }
 
 /** Chain the Boss validators (Fair Housing + advertising) as one structured gate. */
-async function runComplianceGate(output: string, values: Record<string, string>): Promise<ComplianceGate> {
+/**
+ * @param locale The realtor's language. Governs `issue` — the explanation —
+ *   and never `rewrite`, which is corrected PUBLIC copy.
+ */
+async function runComplianceGate(
+  output: string,
+  values: Record<string, string>,
+  locale?: string | null,
+): Promise<ComplianceGate> {
   const system =
     "You are the compliance gate on a real estate agent's AI team (the Boss Assistant's validators). " +
     `Check the draft for Fair Housing issues (no reference or coded language to protected classes: ${values.protected_classes}; ` +
     "no \"safe/exclusive/perfect for [group]/walking distance to church/school\") AND advertising compliance " +
     `(${values.state}: license ${values.license_label}${values.license_number} + brokerage present on public assets; ${values.avm_disclaimer_rule} if a value estimate appears). ` +
-    'Output ONLY JSON: { "status": "pass" | "flag", "issues": [ { "issue": string, "rewrite": string } ] }. Empty issues array when it passes.';
+    'Output ONLY JSON: { "status": "pass" | "flag", "issues": [ { "issue": string, "rewrite": string } ] }. Empty issues array when it passes.' +
+    languageDirectiveForMixedJson(locale, {
+      agentReads: ["issue"],
+      recipientReads: ["rewrite"],
+    });
   try {
     const text = await claude(system, `Draft:\n${output.slice(0, 6000)}`, 800);
     const m = text.match(/\{[\s\S]*\}/);
@@ -120,6 +134,7 @@ export async function runSkill(
   if (resolved && !resolved.enabled) return { ok: false, error: "This skill is turned off. Enable it in Skills first." };
   const assignee: SkillAssignee = resolved?.assignee ?? skill.defaultAssignee;
 
+  const locale = await agentUiLocale(agentId);
   const compliance = await getAgentStateCompliance(agentId);
   const values: Record<string, string> = {
     ...compliancePlaceholders(compliance),
@@ -131,13 +146,23 @@ export async function runSkill(
   const prompt = fill(`${GLOBAL_PREAMBLE}\n\n${skill.prompt}`, values);
   let output: string;
   try {
-    output = await claude("You are a helpful, compliant real estate AI. Follow the instructions exactly.", prompt, 2600);
+    /*
+     * Only an ANALYTICAL skill answers to the realtor. A public one writes a
+     * post, an email or a flyer that somebody else reads, so its output must
+     * not follow the dashboard's language — `producesPublicContent` is
+     * already the line the compliance gate is drawn on, and it is the same
+     * line here.
+     */
+    const skillSystem =
+      "You are a helpful, compliant real estate AI. Follow the instructions exactly." +
+      (producesPublicContent(skill) ? "" : languageDirective(locale));
+    output = await claude(skillSystem, prompt, 2600);
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "The skill run failed." };
   }
   if (!output) return { ok: false, error: "No output was produced." };
 
-  const gate = producesPublicContent(skill) ? await runComplianceGate(output, values) : null;
+  const gate = producesPublicContent(skill) ? await runComplianceGate(output, values, locale) : null;
   return { ok: true, output, assignee, gate };
 }
 
