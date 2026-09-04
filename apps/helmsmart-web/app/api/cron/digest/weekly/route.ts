@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email";
+import { orgOwnerEmails } from "@/lib/org-recipients";
 
 export const dynamic = "force-dynamic";
 
@@ -47,20 +48,15 @@ export async function GET(request: NextRequest) {
     for (const org of orgs ?? []) {
     try {
       if (org.weekly_digest_enabled === false) continue;
-      // Recipients: owners + admins
-      const { data: members } = await db
-        .from("organization_members")
-        .select("role, user:user_id(email)")
-        .eq("organization_id", org.id)
-        .in("role", ["owner", "admin"]);
-
-      const emails = (members ?? [])
-        .map((m) => {
-          const u = Array.isArray(m.user) ? m.user[0] : m.user;
-          return (u as { email?: string | null } | null)?.email ?? null;
-        })
-        .filter((e): e is string => !!e);
-
+      // Recipients: owners + admins.
+      //
+      // This was an embed — .select("role, user:user_id(email)") — which
+      // returns nothing, always: organization_members has no email column, and
+      // user_id points at auth.users, which PostgREST cannot embed from the
+      // public schema. It failed with PGRST200, supabase-js returned data null,
+      // and this loop then `continue`d on an empty list every week without a
+      // sound. The digest has been "sent" to nobody.
+      const emails = await orgOwnerEmails(db, org.id);
       if (!emails.length) continue;
 
       // Metrics
