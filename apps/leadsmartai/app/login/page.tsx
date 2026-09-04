@@ -229,7 +229,7 @@ function LoginPageInner() {
             Sign-in for returning users sits below the divider. */}
         <div className="space-y-1.5 text-center">
           <a
-            href="/signup"
+            href="/agent-signup"
             className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
           >{t("pages.loginPage.createAccount")}</a>
           <p className="text-[11px] text-gray-500">{t("pages.loginPage.meetMax")}</p>

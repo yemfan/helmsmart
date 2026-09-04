@@ -89,7 +89,7 @@ function Hero() {
         </h1>
         <p className="ed-subheadline">{t("pages.editorialLanding.heroSub")}</p>
         <div className="ed-cta-row">
-          <a href="/signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
+          <a href="/agent-signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
           <a href="#demo" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.ctaDemo")}</a>
         </div>
         <div className="ed-trust-line">{t("pages.editorialLanding.noCard")}<span className="ed-sep">·</span>{t("pages.editorialLanding.worksWith")}</div>
@@ -727,7 +727,7 @@ function FinalCTA() {
         <p className="ed-final-sub">
           {/* [INVENTED] — rewrite before launch */}{t("pages.dashFragments.fourteenDaysFree")}</p>
         <div className="ed-final-cta-row">
-          <a href="/signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
+          <a href="/agent-signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
           <a href="#pricing" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.seePricing")}</a>
         </div>
       </div>
