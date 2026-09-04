@@ -47,7 +47,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
       <div className="mx-auto max-w-3xl">
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         <Link href="/dashboard/contacts" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:text-blue-800">
-          ← Back to leads
+          {t("pages.leadProfile.backToLeads")}
         </Link>
       </div>
     );

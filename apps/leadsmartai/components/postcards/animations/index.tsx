@@ -203,7 +203,7 @@ function AnniversaryScene(props: SceneProps) {
           className="mt-3 text-base text-slate-600"
           style={{ animation: "pc-title-slide 700ms ease-out 1100ms both" }}
         >
-          Congrats on the anniversary 🎊
+          {t("pages.postcardAnimations.anniversaryCongrats")}
         </p>
       </div>
       <MessageBlock {...props} delayMs={1500} />

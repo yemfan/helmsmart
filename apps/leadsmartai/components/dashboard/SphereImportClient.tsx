@@ -141,7 +141,7 @@ export default function SphereImportClient() {
         href="/dashboard/sphere"
         className="inline-flex text-sm font-medium text-gray-500 hover:text-gray-800"
       >
-        ← Back to Sphere
+        {t("pages.sphereImport.backToSphere")}
       </Link>
 
       <div className="rounded-xl border border-gray-200 bg-white p-5">

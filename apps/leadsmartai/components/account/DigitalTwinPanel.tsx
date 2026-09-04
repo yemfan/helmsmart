@@ -823,7 +823,7 @@ export default function DigitalTwinPanel() {
                 className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
               />
               <span className="inline-flex flex-wrap items-center gap-1">
-                ✨ Sharper video
+                {t("pages.digitalTwin.sharperVideo")}
                 <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
                   <span className="text-slate-400">— upscales &amp; restores the render</span>
@@ -842,7 +842,7 @@ export default function DigitalTwinPanel() {
                 className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
               />
               <span className="inline-flex flex-wrap items-center gap-1">
-                🧑‍💼 Lifelike avatar
+                {t("pages.digitalTwin.lifelikeAvatar")}
                 <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
                   <span className="text-slate-400">— photo-to-avatar with head motion (vs lip-sync)</span>

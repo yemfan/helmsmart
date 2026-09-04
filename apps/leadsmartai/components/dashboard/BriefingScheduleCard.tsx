@@ -150,7 +150,7 @@ export default function BriefingScheduleCard() {
             className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-[11px] text-gray-500">
-            ☀️ Start-of-day plan, hot leads, follow-ups.
+            {t("pages.briefingSchedule.morningBlurb")}
           </p>
         </Field>
         <Field label={t("pages.briefingSchedule.evening")}>
@@ -163,7 +163,7 @@ export default function BriefingScheduleCard() {
             className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-[11px] text-gray-500">
-            🌙 Recap, missed work, tomorrow preview.
+            {t("pages.briefingSchedule.eveningBlurb")}
           </p>
         </Field>
       </div>

@@ -286,7 +286,7 @@ export function ShowingDetailClient({
                         : "block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
                     }
                   >
-                    📝 Create offer
+                    {t("pages.showingDetail.createOffer")}
                     {isHot ? (
                       <div className="text-[11px] font-normal text-amber-700">{t("pages.showingDetail.wouldOffer")}</div>
                     ) : null}
@@ -305,7 +305,7 @@ export function ShowingDetailClient({
                     : "border-slate-200 bg-slate-50 text-slate-400 pointer-events-none"
                 }`}
               >
-                ✉️ Thank listing agent
+                {t("pages.showingDetail.thankListingAgent")}
                 {!showing.listing_agent_email ? (
                   <div className="text-[11px] text-slate-400">{t("pages.showingDetail.needAgentEmail")}</div>
                 ) : null}
@@ -318,14 +318,14 @@ export function ShowingDetailClient({
                 })}
                 className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
-                📬 Send summary to buyer
+                {t("pages.showingDetail.sendSummaryToBuyer")}
               </a>
               <button
                 type="button"
                 onClick={() => void onDelete()}
                 className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
-                🗑 Delete showing
+                {t("pages.showingDetail.deleteShowing")}
               </button>
             </div>
           </Card>

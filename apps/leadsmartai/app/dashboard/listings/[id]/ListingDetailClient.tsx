@@ -562,7 +562,7 @@ export function ListingDetailClient({
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  Open ↗
+                  {t("pages.listingDetail.openExternal")}
                 </a>
               }
             />

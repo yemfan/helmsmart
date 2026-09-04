@@ -343,7 +343,7 @@ export function UploadListingClient() {
               disabled={parsing}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              📄 Choose PDF
+              {t("pages.uploadListing.choosePdf")}
             </button>
             {parsing && (
               <span className="text-xs text-slate-500">{t("pages.uploadListing.parsing")}</span>

@@ -368,7 +368,7 @@ function ListingCard({
             rel="noopener nofollow"
             className="text-xs font-semibold text-blue-700 hover:underline"
           >
-            View listing ↗
+            {t("pages.homesSearch.viewListing")}
           </a>
         ) : null}
         <button

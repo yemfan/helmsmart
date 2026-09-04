@@ -85,7 +85,8 @@
     "home_value_leads": "Home Value Leads",
     "pricing": "Pricing",
     "privacy_policy": "Privacy Policy",
-    "terms_of_service": "Terms of Service"
+    "terms_of_service": "Terms of Service",
+    "back_to_home": "← Back to home"
   },
   "aria": {
     "home": "CloseBoss home",

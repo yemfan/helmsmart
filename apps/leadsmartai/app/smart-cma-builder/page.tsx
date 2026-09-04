@@ -386,7 +386,7 @@ function SmartCmaBuilderPageInner() {
             <div className="text-xs text-slate-700 font-medium">{t("pages.smartCmaBuilder.youHaveUsed")} {usage.used}/{usage.limit} {t("pages.smartCmaBuilder.reportsToday")}</div>
             {usage.warning && !usage.reached ? (
               <div className="text-[11px] text-amber-700 mt-1">
-                ⚠️ You’re almost out of free CMA reports
+                {t("pages.smartCmaBuilder.almostOutOfFreeReports")}
               </div>
             ) : null}
             {usage.reached ? (

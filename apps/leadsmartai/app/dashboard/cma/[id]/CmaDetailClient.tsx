@@ -132,7 +132,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         {t("pages.cmaDetail.couldntLoad", { reason: error ?? t("pages.cmaDetail.notFound") })}
         <div className="mt-2">
           <Link href="/dashboard/cma" className="font-semibold text-slate-700 hover:underline">
-            ← Back to CMAs
+            {t("pages.cmaDetail.backToCmas")}
           </Link>
         </div>
       </div>

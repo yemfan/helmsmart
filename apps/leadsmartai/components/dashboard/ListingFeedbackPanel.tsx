@@ -116,7 +116,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">
-            💬 Buyer-agent feedback
+            {t("pages.listingFeedback.heading")}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.listingFeedback.intro")}</p>
         </div>

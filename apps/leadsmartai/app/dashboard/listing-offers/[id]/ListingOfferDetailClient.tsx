@@ -261,20 +261,20 @@ export function ListingOfferDetailClient({
                 href={`/dashboard/transactions/${transaction.id}/offers`}
                 className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
-                ← Back to compare view
+                {t("pages.listingOffer.backToCompare")}
               </Link>
               <a
                 href={`/api/dashboard/listing-offers/${offer.id}/net-to-seller-pdf`}
                 className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
-                📄 Download net-to-seller PDF
+                {t("pages.listingOffer.downloadNetSheetPdf")}
               </a>
               <button
                 type="button"
                 onClick={() => void onDelete()}
                 className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
-                🗑 Delete offer
+                {t("pages.listingOffer.deleteOffer")}
               </button>
             </div>
           </Card>
