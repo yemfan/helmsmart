@@ -50,12 +50,22 @@ async function loadBookingOrg(agentId: string): Promise<{ timezone: string; hour
 }
 
 /** Existing booked appointments in the window, as busy intervals. */
-async function busyIntervals(agentId: string, startUtc: Date, endUtc: Date): Promise<BusyInterval[]> {
-  const { data } = await supabaseAdmin
+async function busyIntervals(
+  agentId: string,
+  startUtc: Date,
+  endUtc: Date,
+  /** Appointment to ignore — the one being rescheduled. Without this the slot
+   *  it currently occupies looks taken, so the page hides the caller's own
+   *  time and "move it 30 minutes later" is impossible when the day is busy. */
+  excludeId?: string,
+): Promise<BusyInterval[]> {
+  let q = supabaseAdmin
     .from("voice_appointments")
     .select("start_at,end_at")
     .eq("agent_id", agentId as never)
-    .eq("status", "booked")
+    .eq("status", "booked");
+  if (excludeId) q = q.neq("id", excludeId as never);
+  const { data } = await q
     .gte("start_at", new Date(startUtc.getTime() - 6 * 3600_000).toISOString())
     .lt("start_at", endUtc.toISOString());
   return ((data ?? []) as { start_at: string; end_at: string | null }[]).map((e) => ({
@@ -94,6 +104,147 @@ export async function getAvailability(agentId: string, dateStr: string): Promise
   return { closed: false, durationMinutes: duration, slots };
 }
 
+/** An appointment addressed by its capability token, for the public page. */
+export type RescheduleTarget = {
+  id: string;
+  agentId: string;
+  startISO: string;
+  endISO: string | null;
+  title: string;
+  brandName: string;
+  timezone: string;
+};
+
+/**
+ * Load the appointment a reschedule link points at.
+ *
+ * The token IS the authorization — whoever holds the link may move this one
+ * appointment and nothing else — so this is deliberately the only lookup the
+ * public page does, and it is by token, never by id. Returns null for an
+ * unknown or cancelled token rather than leaking which of the two it was.
+ */
+export async function loadRescheduleTarget(token: string): Promise<RescheduleTarget | null> {
+  if (!token) return null;
+  const { data } = await supabaseAdmin
+    .from("voice_appointments")
+    .select("id, agent_id, start_at, end_at, title, status")
+    .eq("reschedule_token", token as never)
+    .maybeSingle();
+  const row = data as {
+    id: unknown;
+    agent_id: unknown;
+    start_at: string;
+    end_at: string | null;
+    title: string | null;
+    status: string | null;
+  } | null;
+  if (!row || row.status !== "booked") return null;
+
+  const agentId = String(row.agent_id);
+  const { timezone } = await loadBookingOrg(agentId);
+  const { data: agent } = await supabaseAdmin
+    .from("agents")
+    .select("brand_name")
+    .eq("id", agentId as never)
+    .maybeSingle();
+
+  return {
+    id: String(row.id),
+    agentId,
+    startISO: row.start_at,
+    endISO: row.end_at,
+    title: row.title ?? "Appointment",
+    brandName: ((agent as { brand_name?: string | null } | null)?.brand_name ?? "").trim() || "Your appointment",
+    timezone,
+  };
+}
+
+/** Open slots for a reschedule — same as getAvailability, but the appointment
+ *  being moved does not count against itself. */
+export async function getRescheduleAvailability(
+  target: RescheduleTarget,
+  dateStr: string,
+): Promise<AvailabilityResult> {
+  const { timezone, hours } = await loadBookingOrg(target.agentId);
+  const duration = DEFAULT_DURATION_MIN;
+  const todayISO = todayInTimezone(timezone).iso;
+  const date0 = normalizeDateStr(dateStr, todayISO);
+  const open = nextOpenDay(date0, hours);
+  if (!open) return { closed: true, durationMinutes: duration, slots: [] };
+
+  const startUtc = zonedToUtc(open.date, open.open, timezone);
+  const endUtc = zonedToUtc(open.date, open.close, timezone);
+  const busy = await busyIntervals(target.agentId, startUtc, endUtc, target.id);
+  const slots = generateDaySlots({
+    date: open.date,
+    open: open.open,
+    close: open.close,
+    timezone,
+    busy,
+    durationMin: duration,
+    now: Date.now(),
+  });
+  return { closed: false, durationMinutes: duration, slots };
+}
+
+/**
+ * Move an appointment to a new time, addressed by its token.
+ *
+ * Re-validates business hours and conflicts exactly as booking does — a link
+ * is long-lived and the day fills up after it is sent, so the time a caller
+ * taps may already be gone by the time they tap it.
+ */
+export async function rescheduleAppointment(
+  token: string,
+  startISO: string,
+): Promise<BookResult> {
+  const target = await loadRescheduleTarget(token);
+  if (!target) return { ok: false, reason: "That link is no longer valid." };
+
+  const { timezone, hours } = await loadBookingOrg(target.agentId);
+  const duration = target.endISO
+    ? Math.max(15, Math.round((new Date(target.endISO).getTime() - new Date(target.startISO).getTime()) / 60_000))
+    : DEFAULT_DURATION_MIN;
+
+  let startMs = new Date(startISO).getTime();
+  if (!Number.isFinite(startMs) || startMs < Date.now()) {
+    return { ok: false, reason: "That time isn't valid or is in the past." };
+  }
+  const chk = validateBookingTime({ startMs, durationMin: duration, hours, timezone });
+  if (!chk.ok) return { ok: false, reason: chk.reason };
+  startMs = chk.startMs;
+
+  const endMs = startMs + duration * 60_000;
+  const busy = await busyIntervals(target.agentId, new Date(startMs - 1), new Date(endMs + 1), target.id);
+  if (overlapsBusy(startMs, endMs, busy)) {
+    return { ok: false, reason: "That time was just taken." };
+  }
+
+  const newStartISO = new Date(startMs).toISOString();
+  const { data: moved, error } = await supabaseAdmin
+    .from("voice_appointments")
+    .update({ start_at: newStartISO, end_at: new Date(endMs).toISOString() } as never)
+    .eq("id", target.id as never)
+    .select("id");
+
+  // Ask for the rows back: an update that matches nothing is not an error, and
+  // telling someone their appointment moved when it did not is worse than an
+  // error message.
+  if (error || !moved || moved.length === 0) {
+    console.error("[booking] reschedule failed:", (error as { message?: string } | null)?.message ?? "no rows");
+    return { ok: false, reason: "I couldn't move that appointment — please try again." };
+  }
+
+  return {
+    ok: true,
+    startISO: newStartISO,
+    label: spokenDateTimeLabel(startMs, timezone),
+    eventId: target.id,
+    title: target.title,
+    rescheduleToken: token,
+  };
+}
+
 export type BookResult = {
   ok: boolean;
   reason?: string;
@@ -101,6 +252,8 @@ export type BookResult = {
   label?: string;
   eventId?: string;
   title?: string;
+  /** Capability token for the public reschedule page. */
+  rescheduleToken?: string;
 };
 
 /** Book a specific slot — re-validates business hours + conflicts, then inserts. */
@@ -178,7 +331,7 @@ export async function bookAppointment(
       status: "booked",
       source: "ai_receptionist",
     } as never)
-    .select("id")
+    .select("id, reschedule_token")
     .single();
 
   if (error) {
@@ -200,7 +353,15 @@ export async function bookAppointment(
     console.error("[booking] insert failed:", (error as { message?: string }).message);
     return { ok: false, reason: "I couldn't save that booking — let's try another time." };
   }
-  return { ok: true, startISO, label, eventId: String((evt as { id: unknown }).id), title };
+  const row = evt as { id: unknown; reschedule_token?: unknown };
+  return {
+    ok: true,
+    startISO,
+    label,
+    eventId: String(row.id),
+    title,
+    rescheduleToken: row.reschedule_token ? String(row.reschedule_token) : undefined,
+  };
 }
 
 /** create_callback: ensure the caller is a contact + drop a high-priority task. */
@@ -250,6 +411,8 @@ export type ToolResult = {
   /** UTC start, so the confirmation can be re-rendered in the caller's own
    *  language rather than reusing the English `bookedLabel`. */
   bookedStartISO?: string;
+  /** Capability token for the public reschedule page, texted to the caller. */
+  bookedRescheduleToken?: string;
 };
 
 /** Dispatch a Retell custom-function call to the right booking action. Returns a
@@ -353,6 +516,7 @@ export async function runReceptionistTool(
       bookedContactId: contactId,
       bookedCallerName: callerName || null,
       bookedStartISO: r.startISO,
+      bookedRescheduleToken: r.rescheduleToken,
     };
   }
 
