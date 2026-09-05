@@ -10,6 +10,11 @@
   },
   "plans": {
     "heading": "月度套餐",
+    "headingAnnual": "年度套餐",
+    "monthly": "按月",
+    "annual": "按年",
+    "save17": "省 17%",
+    "billedYearly": "每年 ${{total}}，省 ${{saved}}",
     "help": "根据你的通话量和视频量选择套餐。随时可更改或取消。",
     "perMonth": "/月",
     "creditsPerMo": "额度 / 月",

@@ -3411,6 +3411,7 @@
       "writeFastReply": "Write a fast reply… (demo)",
       "sendReply": "Send reply →",
       "comparePlans": "Compare plans & unlock →",
+      "teamHeading": "Need more than one seat?",
       "contactSales": "Contact sales →",
       "readyCreateAccount": "I&apos;m ready — create my agent account →",
       "loadingConversation": "Loading conversation…",
@@ -3917,6 +3918,7 @@
       "everythingIncluded": "Everything's included on every plan — credits are only spent on AI phone minutes and video.",
       "creditsAdded": "Credits added — your new balance should appear in a moment.",
       "subUpdated": "Subscription updated — your monthly credits will appear shortly.",
+      "billedYearly": "${{total}} billed yearly · save ${{saved}}",
       "switchingNote": "Switching plans only bills the difference for the rest of your billing period. Downgrades keep the credits you've already been given.",
       "contactBrokerage": "Contact us about Brokerage",
       "loadingCredits": "Loading credits…"

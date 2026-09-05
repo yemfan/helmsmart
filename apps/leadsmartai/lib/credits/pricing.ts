@@ -167,15 +167,32 @@ export const CREDIT_TIERS: ReadonlyArray<{
  * way four hand-written price lists drifted from each other. Ten months is the
  * convention every existing surface already used (79 -> 790).
  *
- * NOTE: a Stripe recurring price for the annual cadence does not exist yet for
- * these tiers. Surfaces must gate the annual toggle on `annualPriceConfigured`
- * rather than on this number — advertising a cadence that cannot be bought is
- * the same class of bug as advertising the wrong price.
+ * The annual Stripe prices exist as of 2026-09-04. Surfaces must still gate the
+ * annual toggle on `annualPriceConfigured` rather than on this number: for five
+ * weeks the funnel advertised "save 17%" while checkout could only resolve the
+ * monthly price, so the discount was visible and unbuyable. Advertising a
+ * cadence that cannot be bought is the same class of bug as the wrong price.
  */
 export function annualUsd(tierId: CreditTierId): number | null {
   const tier = CREDIT_TIERS.find((t) => t.id === tierId);
   return tier ? tier.priceUsd * 10 : null;
 }
+
+/** How a subscription is billed. Delivery of credits is monthly either way. */
+export type BillingCadence = "monthly" | "annual";
+
+/**
+ * Billing periods a cadence covers, in months.
+ *
+ * The credit grant fires once per PAID INVOICE, and an annual subscription
+ * raises one invoice a year. Without this multiplier an annual subscriber pays
+ * for twelve months and receives one month's credits — a worse bug than the
+ * missing annual checkout it would ship alongside.
+ */
+export const MONTHS_PER_PERIOD: Record<BillingCadence, number> = {
+  monthly: 1,
+  annual: 12,
+};
 
 /** Env var holding a tier's ANNUAL Stripe price id, by convention. */
 export function annualPriceEnv(tierId: CreditTierId): string {

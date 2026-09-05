@@ -3,7 +3,8 @@ import "server-only";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe/server";
 import { grantCredits } from "@/lib/credits/ledger";
-import { CREDIT_TIERS } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, MONTHS_PER_PERIOD } from "@/lib/credits/pricing";
+import type { BillingCadence } from "@/lib/credits/pricing";
 
 /**
  * Monthly-subscription credit grants for the usage model. The new credit plans
@@ -90,7 +91,19 @@ export async function grantMonthlyCreditsForInvoice(invoice: Stripe.Invoice): Pr
   const plan = meta?.plan;
   if (!userId || !plan) return;
 
-  let credits = monthlyCreditsForPlan(plan);
+  /*
+   * An invoice buys a whole billing PERIOD, and an annual period is twelve
+   * months of the advertised "800 credits/mo". This grant fires once per
+   * invoice, so without the multiplier an annual subscriber pays for twelve
+   * months and receives one — the plan cards would be lying by 11/12ths.
+   *
+   * `cadence` is stamped on the subscription at checkout. Its absence means
+   * monthly, which is correct for every subscription created before annual
+   * existed.
+   */
+  const cadence: BillingCadence = meta?.cadence === "annual" ? "annual" : "monthly";
+  const months = MONTHS_PER_PERIOD[cadence];
+  let credits = monthlyCreditsForPlan(plan) * months;
 
   // A mid-cycle plan change bills only the PRORATED difference, so it should
   // grant only the difference in credits — the user already received the old
@@ -99,8 +112,11 @@ export async function grantMonthlyCreditsForInvoice(invoice: Stripe.Invoice): Pr
   // subscription metadata when we perform the switch.
   const billingReason = (invoice as unknown as { billing_reason?: string | null }).billing_reason;
   if (billingReason === "subscription_update") {
-    const prev = Number.parseInt(meta?.prev_credits ?? "", 10);
-    const delta = credits - (Number.isFinite(prev) ? prev : 0);
+    // `prev_credits` is a MONTHLY figure, like `credits`; scale it the same way
+    // so the delta compares like with like rather than a year against a month.
+    const prevMonthly = Number.parseInt(meta?.prev_credits ?? "", 10);
+    const prev = (Number.isFinite(prevMonthly) ? prevMonthly : 0) * months;
+    const delta = credits - prev;
     // Downgrades (delta <= 0) keep the credits already granted — we never claw back.
     if (delta <= 0) return;
     credits = delta;

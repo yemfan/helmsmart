@@ -5,7 +5,14 @@ import { intlLocale } from "@/lib/i18n/locale";
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { approxCallMinutes, approxVideos, CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
+import {
+  approxCallMinutes,
+  approxVideos,
+  annualUsd,
+  CREDIT_TIERS,
+  CREDIT_PACKS,
+} from "@/lib/credits/pricing";
+import type { BillingCadence, CreditTierId } from "@/lib/credits/pricing";
 import IncludedFeatures from "@/components/pricing/IncludedFeatures";
 
 const BRAND = "#0072CE";
@@ -25,7 +32,16 @@ function fmtDate(iso: string, locale: string) {
   return new Date(iso).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
 }
 
-export default function CreditsClient() {
+export default function CreditsClient({
+  /**
+   * Tiers with a real annual Stripe price, decided on the server. Empty means
+   * no annual toggle is shown at all — the control appears only where checkout
+   * can complete.
+   */
+  annualTierIds = [],
+}: {
+  annualTierIds?: CreditTierId[];
+}) {
   // Named `tr` — the plan rows below already bind `t` to a tier.
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
@@ -39,6 +55,12 @@ export default function CreditsClient() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
+  const [cadence, setCadence] = useState<BillingCadence>("monthly");
+
+  const annualOffered = annualTierIds.length > 0;
+  /** Annual is per-tier: a tier without a Stripe price stays monthly, visibly. */
+  const annualFor = (tierId: CreditTierId): number | null =>
+    cadence === "annual" && annualTierIds.includes(tierId) ? annualUsd(tierId) : null;
 
   const loadBalance = useCallback(async () => {
     try {
@@ -185,9 +207,44 @@ export default function CreditsClient() {
         <p className="mb-4 text-sm text-gray-500">
           {tr("more.credits.monthlyHelp")}
         </p>
+
+        {/* Shown only when a real annual price exists to sell. */}
+        {annualOffered && (
+          <div className="mb-4 flex justify-center">
+            <div className="inline-flex rounded-full border border-gray-200 bg-white p-1 shadow-sm">
+              {(["monthly", "annual"] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCadence(c)}
+                  aria-pressed={cadence === c}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                    cadence === c ? "text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
+                  style={cadence === c ? { background: BRAND } : undefined}
+                >
+                  {tr(`pages.onboardingFunnel.${c}`)}
+                  {c === "annual" && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                        cadence === "annual"
+                          ? "bg-white/20 text-white"
+                          : "bg-emerald-100 text-emerald-700"
+                      }`}
+                    >
+                      {tr("pages.onboardingFunnel.save17")}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-4 md:grid-cols-3">
           {CREDIT_TIERS.map((t) => {
             const isCurrent = plan?.planId === t.id;
+            const annualYear = annualFor(t.id);
             // Rank by credit allotment so the button says what the change is.
             const currentTier = CREDIT_TIERS.find((x) => x.id === plan?.planId);
             const label = isCurrent
@@ -207,10 +264,22 @@ export default function CreditsClient() {
                 <p className="text-sm font-semibold" style={{ color: BRAND }}>
                   {t.name}
                 </p>
+                {/* On annual the headline stays a PER-MONTH figure so the
+                    tiers stay comparable, with the yearly total spelled out
+                    underneath — quoting $790 beside $159 would read as a price
+                    rise rather than a discount. */}
                 <p className="mt-1 text-3xl font-extrabold text-brand-text">
-                  ${t.priceUsd}
+                  ${annualYear !== null ? (annualYear / 12).toFixed(2) : t.priceUsd}
                   <span className="text-base font-normal text-gray-500">/mo</span>
                 </p>
+                {annualYear !== null && (
+                  <p className="mt-0.5 text-xs font-medium text-emerald-700">
+                    {tr("pages.credits.billedYearly", {
+                      total: annualYear.toLocaleString(),
+                      saved: (t.priceUsd * 12 - annualYear).toLocaleString(),
+                    })}
+                  </p>
+                )}
                 <p className="mt-1 text-sm font-semibold text-gray-700">
                   {t.monthlyCredits.toLocaleString()} {tr("pages.dashFragments.creditsPerMo")}</p>
                 {/* Computed from CREDIT_COSTS, never hand-written: these numbers
@@ -224,7 +293,17 @@ export default function CreditsClient() {
                 <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
                 <button
                   type="button"
-                  onClick={() => void go("/api/stripe/checkout", { plan: t.id }, `plan:${t.id}`)}
+                  onClick={() =>
+                    void go(
+                      "/api/stripe/checkout",
+                      // Send the cadence this card actually QUOTED. A tier with
+                      // no annual price shows monthly above, so it must buy
+                      // monthly here or the customer is charged a price they
+                      // were never shown.
+                      { plan: t.id, cadence: annualYear !== null ? "annual" : "monthly" },
+                      `plan:${t.id}`,
+                    )
+                  }
                   disabled={busy !== null || isCurrent}
                   className="mt-5 w-full rounded-xl py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ background: isCurrent ? "#94a3b8" : BRAND }}

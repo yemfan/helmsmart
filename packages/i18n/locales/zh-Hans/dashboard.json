@@ -3411,6 +3411,7 @@
       "writeFastReply": "快速回复一句…（演示）",
       "sendReply": "发送回复 →",
       "comparePlans": "对比套餐并解锁 →",
+      "teamHeading": "需要多个席位？",
       "contactSales": "联系销售 →",
       "readyCreateAccount": "我准备好了——创建我的经纪人账户 →",
       "loadingConversation": "正在加载对话…",
@@ -3917,6 +3918,7 @@
       "everythingIncluded": "每个套餐都包含全部功能——额度只用于 AI 通话分钟和视频。",
       "creditsAdded": "额度已充值——新的余额稍后就会显示。",
       "subUpdated": "订阅已更新——每月额度稍后就会到账。",
+      "billedYearly": "每年 ${{total}}，省 ${{saved}}",
       "switchingNote": "切换方案只按本计费周期剩余时间补差价。降级不会收回已经发放给您的额度。",
       "contactBrokerage": "咨询经纪公司方案",
       "loadingCredits": "正在加载额度…"
