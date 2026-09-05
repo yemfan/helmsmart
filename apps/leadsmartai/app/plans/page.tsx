@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import PlansClientPage from "./page.client";
 import JsonLd from "@/components/JsonLd";
-import { CREDIT_TIERS } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, annualPriceConfigured } from "@/lib/credits/pricing";
 import { getServerT } from "@/lib/i18n/server";
 import { pageMetadata } from "@/lib/seo";
 
@@ -47,7 +47,11 @@ export default async function PlansPage() {
           })),
         }}
       />
-      <PlansClientPage />
+      <PlansClientPage
+        annualTierIds={CREDIT_TIERS.filter((tier) => annualPriceConfigured(tier.id)).map(
+          (tier) => tier.id,
+        )}
+      />
     </>
   );
 }

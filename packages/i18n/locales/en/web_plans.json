@@ -10,6 +10,11 @@
   },
   "plans": {
     "heading": "Monthly plans",
+    "headingAnnual": "Annual plans",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save17": "Save 17%",
+    "billedYearly": "${{total}} billed yearly · save ${{saved}}",
     "help": "Pick the plan that matches how much calling and video you do. Change or cancel any time.",
     "perMonth": "/mo",
     "creditsPerMo": "credits / month",

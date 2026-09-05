@@ -4,12 +4,13 @@ import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getPaidSubscriptionEligibility } from "@/lib/paidSubscriptionEligibility";
 import { getStripePriceIdForPlan } from "@/lib/stripePriceIds";
-import { CREDIT_TIERS, readStripePriceId } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, annualPriceEnv, readStripePriceId } from "@/lib/credits/pricing";
 import { monthlyCreditsForPlan } from "@/lib/credits/subscriptionCredits";
+import type { BillingCadence } from "@/lib/credits/pricing";
 
 // The usage-model plans (Starter/Growth/Scale) replace the old Pro/Premium
 // tiers; legacy slugs still resolve (nearest plan) so nothing breaks mid-cutover.
-type Body = { plan: string };
+type Body = { plan: string; cadence?: BillingCadence };
 
 const PRO_ONLY_MSG =
   "Paid plans are for licensed agents, brokers, and real estate teams. Sign up with a professional account or contact support.";
@@ -87,11 +88,30 @@ export async function POST(req: Request) {
     //
     // It is spelled out because the legacy branch still LOOKS live. Anything
     // that genuinely needs the old Agent Pro price must not ask for "pro".
+    /*
+     * Cadence picks a DIFFERENT Stripe price, and an unknown value means
+     * monthly. It refuses rather than falling back, because the failure it
+     * replaces was silent: the funnel offered "save 17%" and $3,990 billed
+     * yearly, and checkout resolved `tier.priceEnv` — the monthly price —
+     * unconditionally. Falling back here would keep that behaviour and bill a
+     * customer $4,788 for the year they were quoted $3,990 for.
+     */
+    const cadence: BillingCadence = body.cadence === "annual" ? "annual" : "monthly";
+
     let price: string | undefined;
     if (tier) {
-      const resolved = readStripePriceId(tier.priceEnv);
+      const priceEnv = cadence === "annual" ? annualPriceEnv(tier.id) : tier.priceEnv;
+      const resolved = readStripePriceId(priceEnv);
       if ("error" in resolved) {
-        return NextResponse.json({ error: resolved.error }, { status: 503 });
+        return NextResponse.json(
+          {
+            error:
+              cadence === "annual"
+                ? "Annual billing isn't available for this plan yet. Choose monthly, or contact support."
+                : resolved.error,
+          },
+          { status: 503 },
+        );
       }
       price = resolved.id;
     } else if (plan === "pro" || plan === "premium") {
@@ -129,6 +149,9 @@ export async function POST(req: Request) {
           user_id: user.id,
           plan,
           credits: String(credits),
+          // Read by grantMonthlyCreditsForInvoice to size the grant: one annual
+          // invoice has to deliver twelve months of credits.
+          cadence,
           // Lets the webhook grant only the DELTA on the proration invoice,
           // instead of a second full month of credits.
           prev_credits: Number.isFinite(prevCredits) ? String(prevCredits) : "0",
@@ -157,12 +180,14 @@ export async function POST(req: Request) {
           user_id: user.id,
           plan,
           credits: String(credits),
+          cadence,
         },
       },
       metadata: {
         user_id: user.id,
         plan,
         credits: String(credits),
+        cadence,
       },
     });
 

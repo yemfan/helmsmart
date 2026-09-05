@@ -1,10 +1,13 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import IncludedFeatures from "@/components/pricing/IncludedFeatures";
 
 import {
+  annualUsd,
   approxCallMinutes,
   approxVideos,
   CREDIT_COSTS,
@@ -13,6 +16,7 @@ import {
   FREE_TIER,
   WELCOME_CREDITS,
 } from "@/lib/credits/pricing";
+import type { BillingCadence, CreditTierId } from "@/lib/credits/pricing";
 
 const BRAND = "#0072ce";
 
@@ -33,8 +37,32 @@ const BRAND = "#0072ce";
  * login. Duplicating checkout here would mean a second code path to keep
  * correct, and a 401 for anyone not signed in.
  */
-export default function PlansClientPage() {
+export default function PlansClientPage({
+  annualTierIds = [],
+}: {
+  /** Tiers with a real annual Stripe price, decided on the server. */
+  annualTierIds?: CreditTierId[];
+}) {
   const { t } = useTranslation("web_plans");
+  const sp = useSearchParams();
+
+  /*
+   * The onboarding funnel sends `?cadence=annual` when the visitor chose the
+   * annual toggle there. Honouring it is the whole point: clicking "Start
+   * 14-day trial" on an annual card used to land here on a page headed
+   * "Monthly plans" quoting the monthly price, with the choice silently
+   * dropped. `plan` and `email` are still passed by the funnel and still
+   * unused here — this page has no checkout to pre-fill.
+   */
+  const annualOffered = annualTierIds.length > 0;
+  const [cadence, setCadence] = useState<BillingCadence>(
+    sp?.get("cadence") === "annual" && annualOffered ? "annual" : "monthly",
+  );
+  const annualFor = (tierId: CreditTierId): number | null =>
+    cadence === "annual" && annualTierIds.includes(tierId) ? annualUsd(tierId) : null;
+  /** Carries the choice on to the one page that can actually charge for it. */
+  const creditsHref =
+    cadence === "annual" ? "/dashboard/credits?cadence=annual" : "/dashboard/credits";
 
   const metered: Array<{ label: string; detail: string }> = [
     {
@@ -72,10 +100,46 @@ export default function PlansClientPage() {
 
         <IncludedFeatures />
 
-        {/* Monthly plans */}
+        {/* Plans — monthly or annual */}
         <section>
-          <h2 className="mb-1 text-lg font-bold text-gray-900">{t("plans.heading")}</h2>
+          <h2 className="mb-1 text-lg font-bold text-gray-900">
+            {cadence === "annual" ? t("plans.headingAnnual") : t("plans.heading")}
+          </h2>
           <p className="mb-4 text-sm text-gray-500">{t("plans.help")}</p>
+
+          {/* Shown only where a real annual price exists to sell. */}
+          {annualOffered && (
+            <div className="mb-4 flex justify-center">
+              <div className="inline-flex rounded-full border border-gray-200 bg-white p-1 shadow-sm">
+                {(["monthly", "annual"] as const).map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCadence(c)}
+                    aria-pressed={cadence === c}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                      cadence === c ? "text-white" : "text-gray-600 hover:text-gray-900"
+                    }`}
+                    style={cadence === c ? { background: BRAND } : undefined}
+                  >
+                    {t(`plans.${c}`)}
+                    {c === "annual" && (
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                          cadence === "annual"
+                            ? "bg-white/20 text-white"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {t("plans.save17")}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {/* Free is not in CREDIT_TIERS — that list drives Stripe checkout and
                 every row in it needs a price id. It is rendered first because
@@ -119,9 +183,19 @@ export default function PlansClientPage() {
                   {tier.name}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-gray-900">
-                  ${tier.priceUsd}
+                  ${annualFor(tier.id) !== null
+                    ? (annualFor(tier.id)! / 12).toFixed(2)
+                    : tier.priceUsd}
                   <span className="text-base font-normal text-gray-500">{t("plans.perMonth")}</span>
                 </p>
+                {annualFor(tier.id) !== null && (
+                  <p className="mt-0.5 text-xs font-medium text-emerald-700">
+                    {t("plans.billedYearly", {
+                      total: annualFor(tier.id)!.toLocaleString(),
+                      saved: (tier.priceUsd * 12 - annualFor(tier.id)!).toLocaleString(),
+                    })}
+                  </p>
+                )}
                 <p className="mt-1 text-sm font-semibold text-gray-700">
                   {tier.monthlyCredits.toLocaleString()} {t("plans.creditsPerMo")}
                 </p>
@@ -143,7 +217,7 @@ export default function PlansClientPage() {
                   {t(`plans.blurb.${tier.id}`, { defaultValue: tier.blurb })}
                 </p>
                 <a
-                  href="/dashboard/credits"
+                  href={creditsHref}
                   className="mt-5 w-full rounded-xl py-2.5 text-center text-sm font-bold text-white shadow transition hover:opacity-90"
                   style={{ background: BRAND }}
                 >
@@ -183,7 +257,7 @@ export default function PlansClientPage() {
                   <span className="font-normal text-gray-500">{t("packs.oneTime")}</span>
                 </p>
                 <a
-                  href="/dashboard/credits"
+                  href={creditsHref}
                   className="mt-5 w-full rounded-xl border border-gray-200 bg-white py-2.5 text-center text-sm font-bold text-gray-700 shadow-sm transition hover:bg-gray-50"
                 >
                   {t("packs.cta")}

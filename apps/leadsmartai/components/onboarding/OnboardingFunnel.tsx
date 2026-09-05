@@ -61,9 +61,18 @@ function ProgressBar({ step }: { step: OnboardingStep }) {
 function Shell({
   children,
   step,
+  /**
+   * Widen the column for steps that lay out a row of cards.
+   *
+   * Every other step is a single form or panel and reads better narrow, so the
+   * default stays. The pricing step has five tiers side by side and needs the
+   * room `/plans` already gives them.
+   */
+  wide = false,
 }: {
   children: React.ReactNode;
   step: OnboardingStep;
+  wide?: boolean;
 }) {
   const { t } = useTranslation("dashboard");
   return (
@@ -74,7 +83,11 @@ function Shell({
       {/* Brand wash. Tuned at 0.25 against near-black; on a white ground that
           reads as a printing error, so it drops to a hint of colour. */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,114,206,0.08),transparent)]" />
-      <div className="relative mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8 sm:max-w-xl sm:px-6 sm:py-12">
+      <div
+        className={`relative mx-auto flex min-h-screen flex-col px-4 py-8 sm:px-6 sm:py-12 ${
+          wide ? "max-w-lg sm:max-w-6xl" : "max-w-lg sm:max-w-xl"
+        }`}
+      >
         <header className="mb-6 flex items-center justify-between gap-3 onboarding-fade-up">
           <Link href="/" className="flex items-center opacity-90 transition hover:opacity-100">
             {/* The dark tone means "drawn FOR a dark background": it paints the
@@ -869,11 +882,18 @@ export default function OnboardingFunnel({
     function deepLinkFor(slug: SoloPlan["slug"]): string {
       const params = new URLSearchParams({ from: "onboarding", plan: slug });
       if (profile.email) params.set("email", profile.email.trim());
+      /*
+       * The cadence has to travel. Without it, choosing Annual here — "$3,990
+       * billed yearly, save $798" — landed on a page headed "Monthly plans"
+       * quoting $399/mo, and the only signal of what the visitor actually
+       * asked for was gone.
+       */
+      params.set("cadence", cadence);
       return `/plans?${params.toString()}`;
     }
 
     return (
-      <Shell step={7}>
+      <Shell step={7} wide>
         <div className="space-y-6">
           <div className="text-center">
             <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.chooseScale")}</h1>
@@ -907,8 +927,10 @@ export default function OnboardingFunnel({
             </div>
           </div>
 
-          {/* Solo plans — 4-up at lg, 2-up at sm */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Five tiers, one row from lg up. At the funnel's default max-w-xl
+              a 5-up grid gives each card ~100px and every feature wraps to one
+              word per line, so step 7 widens the shell (see `wide` above). */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {soloPlans.map((p) => {
               const isSignature = !!p.signatureLook;
               const wrapClass = isSignature
@@ -978,7 +1000,14 @@ export default function OnboardingFunnel({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-gray-900">
-                  {t("pages.onboardingFunnel.teamPrice", { price: cadence === "annual" ? "$249/mo" : "$299/mo" })}
+                  {/*
+                    * No price. The Team tier is retired — not in CREDIT_TIERS, and its
+                    * Stripe product was archived 2026-09-04 — yet this quoted 299 a month
+                    * (249 on annual) from the old ladder. `/plans` already asks the same
+                    * question with no number, which is the honest version: seats are a
+                    * conversation, not a self-serve price.
+                    */}
+                  {t("pages.onboardingFunnel.teamHeading")}
                 </p>
                 <p className="mt-0.5 text-xs text-gray-500">
                   {t("pages.onboardingFunnel.teamSeats")}
