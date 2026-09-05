@@ -10,7 +10,7 @@ import {
   resources,
   type SupportedLocale,
 } from "./config";
-import { interpolate, resolveKey } from "./resolveKey";
+import { translatorFor } from "./translator";
 
 /**
  * Server-side locale resolution for Server Components + Route
@@ -77,20 +77,5 @@ export async function getServerLocale(): Promise<SupportedLocale> {
 export async function getServerT(
   defaultNs = "common",
 ): Promise<(key: string, opts?: { ns?: string; [k: string]: unknown }) => string> {
-  const locale = await getServerLocale();
-  return (key, opts) => {
-    const ns = (opts?.ns as string | undefined) ?? defaultNs;
-    type Ns = keyof (typeof resources)[typeof locale];
-
-    const resolved = resolveKey(key, {
-      bundle: resources[locale]?.[ns as Ns],
-      // Undefined when we're already on English — nothing to fall back to.
-      fallbackBundle:
-        locale === DEFAULT_LOCALE ? undefined : resources[DEFAULT_LOCALE]?.[ns as Ns],
-      defaultValue: opts?.defaultValue,
-    });
-
-    // Null means no bundle in any language has it: render the key, loudly.
-    return resolved == null ? key : interpolate(resolved, opts ?? {});
-  };
+  return translatorFor(await getServerLocale(), defaultNs);
 }

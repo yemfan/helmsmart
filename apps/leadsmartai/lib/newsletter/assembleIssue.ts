@@ -7,11 +7,17 @@ import {
   type ActiveGeography,
 } from "@/lib/research/warehouse/read";
 import { geoSlug, stateSlug } from "@/lib/research/warehouse/slug";
+import { DEFAULT_LOCALE, resolveLocale } from "@leadsmart/i18n";
+
+import { intlLocale } from "@/lib/i18n/locale";
+import { translatorFor } from "@/lib/i18n/translator";
 import {
   METRIC_META,
   findMetric,
   formatValue,
   formatPeriod,
+  metricLabel,
+  metricShort,
   isNum,
 } from "@/lib/research/warehouse/format";
 import type { GeoLevel } from "@/lib/research/warehouse/types";
@@ -97,6 +103,34 @@ function dataHrefFor(level: GeoLevel, geo: ActiveGeography | null): string {
   const st = geo.state ? stateSlug(geo.state) : "";
   const metro = geoSlug(geo);
   return st && metro ? `/data/markets/${st}/${metro}` : "/data/markets";
+}
+
+/**
+ * Re-label a region snapshot in the language the issue is actually written in.
+ *
+ * The stats are built English-first, because `resolveRegion` is also called on
+ * its own (page metadata, the hub) where there is no issue and no language to
+ * speak of. The issue does have one — and it is the DIGEST's, not the one the
+ * reader asked for, because a week with no variant in their language falls
+ * back to English and "中位成交价" over an English newsletter is a worse
+ * answer than "Median sale price".
+ *
+ * Cheap enough to do after the fact: a handful of stats through pure lookups,
+ * which keeps the region and the digest fetching in parallel.
+ */
+function localizeStats(region: IssueRegion, language: string): IssueRegion {
+  if (resolveLocale(language) === DEFAULT_LOCALE) return region;
+  const t = translatorFor(language, "dashboard");
+  const tag = intlLocale(resolveLocale(language) ?? DEFAULT_LOCALE);
+  return {
+    ...region,
+    stats: region.stats.map((st) => ({
+      ...st,
+      label: metricLabel(st.metric, t),
+      short: metricShort(st.metric, t),
+      periodLabel: formatPeriod(st.period, tag),
+    })),
+  };
 }
 
 async function buildStats(
@@ -222,7 +256,11 @@ export async function assembleIssue(
     getDigestForReader(weekOf, language),
   ]);
   if (!region || !digest) return null;
-  return { weekOf: digest.week_of, digest, region };
+  return {
+    weekOf: digest.week_of,
+    digest,
+    region: localizeStats(region, digest.language),
+  };
 }
 
 /**
@@ -245,5 +283,9 @@ export async function assembleLatestIssue(
   if (!region || !anchor) return null;
   const digest = await getDigestForReader(anchor.week_of, language);
   if (!digest) return null;
-  return { weekOf: digest.week_of, digest, region };
+  return {
+    weekOf: digest.week_of,
+    digest,
+    region: localizeStats(region, digest.language),
+  };
 }
