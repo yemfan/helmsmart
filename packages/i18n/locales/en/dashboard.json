@@ -238,10 +238,10 @@
     "team": {
       "heading": "Your AI team",
       "receptionist": "Receptionist",
-      "sales_assistant": "Sales Specialist",
-      "marketing_assistant": "Marketing Specialist",
+      "sales_assistant": "Sales Assistant",
+      "marketing_assistant": "Marketing Assistant",
       "transaction_assistant": "Transaction Coordinator",
-      "accountant": "Financial Analyst",
+      "accountant": "Accountant",
       "realtor": "For your review"
     },
     "verbs": {
@@ -1005,11 +1005,11 @@
       "role": "Inbound communication"
     },
     "sales_assistant": {
-      "name": "AI Sales Specialist",
+      "name": "AI Sales Assistant",
       "role": "Outbound lead conversion"
     },
     "marketing_assistant": {
-      "name": "AI Marketing Specialist",
+      "name": "AI Marketing Assistant",
       "role": "Demand generation"
     },
     "transaction_assistant": {
@@ -1017,7 +1017,7 @@
       "role": "Transaction coordination"
     },
     "accountant": {
-      "name": "AI Financial Analyst",
+      "name": "AI Accountant",
       "role": "Money & books"
     }
   },
@@ -1384,10 +1384,10 @@
     "role": {
       "boss_assistant": "Captain",
       "receptionist": "AI Receptionist",
-      "sales_assistant": "AI Sales Specialist",
-      "marketing_assistant": "AI Marketing Specialist",
+      "sales_assistant": "AI Sales Assistant",
+      "marketing_assistant": "AI Marketing Assistant",
       "transaction_assistant": "AI Transaction Coordinator",
-      "accountant": "AI Financial Analyst"
+      "accountant": "AI Accountant"
     },
     "personality": {
       "boss_assistant": "Calm leader, strategic, always in control.",

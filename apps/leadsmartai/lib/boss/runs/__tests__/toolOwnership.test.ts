@@ -15,7 +15,7 @@ import { ASSIGNEE_PERSONA } from "@/lib/closeboss/assigneePersona";
  * the badge from the registry, the sentence from whatever the model guessed.
  * Asked to set up an open house he wrote "I'll have the Transaction team set
  * up the full open house playbook" directly above a step reading
- * "Ruby · Marketing Specialist".
+ * "Ruby · Marketing Assistant".
  *
  * The owner now travels in the tool description the model reads. These tests
  * hold that wiring in place.

@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
       .order("step_index", { ascending: true });
 
     // Attribute each step to the teammate who ran it, so the UI can show
-    // "Ruby · Marketing Specialist" instead of a generic label. Usually that is
+    // "Ruby · Marketing Assistant" instead of a generic label. Usually that is
     // the tool's static assignee — but a few tools pick their owner at runtime
     // (hand_off_to_agent routes an escrow question to Grace and a billing one
     // to Emma), and those report it back as `data.owner`.

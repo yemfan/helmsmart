@@ -238,10 +238,10 @@
     "team": {
       "heading": "您的 AI 团队",
       "receptionist": "前台接待",
-      "sales_assistant": "销售专员",
-      "marketing_assistant": "营销专员",
+      "sales_assistant": "销售助理",
+      "marketing_assistant": "营销助理",
       "transaction_assistant": "交易协调员",
-      "accountant": "财务分析师",
+      "accountant": "会计",
       "realtor": "待您审阅"
     },
     "verbs": {
@@ -1005,11 +1005,11 @@
       "role": "接听来电与来信"
     },
     "sales_assistant": {
-      "name": "AI 销售专员",
+      "name": "AI 销售助理",
       "role": "主动跟进、促成成交"
     },
     "marketing_assistant": {
-      "name": "AI 营销专员",
+      "name": "AI 营销助理",
       "role": "获客与推广"
     },
     "transaction_assistant": {
@@ -1017,7 +1017,7 @@
       "role": "交易流程协调"
     },
     "accountant": {
-      "name": "AI 财务分析师",
+      "name": "AI 会计",
       "role": "账目与收支"
     }
   },
@@ -1384,10 +1384,10 @@
     "role": {
       "boss_assistant": "队长",
       "receptionist": "AI 前台接待",
-      "sales_assistant": "AI 销售专员",
-      "marketing_assistant": "AI 营销专员",
+      "sales_assistant": "AI 销售助理",
+      "marketing_assistant": "AI 营销助理",
       "transaction_assistant": "AI 交易协调员",
-      "accountant": "AI 财务分析师"
+      "accountant": "AI 会计"
     },
     "personality": {
       "boss_assistant": "沉稳的领导者，讲策略，始终掌控全局。",
@@ -5079,7 +5079,7 @@
         "sales": "销售",
         "marketing": "营销",
         "transaction": "交易",
-        "accountant": "财务"
+        "accountant": "会计"
       },
       "commands": {
         "open_house": {
