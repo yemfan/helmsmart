@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/server";
-import { twilioSender } from "@/lib/twilio-sender";
+import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { cachedSystem, markTranscriptCached, readCacheUsage } from "@/lib/promptCache";
 import { shouldStopMessaging } from "@helm/dna-communication";
 import { createNotificationService } from "@/lib/actions/notifications";
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
         const ackBody = await localizeOutbound(ackEnglish, lang, assist);
         try {
           const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-          await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), to: from, body: ackBody });
+          await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), ...twilioStatusCallback(), to: from, body: ackBody });
           await supabase.from("messages").insert({
             organization_id: org.id,
             client_id: client?.id ?? null,
@@ -262,7 +262,7 @@ async function sendSms(
 ): Promise<void> {
   try {
     const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-    const sms = await client.messages.create({ ...(twilioSender(opts.from) ?? { from: opts.from }), to: opts.to, body: opts.body });
+    const sms = await client.messages.create({ ...(twilioSender(opts.from) ?? { from: opts.from }), ...twilioStatusCallback(), to: opts.to, body: opts.body });
     await supabase.from("messages").insert({
       organization_id: opts.orgId,
       client_id: opts.clientId,
