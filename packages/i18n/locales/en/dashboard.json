@@ -3422,7 +3422,59 @@
       "noCardCancel": "No credit card required · Cancel anytime",
       "teamSeats": "Up to 5 seats · round-robin routing · Top Producer Track for every member.",
       "incoming": "Incoming ·",
-      "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m"
+      "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m",
+      "availableLanguages": "Available in English and 中文.",
+      "ctaTrial": "Start 14-day trial",
+      "ctaGetStarted": "Get started",
+      "trialFooter": "14-day free trial",
+      "forever": "forever",
+      "perMo": "/mo",
+      "billedMonthly": "Billed monthly",
+      "billedYearly": "${{annual}} billed yearly · save ${{save}}",
+      "badgePopular": "Most Popular",
+      "badgeSignature": "Bilingual & Luxury",
+      "creditsPerMo": "{{credits}} credits/mo",
+      "approxCallMinutes": "≈ {{minutes}} AI call minutes",
+      "approxVideos": "≈ {{videos}} AI videos",
+      "plan": {
+        "starter": {
+          "tagline": "For new agents testing the platform.",
+          "leads": "5 leads · 50 contacts",
+          "cma": "2 CMA reports/day",
+          "sms": "AI SMS + email (basic)",
+          "actions": "100 AI actions/mo",
+          "noSms": "No SMS automation",
+          "limitedAi": "Limited AI"
+        },
+        "pro": {
+          "tagline": "For active agents closing deals consistently.",
+          "leads": "500 leads · 500 contacts",
+          "bilingual": "Bilingual English / 中文 AI",
+          "coaching": "Producer Track coaching",
+          "cma": "5 CMA reports/day",
+          "sms": "SMS + email AI (< 60s)",
+          "bookkeeping": "Bookkeeping — invoices & expenses",
+          "actions": "5,000 AI actions/mo"
+        },
+        "premium": {
+          "tagline": "For top producers running solo.",
+          "leads": "Unlimited leads & contacts",
+          "receptionist": "AI Receptionist + AI Concierge",
+          "coaching": "Top Producer Track coaching",
+          "isa": "ISA workflow",
+          "esign": "E-signature (Dotloop / DocuSign)",
+          "actions": "Unlimited AI actions"
+        },
+        "signature": {
+          "tagline": "For relationship-driven agents serving high-value clients.",
+          "everything": "Everything in Premium, plus:",
+          "sphere": "Sphere Intelligence Pro",
+          "onboarding": "White-glove onboarding",
+          "concierge": "Concierge support",
+          "calendar": "Cultural calendar automations",
+          "voice": "Custom voice tuning"
+        }
+      }
     },
     "deepReportView": {
       "title": "Property Deep Report",

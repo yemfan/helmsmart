@@ -726,7 +726,9 @@ export default function OnboardingFunnel({
     const formatHeadline = (m: number, a: number) =>
       cadence === "annual" ? `$${annualMo(a)}` : `$${m}`;
     const formatSubtext = (a: number, m: number) =>
-      cadence === "annual" ? `$${a} billed yearly · save $${m * 2}` : "Billed monthly";
+      cadence === "annual"
+        ? t("pages.onboardingFunnel.billedYearly", { annual: a, save: m * 2 })
+        : t("pages.onboardingFunnel.billedMonthly");
 
     /** Look a tier up in the billing catalogue; the funnel shows a subset. */
     type PaidTier = "solo" | "pro" | "premium" | "signature";
@@ -742,12 +744,19 @@ export default function OnboardingFunnel({
      * per-minute rate long after it changed.
      */
     const tierCredits = (id: PaidTier) => {
-      const t = tierOf(id);
-      if (!t) return [] as string[];
+      // `tier`, not `t` — the translator is `t` in this scope, and shadowing it
+      // here is how a `t("…")` call ends up looking up a property on a billing
+      // row instead of translating.
+      const tier = tierOf(id);
+      if (!tier) return [] as string[];
       return [
-        `${t.monthlyCredits.toLocaleString()} credits/mo`,
-        `≈ ${approxCallMinutes(t.monthlyCredits).toLocaleString()} AI call minutes`,
-        `≈ ${approxVideos(t.monthlyCredits, "twinAvatar").toLocaleString()} AI videos`,
+        t("pages.onboardingFunnel.creditsPerMo", { credits: tier.monthlyCredits.toLocaleString() }),
+        t("pages.onboardingFunnel.approxCallMinutes", {
+          minutes: approxCallMinutes(tier.monthlyCredits).toLocaleString(),
+        }),
+        t("pages.onboardingFunnel.approxVideos", {
+          videos: approxVideos(tier.monthlyCredits, "twinAvatar").toLocaleString(),
+        }),
       ];
     };
 
@@ -778,13 +787,21 @@ export default function OnboardingFunnel({
     const soloPlans: SoloPlan[] = [
       {
         slug: "starter",
+        // Tier NAMES stay as they are: Starter / Solo / Pro / Premium /
+        // Signature are what the plans are called on the invoice, in Stripe
+        // and in support. Everything describing them is translated.
         name: "Starter",
         monthly: 0,
         annual: null,
-        cta: "Get started",
-        tagline: "For new agents testing the platform.",
-        features: ["5 leads · 50 contacts", "2 CMA reports/day", "AI SMS + email (basic)", "100 AI actions/mo"],
-        limits: ["No SMS automation", "Limited AI"],
+        cta: t("pages.onboardingFunnel.ctaGetStarted"),
+        tagline: t("pages.onboardingFunnel.plan.starter.tagline"),
+        features: [
+          t("pages.onboardingFunnel.plan.starter.leads"),
+          t("pages.onboardingFunnel.plan.starter.cma"),
+          t("pages.onboardingFunnel.plan.starter.sms"),
+          t("pages.onboardingFunnel.plan.starter.actions"),
+        ],
+        limits: [t("pages.onboardingFunnel.plan.starter.noSms"), t("pages.onboardingFunnel.plan.starter.limitedAi")],
       },
       {
         /*
@@ -803,66 +820,69 @@ export default function OnboardingFunnel({
         name: tierName("solo"),
         monthly: tierMonthly("solo"),
         annual: tierAnnual("solo"),
-        cta: "Start 14-day trial",
-        tagline: tierOf("solo")?.blurb ?? "",
+        cta: t("pages.onboardingFunnel.ctaTrial"),
+        // The catalogue's own blurb, in the reader's language: /plans already
+        // translates every tier under web_plans.plans.blurb, so the funnel
+        // reads that rather than growing a second copy that can drift.
+        tagline: t(`plans.blurb.solo`, { ns: "web_plans" }),
         features: tierCredits("solo"),
-        trialNote: "14-day free trial",
+        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "pro",
         name: tierName("pro"),
         monthly: tierMonthly("pro"),
         annual: tierAnnual("pro"),
-        cta: "Start 14-day trial",
-        tagline: "For active agents closing deals consistently.",
+        cta: t("pages.onboardingFunnel.ctaTrial"),
+        tagline: t("pages.onboardingFunnel.plan.pro.tagline"),
         features: [
-          "500 leads · 500 contacts",
-          "Bilingual English / 中文 AI",
-          "Producer Track coaching",
-          "5 CMA reports/day",
-          "SMS + email AI (< 60s)",
-          "Bookkeeping — invoices & expenses",
-          "5,000 AI actions/mo",
+          t("pages.onboardingFunnel.plan.pro.leads"),
+          t("pages.onboardingFunnel.plan.pro.bilingual"),
+          t("pages.onboardingFunnel.plan.pro.coaching"),
+          t("pages.onboardingFunnel.plan.pro.cma"),
+          t("pages.onboardingFunnel.plan.pro.sms"),
+          t("pages.onboardingFunnel.plan.pro.bookkeeping"),
+          t("pages.onboardingFunnel.plan.pro.actions"),
         ],
         primary: true,
-        badge: "Most Popular",
-        trialNote: "14-day free trial",
+        badge: t("pages.onboardingFunnel.badgePopular"),
+        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "premium",
         name: tierName("premium"),
         monthly: tierMonthly("premium"),
         annual: tierAnnual("premium"),
-        cta: "Start 14-day trial",
-        tagline: "For top producers running solo.",
+        cta: t("pages.onboardingFunnel.ctaTrial"),
+        tagline: t("pages.onboardingFunnel.plan.premium.tagline"),
         features: [
-          "Unlimited leads & contacts",
-          "AI Receptionist + AI Concierge",
-          "Top Producer Track coaching",
-          "ISA workflow",
-          "E-signature (Dotloop / DocuSign)",
-          "Unlimited AI actions",
+          t("pages.onboardingFunnel.plan.premium.leads"),
+          t("pages.onboardingFunnel.plan.premium.receptionist"),
+          t("pages.onboardingFunnel.plan.premium.coaching"),
+          t("pages.onboardingFunnel.plan.premium.isa"),
+          t("pages.onboardingFunnel.plan.premium.esign"),
+          t("pages.onboardingFunnel.plan.premium.actions"),
         ],
-        trialNote: "14-day free trial",
+        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "signature",
         name: tierName("signature"),
         monthly: tierMonthly("signature"),
         annual: tierAnnual("signature"),
-        cta: "Start 14-day trial",
-        tagline: "For relationship-driven agents serving high-value clients.",
+        cta: t("pages.onboardingFunnel.ctaTrial"),
+        tagline: t("pages.onboardingFunnel.plan.signature.tagline"),
         features: [
-          "Everything in Premium, plus:",
-          "Sphere Intelligence Pro",
-          "White-glove onboarding",
-          "Concierge support",
-          "Cultural calendar automations",
-          "Custom voice tuning",
+          t("pages.onboardingFunnel.plan.signature.everything"),
+          t("pages.onboardingFunnel.plan.signature.sphere"),
+          t("pages.onboardingFunnel.plan.signature.onboarding"),
+          t("pages.onboardingFunnel.plan.signature.concierge"),
+          t("pages.onboardingFunnel.plan.signature.calendar"),
+          t("pages.onboardingFunnel.plan.signature.voice"),
         ],
         signatureLook: true,
-        badge: "Bilingual & Luxury",
-        trialNote: "14-day free trial",
+        badge: t("pages.onboardingFunnel.badgeSignature"),
+        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
     ];
 
@@ -905,8 +925,10 @@ export default function OnboardingFunnel({
         <div className="space-y-6">
           <div className="text-center">
             <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.chooseScale")}</h1>
-            <p className="mt-2 text-sm text-gray-500">{t("pages.onboardingFunnel.trialNote")}<br />
-              Available in English and 中文.
+            <p className="mt-2 text-sm text-gray-500">
+              {t("pages.onboardingFunnel.trialNote")}
+              <br />
+              {t("pages.onboardingFunnel.availableLanguages")}
             </p>
           </div>
 
@@ -963,7 +985,9 @@ export default function OnboardingFunnel({
                     <span className="text-2xl font-bold text-gray-900">
                       {p.slug === "starter" ? "$0" : formatHeadline(p.monthly, p.annual ?? p.monthly * 10)}
                     </span>
-                    <span className="text-xs text-gray-500">{p.slug === "starter" ? "forever" : "/mo"}</span>
+                    <span className="text-xs text-gray-500">
+                      {p.slug === "starter" ? t("pages.onboardingFunnel.forever") : t("pages.onboardingFunnel.perMo")}
+                    </span>
                   </div>
                   {p.slug !== "starter" && p.annual && (
                     <p className="mt-0.5 text-[10px] text-gray-500">
