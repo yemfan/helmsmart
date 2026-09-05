@@ -7,6 +7,7 @@ import { updateOrg, type OrgUpdateResult } from "@/lib/actions/org-update";
 // Aliased: this module exports its own `sendEmail` server action.
 import { sendEmail as sendEmailViaResend, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
+import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import Anthropic from "@anthropic-ai/sdk";
 import { detectLanguage, languageName, type Lang } from "@/lib/language";
 import { normalizePhoneE164 } from "@/lib/phone";
@@ -75,14 +76,24 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
     .eq("id", orgId)
     .single();
 
-  const fromNumber = org?.twilio_number ?? process.env.TWILIO_FROM_NUMBER;
-  // US A2P 10DLC compliance is enforced at the Messaging Service level: sending
-  // by bare `from` number can be filtered as "unregistered" (error 30034) even
-  // when the number sits in a registered campaign. When a Messaging Service SID
-  // is configured we send through it so Twilio applies the campaign; otherwise
-  // we fall back to the raw number (unchanged behavior).
-  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
-  if (!messagingServiceSid && !fromNumber) throw new Error("No Twilio number configured");
+  /*
+   * One rule for who sends, shared with every other send in the app.
+   *
+   * This used to be `org?.twilio_number ?? process.env.TWILIO_FROM_NUMBER` —
+   * the org's own number FIRST. That is backwards, and it is the bug that made
+   * the Inbox the last broken send path: twilio_number is the line the
+   * receptionist ANSWERS on, and answering says nothing about being allowed to
+   * send. It has to belong to the Twilio account these credentials open and be
+   * A2P-registered. When those two are different numbers — which is exactly the
+   * case here — this path kept choosing the one that returns 30034 while the
+   * account's approved sender sat unused in the env.
+   *
+   * twilioSender() applies the same precedence everywhere: Messaging Service,
+   * then the configured account sender, then the org's number as a fallback for
+   * a future one-number-per-tenant setup.
+   */
+  const sender = twilioSender(org?.twilio_number ?? null);
+  if (!sender) throw new Error("No Twilio number configured");
 
   // Twilio only reliably delivers to E.164 numbers. A bare "6066255055" gets a
   // SID back (so the UI says "Sent") but never actually arrives — normalize first
@@ -91,20 +102,12 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
   if (!normalized.ok) throw new Error(normalized.error);
   const to = normalized.value;
 
-  // Absolute callback so Twilio can report delivery outcome back to us. Skip it
-  // for non-https/local URLs — Twilio rejects callbacks it can't reach, which
-  // would fail the whole send.
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
-  const statusCallback = appUrl.startsWith("https://")
-    ? `${appUrl}/api/twilio/sms/status`
-    : undefined;
-
   const client = twilioClient();
   const msg = await client.messages.create({
-    ...(messagingServiceSid ? { messagingServiceSid } : { from: fromNumber! }),
+    ...sender,
+    ...twilioStatusCallback(),
     to,
     body,
-    ...(statusCallback ? { statusCallback } : {}),
   });
 
   await supabase.from("messages").insert({
@@ -112,7 +115,11 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
     client_id: clientId,
     channel: "sms",
     direction: "outbound",
-    from_address: fromNumber ?? msg.from ?? null,
+    // What Twilio actually sent from, preferred over what we asked for. With a
+    // Messaging Service Twilio picks the number out of the sender pool, so the
+    // intended value can differ from the one the recipient sees — and the row
+    // should say what the recipient saw.
+    from_address: msg.from ?? ("from" in sender ? sender.from : null),
     to_address: to,
     body,
     read: true,
