@@ -28,6 +28,7 @@ import { createNotificationService } from "@/lib/actions/notifications";
 import { classifyMissed } from "@/lib/missed-call";
 import { logCallCommunication } from "@/lib/integrations/communication-auto-logger";
 import { notifySlackMissedCall } from "@/lib/integrations/slack";
+import { twilioStatusCallback } from "@/lib/twilio-sender";
 
 type TranscriptTurn = { role?: string; content?: string };
 type Db = Awaited<ReturnType<typeof createServiceClient>>;
@@ -146,7 +147,7 @@ async function maybeTextBackMissedCall(
     const sender = twilioSender(args.toNumber);
     if (!sender) return;
     const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-    await client.messages.create({ ...sender, to: caller.value, body: replyBody });
+    await client.messages.create({ ...sender, ...twilioStatusCallback(), to: caller.value, body: replyBody });
 
     await db.from("messages").insert({
       organization_id: args.orgId,

@@ -21,6 +21,32 @@
 export type TwilioSender = { messagingServiceSid: string } | { from: string };
 
 /**
+ * Where Twilio should report what actually happened to a message.
+ *
+ * `messages.create()` resolves with status "queued" and Twilio decides the real
+ * outcome afterwards, so a send that a carrier rejects looks identical to one
+ * that arrives. That is not hypothetical: 146 of the last 208 outbound messages
+ * on this account came back `30034` (unregistered A2P) and every one of them was
+ * recorded in the Inbox as sent. Nothing had actually been delivered since June
+ * and nobody could tell, because the row was written at "queued" and never
+ * revisited.
+ *
+ * `/api/twilio/sms/status` writes the outcome back onto the row whose
+ * `external_id` matches the MessageSid — but only for messages that asked to be
+ * told. Spread this into every `messages.create()` that records a row.
+ *
+ * Returns undefined for a non-https app URL (local dev, previews). Twilio
+ * rejects a callback it cannot reach and fails the WHOLE send, so an
+ * unreachable URL must be omitted rather than sent — better no delivery
+ * receipt than no message.
+ */
+export function twilioStatusCallback(): { statusCallback: string } | Record<string, never> {
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").trim().replace(/\/+$/, "");
+  if (!appUrl.startsWith("https://")) return {};
+  return { statusCallback: `${appUrl}/api/twilio/sms/status` };
+}
+
+/**
  * Spread into `client.messages.create({ ...twilioSender(n), to, body })`.
  * Returns null when neither a Messaging Service nor a usable number exists, so
  * the caller can skip the send instead of throwing inside a best-effort path.

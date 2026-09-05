@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { twilioSender } from "@/lib/twilio-sender";
+import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
 import twilio from "twilio";
@@ -101,7 +101,7 @@ async function handleRequest(request: NextRequest) {
         if (org.auto_reply && org.auto_reply_msg) {
           const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
           try {
-            await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), to: from, body: org.auto_reply_msg });
+            await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), ...twilioStatusCallback(), to: from, body: org.auto_reply_msg });
             await supabase.from("messages").insert({
               organization_id: org.id,
               channel: "sms",

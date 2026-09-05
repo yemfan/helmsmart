@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { twilioSender } from "./twilio-sender";
+import { twilioSender, twilioStatusCallback } from "./twilio-sender";
 
 const SAVED = { ...process.env };
 
 beforeEach(() => {
   delete process.env.TWILIO_MESSAGING_SERVICE_SID;
   delete process.env.TWILIO_FROM_NUMBER;
+  delete process.env.NEXT_PUBLIC_APP_URL;
 });
 afterEach(() => {
   process.env = { ...SAVED };
@@ -68,5 +69,46 @@ describe("twilioSender", () => {
   it("ignores an empty Messaging Service value rather than sending with nothing", () => {
     process.env.TWILIO_MESSAGING_SERVICE_SID = "   ";
     expect(twilioSender("+16268888685")).toEqual({ from: "+16268888685" });
+  });
+});
+
+describe("twilioStatusCallback", () => {
+  it("points Twilio at the status webhook", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://www.helmsmart.ai";
+    expect(twilioStatusCallback()).toEqual({
+      statusCallback: "https://www.helmsmart.ai/api/twilio/sms/status",
+    });
+  });
+
+  it("does not double the slash when the app URL has a trailing one", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://www.helmsmart.ai/";
+    expect(twilioStatusCallback()).toEqual({
+      statusCallback: "https://www.helmsmart.ai/api/twilio/sms/status",
+    });
+  });
+
+  it("omits the callback on a non-https URL rather than failing the send", () => {
+    // Twilio rejects a callback it cannot reach and fails the WHOLE message.
+    // On localhost that would mean no texts at all in development — better to
+    // lose the delivery receipt than the message.
+    process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3005";
+    expect(twilioStatusCallback()).toEqual({});
+  });
+
+  it("omits the callback when no app URL is configured", () => {
+    expect(twilioStatusCallback()).toEqual({});
+    process.env.NEXT_PUBLIC_APP_URL = "   ";
+    expect(twilioStatusCallback()).toEqual({});
+  });
+
+  it("spreads into a message payload without disturbing it", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://www.helmsmart.ai";
+    const payload = { ...twilioSender("+16268887170"), ...twilioStatusCallback(), to: "+15551234567", body: "hi" };
+    expect(payload).toEqual({
+      from: "+16268887170",
+      statusCallback: "https://www.helmsmart.ai/api/twilio/sms/status",
+      to: "+15551234567",
+      body: "hi",
+    });
   });
 });

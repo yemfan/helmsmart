@@ -4,7 +4,7 @@ import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/boo
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
 import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
 import twilio from "twilio";
-import { twilioSender } from "@/lib/twilio-sender";
+import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { sendEmail } from "@/lib/email";
 import { orgOwnerEmails } from "@/lib/org-recipients";
 import type { ReceptionistContext } from "@repo/voice/prompt";
@@ -383,7 +383,7 @@ export async function notifyBooking(
   /** Send one SMS and record it, without letting a failure end the booking. */
   const send = async (to: string, body: string, clientId: string | null) => {
     try {
-      const sms = await client.messages.create({ ...sender, to, body });
+      const sms = await client.messages.create({ ...sender, ...twilioStatusCallback(), to, body });
       await db.from("messages").insert({
         organization_id: org.orgId,
         client_id: clientId,
