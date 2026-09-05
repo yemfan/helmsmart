@@ -98,12 +98,36 @@ describe("annual cadence", () => {
      */
     const funnel = read("components/onboarding/OnboardingFunnel.tsx");
     expect(funnel).toMatch(/params\.set\("cadence", cadence\)/);
+    /*
+     * And it goes to the page that can CHARGE, not back to the price list.
+     * "Start 14-day trial" landing on /plans meant picking the same tier a
+     * second time on the marketing page the visitor had already left.
+     */
+    expect(funnel).toMatch(/\/dashboard\/credits\?\$\{params\.toString\(\)\}/);
+    expect(funnel).toMatch(/params\.set\("start", "1"\)/);
 
     const plans = read("app/plans/page.client.tsx");
     expect(plans).toMatch(/sp\?\.get\("cadence"\)/);
     expect(plans).toMatch(/dashboard\/credits\?cadence=annual/);
     // A page showing annual prices must not still be headed "Monthly plans".
     expect(plans).toContain("plans.headingAnnual");
+  });
+
+  it("opens checkout on arrival, once, and not for the current plan", () => {
+    /*
+     * `start=1` is what turns the funnel's CTA into a purchase. Three guards
+     * matter more than the feature: it must fire once (a re-render must not
+     * open a second Stripe session), only for a real tier, and never for the
+     * plan the visitor already has — that answers "You're already on that
+     * plan", which is a rotten greeting for a returning subscriber.
+     */
+    const client = read("app/dashboard/credits/CreditsClient.tsx");
+    expect(client).toMatch(/sp\?\.get\("start"\) !== "1"/);
+    expect(client).toMatch(/autoStarted\.current = true/);
+    expect(client).toMatch(/plan\.planId === tier\.id/);
+    expect(client).toMatch(/CREDIT_TIERS\.find\(\(t\) => t\.id === wanted\)/);
+    // The landing page must also SHOW the cadence it is about to charge.
+    expect(client).toMatch(/sp\?\.get\("cadence"\) === "annual"/);
   });
 
   it("quotes no price for the retired Team tier", () => {

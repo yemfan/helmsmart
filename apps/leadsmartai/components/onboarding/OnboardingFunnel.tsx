@@ -883,13 +883,21 @@ export default function OnboardingFunnel({
       const params = new URLSearchParams({ from: "onboarding", plan: slug });
       if (profile.email) params.set("email", profile.email.trim());
       /*
-       * The cadence has to travel. Without it, choosing Annual here — "$3,990
-       * billed yearly, save $798" — landed on a page headed "Monthly plans"
-       * quoting $399/mo, and the only signal of what the visitor actually
-       * asked for was gone.
+       * Straight to checkout, not back to the price list.
+       *
+       * "Start 14-day trial" used to land on /plans — the marketing page the
+       * visitor had just decided against reading — where they had to pick the
+       * same tier a second time. /dashboard/credits is the one page that can
+       * actually charge, and `start=1` makes it open Stripe for this exact
+       * tier and cadence.
+       *
+       * Signed out is handled for us: proxy.ts redirects to /login with
+       * `next` set to the FULL path and query, so the choice survives the
+       * round trip and checkout opens on return.
        */
       params.set("cadence", cadence);
-      return `/plans?${params.toString()}`;
+      params.set("start", "1");
+      return `/dashboard/credits?${params.toString()}`;
     }
 
     return (
