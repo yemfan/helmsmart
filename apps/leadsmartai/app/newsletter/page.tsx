@@ -35,10 +35,13 @@ function formatWeek(d: string, locale: string): string {
 
 export default async function NewsletterHubPage() {
   const t = await getServerT();
-  const locale = intlLocale(await getServerLocale());
+  const uiLocale = await getServerLocale();
+  const locale = intlLocale(uiLocale);
   const [regions, digests] = await Promise.all([
     listRegionOptions(),
-    listRecentDigests(24),
+    // The archive lists one language: two rows for the same week, differing
+    // only in the language of their titles, read as a duplicated week.
+    listRecentDigests(24, uiLocale),
   ]);
 
   const base = getSiteUrl();

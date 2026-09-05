@@ -1,5 +1,7 @@
+import { resolveLocale } from "@leadsmart/i18n";
+
 import {
-  CATEGORY_LABEL,
+  categoryLabel,
   coerceCategory,
   coerceKeyPoint,
   coerceState,
@@ -63,15 +65,98 @@ export type RenderedIssueEmail = {
   html: string;
 };
 
+/**
+ * The email's own copy â everything around the digest.
+ *
+ * The digest arrives already written in one language (one row per
+ * (week_of, language); see lib/newsletter/db.ts). Chrome that stayed English
+ * would put a Chinese newsletter inside an English envelope: English subject
+ * line, English "What it means for you", English unsubscribe. So it is keyed
+ * the same way.
+ *
+ * A plain map rather than i18next: this renderer is deliberately pure â no
+ * `server-only`, no request context â so the wording can be unit-tested, and a
+ * translator instance is neither available nor needed for a dozen strings.
+ *
+ * NOT translated here: the market-snapshot metric names (`st.short`,
+ * `st.periodLabel`). Those come from METRIC_META in lib/research/warehouse,
+ * shared with the public market pages, and localizing them is its own change.
+ */
+type Chrome = {
+  intlTag: string;
+  masthead: string;
+  from: (who: string) => string;
+  sentBy: (who: string) => string;
+  thisWeek: string;
+  whatItMeans: string;
+  readSource: string;
+  marketSnapshot: (region: string) => string;
+  weekOf: (label: string) => string;
+  readFullIssue: string;
+  subscribedAgent: string;
+  /** `link` is ready-to-embed markup for the closebossai.com anchor. */
+  subscribedPublic: (link: string) => string;
+  /** `link` is ready-to-embed markup for the unsubscribe anchor. */
+  unsubscribeLine: (link: string) => string;
+  unsubscribeLabel: string;
+};
+
+const CHROME_EN: Chrome = {
+  intlTag: "en-US",
+  masthead: "This Week in Housing",
+  from: (who) => `From ${who}`,
+  sentBy: (who) => `Sent by ${who}`,
+  thisWeek: "— This week in housing —",
+  whatItMeans: "What it means for you:",
+  readSource: "Read source",
+  marketSnapshot: (region) => `${region} market snapshot`,
+  weekOf: (label) => `Week of ${label}`,
+  readFullIssue: "Read the full issue online →",
+  subscribedAgent:
+    "You're receiving this because you subscribed to this weekly housing briefing.",
+  subscribedPublic: (link) =>
+    `You're receiving this because you subscribed to the CloseBoss weekly housing briefing at ${link}.`,
+  unsubscribeLine: (link) => `${link} at any time.`,
+  unsubscribeLabel: "Unsubscribe",
+};
+
+const CHROME_ZH: Chrome = {
+  intlTag: "zh-CN",
+  masthead: "本周房市",
+  from: (who) => `来自 ${who}`,
+  sentBy: (who) => `由 ${who} 发送`,
+  thisWeek: "— 本周房市 —",
+  whatItMeans: "这对你意味着什么：",
+  readSource: "查看来源",
+  marketSnapshot: (region) => `${region} 市场快照`,
+  weekOf: (label) => `${label} 当周`,
+  readFullIssue: "在线阅读完整内容 →",
+  subscribedAgent:
+    "你收到这封邮件，是因为你订阅了这份每周房市简报。",
+  subscribedPublic: (link) =>
+    `你收到这封邮件，是因为你在 ${link} 订阅了 CloseBoss 每周房市简报。`,
+  unsubscribeLine: (link) => `你可以随时${link}。`,
+  unsubscribeLabel: "退订",
+};
+
+function chromeFor(language?: string | null): Chrome {
+  return resolveLocale(language) === "zh-Hans" ? CHROME_ZH : CHROME_EN;
+}
+
 const BRAND_BLUE = "#0072ce";
 
 export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail {
   const { issue, unsubscribeUrl, mailingAddress, siteUrl } = args;
   const { digest, region, weekOf } = issue;
+  // The shell's language is the DIGEST's, and there is deliberately no way
+  // for a caller to say otherwise. A reader whose variant is missing gets the
+  // English digest, and English copy under Chinese headings would read worse
+  // than a wholly English email — so the two cannot disagree.
+  const c = chromeFor(digest.language);
 
   const agent = normalizeAgent(args.agent);
 
-  const weekLabel = formatWeek(weekOf);
+  const weekLabel = formatWeek(weekOf, c.intlTag);
   const regionName = region.name;
   const issueUrl = `${siteUrl.replace(/\/$/, "")}/newsletter/${region.slug}/${weekOf}`;
 
@@ -82,7 +167,7 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
     region.stateCode,
   );
 
-  const subject = `This Week in Housing — ${regionName} · ${weekLabel}`;
+  const subject = `${c.masthead} — ${regionName} · ${weekLabel}`;
 
   const text = renderText({
     digest,
@@ -93,6 +178,7 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
     unsubscribeUrl,
     mailingAddress,
     agent,
+    c,
   });
   const html = renderHtml({
     digest,
@@ -103,6 +189,7 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
     unsubscribeUrl,
     mailingAddress,
     agent,
+    c,
   });
 
   return { subject, text, html };
@@ -177,6 +264,7 @@ type RenderCtx = {
   unsubscribeUrl: string;
   mailingAddress: string;
   agent: NormalizedAgent | null;
+  c: Chrome;
 };
 
 function renderText(ctx: RenderCtx): string {
@@ -189,11 +277,14 @@ function renderText(ctx: RenderCtx): string {
     unsubscribeUrl,
     mailingAddress,
     agent,
+    c,
   } = ctx;
   const lines: string[] = [];
-  lines.push(`This Week in Housing — ${region.name} · ${weekLabel}`);
+  lines.push(`${c.masthead} — ${region.name} · ${weekLabel}`);
   if (agent) {
-    lines.push(`From ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""}`);
+    lines.push(
+      c.from(`${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""}`),
+    );
   }
   lines.push("");
   if (digest.title) lines.push(digest.title);
@@ -202,35 +293,35 @@ function renderText(ctx: RenderCtx): string {
     lines.push(digest.intro);
   }
   lines.push("");
-  lines.push("— This week in housing —");
+  lines.push(c.thisWeek);
   for (const it of items) {
     lines.push("");
-    const cat = CATEGORY_LABEL[it.category];
+    const cat = categoryLabel(it.category, c.intlTag);
     lines.push(`[${cat}${it.state ? ` · ${it.state}` : ""}] ${it.headline}`);
     if (it.key_point) lines.push(`• ${it.key_point}`);
-    if (it.why_it_matters) lines.push(`What it means for you: ${it.why_it_matters}`);
-    if (it.source_url) lines.push(`Read source: ${it.source_url}`);
+    if (it.why_it_matters) lines.push(`${c.whatItMeans} ${it.why_it_matters}`);
+    if (it.source_url) lines.push(`${c.readSource}: ${it.source_url}`);
   }
   if (region.stats.length > 0) {
     lines.push("");
-    lines.push(`— ${region.name} market snapshot —`);
+    lines.push(`— ${c.marketSnapshot(region.name)} —`);
     for (const st of region.stats) {
       lines.push(`${st.short}: ${st.formatted}${st.periodLabel ? ` (${st.periodLabel})` : ""}`);
     }
   }
   lines.push("");
-  lines.push(`Read the full issue online: ${issueUrl}`);
+  lines.push(`${c.readFullIssue.replace(/\s*→$/, "")}: ${issueUrl}`);
   lines.push("");
   lines.push("—");
   if (agent) {
     lines.push(
-      `Sent by ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""} · powered by CloseBoss`,
+      `${c.sentBy(
+        `${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""}`,
+      )} · powered by CloseBoss`,
     );
   }
-  lines.push(
-    "You're receiving this because you subscribed to this weekly housing briefing at closebossai.com.",
-  );
-  lines.push(`Unsubscribe: ${unsubscribeUrl}`);
+  lines.push(c.subscribedPublic("closebossai.com"));
+  lines.push(`${c.unsubscribeLabel}: ${unsubscribeUrl}`);
   lines.push(mailingAddress);
   return lines.join("\n");
 }
@@ -245,11 +336,12 @@ function renderHtml(ctx: RenderCtx): string {
     unsubscribeUrl,
     mailingAddress,
     agent,
+    c,
   } = ctx;
 
   const itemsHtml = items
     .map((it, idx) => {
-      const cat = CATEGORY_LABEL[it.category];
+      const cat = categoryLabel(it.category, c.intlTag);
       const badge = `<span style="display:inline-block;background:${BRAND_BLUE};color:#ffffff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;">${escapeHtml(
         cat,
       )}</span>`;
@@ -271,14 +363,14 @@ function renderHtml(ctx: RenderCtx): string {
           )}</div>`
         : "";
       const why = it.why_it_matters
-        ? `<div style="margin-top:8px;font-size:13px;line-height:1.5;color:#475569;"><strong style="color:#334155;">What it means for you: </strong>${escapeHtml(
+        ? `<div style="margin-top:8px;font-size:13px;line-height:1.5;color:#475569;"><strong style="color:#334155;">${escapeHtml(c.whatItMeans)} </strong>${escapeHtml(
             it.why_it_matters,
           )}</div>`
         : "";
       const source = it.source_url
         ? `<div style="margin-top:10px;font-size:12px;"><a href="${escapeAttr(
             it.source_url,
-          )}" style="color:${BRAND_BLUE};text-decoration:underline;font-weight:600;">Read source →${
+          )}" style="color:${BRAND_BLUE};text-decoration:underline;font-weight:600;">${escapeHtml(c.readSource)} →${
             it.publisher ? ` (${escapeHtml(it.publisher)})` : ""
           }</a></div>`
         : "";
@@ -304,8 +396,8 @@ function renderHtml(ctx: RenderCtx): string {
     region.stats.length > 0
       ? `<tr><td style="padding:6px 0 4px;">
           <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569;margin-bottom:8px;">${escapeHtml(
-            region.name,
-          )} market snapshot</div>
+            c.marketSnapshot(region.name),
+          )}</div>
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
             ${region.stats
               .map(
@@ -353,27 +445,28 @@ function renderHtml(ctx: RenderCtx): string {
               }
             </td>
           </tr></table>
-          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">This Week in Housing · ${escapeHtml(
-            region.name,
-          )} · Week of ${escapeHtml(weekLabel)}</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">${escapeHtml(
+            c.masthead,
+          )} · ${escapeHtml(region.name)} · ${escapeHtml(c.weekOf(weekLabel))}</div>
         </td></tr>`
     : `<tr><td style="padding:8px 0 4px;">
           <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND_BLUE};">CloseBoss</div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">This Week in Housing · ${escapeHtml(
-            region.name,
-          )} · Week of ${escapeHtml(weekLabel)}</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">${escapeHtml(
+            c.masthead,
+          )} · ${escapeHtml(region.name)} · ${escapeHtml(c.weekOf(weekLabel))}</div>
         </td></tr>`;
 
   // Footer attribution line: agent (powered by CloseBoss) or plain CloseBoss.
   const footerAttribution = agent
-    ? `<strong style="color:#64748b;">Sent by ${escapeHtml(agent.name)}${
-        agent.brokerage ? `, ${escapeHtml(agent.brokerage)}` : ""
-      }</strong> · powered by CloseBoss<br/>
-            You're receiving this because you subscribed to this weekly housing briefing.`
-    : `You're receiving this because you subscribed to the CloseBoss weekly housing briefing at
-            <a href="${escapeAttr(
-              args_siteHref(issueUrl),
-            )}" style="color:#64748b;">closebossai.com</a>.`;
+    ? `<strong style="color:#64748b;">${escapeHtml(
+        c.sentBy(`${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""}`),
+      )}</strong> · powered by CloseBoss<br/>
+            ${escapeHtml(c.subscribedAgent)}`
+    : c.subscribedPublic(
+        `<a href="${escapeAttr(
+          args_siteHref(issueUrl),
+        )}" style="color:#64748b;">closebossai.com</a>`,
+      );
 
   // Outer wrapper: centered ~600px table, light background.
   return `<!-- CloseBoss weekly housing briefing -->
@@ -384,7 +477,7 @@ function renderHtml(ctx: RenderCtx): string {
         ${headerHtml}
         <tr><td style="padding:14px 0 8px;">
           <div style="font-size:22px;font-weight:800;line-height:1.25;color:#0f172a;">${escapeHtml(
-            digest.title || "This Week in Housing",
+            digest.title || c.masthead,
           )}</div>
         </td></tr>
         ${introHtml}
@@ -393,14 +486,20 @@ function renderHtml(ctx: RenderCtx): string {
         <tr><td style="padding:18px 0 4px;">
           <a href="${escapeAttr(
             issueUrl,
-          )}" style="display:inline-block;background:${BRAND_BLUE};color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:8px;">Read the full issue online →</a>
+          )}" style="display:inline-block;background:${BRAND_BLUE};color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:8px;">${escapeHtml(
+            c.readFullIssue,
+          )}</a>
         </td></tr>
         <tr><td style="padding:24px 0 0;border-top:1px solid #e2e8f0;">
           <div style="font-size:12px;line-height:1.55;color:#94a3b8;padding-top:14px;">
             ${footerAttribution}<br/>
-            <a href="${escapeAttr(
-              unsubscribeUrl,
-            )}" style="color:#64748b;text-decoration:underline;">Unsubscribe</a> at any time.<br/>
+            ${c.unsubscribeLine(
+              `<a href="${escapeAttr(
+                unsubscribeUrl,
+              )}" style="color:#64748b;text-decoration:underline;">${escapeHtml(
+                c.unsubscribeLabel,
+              )}</a>`,
+            )}<br/>
             ${escapeHtml(mailingAddress)}
           </div>
         </td></tr>
@@ -419,11 +518,11 @@ function args_siteHref(issueUrl: string): string {
   }
 }
 
-function formatWeek(d: string): string {
+function formatWeek(d: string, intlTag: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", {
+    : dt.toLocaleDateString(intlTag, {
         year: "numeric",
         month: "long",
         day: "numeric",
