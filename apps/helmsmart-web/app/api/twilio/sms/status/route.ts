@@ -40,5 +40,36 @@ export async function POST(request: NextRequest) {
     })
     .eq("external_id", sid);
 
+  /*
+   * Campaign sends land in a different table.
+   *
+   * sms_campaign_recipients records its own twilio_sid and has had delivered_at,
+   * failed_at and failure_reason since it shipped — but this webhook only ever
+   * looked at `messages`, so a campaign row was written at send time and never
+   * updated. Every campaign has therefore reported the number it handed Twilio,
+   * not the number that arrived, which on this account has been very different:
+   * unregistered A2P sends come back 30034 after the fact.
+   *
+   * A campaign message is not in `messages` and a conversation message is not in
+   * this table, so the two updates never collide — one of them simply matches
+   * nothing, which costs a no-op.
+   */
+  const failed = status === "failed" || status === "undelivered";
+  if (status === "delivered" || failed) {
+    await supabase
+      .from("sms_campaign_recipients")
+      .update(
+        failed
+          ? {
+              failed_at: new Date().toISOString(),
+              // The code is the part that is actually diagnosable — 30034 says
+              // "unregistered", 21610 says "they replied STOP". Keep both.
+              failure_reason: [params.ErrorCode, params.ErrorMessage].filter(Boolean).join(" ") || status,
+            }
+          : { delivered_at: new Date().toISOString() },
+      )
+      .eq("twilio_sid", sid);
+  }
+
   return new NextResponse(null, { status: 204 });
 }
