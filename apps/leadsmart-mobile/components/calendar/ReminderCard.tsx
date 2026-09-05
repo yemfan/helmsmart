@@ -16,7 +16,7 @@ export function ReminderCard({ reminder, onPress }: Props) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = useTranslation("calendar_screen");
-  const title = reminder.lead_name ?? t("reminder_card.lead_fallback", { id: reminder.contact_id });
+  const title = reminder.lead_name ?? t("reminder_card.unnamed");
   const status = reminder.overdue
     ? t("reminder_card.status.overdue")
     : t("reminder_card.status.scheduled");

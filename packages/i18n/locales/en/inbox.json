@@ -11,7 +11,7 @@
   "row": {
     "hot_stripe": "HOT LEAD",
     "hot_pill": "Priority",
-    "lead_fallback": "Lead {{id}}",
+    "unnamed": "Unnamed contact",
     "preview_empty": "—",
     "sample_prefix": "Sample · ",
     "a11y": {

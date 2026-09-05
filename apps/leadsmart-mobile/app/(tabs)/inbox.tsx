@@ -59,7 +59,7 @@ function ThreadRowInner({
         ? t("channel.call")
         : t("channel.email");
   const hot = item.isHotLead;
-  const leadName = item.leadName?.trim() || t("row.lead_fallback", { id: item.leadId });
+  const leadName = item.leadName?.trim() || t("row.unnamed");
   const directionLabel = item.lastDirection === "inbound" ? t("direction.inbound") : t("direction.outbound");
 
   return (

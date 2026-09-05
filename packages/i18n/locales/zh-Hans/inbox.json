@@ -11,7 +11,7 @@
   "row": {
     "hot_stripe": "热门客户",
     "hot_pill": "优先",
-    "lead_fallback": "客户 {{id}}",
+    "unnamed": "未命名联系人",
     "preview_empty": "—",
     "sample_prefix": "示例 · ",
     "a11y": {

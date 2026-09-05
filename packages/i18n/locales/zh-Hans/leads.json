@@ -8,7 +8,7 @@
   },
   "hot_pill": "热门",
   "ai_score": "AI {{score}}",
-  "lead_fallback": "线索 {{id}}",
+  "unnamed": "未命名联系人",
   "count_one": "{{count}} 个线索",
   "count_other": "{{count}} 个线索",
   "count_partial": "已显示 {{count}} 个，共 {{total}} 个线索",
