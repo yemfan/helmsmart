@@ -31,12 +31,31 @@ import {
 
 type TeamKey = "receptionist" | "sales" | "marketing" | "transaction" | "accountant";
 
-const TEAM: Array<{ key: TeamKey; label: string; icon: LucideIcon }> = [
-  { key: "receptionist", label: "Receptionist", icon: Headphones },
-  { key: "sales", label: "Sales", icon: TrendingUp },
-  { key: "marketing", label: "Marketing", icon: Megaphone },
-  { key: "transaction", label: "Transaction", icon: ClipboardList },
-  { key: "accountant", label: "Accountant", icon: Receipt },
+/**
+ * The five cards under the Boss Assistant.
+ *
+ * `labelKey`, not `label`. These were five hardcoded English strings, so the
+ * org chart on the Chinese site named its team in English — and the residual-
+ * English scan cannot see them, because an object property is neither a JSX
+ * text node nor a copy-carrying attribute. The names sat in the one shape that
+ * guard has no reach into.
+ *
+ * The key is stored rather than resolved here: TEAM is module scope, where
+ * `t` does not exist yet, and a map built at module scope is exactly how a
+ * label ends up looking wired while still rendering English.
+ *
+ * Short forms of the `boss.team.*` names rather than those names themselves.
+ * The card is a fifth of the row at desktop and half at mobile, so "Transaction
+ * Coordinator" wraps to three lines; and reusing them would rename Accountant
+ * to Financial Analyst on a marketing page, which is a copy decision rather
+ * than a translation. That the two sets disagree is worth settling separately.
+ */
+const TEAM: Array<{ key: TeamKey; labelKey: string; icon: LucideIcon }> = [
+  { key: "receptionist", labelKey: "pages.commandChain.team.receptionist", icon: Headphones },
+  { key: "sales", labelKey: "pages.commandChain.team.sales", icon: TrendingUp },
+  { key: "marketing", labelKey: "pages.commandChain.team.marketing", icon: Megaphone },
+  { key: "transaction", labelKey: "pages.commandChain.team.transaction", icon: ClipboardList },
+  { key: "accountant", labelKey: "pages.commandChain.team.accountant", icon: Receipt },
 ];
 
 type Command = {
@@ -247,7 +266,7 @@ export default function CommandChainDiagram() {
                       : "text-slate-600 dark:text-slate-300"
                   }`}
                 >
-                  {m.label}
+                  {t(m.labelKey)}
                 </span>
                 {/*
                  * The highlight is colour and weight, which a screen reader

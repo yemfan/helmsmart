@@ -5073,7 +5073,14 @@
       "steps": "plans it · assigns the right teammates · reports back",
       "teamLegend": "Highlighted teammates are the ones this command needs. The others are idle, not unavailable — your Boss Assistant can call on any of the five.",
       "onThisCommand": "working on this command",
-      "idle": "idle on this command"
+      "idle": "idle on this command",
+      "team": {
+        "receptionist": "Receptionist",
+        "sales": "Sales",
+        "marketing": "Marketing",
+        "transaction": "Transaction",
+        "accountant": "Accountant"
+      }
     },
     "postQueue": {
       "title": "Post queue",

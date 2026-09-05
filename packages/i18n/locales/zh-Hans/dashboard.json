@@ -5073,7 +5073,14 @@
       "steps": "制定计划 · 分派合适的队友 · 回报结果",
       "teamLegend": "高亮的助理是这条指令需要的人手。其余几位只是暂时闲置，并非无法使用——Boss 助理可以调用这五位中的任何一位。",
       "onThisCommand": "正在处理这条指令",
-      "idle": "这条指令用不到"
+      "idle": "这条指令用不到",
+      "team": {
+        "receptionist": "前台",
+        "sales": "销售",
+        "marketing": "营销",
+        "transaction": "交易",
+        "accountant": "财务"
+      }
     },
     "postQueue": {
       "title": "发布队列",
