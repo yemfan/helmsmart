@@ -4274,7 +4274,8 @@
       "crunching": "正在测算估值、可比成交、负担能力、交易评级、学区和地图…",
       "unlimitedReports": "报告不限次数",
       "metaTitle": "深度报告",
-      "heading": "深度报告"
+      "heading": "深度报告",
+      "openSaved": "打开你保存的报告副本 →"
     },
     "listingOfferDetail": {
       "cancel": "取消",
