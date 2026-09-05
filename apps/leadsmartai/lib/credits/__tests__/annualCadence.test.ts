@@ -111,6 +111,22 @@ describe("annual cadence", () => {
     expect(plans).toMatch(/dashboard\/credits\?cadence=annual/);
     // A page showing annual prices must not still be headed "Monthly plans".
     expect(plans).toContain("plans.headingAnnual");
+    // Same mistake, same fix, on the page that does the charging.
+    const credits = read("app/dashboard/credits/CreditsClient.tsx");
+    expect(credits).toContain("more.credits.annualPlans");
+  });
+
+  it("shows every tier it sells on one row", () => {
+    /*
+     * Four tiers in a 3-up grid put Signature alone on a second row, which
+     * reads as a different, lesser thing rather than the top of the ladder.
+     * The column also has to be wide enough that 4-up is not four slivers.
+     */
+    const credits = read("app/dashboard/credits/CreditsClient.tsx");
+    expect(credits).toMatch(/grid gap-4 sm:grid-cols-2 lg:grid-cols-4/);
+    expect(credits).toMatch(/mx-auto max-w-6xl space-y-8/);
+    // The top-up grid has exactly three cards and must stay 3-up.
+    expect(credits).toMatch(/grid gap-4 md:grid-cols-3/);
   });
 
   it("opens checkout on arrival, once, and not for the current plan", () => {
@@ -128,6 +144,30 @@ describe("annual cadence", () => {
     expect(client).toMatch(/CREDIT_TIERS\.find\(\(t\) => t\.id === wanted\)/);
     // The landing page must also SHOW the cadence it is about to charge.
     expect(client).toMatch(/sp\?\.get\("cadence"\) === "annual"/);
+  });
+
+  it("promises no trial, because there isn't one", () => {
+    /*
+     * Every paid card said "Start 14-day trial", with "14-day free trial"
+     * beneath it and the same claim in the step header. Checkout sets no
+     * `trial_period_days` and the Stripe prices carry none, so clicking it
+     * charged the card immediately — a promise that arrives as a refund
+     * request rather than a bug report.
+     *
+     * And it should not be fixed by adding a trial. pricing.ts settled this:
+     * FREE_TIER is "PERMANENT, not a trial", because a CRM proves itself over
+     * ninety days rather than fourteen, and a free tier is the one thing on
+     * this price list that competitors do not have. The free plan IS the
+     * trial; paid plans are an upgrade.
+     */
+    const funnel = read("components/onboarding/OnboardingFunnel.tsx");
+    expect(funnel).not.toMatch(/14-day|14 day/);
+    expect(funnel).toContain("pages.onboardingFunnel.startFreeTrial");
+    expect(funnel).toContain("pages.onboardingFunnel.upgrade");
+
+    // The checkout that actually charges must not quietly grow a trial either.
+    const checkout = read("app/api/stripe/checkout/route.ts");
+    expect(checkout).not.toContain("trial_period_days");
   });
 
   it("quotes no price for the retired Team tier", () => {

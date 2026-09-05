@@ -781,7 +781,8 @@ export default function OnboardingFunnel({
         name: "Starter",
         monthly: 0,
         annual: null,
-        cta: "Get started",
+        cta: t("pages.onboardingFunnel.startFreeTrial"),
+        trialNote: t("pages.onboardingFunnel.freeTrialNote"),
         tagline: "For new agents testing the platform.",
         features: ["5 leads · 50 contacts", "2 CMA reports/day", "AI SMS + email (basic)", "100 AI actions/mo"],
         limits: ["No SMS automation", "Limited AI"],
@@ -803,17 +804,16 @@ export default function OnboardingFunnel({
         name: tierName("solo"),
         monthly: tierMonthly("solo"),
         annual: tierAnnual("solo"),
-        cta: "Start 14-day trial",
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: tierOf("solo")?.blurb ?? "",
         features: tierCredits("solo"),
-        trialNote: "14-day free trial",
       },
       {
         slug: "pro",
         name: tierName("pro"),
         monthly: tierMonthly("pro"),
         annual: tierAnnual("pro"),
-        cta: "Start 14-day trial",
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: "For active agents closing deals consistently.",
         features: [
           "500 leads · 500 contacts",
@@ -826,14 +826,13 @@ export default function OnboardingFunnel({
         ],
         primary: true,
         badge: "Most Popular",
-        trialNote: "14-day free trial",
       },
       {
         slug: "premium",
         name: tierName("premium"),
         monthly: tierMonthly("premium"),
         annual: tierAnnual("premium"),
-        cta: "Start 14-day trial",
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: "For top producers running solo.",
         features: [
           "Unlimited leads & contacts",
@@ -843,14 +842,13 @@ export default function OnboardingFunnel({
           "E-signature (Dotloop / DocuSign)",
           "Unlimited AI actions",
         ],
-        trialNote: "14-day free trial",
       },
       {
         slug: "signature",
         name: tierName("signature"),
         monthly: tierMonthly("signature"),
         annual: tierAnnual("signature"),
-        cta: "Start 14-day trial",
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: "For relationship-driven agents serving high-value clients.",
         features: [
           "Everything in Premium, plus:",
@@ -862,7 +860,6 @@ export default function OnboardingFunnel({
         ],
         signatureLook: true,
         badge: "Bilingual & Luxury",
-        trialNote: "14-day free trial",
       },
     ];
 
@@ -885,7 +882,7 @@ export default function OnboardingFunnel({
       /*
        * Straight to checkout, not back to the price list.
        *
-       * "Start 14-day trial" used to land on /plans — the marketing page the
+       * The plan CTA used to land on /plans — the marketing page the
        * visitor had just decided against reading — where they had to pick the
        * same tier a second time. /dashboard/credits is the one page that can
        * actually charge, and `start=1` makes it open Stripe for this exact

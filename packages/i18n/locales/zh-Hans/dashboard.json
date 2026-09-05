@@ -739,7 +739,7 @@
       "topUpPacks": "额度充值包",
       "canceled": "充值已取消 —— 未产生任何扣款。",
       "managePlan": "管理套餐",
-      "subscribe": "订阅",
+      "subscribe": "升级",
       "upgrade": "升级",
       "downgrade": "降级",
       "portalFailed": "无法打开账单管理页面。",
@@ -754,7 +754,8 @@
       "creditsUnit": "额度",
       "buy": "购买",
       "manageBilling": "管理账单与发票 →",
-      "opening": "正在打开…"
+      "opening": "正在打开…",
+      "annualPlans": "包年套餐"
     },
     "salesModel": {
       "title": "销售模式"
@@ -3389,7 +3390,7 @@
       "provedSpeed": "您刚刚验证了响应速度的价值。Premium 版包含完整 CRM、AI 跟进和不限量的客源分配，您外出带看时也不会漏掉任何一条。",
       "inboxPreview": "收件箱 + 会话视图（您日常使用的界面）",
       "openPricing": "查看完整价格页",
-      "trialNote": "所有付费方案均含 14 天免费试用，可随时取消。",
+      "trialNote": "免费开始——免费版永不过期，付费套餐可随时取消。",
       "monthly": "按月",
       "annual": "按年",
       "save17": "省 17%",
@@ -3422,7 +3423,10 @@
       "noCardCancel": "无需信用卡 · 可随时取消",
       "teamSeats": "最多 5 个席位 · 轮流分配客源 · 每位成员都享 Top Producer Track。",
       "incoming": "来电 ·",
-      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟"
+      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟",
+      "startFreeTrial": "开始免费试用",
+      "freeTrialNote": "真实工作台，无需信用卡",
+      "upgrade": "升级"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -4276,8 +4280,7 @@
       "crunching": "正在测算估值、可比成交、负担能力、交易评级、学区和地图…",
       "unlimitedReports": "报告不限次数",
       "metaTitle": "深度报告",
-      "heading": "深度报告",
-      "openSaved": "打开你保存的报告副本 →"
+      "heading": "深度报告"
     },
     "listingOfferDetail": {
       "cancel": "取消",
@@ -4749,7 +4752,7 @@
     "demoShell": {
       "workspace": "演示工作区",
       "readyForReal": "想正式用起来了吗？",
-      "startTrialSub": "开始 14 天免费试用——真实的工作区，无需信用卡。",
+      "startTrialSub": "开始免费试用 — 真实工作台，无需信用卡。",
       "startTrial": "开始免费试用",
       "sandboxMode": "沙盒模式。",
       "sandboxNote": "您看到的是模拟数据——发消息、建交易、改设置的按钮都已停用。可以随便点。",

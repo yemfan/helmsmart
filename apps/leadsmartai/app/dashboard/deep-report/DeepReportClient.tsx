@@ -42,14 +42,11 @@ export default function DeepReportClient() {
   const [quota, setQuota] = useState<Quota | null>(null);
 
   /*
-   * `reportId` is a link to the agent's OWN saved copy, not a share URL.
-   *
-   * `/deep-report/<id>` used to be readable by anyone holding it — no auth,
-   * share-by-link — which made the report a client-facing artifact and put
-   * its language beyond the agent's control. The page asks who you are now and
-   * serves only your own reports, so the link is worth surfacing but is not
-   * something to hand a client: `ShareReport` still falls back to Download
-   * only (it already guards on `hasLink`).
+   * No share URL. The Deep Report used to be readable by anyone holding
+   * `/deep-report/<id>` — no auth, share-by-link — which made it a
+   * client-facing artifact and put its language beyond the agent's control.
+   * It is the agent's working document now, so `ShareReport` falls back to
+   * Download only (it already guards on `hasLink`).
    */
 
   // Loan terms are pure local math — recompute affordability (and investment
@@ -240,19 +237,7 @@ export default function DeepReportClient() {
       ) : null}
 
       {displayReport && !loading ? (
-        <>
-          <DeepReportView report={displayReport} />
-          {reportId ? (
-            <p className="mt-3 text-xs text-slate-500">
-              <Link
-                href={`/deep-report/${reportId}`}
-                className="underline underline-offset-2 hover:text-slate-700"
-              >
-                {t("pages.deepReport.openSaved")}
-              </Link>
-            </p>
-          ) : null}
-        </>
+        <DeepReportView report={displayReport} />
       ) : null}
     </div>
   );

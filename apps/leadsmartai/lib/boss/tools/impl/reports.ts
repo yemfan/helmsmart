@@ -90,22 +90,49 @@ export const generateDeepReportTool = defineTool({
   riskClass: "research",
   assignee: "sales_assistant",
   execute: async (ctx, input) => {
-    // Delegates to the sales assistant's action so the quota, the persistence
-    // and the link are defined once. The dashboard route is a third caller of
-    // the same policy; whenever these drifted, one of them was the stale one.
-    const res = await BOSS_ACTIONS.generate_deep_report.run({
+    // Same quota + persistence flow as the dashboard route
+    // (app/api/dashboard/deep-report/route.ts) — one policy, two entry points.
+    const userId = await resolveUserId(ctx.agentId);
+    if (!userId) return { status: "failed", error: "Couldn't resolve the agent's user account." };
+    const quota = await getFeatureQuota(userId, "deep_report");
+    if (quota.reached) {
+      return {
+        status: "rejected",
+        reason: `Daily Deep Report limit reached (${quota.limit}/day). Resets tomorrow.`,
+      };
+    }
+    const res = await generateDeepReport({
       agentId: ctx.agentId,
-      params: { address: input.address, property_use: input.property_use },
-      autoExecute: true,
+      address: input.address,
+      propertyUse: input.property_use,
     });
-    if (res.status !== "completed") return { status: "failed", error: res.note };
+    if (!res.ok) return { status: "failed", error: res.error };
+    await incrementFeatureUsage(userId, "deep_report");
+
+    let id: string | null = null;
+    try {
+      const { data } = await supabaseAdmin
+        .from("deep_reports")
+        .insert({
+          agent_id: userId,
+          address: res.report.property.address,
+          property_use: input.property_use,
+          report: res.report,
+        } as never)
+        .select("id")
+        .single();
+      id = (data as { id: string } | null)?.id ?? null;
+    } catch {
+      // Non-fatal — the report exists; only the share link is lost.
+    }
     return {
       status: "completed",
-      summary: res.note,
+      summary: `Deep report ready for ${input.address}`,
       display: { key: "reports.deepReportReady", params: { address: input.address } },
-      // The agent's own copy â /deep-report/<id> asks who you are and serves
-      // only your own reports. Not something to hand a client.
-      artifactUrl: res.artifactUrl,
+      // No artifactUrl: the report is not shareable by link any more, and a
+      // link the realtor cannot hand to a client is worse than none.
+      artifactUrl: null,
+      data: { report_id: id },
     };
   },
 });

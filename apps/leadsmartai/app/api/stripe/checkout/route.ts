@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -23,7 +24,7 @@ const LIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
  * customer rather than a local column — the local subscription fields have
  * proven to drift, and billing a customer twice is the expensive failure here.
  */
-async function findActiveSubscription(userId: string) {
+async function findActiveSubscription(userId: string): Promise<Stripe.Subscription | null> {
   const { data } = await supabaseAdmin
     .from("leadsmart_users")
     .select("stripe_customer_id")

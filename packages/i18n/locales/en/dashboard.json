@@ -739,7 +739,7 @@
       "topUpPacks": "Top-up packs",
       "canceled": "Top-up canceled — no charge was made.",
       "managePlan": "Manage plan",
-      "subscribe": "Subscribe",
+      "subscribe": "Upgrade",
       "upgrade": "Upgrade",
       "downgrade": "Downgrade",
       "portalFailed": "Couldn't open the billing portal.",
@@ -754,7 +754,8 @@
       "creditsUnit": "credits",
       "buy": "Buy",
       "manageBilling": "Manage billing & invoices →",
-      "opening": "Opening…"
+      "opening": "Opening…",
+      "annualPlans": "Annual plans"
     },
     "salesModel": {
       "title": "Sales Model"
@@ -3389,7 +3390,7 @@
       "provedSpeed": "You just proved response speed. Premium agents get full CRM, AI follow-ups, and unlimited lead routing — so none of these slip while you're in appointments.",
       "inboxPreview": "Inbox + thread view (what you'll use daily)",
       "openPricing": "Open full pricing page",
-      "trialNote": "Every paid plan includes a 14-day free trial. Cancel anytime.",
+      "trialNote": "Start free — the free plan never expires. Cancel a paid plan anytime.",
       "monthly": "Monthly",
       "annual": "Annual",
       "save17": "Save 17%",
@@ -3422,7 +3423,10 @@
       "noCardCancel": "No credit card required · Cancel anytime",
       "teamSeats": "Up to 5 seats · round-robin routing · Top Producer Track for every member.",
       "incoming": "Incoming ·",
-      "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m"
+      "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m",
+      "startFreeTrial": "Start free trial",
+      "freeTrialNote": "Your real workspace, no credit card",
+      "upgrade": "Upgrade"
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -4276,8 +4280,7 @@
       "crunching": "Crunching value, comps, affordability, deal rating, schools, and the map…",
       "unlimitedReports": "Unlimited reports",
       "metaTitle": "Deep report",
-      "heading": "Deep report",
-      "openSaved": "Open your saved copy of this report →"
+      "heading": "Deep report"
     },
     "listingOfferDetail": {
       "cancel": "Cancel",
@@ -4749,7 +4752,7 @@
     "demoShell": {
       "workspace": "Demo workspace",
       "readyForReal": "Ready to use this for real?",
-      "startTrialSub": "Start a 14-day free trial — your real workspace, no credit card.",
+      "startTrialSub": "Start free trial — your real workspace, no credit card.",
       "startTrial": "Start free trial",
       "sandboxMode": "Sandbox mode.",
       "sandboxNote": "You're looking at fake data — buttons that send messages, create deals, or change settings are disabled. Click freely.",
