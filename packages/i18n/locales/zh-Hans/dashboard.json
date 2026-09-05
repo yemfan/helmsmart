@@ -5250,7 +5250,8 @@
       "sub": "原生语音 AI。响应不到 3 秒。支持多语言。可以约看房、甄别买家、记录顾虑——并把有意向的客户转给您。拿起电话就能试。无需注册，无需设置。",
       "tapToCall": "点击拨打",
       "nativeVoice": "原生语音——不是在文字上外挂一层",
-      "languages": "英语 + 西班牙语 + 普通话"
+      "languages": "英语 + 西班牙语 + 普通话",
+      "subNoPhone": "原生语音 AI。响应不到 3 秒。支持多语言。可以约看房、甄别买家、记录顾虑——并把有意向的客户转给您。预约一次讲解，在真实通话中亲耳听听。"
     },
     "marketReportShare": {
       "title": "市场动态",
@@ -5505,7 +5506,8 @@
     "voiceTranscripts": {
       "title": "听起来是什么样",
       "sub": "三个真实场景。拨打上面的号码，跑的是同一套引擎。",
-      "outcome": "结果："
+      "outcome": "结果：",
+      "subNoPhone": "三个真实场景，跑的都是支撑真实通话的同一套引擎。"
     },
     "postcardAnimations": {
       "happyBirthday": "生日快乐，",
@@ -9238,7 +9240,8 @@
       "haveItCallYou": "或者让它打给您 →",
       "hotLeadPush": "高意向客户 → 短信 + 推送到您手机",
       "liveDemo": "在线演示 · 无需注册",
-      "liveAi": "实时 AI · 全天候 · 30 秒演示"
+      "liveAi": "实时 AI · 全天候 · 30 秒演示",
+      "demoBadge": "在线演示 · 预约讲解"
     },
     "jobs": {
       "runAllJobs": "运行全部任务",

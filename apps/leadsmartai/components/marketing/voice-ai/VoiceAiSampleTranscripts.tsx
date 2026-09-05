@@ -1,4 +1,5 @@
 import { getServerT } from "@/lib/i18n/server";
+import { resolveVoiceDemoPhone } from "@/lib/marketing/voiceDemoPhone";
 
 type Turn = {
   speaker: "ai" | "caller";
@@ -81,11 +82,16 @@ const SCENARIOS: Scenario[] = [
  */
 export default async function VoiceAiSampleTranscripts() {
   const t = await getServerT();
+  // "Calling the live number above runs the same engine" is only true when
+  // there IS a number above. Without one the hero shows a Book-a-demo button,
+  // and this line was pointing at something that was not on the page.
+  const phone = resolveVoiceDemoPhone(process.env.NEXT_PUBLIC_VOICE_DEMO_PHONE);
+  const hasPhone = Boolean(phone.display && phone.telHref);
   return (
     <section className="space-y-6">
       <header>
         <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("pages.voiceTranscripts.title", { ns: "dashboard" })}</h2>
-        <p className="mt-1 text-sm text-slate-600">{t("pages.voiceTranscripts.sub", { ns: "dashboard" })}</p>
+        <p className="mt-1 text-sm text-slate-600">{t(hasPhone ? "pages.voiceTranscripts.sub" : "pages.voiceTranscripts.subNoPhone", { ns: "dashboard" })}</p>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-3">

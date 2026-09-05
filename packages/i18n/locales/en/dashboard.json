@@ -5250,7 +5250,8 @@
       "sub": "Native voice AI. Sub-3-second response. Multi-language. Books showings, qualifies buyers, captures objections — and routes the warm ones to you. Pick up the phone and try it. No signup, no setup.",
       "tapToCall": "Tap to call",
       "nativeVoice": "Native voice — not a text bolt-on",
-      "languages": "English + Spanish + Mandarin"
+      "languages": "English + Spanish + Mandarin",
+      "subNoPhone": "Native voice AI. Sub-3-second response. Multi-language. Books showings, qualifies buyers, captures objections — and routes the warm ones to you. Book a walkthrough and hear it on a real call."
     },
     "marketReportShare": {
       "title": "Market Update",
@@ -5505,7 +5506,8 @@
     "voiceTranscripts": {
       "title": "What it sounds like",
       "sub": "Three real scenarios. Calling the live number above runs the same engine.",
-      "outcome": "Outcome:"
+      "outcome": "Outcome:",
+      "subNoPhone": "Three real scenarios, from the same engine that runs live calls."
     },
     "postcardAnimations": {
       "happyBirthday": "Happy Birthday,",
@@ -9238,7 +9240,8 @@
       "haveItCallYou": "Or have it call you →",
       "hotLeadPush": "Hot-lead → text + push to your phone",
       "liveDemo": "Live demo · no signup",
-      "liveAi": "Live AI · 24/7 · 30-second demo"
+      "liveAi": "Live AI · 24/7 · 30-second demo",
+      "demoBadge": "Live demo · book a walkthrough"
     },
     "jobs": {
       "runAllJobs": "Run all jobs",
