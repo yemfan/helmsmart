@@ -8,6 +8,13 @@ import { getServerT } from "@/lib/i18n/server";
  * phone number when configured (via NEXT_PUBLIC_VOICE_DEMO_PHONE), or
  * falls back to a "book a private demo" CTA when not.
  *
+ * WHEN THERE IS NO NUMBER, THE PAGE MUST STOP PROMISING ONE. The badge said
+ * "Live demo · no signup", the sub-headline said "Pick up the phone and try
+ * it", and the transcripts below said "Calling the live number above runs the
+ * same engine" — while the hero rendered a Book-a-demo button and no number at
+ * all. Three claims about a phone that was not on the page. Each now has a
+ * variant for the unconfigured case.
+ *
  * The phone is the *whole point* of this page — agents are evaluating
  * voice AI quality and the only way to convince them is to let them call
  * a real Twilio + OpenAI Realtime endpoint and hear it themselves. So the
@@ -17,6 +24,7 @@ import { getServerT } from "@/lib/i18n/server";
 export default async function VoiceAiHero() {
   const t = await getServerT();
   const phone = resolveVoiceDemoPhone(process.env.NEXT_PUBLIC_VOICE_DEMO_PHONE);
+  const hasPhone = Boolean(phone.display && phone.telHref);
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 px-6 py-14 text-white shadow-xl sm:px-12 sm:py-20">
@@ -25,10 +33,10 @@ export default async function VoiceAiHero() {
 
       <div className="relative">
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300 ring-1 ring-emerald-400/30">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {t("pages.voiceAiHero.liveDemo", { ns: "dashboard" })}
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {t(hasPhone ? "pages.voiceAiHero.liveDemo" : "pages.voiceAiHero.demoBadge", { ns: "dashboard" })}
         </span>
         <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">{t("pages.voiceHero.headline", { ns: "dashboard" })}</h1>
-        <p className="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">{t("pages.voiceHero.sub", { ns: "dashboard" })}</p>
+        <p className="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">{t(hasPhone ? "pages.voiceHero.sub" : "pages.voiceHero.subNoPhone", { ns: "dashboard" })}</p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end">
           {phone.display && phone.telHref ? (
@@ -43,8 +51,11 @@ export default async function VoiceAiHero() {
               </span>
             </a>
           ) : (
+            // /book, not /contact. The button says "Book a private demo" and a
+            // contact form is not a booking — it is a message someone answers
+            // later. /book already embeds the real scheduler.
             <Link
-              href="/contact"
+              href="/book"
               className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-base font-semibold text-slate-900 shadow-lg hover:shadow-xl"
             >
               {t("pages.voiceAiHero.bookDemo", { ns: "dashboard" })}
