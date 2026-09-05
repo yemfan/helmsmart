@@ -239,7 +239,7 @@
       "heading": "Your AI team",
       "receptionist": "Receptionist",
       "sales_assistant": "Sales Assistant",
-      "marketing_assistant": "Marketing Specialist",
+      "marketing_assistant": "Marketing Assistant",
       "transaction_assistant": "Transaction Coordinator",
       "accountant": "Accountant",
       "realtor": "For your review"
@@ -1009,7 +1009,7 @@
       "role": "Outbound lead conversion"
     },
     "marketing_assistant": {
-      "name": "AI Marketing Specialist",
+      "name": "AI Marketing Assistant",
       "role": "Demand generation"
     },
     "transaction_assistant": {
@@ -1385,7 +1385,7 @@
       "boss_assistant": "Captain",
       "receptionist": "AI Receptionist",
       "sales_assistant": "AI Sales Assistant",
-      "marketing_assistant": "AI Marketing Specialist",
+      "marketing_assistant": "AI Marketing Assistant",
       "transaction_assistant": "AI Transaction Coordinator",
       "accountant": "AI Accountant"
     },
