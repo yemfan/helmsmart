@@ -8,9 +8,14 @@ import ShareReport from "@/components/share/ShareReport";
 import type { DeepReport } from "@/lib/deep-report/types";
 
 /**
- * Single source of truth for rendering a Property Deep Report — used by the
- * dashboard generator and the public /deep-report/[id] share page, so they
- * can't drift. Owns the PDF export (html2canvas of the rendered body).
+ * Renders a Property Deep Report. Owns the PDF export (html2canvas of the
+ * rendered body).
+ *
+ * It used to serve two callers — the dashboard generator and a public
+ * /deep-report/[id] share page — which is why `shareUrl` was a prop. The
+ * share page is gone: the report is the agent's working document, so
+ * ShareReport falls back to Download and nothing here is reachable without
+ * a session.
  */
 
 const USE_LABEL: Record<string, string> = {

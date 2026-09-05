@@ -12,6 +12,7 @@ import {
   type LoanAssumptions,
 } from "./finance";
 import { DEEP_REPORT_DISCLAIMER, type DeepReport, type PropertyUse } from "./types";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
 
 export type GenerateDeepReportInput = {
   /** Numeric agent id (for CMA reuse + agent profile). */
@@ -43,6 +44,7 @@ export async function generateDeepReport(
 
   // 2) AI: deal rating + rent (investment) + schools + neighborhood.
   const ai = await generateDeepReportAi({
+    locale: await agentUiLocale(input.agentId),
     address,
     propertyUse: input.propertyUse,
     estimate: {
