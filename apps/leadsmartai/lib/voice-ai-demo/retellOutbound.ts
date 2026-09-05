@@ -13,6 +13,8 @@ import "server-only";
  * because a silent fallback is how the mismatch survived this long.
  */
 
+import { loadReceptionistContext } from "@/lib/voice-agent/context";
+import { buildReceptionistDynamicVariables } from "@repo/voice";
 import {
   demoDynamicVariables,
   envVarFor,
@@ -43,6 +45,43 @@ export function isRetellDemoConfigured(language: DemoLanguage): boolean {
   return resolveRetellDemoConfig(envFromProcess(), language).ok;
 }
 
+/**
+ * A real receptionist's brain for the demo call, when one is designated.
+ *
+ * Without this the demo hands the agent three variables — is_demo, language,
+ * caller_name — and nothing else, so it improvises a generic real-estate
+ * script. A prospect evaluating voice AI hears a plausible robot rather than
+ * the product: no business name, no appointment types, no knowledge base, and
+ * none of the things the page promises it can do.
+ *
+ * VOICE_DEMO_ORG_AGENT_ID names the agent whose configuration to demo. It has
+ * to be set DELIBERATELY and there is no fallback to "whichever agent we find".
+ * This call goes to a stranger who typed their number into a marketing page,
+ * and the context includes a real business's pricing, knowledge base and
+ * appointment types — that is a customer's material, and picking an org
+ * automatically would leak it. Point it at your own demo workspace.
+ *
+ * Every failure returns {} and lets the call proceed on the minimal variables:
+ * a demo with a thin script beats no demo, and the reason is logged.
+ */
+async function demoOrgVariables(): Promise<Record<string, string>> {
+  const agentId = (process.env.VOICE_DEMO_ORG_AGENT_ID || "").trim();
+  if (!agentId) return {};
+  try {
+    const ctx = await loadReceptionistContext(agentId);
+    // Null when that agent's receptionist is switched off — its config is not
+    // something to demo, so fall back rather than half-load it.
+    if (!ctx) {
+      console.warn("[voice-ai-demo] VOICE_DEMO_ORG_AGENT_ID has no enabled receptionist:", agentId);
+      return {};
+    }
+    return buildReceptionistDynamicVariables(ctx);
+  } catch (e) {
+    console.warn("[voice-ai-demo] could not load demo org context:", e);
+    return {};
+  }
+}
+
 export async function placeRetellDemoCall(args: {
   toPhoneE164: string;
   language: DemoLanguage;
@@ -68,10 +107,17 @@ export async function placeRetellDemoCall(args: {
         from_number: fromNumber,
         to_number: args.toPhoneE164,
         override_agent_id: agentId,
-        retell_llm_dynamic_variables: demoDynamicVariables({
-          language: args.language,
-          prospectName: args.prospectName,
-        }),
+        // Org context first, demo flags second: is_demo, language and
+        // caller_name describe THIS call and must win. They do not collide
+        // today (the org set has caller_number, not caller_name), but the
+        // order says which is authoritative if that ever changes.
+        retell_llm_dynamic_variables: {
+          ...(await demoOrgVariables()),
+          ...demoDynamicVariables({
+            language: args.language,
+            prospectName: args.prospectName,
+          }),
+        },
       }),
     });
 
