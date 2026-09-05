@@ -47,6 +47,30 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
   // ── Getting started ───────────────────────────────────────────
   {
     category: "getting_started",
+    key: "receptionist_setup",
+    q: "How do I set up the AI Receptionist?",
+    a: "Open Settings → Voice AI. Turn the AI Voice Agent on, then fill in three fields: the agent's name (what she calls herself), your business name, and Business context — what you do, your pricing, and anything a caller commonly asks. That context is the whole brain; a blank one means she takes a message instead of answering. Add your appointment types so she can book, and set your business hours so she never offers a time you are closed. Full walkthrough at /help/guides/voice-ai-inbound.",
+  },
+  {
+    category: "getting_started",
+    key: "forward_calls_to_receptionist",
+    q: "How do I send calls I don't answer to the AI?",
+    a: "Keep your own number public and forward only what you miss. From the phone you want forwarded, dial **61*<your CloseBoss number>*11*30# and press call — that is forward-on-no-answer, voice calls, after 30 seconds. Most US carriers allow 5–30 seconds in five-second steps, and 30 is the maximum. Also worth setting: **67*<number># for busy and **62*<number># when your phone is off. To undo them all, dial ##004#.",
+  },
+  {
+    category: "getting_started",
+    key: "forwarding_not_working",
+    q: "Call forwarding isn't reaching the AI — why?",
+    a: "Three usual causes. First, the iPhone Settings → Phone → Call Forwarding switch is unconditional — it sends every call to the AI and your phone never rings; conditional forwarding only works through the **61* codes. Second, your carrier voicemail may pick up before the forward does, so if voicemail answers at 25 seconds a 30-second forward never fires — shorten the forward or ask your carrier to lengthen voicemail. Third, Verizon uses *71 and ignores the ring-timer setting.",
+  },
+  {
+    category: "getting_started",
+    key: "caller_reschedule",
+    q: "Can callers reschedule without phoning back?",
+    a: "Yes. Every appointment the receptionist books sends the caller a confirmation text containing a private reschedule link. Opening it shows your real open times — in your business's timezone, within your business hours, with slots that are already taken removed — and picking one moves the appointment immediately. The link only ever moves that one appointment, and it stops working once the appointment has passed.",
+  },
+  {
+    category: "getting_started",
     key: "set_up_first_sequence",
     q: "How do I set up my first AI follow-up sequence?",
     a: "From your dashboard, open Settings → Messages and pick a Review Policy (auto-send vs require approval). Then open Templates and either edit one of the prebuilt sequences or create a new one. New leads start receiving the sequence within 60 seconds of capture. See the step-by-step guide at /help/guides/ai-followup-setup.",
