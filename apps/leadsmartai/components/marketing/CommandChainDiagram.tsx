@@ -46,9 +46,10 @@ type TeamKey = "receptionist" | "sales" | "marketing" | "transaction" | "account
  *
  * Short forms of the `boss.team.*` names rather than those names themselves.
  * The card is a fifth of the row at desktop and half at mobile, so "Transaction
- * Coordinator" wraps to three lines; and reusing them would rename Accountant
- * to Financial Analyst on a marketing page, which is a copy decision rather
- * than a translation. That the two sets disagree is worth settling separately.
+ * Coordinator" wraps to three lines, which is why the short forms exist at all.
+ * They are truncations of the canonical names rather than different words —
+ * Accountant for AI Accountant, Sales for AI Sales Assistant — so the compact
+ * label and the full one never name the employee two ways.
  */
 const TEAM: Array<{ key: TeamKey; labelKey: string; icon: LucideIcon }> = [
   { key: "receptionist", labelKey: "pages.commandChain.team.receptionist", icon: Headphones },

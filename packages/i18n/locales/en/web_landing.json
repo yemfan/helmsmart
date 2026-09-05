@@ -40,12 +40,30 @@
   },
   "team": {
     "members": {
-      "max": { "role": "Captain", "line": "Runs the team and keeps you focused on what matters most today." },
-      "emma": { "role": "AI Receptionist", "line": "Answers every call and text — instantly, day or night." },
-      "chris": { "role": "AI Sales Specialist", "line": "Follows up relentlessly and turns leads into booked appointments." },
-      "ruby": { "role": "AI Marketing Specialist", "line": "Creates content and campaigns that keep your pipeline full." },
-      "grace": { "role": "AI Transaction Coordinator", "line": "Tracks every deadline so deals move smoothly to the closing table." },
-      "oliver": { "role": "AI Financial Analyst", "line": "Watches every dollar and keeps your commissions and books straight." }
+      "max": {
+        "role": "Captain",
+        "line": "Runs the team and keeps you focused on what matters most today."
+      },
+      "emma": {
+        "role": "AI Receptionist",
+        "line": "Answers every call and text — instantly, day or night."
+      },
+      "chris": {
+        "role": "AI Sales Assistant",
+        "line": "Follows up relentlessly and turns leads into booked appointments."
+      },
+      "ruby": {
+        "role": "AI Marketing Specialist",
+        "line": "Creates content and campaigns that keep your pipeline full."
+      },
+      "grace": {
+        "role": "AI Transaction Coordinator",
+        "line": "Tracks every deadline so deals move smoothly to the closing table."
+      },
+      "oliver": {
+        "role": "AI Accountant",
+        "line": "Watches every dollar and keeps your commissions and books straight."
+      }
     },
     "eyebrow": "Meet your AI team",
     "h2_prefix": "Six specialists.",
@@ -308,11 +326,26 @@
     "col_old": "The old CRM",
     "col_us": "CloseBoss",
     "rows": {
-      "acts": { "old": "Waits for you to feed it data", "now": "Acts on its own — answers calls, calls your sphere, follows up" },
-      "one_command": { "old": "Needs an admin or ISA to run it", "now": "You give one command; the AI team runs it" },
-      "cold_call": { "old": "Just stores contacts", "now": "Cold-calls and qualifies leads by real voice" },
-      "trained": { "old": "Generic templates", "now": "Trained on top-agent scripts, objections & pricing" },
-      "you_close": { "old": "You still do all the work", "now": "You review finished reports and close" }
+      "acts": {
+        "old": "Waits for you to feed it data",
+        "now": "Acts on its own — answers calls, calls your sphere, follows up"
+      },
+      "one_command": {
+        "old": "Needs an admin or ISA to run it",
+        "now": "You give one command; the AI team runs it"
+      },
+      "cold_call": {
+        "old": "Just stores contacts",
+        "now": "Cold-calls and qualifies leads by real voice"
+      },
+      "trained": {
+        "old": "Generic templates",
+        "now": "Trained on top-agent scripts, objections & pricing"
+      },
+      "you_close": {
+        "old": "You still do all the work",
+        "now": "You review finished reports and close"
+      }
     }
   },
   "chores": {
@@ -320,15 +353,51 @@
     "h2": "The work that wears you down — handled",
     "body": "Give the word and your AI team does the job — then sends the finished work to your client on your request. You review and close.",
     "items": {
-      "cma": { "chore": "Building a CMA by hand", "fix": "Pulls live comps and a defensible value range, then sends the report to your client.", "who": "Sales Assistant" },
-      "presentation": { "chore": "Writing a listing presentation", "fix": "Generates a branded seller presentation from one address and delivers it.", "who": "Sales Assistant" },
-      "research": { "chore": "Researching the market for a client", "fix": "Runs the neighborhood and market research and packages it for you.", "who": "Sales Assistant" },
-      "home_match": { "chore": "Hunting for homes that fit a buyer", "fix": "Matches listings to plain-English criteria and emails the best ones to the buyer.", "who": "Sales Assistant" },
-      "deal_math": { "chore": "Crunching investor deal math", "fix": "Produces a Property Deep Report — affordability, ROI, and a deal rating.", "who": "Sales Assistant" },
-      "social": { "chore": "Posting to social — consistently", "fix": "Publishes on-brand posts for you, week after week.", "who": "Marketing Assistant" },
-      "leads": { "chore": "Always needing fresh leads", "fix": "Continuously prospects and surfaces new potential leads.", "who": "Marketing Assistant" },
-      "missed_calls": { "chore": "Missed calls while you're with clients", "fix": "Answers every call and texts back missed ones — 24/7.", "who": "Receptionist" },
-      "cold_call": { "chore": "Cold calls you keep putting off", "fix": "Cold-calls and qualifies new leads by real voice.", "who": "Sales Assistant" }
+      "cma": {
+        "chore": "Building a CMA by hand",
+        "fix": "Pulls live comps and a defensible value range, then sends the report to your client.",
+        "who": "Sales Assistant"
+      },
+      "presentation": {
+        "chore": "Writing a listing presentation",
+        "fix": "Generates a branded seller presentation from one address and delivers it.",
+        "who": "Sales Assistant"
+      },
+      "research": {
+        "chore": "Researching the market for a client",
+        "fix": "Runs the neighborhood and market research and packages it for you.",
+        "who": "Sales Assistant"
+      },
+      "home_match": {
+        "chore": "Hunting for homes that fit a buyer",
+        "fix": "Matches listings to plain-English criteria and emails the best ones to the buyer.",
+        "who": "Sales Assistant"
+      },
+      "deal_math": {
+        "chore": "Crunching investor deal math",
+        "fix": "Produces a Property Deep Report — affordability, ROI, and a deal rating.",
+        "who": "Sales Assistant"
+      },
+      "social": {
+        "chore": "Posting to social — consistently",
+        "fix": "Publishes on-brand posts for you, week after week.",
+        "who": "Marketing Assistant"
+      },
+      "leads": {
+        "chore": "Always needing fresh leads",
+        "fix": "Continuously prospects and surfaces new potential leads.",
+        "who": "Marketing Assistant"
+      },
+      "missed_calls": {
+        "chore": "Missed calls while you're with clients",
+        "fix": "Answers every call and texts back missed ones — 24/7.",
+        "who": "Receptionist"
+      },
+      "cold_call": {
+        "chore": "Cold calls you keep putting off",
+        "fix": "Cold-calls and qualifies new leads by real voice.",
+        "who": "Sales Assistant"
+      }
     }
   },
   "ai_tools": {
@@ -337,12 +406,30 @@
     "body": "Beyond the CRM — generate the reports and searches that close deals, each grounded in live web data and branded with your profile.",
     "cta": "See everything in the platform",
     "items": {
-      "cma": { "title": "AI CMA", "body": "Pull live comparable sales and a defensible value range in minutes — grounded in real web sources, not guesswork." },
-      "seller_presentation": { "title": "Seller Presentation", "body": "A branded listing presentation — comps, pricing strategy, marketing plan, schools, and your profile — generated from one address." },
-      "deep_report": { "title": "Property Deep Report", "body": "A complete buyer-decision report: loan affordability, deal rating, investment ROI, schools, neighborhood, and a location map." },
-      "house_search": { "title": "AI House Search", "body": "Describe what a buyer wants in plain English; get matched listings and email the best ones to them in a click." },
-      "comparison": { "title": "Comparison Report", "body": "Score properties side-by-side on price, value, and fit so buyers can decide with confidence — shareable by link." },
-      "net_to_seller": { "title": "Net-to-Seller Sheet", "body": "A clean, signable net-proceeds summary so sellers see exactly what they walk away with before they accept." }
+      "cma": {
+        "title": "AI CMA",
+        "body": "Pull live comparable sales and a defensible value range in minutes — grounded in real web sources, not guesswork."
+      },
+      "seller_presentation": {
+        "title": "Seller Presentation",
+        "body": "A branded listing presentation — comps, pricing strategy, marketing plan, schools, and your profile — generated from one address."
+      },
+      "deep_report": {
+        "title": "Property Deep Report",
+        "body": "A complete buyer-decision report: loan affordability, deal rating, investment ROI, schools, neighborhood, and a location map."
+      },
+      "house_search": {
+        "title": "AI House Search",
+        "body": "Describe what a buyer wants in plain English; get matched listings and email the best ones to them in a click."
+      },
+      "comparison": {
+        "title": "Comparison Report",
+        "body": "Score properties side-by-side on price, value, and fit so buyers can decide with confidence — shareable by link."
+      },
+      "net_to_seller": {
+        "title": "Net-to-Seller Sheet",
+        "body": "A clean, signable net-proceeds summary so sellers see exactly what they walk away with before they accept."
+      }
     }
   },
   "bilingual": {

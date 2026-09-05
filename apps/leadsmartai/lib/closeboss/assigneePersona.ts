@@ -24,10 +24,10 @@ export type AssigneePersona = {
 
 export const ASSIGNEE_PERSONA: Record<string, AssigneePersona> = {
   receptionist: { name: "Emma", avatar: "emma", role: "Receptionist", team: "Reception" },
-  sales_assistant: { name: "Chris", avatar: "chris", role: "Sales Specialist", team: "Sales" },
+  sales_assistant: { name: "Chris", avatar: "chris", role: "Sales Assistant", team: "Sales" },
   marketing_assistant: { name: "Ruby", avatar: "ruby", role: "Marketing Specialist", team: "Marketing" },
   transaction_assistant: { name: "Grace", avatar: "grace", role: "Transaction Coordinator", team: "Transaction" },
-  accountant: { name: "Oliver", avatar: "oliver", role: "Financial Analyst", team: "Accounting" },
+  accountant: { name: "Oliver", avatar: "oliver", role: "Accountant", team: "Accounting" },
   boss_assistant: { name: "Max", avatar: "max", role: "Captain", team: "Command" },
 };
 
