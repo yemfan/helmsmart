@@ -1,7 +1,10 @@
 import "server-only";
 import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 
+import { DEFAULT_LOCALE, resolveLocale } from "@leadsmart/i18n";
+
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 import { attachItemImages } from "./itemImage";
 
 /**
@@ -66,7 +69,14 @@ export const DIGEST_CATEGORIES: readonly DigestCategory[] = [
  *  default for legacy stored digests written before category existed). */
 export const DEFAULT_DIGEST_CATEGORY: DigestCategory = "market_trends";
 
-/** Friendly, UI-facing label for each category (badges, cards). */
+/**
+ * Friendly, UI-facing label for each category (badges, cards).
+ *
+ * This is the English map, kept as a plain export because most callers render
+ * it in an English-only surface. Anything that renders beside translated digest
+ * copy — the issue page, the email — must go through `categoryLabel()` instead,
+ * or a Chinese newsletter grows English badges.
+ */
 export const CATEGORY_LABEL: Record<DigestCategory, string> = {
   economy_rates: "Economy & Rates",
   legislation_policy: "Policy & Law",
@@ -76,6 +86,27 @@ export const CATEGORY_LABEL: Record<DigestCategory, string> = {
   market_trends: "Market",
   seasonal_other: "Seasonal",
 };
+
+const CATEGORY_LABEL_ZH: Record<DigestCategory, string> = {
+  economy_rates: "经济与利率",
+  legislation_policy: "政策与法规",
+  programs_financing: "购房计划",
+  schools_education: "学区教育",
+  local_economy: "本地经济",
+  market_trends: "市场行情",
+  seasonal_other: "季节性",
+};
+
+/** The category badge in the reader's language. Falls back to English. */
+export function categoryLabel(
+  category: DigestCategory,
+  locale?: string | null,
+): string {
+  if (resolveLocale(locale) === "zh-Hans") {
+    return CATEGORY_LABEL_ZH[category] ?? CATEGORY_LABEL[category];
+  }
+  return CATEGORY_LABEL[category];
+}
 
 export type DigestItem = {
   headline: string;
@@ -183,7 +214,8 @@ When done searching, respond with EXACTLY ONE fenced JSON code block and nothing
 
 Write 6-8 items spread across categories. Every item MUST have a "key_point". Keep prose original, concrete, editorial, and tied to the cited facts. Every number stays cited; never fabricate.`;
 
-function buildUserPrompt(weekOf: string): string {
+function buildUserPrompt(weekOf: string, locale: string): string {
+  const lang = langBlock(locale);
   return (
     `Compile this week's U.S. "This Week in Housing" radar for consumers. ` +
     `The week begins Monday ${weekOf}; today's date is ${new Date().toISOString().slice(0, 10)}.\n\n` +
@@ -201,23 +233,54 @@ function buildUserPrompt(weekOf: string): string {
     `cite every fact to the source you found it on, then return the JSON.\n\n` +
     `Write like a professional newsletter editor: a clean single-hook TITLE (≤70 chars, no comma run-ons), a tight 1-2 sentence standfirst INTRO, ` +
     `and for each item a punchy "key_point" bullet (the scannable "so what", ≤150 chars) plus a crisp title-case headline, a tight 1-2 sentence summary, ` +
-    `and a one-sentence why_it_matters. Scannable, not walls of text.`
+    `and a one-sentence why_it_matters. Scannable, not walls of text.` +
+    // The directive rides on the USER prompt, not the system prompt: the
+    // system prompt is the cached prefix and it is identical for every
+    // language, so keeping it untouched means the second and third variants
+    // of a week reuse the cache instead of paying for it again.
+    (lang ? `\n\n${lang}` : "")
   );
 }
 
 /**
- * Generate the national weekly digest for the week beginning Monday `weekOf`
- * (YYYY-MM-DD). Returns null on any failure (best-effort) so the cron never
- * crashes on a bad run.
+ * The language instructions for one variant.
+ *
+ * Two things beyond the usual JSON directive. The digest is a CITED document —
+ * `source_url` and `publisher` identify where a fact came from, and a
+ * "translated" publisher points at nothing. And a national U.S. newsletter is
+ * full of proper nouns (Freddie Mac, the CFPB, a state program's legal name)
+ * that a reader has to be able to search for; those get kept with a gloss
+ * rather than replaced.
  */
-export async function generateWeeklyDigest(weekOf: string): Promise<WeeklyDigest | null> {
+function langBlock(locale: string): string {
+  const base = languageDirectiveForJson(locale);
+  if (!base) return "";
+  return `${base}
+Citations are not copy: reproduce every "source_url" exactly, and keep "publisher" as the outlet's own name.
+Keep the official name of any agency, law, program, index or company (Freddie Mac, CFPB, FHA, the bill's number) in English — gloss it in-line the first time if it helps, but a reader must still be able to search for it.`;
+}
+
+/**
+ * Generate the national weekly digest for the week beginning Monday `weekOf`
+ * (YYYY-MM-DD), written in `locale`. Returns null on any failure (best-effort)
+ * so the cron never crashes on a bad run.
+ *
+ * One call produces ONE language. The cron runs it once per supported locale
+ * and stores each result as its own row, because the digest is national — it
+ * has no single reader whose language it could follow, so it has to exist in
+ * all of them and let the send pick.
+ */
+export async function generateWeeklyDigest(
+  weekOf: string,
+  locale: string = DEFAULT_LOCALE,
+): Promise<WeeklyDigest | null> {
   if (!isAnthropicConfigured()) {
     console.warn("[newsletter] ANTHROPIC_API_KEY not configured — cannot generate digest.");
     return null;
   }
 
   const client = getAnthropicClient();
-  const userPrompt = buildUserPrompt(weekOf);
+  const userPrompt = buildUserPrompt(weekOf, locale);
   const tools = [
     { type: "web_search_20250305", name: "web_search", max_uses: WEB_SEARCH_MAX_USES } as WebTool,
   ];

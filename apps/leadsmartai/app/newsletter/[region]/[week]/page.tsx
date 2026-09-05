@@ -9,7 +9,7 @@ import {
   type NewsletterIssue,
 } from "@/lib/newsletter/assembleIssue";
 import {
-  CATEGORY_LABEL,
+  categoryLabel,
   coerceCategory,
   coerceKeyPoint,
   coerceState,
@@ -34,10 +34,11 @@ function formatWeek(d: string, locale: string): string {
 async function loadIssue(
   region: string,
   week: string,
+  language: string,
 ): Promise<NewsletterIssue | null> {
   if (!WEEK_RE.test(week)) return null;
   try {
-    return await assembleIssue(region, week);
+    return await assembleIssue(region, week, language);
   } catch {
     return null;
   }
@@ -79,9 +80,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NewsletterIssuePage({ params }: Props) {
   const t = await getServerT();
-  const locale = intlLocale(await getServerLocale());
+  const uiLocale = await getServerLocale();
+  const locale = intlLocale(uiLocale);
   const { region, week } = await params;
-  const issue = await loadIssue(region, week);
+  const issue = await loadIssue(region, week, uiLocale);
   if (!issue) notFound();
 
   const { digest, region: reg, weekOf } = issue;
@@ -235,7 +237,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
                     <div className="min-w-0 flex-1">
                       <div className="mb-2 flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center rounded-full bg-[#0072ce]/10 px-2.5 py-0.5 text-xs font-semibold text-[#0072ce]">
-                          {CATEGORY_LABEL[it.category]}
+                          {categoryLabel(it.category, uiLocale)}
                         </span>
                         {it.state && (
                           <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">

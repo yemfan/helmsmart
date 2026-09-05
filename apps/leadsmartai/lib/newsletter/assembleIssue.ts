@@ -16,6 +16,7 @@ import {
 } from "@/lib/research/warehouse/format";
 import type { GeoLevel } from "@/lib/research/warehouse/types";
 import {
+  getDigestForReader,
   getDigestForWeek,
   getLatestDigest,
   listRecentDigests,
@@ -25,6 +26,7 @@ import {
 export {
   getLatestDigest,
   getDigestForWeek,
+  getDigestForReader,
   listRecentDigests,
   type NewsletterDigestRow,
 } from "./db";
@@ -201,17 +203,23 @@ export async function regionSlugForSubscription(
 }
 
 /**
- * Assemble one issue: the digest for `weekOf` + the region snapshot for
- * `regionSlug`. Returns null when either the region or the week can't be
- * resolved (page loaders should notFound()).
+ * Assemble one issue: the digest for `weekOf` in `language` + the region
+ * snapshot for `regionSlug`. Returns null when either the region or the week
+ * can't be resolved (page loaders should notFound()).
+ *
+ * `language` is the READER's — the visitor's locale on the web, the
+ * subscriber's resolved preference in the send. It falls back to English when
+ * that week has no variant in it, so a missing translation costs a reader
+ * their language, never the issue.
  */
 export async function assembleIssue(
   regionSlug: string,
   weekOf: string,
+  language?: string | null,
 ): Promise<NewsletterIssue | null> {
   const [region, digest] = await Promise.all([
     resolveRegion(regionSlug),
-    getDigestForWeek(weekOf),
+    getDigestForReader(weekOf, language),
   ]);
   if (!region || !digest) return null;
   return { weekOf: digest.week_of, digest, region };
@@ -224,11 +232,18 @@ export async function assembleIssue(
  */
 export async function assembleLatestIssue(
   regionSlug = "national",
+  language?: string | null,
 ): Promise<NewsletterIssue | null> {
-  const [region, digest] = await Promise.all([
+  // "Latest" is anchored to the DEFAULT locale's newest week, not the
+  // reader's. Anchoring per-language would show a Chinese reader last week's
+  // issue whenever this week's Chinese variant failed, with nothing saying so
+  // — quietly stale beats loudly translated.
+  const [region, anchor] = await Promise.all([
     resolveRegion(regionSlug),
     getLatestDigest(),
   ]);
-  if (!region || !digest) return null;
+  if (!region || !anchor) return null;
+  const digest = await getDigestForReader(anchor.week_of, language);
+  if (!digest) return null;
   return { weekOf: digest.week_of, digest, region };
 }

@@ -185,6 +185,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let newsletterEntries: MetadataRoute.Sitemap = [];
   if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
     try {
+      // Default locale only. The issue URL carries no language segment —
+      // /newsletter/<region>/<week> serves whichever variant the visitor's
+      // locale resolves to — so listing every language would emit the same
+      // URL once per translation.
       const digests = await listRecentDigests(52);
       newsletterEntries = digests.map((d) => ({
         url: `${base}/newsletter/national/${d.week_of}`,

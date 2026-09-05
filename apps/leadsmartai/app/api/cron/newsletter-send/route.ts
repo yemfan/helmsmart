@@ -20,6 +20,7 @@ import {
   newsletterUnsubscribeMailto,
 } from "@/lib/newsletter/sendConfig";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { resolveLeadOutboundLocale } from "@/lib/locales/resolveLocale";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -93,8 +94,8 @@ export async function GET(req: Request) {
     const rawLimit = url.searchParams.get("limit");
     const limit = rawLimit ? Math.max(0, Math.min(5000, Number(rawLimit) || 0)) : 0;
 
-    // Resolve the issue week: ?week= override (must be a published digest) else
-    // the latest published digest.
+    // Resolve the issue WEEK from the default-locale digest. Language comes
+    // later, per subscriber — this call only establishes which week is out.
     const digest =
       weekParam && WEEK_RE.test(weekParam)
         ? await getDigestForWeek(weekParam)
@@ -126,6 +127,47 @@ export async function GET(req: Request) {
     const subs = (data ?? []) as SendableSub[];
     if (subs.length === 0) {
       return NextResponse.json({ ok: true, sent: 0, failed: 0, skipped: 0, weekOf });
+    }
+
+    // Resolve every subscriber's language in ONE query rather than per send.
+    //
+    // A newsletter subscriber is not necessarily a contact — most are just an
+    // email address off the public form — so this is a best-effort match on
+    // (email, agent_id). No contact, or a contact with no stated preference,
+    // means English, which is also the variant guaranteed to exist.
+    const langByKey = new Map<string, string>();
+    const key = (email: string, agentId: number | string | null) =>
+      `${email.trim().toLowerCase()}::${agentId ?? ""}`;
+    try {
+      const emails = Array.from(
+        new Set(subs.map((s) => s.email.trim().toLowerCase()).filter(Boolean)),
+      );
+      if (emails.length > 0) {
+        const { data: contactRows } = await supabaseServer
+          .from("contacts")
+          .select("email, agent_id, preferred_language")
+          .in("email", emails)
+          .not("preferred_language", "is", null);
+        for (const c of contactRows ?? []) {
+          const email = String(c.email ?? "").trim().toLowerCase();
+          if (!email) continue;
+          // One contact can exist per agent under the same address; the first
+          // stated preference wins, and a public sub (agent_id null) never
+          // matches an agent's contact.
+          const k = key(email, c.agent_id ?? null);
+          if (!langByKey.has(k)) {
+            langByKey.set(
+              k,
+              resolveLeadOutboundLocale({
+                leadPreferredLanguage: c.preferred_language,
+              }),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      // A failed lookup sends the whole run in English rather than not at all.
+      console.warn("[newsletter-send] language lookup failed", e);
     }
 
     const siteUrl = getSiteUrl().replace(/\/$/, "");
@@ -182,7 +224,8 @@ export async function GET(req: Request) {
               skipped += 1;
               return;
             }
-            const issue = await assembleIssue(regionSlug, weekOf);
+            const language = langByKey.get(key(sub.email, sub.agent_id));
+            const issue = await assembleIssue(regionSlug, weekOf, language);
             if (!issue) {
               skipped += 1;
               return;
