@@ -78,9 +78,9 @@ export type RenderedIssueEmail = {
  * `server-only`, no request context â so the wording can be unit-tested, and a
  * translator instance is neither available nor needed for a dozen strings.
  *
- * NOT translated here: the market-snapshot metric names (`st.short`,
- * `st.periodLabel`). Those come from METRIC_META in lib/research/warehouse,
- * shared with the public market pages, and localizing them is its own change.
+ * The market-snapshot metric names arrive already translated: assembleIssue
+ * re-labels the region snapshot in the digest's language before handing the
+ * issue over, so `st.short` and `st.periodLabel` need nothing here.
  */
 type Chrome = {
   intlTag: string;
