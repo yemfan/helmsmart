@@ -5073,7 +5073,99 @@
       "steps": "plans it · assigns the right teammates · reports back",
       "teamLegend": "Highlighted teammates are the ones this command needs. The others are idle, not unavailable — your Boss Assistant can call on any of the five.",
       "onThisCommand": "working on this command",
-      "idle": "idle on this command"
+      "idle": "idle on this command",
+      "team": {
+        "receptionist": "Receptionist",
+        "sales": "Sales",
+        "marketing": "Marketing",
+        "transaction": "Transaction",
+        "accountant": "Accountant"
+      },
+      "commands": {
+        "open_house": {
+          "chip": "Open house",
+          "command": "“Set up Saturday’s open house at 123 Main St.”",
+          "steps": {
+            "s1": "Researches the home, comps & neighborhood",
+            "s2": "Builds the flyer, sign-in & just-listed copy",
+            "s3": "Markets it to your sphere and the portals",
+            "s4": "Preps instant follow-up for every sign-in"
+          },
+          "artifacts": {
+            "a1": "Just-listed flyer",
+            "a2": "Open-house sign-in",
+            "a3": "Social + portal posts",
+            "a4": "Comps research brief",
+            "a5": "Follow-up templates"
+          }
+        },
+        "seller_presentation": {
+          "chip": "Seller presentation",
+          "command": "“Build a seller presentation for 123 Main St.”",
+          "steps": {
+            "s1": "Pulls live comps and a value range (AI CMA)",
+            "s2": "Writes the pricing strategy and marketing plan",
+            "s3": "Adds schools, neighborhood & your branding",
+            "s4": "Delivers a share-ready, professional report"
+          },
+          "artifacts": {
+            "a1": "AI CMA report",
+            "a2": "Listing presentation (PDF)",
+            "a3": "Pricing strategy",
+            "a4": "Marketing plan",
+            "a5": "Net-to-seller estimate"
+          }
+        },
+        "buyer_showings": {
+          "chip": "Buyer showings",
+          "command": "“Find and show homes to the Garcias.”",
+          "steps": {
+            "s1": "Searches the market from your plain-English brief",
+            "s2": "Shortlists matches with deep reports (affordability, ROI)",
+            "s3": "Books the showings and routes the tour",
+            "s4": "Emails the buyer the full lineup"
+          },
+          "artifacts": {
+            "a1": "Matched shortlist",
+            "a2": "Property Deep Reports",
+            "a3": "Comparison report",
+            "a4": "Showing schedule",
+            "a5": "Buyer email lineup"
+          }
+        },
+        "cold_call": {
+          "chip": "Cold-call & qualify",
+          "command": "“Cold-call my new leads and qualify them.”",
+          "steps": {
+            "s1": "Researches each lead before dialing",
+            "s2": "Places the outbound calls in a natural voice",
+            "s3": "Qualifies on budget, timeline & motivation — buyer or seller",
+            "s4": "Scores intent, books the hot ones, logs the rest"
+          },
+          "artifacts": {
+            "a1": "Qualified lead list",
+            "a2": "Call notes + transcripts",
+            "a3": "Intent-scored pipeline",
+            "a4": "Booked appointments"
+          }
+        },
+        "closing": {
+          "chip": "Coordinate the closing",
+          "command": "“Take 123 Main St to closing.”",
+          "steps": {
+            "s1": "Builds the transaction timeline and task list",
+            "s2": "Tracks contingencies, dates & documents",
+            "s3": "Preps the net-to-seller summary",
+            "s4": "Logs the commission and expenses"
+          },
+          "artifacts": {
+            "a1": "Transaction timeline",
+            "a2": "Deadline tracker",
+            "a3": "Net-to-seller sheet",
+            "a4": "Commission + expense log"
+          }
+        }
+      }
     },
     "postQueue": {
       "title": "Post queue",
