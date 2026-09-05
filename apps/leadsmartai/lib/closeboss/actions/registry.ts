@@ -8,6 +8,9 @@ import {
   isCreateCmaFailure,
 } from "@/lib/cma/service";
 import { generateAiCma } from "@/lib/cma/aiCma";
+import { generateDeepReport } from "@/lib/deep-report/service";
+import type { PropertyUse } from "@/lib/deep-report/types";
+import { getFeatureQuota, incrementFeatureUsage } from "@/lib/quota/featureQuota";
 import { generatePresentationAISections } from "@/lib/presentationAI";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { generateHouseSearch } from "@/lib/house-search/aiHouseSearch";
@@ -45,6 +48,7 @@ import {
 
 export type BossActionType =
   | "generate_cma"
+  | "generate_deep_report"
   | "generate_seller_presentation"
   | "schedule_showing"
   | "cold_call_qualify"
@@ -186,6 +190,16 @@ const ADDRESS: ActionParamDef = {
   label: "property address",
   question: "What's the full property address?",
 };
+/**
+ * `property_use` is deliberately NOT an ActionParamDef.
+ *
+ * requiredParams is the ask-before-running list, and a deep report defaults to
+ * a primary residence — which is what most buyers are — so declaring it there
+ * would stop every run to ask a question that already has the right answer.
+ * params_json is free-form, so the planner still fills it from "for a rental"
+ * or "as an investment" off the planHint; run() coerces anything else.
+ */
+const DEEP_REPORT_USES: PropertyUse[] = ["primary", "second_home", "investment"];
 const EVENT_DATE: ActionParamDef = {
   key: "date",
   label: "date",
@@ -217,6 +231,73 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         artifactType: "cma",
         artifactUrl: `/dashboard/cma/${res.cma.id}`,
         note: `CMA ready for ${params.address}`,
+      };
+    },
+  },
+
+  generate_deep_report: {
+    type: "generate_deep_report",
+    assignee: "sales_assistant",
+    label: "Deep Report",
+    planHint:
+      "generate_deep_report — produce the full property picture for one address: valuation, deal rating, rent estimate, affordability, investment returns, schools and neighborhood. Choose over generate_cma when the agent wants more than a price — ‘should my buyer buy this’, ‘is this a good rental’, ‘run the numbers on’. params: { address, property_use? }.",
+    requiredParams: [
+      { ...ADDRESS, question: "What's the full property address for the deep report?" },
+    ],
+    run: async ({ agentId, params }) => {
+      const userId = await resolveUserId(agentId);
+      if (!userId) {
+        return { status: "assigned", note: "Couldn't resolve your account to run the deep report." };
+      }
+
+      // Same quota policy as the dashboard route and the Max tool — three
+      // entry points, one rule about what the agent is allowed to spend.
+      const quota = await getFeatureQuota(userId, "deep_report");
+      if (quota.reached) {
+        return {
+          status: "assigned",
+          note: `Daily Deep Report limit reached (${quota.limit}/day). Resets tomorrow.`,
+        };
+      }
+
+      const propertyUse = DEEP_REPORT_USES.includes(params.property_use as PropertyUse)
+        ? (params.property_use as PropertyUse)
+        : "primary";
+      const res = await generateDeepReport({
+        agentId,
+        address: params.address,
+        propertyUse,
+      });
+      if (!res.ok) return { status: "assigned", note: res.error };
+      await incrementFeatureUsage(userId, "deep_report");
+
+      // Persist so the agent can reopen it. The report is already generated at
+      // this point, so a failed save costs the link, not the work — which is
+      // why artifactUrl is nullable and this doesn't return "assigned".
+      let id: string | null = null;
+      try {
+        const { data } = await supabaseAdmin
+          .from("deep_reports")
+          .insert({
+            agent_id: userId,
+            address: res.report.property.address,
+            property_use: propertyUse,
+            report: res.report,
+          } as never)
+          .select("id")
+          .single();
+        id = (data as { id: string } | null)?.id ?? null;
+      } catch {
+        /* non-fatal — see above */
+      }
+
+      return {
+        status: "completed",
+        artifactType: "deep_report",
+        // The agent's own copy, not a share link: /deep-report/<id> asks who
+        // you are and serves only your own reports.
+        artifactUrl: id ? `/deep-report/${id}` : null,
+        note: `Deep report ready for ${res.report.property.address}`,
       };
     },
   },
