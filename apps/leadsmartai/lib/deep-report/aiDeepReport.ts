@@ -4,6 +4,7 @@ import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
 import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 import type { PresentationSchool } from "@/lib/presentationAI";
 import type { PropertyUse } from "./types";
+import { languageDirectiveForJson } from "@/lib/i18n/languageDirective";
 
 /**
  * AI piece of the Property Deep Report — Claude + live web search produces a
@@ -29,8 +30,17 @@ export type DeepReportAi = {
   sources: { title: string; url: string }[];
 };
 
+/**
+ * @param locale The language the AGENT reads.
+ *
+ *   This was deliberately NOT wired while the report had a public share URL:
+ *   following the dashboard's language would have put a Chinese report in an
+ *   English-speaking buyer's hands. The link is gone, so the report is the
+ *   agent's working document and answers to them.
+ */
 export async function generateDeepReportAi(input: {
   address: string;
+  locale?: string | null;
   propertyUse: PropertyUse;
   estimate: { estimatedValue: number | null; low: number | null; high: number | null; avgPricePerSqft: number | null };
   comps: Array<{ address: string; price: number | null; sqft: number | null; soldDate: string }>;
@@ -106,7 +116,7 @@ When done searching, respond with EXACTLY ONE fenced JSON block and nothing afte
         thinking: { type: "adaptive" } as any,
         // Cached. This one matters most: Opus, six searches, up to eight
         // rounds — every round re-sent the lot at full price.
-        system: cachedSystem(system) as never,
+        system: cachedSystem(system + languageDirectiveForJson(input.locale)) as never,
         messages,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tools: tools as any,

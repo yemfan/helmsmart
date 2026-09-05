@@ -17,7 +17,7 @@ const USES: PropertyUse[] = ["primary", "second_home", "investment"];
 /**
  * POST /api/dashboard/deep-report
  * Body: { address, propertyUse, loanOverrides? }
- * Returns the report + a saved id/share_url + the updated daily quota.
+ * Returns the report + a saved id + the updated daily quota.
  */
 export async function POST(req: Request) {
   try {
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       ok: true,
       report: res.report,
       id,
-      share_url: id ? `/deep-report/${id}` : null,
+
       quota: after,
     });
   } catch (err) {

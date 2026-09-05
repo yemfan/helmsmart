@@ -129,7 +129,9 @@ export const generateDeepReportTool = defineTool({
       status: "completed",
       summary: `Deep report ready for ${input.address}`,
       display: { key: "reports.deepReportReady", params: { address: input.address } },
-      artifactUrl: id ? `/deep-report/${id}` : null,
+      // No artifactUrl: the report is not shareable by link any more, and a
+      // link the realtor cannot hand to a client is worse than none.
+      artifactUrl: null,
       data: { report_id: id },
     };
   },

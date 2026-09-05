@@ -41,10 +41,13 @@ export default function DeepReportClient() {
   const [reportId, setReportId] = useState<string | null>(null);
   const [quota, setQuota] = useState<Quota | null>(null);
 
-  const shareUrl = useMemo(() => {
-    if (typeof window === "undefined" || !reportId) return "";
-    return `${window.location.origin}/deep-report/${encodeURIComponent(reportId)}`;
-  }, [reportId]);
+  /*
+   * No share URL. The Deep Report used to be readable by anyone holding
+   * `/deep-report/<id>` — no auth, share-by-link — which made it a
+   * client-facing artifact and put its language beyond the agent's control.
+   * It is the agent's working document now, so `ShareReport` falls back to
+   * Download only (it already guards on `hasLink`).
+   */
 
   // Loan terms are pure local math — recompute affordability (and investment
   // returns) live as the inputs change, so tweaking the loan never needs a new
@@ -234,7 +237,7 @@ export default function DeepReportClient() {
       ) : null}
 
       {displayReport && !loading ? (
-        <DeepReportView report={displayReport} shareUrl={shareUrl || null} />
+        <DeepReportView report={displayReport} />
       ) : null}
     </div>
   );
