@@ -70,14 +70,38 @@ export function generateDaySlots(params: {
     hour: "numeric",
     minute: "2-digit",
   });
-  const slots: Slot[] = [];
+  const free: Slot[] = [];
   for (let t = openUtc; t + durMs <= closeUtc; t += SLOT_STEP_MS) {
     if (t < now) continue;
     if (overlapsBusy(t, t + durMs, busy)) continue;
-    slots.push({ startISO: new Date(t).toISOString(), label: speakTime(fmt.format(new Date(t))) });
-    if (slots.length >= max) break;
+    free.push({ startISO: new Date(t).toISOString(), label: speakTime(fmt.format(new Date(t))) });
   }
-  return slots;
+
+  /*
+   * Offer times ACROSS the day, not the first few of it.
+   *
+   * This used to `break` as soon as it had `max` slots, walking forward from
+   * opening time in 30-minute steps. On a 9-to-5 business that is 9:00, 9:30,
+   * 10:00, 10:30, 11:00 — every option before lunch, every day, and the
+   * afternoon simply never offered. A caller who could only do 3pm was told
+   * nothing was available, and the agent had no way to know better because the
+   * afternoon was never in the list it was given.
+   *
+   * Keep the earliest, because "soonest available" is what many callers want,
+   * then spread the rest evenly to the last free slot so the offer spans
+   * opening to closing.
+   */
+  if (free.length <= max || max <= 1) return free.slice(0, max);
+
+  const picked: Slot[] = [free[0]];
+  const stride = (free.length - 1) / (max - 1);
+  for (let i = 1; i < max; i++) {
+    const slot = free[Math.round(i * stride)];
+    // Rounding can land twice on the same slot near the ends; a caller read the
+    // same time twice would reasonably think we were not listening.
+    if (slot && slot.startISO !== picked[picked.length - 1].startISO) picked.push(slot);
+  }
+  return picked;
 }
 
 export type BookingTimeCheck = { ok: true; startMs: number } | { ok: false; reason: string };
