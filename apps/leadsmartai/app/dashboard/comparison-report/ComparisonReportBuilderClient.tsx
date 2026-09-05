@@ -338,13 +338,13 @@ export default function ComparisonReportBuilderClient({
                       )}
                       {detect[row.id]!.status === "filled" && (
                         <span className="text-emerald-700">
-                          ✓ {detect[row.id]!.label} detected ·{" "}
+                          {t("pages.comparisonBuilder.detected", { label: detect[row.id]!.label })}{" "}
                           {detect[row.id]!.note}
                         </span>
                       )}
                       {detect[row.id]!.status === "address-only" && (
                         <span className="text-gray-500">
-                          {detect[row.id]!.label} detected ·{" "}
+                          {t("pages.comparisonBuilder.detectedPlain", { label: detect[row.id]!.label })}{" "}
                           {detect[row.id]!.note}
                         </span>
                       )}

@@ -88,7 +88,7 @@ export default function OnePagerClient() {
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
-                Executive brief · {today}
+                {t("pages.onePager.briefDate", { date: today })}
               </p>
               <h1 className="mt-1 text-[26pt] font-semibold leading-[1.05] tracking-tight">{t("pages.fsMarketing.forPartner")}{" "}
                 <span className={theme.accentText}>{partnerLabel}</span>
@@ -222,14 +222,14 @@ export default function OnePagerClient() {
                       : "text-indigo-800"
                   }`}
                 >
-                  90-day pilot · zero cost
+                  {t("pages.onePager.pilotBadge")}
                 </p>
                 <p className="mt-1.5 text-[9.5pt] font-semibold text-slate-900">{t("pages.fsMarketing.oneMdTeam")}</p>
                 <ul className="mt-2 space-y-1.5 text-[9pt] leading-[1.4] text-slate-700">
                   <PilotPoint>{t("pages.fsMarketing.freeFor90")}</PilotPoint>
                   <PilotPoint>{t("pages.fsMarketing.complianceWk1")}</PilotPoint>
                   <PilotPoint>{t("pages.fsMarketing.weeklyReads")}</PilotPoint>
-                  <PilotPoint>{t("pages.fsMarketing.day90Decision")}<strong>expand · extend · exit</strong>
+                  <PilotPoint>{t("pages.fsMarketing.day90Decision")}<strong>{t("pages.onePager.day90Options")}</strong>
                   </PilotPoint>
                   <PilotPoint>{t("pages.fsMarketing.noContracts")}</PilotPoint>
                 </ul>

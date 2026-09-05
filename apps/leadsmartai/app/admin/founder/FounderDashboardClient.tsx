@@ -237,7 +237,10 @@ export function FounderDashboardClient() {
           </div>
 
           <SectionCard title={t("pages.adminPages.funnelWindow")}>
-            <p className="mb-4 text-xs text-gray-500">{t("pages.dashFragments.window")} {funnel?.windowDays ?? "—"} days · Cumulative state: onboarded {funnel?.cumulative.onboarded ?? "—"}
+            <p className="mb-4 text-xs text-gray-500">{t("pages.founder.funnelWindow", {
+                  days: funnel?.windowDays ?? "—",
+                  onboarded: funnel?.cumulative.onboarded ?? "—",
+                })}
               , first reply {funnel?.cumulative.firstReply ?? "—"}, first AI {funnel?.cumulative.firstAi ?? "—"}
             </p>
             <div className="h-[300px] w-full">

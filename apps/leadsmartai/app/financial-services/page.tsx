@@ -283,19 +283,19 @@ export default async function FinancialServicesLandingPage() {
               </div>
               <div className="mt-6 space-y-5 text-sm">
                 <div>
-                  <p className="font-semibold text-slate-900">Week 0 · Agreement + scope</p>
+                  <p className="font-semibold text-slate-900">{t("pages.fsMarketing.week0", { ns: "dashboard" })}</p>
                   <p className="text-slate-600">{t("pages.fsMarketing.pilotStep1", { ns: "dashboard" })}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Week 1–2 · Compliance + onboarding</p>
+                  <p className="font-semibold text-slate-900">{t("pages.fsMarketing.week12", { ns: "dashboard" })}</p>
                   <p className="text-slate-600">{t("pages.fsMarketing.pilotStep2", { ns: "dashboard" })}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Week 3–8 · Active pilot</p>
+                  <p className="font-semibold text-slate-900">{t("pages.fsMarketing.week38", { ns: "dashboard" })}</p>
                   <p className="text-slate-600">{t("pages.fsMarketing.pilotStep3", { ns: "dashboard" })}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Week 9–12 · Measurement + decision</p>
+                  <p className="font-semibold text-slate-900">{t("pages.fsMarketing.week912", { ns: "dashboard" })}</p>
                   <p className="text-slate-600">{t("pages.fsMarketing.pilotStep4", { ns: "dashboard" })}</p>
                 </div>
               </div>
@@ -341,7 +341,7 @@ export default async function FinancialServicesLandingPage() {
       </section>
 
       <footer className="bg-slate-900 py-8 text-center text-xs text-white/60">
-        © LeadSmart AI · Built for financial services agencies. Pilot inquiries welcome.
+        {t("pages.fsMarketing.footerLine", { ns: "dashboard" })}
       </footer>
 
       <DemoIconsKeepBundle />

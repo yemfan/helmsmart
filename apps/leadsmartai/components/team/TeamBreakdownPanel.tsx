@@ -49,7 +49,7 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
       <header>
         <h2 className="text-base font-semibold text-slate-900">{t("pages.teamBreakdown.title")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
-          Who&apos;s driving what · sorted by closed deals year-to-date
+          {t("pages.teamBreakdown.subtitle")}
         </p>
       </header>
 

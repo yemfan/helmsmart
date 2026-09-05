@@ -51,7 +51,7 @@ export default async function AdminSignupsPage() {
     <div className="mx-auto max-w-4xl space-y-6 p-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          LeadSmart AI · Admin
+          {t("pages.adminSignups.eyebrow", { ns: "dashboard" })}
         </p>
         <h1 className="text-2xl font-bold text-slate-900">{t("pages.adminPages.signupsBySource", { ns: "dashboard" })}</h1>
         <p className="mt-1 text-sm text-slate-500">

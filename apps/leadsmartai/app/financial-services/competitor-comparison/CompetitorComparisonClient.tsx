@@ -111,7 +111,7 @@ export default function CompetitorComparisonClient() {
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
-                Competitor brief · {today}
+                {t("pages.competitorComparison.briefDate", { date: today })}
               </p>
               <h1 className="mt-1 text-[24pt] font-semibold leading-[1.05] tracking-tight">{t("pages.competitorComparison.vsThe")}{" "}
                 <span className={theme.accentText}>{t("pages.competitorComparison.stackTail")}</span>
@@ -363,7 +363,7 @@ export default function CompetitorComparisonClient() {
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="font-semibold text-slate-900">CloseBoss AI</p>
-              <p>closebossai.com · pilot inquiries welcome</p>
+              <p>{t("pages.fsMarketing.domainPilotLine")}</p>
             </div>
             <p className="text-right text-[7.5pt] text-slate-400">{t("pages.competitorComparison.confidentialForLeadership", { partner: partnerLabel })}
             </p>

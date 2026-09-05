@@ -164,7 +164,7 @@ export function ReferAFriendCard() {
           <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
             {summary.completedCount > 0 ? (
               <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 font-medium text-emerald-800">
-                {summary.completedCount} signed up · earned{" "}
+                {t("pages.referAFriend.signedUpEarned", { count: summary.completedCount })}{" "}
                 {t("pages.referAFriend.tokensEarned", { n: summary.totalBonusEarned.toLocaleString() })}
               </span>
             ) : null}

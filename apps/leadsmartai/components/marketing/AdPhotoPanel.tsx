@@ -173,7 +173,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
             }`}
           >
             <span className="text-sm font-medium text-gray-700">{t("pages.adPhotos.drop")}</span>
-            <span className="mt-1 text-xs text-gray-400">PNG, JPG, or WebP · up to 8MB each</span>
+            <span className="mt-1 text-xs text-gray-400">{t("pages.adPhoto.formatHint")}</span>
           </div>
 
           {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}

@@ -375,7 +375,7 @@ function DropZone({
       </svg>
       <span className="mt-3 text-sm font-semibold text-gray-700">{t("pages.importFile.dropFile")}</span>
       <span className="mt-1 text-xs text-gray-500">
-        PDF · JPEG / PNG / WEBP · TXT / VCF / MD &nbsp;·&nbsp; up to 20 MB
+        {t("pages.importFile.acceptedFormats")}
       </span>
       <input
         ref={fileRef}

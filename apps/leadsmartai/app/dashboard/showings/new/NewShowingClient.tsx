@@ -817,13 +817,13 @@ function NewShowingForm() {
                 )}
                 {listingUrlDetected.status === "filled" && (
                   <span className="text-emerald-700">
-                    ✓ {listingUrlDetected.label} detected ·{" "}
+                    {t("pages.newShowing.detected", { label: listingUrlDetected.label })}{" "}
                     {listingUrlDetected.note}
                   </span>
                 )}
                 {listingUrlDetected.status === "address-only" && (
                   <span className="text-slate-500">
-                    {listingUrlDetected.label} detected ·{" "}
+                    {t("pages.newShowing.detectedPlain", { label: listingUrlDetected.label })}{" "}
                     {listingUrlDetected.note}
                   </span>
                 )}

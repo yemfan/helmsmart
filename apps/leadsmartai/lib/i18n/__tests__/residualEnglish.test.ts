@@ -77,6 +77,17 @@ const ALLOWED = new Set([
   // Max is an AI employee on the team, not the adjective.
   "Max",
   /*
+   * A byline: the post's publication date and its author. The articles
+   * themselves are written in English, so a Chinese byline over English
+   * prose would be the mixed-language page this scan exists to prevent,
+   * pointing the wrong way.
+   */
+  "May 22, 2026 · Michael Ye",
+  "May 23, 2026 · Michael Ye",
+  "June 23, 2026 · Michael Ye",
+  // A person, their brokerage and their city — three proper nouns.
+  "Mara Tran · Windermere · Seattle",
+  /*
    * Example addresses in address fields. Same reasoning as the postal address
    * above: the placeholder shows the reader the SHAPE the field wants, and the
    * field is read by a US address geocoder. "洛杉矶主街 123 号" is the correct
@@ -177,7 +188,7 @@ const ANCHOR = /^(?:[A-Za-z0-9↓↑←→↻“]|\p{Extended_Pictographic})/u;
  * halves rather than on their words.
  */
 const BODY =
-  /^(?:[A-Za-z0-9 ,.'’“”!?:;%()/&+…←→↻—–-]|\p{Extended_Pictographic}|[\uFE0F\u200D]|[\u{1F3FB}-\u{1F3FF}])*$/u;
+  /^(?:[A-Za-z0-9 ,.'’“”!?:;%()/&+…←→↻—–·-]|\p{Extended_Pictographic}|[\uFE0F\u200D]|[\u{1F3FB}-\u{1F3FF}])*$/u;
 
 /**
  * Files that stay English on purpose, with the reason.

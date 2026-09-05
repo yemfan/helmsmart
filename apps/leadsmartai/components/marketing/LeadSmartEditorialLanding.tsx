@@ -65,11 +65,13 @@ function Nav() {
 }
 
 function Masthead() {
+  // Its own hook: a sub-component inherits no translator from its parent.
+  const { t } = useTranslation("dashboard");
   return (
     <div className="ed-masthead">
       <div className="ed-masthead-inner">
-        <span>Vol. I · Built for agents</span>
-        <span>Est. 2024 · Seattle</span>
+        <span>{t("pages.editorialLanding.volume")}</span>
+        <span>{t("pages.editorialLanding.established")}</span>
       </div>
     </div>
   );
@@ -97,7 +99,7 @@ function Hero() {
       <div className="ed-phone-stage">
         <PhoneMockup />
         <QuoteCard />
-        <div className="ed-phone-caption">Actual message thread · Client name changed</div>
+        <div className="ed-phone-caption">{t("pages.editorialLanding.threadCaption")}</div>
       </div>
     </section>
   );
@@ -125,7 +127,7 @@ function PhoneMockup() {
         <div className="ed-sms-header">
           <div className="ed-sms-back">‹ Back</div>
           <div className="ed-sms-avatar">SM</div>
-          <div className="ed-sms-sender-name">Sarah M. · Zillow lead · 2 min ago</div>
+          <div className="ed-sms-sender-name">{t("pages.editorialLanding.smsSender")}</div>
           <div className="ed-sms-sender-sub">
             {t("pages.editorialLanding.demoSenderSub")} <span className="ed-dot">·</span> max $850k
           </div>
@@ -162,7 +164,7 @@ function PhoneMockup() {
                 <span className="ed-sms-system-icon">✓</span>
                 <span className="ed-sms-system-title">{t("pages.editorialLanding.tourRequested")}</span>
               </div>
-              <div className="ed-sms-system-body">Sarah M. · Sat 1:00pm · Oakhurst Dr.</div>
+              <div className="ed-sms-system-body">{t("pages.editorialLanding.smsSystemBody")}</div>
               <div className="ed-sms-system-actions">
                 <button type="button" className="ed-sms-btn-primary">{t("pages.editorialLanding.confirm")}</button>
                 <button type="button" className="ed-sms-btn-secondary">{t("pages.editorialLanding.reschedule")}</button>
@@ -173,7 +175,7 @@ function PhoneMockup() {
             <div className="ed-sms-score-chip">
               <div className="ed-sms-score-top">
                 <span className="ed-sms-score-label">{t("pages.editorialLanding.leadScore")}</span>
-                <span className="ed-sms-score-hot">Hot · 92/100</span>
+                <span className="ed-sms-score-hot">{t("pages.editorialLanding.smsScore")}</span>
               </div>
               <div className="ed-sms-score-pills">
                 <span>{t("pages.editorialLanding.weekendReady")}</span>
@@ -215,7 +217,7 @@ function DemoSection() {
         <span className="ed-video-play" aria-hidden>
           <span className="ed-video-triangle" />
         </span>
-        <span className="ed-video-label">Captions on · Muted</span>
+        <span className="ed-video-label">{t("pages.editorialLanding.videoLabel")}</span>
       </div>
       <div className="ed-proof-chips">
         <ProofChip
@@ -625,7 +627,7 @@ function PricingSection() {
         <h2 className="ed-section-headline">
           {t("pages.editorialLanding.pricingBefore")} <em>{t("pages.editorialLanding.pricingEm")}</em>
         </h2>
-        <div className="ed-pricing-sub">14-day trial on Pro and Elite · Cancel anytime</div>
+        <div className="ed-pricing-sub">{t("pages.editorialLanding.pricingSub")}</div>
         <div className="ed-pricing-table">
           {tiers.map((t) => (
             <div key={t.name} className={`ed-pricing-tier ${t.featured ? "ed-featured" : ""}`}>
@@ -783,7 +785,7 @@ function Footer() {
           />
         </div>
         <div className="ed-footer-bottom">
-          <span>© 2026 CloseBoss · All rights reserved</span>
+          <span>{t("pages.editorialLanding.copyright")}</span>
           <span>{t("pages.editorialLanding.madeForAgents")}</span>
         </div>
       </div>

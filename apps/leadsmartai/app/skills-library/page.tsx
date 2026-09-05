@@ -45,7 +45,7 @@ export default async function SkillsLibraryPage() {
       {/* Hero */}
       <div className="text-center">
         <p className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-          <Sparkles size={14} aria-hidden /> Free · No signup
+          <Sparkles size={14} aria-hidden /> {t("pages.skillsLibrary.freeNoSignup", { ns: "dashboard" })}
         </p>
         <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-5xl dark:text-white">{t("pages.skillsLibraryPage.h1", { ns: "dashboard" })}</h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-300">

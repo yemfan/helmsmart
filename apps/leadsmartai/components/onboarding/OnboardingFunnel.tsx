@@ -490,13 +490,13 @@ export default function OnboardingFunnel({
       <Shell step={4}>
         <div className="relative">
           <div className="pointer-events-none fixed right-3 top-20 z-[80] flex max-w-[min(100%,320px)] flex-col gap-2 sm:right-6">
-            {toasts.map((t) => (
+            {toasts.map((toast) => (
               <div
-                key={t.id}
+                key={toast.id}
                 className="onboarding-toast-in pointer-events-auto rounded-xl border border-amber-500/40 bg-amber-950/95 px-4 py-3 text-xs font-semibold text-amber-100 shadow-lg backdrop-blur-md"
               >
-                <span className="text-amber-400">Incoming · </span>
-                {t.text}
+                <span className="text-amber-400">{t("pages.onboardingFunnel.incoming")} </span>
+                {toast.text}
               </div>
             ))}
           </div>
@@ -533,7 +533,7 @@ export default function OnboardingFunnel({
                       </div>
                       <p className="mt-1 text-xs text-gray-500">{lead.snippet}</p>
                       <p className="mt-1 text-[11px] font-medium text-amber-700">
-                        ⏱ First response wins · waiting {lead.waitingSinceMin}m
+                        {t("pages.onboardingFunnel.firstResponseWins", { minutes: lead.waitingSinceMin })}
                       </p>
                     </div>
                     <span className="text-sky-400">→</span>
@@ -554,13 +554,13 @@ export default function OnboardingFunnel({
       <Shell step={5}>
         <div className="relative">
           <div className="pointer-events-none fixed right-3 top-20 z-[80] flex max-w-[min(100%,320px)] flex-col gap-2 sm:right-6">
-            {toasts.map((t) => (
+            {toasts.map((toast) => (
               <div
-                key={t.id}
+                key={toast.id}
                 className="onboarding-toast-in pointer-events-auto rounded-xl border border-amber-500/40 bg-amber-950/95 px-4 py-3 text-xs font-semibold text-amber-100 shadow-lg"
               >
-                <span className="text-amber-400">Incoming · </span>
-                {t.text}
+                <span className="text-amber-400">{t("pages.onboardingFunnel.incoming")} </span>
+                {toast.text}
               </div>
             ))}
           </div>
@@ -694,7 +694,7 @@ export default function OnboardingFunnel({
             >{t("pages.onboardingFunnel.openPricing")}</Link>
           </div>
           <p className="mt-6 text-center text-xs text-slate-500">
-            No credit card required · Cancel anytime
+            {t("pages.onboardingFunnel.noCardCancel")}
           </p>
         </div>
       </Shell>
@@ -981,7 +981,7 @@ export default function OnboardingFunnel({
                   {t("pages.onboardingFunnel.teamPrice", { price: cadence === "annual" ? "$249/mo" : "$299/mo" })}
                 </p>
                 <p className="mt-0.5 text-xs text-gray-500">
-                  Up to 5 seats · round-robin routing · Top Producer Track for every member.
+                  {t("pages.onboardingFunnel.teamSeats")}
                 </p>
               </div>
               <Link

@@ -1766,7 +1766,8 @@
       "insertedContacts_one": "✓ 已导入 {{count}} 位联系人。",
       "insertedContacts_other": "✓ 已导入 {{count}} 位联系人。",
       "warningCount_one": "{{count}} 条警告",
-      "warningCount_other": "{{count}} 条警告"
+      "warningCount_other": "{{count}} 条警告",
+      "rowsIncluded": "已纳入 {{included}}／{{total}} 行 ·"
     },
     "sphereContact": {
       "metaTitle": "人脉圈联系人"
@@ -1809,7 +1810,8 @@
       "heading": "调度器活动",
       "intro": "调度器评估过的每一个触发器都会记录在这里——无论它创建了草稿还是抑制了草稿。可用它排查某个模板为何没有对某位联系人触发。",
       "backToDrafts": "← 返回草稿",
-      "openDraft": "打开草稿 →"
+      "openDraft": "打开草稿 →",
+      "suppressed": "已抑制 · {{reason}}"
     },
     "expenses": {
       "metaTitle": "支出",
@@ -1996,7 +1998,8 @@
       "generate": "生成报告与 AI 文案",
       "generating": "正在生成报告…",
       "upgrade": "升级到 Pro 或 Premium 即可生成 AI 对比报告。",
-      "sqftBedBath": "{{sqft}} 平方英尺 · {{beds}} 卧 / {{baths}} 卫"
+      "sqftBedBath": "{{sqft}} 平方英尺 · {{beds}} 卧 / {{baths}} 卫",
+      "disclaimerLine": "由 CloseBoss 生成 · 仅供讨论参考 · 并非财务建议"
     },
     "growth": {
       "metaTitle": "增长与机会",
@@ -2573,7 +2576,8 @@
       "ofNContactsSelected_other": "／共 {{count}} 位联系人",
       "fromSource": "来自 {{source}} ·",
       "resultSummary_one": "新增 {{inserted}} 条 · 合并 {{merged}} 条 · 跳过 {{skipped}} 条 · {{errors}} 条出错",
-      "resultSummary_other": "新增 {{inserted}} 条 · 合并 {{merged}} 条 · 跳过 {{skipped}} 条 · {{errors}} 条出错"
+      "resultSummary_other": "新增 {{inserted}} 条 · 合并 {{merged}} 条 · 跳过 {{skipped}} 条 · {{errors}} 条出错",
+      "acceptedFormats": "PDF · JPEG / PNG / WEBP · TXT / VCF / MD · 不超过 20 MB"
     },
     "newOffer": {
       "metaTitle": "新建报价",
@@ -2708,7 +2712,9 @@
       "viewSource": "查看原始邮件",
       "pickSuggestion": "从建议中选择即可自动填写，或在下方分项填写地址：",
       "copyFromShowingTime": "从 ShowingTime／CSS 的确认信息中复制。仅保存在这次带看记录上。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "detected": "✓ 已识别 {{label}} ·",
+      "detectedPlain": "已识别 {{label}} ·"
     },
     "newTransaction": {
       "metaTitle": "新建交易",
@@ -2800,7 +2806,13 @@
       "openExternal": "打开 ↗",
       "counterCount_one": "{{count}} 次还价",
       "counterCount_other": "{{count}} 次还价",
-      "fromPrice": "原价 {{price}}"
+      "fromPrice": "原价 {{price}}",
+      "daysAgo_one": "{{count}} 天前",
+      "daysAgo_other": "{{count}} 天前",
+      "monthsAgo_one": "{{count}} 个月前",
+      "monthsAgo_other": "{{count}} 个月前",
+      "yearsAgo_one": "{{count}} 年前",
+      "yearsAgo_other": "{{count}} 年前"
     },
     "adWizard": {
       "metaTitle": "新建引流广告",
@@ -3306,7 +3318,8 @@
       "noMessages": "还没有消息。",
       "pickContact": "请先在上方选择一位联系人，再开始拟写短信。",
       "autoPilotHint": "自动驾驶——针对这位联系人自动发送草稿，并自动回复其来信短信。",
-      "searchContact": "按姓名、邮箱、电话搜索联系人…"
+      "searchContact": "按姓名、邮箱、电话搜索联系人…",
+      "dragHint": "拖动可移动 · 双击可重置位置与大小"
     },
     "comparisonReportView": {
       "yourAgent": "您的经纪人",
@@ -3404,7 +3417,11 @@
       "simulatedLeadStream": "模拟的「新线索入口」实时流",
       "moreQueued": "你的区域里还有 2 段对话在排队",
       "waitingCount_one": "{{count}} 条待处理",
-      "waitingCount_other": "{{count}} 条待处理"
+      "waitingCount_other": "{{count}} 条待处理",
+      "noCardCancel": "无需信用卡 · 可随时取消",
+      "teamSeats": "最多 5 个席位 · 轮流分配客源 · 每位成员都享 Top Producer Track。",
+      "incoming": "来电 ·",
+      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -3696,7 +3713,8 @@
       "history": "历史导入",
       "noImports": "还没有导入记录。",
       "metaTitle": "导入联系人",
-      "metaDescription": "从 CSV 或其他客户管理系统导入您的人脉。"
+      "metaDescription": "从 CSV 或其他客户管理系统导入您的人脉。",
+      "rowsJob": "{{rows}} 行 · 任务 {{job}}"
     },
     "uploadListing": {
       "f": {
@@ -4010,7 +4028,9 @@
       "requiresBefore": "此功能需要",
       "requiresAfter": "。",
       "viewPlans": "查看方案",
-      "remove": "移除"
+      "remove": "移除",
+      "detected": "✓ 已识别 {{label}} ·",
+      "detectedPlain": "已识别 {{label}} ·"
     },
     "notifications": {
       "missedCall": "未接来电：",
@@ -4707,7 +4727,8 @@
       "closedYtd": "年初至今成交",
       "empty": "还没有团队成员。",
       "owner": "所有者",
-      "teamTotal": "团队合计"
+      "teamTotal": "团队合计",
+      "subtitle": "谁在推动什么 · 按年初至今已成交量排序"
     },
     "transactionNotifications": {
       "dailyDigest": "每日待办摘要",
@@ -4864,7 +4885,8 @@
       "bounced": "退信",
       "empty": "还没有邮件记录",
       "emptyHint": "通过 AI 邮件层发出邮件后，打开和点击数据会显示在这里。我们通过 Resend 的 webhook 统计——不塞跟踪像素。",
-      "timeRange": "时间范围"
+      "timeRange": "时间范围",
+      "windowSubtitle": "最近 {{days}} 天 · 外发邮件的打开与点击"
     },
     "leadRoutingSettings": {
       "title": "IDX 客源分配",
@@ -4937,7 +4959,8 @@
       "loadingLink": "正在加载您的推荐链接…",
       "tokensEarned": "{{n}} 个代币",
       "pendingCount_one": "{{count}} 项待处理",
-      "pendingCount_other": "{{count}} 项待处理"
+      "pendingCount_other": "{{count}} 项待处理",
+      "signedUpEarned": "{{count}} 人已注册 · 已获得"
     },
     "vsl": {
       "videoAlt": "CloseBoss 演示视频",
@@ -5044,7 +5067,8 @@
       "bossAssistant": "Boss 助理",
       "delegatesTo": "分派给",
       "whatHappens": "接下来会自动发生什么",
-      "whatYouGet": "您拿到的成果——可以直接交出去"
+      "whatYouGet": "您拿到的成果——可以直接交出去",
+      "steps": "制定计划 · 分派合适的队友 · 回报结果"
     },
     "postQueue": {
       "title": "发布队列",
@@ -5395,7 +5419,16 @@
       "madeForAgents": "为在成交的经纪人打造",
       "firstReplyHint": "30 天试用用户首次回复时间的中位数。",
       "replyLiftHint": "与该经纪人此前 30 天的平均值相比。",
-      "demoSenderSub": "Lakewood 三室两卫"
+      "demoSenderSub": "Lakewood 三室两卫",
+      "volume": "第 I 卷 · 为经纪人打造",
+      "established": "创立于 2024 年 · 西雅图",
+      "threadCaption": "真实对话记录 · 客户姓名已更换",
+      "smsSender": "Sarah M. · Zillow 客源 · 2 分钟前",
+      "smsSystemBody": "Sarah M. · 周六 13:00 · Oakhurst Dr.",
+      "smsScore": "热门 · 92/100",
+      "videoLabel": "已开字幕 · 静音",
+      "pricingSub": "Pro 与 Elite 享 14 天试用 · 可随时取消",
+      "copyright": "© 2026 CloseBoss · 保留所有权利"
     },
     "salesModelDashboard": {
       "title": "销售模式",
@@ -6094,7 +6127,14 @@
       "sizeWith": "尺寸，配合",
       "forBestFit": "以获得最佳排版效果。请确认",
       "activeProducers": "3,400 多位在职销售顾问",
-      "builtForProducers": "专为 {{partner}} 的从业者打造"
+      "builtForProducers": "专为 {{partner}} 的从业者打造",
+      "domainPilotLine": "closebossai.com · 欢迎咨询试点合作",
+      "week0": "第 0 周 · 签约与范围界定",
+      "week12": "第 1–2 周 · 合规与上线",
+      "week38": "第 3–8 周 · 试点进行中",
+      "week912": "第 9–12 周 · 评估与决策",
+      "footerLine": "© LeadSmart AI · 专为金融服务机构打造。欢迎咨询试点合作。",
+      "includedFeatureList": "TCPA 同意记录审计 · 州级披露自动插入 · AI 起草通讯的人工审核队列 · 与承保门户无关（并行使用，而非嵌入其中）· 支持双语 · 年度回访自动化 · 客源评分 · 仪表盘分析。"
     },
     "loanBroker": {
       "dashboard": "贷款经纪工作台",
@@ -6321,7 +6361,8 @@
       "win2Body": "14 套预审模板、按州自动插入披露条款、人工复核队列。",
       "win3Body": "6 阶段增员漏斗 + 匹配度评分 + 推荐人归因 + 下线视图，均为一等公民。",
       "confidentialForLeadership": "机密文件——为 {{partner}} 管理层准备。",
-      "printTipFull": "打印时：选择{{paper}}，配合{{margins}}与{{graphics}}，以保留颜色。"
+      "printTipFull": "打印时：选择{{paper}}，配合{{margins}}与{{graphics}}，以保留颜色。",
+      "briefDate": "竞品简报 · {{date}}"
     },
     "articles": {
       "backHome": "返回首页"
@@ -8130,7 +8171,8 @@
       "kvQ0": "如果我的 kvCORE 访问权限掌握在经纪公司手里怎么办？",
       "kvA0": "多数经纪公司在收到申请后会允许经纪人层级的数据导出。如果对方拒绝，经纪人的客户名单在法律上仍然属于经纪人本人——请向 broker／managing broker 反映。作为退路，您可以在我们搭建新 CRM 的同时，从自己的邮箱和手机导出记录里把联系人名单重建起来。",
       "wellMigrate": "我们帮您迁移 →",
-      "migrationEyebrow": "CRM 迁移 · {{source}} → CloseBoss"
+      "migrationEyebrow": "CRM 迁移 · {{source}} → CloseBoss",
+      "ctaTrial": "开始免费试用 · 14 天"
     },
     "switchFromPages": {
       "crmMigration": "CRM 迁移",
@@ -9123,7 +9165,8 @@
     },
     "bossOnboarding": {
       "typing": "Boss 正在输入…",
-      "askAboutSetup": "向 Boss 咨询设置问题…"
+      "askAboutSetup": "向 Boss 咨询设置问题…",
+      "tagline": "Boss · 你的 AI 幕僚长"
     },
     "voiceReceptionistSettings": {
       "loading": "正在加载接待员设置…",
@@ -9193,7 +9236,9 @@
     "voiceAiHero": {
       "bookDemo": "预约一对一演示 →",
       "haveItCallYou": "或者让它打给您 →",
-      "hotLeadPush": "高意向客户 → 短信 + 推送到您手机"
+      "hotLeadPush": "高意向客户 → 短信 + 推送到您手机",
+      "liveDemo": "在线演示 · 无需注册",
+      "liveAi": "实时 AI · 全天候 · 30 秒演示"
     },
     "jobs": {
       "runAllJobs": "运行全部任务",
@@ -9916,7 +9961,8 @@
       "windowDays_one": "统计窗口：最近 {{n}} 天",
       "windowDays_other": "统计窗口：最近 {{n}} 天",
       "subscribers_one": "{{count}} 位订阅者",
-      "subscribers_other": "{{count}} 位订阅者"
+      "subscribers_other": "{{count}} 位订阅者",
+      "funnelWindow": "统计窗口：最近 {{days}} 天 · 累计状态：已上线 {{onboarded}}"
     },
     "leadRoutingAdmin": {
       "agentCount_one": "{{count}} 位经纪人",
@@ -9960,10 +10006,28 @@
     },
     "aiSmsModal": {
       "charsSegments_one": "{{chars}} 字符 · {{count}} 条短信",
-      "charsSegments_other": "{{chars}} 字符 · {{count}} 条短信"
+      "charsSegments_other": "{{chars}} 字符 · {{count}} 条短信",
+      "eyebrow": "AI 短信 · {{model}}"
     },
     "dailyActionPlan": {
       "completedOf": "已完成 {{completed}}／{{total}}"
+    },
+    "adPhoto": {
+      "formatHint": "PNG、JPG 或 WebP · 每张不超过 8MB"
+    },
+    "adminSignups": {
+      "eyebrow": "LeadSmart AI · 管理后台"
+    },
+    "onePager": {
+      "briefDate": "高管简报 · {{date}}",
+      "pilotBadge": "90 天试点 · 零成本",
+      "day90Options": "扩大 · 延长 · 退出"
+    },
+    "skillsLibrary": {
+      "freeNoSignup": "免费 · 无需注册"
+    },
+    "aiEmailModal": {
+      "eyebrow": "AI 邮件 · {{model}}"
     }
   },
   "disclaimers": {

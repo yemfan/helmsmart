@@ -188,10 +188,7 @@ export default function FinancialServicesPricingClient() {
         <div className="mx-auto mt-12 max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 text-sm leading-6 text-slate-600">
           <p className="font-semibold text-slate-900">{t("pages.fsMarketing.includedEveryTier")}</p>
           <p className="mt-2">
-            TCPA opt-in audit logging · State-disclosure injection ·
-            Supervised-review queue for AI-drafted comms · Carrier-portal-agnostic
-            (sits beside, not inside, carrier tools) · Bilingual ready ·
-            Annual review automation · Lead scoring · Dashboard analytics.
+            {t("pages.fsMarketing.includedFeatureList")}
           </p>
         </div>
 
