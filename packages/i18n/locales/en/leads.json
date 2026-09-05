@@ -8,7 +8,7 @@
   },
   "hot_pill": "Hot",
   "ai_score": "AI {{score}}",
-  "lead_fallback": "Lead {{id}}",
+  "unnamed": "Unnamed contact",
   "count_one": "{{count}} lead",
   "count_other": "{{count}} leads",
   "count_partial": "{{count}} of {{total}} leads",
@@ -55,5 +55,3 @@
     "validation_failed": "Please fix the errors below."
   }
 }
-
-

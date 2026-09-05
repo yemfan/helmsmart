@@ -12,7 +12,7 @@
     "stage_new": "新建"
   },
   "last_activity": "上次活动 {{date}}",
-  "lead_fallback": "客户 {{id}}",
+  "unnamed": "未命名联系人",
   "ai_insights": {
     "title": "✨ AI 洞察",
     "score_max": "/ 100",

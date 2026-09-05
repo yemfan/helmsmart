@@ -35,7 +35,7 @@
     }
   },
   "reminder_card": {
-    "lead_fallback": "Lead {{id}}",
+    "unnamed": "Unnamed contact",
     "status": {
       "overdue": "Overdue follow-up",
       "scheduled": "Follow-up scheduled"

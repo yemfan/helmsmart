@@ -35,7 +35,7 @@
     }
   },
   "reminder_card": {
-    "lead_fallback": "客户 {{id}}",
+    "unnamed": "未命名联系人",
     "status": {
       "overdue": "逾期跟进",
       "scheduled": "已安排跟进"
