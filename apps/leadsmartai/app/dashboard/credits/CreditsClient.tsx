@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   approxCallMinutes,
@@ -55,7 +55,40 @@ export default function CreditsClient({
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
-  const [cadence, setCadence] = useState<BillingCadence>("monthly");
+  const [cadence, setCadence] = useState<BillingCadence>(
+    sp?.get("cadence") === "annual" ? "annual" : "monthly",
+  );
+
+  /*
+   * "Start 14-day trial" in the onboarding funnel links here with
+   * `?plan=<tier>&cadence=<c>&start=1`, and this is what makes that a checkout
+   * rather than another price list. Signed-out visitors arrive via login,
+   * which preserves the query, so the tier they picked survives.
+   *
+   * Fires at most once (`autoStarted`), only for a tier that exists, and never
+   * for the plan they are already on — that path answers "You're already on
+   * that plan" and would greet a returning subscriber with an error.
+   */
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (autoStarted.current) return;
+    if (sp?.get("start") !== "1") return;
+    const wanted = sp?.get("plan");
+    const tier = CREDIT_TIERS.find((t) => t.id === wanted);
+    if (!tier) return;
+    // Wait for the current plan to load, so the already-subscribed check is real.
+    if (plan === null) return;
+    autoStarted.current = true;
+    if (plan.planId === tier.id) return;
+    const wantsAnnual = sp?.get("cadence") === "annual" && annualTierIds.includes(tier.id);
+    void go(
+      "/api/stripe/checkout",
+      { plan: tier.id, cadence: wantsAnnual ? "annual" : "monthly" },
+      `plan:${tier.id}`,
+    );
+    // `go` is stable enough for this one-shot; the ref is the real guard.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sp, plan, annualTierIds]);
 
   const annualOffered = annualTierIds.length > 0;
   /** Annual is per-tier: a tier without a Stripe price stays monthly, visibly. */
