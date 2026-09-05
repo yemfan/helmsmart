@@ -207,7 +207,18 @@ export default function CommandChainDiagram() {
 
         <Connector label={t("pages.commandChain.delegatesTo")} fan />
 
-        {/* The team — assigned members light up */}
+        {/*
+         * The team. Every card stays legible: the selected command decides who
+         * is HIGHLIGHTED, not who exists.
+         *
+         * This used to dim the rest to `opacity-50` with slate-400 text, which
+         * is the same treatment the app uses for a disabled control — so on the
+         * open-house command, Transaction and Accountant read as features that
+         * were never built. Someone looking at the /features page asked why the
+         * Boss could not command those two. It can; they simply have nothing to
+         * do with an open house. Absence of work is not absence of capability,
+         * and the two must not look alike.
+         */}
         <div className="grid w-full grid-cols-2 gap-2.5 sm:grid-cols-5">
           {TEAM.map((m) => {
             const on = active.assignees.includes(m.key);
@@ -217,29 +228,49 @@ export default function CommandChainDiagram() {
                 className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-4 text-center transition ${
                   on
                     ? "border-[#0072ce] bg-white shadow-md ring-1 ring-[#0072ce]/30 dark:bg-slate-900"
-                    : "border-slate-200 bg-white opacity-50 dark:border-slate-800 dark:bg-slate-900"
+                    : "border-slate-200 bg-slate-50/60 dark:border-slate-700 dark:bg-slate-900"
                 }`}
               >
                 <div
                   className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                     on
                       ? "bg-[#0072ce] text-white"
-                      : "bg-slate-100 text-slate-400 dark:bg-slate-800"
+                      : "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                   }`}
                 >
                   <m.icon size={18} aria-hidden />
                 </div>
                 <span
                   className={`text-[11px] font-semibold ${
-                    on ? "text-slate-800 dark:text-slate-100" : "text-slate-400"
+                    on
+                      ? "text-slate-800 dark:text-slate-100"
+                      : "text-slate-600 dark:text-slate-300"
                   }`}
                 >
                   {m.label}
+                </span>
+                {/*
+                 * The highlight is colour and weight, which a screen reader
+                 * cannot perceive and a colour-blind reader may not either.
+                 * Say it in words for both.
+                 */}
+                <span className="sr-only">
+                  {on
+                    ? t("pages.commandChain.onThisCommand")
+                    : t("pages.commandChain.idle")}
                 </span>
               </div>
             );
           })}
         </div>
+
+        {/*
+         * And say what the highlighting MEANS. Without this the row reads as a
+         * permanent org chart in which two of the five are switched off.
+         */}
+        <p className="mt-3 max-w-lg text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
+          {t("pages.commandChain.teamLegend")}
+        </p>
 
         {/* What the assigned team runs — processes + artifacts */}
         <div className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50/70 p-5 dark:border-slate-800 dark:bg-slate-900/40">

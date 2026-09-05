@@ -5068,7 +5068,10 @@
       "delegatesTo": "delegates to",
       "whatHappens": "What happens next — automatically",
       "whatYouGet": "What you get — ready to hand over",
-      "steps": "plans it · assigns the right teammates · reports back"
+      "steps": "plans it · assigns the right teammates · reports back",
+      "teamLegend": "Highlighted teammates are the ones this command needs. The others are idle, not unavailable — your Boss Assistant can call on any of the five.",
+      "onThisCommand": "working on this command",
+      "idle": "idle on this command"
     },
     "postQueue": {
       "title": "Post queue",
