@@ -5439,11 +5439,20 @@
       "failedAfterAttempts_other": "Failed after {{count}} attempts"
     },
     "commandPalette": {
-      "searchPlaceholder": "Search pages… (Esc to close)",
-      "noMatches": "No matching pages.",
       "navigate": "Navigate",
       "open": "Open",
-      "close": "Close"
+      "close": "Close",
+      "searchPlaceholder": "Search pages, actions, contacts — or ask Max…",
+      "noMatches": "Nothing matches.",
+      "searching": "Searching…",
+      "shortcuts": "Shortcuts",
+      "askMax": "Ask Max: “{{query}}”",
+      "sections": {
+        "pages": "Pages",
+        "actions": "Actions",
+        "contacts": "Contacts",
+        "askMax": "Ask Max"
+      }
     },
     "csvImport": {
       "title": "Import Contacts from CSV",
@@ -10489,6 +10498,19 @@
     "deepReport": "AI-generated estimate from public web data. Value, rent, affordability, and deal metrics are opinions for planning only — not an appraisal, loan approval, or investment advice. Verify figures and consult a lender / advisor before deciding.",
     "houseSearch": "AI-generated results from public web data. Listings, prices, and availability may be out of date — verify each on its source site before sharing or relying on it.",
     "offerCompare": "AI summary to support your judgment — not legal or financial advice. Verify each offer's terms and the net figures before advising the seller."
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "hint": "Press g, then a letter, to jump. Shortcuts stay quiet while you type.",
+    "palette": "Open the command palette",
+    "askMax": "Ask Max",
+    "contacts": "Contacts",
+    "conversations": "Conversations",
+    "tasks": "Tasks",
+    "calendar": "Calendar",
+    "deals": "Deals",
+    "settings": "Settings",
+    "help": "Show this list"
   },
   "tools": {
     "memory": {
