@@ -93,6 +93,7 @@
         "APP_BASE_URL",
         "PUBLIC_BASE_URL",
         "CRON_SECRET",
+        "TURNSTILE_SECRET_KEY",
         "ENCRYPTION_KEY",
         "REVALIDATE_SECRET",
         "USE_API",
