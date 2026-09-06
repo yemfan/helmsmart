@@ -499,6 +499,36 @@ export default function LeadSmartLandingV2() {
         {/* ── SPEAKS YOUR CLIENTS' LANGUAGE ─── every assistant converses in
             the client's language, by voice and text; bilingual is a core
             differentiator for multicultural markets. */}
+        <section className="px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-4xl">
+            <RevealSection className="rounded-3xl border border-slate-200 bg-gradient-to-br from-[#0072ce]/5 via-white to-[#4F46E5]/5 px-8 py-12 text-center dark:border-slate-800 dark:from-[#0072ce]/10 dark:via-slate-900 dark:to-[#4F46E5]/10 md:px-12 md:py-14">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#0072ce]/10 text-[#0072ce] dark:text-[#4da3e8]">
+                <Globe2 size={24} aria-hidden />
+              </div>
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce] dark:text-[#4da3e8]">
+                {t("bilingual.eyebrow")}
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                {t("bilingual.h2")}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300 md:text-lg">
+                {t("bilingual.body")}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                {["english", "chinese", "more"].map((l) => (
+                  <span
+                    key={l}
+                    className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    {t(`bilingual.langs.${l}`)}
+                  </span>
+                ))}
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
+        {/* ── HOW IT WORKS ─── */}
         <section
           id="how"
           className="border-y border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24"
@@ -541,6 +571,65 @@ export default function LeadSmartLandingV2() {
             row 2 — is the "bento" idiom Apple/Vercel use to break the
             row-of-equal-boxes feel of a standard product grid.
             Falls back to a stacked 1-col on mobile, 2-col on md. */}
+        <section
+          id="missed-call-recovery"
+          className="border-y border-amber-200/70 bg-gradient-to-b from-white via-amber-50/40 to-white px-6 py-20 dark:border-amber-900/40 dark:from-slate-950 dark:via-amber-950/15 dark:to-slate-950 md:py-24"
+        >
+          <div className="mx-auto max-w-5xl">
+            <RevealSection>
+              <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-12">
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-amber-900 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+                    {t("missed_call.badge")}
+                  </span>
+                  <h2 className="mt-5 font-heading text-3xl font-bold leading-tight text-amber-900 md:text-4xl dark:text-amber-200">
+                    {t("missed_call.h2")}
+                  </h2>
+                  <p className="mt-4 text-lg font-semibold text-slate-800 dark:text-slate-200">
+                    {t("missed_call.tagline")}
+                  </p>
+                </div>
+                <div className="space-y-4 text-base leading-relaxed text-slate-700 dark:text-slate-300">
+                  <p>
+                    {t("missed_call.body_p1_prefix")}
+                    <span className="font-semibold text-slate-900 dark:text-white">
+                      {t("missed_call.body_p1_emphasis")}
+                    </span>
+                  </p>
+                  <p>{t("missed_call.body_p2")}</p>
+                  <ul className="grid gap-2 pt-2 sm:grid-cols-2">
+                    {(["text_back", "callback", "qualify", "handoff"] as const).map((featureKey) => (
+                      <li
+                        key={featureKey}
+                        className="flex items-start gap-2 rounded-lg border border-amber-200/70 bg-white/70 px-3 py-2 text-sm text-slate-700 backdrop-blur dark:border-amber-800/50 dark:bg-slate-900/60 dark:text-slate-300"
+                      >
+                        <CheckCircle2
+                          className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+                          aria-hidden
+                        />
+                        <span>{t(`missed_call.features.${featureKey}`)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <Link
+                      href="/features#follow-up"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 hover:underline dark:text-amber-300"
+                    >
+                      {t("missed_call.cta")}
+                      <ArrowRight size={14} aria-hidden />
+                    </Link>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      {t("missed_call.included_note")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
+        {/* ── SALES STYLE ENGINE ─── */}
         <section className="bg-gradient-to-b from-rose-50/80 via-white to-white px-6 py-20 dark:from-rose-950/15 dark:via-slate-950 dark:to-slate-950 md:py-24">
           <div className="mx-auto max-w-3xl text-center">
             <RevealSection>
