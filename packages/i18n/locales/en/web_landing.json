@@ -95,6 +95,7 @@
   },
   "mock": {
     "live_label": "CloseBoss — Live",
+    "example_label": "Example dashboard",
     "auto_replying": "Auto-replying",
     "stats": {
       "new_leads": "New leads",

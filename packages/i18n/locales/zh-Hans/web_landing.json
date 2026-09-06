@@ -95,6 +95,7 @@
   },
   "mock": {
     "live_label": "CloseBoss — 实时",
+    "example_label": "示例仪表盘",
     "auto_replying": "自动回复中",
     "stats": {
       "new_leads": "新客户",
