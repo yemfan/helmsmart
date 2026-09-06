@@ -6,6 +6,7 @@ import ProfileSettingsForm from "@/components/account/ProfileSettingsForm";
 import BrandingSettingsPanel from "@/components/dashboard/BrandingSettingsPanel";
 import DigitalTwinPanel from "@/components/account/DigitalTwinPanel";
 import LanguagePanel from "@/components/dashboard/LanguagePanel";
+import AccountTimezonePanel from "@/components/dashboard/AccountTimezonePanel";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("dashboard");
@@ -35,6 +36,9 @@ export default async function AccountSettingsPage() {
       <DigitalTwinPanel />
 
       <LanguagePanel />
+
+      {/* One timezone for briefings, the overnight run and the receptionist (#1554). */}
+      <AccountTimezonePanel />
 
       <SettingsCard title={tr("settings.index.planTitle")} description={tr("settings.index.planBody")}>
         <Link
