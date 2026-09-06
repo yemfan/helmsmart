@@ -164,5 +164,19 @@
     "facebook": "Facebook",
     "instagram": "Instagram",
     "linkedin": "LinkedIn"
+  },
+  "tasks": {
+    "loading": "Loading tasks…",
+    "loadFailed": "Unable to load tasks",
+    "actionFailed": "Action failed",
+    "dismiss": "Dismiss",
+    "emptyTitle": "No open tasks",
+    "emptySubtitle": "Create a task from a lead to see it here.",
+    "overdue": "Overdue",
+    "overdueHint": "Due before today",
+    "today": "Today",
+    "todayHint": "Due today",
+    "upcoming": "Upcoming",
+    "upcomingHint": "No date or future due dates"
   }
 }

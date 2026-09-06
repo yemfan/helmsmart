@@ -27,7 +27,7 @@
     "check_fields": "Check the highlighted fields and try again."
   },
   "add_menu": {
-    "button": "Add…",
+    "button": "Add",
     "enter_contact": "Enter a contact",
     "scan_card": "Scan business card",
     "ai_extract": "AI extract from file",

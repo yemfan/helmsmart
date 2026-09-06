@@ -128,5 +128,76 @@
       "insights": "洞察",
       "account": "账户"
     }
+  },
+  "boss": {
+    "tagline": "您的 AI 幕僚长",
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "autopilotOn": "自动驾驶已开",
+    "autopilotOff": "自动驾驶已关",
+    "approvalSettings": "审批设置",
+    "briefingFallback": "这是目前的情况，以及我想为您做的事。",
+    "proposal": "建议",
+    "haveMaxHandle": "交给 Max 处理",
+    "notNow": "暂不",
+    "working": "收到 —— 正在拆解成行动…",
+    "couldNotWorkOut": "这条没理解清楚 —— 请换个说法。",
+    "nothingUrgent": "没有紧急事项 —— 团队一切在掌控中。告诉我您想做什么。",
+    "quick": {
+      "checkIn": "给热门线索发一条问候短信",
+      "justListed": "起草一条新上市社交帖",
+      "planDay": "规划我的一天"
+    },
+    "yourTeam": "您的 AI 团队",
+    "offerDesk": "报价台",
+    "offerDeskSub": "生成报价 · 用 AI 审阅合同",
+    "placeholder": "告诉团队要做什么…",
+    "placeholderAuto": "告诉团队要做什么 —— 他们会直接执行…",
+    "send": "发送",
+    "status": {
+      "done": "已完成",
+      "scheduled": "已排期",
+      "needsInfo": "需要信息",
+      "awaitingYou": "等您确认"
+    },
+    "draftLabel": "{{channel}}草稿",
+    "sending": "发送中…",
+    "approveSend": "批准并发送",
+    "dismiss": "忽略",
+    "needOneMoreDetail": "我还需要一个细节才能开始。",
+    "typeAnswer": "输入您的回答…",
+    "close": "关闭",
+    "done": "完成",
+    "approvalSub": "按助理和渠道设置：您审批、Max 审批，或直接发送。点击单元格逐级切换。",
+    "autopilotAll": "自动驾驶（全部渠道）",
+    "autopilotAllSub": "总开关。各渠道的设置优先于它。",
+    "assignee": {
+      "receptionist": "接待员",
+      "sales_assistant": "销售助理",
+      "marketing_assistant": "营销助理",
+      "transaction_assistant": "交易助理",
+      "accountant": "会计",
+      "realtor": "待您审阅",
+      "boss_assistant": "Max"
+    },
+    "channel": {
+      "call": "电话",
+      "sms": "短信",
+      "email": "邮件",
+      "social": "社交"
+    },
+    "mode": {
+      "ask": "问我",
+      "assisted": "Max 审批",
+      "auto": "自动"
+    },
+    "modeHint": {
+      "ask": "发送前需您批准。",
+      "assisted": "Max 校对并做风险检查，只有不确定时才问您。",
+      "auto": "直接发送，仍受合规规则约束。"
+    }
   }
 }

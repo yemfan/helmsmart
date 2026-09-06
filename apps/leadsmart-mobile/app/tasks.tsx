@@ -1,6 +1,7 @@
 import type { MobileLeadTaskDto, MobileTasksGroupedResponseDto } from "@leadsmart/shared";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ScrollView,
   StyleSheet,
@@ -41,6 +42,7 @@ function Section({
 export default function TasksScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
+  const { t } = useTranslation("mobile_misc_screens");
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const [grouped, setGrouped] = useState<MobileTasksGroupedResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,14 +111,14 @@ export default function TasksScreen() {
   );
 
   if (loading && !grouped) {
-    return <ScreenLoading message="Loading tasks…" />;
+    return <ScreenLoading message={t("tasks.loading")} />;
   }
 
   if (error && !grouped) {
     return (
       <View style={styles.centered}>
         <ErrorBanner
-          title="Unable to load tasks"
+          title={t("tasks.loadFailed")}
           message={error.message}
           onRetry={() => {
             void load("full");
@@ -138,22 +140,22 @@ export default function TasksScreen() {
       {actionError ? (
         <View style={styles.bannerPad}>
           <ErrorBanner
-            title="Action failed"
+            title={t("tasks.actionFailed")}
             message={actionError}
             onRetry={() => setActionError(null)}
-            retryLabel="Dismiss"
+            retryLabel={t("tasks.dismiss")}
           />
         </View>
       ) : null}
 
       {totalOpen === 0 ? (
         <View style={styles.emptyWrap}>
-          <EmptyState title="No open tasks" subtitle="Create a task from a lead to see it here." />
+          <EmptyState title={t("tasks.emptyTitle")} subtitle={t("tasks.emptySubtitle")} />
         </View>
       ) : null}
 
       {g.overdue.length > 0 ? (
-        <Section title="Overdue" hint="Due before today (UTC)" styles={styles}>
+        <Section title={t("tasks.overdue")} hint={t("tasks.overdueHint")} styles={styles}>
           {g.overdue.map((t) => (
             <TaskCard
               key={t.id}
@@ -168,7 +170,7 @@ export default function TasksScreen() {
       ) : null}
 
       {g.today.length > 0 ? (
-        <Section title="Today" hint="Due today (UTC)" styles={styles}>
+        <Section title={t("tasks.today")} hint={t("tasks.todayHint")} styles={styles}>
           {g.today.map((t) => (
             <TaskCard
               key={t.id}
@@ -183,7 +185,7 @@ export default function TasksScreen() {
       ) : null}
 
       {g.upcoming.length > 0 ? (
-        <Section title="Upcoming" hint="No date or future due dates" styles={styles}>
+        <Section title={t("tasks.upcoming")} hint={t("tasks.upcomingHint")} styles={styles}>
           {g.upcoming.map((t) => (
             <TaskCard
               key={t.id}

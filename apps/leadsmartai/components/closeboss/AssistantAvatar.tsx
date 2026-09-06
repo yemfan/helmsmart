@@ -1,6 +1,7 @@
 "use client";
 
-import { PICKABLE_AVATARS, avatarUrl } from "@/lib/closeboss/avatars";
+import { useEffect, useState } from "react";
+import { PICKABLE_AVATARS, avatarUrl, isValidAvatarId, defaultAvatarForSeed } from "@/lib/closeboss/avatars";
 import { useTranslation } from "react-i18next";
 
 /** A single circular avatar — a custom uploaded photo (`url`) when present,
@@ -18,10 +19,21 @@ export function AssistantAvatar({
   alt?: string;
   className?: string;
 }) {
+  // A custom photo whose URL no longer resolves (deleted upload, expired
+  // signed link) used to render as an empty grey circle — Emma had no face on
+  // the Receptionist page. Fall back to the persona, and from an unknown
+  // avatar id to a stable default, so the slot is never blank.
+  const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [url, id]);
+  const fallbackId = isValidAvatarId(id) ? id : defaultAvatarForSeed(id);
+  const src = !broken && url ? url : avatarUrl(fallbackId);
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={url || avatarUrl(id)}
+      src={src}
+      onError={() => {
+        if (!broken) setBroken(true);
+      }}
       alt={alt}
       width={size}
       height={size}

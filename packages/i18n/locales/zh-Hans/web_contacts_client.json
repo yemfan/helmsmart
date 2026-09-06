@@ -27,7 +27,7 @@
     "check_fields": "请检查标红的字段后重试。"
   },
   "add_menu": {
-    "button": "添加……",
+    "button": "添加",
     "enter_contact": "手动添加联系人",
     "scan_card": "扫描名片",
     "ai_extract": "AI 从文件提取",

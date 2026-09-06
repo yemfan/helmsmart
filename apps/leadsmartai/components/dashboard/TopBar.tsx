@@ -601,10 +601,14 @@ export default function TopBar({
             <NotificationsBell />
           </div>
 
-          {/* Mobile-only notifications icon — kept because it's a daily-use
-              quick glance, but as a single icon button (no quick-actions or
-              support cluster crowding it). md+ uses the version above. */}
-          <NotificationsBell className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 md:hidden" />
+          {/* Below md: Quick actions (icon-only under sm — the dropdown hides
+              its label itself) plus the bell. Adding a lead or a task from a
+              phone used to mean drawer → Leads → Add; the page-level "+" is
+              the daily-use path and fits beside the bell at 375px. */}
+          <div className="flex items-center gap-2 md:hidden">
+            <QuickActionsDropdown />
+            <NotificationsBell className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50" />
+          </div>
 
           <ProfileMenu
             email={email}

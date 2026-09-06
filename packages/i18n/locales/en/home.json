@@ -128,5 +128,76 @@
       "insights": "Insights",
       "account": "Account"
     }
+  },
+  "boss": {
+    "tagline": "your AI chief of staff",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "autopilotOn": "Autopilot on",
+    "autopilotOff": "Autopilot off",
+    "approvalSettings": "Approval settings",
+    "briefingFallback": "Here's where things stand — and what I'd like to do for you.",
+    "proposal": "Proposal",
+    "haveMaxHandle": "Have Max handle it",
+    "notNow": "Not now",
+    "working": "On it — breaking this into actions…",
+    "couldNotWorkOut": "Couldn't work that one out — try rephrasing it.",
+    "nothingUrgent": "Nothing urgent — your team has things under control. Tell me what you'd like done.",
+    "quick": {
+      "checkIn": "Text my hot leads a check-in",
+      "justListed": "Draft a just-listed social post",
+      "planDay": "Plan my day"
+    },
+    "yourTeam": "Your AI team",
+    "offerDesk": "Offer desk",
+    "offerDeskSub": "Build an offer · review a contract with AI",
+    "placeholder": "Tell your team what to do…",
+    "placeholderAuto": "Tell your team what to do — they'll act…",
+    "send": "Send",
+    "status": {
+      "done": "Done",
+      "scheduled": "Scheduled",
+      "needsInfo": "Needs info",
+      "awaitingYou": "Awaiting you"
+    },
+    "draftLabel": "Draft {{channel}}",
+    "sending": "Sending…",
+    "approveSend": "Approve & send",
+    "dismiss": "Dismiss",
+    "needOneMoreDetail": "I need one more detail to start this.",
+    "typeAnswer": "Type your answer…",
+    "close": "Close",
+    "done": "Done",
+    "approvalSub": "Per assistant and channel: you approve, Max approves, or it just goes. Tap a cell to step through.",
+    "autopilotAll": "Autopilot (all channels)",
+    "autopilotAllSub": "The master switch. Per-channel choices override it.",
+    "assignee": {
+      "receptionist": "Receptionist",
+      "sales_assistant": "Sales Assistant",
+      "marketing_assistant": "Marketing Assistant",
+      "transaction_assistant": "Transaction Assistant",
+      "accountant": "Accountant",
+      "realtor": "For your review",
+      "boss_assistant": "Max"
+    },
+    "channel": {
+      "call": "Call",
+      "sms": "Text",
+      "email": "Email",
+      "social": "Social"
+    },
+    "mode": {
+      "ask": "ask",
+      "assisted": "Max approves",
+      "auto": "auto"
+    },
+    "modeHint": {
+      "ask": "You approve it before it goes.",
+      "assisted": "Max proofreads and risk-checks it, and only asks you when he's unsure.",
+      "auto": "It goes, subject to the usual compliance rails."
+    }
   }
 }
