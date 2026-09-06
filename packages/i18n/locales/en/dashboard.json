@@ -401,6 +401,43 @@
     "smartLinkHelp": "Share with homeowners to route them into your funnel.",
     "mlsImport": "MLS Data Import",
     "pageTitle": "Settings",
+    "index": {
+          "title": "Settings",
+          "subtitle": "Everything you can change, in five places.",
+          "searchPlaceholder": "Search settings…",
+          "noMatch": "No settings match that.",
+          "back": "← All settings",
+          "planTitle": "Plan & credits",
+          "planBody": "See your balance, change your plan or buy more credits.",
+          "planCta": "Open plan & credits"
+    },
+    "groups": {
+          "account": {
+                "label": "Account",
+                "description": "Your name, photo, brand, digital twin, language, plan and credits.",
+                "keywords": "profile name photo brand logo signature twin avatar voice clone language billing plan credits subscription"
+          },
+          "aiTeam": {
+                "label": "AI team",
+                "description": "How your assistants sound, answer the phone, route leads and handle deals.",
+                "keywords": "style tone voice receptionist phone missed call text-back lead routing commission transaction notifications"
+          },
+          "channels": {
+                "label": "Channels",
+                "description": "Phone, email, calendar and social accounts — the plumbing behind every send.",
+                "keywords": "phone number email gmail calendar google facebook instagram tiktok linkedin social autoposting weekly schedule compliance consent"
+          },
+          "messaging": {
+                "label": "Messaging",
+                "description": "What CloseBoss sends, when, and whether it asks you first.",
+                "keywords": "review policy approval autosend templates timing quiet hours frequency drip sphere"
+          },
+          "data": {
+                "label": "Data & tools",
+                "description": "Links you share with clients and imports into your CRM.",
+                "keywords": "smart link home value widget mls import csv"
+          }
+    },
     "tabs": {
       "voice": {
         "label": "Voice & Style",

@@ -401,6 +401,43 @@
     "smartLinkHelp": "分享给房主，把他们引入您的客户漏斗。",
     "mlsImport": "MLS 数据导入",
     "pageTitle": "设置",
+    "index": {
+          "title": "设置",
+          "subtitle": "所有可调整的项目，分成五处。",
+          "searchPlaceholder": "搜索设置…",
+          "noMatch": "没有匹配的设置。",
+          "back": "← 全部设置",
+          "planTitle": "套餐与积分",
+          "planBody": "查看余额、更换套餐或购买更多积分。",
+          "planCta": "打开套餐与积分"
+    },
+    "groups": {
+          "account": {
+                "label": "账户",
+                "description": "您的姓名、照片、品牌、数字分身、语言、套餐与积分。",
+                "keywords": "个人资料 姓名 照片 品牌 标志 签名 数字分身 语音克隆 语言 账单 套餐 积分 订阅 profile brand billing"
+          },
+          "aiTeam": {
+                "label": "AI 团队",
+                "description": "助理的语气、接听电话、线索分配和交易处理方式。",
+                "keywords": "风格 语气 语音 接待 电话 未接来电 短信回复 线索分配 佣金 交易通知 voice receptionist"
+          },
+          "channels": {
+                "label": "渠道",
+                "description": "电话、邮箱、日历和社交账号 —— 每一次发送背后的连接。",
+                "keywords": "电话号码 邮箱 gmail 日历 google facebook instagram tiktok linkedin 社交 自动发布 每周计划 合规 同意"
+          },
+          "messaging": {
+                "label": "消息",
+                "description": "CloseBoss 发什么、什么时候发、是否先问您。",
+                "keywords": "审核策略 批准 自动发送 模板 时间 免打扰 频率 drip 人脉"
+          },
+          "data": {
+                "label": "数据与工具",
+                "description": "分享给客户的链接以及导入到 CRM 的数据。",
+                "keywords": "智能链接 房屋估值 组件 mls 导入 csv"
+          }
+    },
     "tabs": {
       "voice": {
         "label": "语气与风格",
