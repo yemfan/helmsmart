@@ -773,6 +773,7 @@
       "balance": "余额",
       "currentPlan": "当前套餐",
       "monthlyPlans": "包月套餐",
+      "annualPlans": "包年套餐",
       "topUpPacks": "额度充值包",
       "canceled": "充值已取消 —— 未产生任何扣款。",
       "managePlan": "管理套餐",

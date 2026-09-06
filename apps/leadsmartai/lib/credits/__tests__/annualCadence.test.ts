@@ -111,6 +111,22 @@ describe("annual cadence", () => {
     expect(plans).toMatch(/dashboard\/credits\?cadence=annual/);
     // A page showing annual prices must not still be headed "Monthly plans".
     expect(plans).toContain("plans.headingAnnual");
+    // Same mistake, same fix, on the page that does the charging.
+    const credits = read("app/dashboard/credits/CreditsClient.tsx");
+    expect(credits).toContain("more.credits.annualPlans");
+  });
+
+  it("shows every tier it sells on one row", () => {
+    /*
+     * Four tiers in a 3-up grid put Signature alone on a second row, which
+     * reads as a different, lesser thing rather than the top of the ladder.
+     * The column also has to be wide enough that 4-up is not four slivers.
+     */
+    const credits = read("app/dashboard/credits/CreditsClient.tsx");
+    expect(credits).toMatch(/grid gap-4 sm:grid-cols-2 lg:grid-cols-4/);
+    expect(credits).toMatch(/mx-auto max-w-6xl space-y-8/);
+    // The top-up grid has exactly three cards and must stay 3-up.
+    expect(credits).toMatch(/grid gap-4 md:grid-cols-3/);
   });
 
   it("opens checkout on arrival, once, and not for the current plan", () => {
