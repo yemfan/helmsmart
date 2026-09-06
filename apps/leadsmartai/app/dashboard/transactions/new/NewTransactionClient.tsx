@@ -481,6 +481,22 @@ function NewTransactionForm() {
   //                    (offer accepted, spawning the deal)
   //   - isListing    → Creating a fresh listing
   //   - default      → Creating a buyer-rep / dual transaction
+  /**
+   * What still stands between the agent and a saved record.
+   *
+   * Mirrors the button's own disabled condition rather than restating it, so
+   * the two cannot drift into a button that is grey for a reason the hint
+   * does not mention.
+   */
+  const blockers = [
+    !contact?.id
+      ? isListing
+        ? tr("pages.newTransaction.needSeller")
+        : tr("pages.newTransaction.needBuyer")
+      : null,
+    !propertyAddress.trim() ? tr("pages.newTransaction.needAddress") : null,
+  ].filter(Boolean) as string[];
+
   const breadcrumbHref = fromListing
     ? `/dashboard/listings/${prefilledListingId}`
     : isListing
@@ -721,6 +737,21 @@ function NewTransactionForm() {
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+        {/*
+          * Say why the button is grey.
+          *
+          * Create listing sits disabled behind `contact?.id` — a seller TYPED
+          * into the picker but never chosen from the list leaves the field
+          * looking complete and the id null. The form then refuses, silently,
+          * with a faded button and no way to find out which of the two
+          * requirements is unmet.
+          */}
+        {!submitting && blockers.length > 0 ? (
+          <p className="text-right text-xs text-slate-500">
+            {tr("pages.newTransaction.beforeCreating", { items: blockers.join(" · ") })}
+          </p>
+        ) : null}
 
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link

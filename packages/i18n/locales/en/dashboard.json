@@ -2783,6 +2783,10 @@
       "detectedPlain": "{{label}} detected ·"
     },
     "newTransaction": {
+      "beforeCreating": "Before creating: {{items}}",
+      "needSeller": "pick the seller from the list",
+      "needBuyer": "pick the buyer from the list",
+      "needAddress": "add the property address",
       "metaTitle": "New transaction",
       "dealType": "Deal type",
       "listingSide": "Listing side",
