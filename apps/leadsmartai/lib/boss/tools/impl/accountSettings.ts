@@ -16,7 +16,7 @@ import { defineTool } from "../types";
  * something lives and has nothing real to go on.
  *
  * So this tool returns both halves — the VALUE from the database and the
- * LOCATION as a route this repo actually serves. `whereToChange` is a real
+ * LOCATION as both a label and a route this repo actually serves. The route is real
  * href, not prose: if the settings pages are reorganised again, a stale href
  * 404s visibly instead of quietly sending people to a tab that isn't there.
  * (They were reorganised, days after the timezone control shipped.)
@@ -32,6 +32,16 @@ const NO_ARGS = z.object({}).describe("No input.");
 
 /** Where each setting is actually edited. Keep in step with lib/settings/groups.ts. */
 const ACCOUNT_SETTINGS_HREF = "/dashboard/settings/account";
+/*
+ * What to CALL that place, in the words on the screen.
+ *
+ * The first version returned only the href, and Max duly wrote
+ * "go to /dashboard/settings/account" to the realtor — a raw internal path,
+ * which the prompt already forbids two rules further up. Handing back a label
+ * and a link separately lets it say where in the words the nav actually uses
+ * and keep the path as the destination.
+ */
+const ACCOUNT_SETTINGS_LABEL = "Settings → Account";
 
 export const getAccountSettings = defineTool({
   name: "get_account_settings",
@@ -73,7 +83,7 @@ export const getAccountSettings = defineTool({
       summary:
         `Timezone: ${timezone} (it is ${localTime} there now). ` +
         `Briefings: ${morning} and ${evening} in that zone. ` +
-        `Both are changed at ${ACCOUNT_SETTINGS_HREF} (Settings, then Account).`,
+        `Both are changed under ${ACCOUNT_SETTINGS_LABEL} — link it as ${ACCOUNT_SETTINGS_HREF}, and name the place, not the path.`,
       display: {
         key: "reads.accountSettings",
         params: { timezone, localTime, morning, evening },
@@ -83,7 +93,8 @@ export const getAccountSettings = defineTool({
         localTimeNow: localTime,
         briefingMorningTime: morning,
         briefingEveningTime: evening,
-        whereToChange: ACCOUNT_SETTINGS_HREF,
+        whereToChange: ACCOUNT_SETTINGS_LABEL,
+        whereToChangeLink: ACCOUNT_SETTINGS_HREF,
       },
     };
   },

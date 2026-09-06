@@ -58,3 +58,15 @@ describe("get_account_settings points somewhere real", () => {
     expect(columns).toEqual(["timezone", "briefing_morning_time", "briefing_evening_time"]);
   });
 });
+
+describe("it names the place, not the path", () => {
+  it("returns a human label alongside the href", () => {
+    // Handing back only a route made Max write "go to
+    // /dashboard/settings/account" to the realtor — a bare internal path, which
+    // the system prompt forbids two rules above the one this tool was built to
+    // enforce. Seen in production before this line existed.
+    const src = readFileSync(SRC, "utf8");
+    expect(src).toMatch(/ACCOUNT_SETTINGS_LABEL\s*=\s*"[^"]+"/);
+    expect(src).toContain("whereToChangeLink");
+  });
+});
