@@ -331,9 +331,10 @@ function SignupForm() {
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.name")}</label>
+            <label htmlFor="signup-name" className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.name")}</label>
             <input
               type="text"
+              id="signup-name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -342,9 +343,10 @@ function SignupForm() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
+            <label htmlFor="signup-email" className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
+              id="signup-email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -355,9 +357,10 @@ function SignupForm() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.phone")}</label>
+            <label htmlFor="signup-phone" className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.phone")}</label>
             <input
               type="tel"
+              id="signup-phone"
               inputMode="tel"
               value={phone}
               onChange={(e) => setPhone(formatUsPhoneInput(e.target.value))}
@@ -384,8 +387,9 @@ function SignupForm() {
           ) : null}
           {!hasSession ? (
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700">{t("pages.signupPage.password")}</label>
+              <label htmlFor="signup-password" className="block text-xs font-medium text-gray-700">{t("pages.signupPage.password")}</label>
               <input
+                id="signup-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -403,10 +407,11 @@ function SignupForm() {
               which point it looks like the product lost their password. */}
           {!hasSession ? (
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700">
+              <label htmlFor="signup-confirm" className="block text-xs font-medium text-gray-700">
                 {t("pages.signupPage.confirmPassword")}
               </label>
               <input
+                id="signup-confirm"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -492,7 +497,7 @@ function SignupForm() {
           <>
             <div className="flex items-center gap-3">
               <span className="h-px flex-1 bg-gray-200" />
-              <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or</span>
+              <span className="text-[11px] font-medium uppercase tracking-wide text-gray-600">or</span>
               <span className="h-px flex-1 bg-gray-200" />
             </div>
             <div className="space-y-2">

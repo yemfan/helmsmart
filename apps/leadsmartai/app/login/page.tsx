@@ -236,15 +236,16 @@ function LoginPageInner() {
         </div>
         <div className="flex items-center gap-3">
           <span className="h-px flex-1 bg-gray-200" />
-          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{t("pages.loginPage.orSignIn")}</span>
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-600">{t("pages.loginPage.orSignIn")}</span>
           <span className="h-px flex-1 bg-gray-200" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
+            <label htmlFor="login-email" className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
+              id="login-email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -253,9 +254,10 @@ function LoginPageInner() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">{t("pages.loginPage.password")}</label>
+            <label htmlFor="login-password" className="block text-xs font-medium text-gray-700">{t("pages.loginPage.password")}</label>
             <div className="relative">
               <input
+                id="login-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -309,7 +311,7 @@ function LoginPageInner() {
         </form>
         <div className="flex items-center gap-3">
           <span className="h-px flex-1 bg-gray-200" />
-          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{t("pages.loginPage.or")}</span>
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-600">{t("pages.loginPage.or")}</span>
           <span className="h-px flex-1 bg-gray-200" />
         </div>
         <div className="space-y-2">
