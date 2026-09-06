@@ -12,6 +12,7 @@ import {
   type LeadProfilePayload,
 } from "@/lib/closeboss/leadProfile";
 import { SendMarketReportButton } from "@/components/marketReport/SendMarketReportButton";
+import { AutoPilotToggle } from "@/components/crm/AutoPilotToggle";
 
 /**
  * Full-page person profile. Layout answers, in order: who is this
@@ -83,9 +84,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
                 {p.rating}{typeof p.engagement_score === "number" ? ` · ${p.engagement_score}` : ""}
               </span>
             )}
-            {p.auto_pilot && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">{t("pages.leadProfile.assistantHandling")}</span>
-            )}
+            {p.phone && <AutoPilotToggle contactId={p.id} initial={Boolean(p.auto_pilot)} size="sm" />}
           </div>
         </div>
         {(p.intent || story) && <p className="mt-3 text-base text-slate-800 dark:text-slate-200">{p.intent ?? story}</p>}
@@ -96,7 +95,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
             </a>
           )}
           {p.phone && (
-            <a href={`sms:${p.phone}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadProfile.text")}</a>
+            <Link href={`/dashboard/inbox?lead=${encodeURIComponent(p.id)}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadProfile.text")}</Link>
           )}
           {p.email && (
             <a href={`mailto:${p.email}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadProfile.email")}</a>

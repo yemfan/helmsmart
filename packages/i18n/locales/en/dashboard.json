@@ -1602,6 +1602,9 @@
     "metaDescription": "Configure your CloseBoss AI team — pause assistants and choose their skills."
   },
   "inbox": {
+    "autoPilot": "Auto Pilot",
+    "autoPilotHint": "Replies to this contact's texts automatically, as your AI Sales Assistant.",
+    "autoPilotFailed": "Could not change Auto Pilot. Try again.",
     "draftWithMax": "Draft with Max",
     "drafting": "Drafting…",
     "draftFailed": "Max couldn't draft that. Try again.",
@@ -3377,34 +3380,6 @@
       "cloneAfter": "columns on your agent row. Not available yet — preset voices only.",
       "englishLabel": "English:",
       "futureVoiceId": "Future OpenAI Realtime voice id:"
-    },
-    "aiChatPanel": {
-      "open": "Open CloseBoss",
-      "close": "Close CloseBoss",
-      "subtitle": "Guide + per-contact SMS drafting",
-      "guideTab": "AI Guide",
-      "newContactTab": "New contact tab",
-      "tabNotFound": "Tab not found.",
-      "dragWidth": "Drag to resize width",
-      "resizeWidth": "Resize width",
-      "dragHeight": "Drag to resize height",
-      "resizeHeight": "Resize height",
-      "dragPanel": "Drag to resize",
-      "resizePanel": "Resize panel",
-      "closeTab": "Close tab",
-      "tryAsking": "Try asking:",
-      "askPlaceholder": "Ask CloseBoss…",
-      "pickDifferent": "Pick a different contact",
-      "noMatches": "No contacts match.",
-      "autoPilot": "Auto Pilot",
-      "send": "Send",
-      "whatToSay": "What do you want to say?",
-      "draftEditable": "Draft (editable)",
-      "noMessages": "No messages yet.",
-      "pickContact": "Pick a contact above to start drafting an SMS.",
-      "autoPilotHint": "Auto Pilot — auto-send drafts and auto-reply to inbound SMS for this contact.",
-      "searchContact": "Search a contact by name, email, phone…",
-      "dragHint": "Drag to reposition · Double-click to reset position + size"
     },
     "comparisonReportView": {
       "yourAgent": "Your agent",
@@ -9338,11 +9313,6 @@
     },
     "addSignalButton": {
       "addSignal": "Add signal"
-    },
-    "aiChat": {
-      "generateDraft": "Generate draft",
-      "autoPilotSending": "Auto Pilot sending…",
-      "autoPilotWillSend": "Auto Pilot will send this draft."
     },
     "brandingSettings": {
       "loadingPreview": "Loading preview…"

@@ -8,7 +8,6 @@ import { AgentWorkspaceProviders } from "@/components/entitlements/AgentWorkspac
 import { ADMIN_SUPPORT_HOME_PATH, isAdminOrSupportRole } from "@/lib/rolePortalPaths";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/useConfirm";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -144,7 +143,6 @@ export default async function DashboardLayout({
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-          <AiChatPanel />
           <CommandPalette />
         </DashboardShell>
        </ConfirmProvider>

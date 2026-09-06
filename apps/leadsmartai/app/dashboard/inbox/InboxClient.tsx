@@ -6,6 +6,7 @@ import { ArrowLeft, Mail, MessageSquare, Phone, Sparkles } from "lucide-react";
 
 import { canEmailThread } from "@/lib/inbox/replyTarget";
 import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
+import { AutoPilotToggle } from "@/components/crm/AutoPilotToggle";
 import { intlLocale } from "@/lib/i18n/locale";
 
 type Thread = {
@@ -38,6 +39,8 @@ type LeadInfo = {
   phone: string | null;
   rating: string | null;
   property_address: string | null;
+  /** Per-contact Auto Pilot — the AI answers this contact's texts on its own. */
+  auto_pilot?: boolean;
 };
 
 /** Channel glyph — the same icon family as the rest of the app, not emoji. */
@@ -127,6 +130,16 @@ export default function InboxClient() {
   }, []);
 
   useEffect(() => { loadThreads(); const i = setInterval(loadThreads, 15000); return () => clearInterval(i); }, [loadThreads]);
+
+  // Deep link: /dashboard/inbox?lead=<contactId> opens that contact's thread
+  // (the lead drawer and profile link here instead of a native sms: URL).
+  // Read once from the URL rather than useSearchParams, which would need a
+  // Suspense boundary for a value that only matters on first paint.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("lead")?.trim();
+    if (id) void loadThread(id, "sms");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function loadThread(leadId: string, channel: string) {
     setThreadLoading(true);
@@ -399,6 +412,11 @@ export default function InboxClient() {
                   )}
                 </p>
               </div>
+              {lead?.phone && (
+                <div className="shrink-0">
+                  <AutoPilotToggle contactId={lead.id} initial={Boolean(lead.auto_pilot)} size="sm" />
+                </div>
+              )}
             </div>
 
             {/* Messages */}
