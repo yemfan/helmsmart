@@ -19,7 +19,7 @@
     "perMonth": "/mo",
     "creditsPerMo": "credits / month",
     "usage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
-    "cta": "Get started",
+    "cta": "Upgrade",
     "blurb": {
       "free": "Every feature, one seat. Enough to try the AI receptionist.",
       "solo": "Every feature, one seat. For steady solo marketing.",
@@ -28,7 +28,7 @@
       "signature": "Everything in Premium, plus a specialist who sets it all up with you."
     },
     "freeName": "Free",
-    "freeCta": "Start free",
+    "freeCta": "Start free trial",
     "freePrice": "$0",
     "welcomeGrant": "Plus {{credits}} bonus credits when you sign up.",
     "setupFee": "One-time ${{amount}} setup with a specialist."
