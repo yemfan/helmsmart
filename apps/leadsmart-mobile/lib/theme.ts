@@ -15,6 +15,11 @@
  * not into a screen-level StyleSheet.
  */
 
+import { brand as brandLight, brandDark, neutral as neutralRamp } from "@leadsmart/tokens";
+
+/* The ramps come from @leadsmart/tokens — the same values the web theme is
+   tested against (apps/leadsmartai/lib/__tests__/tokensDrift.test.ts). Change
+   a colour there, never here. */
 type Ramp11 = {
   50: string;
   100: string;
@@ -154,65 +159,6 @@ type Tokens = {
   /* Skeleton loader shimmer */
   skeletonBase: string;
   skeletonHighlight: string;
-};
-
-/**
- * Brand 11-step ramp (hex, perceptually-uniform).
- * brand[500] = #0072ce (legacy accent), brand[600] = #005ca8 (legacy
- * accentDark). Computed from the OKLCH ramp in `apps/leadsmartai/app/
- * globals.css` so web and mobile pick the same shade for the same step.
- */
-const brandLight: Ramp11 = {
-  50: "#ebf5fc",
-  100: "#d6ebf9",
-  200: "#a8d4f1",
-  300: "#6fb6e6",
-  400: "#3093d9",
-  500: "#0072ce",
-  600: "#005ca8",
-  700: "#00477f",
-  800: "#003560",
-  900: "#002543",
-  950: "#00172d",
-};
-
-/**
- * Dark-mode brand ramp — same hue family, lifted toward the lighter
- * end so foreground accents read against the deep-slate background.
- * brand[400] is the new "accent" in dark mode (≈ #4da3e8 from the
- * existing palette).
- */
-const brandDark: Ramp11 = {
-  50: "#00172d",
-  100: "#002543",
-  200: "#003560",
-  300: "#00477f",
-  400: "#005ca8",
-  500: "#0072ce",
-  600: "#3093d9",
-  700: "#6fb6e6",
-  800: "#a8d4f1",
-  900: "#d6ebf9",
-  950: "#ebf5fc",
-};
-
-/**
- * Neutral ramp — aligned with the existing slate-* references already
- * sprinkled through the mobile screens, so swapping in `neutral[N]`
- * doesn't shift any existing visual.
- */
-const neutralRamp: Ramp11 = {
-  50: "#f8fafc",
-  100: "#f1f5f9",
-  200: "#e2e8f0",
-  300: "#cbd5e1",
-  400: "#94a3b8",
-  500: "#64748b",
-  600: "#475569",
-  700: "#334155",
-  800: "#1e293b",
-  900: "#0f172a",
-  950: "#020617",
 };
 
 /**

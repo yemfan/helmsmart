@@ -9,7 +9,8 @@
       "@leadsmart/shared": ["../../packages/shared/src/index.ts"],
       "@leadsmart/shared/*": ["../../packages/shared/src/*"],
       "@leadsmart/api-client": ["../../packages/api-client/src/index.ts"],
-      "@leadsmart/api-client/*": ["../../packages/api-client/src/*"]
+      "@leadsmart/api-client/*": ["../../packages/api-client/src/*"],
+      "@leadsmart/tokens": ["../../packages/tokens/src/index.ts"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "app.config.ts"]
