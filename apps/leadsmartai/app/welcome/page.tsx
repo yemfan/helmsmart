@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Clock, Send } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
+import { ServiceAreasPicker } from "@/components/onboarding/ServiceAreasPicker";
+import { serviceAreasToLegacyStrings, type AgentServiceArea } from "@/lib/geo/serviceArea";
 
 /**
  * First-run welcome — hosted by Max, the captain of the AI real estate team.
@@ -18,6 +20,11 @@ import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
  *
  * Voice: calm, confident captain — never a chatbot. Shown once
  * (agents.onboarding_completed / localStorage); login + OAuth route here.
+ *
+ * This is THE first-run flow. The Setup Wizard modal that used to fire on
+ * the dashboard afterwards asked the same questions again (market, brand,
+ * AI style, notifications); the market picker now lives here and the rest
+ * is reachable from Settings, so the wizard is gone (2026-09 UX audit).
  */
 
 const WELCOME_SEEN_KEY = "rb_welcome_seen_v1";
@@ -28,7 +35,8 @@ type Known = { name: string; brokerage: string; market: string; focus: string; g
 type Question = {
   field: keyof Known;
   text: string | ((a: Answers) => string);
-  input: "text" | "choice";
+  /** `areas` renders the structured state/county/city picker. */
+  input: "text" | "choice" | "areas";
   choices?: string[];
   placeholder?: string;
 };
@@ -38,7 +46,7 @@ const GOAL = ["🎯 More leads", "⚡ Faster follow-up", "🧾 Less admin", "�
 
 const QUESTIONS: Question[] = [
   { field: "name", input: "text", placeholder: "Your name", text: "Quick one — what should I call you?" },
-  { field: "market", input: "text", placeholder: "City or area", text: (a) => `Where do you do most of your business${a.name ? `, ${a.name}` : ""}? 📍` },
+  { field: "market", input: "areas", text: (a) => `Where do you do most of your business${a.name ? `, ${a.name}` : ""}? 📍 Pick the areas you serve — I use them to match you with local leads.` },
   { field: "focus", input: "choice", choices: FOCUS, text: "Who do you work with most?" },
   { field: "goal", input: "choice", choices: GOAL, text: "If I could hand you one win this month, what would it be?" },
   { field: "brokerage", input: "text", placeholder: "Your brokerage", text: "And which brokerage are you with? 🏢" },
@@ -48,7 +56,8 @@ type PlanItem = { key: string; icon: string; label: string; href?: string; activ
 
 const PLAN: PlanItem[] = [
   { key: "profile", icon: "🧭", label: "Tell Max about you", interview: true },
-  { key: "email", icon: "📧", label: "Connect your email", href: "/dashboard/settings" },
+  { key: "brand", icon: "🎨", label: "Set your brand name and AI style", href: "/dashboard/settings?tab=voice" },
+  { key: "email", icon: "📧", label: "Connect your email", href: "/dashboard/settings?tab=channels" },
   { key: "contacts", icon: "👥", label: "Import your contacts", href: "/dashboard/leads/import", activationKey: "import_contacts" },
   { key: "social", icon: "📣", label: "Connect Facebook & Instagram", href: "/dashboard/leads/generate/connect" },
   { key: "receptionist", icon: "📞", label: "Set up your AI Receptionist", href: "/dashboard/settings", activationKey: "ai_receptionist" },
@@ -70,6 +79,10 @@ export default function WelcomePage() {
   const [showPlan, setShowPlan] = useState(false);
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({});
   const [profileDone, setProfileDone] = useState(false);
+  // Service areas for the "areas" question — pre-filled from the agent's saved
+  // market or the IP-detected suggestion, so they confirm instead of typing.
+  const [areas, setAreas] = useState<AgentServiceArea[]>([]);
+  const [areasSaving, setAreasSaving] = useState(false);
 
   const answersRef = useRef<Answers>({});
   const userIdRef = useRef("");
@@ -223,10 +236,28 @@ export default function WelcomePage() {
       } catch {
         /* best-effort */
       }
+      // Market comes from the structured service areas, not the free-text
+      // answer: a saved area means the question is already answered; an
+      // IP-detected suggestion pre-fills the picker.
+      let savedMarket = "";
+      try {
+        const res = await fetch("/api/dashboard/onboarding", { credentials: "include" });
+        const data = await res.json().catch(() => ({}));
+        const saved: AgentServiceArea[] = Array.isArray(data?.serviceAreasV2) ? data.serviceAreasV2 : [];
+        const suggested: AgentServiceArea[] = Array.isArray(data?.suggestedServiceAreas) ? data.suggestedServiceAreas : [];
+        if (saved.length > 0) {
+          savedMarket = serviceAreasToLegacyStrings(saved).join(", ");
+          setAreas(saved);
+        } else if (suggested.length > 0) {
+          setAreas(suggested);
+        }
+      } catch {
+        /* best-effort — the picker still works from scratch */
+      }
       return {
         name: accountName || ob.name || "",
         brokerage: brokerage || ob.brokerage || "",
-        market: ob.market ?? "",
+        market: savedMarket || ob.market || "",
         focus: ob.focus ?? "",
         goal: ob.goal ?? "",
       };
@@ -270,14 +301,17 @@ export default function WelcomePage() {
     } catch {
       /* ignore */
     }
-    const uid = userIdRef.current;
-    if (uid) {
-      try {
-        void supabaseBrowser().from("agents").update({ onboarding_completed: true }).eq("auth_user_id", uid);
-      } catch {
-        /* best-effort */
-      }
-    }
+    // Through the API rather than a direct column write: completing onboarding
+    // also assigns a default market when none was picked and sends the
+    // welcome email, and both live behind the route.
+    void fetch("/api/dashboard/onboarding", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ onboarding_completed: true }),
+    }).catch(() => {
+      /* best-effort */
+    });
   }, []);
 
   const isDone = (it: PlanItem) => (it.interview ? profileDone : it.activationKey ? Boolean(doneMap[it.activationKey]) : false);
@@ -288,6 +322,29 @@ export default function WelcomePage() {
     pushMsg({ role: "user", text: v });
     setDraft("");
     answerResolver.current?.({ value: v });
+    answerResolver.current = null;
+  }
+  async function submitAreas() {
+    if (!currentAsk || areas.length === 0 || areasSaving) return;
+    setAreasSaving(true);
+    try {
+      await fetch("/api/dashboard/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          service_areas_v2: areas,
+          service_areas: serviceAreasToLegacyStrings(areas),
+        }),
+      });
+    } catch {
+      /* best-effort — the answer still goes on the profile */
+    } finally {
+      setAreasSaving(false);
+    }
+    const label = serviceAreasToLegacyStrings(areas).join(", ");
+    pushMsg({ role: "user", text: label });
+    answerResolver.current?.({ value: label });
     answerResolver.current = null;
   }
   function submitChoice(v: string) {
@@ -412,7 +469,25 @@ export default function WelcomePage() {
 
       {/* Input dock — question inputs during the interview, CTA once the plan shows */}
       <div className="sticky bottom-0 bg-slate-50/95 py-3 backdrop-blur">
-        {currentAsk && currentAsk.input === "choice" ? (
+        {currentAsk && currentAsk.input === "areas" ? (
+          <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <ServiceAreasPicker value={areas} onChange={setAreas} disabled={areasSaving} />
+            <div className="flex items-center justify-end gap-2">
+              <button type="button" onClick={skip} className="px-2 py-2 text-xs font-semibold text-slate-400 hover:text-slate-600">
+                Skip
+              </button>
+              <button
+                type="button"
+                onClick={() => void submitAreas()}
+                disabled={areas.length === 0 || areasSaving}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-40"
+              >
+                {areasSaving ? "Saving…" : "That's my market"}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+          </div>
+        ) : currentAsk && currentAsk.input === "choice" ? (
           <div className="flex flex-wrap gap-2">
             {currentAsk.choices?.map((c) => (
               <button
