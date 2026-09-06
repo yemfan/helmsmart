@@ -76,14 +76,14 @@ export default function TabsLayout() {
           tabBarLabelStyle: type.tabLabel,
         }}
       >
-        {/* v2 AI-team tab bar — mirrors the web app's AI-team layout:
-         * Boss (home) · Team · Inbox · Leads · More. Boss is now the
-         * home screen (today's agenda + priority alerts fold into it),
-         * and each AI assistant gets its own hub reached from the Team
-         * roster. The legacy supercategory screens (home / work /
-         * engage / analyze / manage) are kept as routes (so any deep
-         * link still resolves) but hidden from the tab bar via
-         * href: null. */}
+        {/* Daily tab bar — Boss (home) · Inbox · Leads · Calendar · More.
+         * Ordered by how often an agent opens each one in a day. The Team
+         * roster moved off the bar (it is a static list of five rows):
+         * Boss already shows the team live, and it is one tap away under
+         * More. Calendar took the slot because it is daily work. The legacy
+         * supercategory screens (home / work / engage / analyze / manage)
+         * are gone — cold start used to land on the hidden `home`, which
+         * highlighted no tab at all. */}
         <Tabs.Screen
           name="boss"
           options={{
@@ -91,16 +91,6 @@ export default function TabsLayout() {
             tabBarLabel: t("tabs.boss"),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="sparkles-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="team"
-          options={{
-            title: t("tabs.team"),
-            tabBarLabel: t("tabs.team"),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people-circle-outline" size={size} color={color} />
             ),
           }}
         />
@@ -125,6 +115,16 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="calendar"
+          options={{
+            title: t("tabs.calendar"),
+            tabBarLabel: t("tabs.calendar"),
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="calendar-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="more"
           options={{
             title: t("tabs.more"),
@@ -138,28 +138,8 @@ export default function TabsLayout() {
         {/* Hidden-from-tab-bar routes — still navigable via router.push
          * (deep links from push notifications + tiles still resolve). */}
         <Tabs.Screen
-          name="home"
-          options={{ title: t("tabs.home"), href: null }}
-        />
-        <Tabs.Screen
-          name="work"
-          options={{ title: t("tabs.work"), href: null }}
-        />
-        <Tabs.Screen
-          name="engage"
-          options={{ title: t("tabs.engage"), href: null }}
-        />
-        <Tabs.Screen
-          name="analyze"
-          options={{ title: t("tabs.analyze"), href: null }}
-        />
-        <Tabs.Screen
-          name="manage"
-          options={{ title: t("tabs.manage"), href: null }}
-        />
-        <Tabs.Screen
-          name="calendar"
-          options={{ title: t("tabs.calendar"), href: null }}
+          name="team"
+          options={{ title: t("tabs.team"), href: null }}
         />
         <Tabs.Screen
           name="settings"

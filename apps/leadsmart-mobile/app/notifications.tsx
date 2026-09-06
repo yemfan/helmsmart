@@ -3,6 +3,7 @@ import type {
   MobileNotificationDeepScreen,
 } from "@leadsmart/shared";
 import { Ionicons } from "@expo/vector-icons";
+import { HOME_ROUTE } from "../lib/homeRoute";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -141,7 +142,7 @@ function navigateForDeepLink(
     return;
   }
   if (kind === "briefing" || screen === "home") {
-    router.push("/(tabs)/home" as never);
+    router.push(HOME_ROUTE);
     return;
   }
   if (contactId) {
