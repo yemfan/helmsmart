@@ -9,7 +9,7 @@
   },
   "team": {
     "receptionist": {
-      "name": "AI Receptionist",
+      "name": "AI 前台接待",
       "role": "全天候接听每一通来电",
       "body": "实时接听来电，筛选来电者，预约看房和会面，无法接听时立即回短信。您的电话再也不会无人应答。"
     },
@@ -19,22 +19,22 @@
       "body": "您是老板——只需说出您想完成的事。Boss Assistant 会判断该由谁处理，分派给合适的助理，再向您汇报。一句指令下达，整个团队开始工作。"
     },
     "sales": {
-      "name": "Sales Assistant",
+      "name": "AI 销售助理",
       "role": "开发、跟进并转化客户",
       "body": "对新客户进行电话开发和筛选（预算、时间、动机——买家或卖家），用真实语音通话跟进——不只是发短信——同时结合短信和邮件，制作 CMA 和房源展示，绝不放过任何一次人脉触达。"
     },
     "marketing": {
-      "name": "Marketing Assistant",
+      "name": "AI 营销助理",
       "role": "为您注满客户漏斗",
       "body": "生成客户、维护人脉、保持曝光——用活动、内容和外联带来新业务，让您在服务现有客户的同时不断开拓。"
     },
     "transaction": {
-      "name": "Transaction Assistant",
+      "name": "AI 交易协调员",
       "role": "协调交易直至成交",
       "body": "推动每笔交易从接受报价到交钥匙——协调看板、报价管理，以及针对定价、风险和谈判的逐单教练。"
     },
     "accountant": {
-      "name": "Accountant",
+      "name": "AI 会计",
       "role": "为您记账",
       "body": "发票、支出和佣金追踪——让您随时清楚赚了多少、欠了多少、成交了多少。"
     }
@@ -141,9 +141,9 @@
     "h2": "赢得房源、引导买家的专业报告",
     "items": {
       "cma": "AI CMA",
-      "seller_presentation": "Seller Presentation",
-      "deep_report": "Property Deep Report",
-      "house_search": "AI House Search"
+      "seller_presentation": "卖方提案",
+      "deep_report": "房源深度报告",
+      "house_search": "AI 房源搜索"
     },
     "extra": "+ 对比报告与卖方净收益表"
   },

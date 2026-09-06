@@ -19,22 +19,22 @@
       "body": "You're the boss — just say what you want done. Your Boss Assistant figures out who should handle it, delegates to the right teammate, and reports back. One command in; the whole team to work."
     },
     "sales": {
-      "name": "Sales Assistant",
+      "name": "AI Sales Assistant",
       "role": "Prospects, follows up & converts",
       "body": "Cold-calls and qualifies new leads (budget, timeline, motivation — buyer or seller), follows up with a real voice call — not just an SMS — plus text and email, runs CMAs and listing presentations, and never lets a sphere touch slip."
     },
     "marketing": {
-      "name": "Marketing Assistant",
+      "name": "AI Marketing Assistant",
       "role": "Fills your pipeline",
       "body": "Generates leads, nurtures your sphere, and keeps you visible — campaigns, content, and outreach that bring new business while you work the ones you have."
     },
     "transaction": {
-      "name": "Transaction Assistant",
+      "name": "AI Transaction Coordinator",
       "role": "Coordinates to close",
       "body": "Drives every deal from accepted offer to keys — coordinator board, offers, and a per-deal coach for pricing, risk, and negotiation."
     },
     "accountant": {
-      "name": "Accountant",
+      "name": "AI Accountant",
       "role": "Keeps the books",
       "body": "Invoices, expenses, and commission tracking — so you always know what's earned, what's owed, and what closed."
     }
