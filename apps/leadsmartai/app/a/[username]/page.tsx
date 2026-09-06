@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { displayUsername } from "@/lib/identity/username";
@@ -43,10 +43,13 @@ export const runtime = "nodejs";
  * pretty URL here; the App Router reserves a leading "@" for parallel-route
  * slots, so this cannot live at app/@[username]).
  *
- * It is a conversion page, not a brochure: who this is, how they can help,
- * the AI assistant that answers now, the tools that capture a lead, and the
- * ways to reach a human. Each section reads the agent's configuration and
- * renders nothing when it has nothing real to say.
+ * Two layouts, chosen by the agent:
+ *
+ *   pages   a real site. This is the HOME page: hero, the assistant, the
+ *           home-value band, and a teaser of services, tools and areas that
+ *           each lead to their own page (/about, /services, /tools, /areas,
+ *           /posts, /contact).
+ *   single  everything on one long page with anchor links — the original.
  *
  * Three states:
  *   ready        published, renders in full
@@ -183,6 +186,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
     campaign: typeof query.utm_campaign === "string" ? query.utm_campaign : null,
   };
   const cfg = hub.config;
+  const pagesLayout = cfg.appearance.layout === "pages";
   const phone = cfg.profile.showPhone ? hub.agent?.phone ?? null : null;
   const email = cfg.profile.showEmail ? hub.agent?.email ?? null : null;
   const bookingHref =
@@ -219,7 +223,37 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
     languages: cfg.profile.languages,
   });
 
-  const props = { hub, L, theme };
+  const props = { hub, L, theme, fromHome: true };
+
+  const assistant = hub.assistantAvailable ? (
+    <Section id="assistant" kicker={L.assistant.kicker} title={L.assistant.title} blurb={L.assistant.blurb} theme={theme} tone="tint">
+      <div className="mx-auto max-w-3xl">
+        <HubChat
+          username={hub.username}
+          prompts={prompts}
+          theme={theme}
+          locale={locale}
+          utmSource={utm.source}
+          utmCampaign={utm.campaign}
+          labels={{
+            greeting: cfg.assistant.greeting?.trim() || L.assistant.greeting(name),
+            placeholder: L.assistant.placeholder,
+            send: L.assistant.send,
+            thinking: L.assistant.thinking,
+            disclaimer: L.assistant.disclaimer(name),
+            error: L.assistant.error,
+            retry: L.assistant.retry,
+            limit: L.assistant.limit,
+            leadCaptured: L.assistant.leadCaptured,
+            suggested: L.assistant.suggested,
+            newChat: L.assistant.newChat,
+            you: L.assistant.you,
+            assistantName: L.assistant.assistantName(name),
+          }}
+        />
+      </div>
+    </Section>
+  ) : null;
 
   return (
     <>
@@ -240,73 +274,54 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         </div>
       ) : null}
 
-      <HubHeader {...props} />
+      <HubHeader {...props} current="home" />
 
       <main id="main-content">
-        <Hero {...props} />
-
-        {hub.assistantAvailable ? (
-          <Section id="assistant" kicker={L.assistant.kicker} title={L.assistant.title} blurb={L.assistant.blurb} theme={theme} tone="tint">
-            <div className="mx-auto max-w-3xl">
-              <HubChat
-                username={hub.username}
-                prompts={prompts}
-                theme={theme}
-                locale={locale}
-                utmSource={utm.source}
-                utmCampaign={utm.campaign}
-                labels={{
-                  greeting: cfg.assistant.greeting?.trim() || L.assistant.greeting(name),
-                  placeholder: L.assistant.placeholder,
-                  send: L.assistant.send,
-                  thinking: L.assistant.thinking,
-                  disclaimer: L.assistant.disclaimer(name),
-                  error: L.assistant.error,
-                  retry: L.assistant.retry,
-                  limit: L.assistant.limit,
-                  leadCaptured: L.assistant.leadCaptured,
-                  suggested: L.assistant.suggested,
-                  newChat: L.assistant.newChat,
-                  you: L.assistant.you,
-                  assistantName: L.assistant.assistantName(name),
-                }}
-              />
-            </div>
-          </Section>
-        ) : null}
-
-        <Workforce {...props} />
-        <Services {...props} />
-        <Tools {...props} />
-        <HomeValueBand {...props} />
-        <Areas {...props} />
-        <Featured {...props} />
-
-        {cfg.content.showFeed && hub.feed.length ? (
-          <Section id="posts" title={L.feed.title} theme={theme}>
-            <HubFeed items={hub.feed} username={hub.username} labels={L.feed} />
-          </Section>
-        ) : null}
-
-        <Trust {...props} />
-
-        {cfg.leadCapture.showForm ? (
-          <Section id="contact" kicker={L.nav.contact} title={L.contact.title} blurb={L.contact.blurb} theme={theme} tone="tint">
-            <HubLeadForm
-              username={hub.username}
-              utmSource={utm.source}
-              utmCampaign={utm.campaign}
-              theme={theme}
-              phone={phone}
-              email={email}
-              bookingHref={bookingHref}
-              locale={locale}
-              labels={L.contact}
-            />
-          </Section>
-        ) : null}
-
-        <FinalCta {...props} />
+        {pagesLayout ? (
+          <>
+            <Hero {...props} bio="excerpt" />
+            {assistant}
+            <HomeValueBand {...props} />
+            <Services {...props} limit={3} />
+            <Tools {...props} limit={3} />
+            <Featured {...props} />
+            <Areas {...props} limit={4} />
+            <FinalCta {...props} />
+          </>
+        ) : (
+          <>
+            <Hero {...props} />
+            {assistant}
+            <Workforce {...props} />
+            <Services {...props} />
+            <Tools {...props} />
+            <HomeValueBand {...props} />
+            <Areas {...props} />
+            <Featured {...props} />
+            {cfg.content.showFeed && hub.feed.length ? (
+              <Section id="posts" title={L.feed.title} theme={theme}>
+                <HubFeed items={hub.feed} username={hub.username} labels={L.feed} />
+              </Section>
+            ) : null}
+            <Trust {...props} />
+            {cfg.leadCapture.showForm ? (
+              <Section id="contact" kicker={L.nav.contact} title={L.contact.title} blurb={L.contact.blurb} theme={theme} tone="tint">
+                <HubLeadForm
+                  username={hub.username}
+                  utmSource={utm.source}
+                  utmCampaign={utm.campaign}
+                  theme={theme}
+                  phone={phone}
+                  email={email}
+                  bookingHref={bookingHref}
+                  locale={locale}
+                  labels={L.contact}
+                />
+              </Section>
+            ) : null}
+            <FinalCta {...props} />
+          </>
+        )}
       </main>
 
       <HubFooter {...props} />

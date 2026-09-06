@@ -21,6 +21,7 @@ export function hubLabels(t: T) {
 
   return {
     nav: {
+      home: h("nav.home"),
       about: h("nav.about"),
       assistant: h("nav.assistant"),
       services: h("nav.services"),
@@ -29,6 +30,22 @@ export function hubLabels(t: T) {
       posts: h("nav.posts"),
       contact: h("nav.contact"),
       menu: h("nav.menu"),
+      close: h("nav.close"),
+    },
+    pages: {
+      about: { title: h("pages.about.title"), blurb: (name: string) => h("pages.about.blurb", { name }) },
+      services: { title: h("pages.services.title"), blurb: (name: string) => h("pages.services.blurb", { name }) },
+      tools: { title: h("pages.tools.title"), blurb: (name: string) => h("pages.tools.blurb", { name }) },
+      areas: { title: h("pages.areas.title"), blurb: (name: string) => h("pages.areas.blurb", { name }) },
+      posts: { title: h("pages.posts.title"), blurb: (name: string) => h("pages.posts.blurb", { name }) },
+      contact: { title: h("pages.contact.title"), blurb: (name: string) => h("pages.contact.blurb", { name }) },
+    },
+    seeAll: {
+      services: h("seeAll.services"),
+      tools: h("seeAll.tools"),
+      areas: h("seeAll.areas"),
+      posts: h("seeAll.posts"),
+      about: h("seeAll.about"),
     },
     cta: {
       home_value: h("cta.home_value"),

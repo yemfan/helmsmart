@@ -7,6 +7,7 @@ import { Check, Copy, ExternalLink, X } from "lucide-react";
 import { intlLocale } from "@/lib/i18n/locale";
 import type { HubMetrics } from "@/lib/marketing-hub/events";
 import type { SectionProps } from "../HubEditorClient";
+import MarketingPerformance from "./MarketingPerformance";
 import type { MetricsData, SectionKey } from "./types";
 import { Card, Empty } from "./ui";
 
@@ -264,6 +265,7 @@ export function AnalyticsSection({ data }: SectionProps) {
           </ul>
         )}
       </Card>
+      <MarketingPerformance days={days} />
       {data.identity.published ? null : <p className="text-xs text-slate-500">{t("pages.hubEditor.settings.publishHintOff")}</p>}
     </>
   );

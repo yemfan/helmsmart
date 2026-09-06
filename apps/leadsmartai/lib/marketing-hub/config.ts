@@ -145,6 +145,9 @@ export type BookingMode = (typeof BOOKING_MODES)[number];
 export const HUB_ACCENTS = ["navy", "blue", "emerald", "gold", "slate"] as const;
 export type HubAccent = (typeof HUB_ACCENTS)[number];
 
+export const HUB_LAYOUTS = ["pages", "single"] as const;
+export type HubLayout = (typeof HUB_LAYOUTS)[number];
+
 const MarketAreaSchema = z.object({
   name: z.string().trim().min(1).max(80),
   /** Optional blurb — "Where I grew up", "Best value in the valley". */
@@ -300,6 +303,13 @@ export const HubConfigSchema = z.object({
   appearance: z
     .object({
       accent: z.enum(HUB_ACCENTS).default("navy"),
+      /**
+       * `pages`: a real multi-page site — home, about, services, tools,
+       * areas, posts, contact — with a menu. `single`: everything on one
+       * long page with anchor links. Pages is the default; it is what a
+       * professional real estate site looks like.
+       */
+      layout: z.enum(HUB_LAYOUTS).default("pages"),
     })
     .default({}),
 

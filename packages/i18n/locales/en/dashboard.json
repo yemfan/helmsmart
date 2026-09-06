@@ -10338,7 +10338,13 @@
           "slate": "Slate"
         },
         "disclosure": "Footer disclosure",
-        "disclosureHint": "Any disclosure your brokerage or state requires, shown in the footer."
+        "disclosureHint": "Any disclosure your brokerage or state requires, shown in the footer.",
+        "layout": "Site layout",
+        "layouts": {
+          "pages": "Separate pages (Home, About, Services, Tools, Areas, Posts, Contact)",
+          "single": "One long page with a menu of anchors"
+        },
+        "layoutHint": "Separate pages read like a professional website and give each topic its own address for search engines."
       },
       "settings": {
         "title": "Publish",
@@ -10362,6 +10368,49 @@
         "dangerTitle": "Account",
         "dangerDesc": "Name, photo, brokerage and license are managed in account settings.",
         "accountSettings": "Open account settings"
+      },
+      "marketing": {
+        "title": "Marketing performance",
+        "desc": "What your posts, ads and channels produced. Numbers come from each platform's own reporting; a dash means the platform does not report that figure or nothing has been measured yet.",
+        "social": "Social posts",
+        "ads": "Facebook & Instagram ads",
+        "sources": "Where hub visitors came from",
+        "google": "Google",
+        "platform": "Platform",
+        "posts": "Posts",
+        "impressions": "Impressions",
+        "reach": "Reach",
+        "clicks": "Clicks",
+        "engagement": "Engagement",
+        "likes": "Likes",
+        "comments": "Comments",
+        "shares": "Shares",
+        "saves": "Saves",
+        "measured": "{{measured}} of {{posts}} measured",
+        "unsupported": "This platform does not share post metrics with apps.",
+        "noData": "No metrics returned yet.",
+        "needsReconnect": "Facebook has not granted insight permissions. Reconnect Facebook to see impressions and reach.",
+        "refreshedAt": "Updated {{when}}",
+        "topPosts": "Top posts by engagement",
+        "noPosts": "No posts published in this period.",
+        "campaign": "Campaign",
+        "status": "Status",
+        "spend": "Spend",
+        "leads": "Leads",
+        "cpl": "Cost per lead",
+        "noAds": "No ad campaigns yet.",
+        "adsStale": "{{count}} active campaign(s) have numbers older than a day. They refresh hourly; open the campaign to refresh now.",
+        "openAds": "Open ad campaigns",
+        "openPosts": "Open posts",
+        "source": "Source",
+        "views": "Views",
+        "hubLeads": "Leads",
+        "rate": "Rate",
+        "noSources": "No hub traffic in this period.",
+        "ga4On": "Your Google Analytics tag is on your hub. Traffic reports are in your GA4 property; CloseBoss does not read them.",
+        "ga4Off": "Add your GA4 measurement ID in Settings to see hub traffic in Google Analytics.",
+        "googleAds": "Google Ads and Search Console are not connected to CloseBoss. Their reports live in those accounts.",
+        "openSettings": "Open Settings"
       }
     },
     "hubLeadNotify": {

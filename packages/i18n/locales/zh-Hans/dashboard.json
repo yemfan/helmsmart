@@ -10338,7 +10338,13 @@
           "slate": "石板灰"
         },
         "disclosure": "页脚声明",
-        "disclosureHint": "经纪公司或所在州要求的任何声明，显示在页脚。"
+        "disclosureHint": "经纪公司或所在州要求的任何声明，显示在页脚。",
+        "layout": "网站布局",
+        "layouts": {
+          "pages": "多个独立页面（首页、关于、服务、工具、区域、动态、联系）",
+          "single": "一个长页面，菜单为页内锚点"
+        },
+        "layoutHint": "独立页面更像专业网站，也让每个主题都有自己的搜索引擎地址。"
       },
       "settings": {
         "title": "发布",
@@ -10362,6 +10368,49 @@
         "dangerTitle": "账户",
         "dangerDesc": "姓名、头像、经纪公司和执照在账户设置中管理。",
         "accountSettings": "打开账户设置"
+      },
+      "marketing": {
+        "title": "营销表现",
+        "desc": "你的动态、广告和渠道带来了什么。数据来自各平台自身的报告；短横线表示该平台不提供此数据，或尚未测得。",
+        "social": "社交动态",
+        "ads": "Facebook 与 Instagram 广告",
+        "sources": "主页访客来源",
+        "google": "Google 数据",
+        "platform": "平台",
+        "posts": "动态数",
+        "impressions": "展示次数",
+        "reach": "触达人数",
+        "clicks": "点击",
+        "engagement": "互动",
+        "likes": "点赞",
+        "comments": "评论",
+        "shares": "分享",
+        "saves": "收藏",
+        "measured": "{{posts}} 条中已测得 {{measured}} 条",
+        "unsupported": "该平台不向应用提供动态数据。",
+        "noData": "尚未返回任何数据。",
+        "needsReconnect": "Facebook 尚未授予洞察权限。重新连接 Facebook 以查看展示次数和触达人数。",
+        "refreshedAt": "更新于 {{when}}",
+        "topPosts": "互动最高的动态",
+        "noPosts": "此期间没有发布动态。",
+        "campaign": "广告系列",
+        "status": "状态",
+        "spend": "花费",
+        "leads": "客户",
+        "cpl": "每客户成本",
+        "noAds": "还没有广告系列。",
+        "adsStale": "{{count}} 个进行中的广告系列数据已超过一天。每小时自动刷新；打开广告系列可立即刷新。",
+        "openAds": "打开广告系列",
+        "openPosts": "打开动态",
+        "source": "来源",
+        "views": "浏览",
+        "hubLeads": "客户",
+        "rate": "转化率",
+        "noSources": "此期间没有主页访问。",
+        "ga4On": "你的 Google Analytics 标签已加载在主页上。流量报告在你的 GA4 媒体资源中；CloseBoss 不读取这些数据。",
+        "ga4Off": "在设置中添加 GA4 衡量 ID，即可在 Google Analytics 中查看主页流量。",
+        "googleAds": "Google Ads 和 Search Console 未与 CloseBoss 连接。它们的报告在各自的账户中。",
+        "openSettings": "打开设置"
       }
     },
     "hubLeadNotify": {
