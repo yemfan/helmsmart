@@ -92,10 +92,9 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             processor (Stripe) on each billing period until cancellation.
           </li>
           <li>
-            <strong>Free trials.</strong> Paid plans may include a free trial (currently
-            up to 14 days). Unless you cancel during the trial, the paid subscription
-            begins and billing starts at the end of the trial. Trials are limited to one
-            per customer; we may refuse trials we reasonably believe to be abusive.
+            <strong>Free plan.</strong> We offer a free plan that does not expire and does
+            not require a payment method. Paid plans do not include a trial period:
+            selecting one starts the subscription and billing immediately.
           </li>
           <li>
             <strong>Cancellation.</strong> You can cancel at any time from the billing

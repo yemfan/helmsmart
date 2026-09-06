@@ -60,7 +60,7 @@ export default function CreditsClient({
   );
 
   /*
-   * "Start 14-day trial" in the onboarding funnel links here with
+   * The onboarding funnel's plan CTA links here with
    * `?plan=<tier>&cadence=<c>&start=1`, and this is what makes that a checkout
    * rather than another price list. Signed-out visitors arrive via login,
    * which preserves the query, so the tier they picked survives.

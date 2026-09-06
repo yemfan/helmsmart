@@ -36,13 +36,28 @@ export async function POST(req: Request) {
     }
 
     const isAgentSurface = body.cancel_surface === "agent";
-    const trialDays = isAgentSurface
-      ? Number(process.env.STRIPE_AGENT_TRIAL_DAYS ?? process.env.STRIPE_TRIAL_DAYS ?? 14)
-      : Number(process.env.STRIPE_TRIAL_DAYS ?? 7);
-    /** Agent Growth + Agent Premium: 14-day trial by default (set `STRIPE_AGENT_TRIAL_DAYS=0` to disable). */
-    const withTrial = isAgentSurface
-      ? trialDays > 0
-      : Boolean(body.with_trial) && (body.plan === "pro" || body.plan === "premium");
+
+    /*
+     * NO TRIAL, on either surface.
+     *
+     * This route used to open a 14-day trial for the agent surface and a 7-day
+     * one elsewhere, defaulted in code — `STRIPE_AGENT_TRIAL_DAYS ?? 14`. Two
+     * things were wrong with that. The credit ladder
+     * (`/api/stripe/checkout`) never had a trial, so the same product sold two
+     * different offers depending on which page you came in through. And an
+     * env-var switch means an unset variable silently reinstates a fortnight
+     * of free product — the default was the generous direction, which is the
+     * wrong way for a default to fail.
+     *
+     * The decision is that the FREE PLAN is the trial: it never expires, and
+     * an upgrade is charged straight away. `FREE_TIER` in lib/credits/pricing
+     * has said so for a while ("PERMANENT, not a trial"); this makes the
+     * checkout agree.
+     *
+     * `with_trial` in the request body is now ignored rather than removed —
+     * older clients still post it, and rejecting the field would fail their
+     * checkout instead of just charging them correctly.
+     */
 
     const price = isAgentSurface
       ? getStripePriceIdForAgentPlan(body.plan)
@@ -73,9 +88,7 @@ export async function POST(req: Request) {
     const origin = new URL(req.url).origin;
     const cancelBase =
       body.cancel_surface === "agent" ? `${origin}/agent/pricing` : `${origin}/pricing`;
-    const cancelUrl = withTrial
-      ? `${cancelBase}?trial_checkout=1&canceled=1`
-      : `${cancelBase}?checkout_canceled=1`;
+    const cancelUrl = `${cancelBase}?checkout_canceled=1`;
 
     const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData = {
       metadata: {
@@ -88,10 +101,6 @@ export async function POST(req: Request) {
           : {}),
       },
     };
-    if (withTrial && Number.isFinite(trialDays) && trialDays > 0) {
-      subscriptionData.trial_period_days = trialDays;
-    }
-
     const session = await stripe.checkout.sessions.create({
       ui_mode: "hosted",
       mode: "subscription",
@@ -106,7 +115,6 @@ export async function POST(req: Request) {
       metadata: {
         user_id: user.id,
         plan: body.plan,
-        ...(withTrial ? { trial_checkout: "1" } : {}),
       },
     });
 
