@@ -114,6 +114,7 @@ describe("boss tool registry", () => {
         "create_listing_video_ad",
         "import_contacts_from_file",
         "run_skill",
+        "get_account_settings",
         "start_selling_playbook",
         "start_buying_playbook",
         "setup_open_house",

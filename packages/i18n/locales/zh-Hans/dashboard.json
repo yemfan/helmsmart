@@ -5334,7 +5334,7 @@
     "briefingSchedule": {
       "morning": "早间简报",
       "evening": "晚间总结",
-      "timezoneMoved": "以上时间按账户时区计算，可在“设置 → 通用”中修改。",
+      "timezoneMoved": "以上时间按账户时区计算，可在“设置 → 账户”中修改。",
       "saved": "已保存！",
       "saveSchedule": "保存排期",
       "morningBlurb": "☀️ 一天的计划、热门客源与待跟进事项。",
@@ -10338,6 +10338,7 @@
       "closingTimeline_other": "已为 {{address}} 安排交割时间表 — 至 {{close}} 共排定 {{count}} 个节点。"
     },
     "reads": {
+      "accountSettings": "时区 {{timezone}} —— 当地现在 {{localTime}}；简报 {{morning}} 和 {{evening}}。",
       "pipeline_one": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}。",
       "pipeline_other": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}。",
       "pipelineCooling_one": "客户管道：{{count}} 位联系人 — 热门 {{hot}}、温和 {{warm}}、冷淡 {{cold}}；{{cooling}} 位正在降温（14 天以上无互动）。",

@@ -5334,7 +5334,7 @@
     "briefingSchedule": {
       "morning": "Morning briefing",
       "evening": "Evening summary",
-      "timezoneMoved": "Times are in your account timezone, set in Settings → General.",
+      "timezoneMoved": "Times are in your account timezone, set in Settings → Account.",
       "saved": "Saved!",
       "saveSchedule": "Save schedule",
       "morningBlurb": "☀️ Start-of-day plan, hot leads, follow-ups.",
@@ -10338,6 +10338,7 @@
       "closingTimeline_other": "Closing timeline arranged for {{address}} — {{count}} milestones scheduled to {{close}}."
     },
     "reads": {
+      "accountSettings": "Timezone {{timezone}} — {{localTime}} there now; briefings {{morning}} and {{evening}}.",
       "pipeline_one": "Pipeline: {{count}} contact — {{hot}} hot, {{warm}} warm, {{cold}} cold.",
       "pipeline_other": "Pipeline: {{count}} contacts — {{hot}} hot, {{warm}} warm, {{cold}} cold.",
       "pipelineCooling_one": "Pipeline: {{count}} contact — {{hot}} hot, {{warm}} warm, {{cold}} cold; {{cooling}} cooling off (no activity 14+ days).",
