@@ -52,3 +52,34 @@ export function isValidTimezone(tz: string | null | undefined): boolean {
 export function safeAccountTimezone(tz: string | null | undefined): string {
   return isValidTimezone(tz) ? (tz as string).trim() : DEFAULT_ACCOUNT_TIMEZONE;
 }
+
+/**
+ * The zones offered in the picker, plus the sentinel for "type your own".
+ *
+ * Lives here rather than in a component because two screens now offer it — the
+ * account setting in General settings and, historically, the briefing card —
+ * and a list that exists twice is a list that will disagree with itself. This
+ * module is deliberately pure, so a Client Component can import it.
+ */
+export const COMMON_TIMEZONES: ReadonlyArray<{ value: string; label: string }> = [
+  { value: "America/Los_Angeles", label: "Pacific (Los Angeles)" },
+  { value: "America/Denver", label: "Mountain (Denver)" },
+  { value: "America/Chicago", label: "Central (Chicago)" },
+  { value: "America/New_York", label: "Eastern (New York)" },
+  { value: "America/Phoenix", label: "Arizona (no DST)" },
+  { value: "America/Anchorage", label: "Alaska" },
+  { value: "Pacific/Honolulu", label: "Hawaii" },
+  { value: "America/Toronto", label: "Toronto" },
+  { value: "America/Vancouver", label: "Vancouver" },
+  { value: "America/Mexico_City", label: "Mexico City" },
+  { value: "Europe/London", label: "London" },
+  { value: "Europe/Paris", label: "Paris" },
+  { value: "Asia/Tokyo", label: "Tokyo" },
+  { value: "Asia/Singapore", label: "Singapore" },
+  { value: "Australia/Sydney", label: "Sydney" },
+];
+
+export const COMMON_TIMEZONE_VALUES = new Set(COMMON_TIMEZONES.map((t) => t.value));
+
+/** Sentinel for the "Other…" option, so a real zone can never collide with it. */
+export const OTHER_TIMEZONE = "__other__";

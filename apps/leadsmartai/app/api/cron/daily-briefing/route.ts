@@ -12,7 +12,6 @@ type AgentRow = {
   briefing_morning_time: string | null;
   briefing_evening_time: string | null;
   timezone: string | null;
-  briefing_timezone: string | null;
 };
 
 /**
@@ -43,7 +42,7 @@ export async function GET(req: Request) {
   try {
     const { data: agents, error } = await supabaseServer
       .from("agents")
-      .select("id, briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
+      .select("id, briefing_morning_time, briefing_evening_time, timezone")
       .limit(500);
     if (error) throw error;
 
@@ -59,7 +58,7 @@ export async function GET(req: Request) {
       // One default, one validity rule — see lib/agent/timezone.ts. The old
       // per-caller `|| "America/Los_Angeles"` is how the account ended up with
       // several answers to the same question.
-      const tz = safeAccountTimezone(a.timezone ?? a.briefing_timezone);
+      const tz = safeAccountTimezone(a.timezone);
       const morningTarget = a.briefing_morning_time || "07:00";
       const eveningTarget = a.briefing_evening_time || "18:00";
 

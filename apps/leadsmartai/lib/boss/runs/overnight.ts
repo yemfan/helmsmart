@@ -49,16 +49,16 @@ async function findDueAgents(now: Date): Promise<DueAgent[]> {
 
   const { data: agents } = await supabaseAdmin
     .from("agents")
-    .select("id, timezone, briefing_timezone")
+    .select("id, timezone")
     .in("id", ids);
-  const rows = (agents ?? []) as { id: number | string; timezone: string | null; briefing_timezone: string | null }[];
+  const rows = (agents ?? []) as { id: number | string; timezone: string | null }[];
 
   const due: DueAgent[] = [];
   for (const a of rows) {
     // safeAccountTimezone, not `|| "America/Los_Angeles"`: the default lives in
     // one place, and a junk value ("EST" resolves to a zone with no DST) has to
     // be rejected rather than passed to Intl.
-    const tz = safeAccountTimezone(a.timezone ?? a.briefing_timezone);
+    const tz = safeAccountTimezone(a.timezone);
     if (!withinFifteen(currentLocalHHMM(now, tz), OVERNIGHT_TARGET)) continue;
     const { data: recent } = await supabaseAdmin
       .from("boss_runs")

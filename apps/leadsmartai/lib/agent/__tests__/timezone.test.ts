@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-const { DEFAULT_ACCOUNT_TIMEZONE, isValidTimezone, safeAccountTimezone } = await import(
-  "../timezone"
-);
+const {
+  COMMON_TIMEZONES,
+  COMMON_TIMEZONE_VALUES,
+  DEFAULT_ACCOUNT_TIMEZONE,
+  OTHER_TIMEZONE,
+  isValidTimezone,
+  safeAccountTimezone,
+} = await import("../timezone");
 
 describe("the account default", () => {
   it("is the one briefings already used, not the receptionist's", () => {
@@ -71,5 +76,39 @@ describe("safeAccountTimezone", () => {
         new Intl.DateTimeFormat("en-US", { timeZone: safeAccountTimezone(v) }),
       ).not.toThrow();
     }
+  });
+});
+
+describe("the picker list", () => {
+  /*
+   * The list and the validator have to agree.
+   *
+   * The panel offers these as one-click choices and the API validates whatever
+   * comes back. If a listed zone failed isValidTimezone, choosing it from the
+   * dropdown would be rejected by the server — an option that cannot be
+   * chosen. Cheap to assert, and it is the same class of disagreement that put
+   * three different timezones in this codebase to begin with.
+   */
+  it("only offers zones the API will accept", () => {
+    for (const tz of COMMON_TIMEZONES) {
+      expect(isValidTimezone(tz.value), tz.value).toBe(true);
+    }
+  });
+
+  it("includes the default, so an untouched account shows a real selection", () => {
+    // Otherwise the select falls back to its first <option> and silently
+    // misreports which zone the account is actually on.
+    expect(COMMON_TIMEZONE_VALUES.has(DEFAULT_ACCOUNT_TIMEZONE)).toBe(true);
+  });
+
+  it("keeps the Other sentinel out of the list and out of the database", () => {
+    expect(COMMON_TIMEZONE_VALUES.has(OTHER_TIMEZONE)).toBe(false);
+    // It is a UI mode, not a zone. Saving it would be a valid-looking write of
+    // a value nothing can format a date in.
+    expect(isValidTimezone(OTHER_TIMEZONE)).toBe(false);
+  });
+
+  it("has no duplicate values", () => {
+    expect(COMMON_TIMEZONE_VALUES.size).toBe(COMMON_TIMEZONES.length);
   });
 });

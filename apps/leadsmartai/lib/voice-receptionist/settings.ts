@@ -15,7 +15,7 @@ const SELECT_COLS =
 
 /**
  * The timezone is NOT read from this row. There is one timezone per account
- * (agents.briefing_timezone) and the caller fills it in - see
+ * (agents.timezone) and the caller fills it in - see
  * lib/agent/accountTimezone.ts for why the second one had to go.
  */
 function mapRow(row: ReceptionistConfigRow): Omit<ReceptionistConfig, "timezone"> {
