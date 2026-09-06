@@ -215,22 +215,29 @@
   },
   "connectPlatforms": {
     "facebookInstagram": "Facebook & Instagram",
-    "connectAFacebookPageIf": "Connect a Facebook Page. If it's linked to an Instagram Business account, that's connected automatically — one grant covers both.",
-    "noPagesConnectedYetTap": "No Pages connected yet. Tap connect to start publishing directly from Quick Post.",
-    "tokensAreStoredEncryptedDisconnect": "Tokens are stored encrypted; disconnect any time. To fully revoke the OAuth grant from Facebook's side too, visit your Facebook account's Apps and Websites and remove LeadSmart AI.",
     "linkedin": "LinkedIn",
-    "postToYourPersonalLinkedin": "Post to your personal LinkedIn feed. Real-estate professionals see strong engagement here — listings, market updates, and client wins all do well.",
-    "notConnectedSignInWith": "Not connected. Sign in with LinkedIn to publish to your personal feed.",
-    "postsGoToYourPersonal": "Posts go to your personal LinkedIn feed. To revoke from LinkedIn's side, visit Settings → Data privacy → Permitted services and remove LeadSmart AI.",
     "tiktok": "TikTok",
-    "publishVideosToYourTiktok": "Publish videos to your TikTok. Great for listing tours, market takes, and behind-the-scenes clips.",
-    "notConnectedSignInWith2": "Not connected. Sign in with TikTok to publish videos.",
-    "videosPostToYourConnected": "Videos post to your connected TikTok account. New TikTok apps publish to a private/self-only audience until TikTok approves the app for public posting.",
     "youtube": "YouTube",
-    "uploadVideosToYourYoutube": "Upload videos to your YouTube channel as Shorts or standard uploads — perfect for reels and walkthroughs.",
-    "notConnectedSignInWith3": "Not connected. Sign in with Google to upload to your channel.",
-    "uploadsGoToYourConnected": "Uploads go to your connected YouTube channel. To revoke from Google's side, visit your Google Account → Security → Third-party access.",
-    "disconnectFailed": "Disconnect failed"
+    "disconnectFailed": "Disconnect failed",
+    "about": "About {{network}}",
+    "notConnected": "Not connected.",
+    "meta": {
+      "subtitle": "One connection covers your Facebook Page and its Instagram account.",
+      "empty": "No Pages connected.",
+      "details": "Access tokens are stored encrypted, and you can disconnect any time. To revoke on Facebook's side as well, remove CloseBoss under your Facebook account's Apps and Websites."
+    },
+    "li": {
+      "subtitle": "Post to your personal LinkedIn feed.",
+      "details": "Posts go to your personal LinkedIn feed. To revoke on LinkedIn's side, go to Settings → Data privacy → Permitted services and remove CloseBoss."
+    },
+    "tt": {
+      "subtitle": "Publish videos to your TikTok.",
+      "details": "Videos post to your connected TikTok account. Until TikTok approves the app for public posting, it can only post to a private account."
+    },
+    "yt": {
+      "subtitle": "Upload Shorts and videos to your YouTube channel.",
+      "details": "Uploads go to your connected YouTube channel. To revoke on Google's side, open your Google Account → Security → Third-party access."
+    }
   },
   "digitalTwin": {
     "recordAShortIntroVideo": "Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into your brand profile, used across your posts and assistants. Your video stays private.",
