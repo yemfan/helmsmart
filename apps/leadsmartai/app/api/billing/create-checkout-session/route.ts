@@ -58,17 +58,13 @@ export async function POST(req: Request) {
     const isConsumerPremium = internalPlan === "consumer_premium";
     const isAgentPaid =
       internalPlan === "agent_starter" || internalPlan === "agent_pro";
-    const isLoanBroker = internalPlan === "loan_broker_pro";
     const productKey = isConsumerPremium
       ? "propertytools_consumer"
       : isAgentPaid
         ? "leadsmart_agent"
-        : isLoanBroker
-          ? "loan_broker"
-          : "stripe_subscription";
+        : "stripe_subscription";
 
-    const checkoutProduct =
-      isConsumerPremium ? "consumer" : isLoanBroker ? "loan_broker" : "agent";
+    const checkoutProduct = isConsumerPremium ? "consumer" : "agent";
     const cancelUrl = isConsumerPremium
       ? `${origin}/pricing`
       : `${origin}/agent/pricing`;

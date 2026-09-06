@@ -91,7 +91,7 @@ export const LOAN_APPLICATIONS_SELECT_WITHOUT_CREATED_AT =
   "id,status,borrower_name,loan_amount,readiness,docs_pending_count,updated_at";
 
 /**
- * Column matched to the resolved broker id (`resolveLoanBrokerIdForUser`).
+ * Column matched to the resolved broker id.
  */
 export const LOAN_APPLICATIONS_BROKER_COLUMN = "assigned_broker_id";
 

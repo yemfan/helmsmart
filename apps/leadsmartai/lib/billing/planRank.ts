@@ -51,7 +51,6 @@ const ALIASES: Record<string, PlanTier> = {
   // Getting this wrong under-grants a legacy subscriber by a full tier.
   agent_starter: "pro",
   agent_pro: "premium",
-  loan_broker_pro: "pro",
   // Homeowner products. NOT an agent entitlement — an agent who also holds one
   // has not thereby bought an agent tier.
   consumer_free: "free",

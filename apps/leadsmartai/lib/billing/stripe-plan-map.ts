@@ -7,7 +7,6 @@ export type InternalPlan =
   | "consumer_premium"
   | "agent_starter"
   | "agent_pro"
-  | "loan_broker_pro"
   /** LeadSmart CRM tiers — derived from `lib/billing/plans.ts`
    *  `PLANS[slug].internalPlan`. Keep this union in sync with the
    *  catalog when slugs are added or renamed. Each `crm_*` plan
@@ -26,7 +25,6 @@ const PRICE_ID_TO_PLAN: Record<string, InternalPlan> = {
   price_agent_pro: "agent_pro",
   /** Alias: Agent Premium SKU maps to Elite (`agent_pro`) entitlements */
   price_agent_premium: "agent_pro",
-  price_loan_broker_pro: "loan_broker_pro",
   price_crm_starter: "crm_starter",
   price_crm_pro: "crm_pro",
   price_crm_pro_annual: "crm_pro",
@@ -88,9 +86,6 @@ function planFromEnv(priceId: string): InternalPlan | undefined {
   if (process.env.STRIPE_PRICE_ID_AGENT_STARTER && priceId === process.env.STRIPE_PRICE_ID_AGENT_STARTER) {
     return "agent_starter";
   }
-  if (process.env.STRIPE_PRICE_ID_LOAN_BROKER_PRO && priceId === process.env.STRIPE_PRICE_ID_LOAN_BROKER_PRO) {
-    return "loan_broker_pro";
-  }
   for (const { envKey, plan } of CRM_ENV_TO_PLAN) {
     const v = process.env[envKey];
     if (v && priceId === v) return plan;
@@ -108,7 +103,6 @@ const INTERNAL_PLAN_VALUES: InternalPlan[] = [
   "consumer_premium",
   "agent_starter",
   "agent_pro",
-  "loan_broker_pro",
   "crm_starter",
   "crm_pro",
   "crm_premium",

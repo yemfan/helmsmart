@@ -64,21 +64,6 @@ const LIST_STR = new RegExp(
 
 const EXEMPT = new Map<string, string>([
   [
-    "app/financial-services/pricing/page.client.tsx",
-    /*
-     * A whole `PLANS` block at module scope, and `name` / `price` /
-     * `priceSubtext` / `description` are English beside the keys flagged here.
-     * Translating only the flagged half would leave a card in two languages,
-     * which is worse than one. It is also a different product line
-     * (financial-services vertical) with its own copy owner.
-     */
-    "Vertical pricing page: whole plan block needs converting, not four keys",
-  ],
-  [
-    "app/loan-broker/pricing/page.client.tsx",
-    "Vertical pricing page: whole plan block needs converting, not four keys",
-  ],
-  [
     "components/marketing/LeadSmartEditorialLanding.tsx",
     /*
      * A whole editorial landing page held as data — plan cards, feature grids,
