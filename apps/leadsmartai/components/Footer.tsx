@@ -47,9 +47,10 @@ const legalLinks = [
 // Sibling businesses under MAXY Investment — cross-promoted in every footer.
 // This app is CloseBoss, so it links to the other three.
 const PARTNERS = [
-  { label: "Property Tools AI", blurb: "Real estate tools & data", href: "https://www.propertytoolsai.com" },
-  { label: "HelmSmart", blurb: "AI operating system for business", href: "https://helmsmart.ai" },
-  { label: "MarketingBoss", blurb: "AI marketing creative", href: "https://marketingbossai.com" },
+  // Names stay; only the one-line description is copy.
+  { label: "Property Tools AI", key: "propertyToolsAi", href: "https://www.propertytoolsai.com" },
+  { label: "HelmSmart", key: "helmsmart", href: "https://helmsmart.ai" },
+  { label: "MarketingBoss", key: "marketingboss", href: "https://marketingbossai.com" },
 ];
 
 type FooterLink = { key: string; en: string; href: string };
@@ -102,7 +103,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
                 >
-                  {p.label} <span className="text-slate-400 dark:text-slate-500">· {p.blurb}</span>
+                  {p.label} <span className="text-slate-400 dark:text-slate-500">· {t(`footer.partnerBlurbs.${p.key}`)}</span>
                 </a>
               </li>
             ))}

@@ -402,41 +402,41 @@
     "mlsImport": "MLS Data Import",
     "pageTitle": "Settings",
     "index": {
-          "title": "Settings",
-          "subtitle": "Everything you can change, in five places.",
-          "searchPlaceholder": "Search settings…",
-          "noMatch": "No settings match that.",
-          "back": "← All settings",
-          "planTitle": "Plan & credits",
-          "planBody": "See your balance, change your plan or buy more credits.",
-          "planCta": "Open plan & credits"
+      "title": "Settings",
+      "subtitle": "Everything you can change, in five places.",
+      "searchPlaceholder": "Search settings…",
+      "noMatch": "No settings match that.",
+      "back": "← All settings",
+      "planTitle": "Plan & credits",
+      "planBody": "See your balance, change your plan or buy more credits.",
+      "planCta": "Open plan & credits"
     },
     "groups": {
-          "account": {
-                "label": "Account",
-                "description": "Your name, photo, brand, digital twin, language, plan and credits.",
-                "keywords": "profile name photo brand logo signature twin avatar voice clone language billing plan credits subscription"
-          },
-          "aiTeam": {
-                "label": "AI team",
-                "description": "How your assistants sound, answer the phone, route leads and handle deals.",
-                "keywords": "style tone voice receptionist phone missed call text-back lead routing commission transaction notifications"
-          },
-          "channels": {
-                "label": "Channels",
-                "description": "Phone, email, calendar and social accounts — the plumbing behind every send.",
-                "keywords": "phone number email gmail calendar google facebook instagram tiktok linkedin social autoposting weekly schedule compliance consent"
-          },
-          "messaging": {
-                "label": "Messaging",
-                "description": "What CloseBoss sends, when, and whether it asks you first.",
-                "keywords": "review policy approval autosend templates timing quiet hours frequency drip sphere"
-          },
-          "data": {
-                "label": "Data & tools",
-                "description": "Links you share with clients and imports into your CRM.",
-                "keywords": "smart link home value widget mls import csv"
-          }
+      "account": {
+        "label": "Account",
+        "description": "Your name, photo, brand, digital twin, language, plan and credits.",
+        "keywords": "profile name photo brand logo signature twin avatar voice clone language billing plan credits subscription"
+      },
+      "aiTeam": {
+        "label": "AI team",
+        "description": "How your assistants sound, answer the phone, route leads and handle deals.",
+        "keywords": "style tone voice receptionist phone missed call text-back lead routing commission transaction notifications"
+      },
+      "channels": {
+        "label": "Channels",
+        "description": "Phone, email, calendar and social accounts — the plumbing behind every send.",
+        "keywords": "phone number email gmail calendar google facebook instagram tiktok linkedin social autoposting weekly schedule compliance consent"
+      },
+      "messaging": {
+        "label": "Messaging",
+        "description": "What CloseBoss sends, when, and whether it asks you first.",
+        "keywords": "review policy approval autosend templates timing quiet hours frequency drip sphere"
+      },
+      "data": {
+        "label": "Data & tools",
+        "description": "Links you share with clients and imports into your CRM.",
+        "keywords": "smart link home value widget mls import csv"
+      }
     },
     "tabs": {
       "voice": {
@@ -1303,26 +1303,26 @@
   },
   "notifications": {
     "feed": {
-          "subtitle": "Everything your AI team flagged for you, newest first.",
-          "unreadCount_one": "{{count}} unread",
-          "unreadCount_other": "{{count}} unread",
-          "allCaughtUp": "You're all caught up.",
-          "markAllRead": "Mark all read",
-          "marking": "Marking…",
-          "markFailed": "Couldn't update notifications. Try again.",
-          "empty": "Nothing here yet. Hot leads, missed calls and reminders will show up as they happen.",
-          "unread": "Unread",
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "needsYou": "Needs you today",
-          "none": "Nothing waiting",
-          "types": {
-                "hot_lead": "Hot lead",
-                "missed_call": "Missed call",
-                "reminder": "Reminder",
-                "new_lead": "New lead",
-                "avatar_ready": "Avatar ready"
-          }
+      "subtitle": "Everything your AI team flagged for you, newest first.",
+      "unreadCount_one": "{{count}} unread",
+      "unreadCount_other": "{{count}} unread",
+      "allCaughtUp": "You're all caught up.",
+      "markAllRead": "Mark all read",
+      "marking": "Marking…",
+      "markFailed": "Couldn't update notifications. Try again.",
+      "empty": "Nothing here yet. Hot leads, missed calls and reminders will show up as they happen.",
+      "unread": "Unread",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "needsYou": "Needs you today",
+      "none": "Nothing waiting",
+      "types": {
+        "hot_lead": "Hot lead",
+        "missed_call": "Missed call",
+        "reminder": "Reminder",
+        "new_lead": "New lead",
+        "avatar_ready": "Avatar ready"
+      }
     },
     "title": "Notifications",
     "subtitle": "Hot leads to prioritize, calls you may have missed, and reminders across your pipeline.",
@@ -3150,7 +3150,21 @@
       "anyTopicFromYour": "Any topic from your content library.",
       "onlyTheTopicsYou": "Only the topics you tick.",
       "spreadAutomaticallyAcrossThe": "Spread automatically across the week.",
-      "onlyTheDaysYou": "Only the days you pick."
+      "onlyTheDaysYou": "Only the days you pick.",
+      "mode": {
+        "review": {
+          "label": "I approve every post",
+          "blurb": "Your week is written and scheduled at the right times, then held. Nothing publishes until you approve it."
+        },
+        "assisted": {
+          "label": "Boss Assistant approves",
+          "blurb": "The Boss fact-checks each post against what your business actually does. Verified posts are scheduled; anything it can't verify is held for you, with the reason."
+        },
+        "auto": {
+          "label": "Full autopilot",
+          "blurb": "Written, scheduled and published with no check — the only option where something reaches your feed that nobody has read."
+        }
+      }
     },
     "listingAd": {
       "videoAd": "Video ad",
@@ -3538,7 +3552,21 @@
       },
       "startFreeTrial": "Start free trial",
       "freeTrialNote": "Your real workspace, no credit card",
-      "upgrade": "Upgrade"
+      "upgrade": "Upgrade",
+      "focus": {
+        "buyers": {
+          "label": "Mostly buyers",
+          "hint": "Tour requests & pre-approvals"
+        },
+        "sellers": {
+          "label": "Mostly sellers",
+          "hint": "Listings & CMA conversations"
+        },
+        "both": {
+          "label": "Both equally",
+          "hint": "Mixed pipeline"
+        }
+      }
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -5049,7 +5077,25 @@
       "dueOn": "due {{date}}",
       "noPastClientsOr": "No past clients or sphere contacts to score yet. Import contacts + capture signals to start surfacing leverage.",
       "sell": "Sell",
-      "buy": "Buy"
+      "buy": "Buy",
+      "filter": {
+        "all": {
+          "label": "All",
+          "hint": "Every contact ranked by combined score"
+        },
+        "both_high": {
+          "label": "Both high",
+          "hint": "Strong on both sell + buy — top leverage"
+        },
+        "seller_leaning": {
+          "label": "Seller-leaning",
+          "hint": "Higher seller score"
+        },
+        "buyer_leaning": {
+          "label": "Buyer-leaning",
+          "hint": "Higher buyer score"
+        }
+      }
     },
     "idxCapture": {
       "close": "Close",
@@ -5059,7 +5105,34 @@
       "email": "Email",
       "name": "Name (optional)",
       "consent": "I agree to receive automated text messages about this property and similar homes from CloseBoss and its agents at the number above. Msg & data rates may apply; message frequency varies. Consent is not a condition of purchase. Reply STOP to unsubscribe, HELP for help.",
-      "privacyNote": "We respect your privacy. No spam — just listings that match what you're looking for."
+      "privacyNote": "We respect your privacy. No spam — just listings that match what you're looking for.",
+      "action": {
+        "favorite": {
+          "title": "Save this home",
+          "subtitle": "Get instant alerts when the price changes or it goes pending.",
+          "cta": "Save home"
+        },
+        "save_search": {
+          "title": "Save this search",
+          "subtitle": "We'll email you when new homes match your filters.",
+          "cta": "Save search"
+        },
+        "schedule_tour": {
+          "title": "Schedule a tour",
+          "subtitle": "We'll connect you with a local agent to schedule a showing.",
+          "cta": "Request tour"
+        },
+        "contact_agent": {
+          "title": "Talk to a local agent",
+          "subtitle": "Get fast answers about this home and the neighborhood.",
+          "cta": "Contact agent"
+        },
+        "view_threshold": {
+          "title": "Save your search to keep browsing",
+          "subtitle": "Free instant access — we'll email you new matches as they hit the market.",
+          "cta": "Continue browsing"
+        }
+      }
     },
     "accountMenu": {
       "signedInAs": "Signed in as",
@@ -6362,7 +6435,21 @@
       "week38": "Week 3–8 · Active pilot",
       "week912": "Week 9–12 · Measurement + decision",
       "footerLine": "© LeadSmart AI · Built for financial services agencies. Pilot inquiries welcome.",
-      "includedFeatureList": "TCPA opt-in audit logging · State-disclosure injection · Supervised-review queue for AI-drafted comms · Carrier-portal-agnostic (sits beside, not inside, carrier tools) · Bilingual ready · Annual review automation · Lead scoring · Dashboard analytics."
+      "includedFeatureList": "TCPA opt-in audit logging · State-disclosure injection · Supervised-review queue for AI-drafted comms · Carrier-portal-agnostic (sits beside, not inside, carrier tools) · Bilingual ready · Annual review automation · Lead scoring · Dashboard analytics.",
+      "kpi": {
+        "speedToLead": {
+          "label": "Speed-to-lead",
+          "hint": "From inbound to first contact, automated."
+        },
+        "fnas": {
+          "label": "FNAs generated",
+          "hint": "AI-built, agent-branded, client-ready."
+        },
+        "recruitConversion": {
+          "label": "Recruit conversion",
+          "hint": "Pilot target vs. industry baseline."
+        }
+      }
     },
     "loanBroker": {
       "dashboard": "Loan broker dashboard",
@@ -8650,7 +8737,17 @@
       "connectAgentBody": "Talk to an agent in seconds — schedule a tour or get fast answers about any listing.",
       "freeToTry": "Free to try",
       "freeToTryBody": "One free AI search a day, no strings. Create a free account for 5 a day — unlimited on a paid plan. No spam, ever.",
-      "equalHousing": "Equal Housing Opportunity."
+      "equalHousing": "Equal Housing Opportunity.",
+      "cityBlurb": {
+        "austin": "Hill country living, tech hub",
+        "denver": "Outdoorsy, walkable neighborhoods",
+        "charlotte": "Banking + booming suburbs",
+        "phoenix": "Sunbelt growth and value",
+        "tampa": "Beaches + no state income tax",
+        "nashville": "Music city, family-friendly",
+        "raleigh": "Research Triangle, top schools",
+        "sanDiego": "Coastal lifestyle, high demand"
+      }
     },
     "resetPasswordPage": {
       "verifying": "Verifying reset link…",

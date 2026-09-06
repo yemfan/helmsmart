@@ -26,11 +26,13 @@ const LABEL_TONE: Record<"high" | "medium" | "low", string> = {
   low: "bg-slate-50 text-slate-600 ring-slate-200",
 };
 
-const FILTERS: { value: MonetizationFilter; label: string; hint: string }[] = [
-  { value: "all", label: "All", hint: "Every contact ranked by combined score" },
-  { value: "both_high", label: "Both high", hint: "Strong on both sell + buy — top leverage" },
-  { value: "seller_leaning", label: "Seller-leaning", hint: "Higher seller score" },
-  { value: "buyer_leaning", label: "Buyer-leaning", hint: "Higher buyer score" },
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. */
+const FILTERS: { value: MonetizationFilter }[] = [
+  { value: "all" },
+  { value: "both_high" },
+  { value: "seller_leaning" },
+  { value: "buyer_leaning" },
 ];
 
 /**
@@ -132,14 +134,14 @@ export default function SphereMonetizationPanel(
               key={f.value}
               type="button"
               onClick={() => setFilter(f.value)}
-              title={f.hint}
+              title={t(`pages.sphereMonetization.filter.${f.value}.hint`)}
               className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${
                 filter === f.value
                   ? "bg-slate-900 text-white ring-slate-900"
                   : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
               }`}
             >
-              {f.label}
+              {t(`pages.sphereMonetization.filter.${f.value}.label`)}
             </button>
           ))}
         </div>

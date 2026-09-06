@@ -402,41 +402,41 @@
     "mlsImport": "MLS 数据导入",
     "pageTitle": "设置",
     "index": {
-          "title": "设置",
-          "subtitle": "所有可调整的项目，分成五处。",
-          "searchPlaceholder": "搜索设置…",
-          "noMatch": "没有匹配的设置。",
-          "back": "← 全部设置",
-          "planTitle": "套餐与积分",
-          "planBody": "查看余额、更换套餐或购买更多积分。",
-          "planCta": "打开套餐与积分"
+      "title": "设置",
+      "subtitle": "所有可调整的项目，分成五处。",
+      "searchPlaceholder": "搜索设置…",
+      "noMatch": "没有匹配的设置。",
+      "back": "← 全部设置",
+      "planTitle": "套餐与积分",
+      "planBody": "查看余额、更换套餐或购买更多积分。",
+      "planCta": "打开套餐与积分"
     },
     "groups": {
-          "account": {
-                "label": "账户",
-                "description": "您的姓名、照片、品牌、数字分身、语言、套餐与积分。",
-                "keywords": "个人资料 姓名 照片 品牌 标志 签名 数字分身 语音克隆 语言 账单 套餐 积分 订阅 profile brand billing"
-          },
-          "aiTeam": {
-                "label": "AI 团队",
-                "description": "助理的语气、接听电话、线索分配和交易处理方式。",
-                "keywords": "风格 语气 语音 接待 电话 未接来电 短信回复 线索分配 佣金 交易通知 voice receptionist"
-          },
-          "channels": {
-                "label": "渠道",
-                "description": "电话、邮箱、日历和社交账号 —— 每一次发送背后的连接。",
-                "keywords": "电话号码 邮箱 gmail 日历 google facebook instagram tiktok linkedin 社交 自动发布 每周计划 合规 同意"
-          },
-          "messaging": {
-                "label": "消息",
-                "description": "CloseBoss 发什么、什么时候发、是否先问您。",
-                "keywords": "审核策略 批准 自动发送 模板 时间 免打扰 频率 drip 人脉"
-          },
-          "data": {
-                "label": "数据与工具",
-                "description": "分享给客户的链接以及导入到 CRM 的数据。",
-                "keywords": "智能链接 房屋估值 组件 mls 导入 csv"
-          }
+      "account": {
+        "label": "账户",
+        "description": "您的姓名、照片、品牌、数字分身、语言、套餐与积分。",
+        "keywords": "个人资料 姓名 照片 品牌 标志 签名 数字分身 语音克隆 语言 账单 套餐 积分 订阅 profile brand billing"
+      },
+      "aiTeam": {
+        "label": "AI 团队",
+        "description": "助理的语气、接听电话、线索分配和交易处理方式。",
+        "keywords": "风格 语气 语音 接待 电话 未接来电 短信回复 线索分配 佣金 交易通知 voice receptionist"
+      },
+      "channels": {
+        "label": "渠道",
+        "description": "电话、邮箱、日历和社交账号 —— 每一次发送背后的连接。",
+        "keywords": "电话号码 邮箱 gmail 日历 google facebook instagram tiktok linkedin 社交 自动发布 每周计划 合规 同意"
+      },
+      "messaging": {
+        "label": "消息",
+        "description": "CloseBoss 发什么、什么时候发、是否先问您。",
+        "keywords": "审核策略 批准 自动发送 模板 时间 免打扰 频率 drip 人脉"
+      },
+      "data": {
+        "label": "数据与工具",
+        "description": "分享给客户的链接以及导入到 CRM 的数据。",
+        "keywords": "智能链接 房屋估值 组件 mls 导入 csv"
+      }
     },
     "tabs": {
       "voice": {
@@ -1303,26 +1303,26 @@
   },
   "notifications": {
     "feed": {
-          "subtitle": "AI 团队为您标记的一切，最新在前。",
-          "unreadCount_one": "{{count}} 条未读",
-          "unreadCount_other": "{{count}} 条未读",
-          "allCaughtUp": "全部处理完了。",
-          "markAllRead": "全部标为已读",
-          "marking": "标记中…",
-          "markFailed": "无法更新通知，请重试。",
-          "empty": "这里还没有内容。热门线索、未接来电和提醒会随时出现在这里。",
-          "unread": "未读",
-          "today": "今天",
-          "yesterday": "昨天",
-          "needsYou": "今天需要您处理",
-          "none": "暂无待办",
-          "types": {
-                "hot_lead": "热门线索",
-                "missed_call": "未接来电",
-                "reminder": "提醒",
-                "new_lead": "新线索",
-                "avatar_ready": "数字分身已就绪"
-          }
+      "subtitle": "AI 团队为您标记的一切，最新在前。",
+      "unreadCount_one": "{{count}} 条未读",
+      "unreadCount_other": "{{count}} 条未读",
+      "allCaughtUp": "全部处理完了。",
+      "markAllRead": "全部标为已读",
+      "marking": "标记中…",
+      "markFailed": "无法更新通知，请重试。",
+      "empty": "这里还没有内容。热门线索、未接来电和提醒会随时出现在这里。",
+      "unread": "未读",
+      "today": "今天",
+      "yesterday": "昨天",
+      "needsYou": "今天需要您处理",
+      "none": "暂无待办",
+      "types": {
+        "hot_lead": "热门线索",
+        "missed_call": "未接来电",
+        "reminder": "提醒",
+        "new_lead": "新线索",
+        "avatar_ready": "数字分身已就绪"
+      }
     },
     "title": "通知",
     "subtitle": "需要优先跟进的重点客户、可能漏接的来电，以及各环节的提醒。",
@@ -3150,7 +3150,21 @@
       "anyTopicFromYour": "内容库中的任意主题。",
       "onlyTheTopicsYou": "仅您勾选的主题。",
       "spreadAutomaticallyAcrossThe": "自动分散到一周各天。",
-      "onlyTheDaysYou": "仅您选定的日期。"
+      "onlyTheDaysYou": "仅您选定的日期。",
+      "mode": {
+        "review": {
+          "label": "每篇都由我审核",
+          "blurb": "系统会写好一周内容并安排在合适的时间，然后暂存。未经你批准，不会发布任何内容。"
+        },
+        "assisted": {
+          "label": "由 Boss 助理审核",
+          "blurb": "Boss 会对照你的实际业务核查每一篇内容。核实通过的会照常排期；无法核实的会连同原因一起留给你处理。"
+        },
+        "auto": {
+          "label": "完全自动",
+          "blurb": "自动撰写、排期并发布，不做任何审核——这是唯一一种会让没人读过的内容出现在你主页上的选项。"
+        }
+      }
     },
     "listingAd": {
       "videoAd": "视频广告",
@@ -3538,7 +3552,21 @@
       },
       "startFreeTrial": "开始免费试用",
       "freeTrialNote": "真实工作台，无需信用卡",
-      "upgrade": "升级"
+      "upgrade": "升级",
+      "focus": {
+        "buyers": {
+          "label": "以买方为主",
+          "hint": "看房预约与贷款预批"
+        },
+        "sellers": {
+          "label": "以卖方为主",
+          "hint": "房源挂牌与 CMA 沟通"
+        },
+        "both": {
+          "label": "买卖各半",
+          "hint": "混合型客户管道"
+        }
+      }
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -5049,7 +5077,25 @@
       "dueOn": "{{date}} 到期",
       "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人并记录信号，才能开始挖掘机会。",
       "sell": "卖房",
-      "buy": "买房"
+      "buy": "买房",
+      "filter": {
+        "all": {
+          "label": "全部",
+          "hint": "按综合评分排序的全部联系人"
+        },
+        "both_high": {
+          "label": "买卖皆强",
+          "hint": "买方与卖方评分都高——最具撬动价值"
+        },
+        "seller_leaning": {
+          "label": "偏卖方",
+          "hint": "卖方评分更高"
+        },
+        "buyer_leaning": {
+          "label": "偏买方",
+          "hint": "买方评分更高"
+        }
+      }
     },
     "idxCapture": {
       "close": "关闭",
@@ -5059,7 +5105,34 @@
       "email": "邮箱",
       "name": "姓名（选填）",
       "consent": "我同意 CloseBoss 及其经纪人通过上方号码，就本套房源及类似房源向我发送自动短信。可能产生短信和流量费用；发送频率不定。同意与否不影响购买。回复 STOP 退订，回复 HELP 获取帮助。",
-      "privacyNote": "我们尊重您的隐私。不发垃圾信息——只发符合您需求的房源。"
+      "privacyNote": "我们尊重您的隐私。不发垃圾信息——只发符合您需求的房源。",
+      "action": {
+        "favorite": {
+          "title": "收藏这套房源",
+          "subtitle": "价格变动或进入待售状态时，第一时间通知你。",
+          "cta": "收藏房源"
+        },
+        "save_search": {
+          "title": "保存此搜索",
+          "subtitle": "有新房源符合你的筛选条件时，我们会发邮件通知你。",
+          "cta": "保存搜索"
+        },
+        "schedule_tour": {
+          "title": "预约看房",
+          "subtitle": "我们会为你对接当地经纪人，安排看房时间。",
+          "cta": "申请看房"
+        },
+        "contact_agent": {
+          "title": "联系当地经纪人",
+          "subtitle": "快速了解这套房源和周边社区的情况。",
+          "cta": "联系经纪人"
+        },
+        "view_threshold": {
+          "title": "保存搜索以继续浏览",
+          "subtitle": "免费即时访问——有新房源上市符合条件时，我们会发邮件给你。",
+          "cta": "继续浏览"
+        }
+      }
     },
     "accountMenu": {
       "signedInAs": "当前登录",
@@ -6362,7 +6435,21 @@
       "week38": "第 3–8 周 · 试点进行中",
       "week912": "第 9–12 周 · 评估与决策",
       "footerLine": "© LeadSmart AI · 专为金融服务机构打造。欢迎咨询试点合作。",
-      "includedFeatureList": "TCPA 同意记录审计 · 州级披露自动插入 · AI 起草通讯的人工审核队列 · 与承保门户无关（并行使用，而非嵌入其中）· 支持双语 · 年度回访自动化 · 客源评分 · 仪表盘分析。"
+      "includedFeatureList": "TCPA 同意记录审计 · 州级披露自动插入 · AI 起草通讯的人工审核队列 · 与承保门户无关（并行使用，而非嵌入其中）· 支持双语 · 年度回访自动化 · 客源评分 · 仪表盘分析。",
+      "kpi": {
+        "speedToLead": {
+          "label": "线索响应速度",
+          "hint": "从线索进入到首次联系，全程自动。"
+        },
+        "fnas": {
+          "label": "已生成的财务需求分析",
+          "hint": "AI 生成，带顾问品牌，可直接交付客户。"
+        },
+        "recruitConversion": {
+          "label": "招募转化率",
+          "hint": "试点目标与行业基准的对比。"
+        }
+      }
     },
     "loanBroker": {
       "dashboard": "贷款经纪工作台",
@@ -8650,7 +8737,17 @@
       "connectAgentBody": "几秒钟就能联系上经纪人——预约看房，或者就任何房源快速得到答复。",
       "freeToTry": "免费试用",
       "freeToTryBody": "每天一次免费 AI 搜索，没有附加条件。注册免费账户可享每天 5 次——付费套餐不限次数。绝不发垃圾信息。",
-      "equalHousing": "住房机会均等（Equal Housing Opportunity）。"
+      "equalHousing": "住房机会均等（Equal Housing Opportunity）。",
+      "cityBlurb": {
+        "austin": "丘陵风光，科技中心",
+        "denver": "户外生活，社区适宜步行",
+        "charlotte": "金融业发达，郊区快速发展",
+        "phoenix": "阳光地带，增长快、性价比高",
+        "tampa": "海滩众多，免征州所得税",
+        "nashville": "音乐之城，适合家庭",
+        "raleigh": "研究三角区，学区优质",
+        "sanDiego": "海岸生活，需求旺盛"
+      }
     },
     "resetPasswordPage": {
       "verifying": "正在验证重设链接…",

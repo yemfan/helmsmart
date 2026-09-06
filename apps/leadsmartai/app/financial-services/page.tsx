@@ -40,10 +40,12 @@ export async function generateMetadata(): Promise<Metadata> {
 };
 }
 
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. */
 const KPI_BAR = [
-  { label: "Speed-to-lead", value: "< 5 min", hint: "From inbound to first contact, automated." },
-  { label: "FNAs generated", value: "60 seconds", hint: "AI-built, agent-branded, client-ready." },
-  { label: "Recruit conversion", value: "+10pp lift", hint: "Pilot target vs. industry baseline." },
+  { key: "speedToLead", value: "< 5 min" },
+  { key: "fnas", value: "60 seconds" },
+  { key: "recruitConversion", value: "+10pp lift" },
 ];
 
 const FEATURES = [
@@ -177,12 +179,16 @@ export default async function FinancialServicesLandingPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-white/60">{t("pages.fsMarketing.benchmarks", { ns: "dashboard" })}</p>
                 <div className="mt-3 space-y-4">
                   {KPI_BAR.map((kpi) => (
-                    <div key={kpi.label} className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                    <div key={kpi.key} className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-sm font-medium text-white/80">{kpi.label}</span>
+                        <span className="text-sm font-medium text-white/80">
+                          {t(`pages.fsMarketing.kpi.${kpi.key}.label`, { ns: "dashboard" })}
+                        </span>
                         <span className="text-2xl font-semibold text-white">{kpi.value}</span>
                       </div>
-                      <p className="mt-1 text-xs text-white/60">{kpi.hint}</p>
+                      <p className="mt-1 text-xs text-white/60">
+                        {t(`pages.fsMarketing.kpi.${kpi.key}.hint`, { ns: "dashboard" })}
+                      </p>
                     </div>
                   ))}
                 </div>

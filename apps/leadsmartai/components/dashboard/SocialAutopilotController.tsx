@@ -60,25 +60,12 @@ const DAYS = [
   { value: 0, label: "Sun" },
 ];
 
-const APPROVAL_OPTIONS: { value: Mode; label: string; blurb: string }[] = [
-  {
-    value: "review",
-    label: "I approve every post",
-    blurb:
-      "Your week is written and scheduled at the right times, then held. Nothing publishes until you approve it.",
-  },
-  {
-    value: "assisted",
-    label: "Boss Assistant approves",
-    blurb:
-      "The Boss fact-checks each post against what your business actually does. Verified posts are scheduled; anything it can't verify is held for you, with the reason.",
-  },
-  {
-    value: "auto",
-    label: "Full autopilot",
-    blurb:
-      "Written, scheduled and published with no check — the only option where something reaches your feed that nobody has read.",
-  },
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. */
+const APPROVAL_OPTIONS: { value: Mode }[] = [
+  { value: "review" },
+  { value: "assisted" },
+  { value: "auto" },
 ];
 
 /** The stored hour is UTC; nobody thinks in UTC, so the picker is local time. */
@@ -399,8 +386,12 @@ export default function SocialAutopilotController() {
                   className="mt-0.5 h-4 w-4 shrink-0 accent-[#0072ce]"
                 />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-gray-900">{opt.label}</span>
-                  <span className="mt-0.5 block text-xs text-gray-600">{opt.blurb}</span>
+                  <span className="block text-sm font-medium text-gray-900">
+                    {t(`pages.socialAutopilot.mode.${opt.value}.label`)}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-gray-600">
+                    {t(`pages.socialAutopilot.mode.${opt.value}.blurb`)}
+                  </span>
                 </span>
               </label>
             );

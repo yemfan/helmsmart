@@ -106,10 +106,12 @@ function Shell({
   );
 }
 
-const FOCUS_OPTIONS: { id: LeadFocus; label: string; hint: string }[] = [
-  { id: "buyers", label: "Mostly buyers", hint: "Tour requests & pre-approvals" },
-  { id: "sellers", label: "Mostly sellers", hint: "Listings & CMA conversations" },
-  { id: "both", label: "Both equally", hint: "Mixed pipeline" },
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. */
+const FOCUS_OPTIONS: { id: LeadFocus }[] = [
+  { id: "buyers" },
+  { id: "sellers" },
+  { id: "both" },
 ];
 
 const PRICE_OPTIONS: { id: PriceRangeId; label: string }[] = [
@@ -411,8 +413,12 @@ export default function OnboardingFunnel({
                       className="mt-1"
                     />
                     <span>
-                      <span className="block text-sm font-semibold">{o.label}</span>
-                      <span className="text-xs text-gray-500">{o.hint}</span>
+                      <span className="block text-sm font-semibold">
+                        {t(`pages.onboardingFunnel.focus.${o.id}.label`)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {t(`pages.onboardingFunnel.focus.${o.id}.hint`)}
+                      </span>
                     </span>
                   </label>
                 ))}
