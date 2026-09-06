@@ -2783,6 +2783,10 @@
       "detectedPlain": "已识别 {{label}} ·"
     },
     "newTransaction": {
+      "beforeCreating": "创建前请先：{{items}}",
+      "needSeller": "从列表中选择卖方",
+      "needBuyer": "从列表中选择买方",
+      "needAddress": "填写房产地址",
       "metaTitle": "新建交易",
       "dealType": "交易类型",
       "listingSide": "卖方代理",
