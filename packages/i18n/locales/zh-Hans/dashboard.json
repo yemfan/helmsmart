@@ -9141,6 +9141,8 @@
       "onePerDaySpread": "1（全天分散发布）"
     },
     "founderDashboard": {
+      "timeToFirstProposal": "首个提案用时",
+      "timeToFirstApproval": "首次审批用时",
       "loadingMetrics": "正在加载指标…",
       "checkoutToPaid": "结账 → 已付款"
     },

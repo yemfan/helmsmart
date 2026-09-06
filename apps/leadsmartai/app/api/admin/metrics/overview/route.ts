@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   clampIntDays,
   computeActivationRate,
+  computeFirstTenMinutes,
   computeCheckoutConversionRate,
   computeChurnMetrics,
   computeCurrentMrr,
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
     const churnDays = clampIntDays(searchParams.get("churnDays"), 30, 90);
     const sinceUsage = daysAgoIso(usageDays);
 
-    const [{ mrr, payingRowCount }, payingUsersDistinct, mauUsage, activation, conversion, churn, newPaying] =
+    const [{ mrr, payingRowCount }, payingUsersDistinct, mauUsage, activation, conversion, churn, newPaying, firstTen] =
       await Promise.all([
         computeCurrentMrr(),
         countDistinctPayingUsers(),
@@ -39,6 +40,11 @@ export async function GET(req: Request) {
         computeCheckoutConversionRate(sinceUsage),
         computeChurnMetrics(churnDays),
         countNewPayingEvents(sinceUsage),
+        // Never let the two new numbers take the whole snapshot down.
+        computeFirstTenMinutes().catch((e) => {
+          console.error("[metrics/overview] first-ten-minutes failed:", e);
+          return null;
+        }),
       ]);
 
     return NextResponse.json({
@@ -52,6 +58,13 @@ export async function GET(req: Request) {
       payingSubscriptions: payingRowCount,
       payingUsersDistinct,
       mauUsage,
+      firstTenMinutes: firstTen
+        ? {
+            ...firstTen,
+            definition:
+              "Per agent: minutes from agents.created_at to the first proposal Max showed (boss_recommendations or a run step parked for approval) and to the first one they approved. Medians over agents who reached the moment; within10m is the share of all agents who did so inside ten minutes.",
+          }
+        : null,
       activation: {
         onboarded: activation.onboarded,
         activatedWithin7dOfOnboarding: activation.activatedWithin7d,
