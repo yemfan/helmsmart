@@ -93,7 +93,7 @@ const DialogContent = forwardRef<
           // attribute). Transition interpolates → soft pop-in + fade.
           // Core Tailwind utilities only — no plugin required.
           "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-modal transition-all duration-200 ease-out dark:border-slate-700 dark:bg-slate-900",
-          "data-[state=closed]:scale-95 data-[state=closed]:opacity-0",
+          "data-[state=open]:motion-enter-scale data-[state=closed]:scale-95 data-[state=closed]:opacity-0",
           className,
         )}
         {...props}

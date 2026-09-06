@@ -1042,7 +1042,7 @@ function Empty({ children }: { children: React.ReactNode }) {
 
 function BossBubble({ bossName, avatar, children }: { bossName: string; avatar: { id: string; url: string | null } | null; children: React.ReactNode }) {
   return (
-    <div className="flex gap-2.5">
+    <div className="motion-enter-up flex gap-2.5">
       <span className="shrink-0">{avatar ? <AssistantAvatar id={avatar.id} url={avatar.url} size={30} alt={bossName} /> : <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-blue-600 text-sm text-white" aria-hidden title={bossName}>♛</span>}</span>
       <div className="min-w-0 flex-1 rounded-xl rounded-tl-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3">{children}</div>
     </div>

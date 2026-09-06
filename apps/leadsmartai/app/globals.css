@@ -438,6 +438,45 @@ html {
 }
 .animate-slide-in-right { animation: slide-in-right 0.3s ease-out both; }
 
+/* ── Motion system ──────────────────────────────────────────────────────
+   One vocabulary for how things arrive and leave, instead of a keyframe
+   per component. Enter is 200ms ease-out (fast in, the eye tracks it);
+   exit is 150ms ease-in (gone before it is noticed). Defined with
+   @utility so Radix state variants compose: `data-[state=open]:motion-enter-scale`.
+
+     motion-enter-up      a card or bubble appearing in a list
+     motion-enter-scale   a dialog
+     motion-enter-right   a toast, a right-hand sheet
+     motion-enter-left    a left-hand sheet
+     motion-exit-fade     anything leaving in place
+
+   Reduced motion: the block at the end zeroes every animation and
+   transition in the app, not just these — the OS setting is a request
+   about all movement, and the per-feature rules above only ever covered
+   the features someone remembered. */
+@keyframes cb-enter-up   { from { opacity: 0; transform: translateY(6px); }   to { opacity: 1; transform: none; } }
+@keyframes cb-enter-scale{ from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes cb-enter-right{ from { opacity: 0; transform: translateX(16px); }  to { opacity: 1; transform: none; } }
+@keyframes cb-enter-left { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+@keyframes cb-exit-fade  { from { opacity: 1; } to { opacity: 0; } }
+
+@utility motion-enter-up    { animation: cb-enter-up 200ms ease-out both; }
+@utility motion-enter-scale { animation: cb-enter-scale 200ms ease-out both; }
+@utility motion-enter-right { animation: cb-enter-right 200ms ease-out both; }
+@utility motion-enter-left  { animation: cb-enter-left 200ms ease-out both; }
+@utility motion-exit-fade   { animation: cb-exit-fade 150ms ease-in both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
