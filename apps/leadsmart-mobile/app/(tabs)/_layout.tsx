@@ -5,18 +5,22 @@ import { useTranslation } from "react-i18next";
 import { useThemeTokens, useIsDarkMode } from "../../lib/useThemeTokens";
 import { hapticTabSwitch } from "../../lib/haptics";
 import { OfflineBanner } from "../../components/OfflineBanner";
+import { FloatingTabBar, type FloatingTabBarProps } from "../../components/FloatingTabBar";
+import { ProfileButton } from "../../components/ProfileButton";
 import { type } from "../../lib/typography";
 
 /**
- * Bottom tab bar — batch-3 dark mode wiring.
+ * Tab bar — Ask Max · Tasks · Deals · Calendar · More, mirroring the web
+ * sidebar's first level, drawn as a floating pill with the active tab in
+ * its own well (components/FloatingTabBar). Leads, Inbox and the Team
+ * roster are one tap away as cards under More; they keep their routes here
+ * (hidden below) so deep links and existing pushes still resolve.
  *
- * Previously this module held hardcoded brand/gray constants and
- * `#fff` backgrounds, so even when the rest of the app learned
- * to respect `useColorScheme()`, switching the phone to dark mode
- * left the tab bar and navigation header stuck in permanent light
- * mode. Now every color comes from `useThemeTokens()` so the
- * entire chrome follows the OS setting live.
+ * Every colour comes from `useThemeTokens()` so the chrome follows the OS
+ * dark-mode setting live.
  */
+const VISIBLE_TABS = ["boss", "tasks", "deals", "calendar", "more"] as const;
+
 export default function TabsLayout() {
   const tokens = useThemeTokens();
   const isDark = useIsDarkMode();
@@ -27,6 +31,9 @@ export default function TabsLayout() {
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <OfflineBanner />
       <Tabs
+        tabBar={(props) => (
+          <FloatingTabBar {...(props as unknown as Omit<FloatingTabBarProps, "visible">)} visible={VISIBLE_TABS} />
+        )}
         screenListeners={{
           // Light "selection changed" tick on every tab press.
           // Fires via React Navigation's tabPress event so both
@@ -39,6 +46,9 @@ export default function TabsLayout() {
         screenOptions={{
           headerTitle: "CloseBoss",
           headerShadowVisible: false,
+          // The agent's photo, top right on every tab — the same place the
+          // web dashboard keeps the account menu. Tapping it opens Settings.
+          headerRight: () => <ProfileButton />,
           headerStyle: {
             backgroundColor: tokens.surface,
             ...(Platform.OS === "ios"
@@ -58,32 +68,8 @@ export default function TabsLayout() {
             ...type.titleMd,
             color: tokens.text,
           },
-          // Active tint pulls from the `brand` ramp at `[600]` so the
-          // selected tab reads as the brand color at full saturation;
-          // inactive uses `[400]` on the neutral ramp for a softer
-          // contrast than pure slate.
-          tabBarActiveTintColor: isDark
-            ? tokens.brandScale[600]
-            : tokens.brandScale[600],
-          tabBarInactiveTintColor: tokens.neutralScale[400],
-          tabBarStyle: {
-            backgroundColor: tokens.surface,
-            borderTopColor: isDark ? tokens.border : tokens.brandScale[100],
-            borderTopWidth: StyleSheet.hairlineWidth,
-            paddingTop: 4,
-            ...(Platform.OS === "ios" ? { height: 88 } : {}),
-          },
-          tabBarLabelStyle: type.tabLabel,
         }}
       >
-        {/* Daily tab bar — Boss (home) · Inbox · Leads · Calendar · More.
-         * Ordered by how often an agent opens each one in a day. The Team
-         * roster moved off the bar (it is a static list of five rows):
-         * Boss already shows the team live, and it is one tap away under
-         * More. Calendar took the slot because it is daily work. The legacy
-         * supercategory screens (home / work / engage / analyze / manage)
-         * are gone — cold start used to land on the hidden `home`, which
-         * highlighted no tab at all. */}
         <Tabs.Screen
           name="boss"
           options={{
@@ -95,22 +81,22 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="inbox"
+          name="tasks"
           options={{
-            title: t("tabs.inbox"),
-            tabBarLabel: t("tabs.inbox"),
+            title: t("tabs.tasks"),
+            tabBarLabel: t("tabs.tasks"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="chatbubbles-outline" size={size} color={color} />
+              <Ionicons name="checkmark-circle-outline" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="leads"
+          name="deals"
           options={{
-            title: t("tabs.leads"),
-            tabBarLabel: t("tabs.leads"),
+            title: t("tabs.deals"),
+            tabBarLabel: t("tabs.deals"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people-outline" size={size} color={color} />
+              <Ionicons name="home-outline" size={size} color={color} />
             ),
           }}
         />
@@ -135,20 +121,13 @@ export default function TabsLayout() {
           }}
         />
 
-        {/* Hidden-from-tab-bar routes — still navigable via router.push
-         * (deep links from push notifications + tiles still resolve). */}
-        <Tabs.Screen
-          name="team"
-          options={{ title: t("tabs.team"), href: null }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{ title: t("tabs.settings"), href: null }}
-        />
-        <Tabs.Screen
-          name="offer-desk"
-          options={{ title: "Offer desk", href: null }}
-        />
+        {/* Off the bar, still routable — deep links from push notifications
+         * and every existing router.push keep working. */}
+        <Tabs.Screen name="inbox" options={{ title: t("tabs.inbox"), href: null }} />
+        <Tabs.Screen name="leads" options={{ title: t("tabs.leads"), href: null }} />
+        <Tabs.Screen name="team" options={{ title: t("tabs.team"), href: null }} />
+        <Tabs.Screen name="settings" options={{ title: t("tabs.settings"), href: null }} />
+        <Tabs.Screen name="offer-desk" options={{ title: "Offer desk", href: null }} />
       </Tabs>
     </>
   );

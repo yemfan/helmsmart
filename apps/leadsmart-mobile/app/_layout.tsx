@@ -32,7 +32,6 @@ function RootNavigation() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="tasks" options={{ title: t("stack.tasks") }} />
       <Stack.Screen name="expenses" options={{ title: t("stack.expenses") }} />
       <Stack.Screen name="notifications" options={{ title: t("stack.notifications") }} />
       <Stack.Screen name="delete-account" options={{ title: t("stack.deleteAccount") }} />

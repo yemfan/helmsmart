@@ -62,7 +62,7 @@ export const HOME_FEATURE_SECTIONS: readonly HomeFeatureSectionConfig[] = [
         key: "tasks",
         labelKey: "v2.tiles.tasks",
         iconName: "checkmark-circle-outline",
-        href: "/tasks",
+        href: "/(tabs)/tasks",
       },
       {
         key: "calendar",

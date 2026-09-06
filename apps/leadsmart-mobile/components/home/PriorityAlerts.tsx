@@ -56,7 +56,7 @@ export function PriorityAlerts() {
         return;
       }
       if (a.type === "overdue_task") {
-        router.push("/tasks");
+        router.push("/(tabs)/tasks");
         return;
       }
       router.push("/(tabs)/leads");

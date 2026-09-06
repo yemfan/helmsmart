@@ -73,7 +73,8 @@
       "settings": "设置",
       "notifications": "通知设置",
       "connect_platforms": "连接平台",
-      "digital_twin": "数字分身"
+      "digital_twin": "数字分身",
+      "offer_desk": "报价台"
     },
     "tab_subtitle": {
       "work": "客户、任务、日历、看房与发帖。",
@@ -122,11 +123,17 @@
   },
   "more": {
     "title": "更多",
-    "subtitle": "其他功能——日程、洞察与账户。",
+    "subtitle": "标签栏之外的全部功能——客户、消息、团队、营销、洞察与账户。",
     "sections": {
-      "schedule": "日程",
+      "work": "工作",
+      "marketing": "营销",
       "insights": "洞察",
       "account": "账户"
+    },
+    "profile": {
+      "a11y": "个人资料——打开设置",
+      "name_fallback": "我的账户",
+      "manage": "管理账户与设置"
     }
   },
   "boss": {
@@ -199,5 +206,9 @@
       "assisted": "Max 校对并做风险检查，只有不确定时才问您。",
       "auto": "直接发送，仍受合规规则约束。"
     }
+  },
+  "deals": {
+    "title": "交易",
+    "subtitle": "看房、报价、合同与定价。"
   }
 }

@@ -73,7 +73,8 @@
       "settings": "Settings",
       "notifications": "Notifications",
       "connect_platforms": "Connect Platforms",
-      "digital_twin": "Digital Twin"
+      "digital_twin": "Digital Twin",
+      "offer_desk": "Offer Desk"
     },
     "tab_subtitle": {
       "work": "Leads, tasks, calendar, showings, and posting.",
@@ -122,11 +123,17 @@
   },
   "more": {
     "title": "More",
-    "subtitle": "Everything else — schedule, insights, and account.",
+    "subtitle": "Everything not on the tab bar — leads, inbox, team, marketing, insights, account.",
     "sections": {
-      "schedule": "Schedule",
+      "work": "Work",
+      "marketing": "Marketing",
       "insights": "Insights",
       "account": "Account"
+    },
+    "profile": {
+      "a11y": "Your profile — opens settings",
+      "name_fallback": "Your account",
+      "manage": "Manage account & settings"
     }
   },
   "boss": {
@@ -199,5 +206,9 @@
       "assisted": "Max proofreads and risk-checks it, and only asks you when he's unsure.",
       "auto": "It goes, subject to the usual compliance rails."
     }
+  },
+  "deals": {
+    "title": "Deals",
+    "subtitle": "Showings, offers, contracts and pricing."
   }
 }
