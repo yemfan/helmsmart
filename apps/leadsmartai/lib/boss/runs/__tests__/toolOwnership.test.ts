@@ -65,20 +65,47 @@ describe("tool ownership reaches the model", () => {
 describe("hand_off_to_agent routes by domain", () => {
   const handoff = listBossTools().find((t) => t.name === "hand_off_to_agent");
 
-  /** The zod field behind `owner`, reached without leaning on zod's public types. */
+  /**
+   * The `owner` field, through zod's PUBLIC surface.
+   *
+   * This used to walk `_def.innerType._def.values` — zod 3's private shape.
+   * zod 4 moved those under `_zod.def`, and in a git worktree `zod` resolves
+   * to the root-hoisted 4.x rather than the ^3.24.2 this app declares, so the
+   * chain yielded undefined. `?? []` then turned "I could not reach the enum"
+   * into "the enum is empty", and the failure read as a roster bug: red in
+   * every local run, green in CI, dismissed as unrelated on six PRs. #1553.
+   *
+   * `.unwrap()` and `.options` are public in both majors, so this no longer
+   * cares which resolves — and it THROWS rather than defaulting, because a
+   * check that cannot reach its subject must say so instead of reporting an
+   * empty one.
+   */
   type OwnerField = {
     description?: string;
-    _def?: { innerType?: { _def?: { values?: string[] } } };
+    unwrap?: () => { options?: readonly string[] };
   };
-  const ownerField = (): OwnerField | undefined => {
+  const ownerField = (): OwnerField => {
     const schema = handoff?.inputSchema as unknown as
       | { shape?: Record<string, OwnerField> }
       | undefined;
-    return schema?.shape?.owner;
+    const field = schema?.shape?.owner;
+    if (!field) throw new Error("hand_off_to_agent has no `owner` on its inputSchema");
+    return field;
+  };
+  const ownerOptions = (): string[] => {
+    const field = ownerField();
+    if (typeof field.unwrap !== "function") {
+      throw new Error("`owner` is not an optional-wrapped enum; zod's shape may have moved (#1553)");
+    }
+    const options = field.unwrap().options;
+    if (!Array.isArray(options) || options.length === 0) {
+      throw new Error("could not read the `owner` enum from zod; its shape may have moved (#1553)");
+    }
+    return [...options];
   };
 
   it("offers an owner covering every teammate on the roster", () => {
-    const options = ownerField()?._def?.innerType?._def?.values ?? [];
+    const options = ownerOptions();
     expect(options.sort()).toEqual(
       ["accountant", "marketing_assistant", "receptionist", "sales_assistant", "transaction_assistant"].sort(),
     );
@@ -86,7 +113,7 @@ describe("hand_off_to_agent routes by domain", () => {
   });
 
   it("tells the model to pick by domain, naming the escrow case", () => {
-    const desc = ownerField()?.description ?? "";
+    const desc = ownerField().description ?? "";
     expect(desc).toContain("transaction_assistant");
     expect(desc).toContain("escrow");
   });
