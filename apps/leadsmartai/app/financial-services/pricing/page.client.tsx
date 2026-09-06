@@ -9,83 +9,19 @@ type Plan = {
   key: "pilot" | "producer" | "agency" | "enterprise";
   name: string;
   price: string;
-  priceSubtext: string;
-  description: string;
-  features: string[];
-  cta: string;
+  featureCount: number;
   href: string;
   featured?: boolean;
 };
 
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. Prices and plan NAMES
+ * stay — they are what appears on the invoice. */
 const PLANS: Plan[] = [
-  {
-    key: "pilot",
-    name: "Pilot cohort",
-    price: "Free",
-    priceSubtext: "90 days, up to 25 producers",
-    description: "For first-mover agencies running a structured 60–90 day pilot.",
-    features: [
-      "Full platform access for cohort",
-      "Compliance review of templates",
-      "Direct founder Slack channel",
-      "Weekly metric reports",
-      "One vertical-specific feature shipped per month",
-    ],
-    cta: "Talk to founder",
-    href: "/support",
-  },
-  {
-    key: "producer",
-    name: "Producer",
-    price: "$49",
-    priceSubtext: "/producer/month",
-    description: "Individual producers — full AI nurture + FNA + appointment tools.",
-    features: [
-      "AI SMS, email, and voice nurture",
-      "Unlimited FNAs",
-      "Lead capture funnels + scoring",
-      "Calendar booking + reminders",
-      "Compliance-reviewed templates",
-    ],
-    cta: "Start free trial",
-    href: "/start-free/agent",
-  },
-  {
-    key: "agency",
-    name: "Agency",
-    price: "$39",
-    priceSubtext: "/producer/month · 10+ seats",
-    description: "MDs and uplines — adds recruit pipeline, downline view, and team analytics.",
-    features: [
-      "Everything in Producer",
-      "Recruit pipeline + downline view",
-      "Hierarchical reporting (KPIs by upline)",
-      "BPM event tooling + post-event nurture",
-      "Multi-language AI (Spanish + Mandarin day-one)",
-      "Bulk template approval workflow",
-    ],
-    cta: "Talk to sales",
-    href: "/support",
-    featured: true,
-  },
-  {
-    key: "enterprise",
-    name: "Enterprise / IMO",
-    price: "Custom",
-    priceSubtext: "Multi-agency, white-label options",
-    description: "For IMOs and multi-agency platforms (Transamerica-affiliated and similar).",
-    features: [
-      "Everything in Agency",
-      "White-label option (your brand, your domain)",
-      "Carrier integrations (WinFlex, iPipeline)",
-      "NIPR license sync",
-      "Smarsh/Global Relay archive integration",
-      "Dedicated success engineer",
-      "Custom commission/override accounting",
-    ],
-    cta: "Schedule discovery call",
-    href: "/support",
-  },
+  { key: "pilot", name: "Pilot cohort", price: "Free", featureCount: 5, href: "/support" },
+  { key: "producer", name: "Producer", price: "$49", featureCount: 5, href: "/start-free/agent" },
+  { key: "agency", name: "Agency", price: "$39", featureCount: 6, href: "/support", featured: true },
+  { key: "enterprise", name: "Enterprise / IMO", price: "Custom", featureCount: 7, href: "/support" },
 ];
 
 export default function FinancialServicesPricingClient() {
@@ -152,20 +88,22 @@ export default function FinancialServicesPricingClient() {
                     {plan.price}
                   </p>
                 </div>
-                <p className="text-xs text-slate-500">{plan.priceSubtext}</p>
+                <p className="text-xs text-slate-500">
+                  {t(`pages.fsPricing.plan.${plan.key}.priceSubtext`)}
+                </p>
                 <p className="mt-3 text-sm leading-6 text-slate-600">
-                  {plan.description}
+                  {t(`pages.fsPricing.plan.${plan.key}.description`)}
                 </p>
               </header>
 
               <ul className="mt-5 flex-1 space-y-2.5">
-                {plan.features.map((feature) => (
+                {Array.from({ length: plan.featureCount }, (_, i) => (
                   <li
-                    key={feature}
+                    key={i}
                     className="flex items-start gap-2 text-sm leading-6 text-slate-700"
                   >
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                    <span>{feature}</span>
+                    <span>{t(`pages.fsPricing.plan.${plan.key}.f${i + 1}`)}</span>
                   </li>
                 ))}
               </ul>
@@ -179,7 +117,7 @@ export default function FinancialServicesPricingClient() {
                     : "border border-slate-300 bg-white text-slate-900 hover:bg-slate-50",
                 ].join(" ")}
               >
-                {plan.cta}
+                {t(`pages.fsPricing.plan.${plan.key}.cta`)}
               </Link>
             </article>
           ))}

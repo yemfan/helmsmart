@@ -21,40 +21,17 @@ const PLANS: Array<{
   name: string;
   price: string;
   priceId?: string;
-  description: string;
-  features: string[];
-  cta: string;
+  featureCount: number;
   featured?: boolean;
 }> = [
-  {
-    key: "starter",
-    name: "Starter",
-    price: "Free",
-    description: "For loan brokers testing the workflow and borrower pipeline.",
-    features: [
-      "Basic borrower queue",
-      "Limited scenarios",
-      "Basic status tracking",
-      "Core workspace access",
-      "No advanced automation",
-    ],
-    cta: "Contact Sales",
-  },
+  { key: "starter", name: "Starter", price: "Free", featureCount: 5 },
   {
     key: "pro",
     billingPlan: "loan_broker_pro",
     name: "Pro",
     price: "$99/mo",
     priceId: "price_loan_broker_pro",
-    description: "For active loan brokers managing applications and borrower workflows at scale.",
-    features: [
-      "Advanced borrower pipeline",
-      "Loan scenario comparisons",
-      "Priority workflow tools",
-      "Expanded CRM and tracking",
-      "Advanced finance workspace",
-    ],
-    cta: "Upgrade to Pro",
+    featureCount: 5,
     featured: true,
   },
 ];
@@ -157,7 +134,7 @@ export default function LoanBrokerPricingClientPage() {
                       {plan.price}
                     </div>
                     <p className="mt-3 text-sm leading-6 text-gray-600">
-                      {plan.description}
+                      {t(`pages.loanBrokerPricing.plan.${plan.key}.description`)}
                     </p>
                   </div>
 
@@ -167,12 +144,12 @@ export default function LoanBrokerPricingClientPage() {
                 </div>
 
                 <ul className="mt-6 space-y-3">
-                  {plan.features.map((feature) => (
+                  {Array.from({ length: plan.featureCount }, (_, i) => (
                     <li
-                      key={feature}
+                      key={i}
                       className="rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700"
                     >
-                      {feature}
+                      {t(`pages.loanBrokerPricing.plan.${plan.key}.f${i + 1}`)}
                     </li>
                   ))}
                 </ul>
@@ -183,7 +160,7 @@ export default function LoanBrokerPricingClientPage() {
                       href="/support"
                       className="block w-full rounded-2xl border px-4 py-3 text-center text-sm font-medium text-gray-900 transition hover:bg-gray-50"
                     >
-                      {plan.cta}
+                      {t(`pages.loanBrokerPricing.plan.${plan.key}.cta`)}
                     </Link>
                   ) : (
                     <button
@@ -196,7 +173,7 @@ export default function LoanBrokerPricingClientPage() {
                         ? t("pages.page.client.currentPlan")
                         : loadingPlan === plan.priceId
                           ? t("common:status.redirecting")
-                          : plan.cta}
+                          : t(`pages.loanBrokerPricing.plan.${plan.key}.cta`)}
                     </button>
                   )}
                 </div>

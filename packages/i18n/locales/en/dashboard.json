@@ -10362,6 +10362,75 @@
       "saved": "Saved",
       "saveFailed": "Couldn’t save that timezone.",
       "invalid": "Use a Region/City timezone such as America/Los_Angeles."
+    },
+    "fsPricing": {
+      "plan": {
+        "pilot": {
+          "priceSubtext": "90 days, up to 25 producers",
+          "description": "For first-mover agencies running a structured 60–90 day pilot.",
+          "cta": "Talk to founder",
+          "f1": "Full platform access for cohort",
+          "f2": "Compliance review of templates",
+          "f3": "Direct founder Slack channel",
+          "f4": "Weekly metric reports",
+          "f5": "One vertical-specific feature shipped per month"
+        },
+        "producer": {
+          "priceSubtext": "/producer/month",
+          "description": "Individual producers — full AI nurture + FNA + appointment tools.",
+          "cta": "Start free trial",
+          "f1": "AI SMS, email, and voice nurture",
+          "f2": "Unlimited FNAs",
+          "f3": "Lead capture funnels + scoring",
+          "f4": "Calendar booking + reminders",
+          "f5": "Compliance-reviewed templates"
+        },
+        "agency": {
+          "priceSubtext": "/producer/month · 10+ seats",
+          "description": "MDs and uplines — adds recruit pipeline, downline view, and team analytics.",
+          "cta": "Talk to sales",
+          "f1": "Everything in Producer",
+          "f2": "Recruit pipeline + downline view",
+          "f3": "Hierarchical reporting (KPIs by upline)",
+          "f4": "BPM event tooling + post-event nurture",
+          "f5": "Multi-language AI (Spanish + Mandarin day-one)",
+          "f6": "Bulk template approval workflow"
+        },
+        "enterprise": {
+          "priceSubtext": "Multi-agency, white-label options",
+          "description": "For IMOs and multi-agency platforms (Transamerica-affiliated and similar).",
+          "cta": "Schedule discovery call",
+          "f1": "Everything in Agency",
+          "f2": "White-label option (your brand, your domain)",
+          "f3": "Carrier integrations (WinFlex, iPipeline)",
+          "f4": "NIPR license sync",
+          "f5": "Smarsh/Global Relay archive integration",
+          "f6": "Dedicated success engineer",
+          "f7": "Custom commission/override accounting"
+        }
+      }
+    },
+    "loanBrokerPricing": {
+      "plan": {
+        "starter": {
+          "description": "For loan brokers testing the workflow and borrower pipeline.",
+          "cta": "Contact Sales",
+          "f1": "Basic borrower queue",
+          "f2": "Limited scenarios",
+          "f3": "Basic status tracking",
+          "f4": "Core workspace access",
+          "f5": "No advanced automation"
+        },
+        "pro": {
+          "description": "For active loan brokers managing applications and borrower workflows at scale.",
+          "cta": "Upgrade to Pro",
+          "f1": "Advanced borrower pipeline",
+          "f2": "Loan scenario comparisons",
+          "f3": "Priority workflow tools",
+          "f4": "Expanded CRM and tracking",
+          "f5": "Advanced finance workspace"
+        }
+      }
     }
   },
   "disclaimers": {

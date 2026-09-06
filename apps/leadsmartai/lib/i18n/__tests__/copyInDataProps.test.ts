@@ -64,30 +64,19 @@ const LIST_STR = new RegExp(
 
 const EXEMPT = new Map<string, string>([
   [
-    "app/financial-services/pricing/page.client.tsx",
-    /*
-     * A whole `PLANS` block at module scope, and `name` / `price` /
-     * `priceSubtext` / `description` are English beside the keys flagged here.
-     * Translating only the flagged half would leave a card in two languages,
-     * which is worse than one. It is also a different product line
-     * (financial-services vertical) with its own copy owner.
-     */
-    "Vertical pricing page: whole plan block needs converting, not four keys",
-  ],
-  [
-    "app/loan-broker/pricing/page.client.tsx",
-    "Vertical pricing page: whole plan block needs converting, not four keys",
-  ],
-  [
     "components/marketing/LeadSmartEditorialLanding.tsx",
     /*
      * A whole editorial landing page held as data — plan cards, feature grids,
      * testimonials — with `name`, `price`, `interval`, `desc` and `features`
-     * all English beside the four keys this guard names. It is the same shape
-     * as the two pricing pages above and wants the same treatment: convert the
-     * block, not the keys the scan happens to see.
+     * all English beside the four keys this guard names.
+     *
+     * It is NOT blocked on the conversion, though. It sells Pro $79 / Elite
+     * $199 / Team $199, and neither "Elite" nor those prices exist in
+     * lib/credits/pricing (the live ladder is Solo $79 / Pro $159 / Premium
+     * $299 / Signature $399). Translating it would give the wrong price list a
+     * second language. It needs a pricing decision first.
      */
-    "Editorial landing: whole page held as data; convert the block, not four keys",
+    "Editorial landing: quotes a price list that no catalogue has — decide, then translate",
   ],
   [
     "components/marketing/voice-ai/VoiceAiComparisonTable.tsx",
