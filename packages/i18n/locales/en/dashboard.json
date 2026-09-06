@@ -712,6 +712,8 @@
       }
     },
     "yourAiTeam": "Your AI Team",
+    "allActions": "All actions",
+    "actionsAria": "Actions",
     "skillsHeading": "Skills",
     "personality": {
       "boss_assistant": "Calm leader, strategic, always in control.",

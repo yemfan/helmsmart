@@ -712,6 +712,8 @@
       }
     },
     "yourAiTeam": "您的 AI 团队",
+    "allActions": "全部操作",
+    "actionsAria": "操作",
     "skillsHeading": "技能",
     "personality": {
       "boss_assistant": "沉稳的领导者，有策略，始终掌控全局。",
