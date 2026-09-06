@@ -9094,6 +9094,7 @@
       "filledFrom": "已根据 {{site}} 填入。保存前请核对各项数据。",
       "filledFromRecords": "已根据房产记录填入。保存前请核对各项数据。",
       "listingFailed": "无法读取该 {{site}} 链接 —— 请手动填写。",
+      "unsupportedSite": "暂不支持该网站——请使用 Zillow、Redfin、Realtor.com 或 Compass，或直接粘贴地址。",
       "addressNotFound": "未找到该地址的记录 —— 请手动填写。"
     },
     "listingLookup": {

@@ -9094,6 +9094,7 @@
       "filledFrom": "Filled in from {{site}}. Check the numbers before you save.",
       "filledFromRecords": "Filled in from property records. Check the numbers before you save.",
       "listingFailed": "Couldn't read that {{site}} link — enter the details by hand.",
+      "unsupportedSite": "That site isn't supported yet — try Zillow, Redfin, Realtor.com or Compass, or paste the address instead.",
       "addressNotFound": "No records found for that address — enter the details by hand."
     },
     "listingLookup": {
