@@ -39,32 +39,32 @@ export function PersonalityPreview({ personality }: { personality: AiPersonality
   const { t } = useTranslation("dashboard");
   const ex = EXAMPLES[personality] ?? EXAMPLES.friendly;
   return (
-    <div className="mt-4 grid gap-3 text-xs text-gray-700">
+    <div className="mt-4 grid gap-3 text-xs text-slate-700">
       <div>
-        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.sms")}</div>
-        <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
+        <div className="font-semibold text-slate-600 mb-1">{t("pages.personalityPreview.sms")}</div>
+        <pre className="whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.sms}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.email")}</div>
-        <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
+        <div className="font-semibold text-slate-600 mb-1">{t("pages.personalityPreview.email")}</div>
+        <pre className="whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.email}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.callSummary")}</div>
-        <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
+        <div className="font-semibold text-slate-600 mb-1">{t("pages.personalityPreview.callSummary")}</div>
+        <pre className="whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.call}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.greeting")}</div>
-        <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
+        <div className="font-semibold text-slate-600 mb-1">{t("pages.personalityPreview.greeting")}</div>
+        <pre className="whitespace-pre-wrap rounded-lg border border-slate-100 bg-slate-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.greeting}
         </pre>
       </div>
-      <p className="text-[10px] text-gray-500">{t("pages.personalityPreview.toneOnly")}</p>
+      <p className="text-[10px] text-slate-500">{t("pages.personalityPreview.toneOnly")}</p>
     </div>
   );
 }

@@ -65,11 +65,11 @@ export default function FavoritesPanel({ contactId }: Props) {
   }, [contactId]);
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
+    <section className="rounded-xl border border-slate-200 bg-white p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">{t("pages.favorites.title")}</h2>
-          <p className="mt-0.5 text-xs text-gray-500">{t("pages.favorites.sub")}</p>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.favorites.title")}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.favorites.sub")}</p>
         </div>
         <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-700">
           {favorites.length}
@@ -77,10 +77,10 @@ export default function FavoritesPanel({ contactId }: Props) {
       </div>
 
       {loading ? (
-        <div className="mt-3 text-xs text-gray-400"><LoadingText /></div>
+        <div className="mt-3 text-xs text-slate-400"><LoadingText /></div>
       ) : favorites.length === 0 ? (
-        <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
-          <Heart className="mx-auto h-5 w-5 text-gray-300" aria-hidden />
+        <div className="mt-3 rounded border border-dashed border-slate-200 p-4 text-center text-xs text-slate-500">
+          <Heart className="mx-auto h-5 w-5 text-slate-300" aria-hidden />
           <div className="mt-1">{t("pages.favorites.empty")}</div>
         </div>
       ) : (
@@ -88,9 +88,9 @@ export default function FavoritesPanel({ contactId }: Props) {
           {favorites.map((f) => (
             <li
               key={f.id}
-              className="overflow-hidden rounded-lg border border-gray-200"
+              className="overflow-hidden rounded-lg border border-slate-200"
             >
-              <div className="relative h-24 bg-gray-100">
+              <div className="relative h-24 bg-slate-100">
                 {f.photoUrl ? (
                   <img
                     src={f.photoUrl}
@@ -100,12 +100,12 @@ export default function FavoritesPanel({ contactId }: Props) {
                 ) : null}
               </div>
               <div className="p-2">
-                <div className="text-sm font-semibold text-gray-900">{money(f.price)}</div>
-                <div className="truncate text-[11px] text-gray-600">
+                <div className="text-sm font-semibold text-slate-900">{money(f.price)}</div>
+                <div className="truncate text-[11px] text-slate-600">
                   {f.address ?? t("pages.favorites.addressUnavailable")}
                 </div>
                 {(f.beds || f.baths || f.sqft) && (
-                  <div className="mt-0.5 text-[10px] text-gray-400">
+                  <div className="mt-0.5 text-[10px] text-slate-400">
                     {[
                       f.beds ? `${f.beds}bd` : null,
                       f.baths ? `${f.baths}ba` : null,
@@ -115,7 +115,7 @@ export default function FavoritesPanel({ contactId }: Props) {
                       .join(" · ")}
                   </div>
                 )}
-                <div className="mt-0.5 text-[10px] text-gray-400">
+                <div className="mt-0.5 text-[10px] text-slate-400">
                   {t("pages.favorites.saved", { date: new Date(f.createdAt).toLocaleDateString(locale) })}
                 </div>
               </div>

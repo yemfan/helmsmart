@@ -96,9 +96,9 @@ export default function SchedulerActivityClient() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.scheduler.colOutcome")}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.scheduler.colOutcome")}</span>
           <div className="flex flex-wrap gap-1">
             {OUTCOME_OPTIONS.map((o) => (
               <button
@@ -107,8 +107,8 @@ export default function SchedulerActivityClient() {
                 onClick={() => setOutcome(o.value)}
                 className={`rounded-full px-2.5 py-1 text-xs ${
                   outcome === o.value
-                    ? "bg-gray-900 text-white"
-                    : "border border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                    ? "bg-slate-900 text-white"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
                 }`}
               >
                 {o.label}
@@ -117,7 +117,7 @@ export default function SchedulerActivityClient() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.scheduler.range")}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.scheduler.range")}</span>
           <div className="flex flex-wrap gap-1">
             {RANGE_OPTIONS.map((r) => (
               <button
@@ -126,8 +126,8 @@ export default function SchedulerActivityClient() {
                 onClick={() => setRange(r.value)}
                 className={`rounded-full px-2.5 py-1 text-xs ${
                   range === r.value
-                    ? "bg-gray-900 text-white"
-                    : "border border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                    ? "bg-slate-900 text-white"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
                 }`}
               >
                 {r.label}
@@ -141,15 +141,15 @@ export default function SchedulerActivityClient() {
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
 
-      <div className="rounded-xl border border-gray-200 bg-white">
+      <div className="rounded-xl border border-slate-200 bg-white">
         {loading ? (
-          <div className="p-8 text-sm text-gray-500"><LoadingText /></div>
+          <div className="p-8 text-sm text-slate-500"><LoadingText /></div>
         ) : rows.length === 0 ? (
           <EmptyState outcome={outcome} />
         ) : (
           <>
             <table className="w-full text-xs">
-              <thead className="bg-gray-50">
+              <thead className="bg-slate-50">
                 <tr>
                   <Th>{t("pages.scheduler.colWhen")}</Th>
                   <Th>{t("pages.scheduler.colContact")}</Th>
@@ -159,19 +159,19 @@ export default function SchedulerActivityClient() {
                   <Th />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {rows.map((r) => {
                   const expanded = expandedId === r.id;
                   return (
                     <>
                       <tr
                         key={r.id}
-                        className="cursor-pointer hover:bg-gray-50/60"
+                        className="cursor-pointer hover:bg-slate-50/60"
                         onClick={() => setExpandedId(expanded ? null : r.id)}
                       >
                         <Td>
-                          <div className="text-gray-700">{relativeTime(r.firedAt, t, locale)}</div>
-                          <div className="text-[10px] text-gray-400">
+                          <div className="text-slate-700">{relativeTime(r.firedAt, t, locale)}</div>
+                          <div className="text-[10px] text-slate-400">
                             {new Date(r.firedAt).toLocaleString(locale)}
                           </div>
                         </Td>
@@ -186,7 +186,7 @@ export default function SchedulerActivityClient() {
                             <Link
                               href={`/dashboard/sphere/${r.contactId}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="truncate font-medium text-gray-900 hover:underline"
+                              className="truncate font-medium text-slate-900 hover:underline"
                             >
                               {r.contactFullName}
                             </Link>
@@ -194,7 +194,7 @@ export default function SchedulerActivityClient() {
                         </Td>
                         <Td>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-[10px] text-gray-500">{r.templateId}</span>
+                            <span className="font-mono text-[10px] text-slate-500">{r.templateId}</span>
                             {r.templateChannel && (
                               <span
                                 className={`rounded px-1 py-0.5 text-[9px] font-semibold uppercase tracking-wide ${
@@ -208,10 +208,10 @@ export default function SchedulerActivityClient() {
                             )}
                           </div>
                           {r.templateName && (
-                            <div className="text-[10px] text-gray-500">{r.templateName}</div>
+                            <div className="text-[10px] text-slate-500">{r.templateName}</div>
                           )}
                         </Td>
-                        <Td className="font-mono text-[10px] text-gray-500">{r.periodKey}</Td>
+                        <Td className="font-mono text-[10px] text-slate-500">{r.periodKey}</Td>
                         <Td>
                           <OutcomeBadge
                             draftId={r.draftId}
@@ -222,7 +222,7 @@ export default function SchedulerActivityClient() {
                         <Td>
                           <button
                             type="button"
-                            className="text-[10px] text-gray-500 hover:text-gray-900"
+                            className="text-[10px] text-slate-500 hover:text-slate-900"
                             aria-expanded={expanded}
                           >
                             {expanded ? "▾" : "▸"}
@@ -230,7 +230,7 @@ export default function SchedulerActivityClient() {
                         </Td>
                       </tr>
                       {expanded && (
-                        <tr className="bg-gray-50/50">
+                        <tr className="bg-slate-50/50">
                           <td colSpan={6} className="px-3 py-3">
                             <div className="flex flex-wrap gap-6 text-[11px]">
                               {r.draftId && (
@@ -242,11 +242,11 @@ export default function SchedulerActivityClient() {
                                 </Link>
                               )}
                               <div>
-                                <span className="text-gray-400">{t("pages.scheduler.firedAt")}</span>
+                                <span className="text-slate-400">{t("pages.scheduler.firedAt")}</span>
                                 {new Date(r.firedAt).toISOString()}
                               </div>
                             </div>
-                            <pre className="mt-2 overflow-auto rounded border border-gray-200 bg-white p-2 text-[10px] leading-snug text-gray-700">
+                            <pre className="mt-2 overflow-auto rounded border border-slate-200 bg-white p-2 text-[10px] leading-snug text-slate-700">
                               {JSON.stringify(r.triggerContext, null, 2)}
                             </pre>
                           </td>
@@ -258,12 +258,12 @@ export default function SchedulerActivityClient() {
               </tbody>
             </table>
             {nextCursor && (
-              <div className="border-t border-gray-100 p-3 text-center">
+              <div className="border-t border-slate-100 p-3 text-center">
                 <button
                   type="button"
                   onClick={() => void loadMore()}
                   disabled={loadingMore}
-                  className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                 >
                   {loadingMore ? <LoadingText /> : t("common:actions.load_more")}
                 </button>
@@ -281,8 +281,8 @@ function EmptyState({ outcome }: { outcome: FiringOutcomeFilter }) {
   const locale = intlLocale(i18n.language);
   if (outcome === "all") {
     return (
-      <div className="p-8 text-center text-sm text-gray-500">
-        <div className="font-medium text-gray-700">{t("pages.scheduler.noActivity")}</div>
+      <div className="p-8 text-center text-sm text-slate-500">
+        <div className="font-medium text-slate-700">{t("pages.scheduler.noActivity")}</div>
         <p className="mt-1">
           Each time the scheduler runs, every (contact × template) evaluation lands here — created,
           suppressed, already fired, and errors. Run the scheduler from the{" "}
@@ -291,7 +291,7 @@ function EmptyState({ outcome }: { outcome: FiringOutcomeFilter }) {
     );
   }
   return (
-    <div className="p-8 text-center text-sm text-gray-500">{t("pages.scheduler.noMatches")}</div>
+    <div className="p-8 text-center text-sm text-slate-500">{t("pages.scheduler.noMatches")}</div>
   );
 }
 
@@ -323,7 +323,7 @@ function OutcomeBadge({
         : draftStatus === "approved"
           ? "bg-blue-50 text-blue-700"
           : draftStatus === "rejected"
-            ? "bg-gray-100 text-gray-500"
+            ? "bg-slate-100 text-slate-500"
             : draftStatus === "failed"
               ? "bg-red-50 text-red-700"
               : "bg-amber-50 text-amber-700";
@@ -343,12 +343,12 @@ function OutcomeBadge({
       </span>
     );
   }
-  return <span className="text-[10px] text-gray-400">—</span>;
+  return <span className="text-[10px] text-slate-400">—</span>;
 }
 
 function Th({ children }: { children?: React.ReactNode }) {
   return (
-    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-slate-500">
       {children}
     </th>
   );

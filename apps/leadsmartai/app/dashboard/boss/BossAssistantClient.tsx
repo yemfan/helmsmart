@@ -649,8 +649,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
         <div className="flex items-center gap-2.5">
           <BossAvatar avatar={bossAvatar} />
           <div>
-            <h1 className="text-lg font-semibold leading-tight text-gray-900">👋 {bossName}</h1>
-            <p className="text-xs text-gray-500">{tr("boss.captain")}</p>
+            <h1 className="text-lg font-semibold leading-tight text-slate-900">👋 {bossName}</h1>
+            <p className="text-xs text-slate-500">{tr("boss.captain")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -658,7 +658,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
             aria-label={tr("boss.approvals.title")}
             title={tr("boss.approvals.title")}
           >
@@ -684,10 +684,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       />
 
       {/* ── Conversation thread ── */}
-      <section className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50/60 p-3 sm:p-4">
+      <section className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-3 sm:p-4">
         {/* Briefing opener */}
         <BossBubble bossName={bossName} avatar={bossAvatar}>
-          <p className="text-sm text-gray-800">
+          <p className="text-sm text-slate-800">
             {greeting}{greetingName ? `, ${greetingName}` : ""}.{" "}
             {briefing?.headline?.trim() || briefing?.summary?.split(/[.!?]\s/)[0] || tr("boss.defaultHeadline")}
           </p>
@@ -695,8 +695,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             <p className="mt-1.5 text-xs font-medium text-[#8a6a0e]">→ {briefing.insights.topOpportunity}</p>
           )}
           {teamDigest && (
-            <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
-              <span className="font-semibold text-gray-800">{tr("pages.boss.teamFinished", { count: teamDigest.total })}</span> — {teamDigest.line}.
+            <p className="mt-2 border-t border-slate-100 pt-2 text-xs text-slate-600">
+              <span className="font-semibold text-slate-800">{tr("pages.boss.teamFinished", { count: teamDigest.total })}</span> — {teamDigest.line}.
               {teamDigest.needsYou > 0 && (
                 <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
                   {tr("pages.boss.needsYou", { count: teamDigest.needsYou })}
@@ -764,7 +764,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           .filter((r) => r.status === "awaiting_approval" && !instructions.some((i) => i.id === r.instruction_id))
           .map((r) => (
             <BossBubble key={r.id} bossName={bossName} avatar={bossAvatar}>
-              <p className="mb-1.5 text-xs text-gray-500">
+              <p className="mb-1.5 text-xs text-slate-500">
                 {r.trigger === "overnight" ? tr("boss.runs.overnight") : tr("boss.runs.earlier")}: {r.objective.slice(0, 120)}
               </p>
               <RunCard runId={r.id} onChanged={loadConversation} />
@@ -778,7 +778,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
               type="button"
               onClick={() => void loadEarlier()}
               disabled={loadingEarlier}
-              className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm hover:bg-slate-50 disabled:opacity-50"
             >
               {loadingEarlier ? <LoadingText /> : "↑ Load earlier conversations"}
             </button>
@@ -794,11 +794,11 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             <Fragment key={ins.id}>
               {showSeparator && (
                 <div className="flex items-center gap-2 py-1" aria-hidden>
-                  <span className="h-px flex-1 bg-gray-200" />
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                  <span className="h-px flex-1 bg-slate-200" />
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                     {dayLabel(ins.created_at, tr, locale)}
                   </span>
-                  <span className="h-px flex-1 bg-gray-200" />
+                  <span className="h-px flex-1 bg-slate-200" />
                 </div>
               )}
               <InstructionExchange
@@ -816,7 +816,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
         {recommendations.length === 0 && allInstructions.length === 0 && !loading && (
           <BossBubble bossName={bossName} avatar={bossAvatar}>
-            <p className="text-sm text-gray-600">{tr("pages.boss.nothingUrgent")}</p>
+            <p className="text-sm text-slate-600">{tr("pages.boss.nothingUrgent")}</p>
           </BossBubble>
         )}
 
@@ -828,14 +828,14 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           it is always reachable without scrolling to find it. Negative margins
           cancel <main>'s padding so the bar spans the full width; the blur keeps
           the conversation legible as it passes underneath. */}
-      <div className="sticky bottom-0 z-10 -mx-4 border-t border-gray-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
+      <div className="sticky bottom-0 z-10 -mx-4 border-t border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
         {!atBottom && (
           <button
             type="button"
             onClick={() => scrollToEnd()}
             aria-label={tr("pages.boss.scrollToEnd")}
             title={tr("pages.boss.scrollToEnd")}
-            className="absolute -top-5 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-base text-gray-700 shadow-md transition hover:bg-gray-50"
+            className="absolute -top-5 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-slate-300 bg-white text-base text-slate-700 shadow-md transition hover:bg-slate-50"
           >
             <span aria-hidden>↓</span>
           </button>
@@ -883,7 +883,7 @@ function AutopilotToggle({ on, onToggle }: { on: boolean; onToggle: () => void }
       onClick={onToggle}
       title={on ? tr("boss.autopilot.onTitle") : tr("boss.autopilot.offTitle")}
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-        on ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-600"
+        on ? "bg-emerald-100 text-emerald-800" : "border border-slate-200 bg-white text-slate-600"
       }`}
     >
       <span aria-hidden>{on ? "🛫" : "✈️"}</span>
@@ -899,7 +899,7 @@ const TEAM_DOT: Record<TeamState, string> = {
   "needs-you": "bg-amber-500",
   active: "bg-emerald-500",
   idle: "bg-emerald-400/70",
-  off: "bg-gray-300",
+  off: "bg-slate-300",
 };
 
 /**
@@ -926,7 +926,7 @@ function TeamStatusStrip({
         return (
           <div
             key={m.type}
-            className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3 shadow-sm"
+            className="flex shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3 shadow-sm"
             title={`${name} · ${m.verb}`}
           >
             {av ? (
@@ -937,8 +937,8 @@ function TeamStatusStrip({
               </span>
             )}
             <span className="flex flex-col leading-tight">
-              <span className="text-xs font-semibold text-gray-900">{name}</span>
-              <span className="flex items-center gap-1 text-[10px] text-gray-500">
+              <span className="text-xs font-semibold text-slate-900">{name}</span>
+              <span className="flex items-center gap-1 text-[10px] text-slate-500">
                 <span className={`h-1.5 w-1.5 rounded-full ${TEAM_DOT[m.state]} ${pulse ? "animate-pulse" : ""}`} />
                 {m.verb}
               </span>
@@ -979,31 +979,31 @@ function ContextStrip({
         <Metric label={tr("boss.metrics.deadlines")} value={deadlinesCount} tone={deadlinesCount ? "warn" : undefined} active={open === "dead"} onClick={() => toggle("dead")} />
       </div>
       {open && (
-        <div className="mt-2 rounded-xl border border-gray-200 bg-white p-2">
+        <div className="mt-2 rounded-xl border border-slate-200 bg-white p-2">
           {open === "hot" && (hotLeads.length ? hotLeads.map((l) => (
-            <button key={l.id} type="button" onClick={() => onOpenLead(l.id)} className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-gray-50">
+            <button key={l.id} type="button" onClick={() => onOpenLead(l.id)} className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-slate-50">
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-gray-900">{l.name ?? tr("pages.bossAssistant.unnamedLead")}</span>
-                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at, locale)}` : null].filter(Boolean).join(" · ") || tr("pages.bossAssistant.noActivityYet")}</span>
+                <span className="block truncate text-sm font-medium text-slate-900">{l.name ?? tr("pages.bossAssistant.unnamedLead")}</span>
+                <span className="block truncate text-xs text-slate-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at, locale)}` : null].filter(Boolean).join(" · ") || tr("pages.bossAssistant.noActivityYet")}</span>
               </span>
               {typeof l.engagement_score === "number" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>}
             </button>
           )) : <Empty>{tr("boss.metrics.noHotLeads")}</Empty>)}
           {open === "today" && (events.length ? events.map((e) => (
             <div key={e.id} className="flex items-center justify-between gap-2 px-2 py-1.5">
-              <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{e.title}</span>{e.lead_name && <span className="block truncate text-xs text-gray-500">{e.lead_name}</span>}</span>
+              <span className="min-w-0"><span className="block truncate text-sm font-medium text-slate-900">{e.title}</span>{e.lead_name && <span className="block truncate text-xs text-slate-500">{e.lead_name}</span>}</span>
               <span className="text-xs font-medium text-blue-600">{fmtTime(e.starts_at, locale)}</span>
             </div>
           )) : <Empty>{tr("boss.metrics.noAppts")}</Empty>)}
           {open === "deals" && (deals.length ? deals.map((d) => (
-            <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
-              <span className="truncate text-sm font-medium text-gray-900">{d.property_address}</span>
-              <span className="shrink-0 text-xs text-gray-500">{d.status}</span>
+            <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-50">
+              <span className="truncate text-sm font-medium text-slate-900">{d.property_address}</span>
+              <span className="shrink-0 text-xs text-slate-500">{d.status}</span>
             </Link>
           )) : <Empty>{tr("boss.metrics.noDeals")}</Empty>)}
           {open === "dead" && (alerts.length ? alerts.map((a) => (
-            <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
-              <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{a.propertyAddress}</span><span className="block text-xs text-gray-500">{a.label}</span></span>
+            <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-50">
+              <span className="min-w-0"><span className="block truncate text-sm font-medium text-slate-900">{a.propertyAddress}</span><span className="block text-xs text-slate-500">{a.label}</span></span>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{fmtDay(a.due, locale)}</span>
             </Link>
           )) : <Empty>{tr("boss.metrics.noDeadlines")}</Empty>)}
@@ -1014,15 +1014,15 @@ function ContextStrip({
 }
 
 function Metric({ label, value, tone, active, onClick }: { label: string; value: number | undefined; tone?: "hot" | "warn"; active: boolean; onClick: () => void }) {
-  const color = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-gray-900";
+  const color = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-slate-900";
   return (
-    <button type="button" onClick={onClick} className={`rounded-xl border bg-white p-3 text-left transition ${active ? "border-blue-300 ring-1 ring-blue-200" : "border-gray-200 hover:border-gray-300"}`}>
-      <p className="text-xs text-gray-500">{label}</p>
+    <button type="button" onClick={onClick} className={`rounded-xl border bg-white p-3 text-left transition ${active ? "border-blue-300 ring-1 ring-blue-200" : "border-slate-200 hover:border-slate-300"}`}>
+      <p className="text-xs text-slate-500">{label}</p>
       {/* A dash for "still loading" and a dash for "zero" looked identical and
           made the first paint read as broken. Zero is a number; loading is a
           pulse. */}
       {value == null ? (
-        <span className="mt-1 block h-7 w-10 animate-pulse rounded-md bg-gray-100" aria-hidden />
+        <span className="mt-1 block h-7 w-10 animate-pulse rounded-md bg-slate-100" aria-hidden />
       ) : (
         <p className={`mt-0.5 text-2xl font-bold tabular-nums ${color}`}>{value}</p>
       )}
@@ -1031,7 +1031,7 @@ function Metric({ label, value, tone, active, onClick }: { label: string; value:
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="px-2 py-3 text-center text-xs text-gray-400">{children}</p>;
+  return <p className="px-2 py-3 text-center text-xs text-slate-400">{children}</p>;
 }
 
 // ── conversation bits ──────────────────────────────────────────────────
@@ -1040,7 +1040,7 @@ function BossBubble({ bossName, avatar, children }: { bossName: string; avatar: 
   return (
     <div className="flex gap-2.5">
       <span className="shrink-0">{avatar ? <AssistantAvatar id={avatar.id} url={avatar.url} size={30} alt={bossName} /> : <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-blue-600 text-sm text-white" aria-hidden title={bossName}>♛</span>}</span>
-      <div className="min-w-0 flex-1 rounded-xl rounded-tl-sm border border-gray-200 bg-white p-3">{children}</div>
+      <div className="min-w-0 flex-1 rounded-xl rounded-tl-sm border border-slate-200 bg-white p-3">{children}</div>
     </div>
   );
 }
@@ -1061,8 +1061,8 @@ function ProposalCard({
   return (
     <BossBubble bossName={bossName} avatar={avatar}>
       <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">{tr("boss.proposal")}</span>
-      <p className="text-sm font-medium text-gray-900">{rec.title}</p>
-      {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-gray-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
+      <p className="text-sm font-medium text-slate-900">{rec.title}</p>
+      {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-slate-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
       {rec.expected_outcome && <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {rec.expected_outcome}</p>}
       {handled ? (
         <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span>{tr("pages.boss.handedToTeam")}</p>
@@ -1083,7 +1083,7 @@ function ProposalCard({
           ) : (
             <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">{tr("pages.boss.haveBossHandle")}</button>
           )}
-          <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">{tr("boss.notNow")}</button>
+          <button type="button" onClick={onDismiss} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:bg-slate-50">{tr("boss.notNow")}</button>
         </div>
       )}
     </BossBubble>
@@ -1118,11 +1118,11 @@ function InstructionExchange({
         </BossBubble>
       ) : processing ? (
         <BossBubble bossName={bossName} avatar={avatar}>
-          <p className="text-sm text-gray-500">{tr("pages.boss.breakingIntoActions")}</p>
+          <p className="text-sm text-slate-500">{tr("pages.boss.breakingIntoActions")}</p>
         </BossBubble>
       ) : instruction.status === "failed" ? (
         <BossBubble bossName={bossName} avatar={avatar}>
-          <p className="text-sm text-gray-500">{tr("boss.couldNotWorkOut")}</p>
+          <p className="text-sm text-slate-500">{tr("boss.couldNotWorkOut")}</p>
         </BossBubble>
       ) : tasks.length > 0 ? (
         <BossBubble bossName={bossName} avatar={avatar}>
@@ -1133,8 +1133,8 @@ function InstructionExchange({
       ) : instruction.clarification ? (
         // Vague/non-actionable ask → one clarifying question, no no-op task card.
         <BossBubble bossName={bossName} avatar={avatar}>
-          <p className="text-sm text-gray-700">{instruction.clarification}</p>
-          <p className="mt-1 text-xs text-gray-400">{tr("pages.boss.beMoreSpecific")}</p>
+          <p className="text-sm text-slate-700">{instruction.clarification}</p>
+          <p className="mt-1 text-xs text-slate-400">{tr("pages.boss.beMoreSpecific")}</p>
         </BossBubble>
       ) : null}
     </div>
@@ -1172,11 +1172,11 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
   const done = t.status === "sent" || t.status === "completed" || t.status === "done";
 
   return (
-    <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-2.5">
+    <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-2.5">
       <div className="flex items-start justify-between gap-2">
-        <p className="min-w-0 text-sm text-gray-800">
+        <p className="min-w-0 text-sm text-slate-800">
           {done && <span className="mr-1 text-emerald-600">✓</span>}
-          {t.status === "dismissed" && <span className="mr-1 text-gray-400">✕</span>}
+          {t.status === "dismissed" && <span className="mr-1 text-slate-400">✕</span>}
           {t.title}
         </p>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${done ? "bg-emerald-50 text-emerald-700" : t.status === "needs_input" || t.assigned_to === "realtor" ? "bg-amber-50 text-amber-800" : "bg-blue-50 text-blue-700"}`}>
@@ -1192,11 +1192,11 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
             })}
             {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
-          {t.draft_subject && <p className="mt-1 text-xs font-medium text-gray-800">{t.draft_subject}</p>}
-          <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
+          {t.draft_subject && <p className="mt-1 text-xs font-medium text-slate-800">{t.draft_subject}</p>}
+          <p className="mt-1 whitespace-pre-wrap text-xs text-slate-700">{t.draft_body}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <button type="button" disabled={busy !== null} onClick={() => act("approve")} className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "approve" ? tr("common:status.sending") : tr("pages.bossAssistant.approveSend")}</button>
-            <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">{tr("boss.dismiss")}</button>
+            <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">{tr("boss.dismiss")}</button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
         </div>
@@ -1212,7 +1212,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
               onChange={(e) => setAnswer(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void act("answer"); } }}
               placeholder={tr("pages.boss.typeAnswer")}
-              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
+              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
             />
             <button type="button" disabled={busy !== null || !answer.trim()} onClick={() => act("answer")} className="shrink-0 rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "answer" ? tr("common:status.working") : tr("common:actions.send")}</button>
           </div>
@@ -1226,7 +1226,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
 
       {t.status === "completed" && (t.execution_note || t.artifact_url) && (
         <div className="mt-1">
-          {t.execution_note && <p className="text-[11px] text-gray-500">{t.execution_note}</p>}
+          {t.execution_note && <p className="text-[11px] text-slate-500">{t.execution_note}</p>}
           {t.artifact_url && (
             <a href={t.artifact_url} className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:underline">
               {tr("pages.boss.viewArtifact", {
@@ -1307,14 +1307,14 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
   }, [initialText]);
   const send = () => { if (text.trim()) { onSubmit(text, attach ?? undefined); setText(""); clearAttach(); if (ref.current) ref.current.style.height = "auto"; } };
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-2">
+    <div className="rounded-xl border border-slate-200 bg-white p-2">
       {pendingQuestion ? (
         <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">{tr("pages.boss.answering")}<span className="font-medium">{pendingQuestion}</span>
         </div>
       ) : (
         <div className="mb-2 flex flex-wrap gap-1.5">
           {QUICK_COMMAND_KEYS.map((k) => (
-            <button key={k} type="button" onClick={() => onSubmit(tr(`boss.suggestions.${k}`))} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{tr(`boss.suggestions.${k}`)}</button>
+            <button key={k} type="button" onClick={() => onSubmit(tr(`boss.suggestions.${k}`))} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] text-slate-600 hover:bg-slate-100">{tr(`boss.suggestions.${k}`)}</button>
           ))}
         </div>
       )}
@@ -1326,7 +1326,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           rows={1}
           placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
-          className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
           // The page exists to be typed into; landing with the cursor already
           // here saves a click every single visit.
           autoFocus
@@ -1340,13 +1340,13 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
         >
           <span aria-hidden className="text-sm leading-none">＋</span> {tr("boss.addFile")}
         </button>
-        {uploading && <span className="text-xs text-gray-400">{tr("pages.boss.uploading")}</span>}
+        {uploading && <span className="text-xs text-slate-400">{tr("pages.boss.uploading")}</span>}
         {(attach || preview) && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-0.5 pl-1 pr-2 text-xs text-gray-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 py-0.5 pl-1 pr-2 text-xs text-slate-700">
             {preview ? (
               // eslint-disable-next-line @next/next/no-img-element -- local object URL thumbnail
               <img src={preview} alt="" className="h-7 w-7 rounded-full object-cover" />
@@ -1354,7 +1354,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
               <span className="pl-1" aria-hidden>📎</span>
             )}
             <span className="max-w-[160px] truncate">{attach?.name ?? tr("pages.bossAssistant.image")}</span>
-            <button type="button" onClick={clearAttach} aria-label={tr("tips.removeFile")} className="text-gray-400 hover:text-gray-700">×</button>
+            <button type="button" onClick={clearAttach} aria-label={tr("tips.removeFile")} className="text-slate-400 hover:text-slate-700">×</button>
           </span>
         )}
         {uploadErr && <span className="text-xs text-red-600">{uploadErr}</span>}
@@ -1400,7 +1400,7 @@ function SettingsModal({
   // Colour carries the amount of trust being handed over: grey nothing, amber
   // some, green all of it.
   const modeClass: Record<Mode, string> = {
-    ask: "border border-gray-200 bg-white text-gray-500",
+    ask: "border border-slate-200 bg-white text-slate-500",
     assisted: "bg-amber-100 text-amber-900",
     auto: "bg-emerald-100 text-emerald-800",
   };
@@ -1408,23 +1408,23 @@ function SettingsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">{tr("boss.approvals.title")}</h2>
-          <button type="button" onClick={onClose} aria-label={tr("pages.labels.close")} className="text-gray-400 hover:text-gray-700">✕</button>
+          <h2 className="text-base font-semibold text-slate-900">{tr("boss.approvals.title")}</h2>
+          <button type="button" onClick={onClose} aria-label={tr("pages.labels.close")} className="text-slate-400 hover:text-slate-700">✕</button>
         </div>
-        <p className="mt-1 text-xs text-gray-500">{tr("boss.approvals.subtitle")}</p>
+        <p className="mt-1 text-xs text-slate-500">{tr("boss.approvals.subtitle")}</p>
 
-        <div className="mt-4 flex items-center justify-between rounded-xl border border-gray-200 p-3">
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 p-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">{tr("boss.approvals.allChannels")}</p>
-            <p className="text-xs text-gray-500">{tr("boss.approvals.allChannelsHelp")}</p>
+            <p className="text-sm font-medium text-slate-900">{tr("boss.approvals.allChannels")}</p>
+            <p className="text-xs text-slate-500">{tr("boss.approvals.allChannelsHelp")}</p>
           </div>
           <AutopilotToggle on={global} onToggle={() => onGlobal(!global)} />
         </div>
 
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-gray-200 p-3">
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 p-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">{tr("pages.boss.overnightMode")}</p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm font-medium text-slate-900">{tr("pages.boss.overnightMode")}</p>
+            <p className="text-xs text-slate-500">
               The Boss works your pipeline at ~4am: research + tasks done, outbound drafted for your
               morning approval. Never calls, never sends overnight.
             </p>
@@ -1434,8 +1434,8 @@ function SettingsModal({
 
         <div className="mt-3 space-y-2">
           {channels.map((row) => (
-            <div key={row.assignee} className="rounded-xl border border-gray-200 p-3">
-              <p className="mb-2 text-sm font-medium text-gray-900">{tr(`boss.team.${row.assignee}`, { defaultValue: row.assignee })}</p>
+            <div key={row.assignee} className="rounded-xl border border-slate-200 p-3">
+              <p className="mb-2 text-sm font-medium text-slate-900">{tr(`boss.team.${row.assignee}`, { defaultValue: row.assignee })}</p>
               <div className="flex flex-wrap gap-1.5">
                 {row.channels.map((ch) => {
                   const mode = cellMode(row.assignee, ch);
@@ -1474,9 +1474,9 @@ function SettingsModal({
 
 // ── performance (collapsible, lazy) ────────────────────────────────────
 
-const RevenuePanel = nextDynamic(() => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
-const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
-const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
+const RevenuePanel = nextDynamic(() => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel), { ssr: false, loading: () => <p className="py-4 text-sm text-slate-400"><LoadingText /></p> });
+const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-slate-400"><LoadingText /></p> });
+const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-slate-400"><LoadingText /></p> });
 
 function PerformanceSection() {
   const { t: tr, i18n } = useTranslation("dashboard");
@@ -1484,14 +1484,14 @@ function PerformanceSection() {
   const [open, setOpen] = useState(false);
   return (
     <section>
-      <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50" aria-expanded={open}>
-        📈 {tr("boss.businessPerformance")} <span className="text-gray-400">{open ? "▾" : "▸"}</span>
+      <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50" aria-expanded={open}>
+        📈 {tr("boss.businessPerformance")} <span className="text-slate-400">{open ? "▾" : "▸"}</span>
       </button>
       {open && (
         <div className="mt-3 space-y-5">
-          <div><h3 className="mb-2 text-sm font-semibold text-gray-900">{tr("boss.panels.revenue")}</h3><RevenuePanel /></div>
-          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">{tr("boss.panels.pipeline")}</h3><PipelineForecastPanel /></div>
-          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">{tr("boss.panels.emailEngagement")}</h3><EmailEngagementPanel /></div>
+          <div><h3 className="mb-2 text-sm font-semibold text-slate-900">{tr("boss.panels.revenue")}</h3><RevenuePanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-slate-900">{tr("boss.panels.pipeline")}</h3><PipelineForecastPanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-slate-900">{tr("boss.panels.emailEngagement")}</h3><EmailEngagementPanel /></div>
         </div>
       )}
     </section>

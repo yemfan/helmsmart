@@ -58,7 +58,7 @@ export default function MlsCsvImportClient() {
         {t("pages.mlsImport.intro")}
       </p>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <input
             type="file"
@@ -83,7 +83,7 @@ export default function MlsCsvImportClient() {
         ) : null}
 
         {result ? (
-          <div className="text-xs text-gray-700 space-y-2">
+          <div className="text-xs text-slate-700 space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <span className="font-semibold">{t("pages.mlsImport.added")}</span>{" "}
@@ -112,9 +112,9 @@ export default function MlsCsvImportClient() {
 
             {result.errors?.length ? (
               <details className="mt-2">
-                <summary className="cursor-pointer text-[11px] text-gray-500">{t("pages.dashFragments.showImportErrors")}{result.errors.length})
+                <summary className="cursor-pointer text-[11px] text-slate-500">{t("pages.dashFragments.showImportErrors")}{result.errors.length})
                 </summary>
-                <div className="mt-2 overflow-auto max-h-48 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="mt-2 overflow-auto max-h-48 rounded-lg border border-slate-200 bg-slate-50 p-3">
                   <pre className="text-[11px] whitespace-pre-wrap">
                     {JSON.stringify(result.errors.slice(0, 50), null, 2)}
                   </pre>

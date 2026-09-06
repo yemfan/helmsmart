@@ -67,9 +67,9 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
   const s = await loadChannelStatus(_agentId);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">{t("pages.channelsCard.title")}</h2>
-      <p className="mt-0.5 text-xs text-gray-500">{t("pages.channelsCard.sub")}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.channelsCard.title")}</h2>
+      <p className="mt-0.5 text-xs text-slate-500">{t("pages.channelsCard.sub")}</p>
 
       <div className="mt-4 space-y-4">
         <ChannelBlock
@@ -130,7 +130,7 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
         />
       </div>
 
-      <p className="mt-4 text-[11px] text-gray-400">{t("pages.channelsCard.readOnly")}</p>
+      <p className="mt-4 text-[11px] text-slate-400">{t("pages.channelsCard.readOnly")}</p>
     </div>
   );
 }
@@ -157,7 +157,7 @@ function ChannelBlock({
   const badgeCls =
     badgeTone === "email" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700";
   return (
-    <div className="rounded-lg border border-gray-200 p-3">
+    <div className="rounded-lg border border-slate-200 p-3">
       <div className="flex items-center gap-3">
         <span
           className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold ${badgeCls}`}
@@ -165,8 +165,8 @@ function ChannelBlock({
           {badge}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="truncate text-sm font-medium text-gray-900">{value}</div>
-          <div className="text-xs text-gray-500">{subtitle}</div>
+          <div className="truncate text-sm font-medium text-slate-900">{value}</div>
+          <div className="text-xs text-slate-500">{subtitle}</div>
         </div>
       </div>
       <div className="mt-2 space-y-1">
@@ -179,12 +179,12 @@ function ChannelBlock({
                   ? "bg-green-500"
                   : r.state === "warn"
                     ? "bg-amber-500"
-                    : "bg-gray-300"
+                    : "bg-slate-300"
               }`}
             />
-            <span className="text-gray-700">
+            <span className="text-slate-700">
               {r.label}
-              {r.hint && <span className="text-gray-400"> — {r.hint}</span>}
+              {r.hint && <span className="text-slate-400"> — {r.hint}</span>}
             </span>
           </div>
         ))}

@@ -44,7 +44,7 @@ export default async function DraftsPage() {
         </div>
         <Link
           href="/dashboard/drafts/activity"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
         >
           <Activity className="h-4 w-4" aria-hidden />
           {t("pages.drafts.activityLog", { ns: "dashboard" })}

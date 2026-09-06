@@ -22,13 +22,13 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   outline:
     "border border-slate-200/90 bg-white !text-slate-900 shadow-raised ring-1 ring-slate-900/[0.03] hover:border-slate-300 hover:bg-slate-50 hover:-translate-y-px hover:shadow-floating dark:border-slate-700 dark:bg-slate-900 dark:!text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-900",
   secondary:
-    "bg-slate-100 !text-gray-900 shadow-raised hover:bg-slate-200 hover:-translate-y-px hover:shadow-floating dark:bg-slate-800 dark:!text-slate-100 dark:hover:bg-slate-700 dark:focus-visible:ring-offset-slate-900",
+    "bg-slate-100 !text-slate-900 shadow-raised hover:bg-slate-200 hover:-translate-y-px hover:shadow-floating dark:bg-slate-800 dark:!text-slate-100 dark:hover:bg-slate-700 dark:focus-visible:ring-offset-slate-900",
   ghost:
     "!text-slate-900 hover:bg-slate-100 dark:!text-slate-100 dark:hover:bg-slate-800",
   destructive:
     "bg-red-600 !text-white shadow-raised hover:bg-red-700 hover:-translate-y-px hover:shadow-floating focus-visible:ring-red-500",
   inverse:
-    "border-2 border-white/90 bg-transparent !text-white shadow-none hover:bg-white/15 focus-visible:ring-white/70 focus-visible:ring-offset-gray-900",
+    "border-2 border-white/90 bg-transparent !text-white shadow-none hover:bg-white/15 focus-visible:ring-white/70 focus-visible:ring-offset-slate-900",
   gradient:
     "bg-gradient-to-r from-[#0072ce] to-[#4F46E5] !text-white shadow-floating hover:shadow-overlay hover:-translate-y-px hover:brightness-110 focus-visible:ring-[#0072ce]",
 };

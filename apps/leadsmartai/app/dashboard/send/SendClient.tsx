@@ -61,7 +61,7 @@ export function SendClient({ agent }: { agent: string }) {
         <p className="text-sm text-brand-text/80">{t("pages.send.blurb")}</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-4">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
             <label className="block text-xs font-semibold text-brand-text">{t("pages.send.clientName")}</label>
@@ -70,7 +70,7 @@ export function SendClient({ agent }: { agent: string }) {
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
               placeholder={t("pages.send.namePlaceholder")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
           <div className="space-y-1">
@@ -84,7 +84,7 @@ export function SendClient({ agent }: { agent: string }) {
                 setAddressLng(v.lng);
               }}
               placeholder={t("pages.send.addressPlaceholder")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               disabled={loading}
             />
           </div>
@@ -96,7 +96,7 @@ export function SendClient({ agent }: { agent: string }) {
               type="checkbox"
               checked={includeEmailSource}
               onChange={(e) => setIncludeEmailSource(e.target.checked)}
-              className="h-3.5 w-3.5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
+              className="h-3.5 w-3.5 rounded border-slate-300 text-brand-primary focus:ring-brand-primary"
             />
             <span>{t("pages.send.tagSource")}</span>
           </label>
@@ -124,7 +124,7 @@ export function SendClient({ agent }: { agent: string }) {
                 type="text"
                 readOnly
                 value={generatedLink}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono bg-brand-surface text-brand-text"
+                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono bg-brand-surface text-brand-text"
               />
               <button
                 type="button"
@@ -136,7 +136,7 @@ export function SendClient({ agent }: { agent: string }) {
               <button
                 type="button"
                 onClick={() => generatedLink && window.open(generatedLink, "_blank")}
-                className="inline-flex items-center justify-center bg-white text-brand-text border border-gray-300 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-surface"
+                className="inline-flex items-center justify-center bg-white text-brand-text border border-slate-300 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-surface"
               >{t("pages.send.openLink")}</button>
             </div>
             {copied && (

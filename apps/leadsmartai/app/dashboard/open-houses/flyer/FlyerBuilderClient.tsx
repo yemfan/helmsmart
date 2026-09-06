@@ -406,19 +406,19 @@ export default function FlyerBuilderClient({
     return (
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{tr("pages.flyer.heading")}</h1>
-          <p className="text-sm text-gray-500">{tr("pages.flyer.intro")}</p>
+          <h1 className="text-xl font-semibold text-slate-900">{tr("pages.flyer.heading")}</h1>
+          <p className="text-sm text-slate-500">{tr("pages.flyer.intro")}</p>
         </div>
         {error && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">{error}</div>}
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">{tr("pages.flyer.property")}</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1">{tr("pages.flyer.property")}</label>
               <select
                 value={selectedPropertyId}
                 onChange={(e) => setSelectedPropertyId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
               >
                 {propertyOptions.map((p) => (
                   <option key={p.id} value={p.id}>{labelFor(p)}</option>
@@ -427,19 +427,19 @@ export default function FlyerBuilderClient({
             </div>
             <div className="flex items-end gap-2">
               <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-500 mb-1">{tr("pages.flyer.signupLink")}</label>
-                <input readOnly value={previewSignupUrl} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono bg-gray-50" />
+                <label className="block text-xs font-medium text-slate-500 mb-1">{tr("pages.flyer.signupLink")}</label>
+                <input readOnly value={previewSignupUrl} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono bg-slate-50" />
               </div>
             </div>
           </div>
 
           {selectedOption && (
             <div className="flex items-center gap-4">
-              <div className="bg-white p-2 rounded-lg border border-gray-200 shrink-0">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shrink-0">
                 {mounted ? <QRCode value={previewSignupUrl} size={100} /> : null}
               </div>
-              <div className="text-xs text-gray-500">
-                <p className="font-medium text-gray-700">{labelFor(selectedOption)}</p>
+              <div className="text-xs text-slate-500">
+                <p className="font-medium text-slate-700">{labelFor(selectedOption)}</p>
                 <p className="mt-1">{tr("pages.flyer.qrHint")}</p>
               </div>
             </div>
@@ -447,18 +447,18 @@ export default function FlyerBuilderClient({
 
           {/* Template picker */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{tr("pages.flyer.chooseTemplate")}</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">{tr("pages.flyer.chooseTemplate")}</label>
             <div className="grid grid-cols-3 gap-3">
               {FLYER_TEMPLATES.map((t) => (
                 <button
                   key={t.key}
                   type="button"
                   onClick={() => setTemplateKey(t.key)}
-                  className={`rounded-lg border-2 p-3 text-left transition ${templateKey === t.key ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                  className={`rounded-lg border-2 p-3 text-left transition ${templateKey === t.key ? "border-blue-600 bg-blue-50" : "border-slate-200 hover:border-slate-300"}`}
                 >
                   <div className="h-2 w-full rounded-sm mb-2" style={{ backgroundColor: t.colors.accent }} />
-                  <p className="text-sm font-medium text-gray-900">{t.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{t.description}</p>
+                  <p className="text-sm font-medium text-slate-900">{t.name}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{t.description}</p>
                   {t.key === defaultTemplate && (
                     <span className="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">{tr("pages.flyer.defaultBadge")}</span>
                   )}
@@ -471,7 +471,7 @@ export default function FlyerBuilderClient({
             type="button"
             onClick={() => void fetchProperty()}
             disabled={loading || !selectedPropertyId}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
             {loading ? tr("pages.flyer.loadingProperty") : tr("pages.flyer.generate")}
           </button>
@@ -479,14 +479,14 @@ export default function FlyerBuilderClient({
 
         {/* Saved Flyers */}
         {savedFlyers.length > 0 && (
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">{tr("pages.flyer.savedFlyers")}</h3>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">{tr("pages.flyer.savedFlyers")}</h3>
             <div className="space-y-2">
               {savedFlyers.map((f) => (
-                <div key={f.id} className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+                <div key={f.id} className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{f.property_address}</p>
-                    <p className="text-xs text-gray-500">{f.template_key} &middot; {new Date(f.created_at).toLocaleDateString(locale)}</p>
+                    <p className="text-sm font-medium text-slate-900">{f.property_address}</p>
+                    <p className="text-xs text-slate-500">{f.template_key} &middot; {new Date(f.created_at).toLocaleDateString(locale)}</p>
                   </div>
                 </div>
               ))}
@@ -502,16 +502,16 @@ export default function FlyerBuilderClient({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{tr("pages.flyer.flyerHeading")}</h1>
-          <p className="text-sm text-gray-500">{tr("pages.flyer.flyerIntro")}</p>
+          <h1 className="text-xl font-semibold text-slate-900">{tr("pages.flyer.flyerHeading")}</h1>
+          <p className="text-sm text-slate-500">{tr("pages.flyer.flyerIntro")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => setProperty(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{tr("pages.flyerBuilder.startOver")}</button>
-          <button onClick={() => void saveFlyer(false)} disabled={saving} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+          <button onClick={() => setProperty(null)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{tr("pages.flyerBuilder.startOver")}</button>
+          <button onClick={() => void saveFlyer(false)} disabled={saving} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
             {saving ? tr("pages.flyer.saving") : tr("pages.flyer.save")}
           </button>
           <button onClick={() => void saveFlyer(true)} disabled={saving} className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">{tr("pages.flyerBuilder.saveDefault")}</button>
-          <button onClick={() => void downloadPdf()} disabled={generating} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
+          <button onClick={() => void downloadPdf()} disabled={generating} className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
             {generating ? tr("pages.flyer.generatingPdf") : tr("pages.flyer.download")}
           </button>
         </div>
@@ -522,13 +522,13 @@ export default function FlyerBuilderClient({
 
       {/* Template selector */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500">{tr("pages.flyer.templateLabel")}</span>
+        <span className="text-xs text-slate-500">{tr("pages.flyer.templateLabel")}</span>
         {FLYER_TEMPLATES.map((t) => (
           <button
             key={t.key}
             type="button"
             onClick={() => setTemplateKey(t.key)}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition ${templateKey === t.key ? "text-white" : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"}`}
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition ${templateKey === t.key ? "text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
             style={templateKey === t.key ? { backgroundColor: t.colors.accent } : undefined}
           >
             {t.name}
@@ -537,7 +537,7 @@ export default function FlyerBuilderClient({
       </div>
 
       {/* Live Preview Card */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 text-center" style={{ backgroundColor: template.colors.headerBg, color: template.colors.headerText }}>
           <h2 className="text-2xl font-bold tracking-tight">{tr("pages.flyer.openHouseBanner")}</h2>
@@ -549,15 +549,15 @@ export default function FlyerBuilderClient({
             <input
               value={property.address}
               onChange={(e) => setProperty((p) => p ? { ...p, address: e.target.value } : p)}
-              className="w-full text-center text-lg font-semibold text-gray-900 border-0 border-b border-dashed border-gray-300 focus:border-blue-500 focus:outline-none pb-1"
+              className="w-full text-center text-lg font-semibold text-slate-900 border-0 border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none pb-1"
             />
             <div className="flex items-center justify-center gap-2">
-              <label className="text-xs text-gray-500">{tr("pages.flyer.listingPrice")}</label>
+              <label className="text-xs text-slate-500">{tr("pages.flyer.listingPrice")}</label>
               <input
                 value={listingPrice}
                 onChange={(e) => setListingPrice(e.target.value)}
                 placeholder="$000,000"
-                className="text-xl font-bold border-0 border-b border-dashed border-gray-300 focus:border-blue-500 focus:outline-none text-center w-40"
+                className="text-xl font-bold border-0 border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none text-center w-40"
                 style={{ color: template.colors.priceColor }}
               />
             </div>
@@ -573,11 +573,11 @@ export default function FlyerBuilderClient({
               { labelKey: "pages.flyer.stat.type", value: property.propertyType ?? "", key: "propertyType" },
             ].map((f) => (
               <div key={f.key} className="text-center">
-                <label className="block text-[10px] text-gray-500">{tr(f.labelKey)}</label>
+                <label className="block text-[10px] text-slate-500">{tr(f.labelKey)}</label>
                 <input
                   value={f.value}
                   onChange={(e) => setProperty((p) => p ? { ...p, [f.key]: e.target.value } : p)}
-                  className="w-full text-center text-sm font-medium border rounded-lg border-gray-200 px-1 py-1 focus:border-blue-500 focus:outline-none"
+                  className="w-full text-center text-sm font-medium border rounded-lg border-slate-200 px-1 py-1 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             ))}
@@ -586,12 +586,12 @@ export default function FlyerBuilderClient({
           {/* Photos */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-gray-500">{tr("pages.dashFragments.photosCount")}{photos.length}/4)</span>
+              <span className="text-xs font-medium text-slate-500">{tr("pages.dashFragments.photosCount")}{photos.length}/4)</span>
               {photos.length < 4 && (
                 <button
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
                 >{tr("pages.flyerBuilder.uploadPhoto")}</button>
               )}
             </div>
@@ -599,7 +599,7 @@ export default function FlyerBuilderClient({
             {photos.length > 0 ? (
               <div className="grid grid-cols-2 gap-2">
                 {photos.map((src, i) => (
-                  <div key={i} className="relative rounded-lg overflow-hidden border border-gray-200">
+                  <div key={i} className="relative rounded-lg overflow-hidden border border-slate-200">
                     <img src={src} alt={`Photo ${i + 1}`} className="h-32 w-full object-cover" />
                     <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white hover:bg-black/70">Remove</button>
                   </div>
@@ -608,10 +608,10 @@ export default function FlyerBuilderClient({
             ) : (
               <div
                 onClick={() => photoInputRef.current?.click()}
-                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50/50 py-8 transition hover:border-blue-400 hover:bg-blue-50/30"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/50 py-8 transition hover:border-blue-400 hover:bg-blue-50/30"
               >
-                <span className="text-sm text-gray-500">Click to upload property photos</span>
-                <span className="text-xs text-gray-400 mt-1">JPG, PNG — up to 4 photos</span>
+                <span className="text-sm text-slate-500">Click to upload property photos</span>
+                <span className="text-xs text-slate-400 mt-1">JPG, PNG — up to 4 photos</span>
               </div>
             )}
           </div>
@@ -619,47 +619,47 @@ export default function FlyerBuilderClient({
           {/* Description */}
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <label className="text-xs font-medium text-gray-500">{tr("pages.flyer.description")}</label>
+              <label className="text-xs font-medium text-slate-500">{tr("pages.flyer.description")}</label>
               <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700">{tr("pages.flyer.aiGenerated")}</span>
-              <span className="text-[10px] text-gray-400">{tr("pages.flyer.editFreely")}</span>
+              <span className="text-[10px] text-slate-400">{tr("pages.flyer.editFreely")}</span>
             </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
             />
           </div>
 
           {/* Divider */}
-          <div className="border-t border-gray-200" />
+          <div className="border-t border-slate-200" />
 
           {/* Agent Info + QR Code */}
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{tr("pages.flyer.yourAgent")}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{tr("pages.flyer.yourAgent")}</span>
               <div className="flex items-center gap-3">
                 {agent.avatarUrl ? (
-                  <img src={agent.avatarUrl} alt={tr("pages.flyer.agentAlt")} className="h-12 w-12 rounded-full object-cover border border-gray-200" />
+                  <img src={agent.avatarUrl} alt={tr("pages.flyer.agentAlt")} className="h-12 w-12 rounded-full object-cover border border-slate-200" />
                 ) : (
-                  <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-lg font-bold text-gray-500">
+                  <div className="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center text-lg font-bold text-slate-500">
                     {(agent.name || "A").charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div>
-                  <input value={agent.name} onChange={(e) => setAgent((a) => ({ ...a, name: e.target.value }))} className="text-sm font-semibold text-gray-900 border-0 border-b border-dashed border-gray-200 focus:border-blue-500 focus:outline-none" placeholder={tr("pages.flyer.yourName")} />
-                  <input value={agent.phone} onChange={(e) => setAgent((a) => ({ ...a, phone: e.target.value }))} className="block text-xs text-gray-600 border-0 border-b border-dashed border-gray-200 focus:border-blue-500 focus:outline-none mt-0.5" placeholder={tr("pages.flyer.phone")} />
-                  <input value={agent.email} onChange={(e) => setAgent((a) => ({ ...a, email: e.target.value }))} className="block text-xs text-gray-600 border-0 border-b border-dashed border-gray-200 focus:border-blue-500 focus:outline-none mt-0.5" placeholder={tr("pages.flyer.email")} />
+                  <input value={agent.name} onChange={(e) => setAgent((a) => ({ ...a, name: e.target.value }))} className="text-sm font-semibold text-slate-900 border-0 border-b border-dashed border-slate-200 focus:border-blue-500 focus:outline-none" placeholder={tr("pages.flyer.yourName")} />
+                  <input value={agent.phone} onChange={(e) => setAgent((a) => ({ ...a, phone: e.target.value }))} className="block text-xs text-slate-600 border-0 border-b border-dashed border-slate-200 focus:border-blue-500 focus:outline-none mt-0.5" placeholder={tr("pages.flyer.phone")} />
+                  <input value={agent.email} onChange={(e) => setAgent((a) => ({ ...a, email: e.target.value }))} className="block text-xs text-slate-600 border-0 border-b border-dashed border-slate-200 focus:border-blue-500 focus:outline-none mt-0.5" placeholder={tr("pages.flyer.email")} />
                 </div>
               </div>
-              {agent.brandName && <p className="text-xs text-gray-400">{agent.brandName}</p>}
+              {agent.brandName && <p className="text-xs text-slate-400">{agent.brandName}</p>}
             </div>
 
             <div className="text-center shrink-0">
-              <div ref={qrRef} className="bg-white p-1 rounded-lg border border-gray-200">
+              <div ref={qrRef} className="bg-white p-1 rounded-lg border border-slate-200">
                 {mounted && signupUrl ? <QRCode value={signupUrl} size={100} /> : null}
               </div>
-              <p className="text-[10px] text-gray-500 mt-1">{tr("pages.flyer.scanToRegister")}</p>
+              <p className="text-[10px] text-slate-500 mt-1">{tr("pages.flyer.scanToRegister")}</p>
             </div>
           </div>
         </div>

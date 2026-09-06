@@ -161,7 +161,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
+        className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
       >
         <Send className="h-3.5 w-3.5" aria-hidden />{t("pages.sendRecommendations.title")}</button>
 
@@ -173,14 +173,14 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
           }}
         >
           <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-              <h2 className="text-base font-semibold text-gray-900">{t("pages.dashFragments.sendProperties")}{contactFirstName ? ` to ${contactFirstName}` : ""}
+            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+              <h2 className="text-base font-semibold text-slate-900">{t("pages.dashFragments.sendProperties")}{contactFirstName ? ` to ${contactFirstName}` : ""}
               </h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("pages.sendRecommendations.close")}
-                className="inline-flex h-7 w-7 items-center justify-center rounded text-gray-400 hover:bg-gray-100"
+                className="inline-flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -190,21 +190,21 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Composer */}
               <div className="space-y-3">
                 <label className="block">
-                  <span className="text-xs font-medium text-gray-600">{t("pages.sendRecommendations.subject")}</span>
+                  <span className="text-xs font-medium text-slate-600">{t("pages.sendRecommendations.subject")}</span>
                   <input
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="mt-0.5 w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+                    className="mt-0.5 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-medium text-gray-600">{t("pages.sendRecommendations.note")}</span>
+                  <span className="text-xs font-medium text-slate-600">{t("pages.sendRecommendations.note")}</span>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     rows={3}
                     placeholder={t("pages.sendRecommendations.samplePreview")}
-                    className="mt-0.5 w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
+                    className="mt-0.5 w-full rounded border border-slate-300 px-2 py-1.5 text-sm"
                   />
                 </label>
               </div>
@@ -212,11 +212,11 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Quick pick from favorites */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t("pages.dashFragments.pickFavorites")}{favorites.length})
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dashFragments.pickFavorites")}{favorites.length})
                   </h3>
                 </div>
                 {favorites.length === 0 ? (
-                  <div className="rounded border border-dashed border-gray-200 p-3 text-center text-xs text-gray-500">{t("pages.sendRecommendations.noFavorites")}</div>
+                  <div className="rounded border border-dashed border-slate-200 p-3 text-center text-xs text-slate-500">{t("pages.sendRecommendations.noFavorites")}</div>
                 ) : (
                   <ul className="grid gap-2 sm:grid-cols-2">
                     {favorites.map((f) => {
@@ -229,7 +229,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                             className={`flex w-full items-start gap-3 rounded-lg border p-2 text-left transition-colors ${
                               isPicked
                                 ? "border-emerald-300 bg-emerald-50"
-                                : "border-gray-200 bg-white hover:border-gray-300"
+                                : "border-slate-200 bg-white hover:border-slate-300"
                             }`}
                           >
                             {f.photoUrl ? (
@@ -239,16 +239,16 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                                 className="h-14 w-14 shrink-0 rounded object-cover"
                               />
                             ) : (
-                              <div className="h-14 w-14 shrink-0 rounded bg-gray-100" />
+                              <div className="h-14 w-14 shrink-0 rounded bg-slate-100" />
                             )}
                             <div className="min-w-0">
-                              <div className="truncate text-sm font-medium text-gray-900">
+                              <div className="truncate text-sm font-medium text-slate-900">
                                 {f.price ? `$${Math.round(f.price / 1000)}K` : "—"}
                               </div>
-                              <div className="truncate text-xs text-gray-500">
+                              <div className="truncate text-xs text-slate-500">
                                 {f.address ?? f.propertyId}
                               </div>
-                              <div className="mt-0.5 text-[10px] text-gray-400">
+                              <div className="mt-0.5 text-[10px] text-slate-400">
                                 {[
                                   f.beds ? `${f.beds}bd` : null,
                                   f.baths ? `${f.baths}ba` : null,
@@ -269,15 +269,15 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Picked list */}
               {picked.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{t("pages.dashFragments.willSend")}{picked.length})
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dashFragments.willSend")}{picked.length})
                   </h3>
                   <ul className="space-y-1">
                     {picked.map((p) => (
                       <li
                         key={p.propertyId}
-                        className="flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-2 py-1 text-xs"
+                        className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs"
                       >
-                        <span className="truncate text-gray-800">{p.address}</span>
+                        <span className="truncate text-slate-800">{p.address}</span>
                         <button
                           type="button"
                           onClick={() =>
@@ -295,14 +295,14 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               )}
 
               {/* Signature control — per-send toggle + preview */}
-              <div className="rounded-lg border border-gray-200 bg-gray-50/80 p-3">
+              <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <label className="flex items-center gap-2 text-xs text-gray-700">
+                  <label className="flex items-center gap-2 text-xs text-slate-700">
                     <input
                       type="checkbox"
                       checked={!suppressSignature}
                       onChange={(e) => setSuppressSignature(!e.target.checked)}
-                      className="h-3.5 w-3.5 accent-gray-900"
+                      className="h-3.5 w-3.5 accent-slate-900"
                     />{t("pages.sendRecommendations.includeSignature")}</label>
                   <button
                     type="button"
@@ -318,7 +318,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 </div>
                 {!suppressSignature && signaturePreview.kind === "ready" && (
                   <div
-                    className="mt-2 rounded border border-gray-200 bg-white p-3 text-xs text-gray-700"
+                    className="mt-2 rounded border border-slate-200 bg-white p-3 text-xs text-slate-700"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(signaturePreview.html) }}
                   />
                 )}
@@ -327,7 +327,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                     {signaturePreview.msg}
                   </div>
                 )}
-                <p className="mt-1.5 text-[10px] text-gray-500">
+                <p className="mt-1.5 text-[10px] text-slate-500">
                   {t("pages.sendRecommendations.brandingHint")}
                 </p>
               </div>
@@ -342,17 +342,17 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-5 py-3">
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 px-5 py-3">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700"
               >{t("pages.sendRecommendations.cancel")}</button>
               <button
                 type="button"
                 onClick={send}
                 disabled={picked.length === 0 || sending}
-                className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
                 {sending ? t("common:status.sending") : `Send ${picked.length || ""}`}

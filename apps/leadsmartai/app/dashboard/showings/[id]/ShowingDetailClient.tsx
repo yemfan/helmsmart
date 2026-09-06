@@ -24,7 +24,7 @@ const STATUS_LABEL: Record<ShowingStatus, string> = {
 const STATUS_BADGE: Record<ShowingStatus, string> = {
   scheduled: "bg-blue-100 text-blue-800",
   attended: "bg-green-100 text-green-800",
-  cancelled: "bg-gray-100 text-gray-600",
+  cancelled: "bg-slate-100 text-slate-600",
   no_show: "bg-amber-100 text-amber-800",
 };
 

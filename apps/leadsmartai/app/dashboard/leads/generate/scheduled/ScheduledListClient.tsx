@@ -167,10 +167,10 @@ function Section({
     <section>
       <h2
         className={`mb-2 text-sm font-semibold ${
-          accent === "red" ? "text-red-700" : "text-gray-900"
+          accent === "red" ? "text-red-700" : "text-slate-900"
         }`}
       >
-        {title} <span className="text-gray-400">({count})</span>
+        {title} <span className="text-slate-400">({count})</span>
       </h2>
       {children}
     </section>
@@ -193,9 +193,9 @@ function RowTable({
   locale: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
       <table className="min-w-full text-sm">
-        <thead className="bg-gray-50/60 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <thead className="bg-slate-50/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-4 py-3">{t("scheduled.columns.caption")}</th>
             <th className="px-3 py-3">{t("scheduled.columns.platform_page")}</th>
@@ -206,15 +206,15 @@ function RowTable({
             <th className="px-3 py-3 w-1" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-slate-100">
           {rows.map((r) => (
-            <tr key={r.id} className="text-gray-800 align-top">
+            <tr key={r.id} className="text-slate-800 align-top">
               <td className="px-4 py-3 max-w-md">
-                <div className="line-clamp-2 text-sm text-gray-800">
+                <div className="line-clamp-2 text-sm text-slate-800">
                   {r.caption}
                 </div>
                 {r.hashtags.length > 0 && (
-                  <div className="mt-1 truncate text-xs text-gray-500">
+                  <div className="mt-1 truncate text-xs text-slate-500">
                     {r.hashtags.map((tag) => `#${tag}`).join(" ")}
                   </div>
                 )}
@@ -222,15 +222,15 @@ function RowTable({
                   <div className="mt-1 text-xs text-red-700">{r.lastError}</div>
                 )}
               </td>
-              <td className="px-3 py-3 text-gray-700">
+              <td className="px-3 py-3 text-slate-700">
                 <PlatformBadge platform={r.platform} t={t} />
-                <div className="mt-0.5 text-xs text-gray-500">
+                <div className="mt-0.5 text-xs text-slate-500">
                   {r.platform === "instagram" && r.igBusinessUsername
                     ? `@${r.igBusinessUsername}`
                     : r.pageName ?? t("scheduled.row.empty_value")}
                 </div>
               </td>
-              <td className="px-3 py-3 text-gray-700">
+              <td className="px-3 py-3 text-slate-700">
                 {variant === "recent" && r.publishedAt
                   ? new Date(r.publishedAt).toLocaleString(locale)
                   : new Date(r.scheduledFor).toLocaleString(locale)}
@@ -280,7 +280,7 @@ function RowActions({
           href={row.publishedUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
           title={t("scheduled.row.view_tooltip")}
         >
           {t("scheduled.row.view")}
@@ -291,7 +291,7 @@ function RowActions({
           type="button"
           onClick={() => onCancel(row.id)}
           disabled={busy}
-          className="rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
         >
           {busy ? t("scheduled.row.busy") : t("scheduled.row.cancel")}
         </button>
@@ -305,7 +305,7 @@ function PlatformBadge({ platform, t }: { platform: string; t: ScheduledT }) {
     facebook: { bg: "bg-blue-100", fg: "text-blue-700" },
     instagram: { bg: "bg-pink-100", fg: "text-pink-700" },
   };
-  const tone = tones[platform] ?? { bg: "bg-gray-100", fg: "text-gray-700" };
+  const tone = tones[platform] ?? { bg: "bg-slate-100", fg: "text-slate-700" };
   const label = t(`scheduled.platform.${platform}`, { defaultValue: platform });
   return (
     <span
@@ -322,9 +322,9 @@ function StatusBadge({ status, t }: { status: string; t: ScheduledT }) {
     posting: { bg: "bg-amber-100", fg: "text-amber-900" },
     posted: { bg: "bg-emerald-100", fg: "text-emerald-800" },
     failed: { bg: "bg-red-100", fg: "text-red-700" },
-    cancelled: { bg: "bg-gray-100", fg: "text-gray-600" },
+    cancelled: { bg: "bg-slate-100", fg: "text-slate-600" },
   };
-  const tone = tones[status] ?? { bg: "bg-gray-100", fg: "text-gray-700" };
+  const tone = tones[status] ?? { bg: "bg-slate-100", fg: "text-slate-700" };
   const label = t(`scheduled.status.${status}`, { defaultValue: status });
   return (
     <span
@@ -337,7 +337,7 @@ function StatusBadge({ status, t }: { status: string; t: ScheduledT }) {
 
 function EmptyState({ t }: { t: ScheduledT }) {
   return (
-    <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/40 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/40 p-8 text-center">
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
         <svg
           className="h-6 w-6"
@@ -353,10 +353,10 @@ function EmptyState({ t }: { t: ScheduledT }) {
           />
         </svg>
       </div>
-      <h2 className="text-base font-semibold text-gray-900">
+      <h2 className="text-base font-semibold text-slate-900">
         {t("scheduled.empty.title")}
       </h2>
-      <p className="mt-1 text-sm text-gray-500">{t("scheduled.empty.body")}</p>
+      <p className="mt-1 text-sm text-slate-500">{t("scheduled.empty.body")}</p>
       <Link
         href="/dashboard/leads/generate/post/new"
         className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"

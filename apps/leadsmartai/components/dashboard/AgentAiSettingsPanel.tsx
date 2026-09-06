@@ -103,7 +103,7 @@ export default function AgentAiSettingsPanel({
 
   if (loading) {
     return (
-      <div className="text-sm text-gray-500 py-4" aria-busy="true">
+      <div className="text-sm text-slate-500 py-4" aria-busy="true">
         {t("pages.agentAiSettings.loading")}
       </div>
     );
@@ -111,10 +111,10 @@ export default function AgentAiSettingsPanel({
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-600">{t("pages.agentAiSettings.intro")}</p>
+      <p className="text-xs text-slate-600">{t("pages.agentAiSettings.intro")}</p>
 
       <div className="space-y-2">
-        <span className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.personality")}</span>
+        <span className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.personality")}</span>
         <div className="flex flex-wrap gap-2">
           {(["friendly", "professional", "luxury"] as const).map((p) => (
             <label
@@ -122,7 +122,7 @@ export default function AgentAiSettingsPanel({
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer text-sm ${
                 settings.personality === p
                   ? "border-brand-accent bg-brand-accent/5"
-                  : "border-gray-200 hover:border-gray-300"
+                  : "border-slate-200 hover:border-slate-300"
               }`}
             >
               <input
@@ -139,9 +139,9 @@ export default function AgentAiSettingsPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
+        <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
         <select
-          className="w-full max-w-xs border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+          className="w-full max-w-xs border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
           value={settings.defaultLanguage}
           onChange={(e) =>
             setSettings((s) => ({
@@ -161,7 +161,7 @@ export default function AgentAiSettingsPanel({
           ))}
           <option value="auto">{t("pages.agentAiSettings.autoMatch")}</option>
         </select>
-        <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.languageHint")}</p>
+        <p className="text-[11px] text-slate-500">{t("pages.agentAiSettings.languageHint")}</p>
       </div>
 
       <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -180,10 +180,10 @@ export default function AgentAiSettingsPanel({
           changes how every message reads. */}
       <AdvancedSection count={3}>
         <div className="space-y-1">
-          <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-gray-400 font-normal">(optional, max 500 chars)</span>
+          <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-slate-400 font-normal">(optional, max 500 chars)</span>
           </label>
           <textarea
-            className="w-full min-h-[88px] border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full min-h-[88px] border border-slate-300 rounded-lg px-3 py-2 text-sm"
             placeholder={t("pages.agentAiSettings.stylePlaceholder")}
             maxLength={500}
             value={settings.styleNotes ?? ""}
@@ -191,10 +191,10 @@ export default function AgentAiSettingsPanel({
           />
         </div>
 
-        <div className="space-y-1 border-t border-gray-100 pt-4">
+        <div className="space-y-1 border-t border-slate-100 pt-4">
           <div className="flex items-center justify-between">
-            <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
-              <span className="font-normal text-gray-400">(social cards)</span>
+            <label className="block text-[11px] font-medium text-slate-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
+              <span className="font-normal text-slate-400">(social cards)</span>
             </label>
             {!canCustomizeBrand && (
               <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">{t("pages.agentAiSettings.signature")}</span>
@@ -211,7 +211,7 @@ export default function AgentAiSettingsPanel({
                   : "#0072ce"
               }
               onChange={(e) => setSettings((s) => ({ ...s, brandColor: e.target.value }))}
-              className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-slate-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
             />
             <input
               id="brand-color"
@@ -224,21 +224,21 @@ export default function AgentAiSettingsPanel({
               onChange={(e) =>
                 setSettings((s) => ({ ...s, brandColor: e.target.value || null }))
               }
-              className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-400"
+              className="w-32 rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
             />
             {settings.brandColor && (
               <button
                 type="button"
                 disabled={!canCustomizeBrand}
                 onClick={() => setSettings((s) => ({ ...s, brandColor: null }))}
-                className="text-[11px] text-gray-500 underline-offset-2 hover:underline disabled:opacity-50"
+                className="text-[11px] text-slate-500 underline-offset-2 hover:underline disabled:opacity-50"
               >{t("pages.agentAiSettings.reset")}</button>
             )}
           </div>
           {canCustomizeBrand ? (
-            <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.accentHint")}</p>
+            <p className="text-[11px] text-slate-500">{t("pages.agentAiSettings.accentHint")}</p>
           ) : (
-            <p className="text-[11px] text-gray-500">{t("pages.dashFragments.ownBrandColor")}{" "}
+            <p className="text-[11px] text-slate-500">{t("pages.dashFragments.ownBrandColor")}{" "}
               <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.agentAiSettings.signature")}</a>
               .
             </p>
@@ -248,8 +248,8 @@ export default function AgentAiSettingsPanel({
           )}
         </div>
 
-        <div className="border-t border-gray-100 pt-4">
-          <div className="text-sm font-semibold text-gray-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
+        <div className="border-t border-slate-100 pt-4">
+          <div className="text-sm font-semibold text-slate-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
           <PersonalityPreview personality={settings.personality} />
         </div>
       </AdvancedSection>

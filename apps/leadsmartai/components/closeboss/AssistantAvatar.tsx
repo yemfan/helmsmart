@@ -84,7 +84,7 @@ export function AssistantAvatarPicker({
             onClick={() => onSelect(id)}
             title={id}
             className={`rounded-full p-0.5 transition disabled:cursor-default disabled:opacity-60 ${
-              selected ? "ring-2 ring-[#0072ce] ring-offset-1" : "ring-2 ring-transparent hover:ring-gray-200"
+              selected ? "ring-2 ring-[#0072ce] ring-offset-1" : "ring-2 ring-transparent hover:ring-slate-200"
             }`}
             style={{ lineHeight: 0, background: "transparent" }}
           >

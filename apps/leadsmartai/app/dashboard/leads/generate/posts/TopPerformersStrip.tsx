@@ -24,9 +24,9 @@ export default async function TopPerformersStrip({
   const locale = await getServerLocale();
   return (
     <section className="mb-6">
-      <h2 className="mb-3 flex items-baseline gap-2 text-sm font-semibold text-gray-700">
+      <h2 className="mb-3 flex items-baseline gap-2 text-sm font-semibold text-slate-700">
         {t("top_performers.title", { ns: "web_posts" })}
-        <span className="text-xs font-normal text-gray-500">
+        <span className="text-xs font-normal text-slate-500">
           {t("top_performers.window", { ns: "web_posts", days: windowDays })}
         </span>
       </h2>
@@ -79,7 +79,7 @@ function Card({
     .slice(0, 3);
 
   const Inner = (
-    <article className="group relative h-full overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-sm transition hover:border-blue-200 hover:shadow-md">
+    <article className="group relative h-full overflow-hidden rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-blue-200 hover:shadow-md">
       <div className="flex gap-3">
         {item.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -89,7 +89,7 @@ function Card({
             className="h-16 w-16 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-lg font-bold text-gray-400">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-400">
             #{rank}
           </div>
         )}
@@ -100,26 +100,26 @@ function Card({
             >
               {platformLabel}
             </span>
-            <span className="truncate text-gray-600">{accountName}</span>
+            <span className="truncate text-slate-600">{accountName}</span>
           </div>
-          <p className="line-clamp-2 text-sm text-gray-800">{item.caption}</p>
+          <p className="line-clamp-2 text-sm text-slate-800">{item.caption}</p>
         </div>
       </div>
 
       <div className="mt-3 flex items-baseline gap-1.5">
-        <span className="text-2xl font-bold text-gray-900">
+        <span className="text-2xl font-bold text-slate-900">
           {item.engagementScore.toLocaleString(locale)}
         </span>
-        <span className="text-xs font-medium text-gray-500">
+        <span className="text-xs font-medium text-slate-500">
           {t("top_performers.total_engagement", { ns: "web_posts" })}
         </span>
       </div>
 
       {ranked.length > 0 && (
-        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500">
+        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
           {ranked.map((c) => (
             <span key={c.label}>
-              <strong className="text-gray-700">
+              <strong className="text-slate-700">
                 {c.value!.toLocaleString(locale)}
               </strong>{" "}
               {c.label}
@@ -129,7 +129,7 @@ function Card({
       )}
 
       {publishedAt && (
-        <p className="mt-2 text-[11px] text-gray-400">
+        <p className="mt-2 text-[11px] text-slate-400">
           {publishedAt.toLocaleString(locale, {
             month: "short",
             day: "numeric",

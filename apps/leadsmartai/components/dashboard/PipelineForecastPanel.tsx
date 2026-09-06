@@ -94,7 +94,7 @@ export function PipelineForecastPanel() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="h-32 animate-pulse rounded-lg bg-slate-100" aria-hidden />
       </div>
     );

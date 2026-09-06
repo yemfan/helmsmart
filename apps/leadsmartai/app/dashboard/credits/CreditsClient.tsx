@@ -170,7 +170,7 @@ export default function CreditsClient({
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-6">
       {/* Header + balance */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="h-1.5 w-full" style={{ background: BRAND }} />
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div>
@@ -178,7 +178,7 @@ export default function CreditsClient({
             <p className="mt-1 text-sm text-brand-text/60">{tr("pages.credits.everythingIncluded")}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">{tr("more.credits.balance")}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{tr("more.credits.balance")}</p>
             <p className="text-3xl font-extrabold text-brand-text">
               {balance === null ? "…" : balance.toLocaleString()}
             </p>
@@ -187,16 +187,16 @@ export default function CreditsClient({
 
         {/* Current plan — the app should be able to answer "what am I on?" */}
         {plan && (
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 px-6 py-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">{tr("more.credits.currentPlan")}</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{tr("more.credits.currentPlan")}</p>
               <p className="mt-0.5 text-lg font-bold text-brand-text">
                 {plan.name}
                 {plan.priceUsd !== null && (
-                  <span className="ml-1 text-sm font-normal text-gray-500">${plan.priceUsd}/mo</span>
+                  <span className="ml-1 text-sm font-normal text-slate-500">${plan.priceUsd}/mo</span>
                 )}
               </p>
-              <p className="mt-0.5 text-xs text-gray-500">
+              <p className="mt-0.5 text-xs text-slate-500">
                 {plan.planId === null ? (
                   <>{tr("more.credits.paygHelp")}</>
                 ) : plan.cancelAtPeriodEnd && plan.renewsAt ? (
@@ -213,7 +213,7 @@ export default function CreditsClient({
                 type="button"
                 onClick={() => void openPortal()}
                 disabled={portalBusy}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-60"
               >
                 {portalBusy ? tr("common:status.opening") : tr("more.credits.managePlan")}
               </button>
@@ -237,14 +237,14 @@ export default function CreditsClient({
       {/* Monthly plans */}
       <section>
         <h2 className="mb-1 text-lg font-bold text-brand-text">{cadence === "annual" ? tr("more.credits.annualPlans") : tr("more.credits.monthlyPlans")}</h2>
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-slate-500">
           {tr("more.credits.monthlyHelp")}
         </p>
 
         {/* Shown only when a real annual price exists to sell. */}
         {annualOffered && (
           <div className="mb-4 flex justify-center">
-            <div className="inline-flex rounded-full border border-gray-200 bg-white p-1 shadow-sm">
+            <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
               {(["monthly", "annual"] as const).map((c) => (
                 <button
                   key={c}
@@ -252,7 +252,7 @@ export default function CreditsClient({
                   onClick={() => setCadence(c)}
                   aria-pressed={cadence === c}
                   className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-                    cadence === c ? "text-white" : "text-gray-600 hover:text-gray-900"
+                    cadence === c ? "text-white" : "text-slate-600 hover:text-slate-900"
                   }`}
                   style={cadence === c ? { background: BRAND } : undefined}
                 >
@@ -291,7 +291,7 @@ export default function CreditsClient({
               <div
                 key={t.id}
                 className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
-                  isCurrent ? "border-[#0072ce] ring-2 ring-[#0072ce]/20" : "border-gray-200"
+                  isCurrent ? "border-[#0072ce] ring-2 ring-[#0072ce]/20" : "border-slate-200"
                 }`}
               >
                 <p className="text-sm font-semibold" style={{ color: BRAND }}>
@@ -303,7 +303,7 @@ export default function CreditsClient({
                     rise rather than a discount. */}
                 <p className="mt-1 text-3xl font-extrabold text-brand-text">
                   ${annualYear !== null ? (annualYear / 12).toFixed(2) : t.priceUsd}
-                  <span className="text-base font-normal text-gray-500">/mo</span>
+                  <span className="text-base font-normal text-slate-500">/mo</span>
                 </p>
                 {annualYear !== null && (
                   <p className="mt-0.5 text-xs font-medium text-emerald-700">
@@ -313,17 +313,17 @@ export default function CreditsClient({
                     })}
                   </p>
                 )}
-                <p className="mt-1 text-sm font-semibold text-gray-700">
+                <p className="mt-1 text-sm font-semibold text-slate-700">
                   {t.monthlyCredits.toLocaleString()} {tr("pages.dashFragments.creditsPerMo")}</p>
                 {/* Computed from CREDIT_COSTS, never hand-written: these numbers
                     have been wrong twice when someone typed them into a blurb. */}
-                <p className="mt-0.5 text-xs text-gray-500">
+                <p className="mt-0.5 text-xs text-slate-500">
                   {tr("pages.credits.planUsage", {
                     minutes: approxCallMinutes(t.monthlyCredits).toLocaleString(),
                     videos: approxVideos(t.monthlyCredits, "twinAvatar").toLocaleString(),
                   })}
                 </p>
-                <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
+                <p className="mt-1 flex-1 text-xs text-slate-500">{t.blurb}</p>
                 <button
                   type="button"
                   onClick={() =>
@@ -348,9 +348,9 @@ export default function CreditsClient({
           })}
         </div>
         {plan?.planId && (
-          <p className="mt-3 text-xs text-gray-500">{tr("pages.credits.switchingNote")}</p>
+          <p className="mt-3 text-xs text-slate-500">{tr("pages.credits.switchingNote")}</p>
         )}
-        <p className="mt-3 text-xs text-gray-500">
+        <p className="mt-3 text-xs text-slate-500">
           {tr("more.credits.teamPrompt")}{" "}
           <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}{tr("pages.dashFragments.forMultipleAgents")}</p>
       </section>
@@ -358,20 +358,20 @@ export default function CreditsClient({
       {/* Top-up packs */}
       <section>
         <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.topUpPacks")}</h2>
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-slate-500">
           {tr("more.credits.topUpHelp")}
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {CREDIT_PACKS.map((p) => (
-            <div key={p.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div key={p.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <p className="text-2xl font-extrabold text-brand-text">{p.credits.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">{tr("more.credits.creditsUnit")}</p>
+              <p className="text-xs text-slate-500">{tr("more.credits.creditsUnit")}</p>
               <p className="mt-3 flex-1 text-lg font-bold text-brand-text">${p.priceUsd}</p>
               <button
                 type="button"
                 onClick={() => void go("/api/credits/topup", { packId: p.id }, `pack:${p.id}`)}
                 disabled={busy !== null}
-                className="mt-4 w-full rounded-xl border py-2.5 text-sm font-bold shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-4 w-full rounded-xl border py-2.5 text-sm font-bold shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 style={{ borderColor: BRAND, color: BRAND }}
               >
                 {busy === `pack:${p.id}` ? tr("common:status.redirecting") : "Buy"}
@@ -382,7 +382,7 @@ export default function CreditsClient({
       </section>
 
       {/* Manage billing / invoices (Stripe portal) */}
-      <div className="border-t border-gray-100 pt-4">
+      <div className="border-t border-slate-100 pt-4">
         <button
           type="button"
           onClick={() => void openPortal()}

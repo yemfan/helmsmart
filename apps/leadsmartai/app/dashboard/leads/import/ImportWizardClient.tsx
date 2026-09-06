@@ -192,24 +192,24 @@ export function ImportWizardClient() {
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
       <div>
-        <Link href="/dashboard/leads" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+        <Link href="/dashboard/leads" className="text-sm font-medium text-slate-600 hover:text-slate-900">
           {t("pages.importWizard.backToLeads")}
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("pages.importWizard.heading")}</h1>
-        <p className="text-sm text-gray-600">{t("pages.importWizard.sub")}</p>
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900">{t("pages.importWizard.heading")}</h1>
+        <p className="text-sm text-slate-600">{t("pages.importWizard.sub")}</p>
       </div>
 
       {error ? <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</div> : null}
 
       {step === 1 && (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step1")}</h2>
-          <p className="mt-1 text-sm text-gray-600">{t("pages.importWizard.step1Hint")}</p>
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.importWizard.step1")}</h2>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.importWizard.step1Hint")}</p>
           <label
             className={`mt-4 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 transition ${
               loading
-                ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
-                : "border-gray-300 bg-gray-50/50 hover:border-blue-400 hover:bg-blue-50/30"
+                ? "border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed"
+                : "border-slate-300 bg-slate-50/50 hover:border-blue-400 hover:bg-blue-50/30"
             }`}
             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
             onDrop={(e) => {
@@ -219,13 +219,13 @@ export function ImportWizardClient() {
               if (f && !loading) void onUpload(f);
             }}
           >
-            <svg className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
             </svg>
-            <span className="mt-3 text-sm font-semibold text-gray-700">
+            <span className="mt-3 text-sm font-semibold text-slate-700">
               {loading ? t("pages.importWizard.uploading") : t("pages.importWizard.dropzone")}
             </span>
-            <span className="mt-1 text-xs text-gray-500">{t("pages.importWizard.csvOnly")}</span>
+            <span className="mt-1 text-xs text-slate-500">{t("pages.importWizard.csvOnly")}</span>
             <input
               type="file"
               accept=".csv,text/csv"
@@ -241,13 +241,13 @@ export function ImportWizardClient() {
       )}
 
       {step === 2 && (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step2")}</h2>
-          <p className="mt-1 text-sm text-gray-600">{t("pages.importWizard.rowsJob", { rows: rowCount.toLocaleString(), job: jobId })}</p>
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.importWizard.step2")}</h2>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.importWizard.rowsJob", { rows: rowCount.toLocaleString(), job: jobId })}</p>
           <label className="mt-3 block text-sm">
-            <span className="font-medium text-gray-700">{t("pages.importWizard.importingFrom")}</span>
+            <span className="font-medium text-slate-700">{t("pages.importWizard.importingFrom")}</span>
             <select
-              className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm sm:w-64"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-2 text-sm sm:w-64"
               value={preset}
               onChange={(e) => {
                 const key = e.target.value;
@@ -263,15 +263,15 @@ export function ImportWizardClient() {
               ))}
             </select>
           </label>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-xs text-slate-500">
             {t("pages.importWizard.autoDetect")}
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {MAP_FIELDS.map(({ key, labelKey }) => (
               <label key={key} className="block text-sm">
-                <span className="font-medium text-gray-700">{t(labelKey)}</span>
+                <span className="font-medium text-slate-700">{t(labelKey)}</span>
                 <select
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm"
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-2 text-sm"
                   value={mapping[key]}
                   onChange={(e) => setMapping((m) => ({ ...m, [key]: e.target.value }))}
                 >
@@ -286,7 +286,7 @@ export function ImportWizardClient() {
             ))}
           </div>
           <div className="mt-4">
-            <span className="text-sm font-medium text-gray-700">{t("pages.importWizard.duplicateHandling")}</span>
+            <span className="text-sm font-medium text-slate-700">{t("pages.importWizard.duplicateHandling")}</span>
             <div className="mt-2 flex flex-wrap gap-3 text-sm">
               <label className="flex items-center gap-2">
                 <input
@@ -314,24 +314,24 @@ export function ImportWizardClient() {
           <button
             type="button"
             disabled={loading}
-            className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+            className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             onClick={() => void runPreview()}
           >{t("pages.importWizard.preview")}</button>
         </section>
       )}
 
       {step === 3 && (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step3")}</h2>
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.importWizard.step3")}</h2>
           {stats ? (
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-slate-600">
               {t("pages.importWizard.rowsAndDupes", { total: stats.total, dupes: stats.likelyDuplicates })}
             </p>
           ) : null}
           <div className="mt-4 overflow-x-auto">
             <table className="min-w-full text-xs">
               <thead>
-                <tr className="text-left text-gray-600">
+                <tr className="text-left text-slate-600">
                   <th className="px-2 py-1">#</th>
                   <th className="px-2 py-1">{t("pages.importWizard.colName")}</th>
                   <th className="px-2 py-1">{t("pages.importWizard.colEmail")}</th>
@@ -341,7 +341,7 @@ export function ImportWizardClient() {
               </thead>
               <tbody>
                 {preview.map((p) => (
-                  <tr key={p.row_index} className="border-t border-gray-100">
+                  <tr key={p.row_index} className="border-t border-slate-100">
                     <td className="px-2 py-1">{p.row_index}</td>
                     <td className="px-2 py-1">{String(p.normalized_payload?.name ?? "")}</td>
                     <td className="px-2 py-1">{String(p.normalized_payload?.email ?? "")}</td>
@@ -357,37 +357,37 @@ export function ImportWizardClient() {
           <button
             type="button"
             disabled={loading}
-            className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+            className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             onClick={() => void runFinalize()}
           >{t("pages.importWizard.runImport")}</button>
         </section>
       )}
 
       {step === 4 && summary && (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step4")}</h2>
-          <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.importWizard.step4")}</h2>
+          <ul className="mt-2 list-disc pl-5 text-sm text-slate-700">
             <li>{t("pages.importWizard.inserted", { count: summary.inserted })}</li>
             <li>{t("pages.importWizard.merged", { count: summary.merged })}</li>
             <li>{t("pages.importWizard.skipped", { count: summary.skipped })}</li>
             <li>{t("pages.importWizard.errors", { count: summary.errors })}</li>
           </ul>
-          <Link href="/dashboard/leads" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">{t("pages.importWizard.viewLeads")}</Link>
+          <Link href="/dashboard/leads" className="mt-4 inline-block text-sm font-medium text-slate-900 underline">{t("pages.importWizard.viewLeads")}</Link>
         </section>
       )}
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.history")}</h2>
-          <button type="button" className="text-sm text-gray-600 hover:text-gray-900" onClick={() => void loadHistory()}>{t("pages.importWizard.refresh")}</button>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.importWizard.history")}</h2>
+          <button type="button" className="text-sm text-slate-600 hover:text-slate-900" onClick={() => void loadHistory()}>{t("pages.importWizard.refresh")}</button>
         </div>
-        <ul className="mt-3 divide-y divide-gray-100 text-sm">
-          {history.length === 0 ? <li className="py-2 text-gray-500">{t("pages.importWizard.noImports")}</li> : null}
+        <ul className="mt-3 divide-y divide-slate-100 text-sm">
+          {history.length === 0 ? <li className="py-2 text-slate-500">{t("pages.importWizard.noImports")}</li> : null}
           {(history as Array<Record<string, unknown>>).map((j) => (
             <li key={String(j.id)} className="py-2 flex flex-wrap justify-between gap-2">
-              <span className="text-gray-800">{String(j.file_name ?? j.intake_channel ?? "job")}</span>
-              <span className="text-gray-500">{String(j.status ?? "")}</span>
-              <span className="text-gray-400 text-xs w-full">
+              <span className="text-slate-800">{String(j.file_name ?? j.intake_channel ?? "job")}</span>
+              <span className="text-slate-500">{String(j.status ?? "")}</span>
+              <span className="text-slate-400 text-xs w-full">
                 {j.created_at ? new Date(String(j.created_at)).toLocaleString() : ""}
               </span>
             </li>

@@ -26,7 +26,7 @@ export default function ToolUsagePage() {
   }, []);
 
   if (error) return <div className="p-6 text-red-600">{t("pages.toolUsage.error", { message: error })}</div>;
-  if (!data) return <div className="p-6 text-gray-500">{t("pages.toolUsage.loading")}</div>;
+  if (!data) return <div className="p-6 text-slate-500">{t("pages.toolUsage.loading")}</div>;
 
   const toolNames = Object.keys(data.tools).sort((a, b) => data.tools[b].total - data.tools[a].total);
   const dailyDays = Object.keys(data.daily).sort().reverse().slice(0, 30);
@@ -34,8 +34,8 @@ export default function ToolUsagePage() {
   return (
     <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{t("pages.toolUsage.heading")}</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-slate-900">{t("pages.toolUsage.heading")}</h1>
+        <p className="mt-1 text-sm text-slate-600">
           {t("pages.toolUsage.totals", {
             events: data.totalEvents.toLocaleString(),
             leads: data.leadCount.toLocaleString(),
@@ -44,9 +44,9 @@ export default function ToolUsagePage() {
       </div>
 
       {/* Tool breakdown table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200">
+      <div className="overflow-x-auto rounded-xl border border-slate-200">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
             <tr>
               <th className="px-4 py-3">{t("pages.toolUsage.colTool")}</th>
               <th className="px-4 py-3 text-right">{t("pages.toolUsage.colTotal")}</th>
@@ -54,10 +54,10 @@ export default function ToolUsagePage() {
               <th className="px-4 py-3 text-right">{t("pages.toolUsage.col30d")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-100">
             {toolNames.map((tool) => (
-              <tr key={tool} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-900">
+              <tr key={tool} className="hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium text-slate-900">
                   {tool.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </td>
                 <td className="px-4 py-3 text-right font-mono">{data.tools[tool].total}</td>
@@ -71,24 +71,24 @@ export default function ToolUsagePage() {
 
       {/* Daily breakdown */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">{t("pages.toolUsage.dailyHeading")}</h2>
-        <div className="mt-4 overflow-x-auto rounded-xl border border-gray-200">
+        <h2 className="text-lg font-semibold text-slate-900">{t("pages.toolUsage.dailyHeading")}</h2>
+        <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
               <tr>
                 <th className="px-4 py-3">{t("pages.toolUsage.colDate")}</th>
                 <th className="px-4 py-3 text-right">{t("pages.toolUsage.colEvents")}</th>
                 <th className="px-4 py-3">{t("pages.toolUsage.colActivity")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-100">
               {dailyDays.map((day) => {
                 const count = data.daily[day];
                 const maxCount = Math.max(...Object.values(data.daily));
                 const barWidth = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
                 return (
-                  <tr key={day} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 text-gray-700">{day}</td>
+                  <tr key={day} className="hover:bg-slate-50">
+                    <td className="px-4 py-2 text-slate-700">{day}</td>
                     <td className="px-4 py-2 text-right font-mono">{count}</td>
                     <td className="px-4 py-2">
                       <div className="h-4 rounded-full bg-blue-100" style={{ width: "100%" }}>

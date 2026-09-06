@@ -423,8 +423,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{tr("calendar.title")}</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-semibold text-slate-900">{tr("calendar.title")}</h1>
+          <p className="text-sm text-slate-500">
             {monthStats.events} {tr("pages.dashFragments.appointments")} {monthStats.tasks} {tr("pages.dashFragments.tasksSep")} {monthStats.followups} {tr("pages.dashFragments.followUps")} {monthStats.drafts} {tr("pages.dashFragments.drafts")}
           </p>
         </div>
@@ -444,29 +444,29 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
 
       {/* Add form */}
       {showAdd && (
-        <div ref={formRef} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
+        <div ref={formRef} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
           {editingEventId ? (
-            <p className="text-xs font-medium text-gray-500">{tr("calendar.editingAppointment")}</p>
+            <p className="text-xs font-medium text-slate-500">{tr("calendar.editingAppointment")}</p>
           ) : (
             <div className="flex gap-2">
-              <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.appointment")}</button>
-              <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.task")}</button>
+              <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}>{tr("calendar.appointment")}</button>
+              <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-slate-100 text-slate-700"}`}>{tr("calendar.task")}</button>
             </div>
           )}
           <div className="grid gap-3 sm:grid-cols-2">
-            <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("calendar.titlePlaceholder")} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("calendar.titlePlaceholder")} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             {editingEventId ? null : (
-              <select value={addFields.leadId} onChange={(e) => setAddFields((f) => ({ ...f, leadId: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <select value={addFields.leadId} onChange={(e) => setAddFields((f) => ({ ...f, leadId: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
                 <option value="">{tr("calendar.noContact")}</option>
                 {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
               </select>
             )}
             {editingEventId || addType === "event" ? (
-              <input type="datetime-local" value={addFields.startsAt} onChange={(e) => setAddFields((f) => ({ ...f, startsAt: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+              <input type="datetime-local" value={addFields.startsAt} onChange={(e) => setAddFields((f) => ({ ...f, startsAt: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
             ) : (
               <>
-                <input type="datetime-local" value={addFields.dueAt} onChange={(e) => setAddFields((f) => ({ ...f, dueAt: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-                <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                <input type="datetime-local" value={addFields.dueAt} onChange={(e) => setAddFields((f) => ({ ...f, dueAt: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
                   <option value="low">{tr("calendar.priority.low")}</option><option value="normal">{tr("calendar.priority.normal")}</option><option value="high">{tr("calendar.priority.high")}</option><option value="urgent">{tr("calendar.priority.urgent")}</option>
                 </select>
               </>
@@ -484,33 +484,33 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Filters + view toggle */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
-        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}>{tr("pages.calendarPage.all")}</button>
-        <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"}`}>
+        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"}`}>{tr("pages.calendarPage.all")}</button>
+        <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-500"}`}>
           <span className="h-2 w-2 rounded-full bg-blue-500" /> {tr("calendar.filters.appointments")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(true); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && showTasks && !showFollowups && !showDrafts ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(true); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && showTasks && !showFollowups && !showDrafts ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>
           <span className="h-2 w-2 rounded-full bg-green-500" /> {tr("calendar.filters.tasks")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(true); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && showFollowups && !showDrafts ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(true); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && showFollowups && !showDrafts ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
           <span className="h-2 w-2 rounded-full bg-amber-500" /> {tr("calendar.filters.followups")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(false); setShowDrafts(true); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && !showFollowups && showDrafts ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(false); setShowDrafts(true); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && !showFollowups && showDrafts ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-500"}`}>
           <span className="h-2 w-2 rounded-full bg-purple-500" /> {tr("calendar.filters.drafts")}
         </button>
         </div>
         {/* Month / List view toggle. Persisted to localStorage so the
             user's preference survives navigations. */}
-        <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white text-xs font-medium">
+        <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white text-xs font-medium">
           <button
             onClick={() => setView("month")}
-            className={`px-3 py-1 transition ${view === "month" ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-50"}`}
+            className={`px-3 py-1 transition ${view === "month" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"}`}
             aria-pressed={view === "month"}
           >
             {tr("calendar.view.month")}
           </button>
           <button
             onClick={() => setView("list")}
-            className={`px-3 py-1 transition ${view === "list" ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-50"}`}
+            className={`px-3 py-1 transition ${view === "list" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"}`}
             aria-pressed={view === "list"}
           >
             {tr("calendar.view.list")}
@@ -521,24 +521,24 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Month grid (default) or chronological list. Both respect the
           filter chips above and stay scoped to the navigated month. */}
       {view === "month" ? (
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-          <button onClick={prevMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&larr;</button>
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+          <button onClick={prevMonth} className="rounded-lg border border-slate-200 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">&larr;</button>
           <div className="text-center">
-            <h2 className="text-sm font-semibold text-gray-900">
+            <h2 className="text-sm font-semibold text-slate-900">
               {currentMonth.toLocaleDateString(timeLocale, { month: "long", year: "numeric" })}
             </h2>
           </div>
           <div className="flex gap-2">
-            <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("calendar.today")}</button>
-            <button onClick={nextMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&rarr;</button>
+            <button onClick={goToday} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">{tr("calendar.today")}</button>
+            <button onClick={nextMonth} className="rounded-lg border border-slate-200 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">&rarr;</button>
           </div>
         </div>
 
         {/* Day headers */}
-        <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50">
+        <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
           {DAY_KEYS.map((d) => (
-            <div key={d} className="px-2 py-2 text-center text-[10px] font-semibold text-gray-500">{tr(`calendar.days.${d}`)}</div>
+            <div key={d} className="px-2 py-2 text-center text-[10px] font-semibold text-slate-500">{tr(`calendar.days.${d}`)}</div>
           ))}
         </div>
 
@@ -572,16 +572,16 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                   setView("list");
                 }}
                 title={isValid ? "Click to select · Double-click to open in list view" : undefined}
-                className={`min-h-[60px] border-b border-r border-gray-50 px-1 py-1 text-left transition ${
-                  !isValid ? "bg-gray-50/50" :
+                className={`min-h-[60px] border-b border-r border-slate-50 px-1 py-1 text-left transition ${
+                  !isValid ? "bg-slate-50/50" :
                   isSelected ? "bg-blue-50" :
                   isToday ? "bg-amber-50/50" :
-                  "hover:bg-gray-50"
+                  "hover:bg-slate-50"
                 }`}
               >
                 {isValid && (
                   <>
-                    <span className={`text-xs ${isToday ? "font-bold text-blue-600" : isSelected ? "font-semibold text-gray-900" : "text-gray-600"}`}>
+                    <span className={`text-xs ${isToday ? "font-bold text-blue-600" : isSelected ? "font-semibold text-slate-900" : "text-slate-600"}`}>
                       {dayNum}
                     </span>
                     <div className="flex gap-0.5 mt-0.5">
@@ -597,7 +597,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                             {e.title}
                           </div>
                         ))}
-                        {entries.length > 2 && <div className="text-[9px] text-gray-400">{tr("pages.calendarPage.plusMore", { count: entries.length - 2 })}</div>}
+                        {entries.length > 2 && <div className="text-[9px] text-slate-400">{tr("pages.calendarPage.plusMore", { count: entries.length - 2 })}</div>}
                       </div>
                     )}
                   </>
@@ -628,21 +628,21 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Day detail panel — only in month view (in list view every
           entry is already shown inline, so the panel would be redundant). */}
       {view === "month" && selectedDate && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900">
             {selectedDate.toLocaleDateString(timeLocale, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
           </h3>
           {selectedEntries.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-400">{tr("calendar.noEvents")}</p>
+            <p className="mt-2 text-sm text-slate-400">{tr("calendar.noEvents")}</p>
           ) : (
             <div className="mt-3 space-y-2">
               {selectedEntries.map((entry, i) => (
-                <div key={`${entry.type}-${entry.id}-${i}`} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2">
+                <div key={`${entry.type}-${entry.id}-${i}`} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${DOT_COLORS[entry.type]}`} />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{entry.title}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-medium text-slate-900 truncate">{entry.title}</p>
+                      <p className="text-xs text-slate-500">
                         {entry.leadName && <span>{entry.leadName} &middot; </span>}
                         {formatTime(entry.time, timeLocale)}
                         {entry.priority && entry.priority !== "normal" && <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>}
@@ -726,22 +726,22 @@ function ListView({
   }, [selectedKey]);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-        <button onClick={prevMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&larr;</button>
-        <h2 className="text-sm font-semibold text-gray-900">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <button onClick={prevMonth} className="rounded-lg border border-slate-200 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">&larr;</button>
+        <h2 className="text-sm font-semibold text-slate-900">
           {currentMonth.toLocaleDateString(timeLocale, { month: "long", year: "numeric" })}
         </h2>
         <div className="flex gap-2">
-          <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("calendar.today")}</button>
-          <button onClick={nextMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&rarr;</button>
+          <button onClick={goToday} className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">{tr("calendar.today")}</button>
+          <button onClick={nextMonth} className="rounded-lg border border-slate-200 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">&rarr;</button>
         </div>
       </div>
 
       {sortedKeys.length === 0 ? (
-        <div className="px-6 py-12 text-center text-sm text-gray-400">{tr("pages.calendarPage.nothingScheduled")}</div>
+        <div className="px-6 py-12 text-center text-sm text-slate-400">{tr("pages.calendarPage.nothingScheduled")}</div>
       ) : (
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-slate-100">
           {sortedKeys.map((key) => {
             const entries = (dayMap.get(key) ?? []).slice().sort((a, b) => a.time.localeCompare(b.time));
             const date = new Date(`${key}T00:00:00`);
@@ -755,7 +755,7 @@ function ListView({
                   isSelected ? "bg-blue-50 ring-1 ring-blue-200" : ""
                 }`}
               >
-                <div className={`shrink-0 ${isToday ? "text-blue-700 font-semibold" : "text-gray-700"}`}>
+                <div className={`shrink-0 ${isToday ? "text-blue-700 font-semibold" : "text-slate-700"}`}>
                   <div className="text-xs uppercase tracking-wide">
                     {date.toLocaleDateString(locale, { weekday: "short" })}
                   </div>
@@ -768,13 +768,13 @@ function ListView({
                   {entries.map((entry, i) => (
                     <div
                       key={`${entry.type}-${entry.id}-${i}`}
-                      className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2"
+                      className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${DOT_COLORS[entry.type]}`} />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{entry.title}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm font-medium text-slate-900 truncate">{entry.title}</p>
+                          <p className="text-xs text-slate-500">
                             {entry.leadName && <span>{entry.leadName} &middot; </span>}
                             {formatTime(entry.time, timeLocale)}
                             {entry.priority && entry.priority !== "normal" && (
@@ -926,7 +926,7 @@ function TaskIconButton({
       ? "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
       : tone === "danger"
         ? "text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-        : "text-gray-500 hover:bg-gray-100 hover:text-gray-900";
+        : "text-slate-500 hover:bg-slate-100 hover:text-slate-900";
   const className = `inline-flex h-7 w-7 items-center justify-center rounded-md transition disabled:opacity-40 ${toneClasses}`;
   if (href) {
     return (
@@ -994,7 +994,7 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (days: number) => void }) {
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-1 w-36 origin-top-right overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg ring-1 ring-black/5"
+          className="absolute right-0 z-20 mt-1 w-36 origin-top-right overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg ring-1 ring-black/5"
         >
           {presets.map((p) => (
             <button
@@ -1005,7 +1005,7 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (days: number) => void }) {
                 setOpen(false);
                 onSnooze(p.days);
               }}
-              className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
             >
               {p.label}
             </button>

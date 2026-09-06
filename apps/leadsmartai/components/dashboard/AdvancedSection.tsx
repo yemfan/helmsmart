@@ -29,12 +29,12 @@ export default function AdvancedSection({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-t border-gray-100 pt-4">
+    <div className="border-t border-slate-100 pt-4">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center gap-1.5 text-left text-[11px] font-medium text-gray-500 transition hover:text-gray-800"
+        className="flex w-full items-center gap-1.5 text-left text-[11px] font-medium text-slate-500 transition hover:text-slate-800"
       >
         <ChevronDown
           className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
@@ -43,7 +43,7 @@ export default function AdvancedSection({
         />
         {t("pages.advancedSection.label")}
         {typeof count === "number" && count > 0 ? (
-          <span className="text-gray-400">{t("pages.advancedSection.count", { count })}</span>
+          <span className="text-slate-400">{t("pages.advancedSection.count", { count })}</span>
         ) : null}
       </button>
 

@@ -46,31 +46,31 @@ export default async function GenerateLeadsPage() {
     <div className="mx-auto max-w-5xl px-4 py-6">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{tg("landing.title")}</h1>
-          <p className="text-sm text-gray-500">{tg("landing.subtitle")}</p>
+          <h1 className="text-xl font-semibold text-slate-900">{tg("landing.title")}</h1>
+          <p className="text-sm text-slate-500">{tg("landing.subtitle")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/dashboard/leads/generate/posts"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             {tg("landing.nav.posts")}
           </Link>
           <Link
             href="/dashboard/leads/generate/scheduled"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             {tg("landing.nav.scheduled")}
           </Link>
           <Link
             href="/dashboard/leads/generate/recurring"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             {tg("landing.nav.recurring")}
           </Link>
           <Link
             href="/dashboard/leads/generate/connect"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             {tg("landing.nav.connect")}
           </Link>
@@ -80,7 +80,7 @@ export default async function GenerateLeadsPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/dashboard/leads/generate/post/new"
-          className="group block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+          className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
         >
           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
             <svg
@@ -97,8 +97,8 @@ export default async function GenerateLeadsPage() {
               />
             </svg>
           </div>
-          <h2 className="text-base font-semibold text-gray-900">{tg("landing.quick_post.title")}</h2>
-          <p className="mt-1 text-sm text-gray-600">{tg("landing.quick_post.body")}</p>
+          <h2 className="text-base font-semibold text-slate-900">{tg("landing.quick_post.title")}</h2>
+          <p className="mt-1 text-sm text-slate-600">{tg("landing.quick_post.body")}</p>
           <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:gap-1.5">
             {tg("landing.quick_post.cta")}
             <svg
@@ -119,7 +119,7 @@ export default async function GenerateLeadsPage() {
 
         <Link
           href="/dashboard/leads/generate/ads"
-          className="group block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+          className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-purple-300 hover:shadow-md"
         >
           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
             <svg
@@ -137,13 +137,13 @@ export default async function GenerateLeadsPage() {
             </svg>
           </div>
           <div className="mb-1 flex items-center gap-2">
-            <h2 className="text-base font-semibold text-gray-900">{tg("landing.ads.title")}</h2>
+            <h2 className="text-base font-semibold text-slate-900">{tg("landing.ads.title")}</h2>
             <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800">
               {tg("landing.ads.premium_badge")}
             </span>
           </div>
-          <p className="text-sm text-gray-600">{tg("landing.ads.body")}</p>
-          <p className="mt-3 text-xs text-gray-500">{tg("landing.ads.billing_note")}</p>
+          <p className="text-sm text-slate-600">{tg("landing.ads.body")}</p>
+          <p className="mt-3 text-xs text-slate-500">{tg("landing.ads.billing_note")}</p>
           <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-purple-600 group-hover:gap-1.5">
             {tg("landing.ads.cta")}
             <svg
@@ -166,7 +166,7 @@ export default async function GenerateLeadsPage() {
             card is the discoverable entry point into it from the leads hub. */}
         <Link
           href="/dashboard/properties"
-          className="group block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md"
+          className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md"
         >
           <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
@@ -178,10 +178,10 @@ export default async function GenerateLeadsPage() {
             </svg>
           </div>
           <div className="mb-1 flex items-center gap-2">
-            <h2 className="text-base font-semibold text-gray-900">{t("videoAd", { ns: "web_generate_leads" })}</h2>
+            <h2 className="text-base font-semibold text-slate-900">{t("videoAd", { ns: "web_generate_leads" })}</h2>
             <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">{t("pages.generateLeads.isNew", { ns: "dashboard" })}</span>
           </div>
-          <p className="text-sm text-gray-600">{t("pages.generateLeads.videoAdBlurb", { ns: "dashboard" })}</p>
+          <p className="text-sm text-slate-600">{t("pages.generateLeads.videoAdBlurb", { ns: "dashboard" })}</p>
           <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-1.5">{t("pages.generateLeads.pickListing", { ns: "dashboard" })}<svg
               className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
               fill="none"
@@ -197,23 +197,23 @@ export default async function GenerateLeadsPage() {
 
       {suggestions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-sm font-semibold text-gray-900">{tg("landing.suggestions.heading")}</h2>
-          <p className="mb-3 text-xs text-gray-500">{tg("landing.suggestions.hint")}</p>
+          <h2 className="text-sm font-semibold text-slate-900">{tg("landing.suggestions.heading")}</h2>
+          <p className="mb-3 text-xs text-slate-500">{tg("landing.suggestions.hint")}</p>
           <div className="space-y-2">
             {suggestions.map((s) => (
               <Link
                 key={s.key}
                 href={`/dashboard/leads/generate/post/new?trigger=${s.trigger}&subjectId=${encodeURIComponent(s.subjectId)}`}
-                className="group flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+                className="group flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition hover:border-blue-300 hover:shadow-md"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <SuggestionBadge badge={s.badge} tg={tg} />
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-gray-900">
+                    <div className="truncate text-sm font-semibold text-slate-900">
                       {s.title}
                     </div>
                     {s.subtitle && (
-                      <div className="truncate text-xs text-gray-500">
+                      <div className="truncate text-xs text-slate-500">
                         {s.subtitle}
                       </div>
                     )}
@@ -228,7 +228,7 @@ export default async function GenerateLeadsPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-gray-400">{tg("landing.roadmap_footer")}</p>
+      <p className="mt-6 text-xs text-slate-400">{tg("landing.roadmap_footer")}</p>
     </div>
   );
 }

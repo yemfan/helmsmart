@@ -30,7 +30,7 @@ export default async function OpenHouseDashboardPage() {
     // Keep it simple (and not crash the dashboard layout).
     console.error("Failed to load properties for Open House QR codes", error);
     return (
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
         <h1 className="text-lg font-semibold text-brand-text">{t("pages.openHouseQr.heading", { ns: "dashboard" })}</h1>
         <p className="mt-2 text-sm text-brand-text/80">{t("pages.openHouseQr.loadFailed", { ns: "dashboard" })}</p>
       </div>

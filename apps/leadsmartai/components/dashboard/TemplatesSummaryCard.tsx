@@ -10,9 +10,9 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
   const summary = await getTemplateSummaryForAgent(agentId, 8);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">{tr("settings.templates.heading")}</h2>
-      <p className="mt-0.5 text-xs text-gray-500">{t("pages.templatesSummary.intro", { ns: "dashboard" })}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900">{tr("settings.templates.heading")}</h2>
+      <p className="mt-0.5 text-xs text-slate-500">{t("pages.templatesSummary.intro", { ns: "dashboard" })}</p>
 
       {summary.fallback ? (
         <div className="mt-4 rounded-lg border border-dashed border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{t("pages.templatesSummary.notSeeded", { ns: "dashboard" })}</div>
@@ -25,8 +25,8 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
             <StatBox n={summary.off} label={t("pages.labels.off", { ns: "dashboard" })} tone="muted" />
           </div>
 
-          <div className="mt-4 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-2 bg-gray-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+          <div className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-2 bg-slate-50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
               <span>ID</span>
               <span>{tr("settings.templates.columns.template")}</span>
               <span>{tr("settings.templates.columns.channel")}</span>
@@ -38,8 +38,8 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
                 key={t.id}
                 className="grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-2 px-3 py-2 text-xs"
               >
-                <span className="font-mono text-[11px] text-gray-500">{t.id}</span>
-                <span className="min-w-0 truncate text-gray-800">{t.name}</span>
+                <span className="font-mono text-[11px] text-slate-500">{t.id}</span>
+                <span className="min-w-0 truncate text-slate-800">{t.name}</span>
                 <span
                   className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                     t.channel === "sms"
@@ -53,7 +53,7 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
                   {t.languages.map((l) => (
                     <span
                       key={l}
-                      className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600"
+                      className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600"
                     >
                       {l}
                     </span>
@@ -67,8 +67,8 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
             ))}
           </div>
 
-          <div className="mt-3 text-[11px] text-gray-500">
-            <strong className="font-semibold text-gray-700">{tr("settings.templates.bilingualLabel")}</strong>{" "}
+          <div className="mt-3 text-[11px] text-slate-500">
+            <strong className="font-semibold text-slate-700">{tr("settings.templates.bilingualLabel")}</strong>{" "}
             {Math.round(summary.bilingualCoverageFraction * 100)}% of templates have both English and Chinese
             variants. Templates with English only will fall back to English even if the contact&apos;s preferred
             language is Chinese.
@@ -103,12 +103,12 @@ function StatBox({
         tone === "accent"
           ? "border-brand-accent/30 bg-brand-accent/5"
           : tone === "muted"
-            ? "border-gray-200 bg-gray-50"
-            : "border-gray-200"
+            ? "border-slate-200 bg-slate-50"
+            : "border-slate-200"
       }`}
     >
-      <div className="text-lg font-semibold text-gray-900 tabular-nums">{n}</div>
-      <div className="text-[10px] uppercase tracking-wide text-gray-500">{label}</div>
+      <div className="text-lg font-semibold text-slate-900 tabular-nums">{n}</div>
+      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
     </div>
   );
 }
@@ -119,7 +119,7 @@ function StatusBadge({ status, label }: { status: "autosend" | "review" | "off";
       ? "bg-green-50 text-green-700"
       : status === "review"
         ? "bg-amber-50 text-amber-700"
-        : "bg-gray-100 text-gray-500";
+        : "bg-slate-100 text-slate-500";
   // Label is resolved by the caller (server component owns `t`).
   return (
     <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${cls}`}>{label}</span>

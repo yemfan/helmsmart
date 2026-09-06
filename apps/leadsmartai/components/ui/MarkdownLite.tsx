@@ -18,7 +18,7 @@ function renderInline(text: string): ReactNode[] {
   return parseInline(text).map((piece, i) => {
     if (piece.kind === "bold") {
       return (
-        <strong key={i} className="font-semibold text-gray-900">
+        <strong key={i} className="font-semibold text-slate-900">
           {piece.text}
         </strong>
       );
@@ -53,7 +53,7 @@ export function MarkdownLite({ text }: { text: string }) {
     if (/^#{1,6}\s+/.test(line)) {
       flushList(`ul-${idx}`);
       blocks.push(
-        <p key={idx} className="mb-0.5 mt-2 font-bold text-gray-900">
+        <p key={idx} className="mb-0.5 mt-2 font-bold text-slate-900">
           {renderInline(line.replace(/^#{1,6}\s+/, ""))}
         </p>,
       );

@@ -33,7 +33,7 @@ export default async function SchedulerActivityPage() {
         </div>
         <Link
           href="/dashboard/drafts"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
         >
           {t("pages.schedulerActivity.backToDrafts", { ns: "dashboard" })}
         </Link>

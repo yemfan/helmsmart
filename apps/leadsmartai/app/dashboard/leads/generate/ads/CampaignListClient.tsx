@@ -136,9 +136,9 @@ export default function CampaignListClient({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50/60 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <thead className="bg-slate-50/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3">{t("campaigns.columns.campaign")}</th>
               <th className="px-3 py-3">{t("campaigns.columns.status")}</th>
@@ -151,7 +151,7 @@ export default function CampaignListClient({
               <th className="px-3 py-3 w-1" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-100">
             {campaigns.map((c) => (
               <CampaignRowView
                 key={c.id}
@@ -167,7 +167,7 @@ export default function CampaignListClient({
         </table>
       </div>
 
-      <p className="text-xs text-gray-400">{t("campaigns.leads_footer")}</p>
+      <p className="text-xs text-slate-400">{t("campaigns.leads_footer")}</p>
     </div>
   );
 }
@@ -195,10 +195,10 @@ function CampaignRowView({
     : null;
 
   return (
-    <tr className="text-gray-800">
+    <tr className="text-slate-800">
       <td className="px-4 py-3 align-top">
-        <div className="font-medium text-gray-900">{c.name}</div>
-        <div className="text-xs text-gray-500">
+        <div className="font-medium text-slate-900">{c.name}</div>
+        <div className="text-xs text-slate-500">
           {c.pageName ?? t("campaigns.row.empty_value")}
           {c.igBusinessUsername ? t("campaigns.row.ig_handle", { user: c.igBusinessUsername }) : ""}
         </div>
@@ -213,29 +213,29 @@ function CampaignRowView({
         <StatusBadge status={c.status} t={t} />
       </td>
 
-      <td className="px-3 py-3 align-top text-gray-700">
+      <td className="px-3 py-3 align-top text-slate-700">
         {c.dailyBudgetCents != null
           ? t("campaigns.row.budget_daily", { amount: (c.dailyBudgetCents / 100).toFixed(0) })
           : t("campaigns.row.empty_value")}
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-slate-500">
           {compactDateRange(c.startTime, c.endTime, t, locale)}
         </div>
       </td>
 
-      <td className="px-3 py-3 align-top text-gray-700">
+      <td className="px-3 py-3 align-top text-slate-700">
         {metrics.spendCents != null
           ? `$${(metrics.spendCents / 100).toFixed(2)}`
           : t("campaigns.row.empty_value")}
       </td>
 
-      <td className="px-3 py-3 align-top text-gray-700">
+      <td className="px-3 py-3 align-top text-slate-700">
         {metrics.impressions != null
           ? metrics.impressions.toLocaleString(locale)
           : t("campaigns.row.empty_value")}
       </td>
 
       <td className="px-3 py-3 align-top">
-        <span className="font-semibold text-gray-900">
+        <span className="font-semibold text-slate-900">
           {c.leadsReceivedCount}
         </span>
         {metrics.leads && metrics.leads > c.leadsReceivedCount ? (
@@ -248,13 +248,13 @@ function CampaignRowView({
         ) : null}
       </td>
 
-      <td className="px-3 py-3 align-top text-gray-700">
+      <td className="px-3 py-3 align-top text-slate-700">
         {metrics.cplCents != null
           ? `$${(metrics.cplCents / 100).toFixed(2)}`
           : t("campaigns.row.empty_value")}
       </td>
 
-      <td className="px-3 py-3 align-top text-xs text-gray-500">
+      <td className="px-3 py-3 align-top text-xs text-slate-500">
         {c.metricsRefreshedAt
           ? friendlyAgo(c.metricsRefreshedAt, t)
           : t("campaigns.row.never")}
@@ -309,7 +309,7 @@ function RowActions({
           type="button"
           onClick={() => onRefresh(c.id)}
           disabled={busy}
-          className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           title={t("campaigns.actions.refresh_tooltip")}
         >
           {busy ? t("campaigns.actions.busy") : t("campaigns.actions.refresh")}
@@ -340,7 +340,7 @@ function RowActions({
           type="button"
           onClick={() => onStatusChange(c.id, "archive")}
           disabled={busy}
-          className="rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
           title={t("campaigns.actions.archive_tooltip")}
         >
           {t("campaigns.actions.archive")}
@@ -351,7 +351,7 @@ function RowActions({
           href={adsManagerUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
           title={t("campaigns.actions.ads_manager_tooltip")}
         >
           {t("campaigns.actions.ads_manager")}
@@ -365,14 +365,14 @@ function RowActions({
 
 function StatusBadge({ status, t }: { status: string; t: CampaignsT }) {
   const tones: Record<string, { bg: string; fg: string }> = {
-    draft: { bg: "bg-gray-100", fg: "text-gray-700" },
+    draft: { bg: "bg-slate-100", fg: "text-slate-700" },
     creating: { bg: "bg-blue-100", fg: "text-blue-700" },
     active: { bg: "bg-emerald-100", fg: "text-emerald-800" },
     paused: { bg: "bg-amber-100", fg: "text-amber-900" },
-    completed: { bg: "bg-gray-100", fg: "text-gray-600" },
+    completed: { bg: "bg-slate-100", fg: "text-slate-600" },
     failed: { bg: "bg-red-100", fg: "text-red-700" },
   };
-  const tone = tones[status] ?? { bg: "bg-gray-100", fg: "text-gray-700" };
+  const tone = tones[status] ?? { bg: "bg-slate-100", fg: "text-slate-700" };
   const label = t(`campaigns.status.${status}`, { defaultValue: status });
   return (
     <span
@@ -416,7 +416,7 @@ function friendlyAgo(iso: string, t: CampaignsT): string {
 
 function EmptyState({ t }: { t: CampaignsT }) {
   return (
-    <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/40 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/40 p-8 text-center">
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
         <svg
           className="h-6 w-6"
@@ -432,10 +432,10 @@ function EmptyState({ t }: { t: CampaignsT }) {
           />
         </svg>
       </div>
-      <h2 className="text-base font-semibold text-gray-900">
+      <h2 className="text-base font-semibold text-slate-900">
         {t("campaigns.empty.title")}
       </h2>
-      <p className="mt-1 text-sm text-gray-500">{t("campaigns.empty.body")}</p>
+      <p className="mt-1 text-sm text-slate-500">{t("campaigns.empty.body")}</p>
       <Link
         href="/dashboard/leads/generate/ads/new"
         className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"

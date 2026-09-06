@@ -138,21 +138,21 @@ export default function HubSettingsClient() {
     );
   }
   if (!profile || !tracking) {
-    return <p className="text-sm text-gray-400">···</p>;
+    return <p className="text-sm text-slate-400">···</p>;
   }
 
   const field =
-    "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-200";
-  const hint = "mt-1 text-xs text-gray-500";
-  const labelCls = "block text-sm font-medium text-gray-700";
+    "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200";
+  const hint = "mt-1 text-xs text-slate-500";
+  const labelCls = "block text-sm font-medium text-slate-700";
 
   return (
     <div className="max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">
+        <h1 className="text-2xl font-semibold text-slate-900">
           {t("pages.hubSettings.title")}
         </h1>
-        <p className="mt-1 text-sm text-gray-600">{t("pages.hubSettings.blurb")}</p>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.hubSettings.blurb")}</p>
       </div>
 
       {fieldError ? (
@@ -162,14 +162,14 @@ export default function HubSettingsClient() {
       ) : null}
 
       {/* ── Live switch. Green on / gray off, right next to its label. ── */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
         <div className="flex items-center gap-3">
           <Toggle
             checked={profile.published}
             onChange={(next) => void saveProfile({ published: next })}
             label={t("pages.hubSettings.publishLabel")}
           />
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-slate-900">
             {t("pages.hubSettings.publishLabel")}
           </span>
           {profile.published && profile.username ? (
@@ -186,7 +186,7 @@ export default function HubSettingsClient() {
             ? t("pages.hubSettings.publishHintOn")
             : t("pages.hubSettings.publishHintOff")}
         </p>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-slate-500">
           {t("pages.hubSettings.postedItems", { count: profile.postedItems })}
           {" · "}
           {profile.willBeIndexed
@@ -196,11 +196,11 @@ export default function HubSettingsClient() {
       </div>
 
       {/* ── Identity and words ── */}
-      <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-4">
+      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
         <label className={labelCls}>
           {t("pages.hubSettings.usernameLabel")}
           <div className="mt-1 flex items-center gap-1">
-            <span className="text-gray-400">@</span>
+            <span className="text-slate-400">@</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -232,7 +232,7 @@ export default function HubSettingsClient() {
           type="button"
           onClick={() => void saveProfile()}
           disabled={profileState === "saving"}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-60"
+          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
         >
           {profileState === "saving"
             ? t("pages.hubSettings.saving")
@@ -243,8 +243,8 @@ export default function HubSettingsClient() {
       </div>
 
       {/* ── The agent's own analytics ── */}
-      <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-gray-900">
+      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="text-sm font-semibold text-slate-900">
           {t("pages.hubSettings.trackingTitle")}
         </h2>
 
@@ -274,7 +274,7 @@ export default function HubSettingsClient() {
           type="button"
           onClick={() => void saveTracking()}
           disabled={trackingState === "saving"}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-60"
+          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60"
         >
           {trackingState === "saving"
             ? t("pages.hubSettings.saving")

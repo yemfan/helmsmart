@@ -112,7 +112,7 @@ function timeAgo(iso: string | null, t: ContactsT) {
 const RATING_COLORS: Record<string, string> = {
   hot: "bg-red-100 text-red-700",
   warm: "bg-amber-100 text-amber-700",
-  cold: "bg-gray-100 text-gray-600",
+  cold: "bg-slate-100 text-slate-600",
 };
 
 function MiniPie({
@@ -126,8 +126,8 @@ function MiniPie({
 }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h2 className="text-xs font-semibold text-gray-500 mb-2">{title}</h2>
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <h2 className="text-xs font-semibold text-slate-500 mb-2">{title}</h2>
       <div className="flex items-center gap-3">
         <div className="h-[120px] w-[120px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -143,9 +143,9 @@ function MiniPie({
           {data.map((d) => (
             <div key={d.key} className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-              <span className="text-gray-600">{labelFor(d.key)}</span>
-              <span className="font-semibold text-gray-900">{d.value}</span>
-              {total > 0 && <span className="text-gray-400">({Math.round((d.value / total) * 100)}%)</span>}
+              <span className="text-slate-600">{labelFor(d.key)}</span>
+              <span className="font-semibold text-slate-900">{d.value}</span>
+              {total > 0 && <span className="text-slate-400">({Math.round((d.value / total) * 100)}%)</span>}
             </div>
           ))}
         </div>
@@ -492,7 +492,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
 
   /** Inline edit form — shared by the table row and the phone card. */
   function renderEditForm() {
-    const field = "w-full rounded border border-gray-300 px-2 py-1.5 text-sm";
+    const field = "w-full rounded border border-slate-300 px-2 py-1.5 text-sm";
     return (
       <div className="space-y-2">
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -525,7 +525,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
         </div>
         <div className="flex gap-2">
           <button onClick={() => void saveEdit(editingId as string)} disabled={actionLoading} className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">{t("row.save")}</button>
-          <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("row.cancel")}</button>
+          <button onClick={() => setEditingId(null)} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("row.cancel")}</button>
         </div>
       </div>
     );
@@ -552,8 +552,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{t("header.title")}</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-semibold text-slate-900">{t("header.title")}</h1>
+          <p className="text-sm text-slate-500">
             {t("header.subtitle_total", { count: leads.length })}
           </p>
         </div>
@@ -562,7 +562,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             type="button"
             onClick={toggleInsights}
             aria-expanded={showInsights}
-            className="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+            className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
           >
             {showInsights ? t("insights.hide") : t("insights.show")}
           </button>
@@ -586,8 +586,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             labelFor={(key) => t(`contactedBucket.${key}`, { defaultValue: key })}
           />
 
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-xs font-semibold text-gray-500 mb-2">{t("charts.growth")}</h2>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="text-xs font-semibold text-slate-500 mb-2">{t("charts.growth")}</h2>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={growthWithLabels} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -627,7 +627,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           {addMenuOpen ? (
             <div
               role="menu"
-              className="absolute right-0 z-20 mt-2 w-56 origin-top-right overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg ring-1 ring-black/5"
+              className="absolute right-0 z-20 mt-2 w-56 origin-top-right overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg ring-1 ring-black/5"
             >
               <button
                 type="button"
@@ -636,27 +636,27 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   setShowAddForm(true);
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
               >
-                <UserPlus className="h-4 w-4 text-gray-500" />
+                <UserPlus className="h-4 w-4 text-slate-500" />
                 {t("add_menu.enter_contact")}
               </button>
               <Link
                 href="/dashboard/contacts/scan"
                 role="menuitem"
                 onClick={() => setAddMenuOpen(false)}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
               >
-                <ScanLine className="h-4 w-4 text-gray-500" />
+                <ScanLine className="h-4 w-4 text-slate-500" />
                 {t("add_menu.scan_card")}
               </Link>
               <Link
                 href="/dashboard/contacts/import-file"
                 role="menuitem"
                 onClick={() => setAddMenuOpen(false)}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
               >
-                <Sparkles className="h-4 w-4 text-gray-500" />
+                <Sparkles className="h-4 w-4 text-slate-500" />
                 {t("add_menu.ai_extract")}
               </Link>
               <button
@@ -666,9 +666,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   setCsvImportOpen(true);
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
               >
-                <Upload className="h-4 w-4 text-gray-500" />
+                <Upload className="h-4 w-4 text-slate-500" />
                 {t("add_menu.upload_csv")}
               </button>
               <button
@@ -678,9 +678,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   downloadTemplate();
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
               >
-                <Download className="h-4 w-4 text-gray-500" />
+                <Download className="h-4 w-4 text-slate-500" />
                 {t("add_menu.download_template")}
               </button>
             </div>
@@ -690,43 +690,43 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
 
       {/* Inline add form */}
       {showAddForm && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900">{t("add_form.title")}</h3>
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900">{t("add_form.title")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_name")}
               <input value={addFields.name} onChange={(e) => setAddFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("add_form.placeholder_name")}
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.name?.length ? "border-red-400" : "border-gray-300"}`} />
+                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.name?.length ? "border-red-400" : "border-slate-300"}`} />
               {addErrors.name?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.name.join(" ")}</p> : null}
             </label>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_email")}
               <input value={addFields.email} onChange={(e) => setAddFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("add_form.placeholder_email")} type="email" inputMode="email" autoCapitalize="off"
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.email?.length ? "border-red-400" : "border-gray-300"}`} />
+                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.email?.length ? "border-red-400" : "border-slate-300"}`} />
               {addErrors.email?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.email.join(" ")}</p> : null}
             </label>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_phone")}
               <input value={addFields.phone} onChange={(e) => setAddFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("add_form.placeholder_phone")} inputMode="tel"
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.phone?.length ? "border-red-400" : "border-gray-300"}`} />
+                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.phone?.length ? "border-red-400" : "border-slate-300"}`} />
               {addErrors.phone?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.phone.join(" ")}</p> : null}
             </label>
-            <div className="block text-sm font-medium text-gray-700">
+            <div className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_address")}
               <AddressAutocomplete
                 value={addFields.property_address}
                 onChange={(v) => setAddFields((f) => ({ ...f, property_address: v }))}
                 onSelect={(v) => setAddFields((f) => ({ ...f, property_address: v.formattedAddress }))}
                 placeholder={t("add_form.placeholder_address")}
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.property_address?.length ? "border-red-400" : "border-gray-300"}`}
+                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.property_address?.length ? "border-red-400" : "border-slate-300"}`}
               />
               {addErrors.property_address?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.property_address.join(" ")}</p> : null}
             </div>
           </div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-slate-700">
             {t("add_form.placeholder_notes")}
             <input value={addFields.notes} onChange={(e) => setAddFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("add_form.placeholder_notes")}
-              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.notes?.length ? "border-red-400" : "border-gray-300"}`} />
+              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.notes?.length ? "border-red-400" : "border-slate-300"}`} />
             {addErrors.notes?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.notes.join(" ")}</p> : null}
           </label>
           {/*
@@ -751,13 +751,13 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("search.placeholder")}
-          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <select
           value={ratingFilter}
           onChange={(e) => setRatingFilter(e.target.value)}
           aria-label={t("columns.rating")}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
         >
           <option value="all">{t("search.filter_all")}</option>
           <option value="hot">{t("rating.hot")}</option>
@@ -801,9 +801,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       ) : null}
 
       {/* Phones: cards. The table below is md+ only. */}
-      <div className="md:hidden rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
+      <div className="md:hidden rounded-xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
         {filtered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-gray-400">
+          <p className="px-4 py-8 text-center text-sm text-slate-400">
             {search ? t("empty.no_match") : t("empty.no_contacts")}
           </p>
         ) : (
@@ -817,11 +817,11 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     <button
                       type="button"
                       onClick={() => setProfileLeadId(c.id)}
-                      className="block max-w-full truncate text-left text-[15px] font-semibold text-gray-900 hover:text-blue-700"
+                      className="block max-w-full truncate text-left text-[15px] font-semibold text-slate-900 hover:text-blue-700"
                     >
                       {c.name ?? t("row.empty_value")}
                     </button>
-                    <p className="mt-0.5 truncate text-xs text-gray-500">
+                    <p className="mt-0.5 truncate text-xs text-slate-500">
                       {[c.phone, c.email].filter(Boolean).join(" · ") || t("row.empty_value")}
                     </p>
                   </div>
@@ -829,9 +829,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <RatingBadges c={c} t={t} />
-                  <span className="text-xs text-gray-500">{timeAgo(c.last_contacted_at, t)}</span>
+                  <span className="text-xs text-slate-500">{timeAgo(c.last_contacted_at, t)}</span>
                 </div>
-                {c.notes ? <p className="mt-2 line-clamp-2 text-xs text-gray-500">{c.notes}</p> : null}
+                {c.notes ? <p className="mt-2 line-clamp-2 text-xs text-slate-500">{c.notes}</p> : null}
                 <div className="mt-3 flex items-center gap-2">
                   <PrimaryAction c={c} t={t} block />
                   <CallButton contactId={c.id} hasPhone={Boolean(c.phone)} />
@@ -843,10 +843,10 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       </div>
 
       {/* Table (md+) */}
-      <div className="hidden md:block rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="hidden md:block rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
                 {/* Select-all for bulk actions (postcards, etc).
                     Toggles all currently filtered contacts. */}
@@ -883,7 +883,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 ] as const).map((col, i) => (
                   <th
                     key={i}
-                    className={`text-left px-4 py-2.5 font-medium ${col.key ? "cursor-pointer select-none hover:text-gray-900" : ""}`}
+                    className={`text-left px-4 py-2.5 font-medium ${col.key ? "cursor-pointer select-none hover:text-slate-900" : ""}`}
                     onClick={() => col.key && toggleSort(col.key)}
                   >
                     {"srOnly" in col && col.srOnly ? <span className="sr-only">{col.label}</span> : col.label}
@@ -894,7 +894,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-50">
               {filtered.map((c) => {
                 const isEditing = editingId === c.id;
                 if (isEditing) {
@@ -906,7 +906,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   );
                 }
                 return (
-                  <tr key={c.id} className="hover:bg-gray-50/50">
+                  <tr key={c.id} className="hover:bg-slate-50/50">
                     <td className="w-8 px-3 py-2.5">
                       <input
                         type="checkbox"
@@ -931,18 +931,18 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                       <button
                         type="button"
                         onClick={() => setProfileLeadId(c.id)}
-                        className="block max-w-full truncate rounded text-left font-medium text-gray-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                        className="block max-w-full truncate rounded text-left font-medium text-slate-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
                         title={t("row.open_profile_tooltip")}
                       >
                         {c.name ?? t("row.empty_value")}
                       </button>
                       {c.email ? (
-                        <a href={`mailto:${c.email}`} className="block truncate text-xs text-gray-500 hover:text-blue-600" title={t("row.email_tooltip", { email: c.email })}>
+                        <a href={`mailto:${c.email}`} className="block truncate text-xs text-slate-500 hover:text-blue-600" title={t("row.email_tooltip", { email: c.email })}>
                           {c.email}
                         </a>
                       ) : null}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span>{c.phone ?? t("row.empty_value")}</span>
                         <CallButton contactId={c.id} hasPhone={Boolean(c.phone)} />
@@ -951,8 +951,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     <td className="px-4 py-2.5">
                       <RatingBadges c={c} t={t} />
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">{timeAgo(c.last_contacted_at, t)}</td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 max-w-[200px] truncate" title={c.notes ?? ""}>
+                    <td className="px-4 py-2.5 text-xs text-slate-500 whitespace-nowrap">{timeAgo(c.last_contacted_at, t)}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-500 max-w-[200px] truncate" title={c.notes ?? ""}>
                       {c.notes ?? t("row.empty_value")}
                     </td>
                     <td className="px-3 py-2.5 whitespace-nowrap">
@@ -969,7 +969,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               })}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
                     {search ? t("empty.no_match") : t("empty.no_contacts")}
                   </td>
                 </tr>
@@ -1061,11 +1061,11 @@ function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {c.rating ? (
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-gray-100 text-gray-600"}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-slate-100 text-slate-600"}`}>
           {t(`rating.${c.rating.toLowerCase()}`, { defaultValue: c.rating })}
         </span>
       ) : (
-        <span className="text-gray-400">{t("row.empty_value")}</span>
+        <span className="text-slate-400">{t("row.empty_value")}</span>
       )}
       {c.preferred_language ? (
         <span
@@ -1108,7 +1108,7 @@ function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
  * there is only an address. Everything else lives in the row menu.
  */
 function PrimaryAction({ c, t, block }: { c: LeadRow; t: ContactsT; block?: boolean }) {
-  const cls = `inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 ${block ? "flex-1" : ""}`;
+  const cls = `inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 ${block ? "flex-1" : ""}`;
   if (c.phone) {
     return (
       <a href={`sms:${c.phone}`} className={cls} title={t("row.text_phone_tooltip", { phone: c.phone })}>
@@ -1159,7 +1159,7 @@ function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
-  const itemCls = "flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40";
+  const itemCls = "flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-40";
   return (
     <div ref={ref} className="relative inline-block">
       <button
@@ -1168,16 +1168,16 @@ function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
       >
         <MoreHorizontal className="h-4 w-4" strokeWidth={2} aria-hidden />
       </button>
       {open ? (
-        <div role="menu" className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg ring-1 ring-black/5">
+        <div role="menu" className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg ring-1 ring-black/5">
           {items.map((it) =>
             it.href ? (
               <Link key={it.label} href={it.href} role="menuitem" onClick={() => setOpen(false)} className={itemCls}>
-                <span className="text-gray-500">{it.icon}</span>
+                <span className="text-slate-500">{it.icon}</span>
                 {it.label}
               </Link>
             ) : (
@@ -1192,7 +1192,7 @@ function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
                 }}
                 className={itemCls}
               >
-                <span className="text-gray-500">{it.icon}</span>
+                <span className="text-slate-500">{it.icon}</span>
                 {it.label}
               </button>
             ),
