@@ -80,15 +80,28 @@ describe("listing ad panel: gated buttons", () => {
 const APP = join(__dirname, "..", "..", "..");
 const ELSEWHERE: Array<[file: string, unmet: string, key: string]> = [
   ["components/account/DigitalTwinPanel.tsx", "!consent", "twin.consentFirst"],
-  ["components/account/DigitalTwinPanel.tsx", "!avAudioPath", "twin.previewFirst"],
-  // Two reasons behind one control: no voice consent, or no intro video yet.
   ["components/account/DigitalTwinPanel.tsx", "!vc?.consent", "twin.cloneVoiceTitle"],
-  ["components/account/DigitalTwinPanel.tsx", "!vc?.consent", "twin.recordFirst"],
   ["components/dashboard/ListingFeedbackPanel.tsx", "!row.buyer_agent_email", "pages.listingFeedback.needBuyerAgentEmail"],
   ["components/dashboard/PlaybooksPanel.tsx", "selectedIds.size === 0", "pages.playbooksPanel.needSelection"],
 ];
 
 describe("the other panels that hid their reasons", () => {
+  it("does not repeat a reason a panel already says out loud", () => {
+    /*
+     * Two of the digital twin's gates were already answered on screen: the
+     * render button has its own hint ("Hit Preview voice (free) first…"),
+     * written with a comment saying a disabled button with only a tooltip
+     * reads as broken, and twin.buildFirst covers the missing intro video.
+     * A second sentence beside the button is noise, not discoverability.
+     */
+    const twin = readFileSync(join(APP, "components/account/DigitalTwinPanel.tsx"), "utf8");
+    expect(twin).not.toContain('<GateReason reason={!avAudioPath');
+    expect(twin).not.toContain('t("twin.recordFirst") : null} />');
+    // The hints that made them redundant have to still be there.
+    expect(twin).toContain('t("pages.digitalTwin.hitPreviewVoiceFree")');
+    expect(twin).toContain('t("twin.buildFirst")');
+  });
+
   it.each(ELSEWHERE)("%s explains %s", (file, unmet, key) => {
     const text = readFileSync(join(APP, file), "utf8");
     expect(text, `${file} should import the shared component`).toContain(
