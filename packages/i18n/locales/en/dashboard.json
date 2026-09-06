@@ -9423,7 +9423,12 @@
     "aiSms": {
       "launchAnAiSms": "Launch an AI SMS conversation",
       "generateFirstDraft": "Generate first draft",
-      "generateReply": "Generate reply"
+      "generateReply": "Generate reply",
+      "draftBlockedOptedOut": "Contact opted out — AI drafting disabled.",
+      "draftBlockedNeedsHuman": "Reply personally — AI drafting paused for this thread.",
+      "draftBlockedNoEntitlement": "Pick a plan that includes AI actions to enable this.",
+      "draftBlockedAiCap": "You've hit this period's AI cap. Upgrade for a higher limit.",
+      "sendBlockedOptedOut": "Sending blocked — contact opted out."
     },
     "modelToolsGrid": {
       "copyPrompt": "Copy prompt"

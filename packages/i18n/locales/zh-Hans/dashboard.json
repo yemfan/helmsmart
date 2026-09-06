@@ -9423,7 +9423,12 @@
     "aiSms": {
       "launchAnAiSms": "发起一段 AI 短信对话",
       "generateFirstDraft": "生成初稿",
-      "generateReply": "生成回复"
+      "generateReply": "生成回复",
+      "draftBlockedOptedOut": "该联系人已退订——AI 起草已停用。",
+      "draftBlockedNeedsHuman": "请您亲自回复——这个会话的 AI 起草已暂停。",
+      "draftBlockedNoEntitlement": "请选择包含 AI 操作的套餐来启用此功能。",
+      "draftBlockedAiCap": "本周期的 AI 用量已达上限。升级可获得更高额度。",
+      "sendBlockedOptedOut": "无法发送——该联系人已退订。"
     },
     "modelToolsGrid": {
       "copyPrompt": "复制提示词"
