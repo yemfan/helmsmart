@@ -12,6 +12,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/useConfirm";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { KeyboardShortcuts } from "@/components/ui/KeyboardShortcuts";
 import { getServerT } from "@/lib/i18n/server";
 import { isPaidPlanCached } from "@/lib/credits/cachedPlan";
 
@@ -144,6 +145,7 @@ export default async function DashboardLayout({
             {children}
           </ErrorBoundary>
           <CommandPalette />
+          <KeyboardShortcuts />
         </DashboardShell>
        </ConfirmProvider>
       </ToastProvider>

@@ -5439,11 +5439,20 @@
       "failedAfterAttempts_other": "尝试 {{count}} 次后失败"
     },
     "commandPalette": {
-      "searchPlaceholder": "搜索页面…（按 Esc 关闭）",
-      "noMatches": "没有匹配的页面。",
       "navigate": "上下选择",
       "open": "打开",
-      "close": "关闭"
+      "close": "关闭",
+      "searchPlaceholder": "搜索页面、功能、联系人，或直接问 Max…",
+      "noMatches": "没有匹配项。",
+      "searching": "搜索中…",
+      "shortcuts": "快捷键",
+      "askMax": "问 Max：“{{query}}”",
+      "sections": {
+        "pages": "页面",
+        "actions": "功能",
+        "contacts": "联系人",
+        "askMax": "问 Max"
+      }
     },
     "csvImport": {
       "title": "从 CSV 导入联系人",
@@ -10489,6 +10498,19 @@
     "deepReport": "由 AI 依据公开网络数据生成的估算。估值、租金、可负担性与交易指标仅为规划参考的意见 — 并非评估、贷款批复或投资建议。决策前请核实数据并咨询贷款机构／顾问。",
     "houseSearch": "由 AI 依据公开网络数据生成的结果。房源、价格与在售状态可能已过时 — 分享或采用前请在原始网站逐条核实。",
     "offerCompare": "AI 摘要仅供辅助判断 — 并非法律或财务意见。向卖方提供建议前，请核实每份报价的条款与净收益数字。"
+  },
+  "shortcuts": {
+    "title": "键盘快捷键",
+    "hint": "先按 g，再按一个字母即可跳转。输入文字时快捷键不会触发。",
+    "palette": "打开命令面板",
+    "askMax": "问 Max",
+    "contacts": "联系人",
+    "conversations": "对话",
+    "tasks": "任务",
+    "calendar": "日历",
+    "deals": "交易",
+    "settings": "设置",
+    "help": "显示此列表"
   },
   "tools": {
     "memory": {
