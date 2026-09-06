@@ -78,13 +78,16 @@ const channelLabel = (t: Tr, ch: MobileAutopilotChannel) => t(`boss.channel.${ch
  * the web matrix: grey, amber, green, because the colour is really "how much
  * am I handing over".
  */
-const NEXT_MODE: Record<MobileAutopilotMode, MobileAutopilotMode> = {
-  ask: "assisted",
-  assisted: "auto",
-  auto: "ask",
-};
-const modeLabel = (t: Tr, m: MobileAutopilotMode) => t(`boss.mode.${m}`);
+const MODES: MobileAutopilotMode[] = ["ask", "assisted", "auto"];
 const modeHint = (t: Tr, m: MobileAutopilotMode) => t(`boss.modeHint.${m}`);
+/** Roster persona per assignee — the same names the web app's assigneePersona.ts carries. */
+const PERSONA_NAME: Record<string, string> = {
+  receptionist: "Emma",
+  sales_assistant: "Chris",
+  marketing_assistant: "Ruby",
+  transaction_assistant: "Grace",
+  accountant: "Oliver",
+};
 const QUICK_COMMAND_KEYS = ["checkIn", "justListed", "planDay"] as const;
 
 export default function BossScreen() {
@@ -417,6 +420,7 @@ export default function BossScreen() {
         global={autopilot}
         channels={channels}
         cells={cells}
+        teamNames={teamNames}
         onGlobal={setGlobal}
         onCell={setCell}
       />
@@ -546,6 +550,7 @@ function SettingsModal({
   global,
   channels,
   cells,
+  teamNames,
   onGlobal,
   onCell,
 }: {
@@ -556,6 +561,7 @@ function SettingsModal({
   global: boolean;
   channels: MobileAutopilotChannels[];
   cells: MobileAutopilotCell[];
+  teamNames: Record<string, string>;
   onGlobal: (on: boolean) => void;
   onCell: (assignee: string, channel: MobileAutopilotChannel, mode: MobileAutopilotMode) => void;
 }) {
@@ -568,7 +574,8 @@ function SettingsModal({
   const pillStyle = (mode: MobileAutopilotMode) =>
     mode === "auto" ? s.cellPillOn : mode === "assisted" ? s.cellPillAssisted : s.cellPillOff;
   const pillColor = (mode: MobileAutopilotMode) =>
-    mode === "auto" ? tokens.successTextDark : mode === "assisted" ? tokens.warningText : tokens.textMuted;
+    mode === "auto" ? tokens.successTextDark : mode === "assisted" ? tokens.warningText : tokens.text;
+  const nameOf = (assignee: string) => teamNames[assignee] || PERSONA_NAME[assignee] || assigneeLabel(t, assignee);
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={s.modalBackdrop}>
@@ -590,26 +597,35 @@ function SettingsModal({
             </View>
             {channels.map((row) => (
               <View key={row.assignee} style={s.matrixRow}>
-                <Text style={s.teamName}>{assigneeLabel(t, row.assignee)}</Text>
-                <View style={s.chipRow}>
-                  {row.channels.map((ch) => {
-                    const mode = cellMode(row.assignee, ch);
-                    return (
-                      <Pressable
-                        key={ch}
-                        style={[s.cellPill, pillStyle(mode)]}
-                        onPress={() => onCell(row.assignee, ch, NEXT_MODE[mode])}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${channelLabel(t, ch)}: ${modeLabel(t, mode)}`}
-                        accessibilityHint={modeHint(t, mode)}
-                      >
-                        <Text style={[s.cellPillText, { color: pillColor(mode) }]}>
-                          {channelLabel(t, ch)}: {modeLabel(t, mode)}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
+                <Text style={s.teamName}>
+                  {nameOf(row.assignee)}
+                  <Text style={s.bossSub}>  {assigneeLabel(t, row.assignee)}</Text>
+                </Text>
+                {row.channels.map((ch) => {
+                  const mode = cellMode(row.assignee, ch);
+                  return (
+                    <View key={ch} style={{ gap: 6 }}>
+                      <Text style={s.sentence}>{t(`boss.approvalSentence.${ch}.${mode}`, { name: nameOf(row.assignee) })}</Text>
+                      <View style={s.chipRow} accessibilityRole="radiogroup" accessibilityLabel={`${nameOf(row.assignee)} · ${channelLabel(t, ch)}`}>
+                        {MODES.map((m) => (
+                          <Pressable
+                            key={m}
+                            style={[s.cellPill, mode === m ? pillStyle(m) : s.cellPillIdle]}
+                            onPress={() => { if (m !== mode) onCell(row.assignee, ch, m); }}
+                            accessibilityRole="radio"
+                            accessibilityState={{ selected: mode === m, checked: mode === m }}
+                            accessibilityLabel={t(`boss.approvalChoice.${m}`)}
+                            accessibilityHint={modeHint(t, m)}
+                          >
+                            <Text style={[s.cellPillText, { color: mode === m ? pillColor(m) : tokens.textMuted }]}>
+                              {t(`boss.approvalChoice.${m}`)}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
             ))}
           </ScrollView>
@@ -708,4 +724,6 @@ const createStyles = (t: ThemeTokens) =>
     cellPillAssisted: { backgroundColor: t.warningBg, borderWidth: 1, borderColor: t.warningBorder },
     cellPillOff: { backgroundColor: t.surface, borderWidth: 1, borderColor: t.border },
     cellPillText: { fontSize: 11, fontWeight: "600" },
+    cellPillIdle: { backgroundColor: "transparent", borderWidth: 1, borderColor: "transparent" },
+    sentence: { fontSize: 13, lineHeight: 18, color: t.text },
   });
