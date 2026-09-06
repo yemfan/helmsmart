@@ -853,6 +853,19 @@
       "example": "示例",
       "previewBanner": "预览：发布之前只有你能看到此页面。",
       "previewPublish": "发布"
+    },
+    "area": {
+      "kicker": "本地专长",
+      "title": "{{area}} 房产",
+      "intro": "{{name}} 为 {{area}} 的买家、卖家和投资者提供服务。查询房屋估值、搜索房源，或向 AI 助理咨询该区域。",
+      "metaDescription": "与 {{name}} 一起了解 {{area}} 房产：免费估值、房源搜索，以及关于在 {{area}} 买卖房产的解答。",
+      "posts": "关于 {{area}} 的动态",
+      "noPosts": "有关该区域的更新将显示在这里。",
+      "askAbout": "咨询 {{area}}",
+      "searchIn": "搜索 {{area}} 的房源",
+      "otherAreas": "我服务的其他区域",
+      "back": "返回",
+      "viewArea": "查看区域"
     }
   }
 }

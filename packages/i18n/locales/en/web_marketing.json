@@ -853,6 +853,19 @@
       "example": "Example",
       "previewBanner": "Preview: only you can see this page until you publish it.",
       "previewPublish": "Publish"
+    },
+    "area": {
+      "kicker": "Local expertise",
+      "title": "{{area}} real estate",
+      "intro": "{{name}} helps buyers, sellers and investors in {{area}}. Get a home value, search homes, or ask the AI assistant about the area.",
+      "metaDescription": "{{area}} homes with {{name}}: free home value, home search, and answers about buying and selling in {{area}}.",
+      "posts": "Posts about {{area}}",
+      "noPosts": "Updates about this area will appear here.",
+      "askAbout": "Ask about {{area}}",
+      "searchIn": "Search homes in {{area}}",
+      "otherAreas": "Other areas I serve",
+      "back": "Back",
+      "viewArea": "View area"
     }
   }
 }

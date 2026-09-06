@@ -44,6 +44,7 @@ import {
   type HubCta,
   type ServiceIcon,
 } from "@/lib/marketing-hub/config";
+import { areaSlug } from "@/lib/marketing-hub/areas";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
 import type { FeedItem } from "@/lib/marketing-hub/feedItems";
 import type { Hub } from "@/lib/marketing-hub/loadHub";
@@ -592,12 +593,25 @@ export function Areas({ hub, L, theme }: SectionProps) {
     <Section id="areas" kicker={L.areas.kicker} title={title} blurb={L.areas.blurb} theme={theme}>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((a) => (
-          <li key={a.name} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4">
-            <MapPin className={`mt-0.5 h-4 w-4 shrink-0 ${theme.text}`} aria-hidden />
-            <div>
-              <p className="font-medium text-slate-900">{a.name}</p>
-              {a.note ? <p className="mt-0.5 text-sm text-slate-600">{a.note}</p> : null}
-            </div>
+          <li key={a.name}>
+            {/* Each area is its own page — the local-SEO landing for that name. */}
+            <TrackedLink
+              username={hub.username}
+              href={`/@${hub.username}/area/${areaSlug(a.name)}`}
+              event="content_opened"
+              meta={{ slug: `area:${areaSlug(a.name)}` }}
+              className={`group flex h-full items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-[var(--shadow-raised)] focus:outline-none focus-visible:ring-2 ${theme.ring}`}
+            >
+              <MapPin className={`mt-0.5 h-4 w-4 shrink-0 ${theme.text}`} aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium text-slate-900">{a.name}</span>
+                {a.note ? <span className="mt-0.5 block text-sm text-slate-600">{a.note}</span> : null}
+                <span className={`mt-1.5 inline-flex items-center gap-1 text-xs font-semibold ${theme.text}`}>
+                  {L.area.viewArea}
+                  <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" aria-hidden />
+                </span>
+              </span>
+            </TrackedLink>
           </li>
         ))}
       </ul>
