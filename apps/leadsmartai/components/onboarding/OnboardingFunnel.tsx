@@ -793,7 +793,8 @@ export default function OnboardingFunnel({
         name: "Starter",
         monthly: 0,
         annual: null,
-        cta: t("pages.onboardingFunnel.ctaGetStarted"),
+        cta: t("pages.onboardingFunnel.startFreeTrial"),
+        trialNote: t("pages.onboardingFunnel.freeTrialNote"),
         tagline: t("pages.onboardingFunnel.plan.starter.tagline"),
         features: [
           t("pages.onboardingFunnel.plan.starter.leads"),
@@ -820,20 +821,19 @@ export default function OnboardingFunnel({
         name: tierName("solo"),
         monthly: tierMonthly("solo"),
         annual: tierAnnual("solo"),
-        cta: t("pages.onboardingFunnel.ctaTrial"),
+        cta: t("pages.onboardingFunnel.upgrade"),
         // The catalogue's own blurb, in the reader's language: /plans already
         // translates every tier under web_plans.plans.blurb, so the funnel
         // reads that rather than growing a second copy that can drift.
         tagline: t(`plans.blurb.solo`, { ns: "web_plans" }),
         features: tierCredits("solo"),
-        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "pro",
         name: tierName("pro"),
         monthly: tierMonthly("pro"),
         annual: tierAnnual("pro"),
-        cta: t("pages.onboardingFunnel.ctaTrial"),
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: t("pages.onboardingFunnel.plan.pro.tagline"),
         features: [
           t("pages.onboardingFunnel.plan.pro.leads"),
@@ -846,14 +846,13 @@ export default function OnboardingFunnel({
         ],
         primary: true,
         badge: t("pages.onboardingFunnel.badgePopular"),
-        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "premium",
         name: tierName("premium"),
         monthly: tierMonthly("premium"),
         annual: tierAnnual("premium"),
-        cta: t("pages.onboardingFunnel.ctaTrial"),
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: t("pages.onboardingFunnel.plan.premium.tagline"),
         features: [
           t("pages.onboardingFunnel.plan.premium.leads"),
@@ -863,14 +862,13 @@ export default function OnboardingFunnel({
           t("pages.onboardingFunnel.plan.premium.esign"),
           t("pages.onboardingFunnel.plan.premium.actions"),
         ],
-        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
       {
         slug: "signature",
         name: tierName("signature"),
         monthly: tierMonthly("signature"),
         annual: tierAnnual("signature"),
-        cta: t("pages.onboardingFunnel.ctaTrial"),
+        cta: t("pages.onboardingFunnel.upgrade"),
         tagline: t("pages.onboardingFunnel.plan.signature.tagline"),
         features: [
           t("pages.onboardingFunnel.plan.signature.everything"),
@@ -882,7 +880,6 @@ export default function OnboardingFunnel({
         ],
         signatureLook: true,
         badge: t("pages.onboardingFunnel.badgeSignature"),
-        trialNote: t("pages.onboardingFunnel.trialFooter"),
       },
     ];
 
@@ -905,7 +902,7 @@ export default function OnboardingFunnel({
       /*
        * Straight to checkout, not back to the price list.
        *
-       * "Start 14-day trial" used to land on /plans — the marketing page the
+       * The plan CTA used to land on /plans — the marketing page the
        * visitor had just decided against reading — where they had to pick the
        * same tier a second time. /dashboard/credits is the one page that can
        * actually charge, and `start=1` makes it open Stripe for this exact

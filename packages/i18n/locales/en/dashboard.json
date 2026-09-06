@@ -3389,7 +3389,7 @@
       "provedSpeed": "You just proved response speed. Premium agents get full CRM, AI follow-ups, and unlimited lead routing — so none of these slip while you're in appointments.",
       "inboxPreview": "Inbox + thread view (what you'll use daily)",
       "openPricing": "Open full pricing page",
-      "trialNote": "Every paid plan includes a 14-day free trial. Cancel anytime.",
+      "trialNote": "Start free — the free plan never expires. Cancel a paid plan anytime.",
       "monthly": "Monthly",
       "annual": "Annual",
       "save17": "Save 17%",
@@ -3424,9 +3424,6 @@
       "incoming": "Incoming ·",
       "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m",
       "availableLanguages": "Available in English and 中文.",
-      "ctaTrial": "Start 14-day trial",
-      "ctaGetStarted": "Get started",
-      "trialFooter": "14-day free trial",
       "forever": "forever",
       "perMo": "/mo",
       "billedMonthly": "Billed monthly",
@@ -3474,7 +3471,10 @@
           "calendar": "Cultural calendar automations",
           "voice": "Custom voice tuning"
         }
-      }
+      },
+      "startFreeTrial": "Start free trial",
+      "freeTrialNote": "Your real workspace, no credit card",
+      "upgrade": "Upgrade"
     },
     "deepReportView": {
       "title": "Property Deep Report",

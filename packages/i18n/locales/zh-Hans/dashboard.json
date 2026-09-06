@@ -3389,7 +3389,7 @@
       "provedSpeed": "您刚刚验证了响应速度的价值。Premium 版包含完整 CRM、AI 跟进和不限量的客源分配，您外出带看时也不会漏掉任何一条。",
       "inboxPreview": "收件箱 + 会话视图（您日常使用的界面）",
       "openPricing": "查看完整价格页",
-      "trialNote": "所有付费方案均含 14 天免费试用，可随时取消。",
+      "trialNote": "免费开始——免费版永不过期，付费套餐可随时取消。",
       "monthly": "按月",
       "annual": "按年",
       "save17": "省 17%",
@@ -3424,9 +3424,6 @@
       "incoming": "来电 ·",
       "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟",
       "availableLanguages": "支持英文与中文界面。",
-      "ctaTrial": "开始 14 天试用",
-      "ctaGetStarted": "免费开始",
-      "trialFooter": "14 天免费试用",
       "forever": "永久免费",
       "perMo": "/月",
       "billedMonthly": "按月计费",
@@ -3474,7 +3471,10 @@
           "calendar": "文化节庆日历自动化",
           "voice": "定制语音调校"
         }
-      }
+      },
+      "startFreeTrial": "开始免费试用",
+      "freeTrialNote": "真实工作台，无需信用卡",
+      "upgrade": "升级"
     },
     "deepReportView": {
       "title": "房产深度报告",
