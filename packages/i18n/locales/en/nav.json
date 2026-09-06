@@ -12,5 +12,13 @@
     "boss": "Boss",
     "team": "Team",
     "more": "More"
+  },
+  "stack": {
+    "tasks": "Tasks",
+    "expenses": "Expenses",
+    "notifications": "Notifications",
+    "deleteAccount": "Delete account",
+    "lead": "Lead",
+    "assistant": "Assistant"
   }
 }

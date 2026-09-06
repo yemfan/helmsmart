@@ -8,7 +8,7 @@ import {
 } from "@expo-google-fonts/geist";
 import { GeistMono_500Medium } from "@expo-google-fonts/geist-mono";
 import { useEffect, useState } from "react";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { i18n, initI18n } from "../lib/i18n";
@@ -18,6 +18,8 @@ import { useLeadsmartPush } from "../lib/useLeadsmartPush";
 
 function RootNavigation() {
   useLeadsmartPush();
+  // Header titles were English literals while every tab label was translated.
+  const { t } = useTranslation("nav");
 
   return (
     <Stack
@@ -30,12 +32,12 @@ function RootNavigation() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="tasks" options={{ title: "Tasks" }} />
-      <Stack.Screen name="expenses" options={{ title: "Expenses" }} />
-      <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
-      <Stack.Screen name="delete-account" options={{ title: "Delete account" }} />
-      <Stack.Screen name="lead/[id]" options={{ title: "Lead" }} />
-      <Stack.Screen name="assistant/[type]" options={{ title: "Assistant" }} />
+      <Stack.Screen name="tasks" options={{ title: t("stack.tasks") }} />
+      <Stack.Screen name="expenses" options={{ title: t("stack.expenses") }} />
+      <Stack.Screen name="notifications" options={{ title: t("stack.notifications") }} />
+      <Stack.Screen name="delete-account" options={{ title: t("stack.deleteAccount") }} />
+      <Stack.Screen name="lead/[id]" options={{ title: t("stack.lead") }} />
+      <Stack.Screen name="assistant/[type]" options={{ title: t("stack.assistant") }} />
     </Stack>
   );
 }

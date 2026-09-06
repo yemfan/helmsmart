@@ -164,5 +164,19 @@
     "facebook": "Facebook",
     "instagram": "Instagram",
     "linkedin": "LinkedIn"
+  },
+  "tasks": {
+    "loading": "正在加载任务…",
+    "loadFailed": "无法加载任务",
+    "actionFailed": "操作失败",
+    "dismiss": "忽略",
+    "emptyTitle": "没有待办任务",
+    "emptySubtitle": "从线索创建任务后会显示在这里。",
+    "overdue": "已逾期",
+    "overdueHint": "今天之前到期",
+    "today": "今天",
+    "todayHint": "今天到期",
+    "upcoming": "即将到来",
+    "upcomingHint": "无日期或未来到期"
   }
 }

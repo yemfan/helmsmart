@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import type { ThemeTokens } from "../../lib/theme";
@@ -53,22 +54,24 @@ const BOSS_AVATAR = require("../../assets/team/max.png");
  * Talks to the dual-auth /api/dashboard/closeboss/* routes via bearer token.
  */
 
-const ASSIGNEE_LABEL: Record<string, string> = {
-  receptionist: "Receptionist",
-  sales_assistant: "Sales Assistant",
-  marketing_assistant: "Marketing Assistant",
-  transaction_assistant: "Transaction Assistant",
-  accountant: "Accountant",
-  realtor: "For your review",
-  // Fallback only — the live name comes from the team roster (ai_assistants).
-  boss_assistant: "Max",
-};
-const CHANNEL_LABEL: Record<MobileAutopilotChannel, string> = {
-  call: "Call",
-  sms: "Text",
-  email: "Email",
-  social: "Social",
-};
+/**
+ * Labels resolve through `home:boss.*` at render (this screen shipped English
+ * only while the app offered 中文). The assignee map is a fallback — the live
+ * name comes from the team roster (ai_assistants).
+ */
+const ASSIGNEE_KEYS = new Set([
+  "receptionist",
+  "sales_assistant",
+  "marketing_assistant",
+  "transaction_assistant",
+  "accountant",
+  "realtor",
+  "boss_assistant",
+]);
+type Tr = (key: string, opts?: Record<string, unknown>) => string;
+const assigneeLabel = (t: Tr, key: string) =>
+  ASSIGNEE_KEYS.has(key) ? t(`boss.assignee.${key}`) : key;
+const channelLabel = (t: Tr, ch: MobileAutopilotChannel) => t(`boss.channel.${ch}`);
 /**
  * Tapping a cell walks outward one step — you approve → Max approves → it
  * just goes — then back to the strictest. Same order and colour grammar as
@@ -80,23 +83,12 @@ const NEXT_MODE: Record<MobileAutopilotMode, MobileAutopilotMode> = {
   assisted: "auto",
   auto: "ask",
 };
-const MODE_LABEL: Record<MobileAutopilotMode, string> = {
-  ask: "ask",
-  assisted: "Max approves",
-  auto: "auto",
-};
-const MODE_HINT: Record<MobileAutopilotMode, string> = {
-  ask: "You approve it before it goes.",
-  assisted: "Max proofreads and risk-checks it, and only asks you when he's unsure.",
-  auto: "It goes, subject to the usual compliance rails.",
-};
-const QUICK_COMMANDS = [
-  "Text my hot leads a check-in",
-  "Draft a just-listed social post",
-  "Plan my day",
-];
+const modeLabel = (t: Tr, m: MobileAutopilotMode) => t(`boss.mode.${m}`);
+const modeHint = (t: Tr, m: MobileAutopilotMode) => t(`boss.modeHint.${m}`);
+const QUICK_COMMAND_KEYS = ["checkIn", "justListed", "planDay"] as const;
 
 export default function BossScreen() {
+  const { t } = useTranslation("home");
   const tokens = useThemeTokens();
   const router = useRouter();
   const s = useMemo(() => createStyles(tokens), [tokens]);
@@ -211,7 +203,7 @@ export default function BossScreen() {
 
   const greeting = (() => {
     const h = new Date().getHours();
-    return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+    return h < 12 ? t("boss.greeting.morning") : h < 17 ? t("boss.greeting.afternoon") : t("boss.greeting.evening");
   })();
 
   return (
@@ -233,7 +225,7 @@ export default function BossScreen() {
             </View>
             <View style={{ flexShrink: 1 }}>
               <Text style={s.bossName}>{bossName}</Text>
-              <Text style={s.bossSub}>your AI chief of staff</Text>
+              <Text style={s.bossSub}>{t("boss.tagline")}</Text>
             </View>
           </View>
           <View style={s.headerActions}>
@@ -246,10 +238,10 @@ export default function BossScreen() {
             >
               <Ionicons name={autopilot ? "airplane" : "airplane-outline"} size={13} color={autopilot ? tokens.successTextDark : tokens.textMuted} />
               <Text style={[s.autoPillText, { color: autopilot ? tokens.successTextDark : tokens.textMuted }]}>
-                {autopilot ? "Autopilot on" : "Autopilot off"}
+                {autopilot ? t("boss.autopilotOn") : t("boss.autopilotOff")}
               </Text>
             </Pressable>
-            <Pressable onPress={() => setSettingsOpen(true)} style={s.gear} hitSlop={4} accessibilityRole="button" accessibilityLabel="Approval settings">
+            <Pressable onPress={() => setSettingsOpen(true)} style={s.gear} hitSlop={4} accessibilityRole="button" accessibilityLabel={t("boss.approvalSettings")}>
               <Ionicons name="options-outline" size={18} color={tokens.textMuted} />
             </Pressable>
           </View>
@@ -275,7 +267,7 @@ export default function BossScreen() {
             {/* Briefing opener */}
             <BossBubble tokens={tokens} s={s}>
               <Text style={s.bodyText}>
-                {greeting}. {briefingLine || "Here's where things stand — and what I'd like to do for you."}
+                {greeting}. {briefingLine || t("boss.briefingFallback")}
               </Text>
             </BossBubble>
 
@@ -283,7 +275,7 @@ export default function BossScreen() {
             {recs.map((r) => (
               <BossBubble key={r.id} tokens={tokens} s={s}>
                 <View style={s.tagWarn}>
-                  <Text style={s.tagWarnText}>Proposal</Text>
+                  <Text style={s.tagWarnText}>{t("boss.proposal")}</Text>
                 </View>
                 <Text style={s.cardTitle}>{r.title}</Text>
                 {(r.summary || r.reason) ? (
@@ -293,11 +285,11 @@ export default function BossScreen() {
                 <View style={s.actionRow}>
                   <Pressable style={s.primaryBtn} onPress={() => void handleProposal(r)}>
                     <Text style={s.primaryBtnText}>
-                      {r.recommended_action && r.recommended_action.length > 3 ? r.recommended_action : "Have Boss handle it"}
+                      {r.recommended_action && r.recommended_action.length > 3 ? r.recommended_action : t("boss.haveMaxHandle")}
                     </Text>
                   </Pressable>
                   <Pressable style={s.ghostBtn} onPress={() => void dismissProposal(r.id)}>
-                    <Text style={s.ghostBtnText}>Not now</Text>
+                    <Text style={s.ghostBtnText}>{t("boss.notNow")}</Text>
                   </Pressable>
                 </View>
               </BossBubble>
@@ -311,11 +303,11 @@ export default function BossScreen() {
                 </View>
                 {ins.status === "pending" || ins.status === "processing" ? (
                   <BossBubble tokens={tokens} s={s}>
-                    <Text style={s.mutedText}>On it — breaking this into actions…</Text>
+                    <Text style={s.mutedText}>{t("boss.working")}</Text>
                   </BossBubble>
                 ) : ins.status === "failed" ? (
                   <BossBubble tokens={tokens} s={s}>
-                    <Text style={s.mutedText}>Couldn&apos;t work that one out — try rephrasing it.</Text>
+                    <Text style={s.mutedText}>{t("boss.couldNotWorkOut")}</Text>
                   </BossBubble>
                 ) : (
                   tasks.filter((t) => t.instruction_id === ins.id).length > 0 && (
@@ -333,33 +325,36 @@ export default function BossScreen() {
 
             {recs.length === 0 && instructions.length === 0 ? (
               <BossBubble tokens={tokens} s={s}>
-                <Text style={s.bodyText}>Nothing urgent — your team has things under control. Tell me what you&apos;d like done.</Text>
+                <Text style={s.bodyText}>{t("boss.nothingUrgent")}</Text>
               </BossBubble>
             ) : null}
 
             {/* Quick commands */}
             <View style={s.chipRow}>
-              {QUICK_COMMANDS.map((q) => (
-                <Pressable key={q} style={s.chip} hitSlop={6} accessibilityRole="button" onPress={() => void submitCommand(q)}>
-                  <Text style={s.chipText}>{q}</Text>
-                </Pressable>
-              ))}
+              {QUICK_COMMAND_KEYS.map((k) => {
+                const q = t(`boss.quick.${k}`);
+                return (
+                  <Pressable key={k} style={s.chip} hitSlop={6} accessibilityRole="button" onPress={() => void submitCommand(q)}>
+                    <Text style={s.chipText}>{q}</Text>
+                  </Pressable>
+                );
+              })}
             </View>
 
             {/* AI team */}
             {team.filter((a) => a.type !== "boss_assistant").length > 0 ? (
               <View style={s.teamSection}>
-                <Text style={s.sectionTitle}>Your AI team</Text>
+                <Text style={s.sectionTitle}>{t("boss.yourTeam")}</Text>
                 {team
                   .filter((a) => a.type !== "boss_assistant")
                   .map((a) => (
                     <View key={a.type} style={s.teamRow}>
                       <View style={[s.teamInitial, { backgroundColor: tokens.infoBg }]}>
                         <Text style={[s.teamInitialText, { color: tokens.infoText }]}>
-                          {(teamNames[a.type] || ASSIGNEE_LABEL[a.type] || a.type).slice(0, 1)}
+                          {(teamNames[a.type] || assigneeLabel(t, a.type)).slice(0, 1)}
                         </Text>
                       </View>
-                      <Text style={s.teamName}>{teamNames[a.type] || ASSIGNEE_LABEL[a.type] || a.type}</Text>
+                      <Text style={s.teamName}>{teamNames[a.type] || assigneeLabel(t, a.type)}</Text>
                       <View style={[s.statusDot, { backgroundColor: a.status === "active" ? tokens.success : tokens.textSubtle }]} />
                     </View>
                   ))}
@@ -373,8 +368,8 @@ export default function BossScreen() {
                   <Ionicons name="document-text-outline" size={16} color={tokens.infoText} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.teamName}>Offer desk</Text>
-                  <Text style={s.bossSub}>Build an offer · review a contract with AI</Text>
+                  <Text style={s.teamName}>{t("boss.offerDesk")}</Text>
+                  <Text style={s.bossSub}>{t("boss.offerDeskSub")}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={tokens.textSubtle} />
               </View>
@@ -389,7 +384,7 @@ export default function BossScreen() {
           style={s.commandInput}
           value={command}
           onChangeText={setCommand}
-          placeholder={autopilot ? "Tell your team what to do — they'll act…" : "Tell your team what to do…"}
+          placeholder={autopilot ? t("boss.placeholderAuto") : t("boss.placeholder")}
           placeholderTextColor={tokens.textSubtle}
           multiline
           onSubmitEditing={() => void submitCommand(command)}
@@ -398,7 +393,7 @@ export default function BossScreen() {
           style={[s.sendBtn, !command.trim() && { opacity: 0.5 }]}
           disabled={!command.trim()}
           onPress={() => void submitCommand(command)}
-          accessibilityLabel="Send"
+          accessibilityLabel={t("boss.send")}
         >
           <Ionicons name="arrow-up" size={20} color={tokens.textOnAccent} />
         </Pressable>
@@ -444,6 +439,7 @@ function TaskRow({
   teamNames: Record<string, string>;
   onChanged: () => void | Promise<void>;
 }) {
+  const { t: tr } = useTranslation("home");
   const [busy, setBusy] = useState(false);
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -463,15 +459,15 @@ function TaskRow({
     await onChanged();
   }
 
-  const who = teamNames[t.assigned_to] ?? ASSIGNEE_LABEL[t.assigned_to] ?? t.assigned_to;
+  const who = teamNames[t.assigned_to] ?? assigneeLabel(tr, t.assigned_to);
   const badge = done
-    ? { text: "Done", bg: tokens.successBg, fg: tokens.successTextDark }
+    ? { text: tr("boss.status.done"), bg: tokens.successBg, fg: tokens.successTextDark }
     : t.status === "scheduled"
-      ? { text: "Scheduled", bg: tokens.warningBg, fg: tokens.warningText }
+      ? { text: tr("boss.status.scheduled"), bg: tokens.warningBg, fg: tokens.warningText }
       : t.status === "needs_input"
-        ? { text: "Needs info", bg: tokens.warningBg, fg: tokens.warningText }
+        ? { text: tr("boss.status.needsInfo"), bg: tokens.warningBg, fg: tokens.warningText }
         : t.status === "awaiting_approval"
-          ? { text: "Awaiting you", bg: tokens.warningBg, fg: tokens.warningText }
+          ? { text: tr("boss.status.awaitingYou"), bg: tokens.warningBg, fg: tokens.warningText }
           : { text: who, bg: tokens.infoBg, fg: tokens.infoText };
 
   return (
@@ -489,17 +485,17 @@ function TaskRow({
       {t.status === "awaiting_approval" && t.draft_body ? (
         <View style={s.draftBox}>
           <Text style={s.draftLabel}>
-            Draft {t.draft_channel === "sms" ? "text" : "email"}
+            {tr("boss.draftLabel", { channel: t.draft_channel === "sms" ? tr("boss.channel.sms") : tr("boss.channel.email") })}
             {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </Text>
           {t.draft_subject ? <Text style={s.draftSubject}>{t.draft_subject}</Text> : null}
           <Text style={s.draftBody}>{t.draft_body}</Text>
           <View style={s.actionRow}>
             <Pressable style={s.primaryBtn} disabled={busy} onPress={() => void act("approve")}>
-              <Text style={s.primaryBtnText}>{busy ? "Sending…" : "Approve & send"}</Text>
+              <Text style={s.primaryBtnText}>{busy ? tr("boss.sending") : tr("boss.approveSend")}</Text>
             </Pressable>
             <Pressable style={s.ghostBtn} disabled={busy} onPress={() => void act("dismiss")}>
-              <Text style={s.ghostBtnText}>Dismiss</Text>
+              <Text style={s.ghostBtnText}>{tr("boss.dismiss")}</Text>
             </Pressable>
           </View>
           {error ? <Text style={s.errorText}>{error}</Text> : null}
@@ -508,18 +504,18 @@ function TaskRow({
 
       {t.status === "needs_input" ? (
         <View style={s.draftBox}>
-          <Text style={s.askText}>{t.follow_up_question ?? "I need one more detail to start this."}</Text>
+          <Text style={s.askText}>{t.follow_up_question ?? tr("boss.needOneMoreDetail")}</Text>
           <View style={s.answerRow}>
             <TextInput
               style={s.answerInput}
               value={answer}
               onChangeText={setAnswer}
-              placeholder="Type your answer…"
+              placeholder={tr("boss.typeAnswer")}
               placeholderTextColor={tokens.textSubtle}
               editable={!busy}
             />
             <Pressable style={[s.sendSmall, (!answer.trim() || busy) && { opacity: 0.5 }]} disabled={!answer.trim() || busy} onPress={() => void act("answer")}>
-              <Text style={s.primaryBtnText}>{busy ? "…" : "Send"}</Text>
+              <Text style={s.primaryBtnText}>{busy ? "…" : tr("boss.send")}</Text>
             </Pressable>
           </View>
           {error ? <Text style={s.errorText}>{error}</Text> : null}
@@ -554,6 +550,7 @@ function SettingsModal({
   onGlobal: (on: boolean) => void;
   onCell: (assignee: string, channel: MobileAutopilotChannel, mode: MobileAutopilotMode) => void;
 }) {
+  const { t } = useTranslation("home");
   const cellMode = (assignee: string, channel: MobileAutopilotChannel): MobileAutopilotMode => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
     if (c) return c.mode;
@@ -568,23 +565,23 @@ function SettingsModal({
       <View style={s.modalBackdrop}>
         <View style={s.modalSheet} accessibilityViewIsModal>
           <View style={s.modalHead}>
-            <Text style={s.modalTitle} accessibilityRole="header">Approval settings</Text>
-            <Pressable onPress={onClose} accessibilityLabel="Close">
+            <Text style={s.modalTitle} accessibilityRole="header">{t("boss.approvalSettings")}</Text>
+            <Pressable onPress={onClose} accessibilityLabel={t("boss.close")} hitSlop={8}>
               <Ionicons name="close" size={22} color={tokens.textMuted} />
             </Pressable>
           </View>
-          <Text style={s.modalSub}>Per assistant and channel: you approve, Max approves, or it just goes. Tap a cell to step through.</Text>
+          <Text style={s.modalSub}>{t("boss.approvalSub")}</Text>
           <ScrollView style={{ maxHeight: 460 }}>
             <View style={s.globalRow}>
               <View style={{ flex: 1 }}>
-                <Text style={s.teamName}>Autopilot (all channels)</Text>
-                <Text style={s.bossSub}>The master switch. Per-channel choices override it.</Text>
+                <Text style={s.teamName}>{t("boss.autopilotAll")}</Text>
+                <Text style={s.bossSub}>{t("boss.autopilotAllSub")}</Text>
               </View>
               <Switch value={global} onValueChange={onGlobal} />
             </View>
             {channels.map((row) => (
               <View key={row.assignee} style={s.matrixRow}>
-                <Text style={s.teamName}>{ASSIGNEE_LABEL[row.assignee] ?? row.assignee}</Text>
+                <Text style={s.teamName}>{assigneeLabel(t, row.assignee)}</Text>
                 <View style={s.chipRow}>
                   {row.channels.map((ch) => {
                     const mode = cellMode(row.assignee, ch);
@@ -594,11 +591,11 @@ function SettingsModal({
                         style={[s.cellPill, pillStyle(mode)]}
                         onPress={() => onCell(row.assignee, ch, NEXT_MODE[mode])}
                         accessibilityRole="button"
-                        accessibilityLabel={`${CHANNEL_LABEL[ch]}: ${MODE_LABEL[mode]}`}
-                        accessibilityHint={MODE_HINT[mode]}
+                        accessibilityLabel={`${channelLabel(t, ch)}: ${modeLabel(t, mode)}`}
+                        accessibilityHint={modeHint(t, mode)}
                       >
                         <Text style={[s.cellPillText, { color: pillColor(mode) }]}>
-                          {CHANNEL_LABEL[ch]}: {MODE_LABEL[mode]}
+                          {channelLabel(t, ch)}: {modeLabel(t, mode)}
                         </Text>
                       </Pressable>
                     );
@@ -608,7 +605,7 @@ function SettingsModal({
             ))}
           </ScrollView>
           <Pressable style={[s.primaryBtn, { alignSelf: "flex-end", marginTop: 12 }]} onPress={onClose}>
-            <Text style={s.primaryBtnText}>Done</Text>
+            <Text style={s.primaryBtnText}>{t("boss.done")}</Text>
           </Pressable>
         </View>
       </View>

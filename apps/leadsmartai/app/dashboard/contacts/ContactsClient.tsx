@@ -21,6 +21,7 @@ import {
   UserPlus,
   Mail,
   AlertCircle,
+  ChevronDown,
   MoreHorizontal,
   X,
 } from "lucide-react";
@@ -621,6 +622,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           >
             <Plus className="h-4 w-4" strokeWidth={2.5} />
             {t("add_menu.button")}
+            <ChevronDown className="h-3.5 w-3.5 text-white/80" strokeWidth={2} aria-hidden />
           </button>
           {addMenuOpen ? (
             <div
