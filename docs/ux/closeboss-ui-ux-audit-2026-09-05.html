@@ -1,0 +1,906 @@
+<title>CloseBoss UX Audit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F4F6F9; --surface:#FFFFFF; --surface-2:#EAEEF4; --line:#D5DBE5; --line-strong:#B9C2D0;
+  --ink:#14213D; --ink-2:#3D4A63; --ink-3:#6B7790;
+  --navy:#0B1F44; --gold:#B8730A; --gold-soft:#FBF3E4;
+  --p0:#B42318; --p0-bg:#FCEBE9; --p1:#C2410C; --p1-bg:#FDEEE4; --p2:#8A5A00; --p2-bg:#FBF3DD; --p3:#4B5563; --p3-bg:#EEF0F3;
+  --good:#1B7F4C; --good-bg:#E4F4EA;
+  --meter:#0B1F44; --meter-track:#DCE2EC;
+  --code-bg:#EEF1F6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1420; --surface:#161C2B; --surface-2:#1E2536; --line:#2A3347; --line-strong:#3A4560;
+    --ink:#E8EAF0; --ink-2:#B9C0D0; --ink-3:#8A93A8;
+    --navy:#8FB0F0; --gold:#E3A63A; --gold-soft:#2A2314;
+    --p0:#F08A80; --p0-bg:#3A1C1A; --p1:#F0A070; --p1-bg:#3A2418; --p2:#E4C06A; --p2-bg:#332B12; --p3:#B0B8C8; --p3-bg:#262C3A;
+    --good:#6CCB92; --good-bg:#16301F;
+    --meter:#8FB0F0; --meter-track:#2A3347;
+    --code-bg:#1B2233;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1420; --surface:#161C2B; --surface-2:#1E2536; --line:#2A3347; --line-strong:#3A4560;
+  --ink:#E8EAF0; --ink-2:#B9C0D0; --ink-3:#8A93A8;
+  --navy:#8FB0F0; --gold:#E3A63A; --gold-soft:#2A2314;
+  --p0:#F08A80; --p0-bg:#3A1C1A; --p1:#F0A070; --p1-bg:#3A2418; --p2:#E4C06A; --p2-bg:#332B12; --p3:#B0B8C8; --p3-bg:#262C3A;
+  --good:#6CCB92; --good-bg:#16301F;
+  --meter:#8FB0F0; --meter-track:#2A3347;
+  --code-bg:#1B2233;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",ui-sans-serif,system-ui,sans-serif;font-size:17px;line-height:1.55}
+a{color:var(--navy)}
+.wrap{display:grid;grid-template-columns:1fr;max-width:1240px;margin:0 auto;padding:0 20px 80px}
+@media (min-width:1100px){.wrap{grid-template-columns:250px minmax(0,1fr);gap:48px}}
+nav.toc{display:none}
+@media (min-width:1100px){
+  nav.toc{display:block;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:36px 0 40px;font-size:13.5px}
+  nav.toc ol{list-style:none;margin:0;padding:0}
+  nav.toc li{margin:0}
+  nav.toc a{display:block;padding:4px 10px;border-left:2px solid transparent;color:var(--ink-3);text-decoration:none;line-height:1.3}
+  nav.toc a:hover{color:var(--ink);border-left-color:var(--line-strong)}
+  nav.toc .grp{margin:14px 0 4px;padding-left:10px;font-family:Manrope,sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+}
+main{min-width:0;max-width:820px}
+header.masthead{padding:44px 0 28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:Manrope,sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:Manrope,sans-serif;font-weight:800;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-.02em;margin:8px 0 12px;text-wrap:balance}
+h2{font-family:Manrope,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.015em;line-height:1.15;margin:56px 0 12px;padding-top:24px;border-top:1px solid var(--line);text-wrap:balance}
+h2 .num{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:13px;color:var(--gold);display:block;margin-bottom:6px;letter-spacing:.04em}
+h3{font-family:Manrope,sans-serif;font-weight:700;font-size:18.5px;margin:30px 0 8px;letter-spacing:-.01em}
+h4{font-family:Manrope,sans-serif;font-weight:700;font-size:15px;margin:20px 0 6px}
+p{margin:0 0 14px;max-width:70ch}
+ul,ol{margin:0 0 14px;padding-left:22px;max-width:70ch}
+li{margin:0 0 5px}
+li p{margin:0}
+.lede{font-size:19px;color:var(--ink-2);max-width:66ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-size:14px;color:var(--ink-3)}
+.meta b{color:var(--ink-2);font-weight:600}
+code,kbd{font-family:"JetBrains Mono",monospace;font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.5;background:var(--code-bg);padding:14px 16px;border-radius:6px;overflow-x:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:0 0 20px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:Manrope,sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:var(--surface-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-family:Manrope,sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.P0{background:var(--p0-bg);color:var(--p0)} .P1{background:var(--p1-bg);color:var(--p1)} .P2{background:var(--p2-bg);color:var(--p2)} .P3{background:var(--p3-bg);color:var(--p3)}
+.ok{background:var(--good-bg);color:var(--good)}
+.callout{border-left:3px solid var(--gold);background:var(--gold-soft);padding:12px 16px;border-radius:0 6px 6px 0;margin:0 0 18px;max-width:72ch}
+.callout p:last-child{margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 8px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.kpi .v{font-family:Manrope,sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--ink-3);margin-top:6px;letter-spacing:.02em;text-transform:uppercase;font-family:Manrope,sans-serif;font-weight:600}
+.meterbar{display:flex;align-items:center;gap:10px;min-width:150px}
+.meterbar i{flex:1;height:6px;background:var(--meter-track);border-radius:3px;overflow:hidden;display:block}
+.meterbar i b{display:block;height:100%;background:var(--meter)}
+.meterbar span{font-variant-numeric:tabular-nums;font-weight:600;min-width:3ch;text-align:right}
+.screen{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin:0 0 18px}
+.screen h3{margin:0 0 4px}
+.screen .purpose{color:var(--ink-3);font-size:14.5px;margin-bottom:12px}
+.screen dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 14px;margin:0;font-size:15px}
+.screen dt{font-family:Manrope,sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.screen dd{margin:0}
+.screen dd ul{margin:0;padding-left:18px}
+@media (max-width:560px){.screen dl{grid-template-columns:1fr}.screen dt{padding-top:6px}}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 20px;margin:0 0 16px}
+.rec h4{margin:0 0 8px;font-size:16px}
+.rec dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:6px 14px;margin:0;font-size:15px}
+.rec dt{font-weight:700;color:var(--ink-3);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;font-family:Manrope,sans-serif;padding-top:3px}
+.rec dd{margin:0}
+@media (max-width:560px){.rec dl{grid-template-columns:1fr}}
+.jour{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 18px}
+.jour div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:14.5px}
+.jour b{display:block;font-family:Manrope,sans-serif;font-size:14px;margin-bottom:4px}
+.jour .stat{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-3)}
+.small{font-size:14px;color:var(--ink-3)}
+hr.soft{border:0;border-top:1px dashed var(--line);margin:28px 0}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Sections">
+  <div class="grp">Summary</div>
+  <ol>
+    <li><a href="#s1">1 Executive summary</a></li>
+    <li><a href="#s2">2 Overall UX score</a></li>
+    <li><a href="#s3">3 Strengths</a></li>
+    <li><a href="#s4">4 Major weaknesses</a></li>
+    <li><a href="#s5">5 User journeys</a></li>
+  </ol>
+  <div class="grp">Audits</div>
+  <ol>
+    <li><a href="#s6">6 Web UI</a></li>
+    <li><a href="#s7">7 Mobile app</a></li>
+    <li><a href="#s8">8 Responsive</a></li>
+    <li><a href="#s9">9 Visual design</a></li>
+    <li><a href="#s10">10 Information architecture</a></li>
+    <li><a href="#s11">11 Navigation</a></li>
+    <li><a href="#s12">12 Usability</a></li>
+    <li><a href="#s13">13 Accessibility</a></li>
+    <li><a href="#s14">14 Forms</a></li>
+    <li><a href="#s15">15 Dashboards</a></li>
+    <li><a href="#s16">16 AI UX</a></li>
+    <li><a href="#s17">17 Interaction design</a></li>
+    <li><a href="#s18">18 Consistency</a></li>
+    <li><a href="#s19">19 Design system</a></li>
+    <li><a href="#s20">20 Conversion UX</a></li>
+    <li><a href="#s21">21 Screen by screen</a></li>
+  </ol>
+  <div class="grp">Action</div>
+  <ol>
+    <li><a href="#s22">22 Top 20 problems</a></li>
+    <li><a href="#s23">23 Top 20 quick wins</a></li>
+    <li><a href="#s24">24 Recommended redesigns</a></li>
+    <li><a href="#s25">25 UX scorecard</a></li>
+    <li><a href="#s26">26 Roadmap</a></li>
+    <li><a href="#s27">27 Developer-ready recs</a></li>
+    <li><a href="#s28">28 Strategic recommendations</a></li>
+    <li><a href="#s29">If I were Head of Product</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="masthead">
+  <div class="eyebrow">UI/UX audit · CloseBoss web + mobile</div>
+  <h1>CloseBoss UX Audit</h1>
+  <p class="lede">An objective usability, visual and AI-experience review of the CloseBoss agent product: the Next.js web app at closebossai.com and the Expo mobile app. Findings are grounded in the live production dashboard, automated WCAG scans, and the source in <code>apps/leadsmartai</code> and <code>apps/leadsmart-mobile</code>.</p>
+  <div class="meta">
+    <span><b>Date</b> 5 Sep 2026</span>
+    <span><b>Account</b> test agent 26 (Signature plan, seeded data)</span>
+    <span><b>Viewports</b> 1568 · 768 · 390 px live; 320–1920 via code</span>
+    <span><b>Mobile app</b> reviewed from source (Expo 55, v1.6.0); not run on device</span>
+  </div>
+</header>
+
+<h2 id="s1"><span class="num">01</span>Executive summary</h2>
+<h3>Overall assessment</h3>
+<p>CloseBoss has a genuinely differentiated product idea, an "AI team" you command rather than a CRM you feed, and the web app already carries the visual foundations of a modern SaaS product: a coherent OKLCH brand ramp, Geist typography, a tinted elevation scale, and a purposeful sidebar. The gap is between that foundation and what a new agent actually meets on screen. Three onboarding systems overlap, the AI's own voice leaks raw markdown and internal counters, the primary "Leads" screen is a nine-column table with icon-only actions that does not survive a phone, and the same product answers to three names (Ask Max, AI Guide, Bossy). The result sits at <b>Functional, approaching Professional</b>. It is not yet the calm, premium "company floor" the brand charter describes.</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">5.6</div><div class="l">Overall UX / 10</div></div>
+  <div class="kpi"><div class="v">6</div><div class="l">Benchmark vs modern SaaS</div></div>
+  <div class="kpi"><div class="v">3</div><div class="l">P0 findings</div></div>
+  <div class="kpi"><div class="v">17</div><div class="l">P1 findings</div></div>
+  <div class="kpi"><div class="v">856:3</div><div class="l">Raw buttons vs Button component</div></div>
+</div>
+
+<h3>Current strengths</h3>
+<ul>
+  <li><b>Strong product thesis carried into the UI.</b> The sidebar is organised as "your day" then "your AI team", and Ask Max leads with proposals the agent approves. That is the right shape.</li>
+  <li><b>Real design tokens exist.</b> <code>globals.css</code> defines a perceptually uniform brand and neutral ramp, four elevation levels, tabular numerals, and an AA-safe orange for text. The mobile <code>theme.ts</code> mirrors the same ramps with a hand-tuned dark palette.</li>
+  <li><b>Mobile engineering is mature where it exists.</b> Offline banner, cached fetches, a write queue, row skeletons, haptics, accessibility labels on list rows, and a keyboard-safe login.</li>
+  <li><b>Bilingual by default.</b> EN / 中文 across web and mobile, including per-contact language pills.</li>
+  <li><b>Approval is the control point.</b> Autopilot is a per-assistant, per-channel matrix with "ask" as default; drafts are shown before they send.</li>
+</ul>
+
+<h3>Biggest weaknesses</h3>
+<ul>
+  <li><b>Onboarding is three products stacked.</b> The Max welcome interview, the Setup Wizard modal and the Site Tour all fire on a first session and ask overlapping questions.</li>
+  <li><b>AI output is not rendered as a product surface.</b> Literal <code>**Needs you:**</code> asterisks, "0/25 tools" meters and a five-star "Mission accomplished" card for a clarifying question.</li>
+  <li><b>Contacts and Inbox are desktop tables squeezed onto phones.</b> No card layout, no single-pane conversation on mobile, 16px icon-only actions.</li>
+  <li><b>Identity and naming drift.</b> "Leads" opens a page titled "Contacts"; "Conversations" is "Inbox" in the command palette; the sidebar shows "Fan Yes" while the top bar shows "Michael Yestest"; the mobile Boss is "Bossy" with the app icon as a face.</li>
+  <li><b>Monetisation UI ignores plan state.</b> A paying Signature user sees an orange "Upgrade" button, a "Grow with AI follow-ups, upgrade" promo, and a plan named "Subscribed".</li>
+  <li><b>No component discipline.</b> Three primary-button colours, five spinner variants, seven radius sizes, gray and slate palettes side by side, 38 native <code>confirm()</code> dialogs.</li>
+</ul>
+
+<h3>Biggest risks</h3>
+<ul>
+  <li>Trial abandonment during the first ten minutes: the welcome, wizard, tour and a 434-unread bell all compete for attention before the agent has seen a single lead of their own.</li>
+  <li>Trust erosion from AI framing: celebratory cards for non-work, and "each session starts fresh" contradicting the "chief of staff" promise.</li>
+  <li>Accessibility exposure: unlabeled form controls and selects (axe: critical), a drawer that cannot be closed with Escape, and a skip-link that points nowhere.</li>
+  <li>Mobile app cold start lands on a hidden legacy tab, so the tab bar shows no active tab.</li>
+</ul>
+
+<h3>Biggest opportunities</h3>
+<ul>
+  <li>Collapse onboarding into one Max-led conversation that ends with the agent's own data on screen.</li>
+  <li>Make Ask Max the single AI surface (retire the floating "AI Guide" bubble) and render its output like a product, not a log.</li>
+  <li>Rebuild Contacts as a list with a row-level primary action and a responsive card mode; rebuild Inbox as a true two-pane that collapses on phones.</li>
+  <li>Ship the design system you already have: one Button, one Card, one Dialog, one Toggle, one radius scale, one neutral ramp.</li>
+</ul>
+
+<div class="callout">
+  <p><b>Overall UX score: 5.6 / 10.</b> To reach <b>8 / 10 (Professional)</b>: fix the three P0s, consolidate onboarding, make Contacts and Inbox responsive, and enforce the component library. To reach <b>9 / 10 (Excellent)</b>: redesign Ask Max's run cards, plan-aware monetisation, a real notification centre, and AA accessibility across every form. To reach <b>10 / 10 (Best-in-class)</b>: one shared design system across web and mobile, memory-backed Max, motion and micro-interaction polish, and personalised dashboards.</p>
+</div>
+
+<h2 id="s2"><span class="num">02</span>Overall UX score</h2>
+<div class="tbl"><table>
+<thead><tr><th>Dimension</th><th>Score</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Visual design</td><td><div class="meterbar"><i><b style="width:70%"></b></i><span>7.0</span></div></td><td>Good tokens and type; drift in radius, palette and button colour.</td></tr>
+<tr><td>Usability</td><td><div class="meterbar"><i><b style="width:55%"></b></i><span>5.5</span></div></td><td>Icon-only actions, overlapping onboarding, native confirms, drawer without Escape.</td></tr>
+<tr><td>Navigation</td><td><div class="meterbar"><i><b style="width:60%"></b></i><span>6.0</span></div></td><td>Sidebar structure is right; labels drift, footer clips items, mobile hides quick actions.</td></tr>
+<tr><td>Information architecture</td><td><div class="meterbar"><i><b style="width:55%"></b></i><span>5.5</span></div></td><td>Settings split across three places; Overview/Actions nesting adds clicks.</td></tr>
+<tr><td>Responsive design</td><td><div class="meterbar"><i><b style="width:50%"></b></i><span>5.0</span></div></td><td>Tables and three-pane layouts do not collapse; floating avatar collides.</td></tr>
+<tr><td>Mobile UX (native app)</td><td><div class="meterbar"><i><b style="width:55%"></b></i><span>5.5</span></div></td><td>Solid plumbing; inconsistent home, small targets, English-only Boss, dev artifacts on login.</td></tr>
+<tr><td>Accessibility</td><td><div class="meterbar"><i><b style="width:50%"></b></i><span>5.0</span></div></td><td>Critical axe hits on labels; contrast on sidebar and badges; focus states in 14 files.</td></tr>
+<tr><td>Interaction design</td><td><div class="meterbar"><i><b style="width:60%"></b></i><span>6.0</span></div></td><td>Hover lifts and skeletons on mobile; zero route-level loading states on web.</td></tr>
+<tr><td>Forms</td><td><div class="meterbar"><i><b style="width:60%"></b></i><span>6.0</span></div></td><td>Signup validates well; settings inputs unlabeled; save state in-button (good).</td></tr>
+<tr><td>Dashboard UX</td><td><div class="meterbar"><i><b style="width:55%"></b></i><span>5.5</span></div></td><td>Ask Max opens with dashes for zero; Contacts opens with charts, not people.</td></tr>
+<tr><td>AI UX</td><td><div class="meterbar"><i><b style="width:50%"></b></i><span>5.0</span></div></td><td>Right control model; wrong rendering, framing and duplicated entry points.</td></tr>
+<tr><td>Consistency</td><td><div class="meterbar"><i><b style="width:45%"></b></i><span>4.5</span></div></td><td>Three primary colours, two neutral palettes, three names for the AI.</td></tr>
+<tr><td>Design system</td><td><div class="meterbar"><i><b style="width:50%"></b></i><span>5.0</span></div></td><td>Tokens defined, components not adopted (3 of 856 buttons).</td></tr>
+<tr><td>Performance perception</td><td><div class="meterbar"><i><b style="width:60%"></b></i><span>6.0</span></div></td><td>Client fetch-on-mount everywhere; blank panes before data.</td></tr>
+<tr><td>Conversion UX</td><td><div class="meterbar"><i><b style="width:60%"></b></i><span>6.0</span></div></td><td>Clear pricing; two signup paths; upgrade CTAs shown to paying users.</td></tr>
+<tr><td><b>Overall</b></td><td><div class="meterbar"><i><b style="width:56%"></b></i><span>5.6</span></div></td><td>Functional, approaching Professional.</td></tr>
+</tbody></table></div>
+
+<h2 id="s3"><span class="num">03</span>Product strengths to preserve</h2>
+<ul>
+  <li><b>The "Your AI Team" sidebar band</b> with persona avatars: keep it. It is the clearest expression of the brand charter in the product.</li>
+  <li><b>Proposal cards in Ask Max</b> (Proposal → reason → "Review transaction" / "Not now"): the approval loop is right. Fix the rendering, not the model.</li>
+  <li><b>Pricing page copy</b> ("Every plan includes everything; only credits change"): unusually honest and easy to scan. Keep the structure.</li>
+  <li><b>Contact drawer "Story so far"</b>: a timeline in plain language is the right way to show AI activity per person.</li>
+  <li><b>Mobile offline and skeleton plumbing</b>, haptics, and row accessibility labels.</li>
+  <li><b>Bilingual toggle</b> in the top bar and per-contact language pills.</li>
+  <li><b>Save-in-button feedback</b> (116 inline "Saved" states vs 2 toasts) matches the house rule; keep it, standardise the style.</li>
+</ul>
+
+<h2 id="s4"><span class="num">04</span>Major weaknesses</h2>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Weakness</th><th>Evidence</th><th>Severity</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Three overlapping onboarding flows</td><td><code>app/welcome/page.tsx</code> (5-question chat), <code>components/onboarding/SetupWizard.tsx</code> (4-step modal gated by <code>onboarding_completed</code>), <code>components/tour/SiteTour.tsx</code>. Wizard step titles are hardcoded English.</td><td><span class="pill P0">P0</span></td></tr>
+<tr><td>2</td><td>AI output rendered raw</td><td>Live thread shows <code>**Needs you:**</code> literally; <code>RunCard.tsx:169</code> uses <code>whitespace-pre-line</code>, no markdown; "Mission accomplished ★★★★★ · 0 steps" for a clarifying question.</td><td><span class="pill P0">P0</span></td></tr>
+<tr><td>3</td><td>Mobile app lands on a hidden tab</td><td><code>app/index.tsx</code> redirects to <code>/(tabs)/home</code>, which <code>(tabs)/_layout.tsx</code> hides (<code>href: null</code>); login redirects to Inbox; first tab is Boss.</td><td><span class="pill P0">P0</span></td></tr>
+<tr><td>4</td><td>Contacts is a desktop table only</td><td>9 columns, 8 icon-only row actions with <code>title</code> tooltips; at 390px the table scrolls inside <code>main</code>. No card mode.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>5</td><td>Inbox three-pane does not collapse</td><td>At 390px the list is ~230px wide beside an empty "Select a conversation" pane (<code>InboxClient.tsx:228</code>).</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>6</td><td>Plan-blind monetisation UI</td><td>"Upgrade" pill and sidebar promo keyed on role (<code>isAgentOrBrokerProfileRole</code>), not plan; Billing shows plan name "Subscribed".</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>7</td><td>Identity drift</td><td><code>app/account/layout.tsx:40</code> omits <code>fullName</code>/<code>avatarUrl</code>, so sidebar says "Fan Yes" on Profile while top bar says "Michael Yestest".</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>8</td><td>Two AI entry points, three AI names</td><td>Ask Max page + floating "AI Guide" bubble wearing Max's face; mobile calls him "Bossy" and uses the app icon.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>9</td><td>Accessibility criticals</td><td>axe: <code>select-name</code> (Contacts), <code>label</code> on two time inputs (Settings), contrast on sidebar active label and bell badge, skip-link target missing. Drawer ignores Escape.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>10</td><td>Notification overload</td><td>Bell shows "9+" with 434 unread; page has no mark-all-read or grouping.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>11</td><td>Component drift</td><td>856 raw <code>&lt;button&gt;</code>, 3 uses of <code>ui/button</code>; 5 spinner variants; radius spread from <code>md</code> to <code>3xl</code>; gray-50 (407) and slate-50 (546) both used.</td><td><span class="pill P2">P2</span></td></tr>
+<tr><td>12</td><td>Developer artifacts in mobile login</td><td>Login screen prints "Endpoint: https://…" and offers a "paste a JWT" fallback.</td><td><span class="pill P1">P1</span></td></tr>
+</tbody></table></div>
+
+<h2 id="s5"><span class="num">05</span>User journey analysis</h2>
+<p>Estimated for a new solo agent on desktop unless stated. "Clicks" counts taps, key presses to submit, and choices; typing is counted once per field.</p>
+
+<div class="jour">
+  <div><b>First visit → paying trial</b><span class="stat">Landing → Pricing → Agent signup → Welcome → Dashboard</span><p>Landing is ~15 sections long; hero states the thesis three times. Two CTAs ("Talk to Max", "Watch Demo") plus "Ask Max free" and "Hire Your AI Team Free" further down. Signup form: 7 fields + 2 checkboxes. Then /welcome (5 questions + 6-item plan), then the Setup Wizard modal (4 steps), then the tour prompt. <b>≈ 28 interactions before own data.</b></p></div>
+  <div><b>Add a lead</b><span class="stat">3 clicks + form (desktop) · 4 (mobile)</span><p>Quick actions → Add lead → form. On mobile the Quick actions button is hidden (<code>hidden md:flex</code>), so the path is drawer → Leads → Add. The "Add…" button label truncates on the Contacts page.</p></div>
+  <div><b>Reply to a text</b><span class="stat">3 clicks</span><p>Conversations → thread → reply. Fine on desktop. On a phone the list is squeezed to a third of the width and the reply pane may render off-screen.</p></div>
+  <div><b>Turn on the AI Receptionist</b><span class="stat">2 routes, 4–6 clicks</span><p>Either Receptionist → Overview → "Voice settings" → panel, or Settings → Voice &amp; Style → scroll past AI style and phone voice. Two doors, no signpost between them.</p></div>
+  <div><b>Approve an AI draft</b><span class="stat">2–3 clicks</span><p>Ask Max → Proposal → Review → Approve. Good. But the run card that follows says "Mission accomplished" even when nothing ran.</p></div>
+  <div><b>Change notification settings</b><span class="stat">Unclear</span><p>Notifications page has no settings link; push preferences live in the mobile app and in the Setup Wizard step 4; transaction notifications live in Settings → Channels. Three homes.</p></div>
+</div>
+
+<h3>Where users hesitate or abandon</h3>
+<ul>
+  <li><b>Confusion:</b> "Leads" in the nav opens a page titled "Contacts" with "Leads / Sphere / All contacts" chips each tagged "DEFAULT". A new user cannot tell which is the default.</li>
+  <li><b>Hesitation:</b> Ask Max opens with four metric tiles reading "—" and a single line of greeting; the command bar sits below an empty "Business performance" disclosure. Nothing invites the first command except three small chips.</li>
+  <li><b>Abandonment:</b> the welcome chat asks for name and brokerage that signup already collected; the wizard then asks for brand name again.</li>
+  <li><b>Mistakes:</b> row actions in Contacts include "Mark contacted", "Draft offer" and "Start deal" as 16px icons with no confirm; one mis-tap creates a deal.</li>
+  <li><b>Recall burden:</b> icon-only actions rely on hover tooltips, which do not exist on touch.</li>
+</ul>
+
+<h2 id="s6"><span class="num">06</span>Web UI audit</h2>
+<h3>Shell and navigation chrome</h3>
+<ul>
+  <li><b>Sidebar footer overlaps the nav list.</b> At a 710px-tall viewport the pinned promo card and user card cover "Manage AI Team"; the list gains an inner scrollbar with 8px arrow buttons. <span class="pill P1">P1</span> Fix: make the promo dismissible, move it out of the sidebar for paid plans, and give the nav list <code>min-h-0 flex-1 overflow-y-auto</code> with padding-bottom equal to the footer height.</li>
+  <li><b>Top bar carries seven controls</b> (search, Upgrade, credits, EN/中文, support, Quick actions, bell, account). On desktop it works; on phones five of them vanish rather than collapse into an overflow.</li>
+  <li><b>Search placeholder promises more than it does.</b> "Search leads, clients, addresses…" submits to the contacts list; the ⌘K palette only navigates pages.</li>
+  <li><b>Floating Max avatar</b> (64px, <code>fixed bottom-6 right-6</code>) overlaps the last table row's actions on Contacts and the command bar on phones.</li>
+</ul>
+<h3>Page headers</h3>
+<p>Four header styles coexist: "CLOSEBOSS" eyebrow + title (Manage AI Team), plain title + subtitle (Contacts, Tasks), title + right-aligned black button (Transactions, Calendar, Listings), and tabs above title (Settings). Standardise on one <code>PageHeader</code> with title, one-line purpose, and a primary action slot.</p>
+<h3>Tables</h3>
+<p>Contacts, Tasks, Listings, Calls all use a hand-built <code>&lt;table&gt;</code> with its own header styling. Contacts sorts by clicking headers with a 10px triangle glyph; Tasks has no sort; Listings has none. There is no shared DataTable, no sticky header, no column visibility, no bulk action bar beyond the Contacts checkbox column.</p>
+<h3>Cards, modals, drawers</h3>
+<p>A Radix <code>Dialog</code> primitive exists (<code>components/ui/dialog.tsx</code>) but the Lead Profile drawer, Setup Wizard and most modals are hand-rolled fixed overlays. Escape does not close the drawer (verified live). 38 native <code>confirm()</code> calls, several with untranslated English strings ("Delete this offer? This cannot be undone.").</p>
+<h3>Empty, error and loading states</h3>
+<ul>
+  <li>Empty: Transactions defaults to "Active (0)" and shows "No transactions match this filter" while "All (2)" exists. Inbox shows "Select a conversation to view" in a pane that should not exist on phones. Notifications shows two empty columns with copy that reads as an apology.</li>
+  <li>Loading: no <code>loading.tsx</code> in any of 62 dashboard route folders; 15 ad-hoc spinners in five styles; Skeleton used in five files.</li>
+  <li>Error: one <code>error.tsx</code> and an <code>ErrorBoundary</code> in the layout. Good baseline; the list-vs-error distinction in Inbox (<code>listError</code>) is a good pattern to copy.</li>
+</ul>
+
+<h2 id="s7"><span class="num">07</span>Mobile app audit (Expo)</h2>
+<p class="small">Reviewed from source; the app was not launched on a simulator in this session. Findings are structural and verifiable in code.</p>
+<h3>Entry and navigation</h3>
+<ul>
+  <li><b>Three different homes.</b> Cold start → <code>/(tabs)/home</code> (hidden legacy screen; no tab highlighted). Login → <code>/(tabs)/inbox</code>. Onboarding finish → Inbox. Tab bar's first tab is Boss. <span class="pill P0">P0</span> Pick Boss and route every entry there.</li>
+  <li><b>Five visible tabs, twelve tab routes.</b> home/work/engage/analyze/manage/calendar/settings are hidden with <code>href: null</code> but still reachable; deep links can land on chrome-less legacy screens.</li>
+  <li><b>Calendar, Tasks and Settings are buried under More</b> as tiles, while Team (a static roster of five rows) owns a tab. For an agent, Calendar and Tasks are daily; Team is occasional.</li>
+</ul>
+<h3>Boss screen</h3>
+<ul>
+  <li>Entirely hardcoded English (no <code>useTranslation</code>) while the app ships zh-Hans; 11 other screens share the gap (<code>briefings, cma, coaching, connect-platforms, digital-twin, expenses, tasks, weekly-schedule, offer-desk…</code>). <span class="pill P1">P1</span></li>
+  <li>Fallback name "Bossy" and avatar <code>assets/icon.png</code>; web is "Max" with a portrait. <span class="pill P1">P1</span></li>
+  <li>One ScrollView stacks agenda, alerts, briefing, proposals and the thread above the docked command bar; the proposals, the most important content, sit below two dashboard blocks.</li>
+  <li>Touch targets: gear 34×34, autopilot pill ~28px tall, quick-command chips ~30px. Only 7 <code>hitSlop</code> uses app-wide. <span class="pill P1">P1</span></li>
+</ul>
+<h3>Login and onboarding</h3>
+<ul>
+  <li>Login prints the API endpoint and offers a "paste a JWT" fallback to every user. <span class="pill P1">P1</span> Gate both behind a dev flag.</li>
+  <li>Value carousel has two text-only slides; the notification permission is requested before the agent has seen a lead. Defer to the first hot-lead moment.</li>
+</ul>
+<h3>Lists and detail</h3>
+<ul>
+  <li>Leads and Inbox rows: good density, hot stripe, skeletons, a11y labels. Tapping an Inbox thread opens the lead record, not a conversation; label the row accordingly or open the conversation section anchored.</li>
+  <li><code>EmptyState</code> has no action; a demo lead is injected instead. Add a primary CTA prop.</li>
+  <li>Six native <code>Switch</code> uses vs the product rule of a green/gray toggle next to its label; the Boss autopilot control is a custom pill acting as a switch.</li>
+</ul>
+<h3>Visual system</h3>
+<ul>
+  <li>Feature tiles hardcode per-tile hex (<code>#4f46e5, #16a34a, #e11d48, #0891b2…</code>) outside <code>theme.ts</code>; white glyphs on saturated squares read as an iOS home screen, not as CloseBoss.</li>
+  <li>Root Stack titles are English literals ("Tasks", "Lead", "Assistant").</li>
+  <li>Dark mode is well designed; older screens importing the legacy <code>theme</code> alias stay light.</li>
+</ul>
+
+<h2 id="s8"><span class="num">08</span>Responsive design audit</h2>
+<div class="tbl"><table>
+<thead><tr><th>Width</th><th>Observed / inferred behaviour</th><th>Issue</th></tr></thead>
+<tbody>
+<tr><td class="n">320</td><td>Top bar: hamburger, mark, bell, avatar; search drops below (<code>min-[480px]:hidden</code> block). Sidebar drawer.</td><td>Smart-list chips wrap to three rows with "DEFAULT" badges; Settings tab strip clips "Channels &amp; Compliance" with no scroll cue.</td></tr>
+<tr><td class="n">375–414</td><td>Verified at 390. Contacts table scrolls inside <code>main</code>; Inbox list ~230px beside empty detail pane; Ask Max team ribbon scrolls horizontally; floating avatar covers composer.</td><td><span class="pill P1">P1</span> Tables and three-pane layouts need mobile modes.</td></tr>
+<tr><td class="n">768</td><td>Sidebar hidden (<code>hidden lg:flex</code>), drawer used; Quick actions visible (<code>md</code>). Contacts charts stack 1-column then table.</td><td>768 is treated as phone for nav but desktop for content; a rail sidebar would fit.</td></tr>
+<tr><td class="n">1024</td><td>Sidebar appears at <code>lg</code> (268px); content ~700px.</td><td>Contacts nine columns + actions overflow at this width; Ask Max fine.</td></tr>
+<tr><td class="n">1280–1440</td><td>Verified at 1254–1568. Comfortable.</td><td>Sidebar footer clips items when height &lt; ~800px.</td></tr>
+<tr><td class="n">1920+</td><td>Content max widths: Settings <code>max-w-3xl</code>, Actions hubs ~<code>max-w-4xl</code>, Contacts/Tasks unbounded.</td><td>Unbounded tables stretch to 1600px; set <code>max-w-7xl</code> on list pages.</td></tr>
+</tbody></table></div>
+<p><b>Breakpoint decisions to change:</b> use <code>md</code> (768) for a collapsed icon rail and <code>lg</code> for the full sidebar; give every list page a <code>&lt;640</code> card mode; give Inbox a routed thread view below <code>lg</code>; hide the floating avatar below <code>md</code> and fold Ask Max into the drawer's first row.</p>
+
+<h2 id="s9"><span class="num">09</span>Visual design audit</h2>
+<h3>Typography</h3>
+<p>Geist with <code>cv11</code>/<code>ss03</code> alternates, negative tracking on headings, tabular numerals for stats: this is a considered scale and it reads well. Problems are in application, not definition: page titles vary between 20px (Settings), 24px (Contacts) and 30px (Manage AI Team); table headers mix 12px uppercase and 14px sentence case; the sidebar active label at 13.5px fails contrast on <code>bg-slate-100</code> per axe.</p>
+<h3>Colour</h3>
+<p>Brand blue <code>#0072ce</code> is used for links, active states and primary buttons, but the visible primary action colour is black on Transactions, Calendar, Listings and Tasks, blue on Contacts/Ask Max, and amber-to-orange for Upgrade. Semantic colours are sound (emerald/amber/red) but two neutral families (Tailwind gray and slate) appear on the same screens: the Contacts stats cards are slate, the table below is gray. Orange text uses the AA-safe <code>#b45309</code> correctly in Settings tabs.</p>
+<h3>Spacing and layout</h3>
+<p>Card padding varies between 12, 16, 20 and 24px; section gaps between 16 and 24. Content widths are set per page rather than by a layout token. The dashboard main pane uses a subtle gradient ground and cards use tinted shadows: keep.</p>
+<h3>Components</h3>
+<ul>
+  <li>Buttons: <code>ui/button.tsx</code> is good (elevation lift, focus ring, five variants) and almost unused.</li>
+  <li>Inputs: no shared Input; borders alternate between <code>border-gray-200</code> and <code>border-slate-200</code>, radii between <code>lg</code> and <code>xl</code>.</li>
+  <li>Badges/pills: Smart-list "DEFAULT" tag, rating pills, status pills and language pills each have their own padding and case.</li>
+  <li>Toggles: one <code>Toggle</code> component exists and follows the house rule. Adopt it everywhere.</li>
+</ul>
+
+<h2 id="s10"><span class="num">10</span>Information architecture audit</h2>
+<h3>Web</h3>
+<ul>
+  <li><b>Primary band</b> (Ask Max, Conversations, Tasks, Leads, Calendar, Deals) is right. Rename "Leads" → "People" or rename the page to "Leads"; the nav and page must agree.</li>
+  <li><b>AI team band</b>: each assistant nests Overview + Actions, so reaching "CMA" is Sales Assistant → Actions → CMA (three clicks). Flatten: the assistant row opens the hub; the hub shows actions as the first thing.</li>
+  <li><b>Settings is in three places</b>: <code>/dashboard/settings</code> (4 tabs, ~20 panels), <code>/account/profile</code> (identity, branding), <code>/dashboard/billing</code> (under More). Group as Account · Team &amp; AI · Channels · Messaging · Billing and put one "Settings" entry in the sidebar.</li>
+  <li><b>"More"</b> holds Sales Model, Playbooks, Playbook runs, Skills, Coaching, Property Tools, Billing, Profile, Help. Billing and Profile are account items; Playbooks/Skills are power features. Split accordingly.</li>
+  <li>Command palette lists "Leads", "Contacts", "Inbox", "Performance", "Reports": four labels that no longer match the sidebar.</li>
+</ul>
+<h3>Mobile</h3>
+<p>Recommended tab bar: <b>Boss · Inbox · Leads · Calendar · More</b>. Team moves into Boss (the ribbon already shows it) and More. Tasks becomes a section of Calendar (the web calendar already merges them).</p>
+<p><i>"If I am a new user, can I understand where I am?"</i> On desktop, mostly yes, thanks to the sidebar bands. On mobile web, the drawer is the only map and it closes on every tap. In the native app, a cold start currently answers "no": no tab is highlighted.</p>
+
+<h2 id="s11"><span class="num">11</span>Navigation audit</h2>
+<div class="tbl"><table>
+<thead><tr><th>Surface</th><th>Works</th><th>Problems</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Desktop sidebar (PremiumSidebarV2)</td><td>Bands, avatars, auto-open groups, aria-expanded.</td><td>Footer overlaps list; promo shown to paid users; "Ask Max" uses a House icon; no keyboard shortcut hints.</td><td>Scrollable list region; plan-aware footer; Sparkles icon; show ⌘K hint.</td></tr>
+<tr><td>Top bar</td><td>Search, bell, account menu.</td><td>Seven controls; five hidden on mobile; "Upgrade" for paid users.</td><td>Overflow menu below <code>md</code>; plan-aware CTA.</td></tr>
+<tr><td>Mobile drawer</td><td>Mirrors sidebar, portaled, focus ring.</td><td>Closes on every navigation; Ask Max is not pinned; drawer opens from a 40px button.</td><td>Pin Ask Max + search at top; 44px trigger.</td></tr>
+<tr><td>Command palette</td><td>⌘K, arrow navigation, Esc.</td><td>Page-only; stale labels; no contacts or actions.</td><td>Generate from <code>nav.config</code>; add contacts and quick actions.</td></tr>
+<tr><td>Breadcrumbs</td><td>"← Sales Assistant overview" on Actions hub.</td><td>Only on hubs; detail pages lack a way back beyond browser.</td><td>Add a back link in <code>PageHeader</code> for all detail routes.</td></tr>
+<tr><td>Native tab bar</td><td>Haptics, theme-aware, i18n labels.</td><td>Hidden routes; inconsistent home; Team over Calendar.</td><td>Five daily tabs; delete legacy screens.</td></tr>
+</tbody></table></div>
+
+<h2 id="s12"><span class="num">12</span>Usability audit (heuristics)</h2>
+<div class="tbl"><table>
+<thead><tr><th>Heuristic</th><th>Finding</th><th>Who</th><th>Likely behaviour</th><th>Fix</th><th>Sev.</th></tr></thead>
+<tbody>
+<tr><td>Visibility of system status</td><td>Ask Max tiles show "—" while data loads and also when the value is zero; run cards say "Done" and "Mission accomplished" for a question.</td><td>All agents</td><td>Doubt whether the AI did anything.</td><td>Skeleton while loading, "0" when zero; run card states: Asked you · Working · Waiting for approval · Done (n steps).</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>Match to the real world</td><td>Skills list "Buy Sell Contingency", "Transfer / Escalation"; autopilot "cells"; "Instruction" wording.</td><td>Non-technical agents</td><td>Skip configuration.</td><td>Plain-language labels with one-line examples.</td><td><span class="pill P2">P2</span></td></tr>
+<tr><td>User control and freedom</td><td>Drawer has no Escape; native confirms; wizard cannot be closed, only skipped step by step.</td><td>All</td><td>Feel trapped; reload.</td><td>Radix Dialog everywhere; "Do this later" on the wizard.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>Consistency and standards</td><td>Three primary colours; Leads/Contacts; Inbox/Conversations; Max/Bossy.</td><td>All</td><td>Slower learning; lower perceived quality.</td><td>See §18 matrix.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>Error prevention</td><td>"Start deal" and "Draft offer" are one-click icons in every contact row.</td><td>Busy agents on laptops</td><td>Accidental records.</td><td>Move to a row menu; confirm creation inline.</td><td><span class="pill P2">P2</span></td></tr>
+<tr><td>Recognition over recall</td><td>Icon-only row actions; "DEFAULT" chips; Settings tab names.</td><td>New users</td><td>Hover-hunt or give up.</td><td>Labels on primary actions; overflow menu for the rest.</td><td><span class="pill P1">P1</span></td></tr>
+<tr><td>Flexibility and efficiency</td><td>⌘K present; no keyboard shortcuts elsewhere; bulk actions only for postcards.</td><td>Power users</td><td>Stay slow.</td><td>Shortcuts for new lead, reply, approve; bulk bar.</td><td><span class="pill P3">P3</span></td></tr>
+<tr><td>Minimalist design</td><td>Contacts opens with three charts; landing has ~15 sections; top bar has seven controls.</td><td>All</td><td>Scan past the important thing.</td><td>Charts behind "Insights"; landing to 7 sections.</td><td><span class="pill P2">P2</span></td></tr>
+<tr><td>Error recovery</td><td>Inbox distinguishes list error from empty (good); most fetches swallow errors silently.</td><td>All</td><td>Blank panes with no way out.</td><td>Shared <code>ErrorState</code> with retry.</td><td><span class="pill P2">P2</span></td></tr>
+<tr><td>Help</td><td>Help &amp; Guides under More; support chat in top bar; tour exists.</td><td>New users</td><td>Do not find help in context.</td><td>"?" affordance in page headers linking to the matching guide.</td><td><span class="pill P3">P3</span></td></tr>
+</tbody></table></div>
+
+<h2 id="s13"><span class="num">13</span>Accessibility audit (WCAG 2.2)</h2>
+<p>Automated scan (axe-core 4.10, WCAG 2.x A/AA + best practice) on three live pages, plus code review.</p>
+<div class="tbl"><table>
+<thead><tr><th>Page</th><th>Rule</th><th>Impact</th><th>Node</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Contacts</td><td>select-name</td><td>critical</td><td>"All ratings" <code>&lt;select&gt;</code></td><td>Add <code>aria-label</code> or a visible label.</td></tr>
+<tr><td>Contacts</td><td>empty-table-header</td><td>minor</td><td>7th <code>th</code> (actions column)</td><td>Visually-hidden "Actions" text.</td></tr>
+<tr><td>Contacts</td><td>heading-order</td><td>moderate</td><td>Chart card <code>h3</code> after <code>h1</code></td><td>Use <code>h2</code>.</td></tr>
+<tr><td>Settings</td><td>label</td><td>critical</td><td>Two time inputs (21:00 / 08:00)</td><td>Associate <code>&lt;label for&gt;</code> with each.</td></tr>
+<tr><td>Ask Max, Settings</td><td>color-contrast</td><td>serious</td><td>Sidebar active label; bell badge "9+"</td><td>Darken label to slate-900 at 13.5px; badge red-700 on white.</td></tr>
+<tr><td>All</td><td>skip-link / region</td><td>moderate</td><td><code>.focus:not-sr-only</code> target missing</td><td>Point skip link at <code>#agent-portal-main</code> with <code>tabindex="-1"</code>.</td></tr>
+<tr><td>All</td><td>image-redundant-alt</td><td>minor</td><td>Logo <code>alt="CloseBoss"</code> beside text "CloseBoss"</td><td>Empty alt on the mark when wordmark text is present.</td></tr>
+</tbody></table></div>
+<h3>Manual findings</h3>
+<ul>
+  <li><b>Keyboard:</b> Lead Profile drawer opens as <code>role="dialog"</code> but has no focus trap, no initial focus and no Escape handler (verified). Quick actions menu handles Escape and outside click (good).</li>
+  <li><b>Focus states:</b> <code>focus-visible</code> appears in 14 files of the web app; 856 raw buttons mostly inherit the browser default, which several global styles remove.</li>
+  <li><b>Touch targets:</b> row action icons 16px in a ~24px button; mobile gear 34px; WCAG 2.5.8 wants 24px minimum and 44px is the practical target.</li>
+  <li><b>Forms:</b> Signup labels and errors are good; Settings panels mix labelled and unlabelled inputs.</li>
+  <li><b>Motion:</b> sidebar honours <code>motion-reduce</code>; team ribbon pulse and button lift do not.</li>
+  <li><b>Screen readers (mobile):</b> rows have composed labels and hints; ErrorBanner announces on mount. Feature tiles wrap icons correctly. Good.</li>
+  <li><b>Language:</b> AI replies and confirm dialogs are English regardless of the 中文 UI locale.</li>
+</ul>
+
+<h2 id="s14"><span class="num">14</span>Forms audit</h2>
+<div class="tbl"><table>
+<thead><tr><th>Form</th><th>What works</th><th>Problems</th><th>Recommendation</th></tr></thead>
+<tbody>
+<tr><td>Agent signup</td><td>Phone formatting, TCPA consent unchecked by default, password strength, duplicate-account redirect.</td><td>Seven fields on one screen; confirm-password doubles effort; two signup routes (consumer /signup vs /agent-signup) with a "Real estate agent? Start free as agent" link on Login.</td><td>Single agent signup: name, email, password, then phone + consent as step 2 inside Max's welcome. Remove confirm-password (show/hide toggle already exists).</td></tr>
+<tr><td>Login</td><td>Show password, OAuth, redirect handling.</td><td>"Cancel" button on a login form; error copy is raw Supabase text.</td><td>Drop Cancel; map auth errors to friendly copy.</td></tr>
+<tr><td>Welcome interview</td><td>Conversational, saves to profile.</td><td>Re-asks name and brokerage; free-text market with no autocomplete.</td><td>Skip known fields; use the service-area picker inline.</td></tr>
+<tr><td>Setup Wizard</td><td>Auto-suggested service areas.</td><td>Hardcoded English step titles; overlaps welcome; "Skip" is the only exit.</td><td>Merge into welcome; one "Do this later".</td></tr>
+<tr><td>Settings panels</td><td>Save reports itself on the button.</td><td>Unlabelled time inputs; no unsaved-changes guard on tab switch; panels save independently with different button styles.</td><td>Shared <code>SettingsSection</code> with labelled fields and one save style; dirty-state guard.</td></tr>
+<tr><td>Add task / Add event</td><td>Inline forms; contact picker pre-loaded.</td><td>Black button; no default due date; time fields show 2:00 AM in the Calendar list (a timezone conversion issue: dates stored as UTC midnight render as 2 AM in a UTC+2 browser, or all-day items are being given a time).</td><td>Default "Today 5 PM"; store all-day items without a time and render them as "All day"; convert timestamps with the agent's timezone, not the server's.</td></tr>
+<tr><td>Profile</td><td>Clear grouping.</td><td>"Save changes" disabled with no hint until edited.</td><td>Keep, add "No changes yet" tooltip or hide until dirty.</td></tr>
+<tr><td>Mobile login</td><td>Keyboard-safe, OAuth, remember device.</td><td>Endpoint text and JWT fallback exposed.</td><td>Dev-only.</td></tr>
+</tbody></table></div>
+
+<h2 id="s15"><span class="num">15</span>Dashboard audit</h2>
+<h3>Ask Max (home)</h3>
+<p><i>Five-second test:</i> fails today. The first paint is four tiles of "—", a one-line greeting, a collapsed "Business performance" row, then the composer. The proposals (the most important content) sit further down the thread. Recommend: proposals first, tiles as a compact strip with real zeros, composer docked at the bottom, thread history behind "Earlier".</p>
+<h3>Contacts</h3>
+<p>Opens with three chart cards (rating, last-contacted, growth) before the list. Agents open this page to find a person. Put search and the list first; charts behind an "Insights" toggle or in the Sales Assistant overview.</p>
+<h3>Tasks</h3>
+<p>Two chart cards, then tabs, then source filters, then search, then the table: four control rows before content. Collapse charts into a one-line summary ("38 done · 11 open · 3 overdue").</p>
+<h3>Manage AI Team</h3>
+<p>Good hierarchy: performance strip, per-assistant activity, roster. Bars have no axis or values; add hover values and a 14-day label. Grace and Oliver show "0 activities" with empty charts; show "Not set up yet" with a CTA instead.</p>
+<h3>Notifications</h3>
+<p>Three columns (hot leads, missed calls, reminders) with two empty. 434 unread with no read state, grouping or mark-all. Redesign as a single feed grouped by day with type chips and "Mark all read".</p>
+<h3>Mobile Boss</h3>
+<p>Agenda and alerts sit above the briefing, so proposals start below the fold. The command bar is already docked; show proposals first.</p>
+
+<h2 id="s16"><span class="num">16</span>AI UX audit</h2>
+<p>The model is right: Max proposes, the agent approves, assistants report back. The presentation undermines it.</p>
+<ul>
+  <li><b>Raw markdown.</b> <code>**Needs you:**</code> is displayed literally in run reports. <code>AiChatPanel</code> has a <code>MarkdownLite</code> renderer; <code>RunCard</code> and the Boss thread do not use it. <span class="pill P0">P0</span></li>
+  <li><b>Internal counters leak.</b> "0/25 tools" with a progress bar tells the agent about a budget they never set. Show "Working · step 2 of 4" only while running; hide after.</li>
+  <li><b>Wrong framing for non-work.</b> A clarifying question produced "Mission accomplished ★★★★★ · 0 steps complete · 6s". Only celebrate when outbound work completed; a question should render as a question card with a reply field.</li>
+  <li><b>Memory promise broken.</b> Max says "each session starts fresh for me". A chief of staff remembers. At minimum show the last three exchanges as context and never let the model say it cannot remember.</li>
+  <li><b>Two AI surfaces.</b> The floating bubble opens "AI Guide + per-contact SMS drafting" wearing Max's face; the page is "Ask Max". Retire the bubble on dashboard routes; keep a "Draft a text" action inside the contact drawer.</li>
+  <li><b>Transparency is good where it exists.</b> Proposals show a reason and expected outcome. Extend the pattern: every run card shows Why → Did → Result → Your options.</li>
+  <li><b>Autopilot matrix</b> is expressive but reads as an engineering table (assignee × channel × ask/auto). Present as sentences: "Emma may text back missed calls without asking."</li>
+  <li><b>Uncertainty.</b> No confidence indicator on CMA values or lead scores beyond a number badge; add a range and a one-line basis.</li>
+  <li><b>Errors.</b> Failed runs show status "failed" only; add what failed and a retry.</li>
+  <li><b>Mobile.</b> Same thread with fewer states; "Bossy" and the app icon break persona continuity.</li>
+</ul>
+
+<h2 id="s17"><span class="num">17</span>Interaction design audit</h2>
+<ul>
+  <li><b>Hover/press:</b> Button lift and card lift are tasteful. Raw buttons lack them.</li>
+  <li><b>Focus:</b> defined in the component library, absent in most pages.</li>
+  <li><b>Disabled:</b> <code>opacity-50</code> everywhere, no cursor or hint.</li>
+  <li><b>Loading:</b> web has no route skeletons; each client fetches after mount, so pages paint empty then fill. Mobile skeletons are good.</li>
+  <li><b>Animations:</b> sidebar chevrons, pulse dots, toast slide-in. Team ribbon pulse is permanent for "working" states and becomes noise.</li>
+  <li><b>Toasts:</b> bottom-right, 4s, three tones, no dismiss button, no action ("Undo").</li>
+  <li><b>Confirmations:</b> native <code>confirm()</code> in 38 places; wording inconsistent.</li>
+  <li><b>Empty states:</b> a shared <code>EmptyState</code> exists (emoji icon, gray palette) but most pages write their own.</li>
+  <li><b>Feels static:</b> Notifications, Listings. <b>Feels uncertain:</b> Ask Max run cards. <b>Feels overcomplicated:</b> Contacts, Settings.</li>
+</ul>
+
+<h2 id="s18"><span class="num">18</span>Consistency audit</h2>
+<div class="tbl"><table>
+<thead><tr><th>Component</th><th>Current variations</th><th>Recommended standard</th></tr></thead>
+<tbody>
+<tr><td>Primary button</td><td>Blue <code>#0072ce</code> (Contacts, Ask Max), black <code>gray-900</code> (Tasks, Transactions, Calendar, Listings), amber gradient (Upgrade), emerald (some saves)</td><td><code>Button variant="default"</code> brand blue; black reserved for nothing; gradient only for Upgrade when plan is Free.</td></tr>
+<tr><td>Border radius</td><td>md 257 · lg 1416 · xl 872 · 2xl 522 · 3xl 30 · full 588</td><td>Controls 8 (lg) · cards 12 (xl) · modals/drawers 16 (2xl) · pills full.</td></tr>
+<tr><td>Neutral palette</td><td>gray-* and slate-* interleaved</td><td>Slate via the <code>neutral</code> OKLCH ramp only.</td></tr>
+<tr><td>Row actions</td><td>8 icon-only buttons (Contacts), 3 icons (Tasks), text links (Listings)</td><td>One visible primary action + "…" overflow menu.</td></tr>
+<tr><td>Confirm dialogs</td><td>38 native <code>confirm()</code>, mixed languages</td><td>Radix <code>Dialog</code> with destructive variant; i18n keys.</td></tr>
+<tr><td>Drawers/modals</td><td>Radix Dialog, hand-rolled drawer, hand-rolled wizard overlay</td><td>Radix Dialog + a <code>Sheet</code> built on it.</td></tr>
+<tr><td>Empty states</td><td>Shared component + ~10 bespoke</td><td>One <code>EmptyState</code> with icon, title, body, primary + secondary action.</td></tr>
+<tr><td>Loading</td><td>5 spinner variants, 1 Skeleton, none at route level</td><td><code>loading.tsx</code> skeleton per route; one <code>Spinner</code>.</td></tr>
+<tr><td>Page header</td><td>4 patterns</td><td><code>PageHeader</code> (eyebrow optional, title, purpose, actions, back).</td></tr>
+<tr><td>Terminology</td><td>Leads/Contacts/People · Inbox/Conversations · Max/Bossy/AI Guide · Deals/Transactions</td><td>Leads (nav + page) · Conversations · Max · Deals (group) with Transactions as a child.</td></tr>
+<tr><td>Toggles</td><td>Toggle component, native Switch (mobile), custom pill (Boss autopilot)</td><td>Green/gray Toggle next to label + gear.</td></tr>
+<tr><td>Icons</td><td>Lucide (web), Ionicons (mobile), emoji in EmptyState and channel icons ("💬 ✉️ 📞")</td><td>Lucide on web; Lucide-RN or matching Ionicons set on mobile; no emoji as icons.</td></tr>
+<tr><td>Table header</td><td>uppercase 12px (Receptionist), sentence 14px (Contacts), bold 12px (Tasks)</td><td><code>.ui-table-header</code> token already defined; use it.</td></tr>
+</tbody></table></div>
+
+<h2 id="s19"><span class="num">19</span>Design system audit</h2>
+<p>The tokens exist and are good. The gap is adoption and a small set of missing primitives. Proposed token set, derived from what is already in <code>globals.css</code> and <code>theme.ts</code> rather than invented:</p>
+<pre><code>Color
+  primary          brand-500  #0072ce   (hover brand-600 #005ca8)
+  primary-strong   brand-700            (text on light)
+  accent           #ff8c42 fills only · accent-text #b45309
+  background       neutral-50           surface white · surface-2 neutral-100
+  border           neutral-200 · border-strong neutral-300
+  text-primary     neutral-900 · text-secondary neutral-600 · text-muted neutral-500
+  success #16a34a  warning #b45309  error #b91c1c  info brand-500
+Spacing   4 · 8 · 12 · 16 · 24 · 32 · 48 · 64
+Radius    8 (controls) · 12 (cards) · 16 (sheets/modals) · 999 (pills)
+Buttons   36 (sm) · 40 (default) · 44 (lg, mobile default)
+Elevation raised · floating · overlay · modal (already defined)
+Type      page-title 24/600 · section 18/600 · card-title 15/600 · body 14–15 · meta 12/500 · table-header 12/600 uppercase</code></pre>
+<p><b>Missing primitives:</b> Input, Select, Textarea, Checkbox, Radio, Sheet (drawer), PageHeader, DataTable, Tabs, Tooltip, Spinner, ErrorState. <b>Rule:</b> new PRs may not add a raw <code>&lt;button&gt;</code> or <code>confirm()</code>; lint for it.</p>
+<p><b>Cross-platform:</b> mobile <code>theme.ts</code> already mirrors the ramps. Add a shared <code>packages/design-tokens</code> JSON that both consume so the tile hex values and the web hex values stop diverging.</p>
+
+<h2 id="s20"><span class="num">20</span>Conversion UX audit</h2>
+<ul>
+  <li><b>Landing:</b> strong thesis, too long, headline restated three times, "Trusted by top-producing agents coast to coast" without proof, a simulated "live" widget with named leads that a sceptical agent may read as fabricated. Cut to seven sections: thesis, meet the team, one command demo, pricing, proof, FAQ, CTA. Label the widget "Example".</li>
+  <li><b>CTAs:</b> "Talk to Max", "Watch Demo", "Ask Max free", "Hire Your AI Team Free", "Start free". Pick one primary verb ("Start free with Max") and one secondary ("See a 2-minute demo").</li>
+  <li><b>Pricing:</b> clear and honest. Premium ($299) and Signature ($399) both give 4,000 credits; Signature differs only by a $499 setup, which reads as the same plan twice. Fold Signature into an add-on. The $79 Solo price shown is confirmed correct; make sure /pricing, /start-free/agent and /agent/pricing all derive from the same <code>CREDIT_TIERS</code> source so they cannot drift again.</li>
+  <li><b>Signup:</b> two paths; the agent path is the business. Make /signup redirect to the agent form.</li>
+  <li><b>Upgrade prompts:</b> shown to paying users; the credits pill is the only plan-aware element. Hide Upgrade for paid plans; show "Buy credits" when balance &lt; 20%.</li>
+  <li><b>Feature discovery:</b> Actions hubs are good showrooms; add "Try it" with a sample so an agent sees output before connecting data.</li>
+  <li><b>Retention:</b> the morning briefing and proposals are the hook; make the email briefing link deep into the proposal, not the dashboard root.</li>
+</ul>
+
+<h2 id="s21"><span class="num">21</span>Screen-by-screen findings</h2>
+
+<div class="screen"><h3>Landing page (/)</h3><div class="purpose">Convert a solo agent to a free trial.</div><dl>
+<dt>What works</dt><dd>Team introduction with personas; honest pricing teaser; bilingual promise.</dd>
+<dt>Problems</dt><dd><ul><li>~15 sections, ~1,400 lines; thesis repeated in hero and three sub-heroes.</li><li>Unproven trust bar; simulated live widget.</li><li>Five different CTA labels.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P2">P2</span></dd>
+<dt>Recommendation</dt><dd>Seven sections; one primary CTA; real proof or none.</dd>
+<dt>Mobile</dt><dd>Hero at one screen; team as horizontal cards; sticky bottom CTA.</dd>
+<dt>Priority</dt><dd>Medium</dd></dl></div>
+
+<div class="screen"><h3>Login / Signup</h3><div class="purpose">Get an agent into the product.</div><dl>
+<dt>What works</dt><dd>OAuth, password strength, consent handling.</dd>
+<dt>Problems</dt><dd><ul><li>"Cancel" on login; raw Supabase error text.</li><li>Two signup forms; consumer path shown to agents.</li><li>Seven fields plus confirm-password.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>One agent signup, three fields; phone + consent deferred into welcome.</dd>
+<dt>Mobile</dt><dd>Same; remove endpoint text and JWT fallback from the native login.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Welcome + Setup Wizard + Tour</h3><div class="purpose">Turn a signup into a configured workspace.</div><dl>
+<dt>What works</dt><dd>Max's voice; service-area auto-suggest; plan checklist.</dd>
+<dt>Problems</dt><dd><ul><li>Three systems, overlapping questions, English-only wizard.</li><li>No way to finish later without stepping through.</li><li>Ends on a dashboard with dashes instead of a first result.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P0">P0</span></dd>
+<dt>Recommendation</dt><dd>One flow inside Max: 3 questions → import contacts or add one → first proposal appears. Tour becomes contextual tips.</dd>
+<dt>Mobile</dt><dd>Two value slides → login → Boss with a sample proposal; ask for notifications after the first hot lead.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Ask Max (/dashboard)</h3><div class="purpose">Command centre: see what matters, approve work, give orders.</div><dl>
+<dt>What works</dt><dd>Proposal cards with reason and outcome; team ribbon; command chips; file attach.</dd>
+<dt>Problems</dt><dd><ul><li>Tiles show "—" for zero and while loading.</li><li>Raw markdown, "0/25 tools", five-star card for a question.</li><li>Composer not docked; proposals below the fold on first paint.</li><li>Floating AI Guide duplicates the page.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P0">P0</span></dd>
+<dt>Recommendation</dt><dd>Proposals first; docked composer; run cards with four states; markdown rendering; retire bubble.</dd>
+<dt>Mobile</dt><dd>Dock the composer above the tab bar; ribbon as avatars only; agenda behind "Today" chip.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Leads / Contacts (/dashboard/contacts)</h3><div class="purpose">Find a person and act.</div><dl>
+<dt>What works</dt><dd>Smart lists; drawer with story timeline; language pills; bulk select.</dd>
+<dt>Problems</dt><dd><ul><li>Charts before people; nine columns; eight icon-only actions with no touch tooltip.</li><li>Unlabelled select; empty header; truncated "Add…" button.</li><li>No card mode; horizontal scroll inside main on phones.</li><li>Nav says Leads, page says Contacts, chips say DEFAULT.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>List first, six columns, one primary action (Text/Call by channel), overflow menu; charts behind Insights.</dd>
+<dt>Mobile</dt><dd>Card rows: name, rating, last contact, one action; filter sheet; floating "Add" above tab bar.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Conversations (/dashboard/inbox)</h3><div class="purpose">Read and reply across SMS, email and calls.</div><dl>
+<dt>What works</dt><dd>Channel filters; unread count; error-vs-empty distinction; email auto-import CTA.</dd>
+<dt>Problems</dt><dd><ul><li>Three-pane fixed height (<code>calc(100vh-180px)</code>) never collapses.</li><li>Emoji channel icons; "Conversations 1" badge ambiguous.</li><li>No AI-draft reply inline (lives in the floating bubble).</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>Two-pane with list ≥320px; below <code>lg</code> route to <code>/inbox/[leadId]</code>; "Draft with Max" in the reply box.</dd>
+<dt>Mobile</dt><dd>List only; thread is a pushed screen with docked reply.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Tasks</h3><div class="purpose">Work the follow-up queue.</div><dl>
+<dt>What works</dt><dd>Source filters (Manual, Briefing, Playbook, Coaching); overdue in red.</dd>
+<dt>Problems</dt><dd><ul><li>Four control rows above the list; black primary button; icon-only complete/cancel.</li><li>Charts duplicate what the tabs already say.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P2">P2</span></dd>
+<dt>Recommendation</dt><dd>One-line summary; checkbox to complete; due date grouping (Overdue, Today, This week).</dd>
+<dt>Mobile</dt><dd>Grouped list with swipe to complete; merge into Calendar tab.</dd>
+<dt>Priority</dt><dd>Medium</dd></dl></div>
+
+<div class="screen"><h3>Calendar</h3><div class="purpose">See the day.</div><dl>
+<dt>What works</dt><dd>Google sync status; type filters; month/list toggle.</dd>
+<dt>Problems</dt><dd><ul><li>List shows "2:00 AM" for many items: a timezone conversion problem (UTC dates rendered in local time, or all-day items given a clock time).</li><li>Black "Add Event" button; "high Done" metadata uncoloured.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P2">P2</span></dd>
+<dt>Recommendation</dt><dd>Fix the timezone conversion (render in the agent's timezone; treat date-only values as all-day); show all-day items as "All day"; agenda view default on mobile.</dd>
+<dt>Mobile</dt><dd>Day strip + agenda; add via bottom sheet.</dd>
+<dt>Priority</dt><dd>Medium</dd></dl></div>
+
+<div class="screen"><h3>Deals: Listings, Showings, Offers, Transactions</h3><div class="purpose">Object records for the deal lifecycle.</div><dl>
+<dt>What works</dt><dd>KPI strips; list/board toggle on Transactions; upload listing agreement.</dd>
+<dt>Problems</dt><dd><ul><li>Transactions default filter "Active (0)" lands on an empty state while records exist.</li><li>Detail pages use native confirms with English strings.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P2">P2</span></dd>
+<dt>Recommendation</dt><dd>Fall back to the first non-empty filter; shared destructive dialog.</dd>
+<dt>Mobile</dt><dd>Cards with stage chips; deadlines as a top strip.</dd>
+<dt>Priority</dt><dd>Medium</dd></dl></div>
+
+<div class="screen"><h3>AI assistant pages (Receptionist, Sales, Marketing, Transaction, Accountant)</h3><div class="purpose">Show what each employee does and let the agent use it.</div><dl>
+<dt>What works</dt><dd>Actions hub grid with one-line descriptions; call log with reason and action taken.</dd>
+<dt>Problems</dt><dd><ul><li>Emma's avatar renders as a blank circle.</li><li>Skills listed as internal taxonomy.</li><li>Overview/Actions nesting adds a click; "Voice settings" duplicates Settings.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P2">P2</span></dd>
+<dt>Recommendation</dt><dd>One hub page: header, actions grid, recent activity, settings link.</dd>
+<dt>Mobile</dt><dd>Same hub as tiles (already built); add activity list.</dd>
+<dt>Priority</dt><dd>Medium</dd></dl></div>
+
+<div class="screen"><h3>Manage AI Team</h3><div class="purpose">Pause assistants, tune skills, see performance.</div><dl>
+<dt>What works</dt><dd>Clear hierarchy; roster with status pills; per-assistant sparkbars.</dd>
+<dt>Problems</dt><dd><ul><li>No axis/values on bars; "0 activities" for unset-up assistants.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P3">P3</span></dd>
+<dt>Recommendation</dt><dd>Hover values; "Not set up" state with CTA.</dd>
+<dt>Mobile</dt><dd>Roster only; performance in Boss.</dd>
+<dt>Priority</dt><dd>Low</dd></dl></div>
+
+<div class="screen"><h3>Settings</h3><div class="purpose">Configure voice, messaging, tools, channels.</div><dl>
+<dt>What works</dt><dd>Review Policy explained in plain words with "What this means right now".</dd>
+<dt>Problems</dt><dd><ul><li>Four opaque tab names; ~20 panels; default tab is second.</li><li>Unlabelled inputs; tab strip clips on phones.</li><li>Profile and Billing elsewhere.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>Settings index with five groups and a search box; each group a page.</dd>
+<dt>Mobile</dt><dd>Index list → group screens (native pattern).</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Notifications</h3><div class="purpose">Triage what needs the agent.</div><dl>
+<dt>What works</dt><dd>Three categories map to real events.</dd>
+<dt>Problems</dt><dd><ul><li>434 unread; no read state; empty columns dominate.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>Single feed, day groups, mark read, deep links.</dd>
+<dt>Mobile</dt><dd>Same feed; push taps deep-link into it.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Billing / Credits / Profile</h3><div class="purpose">Plan, credits, identity.</div><dl>
+<dt>What works</dt><dd>Balance and renewal are clear; feature list matches pricing page.</dd>
+<dt>Problems</dt><dd><ul><li>Plan name "Subscribed"; Upgrade CTA persists.</li><li>Sidebar identity differs on Profile.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P1">P1</span></dd>
+<dt>Recommendation</dt><dd>Real plan name; plan-aware CTAs; pass identity props in account layout.</dd>
+<dt>Mobile</dt><dd>Read-only plan + buy credits via web.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<div class="screen"><h3>Mobile app: Boss · Team · Inbox · Leads · More</h3><div class="purpose">Pocket command centre.</div><dl>
+<dt>What works</dt><dd>Offline, skeletons, haptics, a11y labels, dark mode, demo lead.</dd>
+<dt>Problems</dt><dd><ul><li>Inconsistent home; hidden legacy tabs.</li><li>Boss English-only, app-icon avatar instead of Max's portrait, small targets.</li><li>Team tab is static; Calendar/Tasks buried.</li><li>Native Switch vs house toggle; hardcoded tile colours.</li></ul></dd>
+<dt>Severity</dt><dd><span class="pill P0">P0</span></dd>
+<dt>Recommendation</dt><dd>Boss · Inbox · Leads · Calendar · More; delete legacy screens; i18n sweep; token the tiles.</dd>
+<dt>Priority</dt><dd>High</dd></dl></div>
+
+<h2 id="s22"><span class="num">22</span>Top 20 problems to fix</h2>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Problem</th><th>Impact</th><th>Sev.</th><th>Recommended fix</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Three overlapping onboarding flows</td><td>Trial abandonment</td><td><span class="pill P0">P0</span></td><td>One Max-led flow; wizard and tour become contextual.</td></tr>
+<tr><td>2</td><td>AI output rendered as raw markdown and internal counters</td><td>Trust in the core promise</td><td><span class="pill P0">P0</span></td><td>Markdown renderer in RunCard/thread; hide tool budget; four run states.</td></tr>
+<tr><td>3</td><td>Mobile app cold start lands on hidden tab</td><td>Disorientation every launch</td><td><span class="pill P0">P0</span></td><td>Route all entries to Boss; remove legacy tab routes.</td></tr>
+<tr><td>4</td><td>"Mission accomplished ★★★★★" for a clarifying question</td><td>AI feels performative</td><td><span class="pill P1">P1</span></td><td>Celebrate only completed outbound steps.</td></tr>
+<tr><td>5</td><td>Contacts table unusable on phones; icon-only actions</td><td>Core task on mobile web</td><td><span class="pill P1">P1</span></td><td>Card mode + primary action + overflow.</td></tr>
+<tr><td>6</td><td>Inbox three-pane never collapses</td><td>Replying on a phone</td><td><span class="pill P1">P1</span></td><td>Routed thread view below lg.</td></tr>
+<tr><td>7</td><td>Upgrade CTAs and promo shown to paying users</td><td>Trust, wasted attention</td><td><span class="pill P1">P1</span></td><td>Key on plan, not role; plan name from billing.</td></tr>
+<tr><td>8</td><td>Two AI surfaces, three AI names</td><td>Brand coherence</td><td><span class="pill P1">P1</span></td><td>Max only; retire bubble; mobile uses Max portrait.</td></tr>
+<tr><td>9</td><td>Sidebar footer clips nav items</td><td>Manage AI Team unreachable at common heights</td><td><span class="pill P1">P1</span></td><td>Scrollable nav region; dismissible promo.</td></tr>
+<tr><td>10</td><td>Identity mismatch on Profile</td><td>Confidence in the account</td><td><span class="pill P1">P1</span></td><td>Pass fullName/avatarUrl in account layout.</td></tr>
+<tr><td>11</td><td>Critical axe failures (select, time inputs)</td><td>Screen-reader users blocked</td><td><span class="pill P1">P1</span></td><td>Labels; lint rule.</td></tr>
+<tr><td>12</td><td>Drawer without Escape/focus trap; 38 native confirms</td><td>Keyboard users, consistency</td><td><span class="pill P1">P1</span></td><td>Radix Sheet + Dialog.</td></tr>
+<tr><td>13</td><td>434 unread notifications, no triage</td><td>Bell becomes noise</td><td><span class="pill P1">P1</span></td><td>Feed with read state and grouping.</td></tr>
+<tr><td>14</td><td>Settings IA split across three places</td><td>Findability</td><td><span class="pill P1">P1</span></td><td>Settings index with five groups.</td></tr>
+<tr><td>15</td><td>Mobile Boss and 11 screens English-only</td><td>中文 users</td><td><span class="pill P1">P1</span></td><td>i18n sweep.</td></tr>
+<tr><td>16</td><td>Mobile login shows endpoint and JWT fallback</td><td>Looks unfinished</td><td><span class="pill P1">P1</span></td><td>Dev flag.</td></tr>
+<tr><td>17</td><td>Nav/page/palette label drift</td><td>Learnability</td><td><span class="pill P2">P2</span></td><td>Single vocabulary; palette from nav.config.</td></tr>
+<tr><td>18</td><td>Three primary button colours, two neutral palettes</td><td>Perceived quality</td><td><span class="pill P2">P2</span></td><td>Adopt Button; codemod gray→slate.</td></tr>
+<tr><td>19</td><td>No route-level loading states</td><td>Pages paint empty</td><td><span class="pill P2">P2</span></td><td>loading.tsx skeletons.</td></tr>
+<tr><td>20</td><td>Calendar times at 2:00 AM; Transactions empty default filter</td><td>Data trust</td><td><span class="pill P2">P2</span></td><td>Timezone check; smart default filter.</td></tr>
+</tbody></table></div>
+
+<h2 id="s23"><span class="num">23</span>Top 20 quick wins</h2>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Problem</th><th>Change</th><th>Effort / impact</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Raw markdown in run cards</td><td>Reuse <code>MarkdownLite</code> from AiChatPanel in RunCard and Boss thread.</td><td>Low / High</td></tr>
+<tr><td>2</td><td>"0/25 tools" meter</td><td>Hide unless status is running; label "Working…".</td><td>Low / High</td></tr>
+<tr><td>3</td><td>Five-star card for questions</td><td>Render <code>MissionCompleteCard</code> only when steps &gt; 0 and an outbound/artifact step completed.</td><td>Low / High</td></tr>
+<tr><td>4</td><td>Tiles show "—" for zero</td><td><code>value ?? skeleton</code>; zero renders "0".</td><td>Low / Medium</td></tr>
+<tr><td>5</td><td>Upgrade shown to paid users</td><td>Gate Upgrade pill and SidebarFooter on plan ∈ {free, trial}.</td><td>Low / High</td></tr>
+<tr><td>6</td><td>Plan "Subscribed"</td><td>Show product name from billing_subscriptions.</td><td>Low / Medium</td></tr>
+<tr><td>7</td><td>Sidebar identity on Profile</td><td>Pass fullName/avatarUrl in <code>app/account/layout.tsx</code>.</td><td>Low / Medium</td></tr>
+<tr><td>8</td><td>Drawer ignores Escape</td><td>Add keydown handler + initial focus; or wrap in Radix Dialog.</td><td>Low / High</td></tr>
+<tr><td>9</td><td>Unlabelled select and time inputs</td><td>aria-label / label for.</td><td>Low / High</td></tr>
+<tr><td>10</td><td>Skip link target</td><td>Point to <code>#agent-portal-main</code>, add tabindex=-1.</td><td>Low / Medium</td></tr>
+<tr><td>11</td><td>Mobile cold start</td><td>index.tsx → <code>/(tabs)/boss</code>; login and onboarding likewise.</td><td>Low / High</td></tr>
+<tr><td>12</td><td>Mobile login dev text</td><td>Wrap endpoint + JWT fallback in <code>__DEV__</code>.</td><td>Low / Medium</td></tr>
+<tr><td>13</td><td>"Bossy" + app icon on mobile</td><td>Default name "Max", portrait asset from web personas.</td><td>Low / Medium</td></tr>
+<tr><td>14</td><td>Emma blank avatar</td><td>Fix persona asset path on Receptionist page.</td><td>Low / Medium</td></tr>
+<tr><td>15</td><td>Transactions empty default</td><td>Pick first filter with count &gt; 0.</td><td>Low / Medium</td></tr>
+<tr><td>16</td><td>Command palette stale labels</td><td>Build items from <code>nav.config</code>.</td><td>Low / Medium</td></tr>
+<tr><td>17</td><td>Floating avatar covers content</td><td>Hide bubble on dashboard routes below md; move above composer.</td><td>Low / Medium</td></tr>
+<tr><td>18</td><td>"Add…" truncated button</td><td>Full label "Add contact"; icon on mobile only.</td><td>Low / Low</td></tr>
+<tr><td>19</td><td>Emoji channel icons</td><td>Lucide MessageSquare / Mail / Phone.</td><td>Low / Medium</td></tr>
+<tr><td>20</td><td>Black primary buttons</td><td>Replace <code>bg-gray-900</code> CTAs with <code>Button</code> default.</td><td>Medium / High</td></tr>
+</tbody></table></div>
+
+<h2 id="s24"><span class="num">24</span>Recommended redesigns</h2>
+
+<h3>A. Onboarding: one conversation, one outcome</h3>
+<h4>Current problem</h4><p>Welcome chat, Setup Wizard and Tour run in sequence, ask overlapping questions, and end on an empty dashboard.</p>
+<h4>Recommended architecture</h4><p>Signup collects name, email, password. Max's welcome asks three things (market via the service-area picker, who you work with, first win) and then does one of two things: imports contacts (CSV or Google) or adds one lead by hand. The first proposal renders on the dashboard immediately from that data. Branding, voice, notifications and channels become "Set up later" cards Max proposes over the first week.</p>
+<h4>Layout</h4><p>Full-screen conversation with a progress rail of three dots; each answer collapses into a chip; the final screen is the real dashboard with the first proposal highlighted.</p>
+<h4>User flow</h4><p>Signup → 3 answers → import or add → dashboard with proposal → approve → first outbound message. Target: under 4 minutes, 12 interactions.</p>
+<h4>Mobile</h4><p>Two value slides → login → same three answers inside Boss → notification permission requested when the first hot lead appears.</p>
+
+<h3>B. Ask Max thread and run cards</h3>
+<h4>Current problem</h4><p>Run cards expose engineering state (tool budgets, step counts, star ratings) and render text unformatted.</p>
+<h4>Recommended architecture</h4><p>Four card types: <b>Question</b> (Max needs something; inline reply), <b>Working</b> (assignee avatar, current step, cancel), <b>Approval</b> (draft with edit/approve/reject), <b>Done</b> (what happened, artifacts, next options). Markdown rendered; one accent colour; no stars.</p>
+<h4>Layout</h4><p>Proposals pinned at top; thread below; composer docked at the bottom with chips; context strip as a compact line ("2 hot · 1 appt · 1 deal · 0 deadlines").</p>
+<h4>Mobile</h4><p>Identical card types; composer above tab bar; ribbon as an avatar row.</p>
+
+<h3>C. Leads list</h3>
+<h4>Current problem</h4><p>Charts before people; nine columns; eight icon actions; no phone layout.</p>
+<h4>Recommended architecture</h4><p>Search + smart-list tabs + list. Columns: Name (with rating dot), Last activity, Stage, Next step, one primary action, overflow. Insights panel toggled from the header. Drawer stays.</p>
+<h4>Mobile</h4><p>Cards; filter bottom sheet; swipe for text/call; "Add" floating above the tab bar.</p>
+
+<h3>D. Conversations</h3>
+<h4>Current problem</h4><p>Fixed three-pane; empty pane on phones; AI drafting lives in a separate bubble.</p>
+<h4>Recommended architecture</h4><p>Two-pane on desktop; routed thread on mobile; reply box with "Draft with Max" and channel switch; call rows expand to transcript.</p>
+
+<h3>E. Settings</h3>
+<h4>Current problem</h4><p>Four opaque tabs and twenty panels; profile and billing elsewhere.</p>
+<h4>Recommended architecture</h4><p>Settings index: Account (profile, branding, billing), AI team (voice, style, review policy, autopilot), Channels (phone, email, calendar, social), Messaging (templates, timing, drips), Data (import, smart link). Each a page with a sticky save state and a search box on the index.</p>
+
+<h3>F. Mobile home and tab bar</h3>
+<h4>Current problem</h4><p>Inconsistent landing; Team over Calendar; legacy hidden screens.</p>
+<h4>Recommended architecture</h4><p>Boss · Inbox · Leads · Calendar (with Tasks) · More. Team roster inside Boss and More. Delete home/work/engage/analyze/manage routes after redirect mapping.</p>
+
+<h2 id="s25"><span class="num">25</span>UX scorecard</h2>
+<div class="tbl"><table>
+<thead><tr><th>Category</th><th class="n">Score / 10</th><th>Priority</th></tr></thead>
+<tbody>
+<tr><td>Visual design</td><td class="n">7.0</td><td>Medium</td></tr>
+<tr><td>Usability</td><td class="n">5.5</td><td>High</td></tr>
+<tr><td>Navigation</td><td class="n">6.0</td><td>Medium</td></tr>
+<tr><td>Information architecture</td><td class="n">5.5</td><td>High</td></tr>
+<tr><td>Responsive design</td><td class="n">5.0</td><td>High</td></tr>
+<tr><td>Mobile UX</td><td class="n">5.5</td><td>High</td></tr>
+<tr><td>Accessibility</td><td class="n">5.0</td><td>High</td></tr>
+<tr><td>Interaction design</td><td class="n">6.0</td><td>Medium</td></tr>
+<tr><td>Forms</td><td class="n">6.0</td><td>Medium</td></tr>
+<tr><td>Dashboard UX</td><td class="n">5.5</td><td>High</td></tr>
+<tr><td>AI UX</td><td class="n">5.0</td><td>High</td></tr>
+<tr><td>Consistency</td><td class="n">4.5</td><td>High</td></tr>
+<tr><td>Design system</td><td class="n">5.0</td><td>Medium</td></tr>
+<tr><td>Performance perception</td><td class="n">6.0</td><td>Medium</td></tr>
+<tr><td>Conversion UX</td><td class="n">6.0</td><td>Medium</td></tr>
+<tr><td><b>Overall UX</b></td><td class="n"><b>5.6</b></td><td><b>High</b></td></tr>
+</tbody></table></div>
+<p><b>Modern benchmark: 6 / 10.</b> Against Linear, Stripe or HubSpot the product has the same ingredients (tokens, elevation, a real IA) but applies them unevenly, and the AI surface, its differentiator, is the least polished part. Scale: Basic → <b>Functional</b> → Professional → Modern → Premium.</p>
+
+<h2 id="s26"><span class="num">26</span>Prioritised roadmap</h2>
+<h3>Phase 1 — Critical (weeks 1–2)</h3>
+<ul>
+  <li>Run-card rendering and states · <b>Priority</b> P0 · <b>Impact</b> High · <b>Effort</b> Low · <b>Result</b> AI output reads as a product.</li>
+  <li>Mobile cold-start route + i18n on Boss · P0 · High · Low · Every launch lands on Boss.</li>
+  <li>Onboarding consolidation (phase 1: disable wizard when welcome completed; wizard i18n) · P0 · High · Medium · One first-run flow.</li>
+  <li>Plan-aware Upgrade/promo, plan name, identity props · P1 · High · Low · Paying users stop seeing upsell.</li>
+  <li>axe criticals, drawer Escape, skip link · P1 · High · Low · No critical WCAG failures.</li>
+</ul>
+<h3>Phase 2 — High impact (weeks 3–6)</h3>
+<ul>
+  <li>Leads list rebuild with card mode · P1 · High · Medium.</li>
+  <li>Conversations two-pane + routed thread · P1 · High · Medium.</li>
+  <li>Settings index and grouping · P1 · High · Medium.</li>
+  <li>Notification feed with read state · P1 · Medium · Medium.</li>
+  <li>Mobile tab bar reshuffle, legacy route removal, touch-target pass · P1 · High · Medium.</li>
+  <li>Sidebar footer/scroll fix, top-bar overflow menu · P1 · Medium · Low.</li>
+</ul>
+<h3>Phase 3 — Design system (weeks 6–10)</h3>
+<ul>
+  <li>Adopt Button, Card, Dialog, Toggle; add Input, Select, Sheet, PageHeader, DataTable, EmptyState, ErrorState, Spinner · P2 · High · Medium-High.</li>
+  <li>Codemods: gray→slate, radius scale, <code>confirm()</code>→Dialog · P2 · Medium · Medium.</li>
+  <li>Shared tokens package consumed by web and mobile · P2 · Medium · Medium.</li>
+  <li>Route-level loading skeletons · P2 · Medium · Low.</li>
+</ul>
+<h3>Phase 4 — Advanced UX (quarter 2)</h3>
+<ul>
+  <li>Max memory and context line; autopilot expressed as sentences; confidence on valuations · P2 · High · High.</li>
+  <li>Command palette with contacts and actions; keyboard shortcuts · P3 · Medium · Medium.</li>
+  <li>Personalised Ask Max ordering by agent goal from onboarding · P3 · Medium · High.</li>
+</ul>
+<h3>Phase 5 — Premium polish</h3>
+<ul>
+  <li>Motion system (enter/exit for cards, drawers, toasts) honouring reduced motion · P3 · Medium · Medium.</li>
+  <li>Dark mode for the dashboard shell · P3 · Medium · Medium.</li>
+  <li>Landing rewrite to seven sections with real proof · P2 · Medium · Medium.</li>
+</ul>
+
+<h2 id="s27"><span class="num">27</span>Developer-ready recommendations</h2>
+
+<div class="rec"><h4>1. Render AI output and gate the "done" card</h4><dl>
+<dt>Component</dt><dd><code>components/closeboss/RunCard.tsx</code>, <code>app/dashboard/boss/BossAssistantClient.tsx</code></dd>
+<dt>Problem</dt><dd>Reports render with <code>whitespace-pre-line</code>; markdown shows literally; <code>MissionCompleteCard</code> renders for any completed run.</dd>
+<dt>Current</dt><dd><code>&lt;p className="whitespace-pre-line"&gt;{run.report}&lt;/p&gt;</code>; "0/25 tools" bar always visible.</dd>
+<dt>Recommended</dt><dd>Extract <code>MarkdownLite</code> from <code>AiChatPanel.tsx:1168</code> into <code>components/ui/Markdown.tsx</code>; use it for report, plan and draft bodies. Show the tool meter only while <code>status ∈ {planning, running}</code>. Render <code>MissionCompleteCard</code> only if <code>steps.some(s =&gt; s.kind === "send" || s.artifact_url)</code>; otherwise a <code>QuestionCard</code> with an inline reply input.</dd>
+<dt>Desktop / Mobile</dt><dd>Same; on mobile (<code>boss.tsx</code>) mirror the four states.</dd>
+<dt>Accessibility</dt><dd>Status as text, not colour only; <code>aria-live="polite"</code> on the thread container.</dd>
+<dt>Priority</dt><dd><span class="pill P0">P0</span></dd>
+<dt>Notes</dt><dd>No API change; the run row already has <code>status</code> and steps.</dd></dl></div>
+
+<div class="rec"><h4>2. Single mobile entry route</h4><dl>
+<dt>Component</dt><dd><code>apps/leadsmart-mobile/app/index.tsx</code>, <code>(onboarding)/login.tsx</code>, <code>(onboarding)/notifications.tsx</code>, <code>(tabs)/_layout.tsx</code></dd>
+<dt>Problem</dt><dd>Three landing targets; one is a hidden tab.</dd>
+<dt>Recommended</dt><dd>Export <code>HOME_ROUTE = "/(tabs)/boss"</code> from <code>lib/session</code> and use it in all three. Replace hidden legacy screens with <code>&lt;Redirect&gt;</code> stubs for one release, then delete.</dd>
+<dt>Priority</dt><dd><span class="pill P0">P0</span></dd></dl></div>
+
+<div class="rec"><h4>3. Consolidate onboarding</h4><dl>
+<dt>Component</dt><dd><code>app/welcome/page.tsx</code>, <code>components/onboarding/OnboardingGate.tsx</code>, <code>SetupWizard.tsx</code>, <code>components/tour/SiteTour.tsx</code></dd>
+<dt>Problem</dt><dd>Three flows; wizard step titles hardcoded; welcome re-asks known fields.</dd>
+<dt>Recommended</dt><dd>Welcome writes <code>onboarding_completed = true</code> on finish so <code>OnboardingGate</code> never shows the wizard afterwards. Welcome skips questions whose profile fields exist. Move Service Areas into welcome step 1 using <code>ServiceAreasPicker</code>. Convert wizard steps 2–4 into Max proposals with <code>activationKey</code>s. Tour becomes an opt-in from Help.</dd>
+<dt>Mobile</dt><dd>Reuse the welcome questions in <code>boss.tsx</code> when <code>onboarding_completed</code> is false.</dd>
+<dt>Accessibility</dt><dd>Chat log <code>role="log"</code>; choice chips as radio group.</dd>
+<dt>Priority</dt><dd><span class="pill P0">P0</span></dd></dl></div>
+
+<div class="rec"><h4>4. Plan-aware monetisation chrome</h4><dl>
+<dt>Component</dt><dd><code>components/dashboard/TopBar.tsx</code> (Upgrade pill), <code>DashboardShell.tsx</code> (SidebarFooter), <code>app/dashboard/billing</code></dd>
+<dt>Current</dt><dd><code>showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole)</code>; plan label "Subscribed".</dd>
+<dt>Recommended</dt><dd>Read plan from <code>billing_subscriptions</code> (source of truth) in the layout and pass <code>plan</code> down. Show Upgrade only for free/trial; show "Buy credits" when balance &lt; 20% of allotment; footer promo only for free. Billing header shows the product name and cadence.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>5. Leads list: responsive and labelled</h4><dl>
+<dt>Component</dt><dd><code>app/dashboard/contacts/ContactsClient.tsx</code></dd>
+<dt>Recommended</dt><dd>Below <code>md</code> render <code>ContactCard</code> (name, rating pill, last activity, one action) instead of <code>&lt;table&gt;</code>. On desktop reduce to Name · Last activity · Rating · Stage · Next step · Action · ⋯. Row overflow via Radix DropdownMenu with text labels. Move charts into a collapsible "Insights" section, closed by default. Add <code>aria-label</code> to the ratings select; visually-hidden text in the actions header.</dd>
+<dt>Accessibility</dt><dd>Row buttons ≥ 32px, labelled; sort buttons announce direction.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>6. Conversations: two-pane with routed thread</h4><dl>
+<dt>Component</dt><dd><code>app/dashboard/inbox/InboxClient.tsx</code></dd>
+<dt>Current</dt><dd><code>flex h-[calc(100vh-180px)]</code> with list + detail always mounted.</dd>
+<dt>Recommended</dt><dd>Add <code>app/dashboard/inbox/[leadId]/page.tsx</code>. Below <code>lg</code>, list navigates; at <code>lg+</code> the layout renders both with the thread as a parallel route. Reply box gets a "Draft with Max" button calling the existing per-contact draft endpoint. Replace emoji icons with Lucide.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>7. Sheet and Dialog everywhere</h4><dl>
+<dt>Component</dt><dd><code>components/closeboss/LeadProfileDrawer.tsx</code>, all <code>confirm()</code> call sites</dd>
+<dt>Recommended</dt><dd>Create <code>components/ui/sheet.tsx</code> on Radix Dialog with side="right". Wrap the drawer; Escape, focus trap and restore come free. Create <code>useConfirm()</code> returning a promise-backed Dialog; codemod the 38 <code>confirm()</code> calls with i18n keys.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>8. Sidebar footer and nav scroll</h4><dl>
+<dt>Component</dt><dd><code>packages/ui/navigation/PremiumSidebarV2.tsx</code>, <code>DashboardShell.tsx</code></dd>
+<dt>Recommended</dt><dd>Nav list: <code>flex-1 min-h-0 overflow-y-auto</code> with <code>scrollbar-gutter: stable</code> and bottom padding equal to footer height. Footer slot renders only when <code>plan === "free"</code> and is dismissible (localStorage). Change Ask Max icon to <code>Sparkles</code>.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>9. Settings index</h4><dl>
+<dt>Component</dt><dd><code>app/dashboard/settings/page.tsx</code>, <code>SettingsTabsClient.tsx</code>, <code>nav.config.tsx</code></dd>
+<dt>Recommended</dt><dd>Replace tabs with nested routes <code>/settings/{account,ai-team,channels,messaging,data}</code>; index page lists groups with descriptions and a filter input. Move Profile and Billing under Account. Shared <code>SettingsSection</code> with labelled fields and the in-button save state.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>10. Notification feed</h4><dl>
+<dt>Component</dt><dd><code>app/dashboard/notifications/page.tsx</code>, <code>NotificationsBell.tsx</code></dd>
+<dt>Recommended</dt><dd>Single list grouped by day; type chip; read state (<code>read_at</code>); "Mark all read"; bell shows count of unread since last visit, capped at 99. Deep links to the entity.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>11. Mobile Boss persona, i18n and touch targets</h4><dl>
+<dt>Component</dt><dd><code>app/(tabs)/boss.tsx</code>, <code>lib/teamPortraits.ts</code>, 11 other screens</dd>
+<dt>Recommended</dt><dd>Default name "Max"; avatar from <code>TEAM_PORTRAITS.boss</code>. Move strings to <code>home.json</code>. Minimum 44px on gear, pill and chips (<code>minHeight: 44</code> or <code>hitSlop</code>). Replace native <code>Switch</code> with a shared <code>Toggle</code> matching the web rule.</dd>
+<dt>Priority</dt><dd><span class="pill P1">P1</span></dd></dl></div>
+
+<div class="rec"><h4>12. Design-system enforcement</h4><dl>
+<dt>Component</dt><dd>ESLint config, <code>components/ui/*</code></dd>
+<dt>Recommended</dt><dd>Add Input, Select, Textarea, PageHeader, EmptyState (with actions), ErrorState, Spinner, DataTable. ESLint rules: no <code>bg-gray-*</code>, no raw <code>&lt;button&gt;</code> outside <code>components/ui</code>, no <code>confirm(</code>. Codemod existing usages in three passes (buttons, neutrals, radii). Publish tokens as <code>packages/design-tokens</code> and generate both <code>globals.css</code> and <code>theme.ts</code>.</dd>
+<dt>Priority</dt><dd><span class="pill P2">P2</span></dd></dl></div>
+
+<div class="rec"><h4>13. Route-level loading and error states</h4><dl>
+<dt>Component</dt><dd><code>app/dashboard/**/loading.tsx</code></dd>
+<dt>Recommended</dt><dd>Add <code>loading.tsx</code> using <code>components/ui/Skeleton</code> for the ten most visited routes; a shared <code>ErrorState</code> with retry for client fetch failures (copy the Inbox <code>listError</code> pattern).</dd>
+<dt>Priority</dt><dd><span class="pill P2">P2</span></dd></dl></div>
+
+<h2 id="s28"><span class="num">28</span>Final strategic recommendations</h2>
+<ol>
+  <li><b>Treat Ask Max as the product.</b> Every other screen is a record view; Max is the experience. Its rendering, states and memory deserve the first two sprints.</li>
+  <li><b>Design mobile web and the native app as one mobile strategy.</b> Today mobile web is a squeezed desktop and the native app is a separate product with its own names and colours. Share tokens, vocabulary and the Boss thread model.</li>
+  <li><b>Make plan state a first-class UI input.</b> Upsell, footer promos, credits, and plan names should all read from billing truth.</li>
+  <li><b>Adopt before you add.</b> The component library exists; the roadmap should ban new bespoke buttons, modals and confirms before building new features.</li>
+  <li><b>Measure the first ten minutes.</b> Instrument time-to-first-proposal and time-to-first-approval; they are the metrics onboarding should move.</li>
+</ol>
+
+<h2 id="s29"><span class="num">—</span>If I were the Head of Product</h2>
+<ol>
+  <li><b>Freeze new features for one sprint</b> and ship the P0s: run-card rendering, mobile entry route, onboarding consolidation.</li>
+  <li><b>Declare one vocabulary</b> (Max, Leads, Conversations, Deals) and enforce it in nav, pages, palette, mobile and marketing in a single PR.</li>
+  <li><b>Retire the floating AI Guide bubble</b> on dashboard routes; move contact drafting into the drawer and the reply box.</li>
+  <li><b>Rebuild Leads and Conversations for phones first</b>, then let the desktop layouts inherit the card and thread components.</li>
+  <li><b>Fund the design system as a product</b>: one owner, a tokens package shared by web and mobile, lint rules that fail CI on drift.</li>
+  <li><b>Make Max remember.</b> Persist a rolling context and never let the model say it starts fresh; that sentence undermines the whole pitch.</li>
+  <li><b>Key every upsell on plan truth</b> and give paying users a calm, promo-free workspace.</li>
+  <li><b>Collapse Settings into five groups</b> with an index and search, and move Profile and Billing home.</li>
+  <li><b>Cut the landing page in half</b> and replace simulated proof with real proof or none.</li>
+  <li><b>Put accessibility in the definition of done</b>: axe in CI on the ten core routes, zero critical or serious violations, keyboard closable overlays.</li>
+</ol>
+<hr class="soft">
+<p class="small">Method: live production review through an authenticated agent session (desktop 1568 px, phone 390 px and tablet 768 px rendered in-page), axe-core 4.10 scans on Ask Max, Contacts and Settings, and source review of <code>apps/leadsmartai</code>, <code>packages/ui</code> and <code>apps/leadsmart-mobile</code>. The Expo app was audited from source; device-level checks (keyboard, gestures, notch handling) should be confirmed on a simulator before acting on §7 layout notes.</p>
+</main>
+</div>
