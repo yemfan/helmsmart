@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Linking,
   Platform,
@@ -39,6 +40,7 @@ import type { ThemeTokens } from "../lib/theme";
  *     pointing at /agent/pricing on web
  */
 export default function CoachingScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -77,15 +79,14 @@ export default function CoachingScreen() {
         refreshControl={<BrandRefreshControl refreshing={loading} onRefresh={refresh} />}
       >
         <View style={styles.heroBlock}>
-          <Text style={styles.eyebrow}>LEADSMART AI COACHING</Text>
-          <Text style={styles.title}>Producer development, built in.</Text>
+          <Text style={styles.eyebrow}>{t("coaching.leadsmartAiCoaching")}</Text>
+          <Text style={styles.title}>{t("coaching.producerDevelopmentBuiltIn")}</Text>
           <Text style={styles.subtitle}>
-            Daily plans, weekly playbooks, monthly reviews — tied to a
-            real annual transaction target.
+            {t("coaching.dailyPlansWeeklyPlaybooksMonthly")}
           </Text>
         </View>
 
-        {error ? <ErrorBanner message={error.message} onRetry={refresh} /> : null}
+        {error ? <ErrorBanner title={t("coaching.loadFailed")} message={error.message} onRetry={refresh} /> : null}
 
         {!initialDone ? (
           <View style={styles.skeletonList}>
@@ -111,7 +112,7 @@ export default function CoachingScreen() {
               style={({ pressed }) => [styles.manageRow, pressed && styles.manageRowPressed]}
             >
               <Ionicons name="settings-outline" size={16} color={tokens.textMuted} />
-              <Text style={styles.manageText}>Manage enrollment on web</Text>
+              <Text style={styles.manageText}>{t("coaching.manageEnrollmentOnWeb")}</Text>
               <Ionicons name="open-outline" size={14} color={tokens.textMuted} />
             </Pressable>
           </View>
@@ -130,6 +131,7 @@ function ProgramCard({
   styles: ReturnType<typeof createStyles>;
   tokens: ThemeTokens;
 }) {
+  const { t } = useTranslation("mobile_misc_screens");
   const isEnrolled = program.status === "enrolled";
   const isOptedOut = program.status === "opted_out";
 
@@ -147,13 +149,13 @@ function ProgramCard({
       <Text style={styles.programTagline}>{program.meta.tagline}</Text>
       <View style={styles.statsRow}>
         <Stat
-          label="Annual deals"
+          label={t("coaching.annualDeals")}
           value={String(program.meta.annualTransactionTarget)}
           styles={styles}
           tone={isEnrolled ? "primary" : "neutral"}
         />
         <Stat
-          label="Lead → close"
+          label={t("coaching.leadClose")}
           value={`${program.meta.conversionRateTargetPct}%`}
           styles={styles}
           tone={isEnrolled ? "primary" : "neutral"}
@@ -177,23 +179,24 @@ function StatusPill({
   status: MobileCoachingProgramStatus;
   styles: ReturnType<typeof createStyles>;
 }) {
+  const { t } = useTranslation("mobile_misc_screens");
   if (status === "enrolled") {
     return (
       <View style={[styles.pill, styles.pillEnrolled]}>
-        <Text style={styles.pillEnrolledText}>Enrolled</Text>
+        <Text style={styles.pillEnrolledText}>{t("coaching.enrolled")}</Text>
       </View>
     );
   }
   if (status === "opted_out") {
     return (
       <View style={[styles.pill, styles.pillOptedOut]}>
-        <Text style={styles.pillOptedOutText}>Opted out</Text>
+        <Text style={styles.pillOptedOutText}>{t("coaching.optedOut")}</Text>
       </View>
     );
   }
   return (
     <View style={[styles.pill, styles.pillEligible]}>
-      <Text style={styles.pillEligibleText}>Eligible</Text>
+      <Text style={styles.pillEligibleText}>{t("coaching.eligible")}</Text>
     </View>
   );
 }
@@ -233,6 +236,7 @@ function UpgradeCard({
   tokens: ThemeTokens;
   onUpgrade: () => void;
 }) {
+  const { t } = useTranslation("mobile_misc_screens");
   // iOS: App Store Guideline 3.1.3 forbids steering users to an external
   // purchase flow, so we show a neutral "not available" message with no
   // pricing/upgrade CTA and no link to the web. Android keeps the upgrade link.
@@ -243,26 +247,23 @@ function UpgradeCard({
       {neutral ? (
         <>
           <Text style={styles.upgradeTitle}>
-            Coaching isn't available on your current plan
+            {t("coaching.coachingIsnTAvailableOn")}
           </Text>
           <Text style={styles.upgradeBody}>
-            Coaching programs (Producer Track and Top Producer Track) aren't
-            included in your current access.
+            {t("coaching.coachingProgramsProducerTrackAnd")}
           </Text>
         </>
       ) : (
         <>
-          <Text style={styles.upgradeTitle}>Coaching unlocks on Pro</Text>
+          <Text style={styles.upgradeTitle}>{t("coaching.coachingUnlocksOnPro")}</Text>
           <Text style={styles.upgradeBody}>
-            Producer Track auto-enrolls on Pro and above; Top Producer Track
-            is bundled with Premium, Signature and Team. Upgrade to start hitting
-            10–15 transactions a year with daily AI-driven plans.
+            {t("coaching.producerTrackAutoEnrollsOn")}
           </Text>
           <Pressable
             onPress={onUpgrade}
             style={({ pressed }) => [styles.upgradeBtn, pressed && styles.upgradeBtnPressed]}
           >
-            <Text style={styles.upgradeBtnText}>See pricing</Text>
+            <Text style={styles.upgradeBtnText}>{t("coaching.seePricing")}</Text>
             <Ionicons name="open-outline" size={14} color="#ffffff" />
           </Pressable>
         </>

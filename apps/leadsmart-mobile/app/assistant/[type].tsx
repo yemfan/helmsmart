@@ -61,7 +61,7 @@ export default function AssistantHubScreen() {
               key={tile.key}
               icon={<Ionicons name={tile.iconName} size={24} color="#ffffff" />}
               label={t(tile.labelKey)}
-              accentColor={hub.accentColor}
+              accentColor={tokens[hub.accentKey]}
               href={tile.href}
               badge={tile.badge}
             />

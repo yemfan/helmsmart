@@ -59,8 +59,8 @@ export type AssistantHubConfig = {
   descriptionKey: string;
   /** Ionicon name for the roster row + hub header accent. */
   iconName: IoniconName;
-  /** Vibrant accent hue for the roster avatar bubble. */
-  accentColor: string;
+  /** Theme token for the hub's tile bubbles — resolved via `useThemeTokens()` at render. */
+  accentKey: "accent" | "success" | "infoAccent" | "warning" | "danger";
   /** Feature tiles — ONLY features with an existing mobile screen. */
   tiles: HomeFeatureTileConfig[];
 };
@@ -71,7 +71,7 @@ export const TEAM_SECTIONS: Record<AssistantType, AssistantHubConfig> = {
     nameKey: "team.assistants.receptionist.name",
     descriptionKey: "team.assistants.receptionist.description",
     iconName: "call-outline",
-    accentColor: "#2563eb",
+    accentKey: "accent",
     tiles: [
       {
         key: "call_log",
@@ -86,7 +86,7 @@ export const TEAM_SECTIONS: Record<AssistantType, AssistantHubConfig> = {
     nameKey: "team.assistants.sales.name",
     descriptionKey: "team.assistants.sales.description",
     iconName: "trending-up-outline",
-    accentColor: "#16a34a",
+    accentKey: "success",
     tiles: [
       {
         key: "cma",
@@ -107,7 +107,7 @@ export const TEAM_SECTIONS: Record<AssistantType, AssistantHubConfig> = {
     nameKey: "team.assistants.marketing.name",
     descriptionKey: "team.assistants.marketing.description",
     iconName: "megaphone-outline",
-    accentColor: "#7c3aed",
+    accentKey: "infoAccent",
     tiles: [
       {
         key: "quick_post",
@@ -152,7 +152,7 @@ export const TEAM_SECTIONS: Record<AssistantType, AssistantHubConfig> = {
     nameKey: "team.assistants.transaction.name",
     descriptionKey: "team.assistants.transaction.description",
     iconName: "document-text-outline",
-    accentColor: "#0891b2",
+    accentKey: "infoAccent",
     tiles: [
       {
         key: "offer_desk",
@@ -167,7 +167,7 @@ export const TEAM_SECTIONS: Record<AssistantType, AssistantHubConfig> = {
     nameKey: "team.assistants.accountant.name",
     descriptionKey: "team.assistants.accountant.description",
     iconName: "wallet-outline",
-    accentColor: "#0d9488",
+    accentKey: "success",
     tiles: [
       {
         key: "expenses",

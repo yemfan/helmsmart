@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Toggle } from "../../components/Toggle";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -6,7 +7,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
@@ -305,13 +305,13 @@ export default function OnboardingLoginScreen() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "flex-start",
               marginTop: 16,
               gap: 12,
             }}
           >
-            <Text style={[s.muted, { flex: 1, marginTop: 0 }]}>Remember this device</Text>
-            <Switch
+            <Text style={[s.muted, { flexShrink: 1, marginTop: 0 }]}>Remember this device</Text>
+            <Toggle
               value={rememberDevice}
               onValueChange={setRememberDevice}
               disabled={busy}

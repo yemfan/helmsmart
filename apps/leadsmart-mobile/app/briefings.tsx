@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,6 +29,7 @@ import type { ThemeTokens } from "../lib/theme";
  * than the agent wants. Keeps the screen browsable.
  */
 export default function BriefingsScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -87,10 +89,9 @@ export default function BriefingsScreen() {
         </View>
       ) : items.length === 0 ? (
         <View style={styles.emptyBlock}>
-          <Text style={styles.emptyTitle}>No briefings yet</Text>
+          <Text style={styles.emptyTitle}>{t("briefings.noBriefingsYet")}</Text>
           <Text style={styles.emptyBody}>
-            Once your morning and evening briefings have fired a few times,
-            this is where you&apos;ll find them.
+            {t("briefings.onceYourMorningAndEvening")}
           </Text>
         </View>
       ) : (

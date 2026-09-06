@@ -1,4 +1,5 @@
 import { SUPPORTED_LOCALES, type SupportedLocale } from "@leadsmart/i18n";
+import { Toggle } from "../../components/Toggle";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,7 +10,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from "react-native";
@@ -181,7 +181,7 @@ export default function SettingsScreen() {
           <>
             <View style={styles.row}>
               <Text style={styles.rowLabel}>{t("push.hot_leads")}</Text>
-              <Switch
+              <Toggle
                 value={pushHot}
                 onValueChange={(v) => {
                   setPushHot(v);
@@ -192,7 +192,7 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.row}>
               <Text style={styles.rowLabel}>{t("push.missed_calls")}</Text>
-              <Switch
+              <Toggle
                 value={pushMissed}
                 onValueChange={(v) => {
                   setPushMissed(v);
@@ -203,7 +203,7 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.row}>
               <Text style={styles.rowLabel}>{t("push.follow_ups")}</Text>
-              <Switch
+              <Toggle
                 value={pushReminder}
                 onValueChange={(v) => {
                   setPushReminder(v);
@@ -214,7 +214,7 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.row}>
               <Text style={styles.rowLabel}>{t("push.post_milestones")}</Text>
-              <Switch
+              <Toggle
                 value={pushMilestone}
                 onValueChange={(v) => {
                   setPushMilestone(v);
@@ -355,14 +355,17 @@ const createStyles = (theme: ThemeTokens) => StyleSheet.create({
   email: { fontSize: 16, fontWeight: "600", color: theme.text },
   meta: { fontSize: 15, color: theme.textMuted },
   prefsSpinner: { marginVertical: 12 },
+  // Label then switch, side by side — not pushed apart by space-between
+  // (house rule: a switch far from its label neither reads as changeable
+  // nor makes its state obvious).
   row: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     marginBottom: 14,
     gap: 12,
   },
-  rowLabel: { flex: 1, fontSize: 15, color: theme.text, fontWeight: "600" },
+  rowLabel: { flexShrink: 1, fontSize: 15, color: theme.text, fontWeight: "600" },
   digestNote: { fontSize: 12, color: theme.textSubtle, marginTop: 4 },
   localeRow: {
     flexDirection: "row",

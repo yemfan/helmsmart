@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { Stack, useFocusEffect } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useMemo, useState } from "react";
@@ -54,6 +55,7 @@ const RETURN_TO_DEEP_LINK = "leadsmart://leads-gen/connect/callback";
 type Network = "meta" | "linkedin" | "tiktok" | "youtube";
 
 export default function ConnectPlatformsScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -194,7 +196,7 @@ export default function ConnectPlatformsScreen() {
               setDisconnectingId(null);
               if (res.ok === false) {
                 hapticError();
-                Alert.alert("Disconnect failed", res.message);
+                Alert.alert(t("connectPlatforms.disconnectFailed"), res.message);
                 return;
               }
               hapticSuccess();
@@ -253,11 +255,9 @@ export default function ConnectPlatformsScreen() {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>Facebook &amp; Instagram</Text>
+            <Text style={styles.cardTitle}>{t("connectPlatforms.facebookInstagram")}</Text>
             <Text style={styles.cardSubtitle}>
-              Connect a Facebook Page. If it&apos;s linked to an Instagram
-              Business account, that&apos;s connected automatically — one grant
-              covers both.
+              {t("connectPlatforms.connectAFacebookPageIf")}
             </Text>
           </View>
         </View>
@@ -291,8 +291,7 @@ export default function ConnectPlatformsScreen() {
         ) : metaConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
             <Text style={styles.emptyText}>
-              No Pages connected yet. Tap connect to start publishing directly
-              from Quick Post.
+              {t("connectPlatforms.noPagesConnectedYetTap")}
             </Text>
           </View>
         ) : (
@@ -345,9 +344,7 @@ export default function ConnectPlatformsScreen() {
         )}
 
         <Text style={styles.helperText}>
-          Tokens are stored encrypted; disconnect any time. To fully revoke
-          the OAuth grant from Facebook&apos;s side too, visit your Facebook
-          account&apos;s Apps and Websites and remove LeadSmart AI.
+          {t("connectPlatforms.tokensAreStoredEncryptedDisconnect")}
         </Text>
       </View>
 
@@ -355,11 +352,9 @@ export default function ConnectPlatformsScreen() {
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>LinkedIn</Text>
+            <Text style={styles.cardTitle}>{t("connectPlatforms.linkedin")}</Text>
             <Text style={styles.cardSubtitle}>
-              Post to your personal LinkedIn feed. Real-estate professionals
-              see strong engagement here — listings, market updates, and
-              client wins all do well.
+              {t("connectPlatforms.postToYourPersonalLinkedin")}
             </Text>
           </View>
         </View>
@@ -390,8 +385,7 @@ export default function ConnectPlatformsScreen() {
         {connections === null ? null : linkedinConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
             <Text style={styles.emptyText}>
-              Not connected. Sign in with LinkedIn to publish to your personal
-              feed.
+              {t("connectPlatforms.notConnectedSignInWith")}
             </Text>
           </View>
         ) : (
@@ -442,9 +436,7 @@ export default function ConnectPlatformsScreen() {
         )}
 
         <Text style={styles.helperText}>
-          Posts go to your personal LinkedIn feed. To revoke from
-          LinkedIn&apos;s side, visit Settings → Data privacy → Permitted
-          services and remove LeadSmart AI.
+          {t("connectPlatforms.postsGoToYourPersonal")}
         </Text>
       </View>
 
@@ -452,9 +444,9 @@ export default function ConnectPlatformsScreen() {
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>TikTok</Text>
+            <Text style={styles.cardTitle}>{t("connectPlatforms.tiktok")}</Text>
             <Text style={styles.cardSubtitle}>
-              Publish videos to your TikTok. Great for listing tours, market takes, and behind-the-scenes clips.
+              {t("connectPlatforms.publishVideosToYourTiktok")}
             </Text>
           </View>
         </View>
@@ -478,7 +470,7 @@ export default function ConnectPlatformsScreen() {
 
         {connections === null ? null : tiktokConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
-            <Text style={styles.emptyText}>Not connected. Sign in with TikTok to publish videos.</Text>
+            <Text style={styles.emptyText}>{t("connectPlatforms.notConnectedSignInWith2")}</Text>
           </View>
         ) : (
           <View style={styles.connectionsList}>
@@ -513,8 +505,7 @@ export default function ConnectPlatformsScreen() {
         )}
 
         <Text style={styles.helperText}>
-          Videos post to your connected TikTok account. New TikTok apps publish to a private/self-only audience until
-          TikTok approves the app for public posting.
+          {t("connectPlatforms.videosPostToYourConnected")}
         </Text>
       </View>
 
@@ -522,9 +513,9 @@ export default function ConnectPlatformsScreen() {
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>YouTube</Text>
+            <Text style={styles.cardTitle}>{t("connectPlatforms.youtube")}</Text>
             <Text style={styles.cardSubtitle}>
-              Upload videos to your YouTube channel as Shorts or standard uploads — perfect for reels and walkthroughs.
+              {t("connectPlatforms.uploadVideosToYourYoutube")}
             </Text>
           </View>
         </View>
@@ -548,7 +539,7 @@ export default function ConnectPlatformsScreen() {
 
         {connections === null ? null : youtubeConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
-            <Text style={styles.emptyText}>Not connected. Sign in with Google to upload to your channel.</Text>
+            <Text style={styles.emptyText}>{t("connectPlatforms.notConnectedSignInWith3")}</Text>
           </View>
         ) : (
           <View style={styles.connectionsList}>
@@ -583,8 +574,7 @@ export default function ConnectPlatformsScreen() {
         )}
 
         <Text style={styles.helperText}>
-          Uploads go to your connected YouTube channel. To revoke from Google&apos;s side, visit your Google Account →
-          Security → Third-party access.
+          {t("connectPlatforms.uploadsGoToYourConnected")}
         </Text>
       </View>
     </ScrollView>

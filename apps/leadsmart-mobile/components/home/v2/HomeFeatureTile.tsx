@@ -67,10 +67,10 @@ export function HomeFeatureTile({
   const badgeVariant = badge?.variant ?? "hot";
   const badgeColor =
     badgeVariant === "vip"
-      ? "#f59e0b" // amber-500
+      ? tokens.warning
       : badgeVariant === "new"
       ? tokens.success
-      : "#e11d48"; // rose-600
+      : tokens.danger;
 
   const onPress = () => {
     hapticSelectionChange();
