@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import type { ListingFeedbackRow } from "@/lib/listing-feedback/types";
@@ -37,6 +38,7 @@ type FetchResponse = {
  */
 export function ListingFeedbackPanel({ transactionId }: { transactionId: string }) {
   const { t } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const [rows, setRows] = useState<ListingFeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
   }
 
   async function deleteRow(id: string) {
-    if (!confirm("Delete this feedback row?")) return;
+    if (!await confirmDialog("Delete this feedback row?")) return;
     try {
       const res = await fetch(`/api/dashboard/listing-feedback/${id}`, {
         method: "DELETE",

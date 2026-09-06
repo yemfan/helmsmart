@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -56,6 +57,7 @@ export function ListingOffersCompareClient({
   initialOffers: ListingOfferCompareItem[];
 }) {
   const { t } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const [offers, setOffers] = useState(initialOffers);
   const [showAdd, setShowAdd] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -188,7 +190,7 @@ export function ListingOffersCompareClient({
       "Click OK to ALSO mark them as rejected now.",
       "Click Cancel to keep them as backup (status stays 'submitted' / 'countered').",
     ].join("\n");
-    const rejectSiblings = confirm(msg);
+    const rejectSiblings = await confirmDialog(msg);
     await updateStatus(offerId, "accepted", {
       rejectSiblingsOnAccept: rejectSiblings,
     });

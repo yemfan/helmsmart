@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -60,6 +61,7 @@ export function ListingOfferDetailClient({
   transaction: { id: string; property_address: string };
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [offer, setOffer] = useState(initialOffer);
@@ -95,7 +97,7 @@ export function ListingOfferDetailClient({
   }
 
   async function onDelete() {
-    if (!confirm("Delete this offer? This cannot be undone.")) return;
+    if (!await confirmDialog("Delete this offer? This cannot be undone.")) return;
     const res = await fetch(`/api/dashboard/listing-offers/${offer.id}`, { method: "DELETE" });
     const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     if (!res.ok || !body.ok) {

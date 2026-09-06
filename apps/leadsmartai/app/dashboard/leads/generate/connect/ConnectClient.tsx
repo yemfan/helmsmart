@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useConfirm } from "@/components/ui/useConfirm";
 import GoogleCalendarConnectPanel from "@/components/dashboard/GoogleCalendarConnectPanel";
 import {
   ConnectionNotice,
@@ -217,6 +218,7 @@ export default function ConnectClient({
 }) {
   const router = useRouter();
   const { t, i18n } = useTranslation("web_generate_leads_clients");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const [flash, setFlash] = useState<Flash | null>(() =>
     buildFlash(initialStatus, initialReason, initialCount, initialNetwork, initialAwaiting, t),
@@ -242,7 +244,7 @@ export default function ConnectClient({
   const onDisconnect = useCallback(
     async (network: Network, id: string, label: string) => {
       if (
-        !confirm(
+        !await confirmDialog(
           t("connect.disconnect_confirm", { label, network: networkLabel(network) }),
         )
       )

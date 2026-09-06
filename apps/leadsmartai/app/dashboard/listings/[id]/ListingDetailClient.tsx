@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -217,6 +218,7 @@ export function ListingDetailClient({
   offers: ListingOfferCompareItem[];
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const router = useRouter();
   const cityState = [listing.city, listing.state].filter(Boolean).join(", ");
@@ -296,7 +298,7 @@ export function ListingDetailClient({
 
   async function acceptOffer(offerId: string, offerPrice: number) {
     if (
-      !confirm(
+      !await confirmDialog(
         `Accept this offer at ${formatMoney(offerPrice, locale)}?\n\nThis marks the offer accepted, flips the listing to "under contract," and opens the new-transaction form prefilled with the listing + offer details.`,
       )
     ) {
@@ -432,7 +434,7 @@ export function ListingDetailClient({
     listing.status !== "expired";
 
   async function promote() {
-    if (!confirm(
+    if (!await confirmDialog(
       `Mark this listing under contract?\n\nThis spawns a deal so escrow + closing can be tracked.`,
     )) {
       return;

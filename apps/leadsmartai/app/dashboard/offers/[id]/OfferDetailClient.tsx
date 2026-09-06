@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
@@ -68,6 +69,7 @@ export function OfferDetailClient({
   contactName: string | null;
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [offer, setOffer] = useState(initialOffer);
@@ -128,7 +130,7 @@ export function OfferDetailClient({
   }
 
   async function onDelete() {
-    if (!confirm(t("detail.offerDetail.confirmDelete"))) return;
+    if (!await confirmDialog(t("detail.offerDetail.confirmDelete"))) return;
     const res = await fetch(`/api/dashboard/offers/${offer.id}`, { method: "DELETE" });
     const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     if (!res.ok || !body.ok) {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,6 +60,7 @@ export default function CampaignListClient({
 }) {
   const router = useRouter();
   const { t, i18n } = useTranslation("web_generate_leads_clients");
+  const confirmDialog = useConfirm();
   const [actingId, setActingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -69,7 +71,7 @@ export default function CampaignListClient({
         resume: "campaigns.errors.failed_to_resume",
         archive: "campaigns.errors.failed_to_archive",
       };
-      if (action === "archive" && !confirm(t("campaigns.archive_confirm"))) {
+      if (action === "archive" && !await confirmDialog(t("campaigns.archive_confirm"))) {
         return;
       }
       setActionError(null);

@@ -10,6 +10,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import { ToastProvider } from "@/components/ui/Toast";
+import { ConfirmProvider } from "@/components/ui/useConfirm";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { getServerT } from "@/lib/i18n/server";
@@ -132,6 +133,7 @@ export default async function DashboardLayout({
   return (
     <AgentWorkspaceProviders>
       <ToastProvider>
+       <ConfirmProvider>
         <DashboardShell
           email={ctx?.email}
           appRole={appRole}
@@ -145,6 +147,7 @@ export default async function DashboardLayout({
           <AiChatPanel />
           <CommandPalette />
         </DashboardShell>
+       </ConfirmProvider>
       </ToastProvider>
     </AgentWorkspaceProviders>
   );

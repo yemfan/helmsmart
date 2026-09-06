@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,6 +50,7 @@ export default function ScheduledListClient({
 }) {
   const router = useRouter();
   const { t, i18n } = useTranslation("web_generate_leads_clients");
+  const confirmDialog = useConfirm();
   const [actingId, setActingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -70,7 +72,7 @@ export default function ScheduledListClient({
 
   const onCancel = useCallback(
     async (id: string) => {
-      if (!confirm(t("scheduled.cancel_confirm"))) {
+      if (!await confirmDialog(t("scheduled.cancel_confirm"))) {
         return;
       }
       setActionError(null);

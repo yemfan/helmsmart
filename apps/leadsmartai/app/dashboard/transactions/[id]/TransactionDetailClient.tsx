@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { useConfirm } from "@/components/ui/useConfirm";
 
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -47,6 +48,7 @@ function daysUntil(dateIso: string | null): number | null {
 
 export function TransactionDetailClient({ initial }: { initial: Bundle }) {
   const { t } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const [txn, setTxn] = useState<TransactionRow>(initial.transaction);
   const [tasks, setTasks] = useState<TransactionTaskRow[]>(initial.tasks);
   const [cps, setCps] = useState<TransactionCounterpartyRow[]>(initial.counterparties);
@@ -442,6 +444,7 @@ function StageBlock({
 }) {
   // Named `tr` — the task rows in this block bind `t` to a TransactionTaskRow.
   const { t: tr } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const [adding, setAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDue, setNewDue] = useState("");
@@ -576,7 +579,7 @@ function StageBlock({
                       type="button"
                       title={tr("detail.transaction.deleteCustomTask")}
                       onClick={async () => {
-                        if (!confirm(tr("detail.transaction.confirmDeleteTask"))) return;
+                        if (!await confirmDialog(tr("detail.transaction.confirmDeleteTask"))) return;
                         const res = await fetch(
                           `/api/dashboard/transactions/${transactionId}/tasks/${t.id}`,
                           { method: "DELETE" },
@@ -741,6 +744,7 @@ function CounterpartiesBlockBody({
   onDelete: (id: string) => void;
 }) {
   const { t } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<{
     role: CounterpartyRole;
@@ -847,7 +851,7 @@ function CounterpartiesBlockBody({
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!confirm(`Remove ${cp.name}?`)) return;
+                    if (!await confirmDialog(`Remove ${cp.name}?`)) return;
                     const res = await fetch(
                       `/api/dashboard/transactions/${transactionId}/counterparties/${cp.id}`,
                       { method: "DELETE" },
