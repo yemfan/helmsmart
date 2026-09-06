@@ -18,6 +18,9 @@ import {
 import { hasPrivacySignal } from "@/lib/marketing-hub/tracking";
 import HubTracker from "../../HubTracker";
 import { HubTags } from "../../HubTags";
+import { hubLabels } from "../../labels";
+import { HubFooter, HubHeader } from "../../sections";
+import { hubTheme } from "../../theme";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -150,12 +153,15 @@ export default async function HubContentPage({ params, searchParams }: Props) {
 
   const utmSource = typeof query.utm_source === "string" ? query.utm_source : null;
   const utmCampaign = typeof query.utm_campaign === "string" ? query.utm_campaign : null;
+  const L = hubLabels(t);
+  const theme = hubTheme(hub.config.appearance.accent);
 
   return (
-    <Shell>
+    <>
       <HubTags decision={hub.tracking} />
       <HubTracker username={hub.username} utmSource={utmSource} utmCampaign={utmCampaign} />
-
+      <HubHeader hub={hub} L={L} theme={theme} />
+      <main id="main-content" className="mx-auto w-full max-w-3xl px-5 py-10 sm:py-14">
       <p className="text-sm">
         <Link href={`/@${hub.username}`} className="text-blue-700 hover:underline">
           ← {name}
@@ -267,11 +273,13 @@ export default async function HubContentPage({ params, searchParams }: Props) {
         </section>
       ) : null}
 
-      <footer className="mt-16 border-t border-slate-200 pt-6 text-sm">
+      <p className="mt-12 text-sm">
         <Link href={`/@${hub.username}`} className="text-blue-700 hover:underline">
           {t("hub.backToHub", { ns: "web_marketing" })}
         </Link>
-      </footer>
-    </Shell>
+      </p>
+      </main>
+      <HubFooter hub={hub} L={L} theme={theme} />
+    </>
   );
 }

@@ -37,9 +37,12 @@ const UPGRADE_HREF = "/agent/pricing";
 export default function HomesSearchClient({
   initialQuery,
   initialParams,
+  agent = null,
 }: {
   initialQuery: string | null;
   initialParams: HomeSearchParams;
+  /** Referring agent's handle, when the visitor came from a marketing hub. */
+  agent?: string | null;
 }) {
   const { t } = useTranslation("dashboard");
   // Seed the box: an explicit ?q= wins; otherwise translate structured params.
@@ -319,6 +322,7 @@ export default function HomesSearchClient({
         context={{
           action: "contact_agent",
           listingAddress: leadAddress,
+          agent,
         }}
       />
     </div>
