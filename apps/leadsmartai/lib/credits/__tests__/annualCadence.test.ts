@@ -146,6 +146,29 @@ describe("annual cadence", () => {
     expect(client).toMatch(/sp\?\.get\("cadence"\) === "annual"/);
   });
 
+  it("promises no trial, because there isn't one", () => {
+    /*
+     * Every paid card said "Start 14-day trial", with "14-day free trial"
+     * beneath it and the same claim in the step header, while checkout set no
+     * `trial_period_days` and the Stripe prices carried none — so clicking it
+     * charged the card immediately. Fixed in #1549; this stops it returning.
+     *
+     * And it must NOT be fixed by adding a trial. pricing.ts settled that:
+     * FREE_TIER is "PERMANENT, not a trial", because a CRM proves itself over
+     * ninety days rather than fourteen, and a free tier is the one thing on
+     * this price list competitors do not have. The free plan IS the trial;
+     * paid plans are an upgrade.
+     */
+    const funnel = read("components/onboarding/OnboardingFunnel.tsx");
+    expect(funnel).not.toMatch(/14-day|14 day/);
+    expect(funnel).toContain("pages.onboardingFunnel.startFreeTrial");
+    expect(funnel).toContain("pages.onboardingFunnel.upgrade");
+
+    // The checkout that actually charges must not quietly grow a trial either.
+    const checkout = read("app/api/stripe/checkout/route.ts");
+    expect(checkout).not.toContain("trial_period_days");
+  });
+
   it("quotes no price for the retired Team tier", () => {
     // The funnel advertised "Team — $299/mo" ($249 on annual) from the old
     // ladder. There is no `team` in CREDIT_TIERS and its Stripe product is
