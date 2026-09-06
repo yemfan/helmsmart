@@ -58,12 +58,47 @@ describe("plans / v2.0 catalog shape", () => {
     expect(sig).toContain("custom_voice_tuning");
   });
 
-  it("bilingual_ai is on Pro and inherited up the ladder", () => {
-    expect(PLANS.starter.features).not.toContain("bilingual_ai");
-    expect(PLANS.pro.features).toContain("bilingual_ai");
-    expect(PLANS.premium.features).toContain("bilingual_ai");
-    expect(PLANS.signature.features).toContain("bilingual_ai");
-    expect(PLANS.team.features).toContain("bilingual_ai");
+  it("opens everything the price list does not differentiate on", () => {
+    /*
+     * The ladder sells on CREDITS, not on features: every tier's blurb reads
+     * "Every feature, one seat". Only four things are actually tier-limited
+     * (see the next test), so anything else must be on the free tier too —
+     * bilingual AI, predictions, bookkeeping, the AI receptionist.
+     */
+    for (const f of [
+      "basic_crm",
+      "ask_max",
+      "email_support",
+      "bilingual_ai",
+      "prediction",
+      "bookkeeping",
+      "ai_calling",
+      "full_ai",
+      "automation",
+    ] as const) {
+      expect(PLANS.starter.features, `starter should carry ${f}`).toContain(f);
+      expect(PLANS.solo.features, `solo should carry ${f}`).toContain(f);
+    }
+  });
+
+  it("limits exactly the four things the price list differentiates on", () => {
+    // Facebook ads: Pro and above.
+    expect(PLANS.starter.features).not.toContain("facebook_ad_management");
+    expect(PLANS.solo.features).not.toContain("facebook_ad_management");
+    for (const p of ["pro", "premium", "signature"] as const) {
+      expect(PLANS[p].features).toContain("facebook_ad_management");
+    }
+    // Phone support: Premium and Signature.
+    for (const p of ["starter", "solo", "pro"] as const) {
+      expect(PLANS[p].features).not.toContain("phone_support");
+    }
+    for (const p of ["premium", "signature"] as const) {
+      expect(PLANS[p].features).toContain("phone_support");
+    }
+    // Coaching splits by track rather than stacking.
+    expect(PLANS.pro.features).toContain("producer_track_coaching");
+    expect(PLANS.premium.features).toContain("top_producer_track_coaching");
+    expect(PLANS.signature.features).toContain("top_producer_track_coaching");
   });
 
   it("Signature inherits Top Producer Track coaching", () => {
@@ -86,11 +121,17 @@ describe("plans / v2.0 catalog shape", () => {
 });
 
 describe("hasFeature", () => {
-  it("Signature-only features gate correctly", () => {
-    expect(hasFeature({ plan: "signature" }, "sphere_intelligence_pro")).toBe(true);
-    expect(hasFeature({ plan: "premium" }, "sphere_intelligence_pro")).toBe(false);
-    expect(hasFeature({ plan: "pro" }, "white_glove_onboarding")).toBe(false);
+  it("gates the tier-limited features and nothing else", () => {
+    // The $499 setup specialist is what Signature sells; it stays Signature's.
     expect(hasFeature({ plan: "signature" }, "white_glove_onboarding")).toBe(true);
+    expect(hasFeature({ plan: "pro" }, "white_glove_onboarding")).toBe(false);
+    // Facebook ads start at Pro.
+    expect(hasFeature({ plan: "solo" }, "facebook_ad_management")).toBe(false);
+    expect(hasFeature({ plan: "pro" }, "facebook_ad_management")).toBe(true);
+    // Everything else is open, including on the free tier.
+    expect(hasFeature({ plan: "starter" }, "prediction")).toBe(true);
+    expect(hasFeature({ plan: "starter" }, "bookkeeping")).toBe(true);
+    expect(hasFeature({ plan: "starter" }, "ai_calling")).toBe(true);
   });
 
   it("returns false on unknown / null plan", () => {

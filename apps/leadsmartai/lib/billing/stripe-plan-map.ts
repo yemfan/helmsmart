@@ -1,3 +1,5 @@
+import { CREDIT_TIERS } from "@/lib/credits/pricing";
+
 /**
  * Canonical product/plan keys (admin UI + `billing_subscriptions.plan`).
  * Keep aligned with `BillingPlan` in `@/lib/admin/billingRecords`.
@@ -7,6 +9,7 @@ export type InternalPlan =
   | "consumer_premium"
   | "agent_starter"
   | "agent_pro"
+  | "crm_solo"
   /** LeadSmart CRM tiers — derived from `lib/billing/plans.ts`
    *  `PLANS[slug].internalPlan`. Keep this union in sync with the
    *  catalog when slugs are added or renamed. Each `crm_*` plan
@@ -49,17 +52,29 @@ const PRICE_ID_TO_PLAN: Record<string, InternalPlan> = {
  * cadences.
  */
 const CRM_ENV_TO_PLAN: ReadonlyArray<{ envKey: string; plan: InternalPlan }> = [
-  // Usage-model tiers (Starter/Growth/Scale). Without these the live CB price
-  // ids match nothing and every paid CB checkout is recorded as `consumer_free`
-  // — which is exactly what happened to the first real $59 subscription.
-  //
-  // All three collapse to one InternalPlan on purpose. Entitlements do not vary
-  // by CB tier: every plan includes every feature and the tiers differ only in
-  // monthly credits, which are tracked in the ledger, not here. Same reasoning
-  // the map already applies to monthly vs annual.
-  { envKey: "STRIPE_PRICE_ID_CB_STARTER", plan: "crm_signature" },
-  { envKey: "STRIPE_PRICE_ID_CB_GROWTH", plan: "crm_signature" },
-  { envKey: "STRIPE_PRICE_ID_CB_SCALE", plan: "crm_signature" },
+  /*
+   * The live credit ladder. Without these the CB price ids match nothing and
+   * every paid checkout is recorded as `consumer_free` — which is exactly what
+   * happened to the first real $59 subscription.
+   *
+   * IT HAPPENED TWICE. The entries that fixed it named the tiers of the day,
+   * Starter / Growth / Scale. The ladder was renamed to Solo / Pro / Premium /
+   * Signature and this list was not, so it recognised three env vars that no
+   * tier defines any more and none of the four that checkout actually charges
+   * with. A customer paying $399 was entitled to the free plan.
+   *
+   * These are DERIVED from CREDIT_TIERS now, so a rename cannot desync them
+   * again. Each tier keeps its own InternalPlan: entitlements do vary by tier
+   * (Facebook ads on Pro and up, phone support on Premium and Signature,
+   * coaching by track), so collapsing them would flatten the matrix.
+   */
+  ...CREDIT_TIERS.flatMap((tier) => {
+    const plan = `crm_${tier.id}` as InternalPlan;
+    return [
+      { envKey: tier.priceEnv, plan },
+      { envKey: `${tier.priceEnv}_ANNUAL`, plan },
+    ];
+  }),
   { envKey: "STRIPE_PRICE_ID_PRO", plan: "crm_pro" },
   { envKey: "STRIPE_PRICE_ID_PRO_ANNUAL", plan: "crm_pro" },
   { envKey: "STRIPE_PRICE_ID_PREMIUM", plan: "crm_premium" },

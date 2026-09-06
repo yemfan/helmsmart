@@ -27,10 +27,32 @@ import type { InternalPlan } from "./stripe-plan-map";
  * created in Stripe).
  */
 
-export type PlanSlug = "starter" | "pro" | "premium" | "signature" | "team";
+export type PlanSlug =
+  | "starter"
+  /**
+   * Solo is the $79 step on the credit ladder. It had no entry here, so a
+   * Solo purchase had nowhere to land and resolved to `starter` — a paying
+   * customer recorded as the free plan.
+   */
+  | "solo"
+  | "pro"
+  | "premium"
+  | "signature"
+  | "team";
 
 export type PlanFeature =
   | "basic_crm"
+  /*
+   * The four flags the price list actually differentiates on. Nothing
+   * gates them in code yet — they are declared so the catalogue states the
+   * entitlement matrix in one place, the way `features` already does for
+   * the gated ones. A gate added later reads from here rather than
+   * inventing a second list.
+   */
+  | "ask_max"
+  | "email_support"
+  | "phone_support"
+  | "facebook_ad_management"
   | "limited_ai"
   | "full_ai"
   | "automation"
@@ -99,10 +121,57 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
      * The spend is bounded by CREDITS, not by this flag — voice costs 8
      * credits a minute, so 100 free credits buys about twelve.
      */
-    features: ["basic_crm", "ai_calling"],
+    features: [
+      "basic_crm",
+      "ask_max",
+      "email_support",
+      "limited_ai",
+      "full_ai",
+      "automation",
+      "prediction",
+      "bilingual_ai",
+      "bookkeeping",
+      "ai_calling",
+      "social_customization",
+      "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+    ],
     stripePriceEnvVar: null,
     stripePriceEnvVarAnnual: null,
     internalPlan: "crm_starter",
+  },
+  solo: {
+    slug: "solo",
+    displayName: "Solo",
+    tagline: "Every feature, one seat. For steady solo marketing.",
+    price: 79,
+    annualPrice: 790,
+    features: [
+      "basic_crm",
+      "ask_max",
+      "email_support",
+      "limited_ai",
+      "full_ai",
+      "automation",
+      "prediction",
+      "bilingual_ai",
+      "bookkeeping",
+      "ai_calling",
+      "social_customization",
+      "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+    ],
+    stripePriceEnvVar: "STRIPE_PRICE_ID_CB_SOLO",
+    stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_CB_SOLO_ANNUAL",
+    internalPlan: "crm_solo",
   },
   pro: {
     slug: "pro",
@@ -112,11 +181,24 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     annualPrice: 790,
     features: [
       "basic_crm",
+      "ask_max",
+      "email_support",
       "limited_ai",
+      "full_ai",
+      "automation",
+      "prediction",
       "bilingual_ai",
-      "producer_track_coaching",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
+      "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+      "facebook_ad_management",
+      "producer_track_coaching",
     ],
     // Reuses the existing STRIPE_PRICE_ID_PRO env var — historically
     // the $49 product was wired to this name (the old "starter" CRM
@@ -135,14 +217,25 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     annualPrice: 1990,
     features: [
       "basic_crm",
+      "ask_max",
+      "email_support",
+      "limited_ai",
       "full_ai",
       "automation",
       "prediction",
       "bilingual_ai",
-      "top_producer_track_coaching",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
       "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+      "facebook_ad_management",
+      "phone_support",
+      "top_producer_track_coaching",
     ],
     // STRIPE_PRICE_ID_PREMIUM with fallback to STRIPE_PRICE_ID_ELITE
     // is handled in crmStripePrices.ts so existing deployments don't
@@ -160,20 +253,27 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     annualPrice: 3990,
     features: [
       "basic_crm",
+      "ask_max",
+      "email_support",
+      "limited_ai",
       "full_ai",
       "automation",
       "prediction",
       "bilingual_ai",
-      "top_producer_track_coaching",
-      "sphere_intelligence_pro",
-      "white_glove_onboarding",
-      "concierge_support",
-      "cultural_calendar",
-      "custom_voice_tuning",
       "bookkeeping",
       "ai_calling",
       "social_customization",
       "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+      "facebook_ad_management",
+      "phone_support",
+      "top_producer_track_coaching",
+      "white_glove_onboarding",
+      "concierge_support",
     ],
     stripePriceEnvVar: "STRIPE_PRICE_ID_SIGNATURE",
     stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_SIGNATURE_ANNUAL",
@@ -188,17 +288,25 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     annualPrice: 2990,
     features: [
       "basic_crm",
+      "ask_max",
+      "email_support",
+      "limited_ai",
       "full_ai",
       "automation",
       "prediction",
       "bilingual_ai",
-      "multi_agent",
-      "routing",
-      "top_producer_track_coaching",
       "bookkeeping",
       "ai_calling",
       "social_customization",
       "premium_avatar",
+      "cultural_calendar",
+      "custom_voice_tuning",
+      "sphere_intelligence_pro",
+      "multi_agent",
+      "routing",
+      "facebook_ad_management",
+      "phone_support",
+      "top_producer_track_coaching",
     ],
     // Team is sales-assisted (per-seat, brokerage terms) — no self-serve
     // checkout, so no STRIPE_PRICE_ID_TEAM* env vars are needed. The pricing UI
@@ -273,6 +381,8 @@ export function effectiveMonthlyPrice(
 export const AI_USAGE_MONTHLY_LIMIT: Record<PlanSlug | "free", number> = {
   free: 100,
   starter: 100,
+  // Solo's ceiling is its credit allowance, not a separate AI cap.
+  solo: 5_000,
   pro: 5_000,
   premium: 999_999,
   signature: 999_999,
@@ -286,6 +396,10 @@ export const AI_USAGE_MONTHLY_LIMIT: Record<PlanSlug | "free", number> = {
  */
 export const PLAN_FEATURE_LABEL: Record<PlanFeature, string> = {
   basic_crm: "The CRM",
+  ask_max: "Ask Max",
+  email_support: "Email support",
+  phone_support: "Phone support",
+  facebook_ad_management: "Facebook ad management",
   limited_ai: "AI drafting",
   full_ai: "Full AI",
   automation: "Automations",

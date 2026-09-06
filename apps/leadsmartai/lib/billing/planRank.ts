@@ -25,6 +25,7 @@ import type { InternalPlan } from "./stripe-plan-map";
 export const PLAN_RANK = [
   "free",
   "starter",
+  "solo",
   "pro",
   "premium",
   "signature",
