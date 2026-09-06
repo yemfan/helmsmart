@@ -42,6 +42,32 @@ export type ConfigProblem =
   | "missing_from_number"
   | "missing_agent_id";
 
+/**
+ * The from-number as Retell wants it: E.164, with the leading "+".
+ *
+ * Retell matches `from_number` against the numbers registered on the account
+ * and answers a miss with a bare 404 — the same 404 it gives for an unknown
+ * agent, so the two are indistinguishable from the response. Production had
+ * `RETELL_DEMO_FROM_NUMBER=18778017240`: the right number, pasted without its
+ * plus. Every demo 404'd and fell through to the legacy Twilio bot, so
+ * prospects heard a turn-by-turn robot while the page sold them a receptionist.
+ *
+ * A missing "+" is the easiest possible mistake to make in a Vercel env field
+ * and the hardest to see afterwards, so this normalises rather than rejects.
+ * Anything already E.164 is untouched; a digits-only value gets its "+"; a US
+ * 10-digit value also gets its country code. Something that is neither is left
+ * alone for the caller to fail on visibly.
+ */
+export function e164FromNumber(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("+")) return trimmed;
+  const digits = trimmed.replace(/[\s()\-.]/g, "");
+  if (!/^\d+$/.test(digits)) return trimmed;
+  if (digits.length === 10) return `+1${digits}`;
+  return `+${digits}`;
+}
+
 /** Normalise whatever the form gave us to the two languages we run. */
 export function demoLanguage(raw: string | null | undefined): DemoLanguage {
   return String(raw ?? "").toLowerCase().startsWith("zh") ? "zh" : "en";
@@ -69,7 +95,7 @@ export function resolveRetellDemoConfig(
   const apiKey = (env.apiKey || "").trim();
   if (!apiKey) return { ok: false, problem: "missing_api_key" };
 
-  const fromNumber = (env.fromNumber || "").trim();
+  const fromNumber = e164FromNumber(env.fromNumber || "");
   if (!fromNumber) return { ok: false, problem: "missing_from_number" };
 
   const agentId = pickDemoAgentId(env, language);
