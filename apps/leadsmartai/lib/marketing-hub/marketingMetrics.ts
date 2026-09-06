@@ -43,10 +43,11 @@ export const SOCIAL_METRICS_SUPPORTED: Record<string, boolean> = {
   facebook: true,
   instagram: true,
   pinterest: true,
-  threads: false,
+  threads: true,
+  tiktok: true,
+  youtube: true,
+  // Personal-profile post analytics sit behind LinkedIn's partner program.
   linkedin: false,
-  tiktok: false,
-  youtube: false,
   x: false,
 };
 

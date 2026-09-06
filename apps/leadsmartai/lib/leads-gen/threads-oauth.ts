@@ -35,6 +35,9 @@ import {
 export const THREADS_OAUTH_SCOPES = [
   "threads_basic",
   "threads_content_publish",
+  // Post metrics (views, likes, replies, reposts, quotes) for the hourly
+  // refresh. Existing connections keep their grant until reconnected.
+  "threads_manage_insights",
 ] as const;
 
 function clientId(): string {

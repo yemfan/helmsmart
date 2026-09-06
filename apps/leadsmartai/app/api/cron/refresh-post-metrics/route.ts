@@ -5,6 +5,13 @@ import { decryptToken } from "@/lib/leads-gen/token-enc";
 import { fetchPinterestPinInsights } from "@/lib/leads-gen/pinterest-insights";
 import { ensurePinterestAccessToken } from "@/lib/leads-gen/pinterest-post";
 import {
+  fetchThreadsPostInsights,
+  fetchTikTokVideoInsights,
+  fetchYouTubeVideoInsights,
+} from "@/lib/leads-gen/social-insights";
+import { ensureTikTokAccessToken } from "@/lib/leads-gen/tiktok-publish";
+import { ensureYouTubeAccessToken } from "@/lib/leads-gen/youtube-publish";
+import {
   dispatchMobilePostMilestonePush,
   highestCrossedMilestone,
 } from "@/lib/mobile/pushDispatch";
@@ -65,11 +72,18 @@ function authorize(req: Request): boolean {
   return provided === `Bearer ${secret}`;
 }
 
+/**
+ * Networks whose post metrics we can fetch. LinkedIn is absent on purpose:
+ * personal-profile analytics sit behind its partner program.
+ */
+const MEASURED_PLATFORMS = ["facebook", "instagram", "pinterest", "threads", "tiktok", "youtube"] as const;
+type MeasuredPlatform = (typeof MEASURED_PLATFORMS)[number];
+
 type StaleRow = {
   id: string;
   agent_id: string;
   social_account_id: string;
-  platform: "facebook" | "instagram" | "pinterest";
+  platform: MeasuredPlatform;
   external_post_id: string;
   caption: string;
   last_milestone_pushed: number;
@@ -94,7 +108,7 @@ async function selectStalePosts(): Promise<StaleRow[]> {
     .from("lead_posts")
     .select(selectCols)
     .eq("status", "published")
-    .in("platform", ["facebook", "instagram", "pinterest"])
+    .in("platform", [...MEASURED_PLATFORMS])
     .not("external_post_id", "is", null)
     .is("metrics_refreshed_at", null)
     .gte("published_at", windowStartIso)
@@ -109,7 +123,7 @@ async function selectStalePosts(): Promise<StaleRow[]> {
     .from("lead_posts")
     .select(selectCols)
     .eq("status", "published")
-    .in("platform", ["facebook", "instagram", "pinterest"])
+    .in("platform", [...MEASURED_PLATFORMS])
     .not("external_post_id", "is", null)
     .lte("metrics_refreshed_at", staleCutoffIso)
     .gte("published_at", windowStartIso)
@@ -157,17 +171,20 @@ export async function POST(req: Request) {
     const { data: conns } = await supabaseAdmin
       .from("social_accounts")
       .select(
-        "id, agent_id, page_access_token_enc, user_access_token_enc, pinterest_refresh_token_enc, user_token_expires_at, status",
+        "id, agent_id, page_access_token_enc, user_access_token_enc, pinterest_refresh_token_enc, tiktok_refresh_token_enc, youtube_refresh_token_enc, user_token_expires_at, status",
       )
       .in("id", socialAccountIds);
     type Conn = {
       id: string;
       agent_id: string;
       page_access_token_enc: string | null;
-      // Pinterest signs with the USER token and refreshes it in place; Meta
-      // uses the Page token. Both columns travel so the loop can pick.
+      // Pinterest, Threads, TikTok and YouTube sign with the USER token
+      // (Pinterest/TikTok/YouTube refresh it in place); Meta uses the Page
+      // token. Every column travels so the loop can pick per platform.
       user_access_token_enc: string | null;
       pinterest_refresh_token_enc: string | null;
+      tiktok_refresh_token_enc: string | null;
+      youtube_refresh_token_enc: string | null;
       user_token_expires_at: string | null;
       status: string;
     };
@@ -187,7 +204,9 @@ export async function POST(req: Request) {
       const nowIso = new Date().toISOString();
 
       const isPinterest = row.platform === "pinterest";
-      const hasToken = isPinterest
+      const usesUserToken =
+        isPinterest || row.platform === "threads" || row.platform === "tiktok" || row.platform === "youtube";
+      const hasToken = usesUserToken
         ? !!conn?.user_access_token_enc
         : !!conn?.page_access_token_enc;
       if (!conn || conn.status !== "connected" || !hasToken) {
@@ -204,14 +223,33 @@ export async function POST(req: Request) {
 
       let token: string;
       try {
-        token = isPinterest
-          ? await ensurePinterestAccessToken({
-              id: conn.id,
-              user_access_token_enc: conn.user_access_token_enc,
-              pinterest_refresh_token_enc: conn.pinterest_refresh_token_enc,
-              user_token_expires_at: conn.user_token_expires_at,
-            })
-          : decryptToken(conn.page_access_token_enc!);
+        if (isPinterest) {
+          token = await ensurePinterestAccessToken({
+            id: conn.id,
+            user_access_token_enc: conn.user_access_token_enc,
+            pinterest_refresh_token_enc: conn.pinterest_refresh_token_enc,
+            user_token_expires_at: conn.user_token_expires_at,
+          });
+        } else if (row.platform === "tiktok") {
+          token = await ensureTikTokAccessToken({
+            id: conn.id,
+            user_access_token_enc: conn.user_access_token_enc,
+            tiktok_refresh_token_enc: conn.tiktok_refresh_token_enc,
+            user_token_expires_at: conn.user_token_expires_at,
+          });
+        } else if (row.platform === "youtube") {
+          token = await ensureYouTubeAccessToken({
+            id: conn.id,
+            user_access_token_enc: conn.user_access_token_enc,
+            youtube_refresh_token_enc: conn.youtube_refresh_token_enc,
+            user_token_expires_at: conn.user_token_expires_at,
+          });
+        } else if (row.platform === "threads") {
+          // Threads issues a 60-day user token; the publish path uses it as-is.
+          token = decryptToken(conn.user_access_token_enc!);
+        } else {
+          token = decryptToken(conn.page_access_token_enc!);
+        }
       } catch {
         await supabaseAdmin
           .from("lead_posts")
@@ -222,16 +260,20 @@ export async function POST(req: Request) {
       }
 
       try {
-        const insights = isPinterest
-          ? await fetchPinterestPinInsights({
-              accessToken: token,
-              pinId: row.external_post_id,
-            })
-          : await fetchPostInsights({
-              platform: row.platform as "facebook" | "instagram",
-              externalPostId: row.external_post_id,
-              pageAccessToken: token,
-            });
+        const insights =
+          row.platform === "pinterest"
+            ? await fetchPinterestPinInsights({ accessToken: token, pinId: row.external_post_id })
+            : row.platform === "youtube"
+              ? await fetchYouTubeVideoInsights({ accessToken: token, videoId: row.external_post_id })
+              : row.platform === "threads"
+                ? await fetchThreadsPostInsights({ accessToken: token, mediaId: row.external_post_id })
+                : row.platform === "tiktok"
+                  ? await fetchTikTokVideoInsights({ accessToken: token, publishId: row.external_post_id })
+                  : await fetchPostInsights({
+                      platform: row.platform,
+                      externalPostId: row.external_post_id,
+                      pageAccessToken: token,
+                    });
         const update: Record<string, unknown> = {
           metrics_refreshed_at: nowIso,
           updated_at: nowIso,
