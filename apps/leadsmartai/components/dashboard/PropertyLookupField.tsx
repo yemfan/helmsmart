@@ -82,13 +82,24 @@ export default function PropertyLookupField({
   const [busy, setBusy] = useState(false);
 
   const platform = detectPlatform(value.trim());
+  /*
+   * A link is a link even when we do not know the site.
+   *
+   * The dispatch below used to branch on "is this a platform we support",
+   * so a listing on any other site fell through to the ADDRESS lookup with
+   * the whole URL as the address. The warehouse fuzzy-matched the slug
+   * ("…931-hampton") to a real property, filled city, ZIP and price
+   * correctly, and left `https://1pinnacle.com/home-search/listings/…` sitting
+   * in Property address — which is what the transaction would have saved.
+   */
+  const looksLikeUrl = /^https?:\/\//i.test(value.trim());
 
   async function lookup() {
     const raw = value.trim();
     if (!raw || busy) return;
     setBusy(true);
     try {
-      const result = platform ? await fromListingUrl(raw) : await fromAddress(raw);
+      const result = looksLikeUrl ? await fromListingUrl(raw) : await fromAddress(raw);
       if (!result) return;
       onResolved(result);
     } finally {
@@ -110,7 +121,14 @@ export default function PropertyLookupField({
         error?: string;
       };
       if (!res.ok || !body.ok || !body.address) {
-        setStatus({ tone: "warn", text: t("pages.propertyLookup.listingFailed", { site: label }) });
+        // A site we cannot read is worth saying plainly: the agent can paste
+        // the address instead, which always works.
+        setStatus({
+          tone: "warn",
+          text: res.status === 400
+            ? t("pages.propertyLookup.unsupportedSite")
+            : t("pages.propertyLookup.listingFailed", { site: label }),
+        });
         return null;
       }
       const d = body.data;
@@ -152,7 +170,9 @@ export default function PropertyLookupField({
       }
       const p = body.property;
       const out: PropertyLookupResult = {
-        address: str(p.address) ?? address,
+        // Never the raw query as a fallback when the query was a link —
+        // that is exactly how a URL ended up in Property address.
+        address: str(p.address) ?? (/^https?:\/\//i.test(address) ? null : address),
         city: str(p.city),
         state: str(p.state),
         zip: str(p.zip_code),
