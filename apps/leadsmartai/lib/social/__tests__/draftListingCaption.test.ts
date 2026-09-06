@@ -83,6 +83,44 @@ describe("draftListingCaption", () => {
     expect(caption.length).toBeLessThanOrEqual(1500);
   });
 
+  it("states the listing's status, and binds the model to it", async () => {
+    /*
+     * Given only an address and a price, the model reaches for the commonest
+     * listing post there is: it wrote "#JustListed" for 4521 Rosewood Dr,
+     * which was under contract with a closing date three weeks out. Verified
+     * in production before this was added.
+     *
+     * "Under contract" is a claim an agent makes under their own licence, so
+     * the status is stated in the prompt and marked binding rather than left
+     * to the model to infer from a price.
+     */
+    create.mockResolvedValue({ content: [{ type: "text", text: "ok" }] });
+    await draftListingCaption({ ...FACTS, listingStatus: "under_contract" });
+    const sent = create.mock.calls[0][0];
+    expect(sent.system).toMatch(/STATUS line below is binding/i);
+    expect(sent.messages[0].content).toMatch(/UNDER CONTRACT/);
+    expect(sent.messages[0].content).toMatch(/#JustListed/); // named as forbidden
+  });
+
+  it("says nothing about status when the caller does not know it", async () => {
+    create.mockResolvedValue({ content: [{ type: "text", text: "ok" }] });
+    await draftListingCaption(FACTS);
+    const sent = create.mock.calls[0][0];
+    expect(sent.messages[0].content).toMatch(/do not state or imply any status/i);
+  });
+
+  it("opens the template caption on the status, not on 'Just listed'", async () => {
+    // The fallback had the same bug: DEFAULT_HOOK was "Just listed!" for every
+    // property, whatever it was actually doing.
+    create.mockResolvedValue(undefined);
+    const pending = await draftListingCaption({ ...FACTS, listingStatus: "under_contract" });
+    expect(pending.caption).toContain("Under contract");
+    expect(pending.caption).not.toContain("Just listed");
+
+    const sold = await draftListingCaption({ ...FACTS, listingStatus: "sold" });
+    expect(sold.caption).toContain("Just sold");
+  });
+
   it("sends the model only facts it was given", async () => {
     create.mockResolvedValue({ content: [{ type: "text", text: "ok" }] });
     await draftListingCaption(FACTS);

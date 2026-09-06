@@ -36,6 +36,20 @@ export async function draftListingCaption(
     .join(" · ");
   const where = [input.propertyAddress, input.city, input.state].filter(Boolean).join(", ");
 
+  /*
+   * The status has to be stated, not left to the model to guess.
+   *
+   * Given only an address and a price it reaches for the commonest listing
+   * post there is and writes "#JustListed" — which it did, on a property that
+   * was under contract with a closing date three weeks out.
+   */
+  const STATUS_BRIEF: Record<NonNullable<ListingCaptionInput["listingStatus"]>, string> = {
+    on_market: "FOR SALE and taking showings. Do not claim it is newly or 'just' listed — you do not know how long it has been on the market.",
+    under_contract:
+      "UNDER CONTRACT — already in escrow. Do NOT write 'just listed', '#JustListed', 'for sale', or invite offers. Celebrate the milestone or thank the parties; you may invite people to ask about similar homes.",
+    sold: "SOLD and closed. Write about it in the past tense. Do NOT imply it is available or invite tours of it.",
+  };
+
   try {
     const res = await getAnthropicClient().messages.create({
       model: "claude-sonnet-4-6",
@@ -44,8 +58,10 @@ export async function draftListingCaption(
         "You are a real-estate agent writing ONE Facebook post about your own listing. " +
         "Use ONLY the facts given — never invent price, specs, condition, or features, and never " +
         "describe the neighbourhood's schools, safety or demographics. Warm and specific, not " +
-        "salesy: 2-3 short sentences, then a call to action (e.g. 'DM me for a private tour'), " +
-        "then 3-5 relevant hashtags. Sign off as the agent when a name is given. " +
+        "salesy: 2-3 short sentences, then a call to action, then 3-5 hashtags. " +
+        "The STATUS line below is binding: never write a caption that contradicts it, and " +
+        "pick a call to action and hashtags that fit it. " +
+        "Sign off as the agent when a name is given. " +
         "Return ONLY the post text.",
       messages: [
         {
@@ -54,6 +70,8 @@ export async function draftListingCaption(
             `Listing: ${where || "a home"}\n` +
             `Specs: ${specs || "(none given)"}\n` +
             `Hook the agent typed: ${input.hook?.trim() || "(none — choose your own opening)"}\n` +
+            `Status: ${input.listingStatus ? STATUS_BRIEF[input.listingStatus] : "(unknown — do not state or imply any status)"}
+` +
             `Agent: ${input.agentName ?? "(unnamed)"}` +
             (input.agentBrokerage ? ` at ${input.agentBrokerage}` : ""),
         },

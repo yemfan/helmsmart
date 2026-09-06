@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { publishPost } from "@/lib/leads-gen/publish";
-import { buildListingCaption } from "@/lib/social/captionBuilder";
+import { buildListingCaption, type ListingStatus } from "@/lib/social/captionBuilder";
 import { draftListingCaption } from "@/lib/social/draftListingCaption";
 import {
   listConnectionsForAgent,
@@ -66,6 +66,7 @@ export async function GET(
       listPrice: txn.purchase_price,
       agentName: agentMeta.name,
       agentBrokerage: agentMeta.brokerage,
+      listingStatus: listingStatusOf(txn),
     });
 
     return NextResponse.json({ ok: true, caption, source });
@@ -137,6 +138,7 @@ export async function POST(
           listPrice: txn.purchase_price,
           agentName: agentMeta.name,
           agentBrokerage: agentMeta.brokerage,
+          listingStatus: listingStatusOf(txn),
         });
 
     // Publish through the shared rail (lib/leads-gen/publish) — the same path
@@ -189,6 +191,8 @@ async function loadTransactionForListing(
   agentId: string,
   transactionId: string,
 ): Promise<{
+  status: string | null;
+  closing_date: string | null;
   property_address: string;
   city: string | null;
   state: string | null;
@@ -196,17 +200,39 @@ async function loadTransactionForListing(
 } | null> {
   const { data, error } = await supabaseAdmin
     .from("transactions")
-    .select("property_address, city, state, purchase_price")
+    .select("property_address, city, state, purchase_price, status, closing_date")
     .eq("id", transactionId)
     .eq("agent_id", agentId)
     .maybeSingle();
   if (error || !data) return null;
   return data as {
+    status: string | null;
+    closing_date: string | null;
     property_address: string;
     city: string | null;
     state: string | null;
     purchase_price: number | null;
   };
+}
+
+/**
+ * What to say about where this property stands.
+ *
+ * `status` is only "active" or "closed", and "closed" means the transaction
+ * reached its closing stage — not that the sale has completed, so a closing
+ * date in the future is a property in escrow rather than one that has sold.
+ * Without this the caption opened "Just listed!" for everything, and the AI
+ * draft turned that into #JustListed on a property under contract.
+ */
+function listingStatusOf(txn: {
+  status: string | null;
+  closing_date: string | null;
+}): ListingStatus {
+  if ((txn.status ?? "").toLowerCase() !== "closed") return "on_market";
+  const closes = txn.closing_date ? Date.parse(txn.closing_date) : NaN;
+  // Unparseable or still ahead of us: in escrow, not sold.
+  if (!Number.isFinite(closes) || closes > Date.now()) return "under_contract";
+  return "sold";
 }
 
 async function loadAgentDisplayMeta(
