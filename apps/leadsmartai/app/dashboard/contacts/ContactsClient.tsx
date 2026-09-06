@@ -26,6 +26,7 @@ import {
   X,
 } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { Input, Select } from "@/components/ui/input";
 import { CallButton } from "@/components/contacts/CallButton";
 import { LeadProfileDrawer } from "@/components/closeboss/LeadProfileDrawer";
 import { CsvImportModal } from "@/components/crm/CsvImportModal";
@@ -492,26 +493,25 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
 
   /** Inline edit form — shared by the table row and the phone card. */
   function renderEditForm() {
-    const field = "w-full rounded border border-slate-300 px-2 py-1.5 text-sm";
     return (
       <div className="space-y-2">
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          <input aria-label={t("columns.name")} value={editFields.name ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("columns.name")} className={field} />
-          <input aria-label={t("columns.email")} value={editFields.email ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("columns.email")} className={field} />
-          <input aria-label={t("columns.phone")} value={editFields.phone ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("columns.phone")} className={field} />
-          <select aria-label={t("columns.rating")} value={editFields.rating ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, rating: e.target.value || null }))} className={field}>
+          <Input inputSize="sm" aria-label={t("columns.name")} value={editFields.name ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("columns.name")} />
+          <Input inputSize="sm" aria-label={t("columns.email")} value={editFields.email ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("columns.email")} />
+          <Input inputSize="sm" aria-label={t("columns.phone")} value={editFields.phone ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("columns.phone")} />
+          <Select inputSize="sm" aria-label={t("columns.rating")} value={editFields.rating ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, rating: e.target.value || null }))}>
             <option value="">{t("rating.empty")}</option>
             <option value="hot">{t("rating.hot")}</option>
             <option value="warm">{t("rating.warm")}</option>
             <option value="cold">{t("rating.cold")}</option>
-          </select>
+          </Select>
           {/* Per-contact preferred language override (BCP-47 base id). Empty =
               the agent's default_outbound_language; see lib/locales/resolveLocale.ts. */}
-          <select
+          <Select
+            inputSize="sm"
             aria-label={t("row.language_default")}
             value={editFields.preferred_language ?? ""}
             onChange={(e) => setEditFields((f) => ({ ...f, preferred_language: (e.target.value || null) as LocaleId | null }))}
-            className={field}
           >
             <option value="">{t("row.language_default")}</option>
             {listOutboundEnabled().map((l) => (
@@ -519,9 +519,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 {l.nativeLabel}
               </option>
             ))}
-          </select>
-          <input aria-label={t("columns.address")} value={editFields.property_address ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, property_address: e.target.value }))} placeholder={t("columns.address")} className={field} />
-          <input aria-label={t("columns.memo")} value={editFields.notes ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("columns.memo")} className={`${field} sm:col-span-2 lg:col-span-3`} />
+          </Select>
+          <Input inputSize="sm" aria-label={t("columns.address")} value={editFields.property_address ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, property_address: e.target.value }))} placeholder={t("columns.address")} />
+          <Input inputSize="sm" aria-label={t("columns.memo")} value={editFields.notes ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("columns.memo")} className="sm:col-span-2 lg:col-span-3" />
         </div>
         <div className="flex gap-2">
           <button onClick={() => void saveEdit(editingId as string)} disabled={actionLoading} className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">{t("row.save")}</button>
@@ -695,20 +695,20 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_name")}
-              <input value={addFields.name} onChange={(e) => setAddFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("add_form.placeholder_name")}
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.name?.length ? "border-red-400" : "border-slate-300"}`} />
+              <Input value={addFields.name} onChange={(e) => setAddFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("add_form.placeholder_name")}
+                className="mt-1" aria-invalid={Boolean(addErrors.name?.length)} />
               {addErrors.name?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.name.join(" ")}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_email")}
-              <input value={addFields.email} onChange={(e) => setAddFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("add_form.placeholder_email")} type="email" inputMode="email" autoCapitalize="off"
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.email?.length ? "border-red-400" : "border-slate-300"}`} />
+              <Input value={addFields.email} onChange={(e) => setAddFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("add_form.placeholder_email")} type="email" inputMode="email" autoCapitalize="off"
+                className="mt-1" aria-invalid={Boolean(addErrors.email?.length)} />
               {addErrors.email?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.email.join(" ")}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               {t("add_form.placeholder_phone")}
-              <input value={addFields.phone} onChange={(e) => setAddFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("add_form.placeholder_phone")} inputMode="tel"
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.phone?.length ? "border-red-400" : "border-slate-300"}`} />
+              <Input value={addFields.phone} onChange={(e) => setAddFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("add_form.placeholder_phone")} inputMode="tel"
+                className="mt-1" aria-invalid={Boolean(addErrors.phone?.length)} />
               {addErrors.phone?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.phone.join(" ")}</p> : null}
             </label>
             <div className="block text-sm font-medium text-slate-700">
@@ -725,8 +725,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           </div>
           <label className="block text-sm font-medium text-slate-700">
             {t("add_form.placeholder_notes")}
-            <input value={addFields.notes} onChange={(e) => setAddFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("add_form.placeholder_notes")}
-              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.notes?.length ? "border-red-400" : "border-slate-300"}`} />
+            <Input value={addFields.notes} onChange={(e) => setAddFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("add_form.placeholder_notes")}
+              className="mt-1" aria-invalid={Boolean(addErrors.notes?.length)} />
             {addErrors.notes?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.notes.join(" ")}</p> : null}
           </label>
           {/*
@@ -747,23 +747,25 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
 
       {/* Search + Filter */}
       <div className="flex flex-wrap gap-2">
-        <input
+        <Input
+          type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("search.placeholder")}
-          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label={t("search.placeholder")}
+          className="min-w-[200px] max-w-sm flex-1"
         />
-        <select
+        <Select
           value={ratingFilter}
           onChange={(e) => setRatingFilter(e.target.value)}
           aria-label={t("columns.rating")}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+          className="w-auto"
         >
           <option value="all">{t("search.filter_all")}</option>
           <option value="hot">{t("rating.hot")}</option>
           <option value="warm">{t("rating.warm")}</option>
           <option value="cold">{t("rating.cold")}</option>
-        </select>
+        </Select>
       </div>
 
       {/* Bulk action bar — appears only when any row is selected.

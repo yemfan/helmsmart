@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Input, Select, Textarea } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Check, X, CalendarClock, Pencil, ExternalLink } from "lucide-react";
@@ -502,21 +503,21 @@ export default function TasksClient({
       {showAddForm && (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
           <h3 className="text-sm font-semibold text-slate-900">{tr("tasks.newTask")}</h3>
-          <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("tasks.titlePlaceholder")} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <Input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("tasks.titlePlaceholder")} aria-label={tr("tasks.titlePlaceholder")} />
           <div className="grid gap-3 sm:grid-cols-3">
-            <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <Select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="w-auto">
               <option value="low">{tr("tasks.priority.low")}</option>
               <option value="normal">{tr("tasks.priority.normal")}</option>
               <option value="high">{tr("tasks.priority.high")}</option>
               <option value="urgent">{tr("tasks.priority.urgent")}</option>
-            </select>
-            <input type="datetime-local" value={addFields.due_at} onChange={(e) => setAddFields((f) => ({ ...f, due_at: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-            <select value={addFields.contact_id} onChange={(e) => setAddFields((f) => ({ ...f, contact_id: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            </Select>
+            <Input type="datetime-local" value={addFields.due_at} onChange={(e) => setAddFields((f) => ({ ...f, due_at: e.target.value }))} className="w-auto" />
+            <Select value={addFields.contact_id} onChange={(e) => setAddFields((f) => ({ ...f, contact_id: e.target.value }))} className="w-auto">
               <option value="">{tr("tasks.noContact")}</option>
               {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
-            </select>
+            </Select>
           </div>
-          <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <Textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} aria-label={tr("tasks.notesPlaceholder")} rows={2} />
           <button type="button" onClick={() => void addTask()} disabled={actionLoading || !addFields.title.trim()}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {actionLoading ? tr("tasks.saving") : tr("tasks.createTask")}
