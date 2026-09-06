@@ -46,4 +46,12 @@ jobs:
             --chromedriver-path "$CHROMEWEBDRIVER/chromedriver" \
             --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
             --timeout 60 \
+            --save results.json --dir axe-results \
             --exit
+      - name: Keep the full report (selectors, snippets, fixes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-results
+          path: axe-results/
+          retention-days: 30
