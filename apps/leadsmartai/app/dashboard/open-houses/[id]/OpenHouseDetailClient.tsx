@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -69,6 +70,7 @@ export function OpenHouseDetailClient({
   visitors: OpenHouseVisitorRow[];
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [oh, setOH] = useState(initialOH);
@@ -112,7 +114,7 @@ export function OpenHouseDetailClient({
   }
 
   async function onDelete() {
-    if (!confirm("Delete this open house and all its visitors? Cannot be undone.")) return;
+    if (!await confirmDialog("Delete this open house and all its visitors? Cannot be undone.")) return;
     const res = await fetch(`/api/dashboard/open-houses/${oh.id}`, { method: "DELETE" });
     const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     if (!res.ok || !body.ok) {
@@ -124,7 +126,7 @@ export function OpenHouseDetailClient({
 
   async function onCancelSeries() {
     if (
-      !confirm(
+      !await confirmDialog(
         "Cancel this open house AND every future one in the same series? " +
           "Past occurrences are left alone.",
       )

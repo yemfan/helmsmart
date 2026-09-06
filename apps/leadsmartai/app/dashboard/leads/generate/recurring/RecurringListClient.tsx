@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useTranslation } from "react-i18next";
 
 type RecurringT = (key: string, options?: Record<string, unknown>) => string;
@@ -58,6 +59,7 @@ function describeCadence(r: Recurrence, t: RecurringT): string {
 
 export default function RecurringListClient() {
   const { t, i18n } = useTranslation("web_generate_leads_clients");
+  const confirmDialog = useConfirm();
   const [recurrences, setRecurrences] = useState<Recurrence[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionId, setActionId] = useState<string | null>(null);
@@ -87,7 +89,7 @@ export default function RecurringListClient() {
 
   const act = useCallback(
     async (id: string, action: "pause" | "resume" | "cancel") => {
-      if (action === "cancel" && !confirm(t("recurring.cancel_confirm"))) {
+      if (action === "cancel" && !await confirmDialog(t("recurring.cancel_confirm"))) {
         return;
       }
       setActionError(null);

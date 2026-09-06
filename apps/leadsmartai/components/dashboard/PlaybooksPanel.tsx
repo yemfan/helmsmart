@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { Check, Plus } from "lucide-react";
@@ -47,6 +48,7 @@ export function PlaybooksPanel({
   defaultAnchorDate?: string;
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const [tasks, setTasks] = useState<PlaybookTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,7 +118,7 @@ export function PlaybooksPanel({
   }
 
   async function deleteBatch(batchId: string) {
-    if (!confirm("Remove every task in this playbook?")) return;
+    if (!await confirmDialog("Remove every task in this playbook?")) return;
     await fetch(`/api/dashboard/playbooks/batch/${batchId}`, { method: "DELETE" });
     await load();
   }

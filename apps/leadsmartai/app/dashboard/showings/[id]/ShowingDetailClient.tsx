@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useConfirm } from "@/components/ui/useConfirm";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -57,6 +58,7 @@ export function ShowingDetailClient({
   siblings: ShowingListItem[];
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const confirmDialog = useConfirm();
   const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [status, setStatus] = useState<ShowingStatus>(showing.status);
@@ -120,7 +122,7 @@ export function ShowingDetailClient({
   }
 
   async function onDelete() {
-    if (!confirm("Delete this showing? This cannot be undone.")) return;
+    if (!await confirmDialog("Delete this showing? This cannot be undone.")) return;
     try {
       const res = await fetch(`/api/dashboard/showings/${showing.id}`, { method: "DELETE" });
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
