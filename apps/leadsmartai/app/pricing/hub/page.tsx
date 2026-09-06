@@ -1,19 +1,15 @@
-import type { Metadata } from "next";
-import PricingHubClientPage from "./page.client";
-import { redirectAdminSupportAwayFromCommercialPricing } from "@/lib/auth/redirectStaffFromCommercialPricing";
-import { getServerT } from "@/lib/i18n/server";
+import { redirect } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
-  const title = t("routeMeta.pricingHub.title", { ns: "web_marketing" });
-  const description = t("routeMeta.pricingHub.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
-};
-}
+/**
+ * Retired product hub — redirects to /plans.
+ *
+ * It offered three doors: consumer, agent, and loan_broker. The loan-broker
+ * vertical is deleted, and the other two both led to storefronts that are
+ * themselves redirects to /plans now — so the page's job had become handing a
+ * visitor a choice between two links to the same destination and one 404.
+ */
+export const dynamic = "force-dynamic";
 
-export default async function PricingHubPage() {
-  await redirectAdminSupportAwayFromCommercialPricing();
-  return <PricingHubClientPage />;
+export default function RetiredPricingHubPage() {
+  redirect("/plans");
 }

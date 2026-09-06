@@ -11,9 +11,11 @@ import { pageMetadata } from "@/lib/seo";
  * without signing in. Until now `CREDIT_TIERS` was rendered only by
  * `/dashboard/credits`, which is behind auth.
  *
- * Note this is NOT `/agent/pricing`. That page sells the older feature-gated
- * catalog off a different set of Stripe price env vars; reconciling the two is
- * a separate decision and is deliberately untouched here.
+ * This is the ONE price list. The surfaces that used to keep their own —
+ * the agent storefront, the consumer pricing page, the plan modal and the
+ * editorial landing page — quoted four different ladders between them and
+ * are now redirects or links to here. Reconciling them was the whole point:
+ * a hardcoded number does not throw, it just misquotes a stranger.
  */
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();

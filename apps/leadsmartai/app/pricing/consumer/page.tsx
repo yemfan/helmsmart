@@ -16,5 +16,5 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Canonical consumer pricing lives at `/pricing`. */
 export default function PricingConsumerRedirectPage() {
-  redirect("/pricing");
+  redirect("/plans");
 }

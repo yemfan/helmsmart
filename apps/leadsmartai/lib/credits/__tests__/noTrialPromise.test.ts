@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -14,13 +14,13 @@ import { FREE_TIER, TRIAL_DAYS } from "../pricing";
  * clicking it charged the card immediately: a promise that arrives as a refund
  * request rather than a bug report.
  *
- * That decision is now settled for BOTH ladders. `/api/create-checkout-session`
- * — the legacy agent route reached from /pricing and PricingModal — used to
- * open a trial of `STRIPE_AGENT_TRIAL_DAYS ?? STRIPE_TRIAL_DAYS ?? 14` days
- * whenever `cancel_surface === "agent"`. It no longer does. Note what the old
- * default meant: an unset env var granted a fortnight of free product, so the
- * switch failed in the generous direction — which is why this is asserted in
- * code rather than configured.
+ * That decision is now settled for the whole product. The legacy agent route
+ * `/api/create-checkout-session` used to open a trial of
+ * `STRIPE_AGENT_TRIAL_DAYS ?? STRIPE_TRIAL_DAYS ?? 14` days whenever
+ * `cancel_surface === "agent"`. Note what that default meant: an unset env
+ * var granted a fortnight of free product, so the switch failed in the
+ * generous direction. The route is deleted now, along with the two surfaces
+ * that called it — they sold a ladder this product no longer has.
  *
  * And it must not be fixed by adding a trial. `pricing.ts` settled that
  * deliberately: FREE_TIER is permanent, because a CRM proves itself over about
@@ -77,11 +77,12 @@ describe("the onboarding funnel promises no trial", () => {
     // Two live ladders sold two different offers depending on which page the
     // customer came in through. Both charge on selection now.
     expect(read("app/api/stripe/checkout/route.ts")).not.toContain("trial_period_days");
-    const legacy = read("app/api/create-checkout-session/route.ts");
-    expect(legacy).not.toContain("trial_period_days");
-    // Usage, not mention: the comment above the removal still names the env
-    // vars, and that history is worth keeping. Reading one again is not.
-    expect(legacy).not.toMatch(/process\.env\.STRIPE_\w*TRIAL/);
+    /*
+     * The legacy agent-ladder route is gone entirely — it sold the retired
+     * Pro $79 / Premium $199 tiers, and the only surfaces that called it are
+     * retired too. Absence is the strongest version of this assertion.
+     */
+    expect(existsSync(join(APP, "app/api/create-checkout-session/route.ts"))).toBe(false);
   });
 
   it("leaves no 14-day promise on ANY marketing surface", () => {
