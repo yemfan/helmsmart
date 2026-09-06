@@ -15,7 +15,6 @@ import {
   House,
   KeyRound,
   LayoutDashboard,
-  LayoutGrid,
   Megaphone,
   MessageCircle,
   Receipt,
@@ -138,122 +137,61 @@ const navConfig = {
        is 2 levels: a group and its items). ── */
     { kind: "divider" as const },
     { kind: "section-label" as const, label: "Your AI Team" },
+    // Each assistant is ONE row. Its actions sit in a strip under the page
+    // header (AssistantActionsStrip) and the long-tail /actions page stays
+    // reachable from there — the Overview · Actions nesting cost a click on
+    // every visit (2026-09 UX audit).
     {
       label: "Receptionist",
+      href: "/dashboard/ai-receptionist",
+      match: ["/dashboard/ai-receptionist", ...TEAM_ACTIONS.receptionist.actionMatch],
       icon: p(<Headphones size={17} strokeWidth={STROKE} aria-hidden />),
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/ai-receptionist",
-          match: ["/dashboard/ai-receptionist"],
-          icon: l(<Headphones size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Actions",
-          href: "/dashboard/ai-receptionist/actions",
-          match: TEAM_ACTIONS.receptionist.actionMatch,
-          icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-      ],
     },
     {
-      // Its actions (Open Houses, House Search, Deep Report, CMA, Seller
-      // Presentation, Growth) are nested in the Actions hub.
       label: "Sales Assistant",
+      href: "/dashboard/ai-sales-assistant",
+      match: ["/dashboard/ai-sales-assistant", ...TEAM_ACTIONS.sales.actionMatch],
       icon: p(<TrendingUp size={17} strokeWidth={STROKE} aria-hidden />),
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/ai-sales-assistant",
-          match: ["/dashboard/ai-sales-assistant"],
-          icon: l(<TrendingUp size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Actions",
-          href: "/dashboard/ai-sales-assistant/actions",
-          match: TEAM_ACTIONS.sales.actionMatch,
-          icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-      ],
     },
     {
       // Took demand generation over from the Sales Assistant: it CREATES
-      // leads and keeps the Realtor visible; Sales converts. Its actions
-      // (Drafts, Marketing Plans, Templates, Generate Leads, Lead Source
-      // ROI) are nested in the Actions hub.
+      // leads and keeps the Realtor visible; Sales converts.
       label: "Marketing Assistant",
+      href: "/dashboard/ai-marketing-assistant",
+      // match entries are EXACT paths (see @repo/ui matchPath.ts);
+      // include the sphere deep-dives Marketing Plans owns.
+      match: [
+        "/dashboard/ai-marketing-assistant",
+        ...TEAM_ACTIONS.marketing.actionMatch,
+        "/dashboard/marketing",
+        "/dashboard/sphere/monetization",
+        "/dashboard/sphere/likely-buyers",
+        "/dashboard/sphere/likely-sellers",
+        "/dashboard/sphere/signals",
+      ],
       icon: p(<Megaphone size={17} strokeWidth={STROKE} aria-hidden />),
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/ai-marketing-assistant",
-          match: ["/dashboard/ai-marketing-assistant"],
-          icon: l(<Megaphone size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          // The agent's public page — the only outward-facing surface the
-          // Marketing Assistant owns, which is why it sits beside the
-          // Overview rather than inside Actions. Everything in Actions is
-          // something the AI does; this is somewhere a stranger lands.
-          label: "Marketing Hub",
-          href: "/dashboard/hub",
-          match: ["/dashboard/hub"],
-          icon: l(<Globe size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Actions",
-          href: "/dashboard/ai-marketing-assistant/actions",
-          // match entries are EXACT paths (see @repo/ui matchPath.ts);
-          // include the sphere deep-dives Marketing Plans owns.
-          match: [
-            ...TEAM_ACTIONS.marketing.actionMatch,
-            "/dashboard/marketing",
-            "/dashboard/sphere/monetization",
-            "/dashboard/sphere/likely-buyers",
-            "/dashboard/sphere/likely-sellers",
-            "/dashboard/sphere/signals",
-          ],
-          icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-      ],
     },
     {
-      // Actions (Coordinator Board, Deal Coach) are nested in the Actions hub.
+      // The agent's public page — the only outward-facing surface the
+      // Marketing Assistant owns. Everything in its actions is something
+      // the AI does; this is somewhere a stranger lands, so it keeps its
+      // own row.
+      label: "Marketing Hub",
+      href: "/dashboard/hub",
+      match: ["/dashboard/hub"],
+      icon: p(<Globe size={17} strokeWidth={STROKE} aria-hidden />),
+    },
+    {
       label: "Transaction Assistant",
+      href: "/dashboard/ai-transaction-assistant",
+      match: ["/dashboard/ai-transaction-assistant", ...TEAM_ACTIONS.transaction.actionMatch],
       icon: p(<ClipboardList size={17} strokeWidth={STROKE} aria-hidden />),
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/ai-transaction-assistant",
-          match: ["/dashboard/ai-transaction-assistant"],
-          icon: l(<ClipboardList size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Actions",
-          href: "/dashboard/ai-transaction-assistant/actions",
-          match: TEAM_ACTIONS.transaction.actionMatch,
-          icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-      ],
     },
     {
-      // Actions (Invoices, Expenses) are nested in the Actions hub.
       label: "Accountant",
+      href: "/dashboard/ai-accountant",
+      match: ["/dashboard/ai-accountant", ...TEAM_ACTIONS.accountant.actionMatch],
       icon: p(<Receipt size={17} strokeWidth={STROKE} aria-hidden />),
-      items: [
-        {
-          label: "Overview",
-          href: "/dashboard/ai-accountant",
-          match: ["/dashboard/ai-accountant"],
-          icon: l(<Receipt size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Actions",
-          href: "/dashboard/ai-accountant/actions",
-          match: TEAM_ACTIONS.accountant.actionMatch,
-          icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-      ],
     },
     {
       label: "Manage AI Team",
@@ -434,6 +372,7 @@ export const leadSmartMobileNav: NavSection[] = [
     "Receptionist",
     "Sales Assistant",
     "Marketing Assistant",
+    "Marketing Hub",
     "Transaction Assistant",
     "Accountant",
     "Manage AI Team",

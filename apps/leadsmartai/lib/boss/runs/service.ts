@@ -133,6 +133,33 @@ async function buildSystemPrompt(run: BossRunRow): Promise<string> {
       ? matrix.map((c) => `  - ${c.assignee}/${c.channel}: ${c.mode}`).join("\n")
       : "  (no per-channel overrides)";
 
+  // Continuity. Each run used to start from nothing, so Max answered "I meant
+  // the house you recommended earlier" with "each session starts fresh for me"
+  // — the single line most at odds with being someone's chief of staff. The
+  // last few completed missions ride along as context: enough to resolve
+  // "that property" and "the lead from yesterday", small enough not to crowd
+  // the tool budget.
+  const { data: recentRows } = await supabaseAdmin
+    .from("boss_runs")
+    .select("id, objective, report, started_at")
+    .eq("agent_id", run.agent_id)
+    .eq("status", "completed")
+    .neq("id", run.id)
+    .order("started_at", { ascending: false })
+    .limit(4);
+  const recent = ((recentRows ?? []) as { objective?: string | null; report?: string | null; started_at?: string | null }[])
+    .filter((r) => (r.objective ?? "").trim())
+    .map((r) => {
+      const when = r.started_at ? r.started_at.slice(0, 10) : "";
+      const ask = (r.objective ?? "").replace(/\s+/g, " ").trim().slice(0, 240);
+      const outcome = (r.report ?? "").replace(/\s+/g, " ").trim().slice(0, 320);
+      return `  - ${when} · Realtor asked: "${ask}"${outcome ? ` → You reported: "${outcome}"` : ""}`;
+    });
+  const continuity =
+    recent.length > 0
+      ? `\n\nContinuity — your most recent missions for this realtor, newest first. Use them to resolve references like "that property" or "the lead from yesterday", and to avoid redoing finished work. Never say you have no memory of earlier sessions; if something isn't here, ask one short question.\n${recent.join("\n")}`
+      : "";
+
   return `You are Max, captain of an AI real estate team (CloseBoss), acting for ${agent?.brand_name ?? "the realtor"}${where}.${profileLine}
 Today is ${new Date().toISOString().slice(0, 10)}.
 
@@ -167,7 +194,7 @@ Handling ANY request — including ones that don't match a tool name (you're a s
 - If it needs the realtor personally (moving money, signing, account/billing/security), is out of scope, stayed unclear after you asked, or the team simply has no tool for it yet — call hand_off_to_agent with the right category. Use "capability_gap" when it's something the team should be able to do but can't yet, so we learn what to build. NEVER invent a result or claim a tool exists — honest handoff beats bluffing.
 
 Autopilot (global auto-send: ${globalAuto ? "ON" : "OFF"}; per-channel overrides):
-${matrixLines}${languageDirective(run.locale)}
+${matrixLines}${continuity}${languageDirective(run.locale)}
 
 The realtor's command follows as the first user message.`;
 }

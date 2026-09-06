@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import type { AssistantDef } from "@/lib/closeboss/team";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
 import { defaultAvatarForType } from "@/lib/closeboss/avatars";
+import { TEAM_ACTIONS } from "@/lib/team-actions";
+import { ArrowRight } from "lucide-react";
 
 /** Header block shared by the AI-team pages — name, mission, skills, action links. */
 type AssistantAction =
@@ -89,6 +91,7 @@ export function AssistantHeader({
   const avatarUrl = custom?.avatar_url ?? null;
 
   return (
+    <>
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="flex items-start gap-3">
         <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" />
@@ -118,6 +121,53 @@ export function AssistantHeader({
         )}
       </div>
     </div>
+    <AssistantActionsStrip type={assistant.type} />
+    </>
+  );
+}
+
+/** Roster type → TEAM_ACTIONS key. */
+const ACTIONS_KEY: Record<string, string> = {
+  receptionist: "receptionist",
+  sales_assistant: "sales",
+  marketing_assistant: "marketing",
+  transaction_assistant: "transaction",
+  accountant: "accountant",
+};
+
+/**
+ * The assistant's actions, right under its header.
+ *
+ * They used to live one level down, on a separate "Actions" page reached from
+ * a nested sidebar row — so getting to "CMA" was Sales Assistant → Actions →
+ * CMA. The overview is the hub now; the sidebar row is a single link, and the
+ * full Actions page stays reachable from the strip for the long tail.
+ */
+function AssistantActionsStrip({ type }: { type: string }) {
+  const { t } = useTranslation(["dashboard", "dashboard_nav"]);
+  const m = TEAM_ACTIONS[ACTIONS_KEY[type] ?? ""];
+  if (!m || m.actions.length === 0) return null;
+  return (
+    <nav aria-label={t("assistants.actionsAria", { defaultValue: "Actions" })} className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+      {m.actions.map((a) => (
+        <Link
+          key={a.href}
+          href={a.href}
+          className="group inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+          title={t(`actionsHub.desc.${a.href}`, { defaultValue: a.desc })}
+        >
+          <span className="text-gray-500 [&_svg]:h-4 [&_svg]:w-4">{a.icon}</span>
+          {t(a.label, { ns: "dashboard_nav", defaultValue: a.label })}
+        </Link>
+      ))}
+      <Link
+        href={`${m.overviewHref}/actions`}
+        className="inline-flex shrink-0 items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-[#0072ce] hover:underline"
+      >
+        {t("assistants.allActions")}
+        <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+      </Link>
+    </nav>
   );
 }
 
