@@ -27,6 +27,7 @@ import {
 import { handOffToAgent } from "./impl/handoff";
 import { reportBug } from "./impl/bugs";
 import { getMarketSnapshot } from "./impl/market";
+import { getAccountSettings } from "./impl/accountSettings";
 
 /**
  * The Boss v2 tool registry (HANDOFF_BOSS_V2 PR-2).
@@ -58,6 +59,7 @@ const ALL_TOOLS = [
   createListingVideoAd,
   importContactsFromFile,
   runSkill,
+  getAccountSettings,
   startSellingPlaybook,
   startBuyingPlaybook,
   setupOpenHouse,
