@@ -134,7 +134,7 @@ export default function AccountMenu() {
     if (!me) {
       return {
         workspaceHref: "/",
-        profileHref: "/account/profile",
+        profileHref: "/dashboard/settings/account",
         settingsHref: "/dashboard/settings",
         pricingHref: "/pricing",
         hideCommercialPricing: false,
@@ -149,8 +149,8 @@ export default function AccountMenu() {
       const pt = consumerShouldUsePropertyToolsApp(me.signup_origin_app);
       return {
         workspaceHref: pt ? getPropertyToolsConsumerPostLoginUrl() : "/",
-        profileHref: pt ? getPropertyToolsConsumerAccountProfileUrl() : "/account/profile",
-        settingsHref: pt ? getPropertyToolsConsumerAccountProfileUrl() : "/account/profile",
+        profileHref: pt ? getPropertyToolsConsumerAccountProfileUrl() : "/dashboard/settings/account",
+        settingsHref: pt ? getPropertyToolsConsumerAccountProfileUrl() : "/dashboard/settings/account",
         pricingHref: "/pricing",
         hideCommercialPricing: false,
         slimAgentBrokerHeaderMenu: false,
@@ -164,7 +164,7 @@ export default function AccountMenu() {
     const staff = isAdminOrSupportRole(role);
     return {
       workspaceHref: home,
-      profileHref: "/account/profile",
+      profileHref: "/dashboard/settings/account",
       settingsHref: settings,
       pricingHref: "/dashboard/billing",
       hideCommercialPricing: staff,
@@ -213,7 +213,7 @@ export default function AccountMenu() {
           onClick={() => setOpen(false)}
         >{t("pages.accountMenu.home")}</Link>
         <Link
-          href="/account/profile"
+          href="/dashboard/settings/account"
           role="menuitem"
           className="block px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50"
           onClick={() => setOpen(false)}

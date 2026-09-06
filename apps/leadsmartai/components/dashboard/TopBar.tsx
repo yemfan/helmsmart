@@ -312,7 +312,7 @@ function ProfileMenu({
         {t("topbar.home")}
       </Link>
       <Link
-        href="/account/profile"
+        href="/dashboard/settings/account"
         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
         role="menuitem"
         onClick={() => setOpen(false)}

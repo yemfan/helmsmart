@@ -25,7 +25,6 @@ import {
   Sparkles,
   Target,
   TrendingUp,
-  User,
   Users,
   Wrench,
 } from "lucide-react";
@@ -323,12 +322,6 @@ const navConfig = {
           icon: l(<CreditCard size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
-          label: "Profile",
-          href: "/account/profile",
-          match: ["/account/profile"],
-          icon: l(<User size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
           // Ungated, unlike the staff Support inbox below: this is the agent-
           // facing help center, and it is the only help entry point in the nav.
           label: "Help & Guides",
@@ -349,9 +342,18 @@ const navConfig = {
 
     /* ── Settings ── */
     {
+      // Settings is an index of five groups; each group page keeps this row lit.
       label: "Settings",
       href: "/dashboard/settings",
-      match: ["/dashboard/settings"],
+      match: [
+        "/dashboard/settings",
+        "/dashboard/settings/account",
+        "/dashboard/settings/ai-team",
+        "/dashboard/settings/channels",
+        "/dashboard/settings/messaging",
+        "/dashboard/settings/data",
+        "/account/profile",
+      ],
       icon: p(<Settings size={17} strokeWidth={STROKE} aria-hidden />),
     },
 
