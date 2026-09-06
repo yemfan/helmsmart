@@ -14,7 +14,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -92,6 +92,7 @@ export default function BossScreen() {
   const tokens = useThemeTokens();
   const router = useRouter();
   const s = useMemo(() => createStyles(tokens), [tokens]);
+  const insets = useSafeAreaInsets();
 
   const [briefingLine, setBriefingLine] = useState<string | null>(null);
   const [recs, setRecs] = useState<MobileBossRecommendation[]>([]);
@@ -209,8 +210,16 @@ export default function BossScreen() {
   return (
     <SafeAreaView style={s.flex} edges={["bottom"]}>
       {/* Lift the docked command bar above the keyboard so what you type
-          stays visible (mirrors the offer-desk tab). */}
-      <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+          stays visible. KeyboardAvoidingView measures its frame relative to
+          its parent, not the screen, so it does not know about the tab
+          header above it and pads short by exactly that height — which hid
+          the whole bar behind the keyboard. The offset is the header:
+          44pt of bar plus the status-bar inset, which varies by device. */}
+      <KeyboardAvoidingView
+        style={s.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 44 + insets.top : 0}
+      >
       <ScrollView
         style={s.flex}
         contentContainerStyle={s.content}
