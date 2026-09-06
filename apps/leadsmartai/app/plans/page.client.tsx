@@ -49,7 +49,7 @@ export default function PlansClientPage({
   /*
    * The onboarding funnel sends `?cadence=annual` when the visitor chose the
    * annual toggle there. Honouring it is the whole point: clicking "Start
-   * 14-day trial" on an annual card used to land here on a page headed
+   * on an annual card used to land here on a page headed
    * "Monthly plans" quoting the monthly price, with the choice silently
    * dropped. `plan` and `email` are still passed by the funnel and still
    * unused here — this page has no checkout to pre-fill.

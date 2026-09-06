@@ -14,12 +14,13 @@ import { FREE_TIER, TRIAL_DAYS } from "../pricing";
  * clicking it charged the card immediately: a promise that arrives as a refund
  * request rather than a bug report.
  *
- * Scoped to that path on purpose. `/api/create-checkout-session` — the legacy
- * agent ladder still reached from /pricing and PricingModal — DOES set a trial
- * (`STRIPE_AGENT_TRIAL_DAYS ?? STRIPE_TRIAL_DAYS ?? 14` whenever
- * `cancel_surface === "agent"`). Those surfaces keep their trial copy until
- * someone decides which of the two ladders the product actually sells; asserting
- * "no trial anywhere" here would make that decision by accident.
+ * That decision is now settled for BOTH ladders. `/api/create-checkout-session`
+ * — the legacy agent route reached from /pricing and PricingModal — used to
+ * open a trial of `STRIPE_AGENT_TRIAL_DAYS ?? STRIPE_TRIAL_DAYS ?? 14` days
+ * whenever `cancel_surface === "agent"`. It no longer does. Note what the old
+ * default meant: an unset env var granted a fortnight of free product, so the
+ * switch failed in the generous direction — which is why this is asserted in
+ * code rather than configured.
  *
  * And it must not be fixed by adding a trial. `pricing.ts` settled that
  * deliberately: FREE_TIER is permanent, because a CRM proves itself over about
@@ -72,7 +73,39 @@ describe("the onboarding funnel promises no trial", () => {
     expect(zh.trialNote).not.toMatch(/14/);
   });
 
-  it("does not quietly grow a trial in the checkout the funnel reaches", () => {
+  it("grants no trial from EITHER checkout route", () => {
+    // Two live ladders sold two different offers depending on which page the
+    // customer came in through. Both charge on selection now.
     expect(read("app/api/stripe/checkout/route.ts")).not.toContain("trial_period_days");
+    const legacy = read("app/api/create-checkout-session/route.ts");
+    expect(legacy).not.toContain("trial_period_days");
+    // Usage, not mention: the comment above the removal still names the env
+    // vars, and that history is worth keeping. Reading one again is not.
+    expect(legacy).not.toMatch(/process\.env\.STRIPE_\w*TRIAL/);
+  });
+
+  it("leaves no 14-day promise on ANY marketing surface", () => {
+    /*
+     * Fifteen keys across the funnel, the editorial landing page, the demo
+     * shell, the switch-from pages, the blog index and the CRM-problems page
+     * each promised a fortnight. The competitor comparison was the sharpest:
+     * it named Lofty, said they offer no trial, and claimed one for us.
+     *
+     * Unrelated "14 days" (deadlines, activity windows, an invite that
+     * expires) are legitimate, so this looks for the PROMISE, not the number.
+     */
+    const locales = join(APP, "..", "..", "packages", "i18n", "locales");
+    for (const loc of ["en", "zh-Hans"]) {
+      const raw = readFileSync(join(locales, loc, "dashboard.json"), "utf8");
+      expect(raw, `${loc} still promises a trial`).not.toMatch(
+        /14[- ]day free trial|14 天免费试用|14[- ]day trial|14 天试用/,
+      );
+    }
+  });
+
+  it("says the same thing in the Terms as on the pricing pages", () => {
+    const terms = read("app/terms/page.tsx");
+    expect(terms).not.toMatch(/up to 14 days/);
+    expect(terms).toMatch(/do not include a trial period/);
   });
 });
