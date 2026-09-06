@@ -590,7 +590,7 @@ export default function DigitalTwinPanel() {
                 ? t("twin.recloneVoice")
                 : t("twin.cloneVoice")}
           </button>
-          <GateReason reason={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? t("twin.recordFirst") : null} />
+          <GateReason reason={!vc?.consent ? t("twin.cloneVoiceTitle") : null} />
 
           <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
             <input
@@ -771,7 +771,6 @@ export default function DigitalTwinPanel() {
               >
                 {avBusy === "render" ? t("common:status.queueing") : t("pages.digitalTwin.generateVideoUsesCredits")}
               </button>
-              <GateReason reason={!avAudioPath ? t("twin.previewFirst") : null} />
             </div>
 
             {/*
