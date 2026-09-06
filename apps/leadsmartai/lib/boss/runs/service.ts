@@ -14,6 +14,8 @@ import { insertAgentInboxNotification } from "@/lib/notifications/agentNotificat
 import { getAutopilotMatrix, getGlobalAutopilot } from "@/lib/closeboss/autopilot";
 import { executeTool, defaultExecuteDeps } from "../tools/execute";
 import { getBossTool } from "../tools/registry";
+import { memoryBlockForPrompt } from "../memory/store";
+import { extractMemoriesFromRun } from "../memory/extract";
 import { newRunState, type ToolContext } from "../tools/types";
 import { driveRun, type EngineDeps, type ModelClient, type ModelResponse } from "./engine";
 import { SupabaseRunStore, type BossRunRow, type BossRunStatus } from "./store";
@@ -111,7 +113,7 @@ function realModelClient(): ModelClient {
 // ── system prompt ────────────────────────────────────────────────────
 
 async function buildSystemPrompt(run: BossRunRow): Promise<string> {
-  const [{ data: agentRow }, matrix, globalAuto] = await Promise.all([
+  const [{ data: agentRow }, matrix, globalAuto, memory] = await Promise.all([
     supabaseAdmin
       .from("agents")
       .select("brand_name, onboarding")
@@ -119,6 +121,9 @@ async function buildSystemPrompt(run: BossRunRow): Promise<string> {
       .maybeSingle(),
     getAutopilotMatrix(run.agent_id).catch(() => []),
     getGlobalAutopilot(run.agent_id).catch(() => false),
+    // Durable notes (lib/boss/memory) — what Max still knows next week, as
+    // opposed to the last four missions below, which are this week's context.
+    memoryBlockForPrompt(run.agent_id),
   ]);
   const agent = agentRow as { brand_name?: string | null; onboarding?: Record<string, unknown> | null } | null;
   const ob = (agent?.onboarding ?? {}) as { market?: string; focus?: string; goal?: string };
@@ -194,7 +199,7 @@ Handling ANY request — including ones that don't match a tool name (you're a s
 - If it needs the realtor personally (moving money, signing, account/billing/security), is out of scope, stayed unclear after you asked, or the team simply has no tool for it yet — call hand_off_to_agent with the right category. Use "capability_gap" when it's something the team should be able to do but can't yet, so we learn what to build. NEVER invent a result or claim a tool exists — honest handoff beats bluffing.
 
 Autopilot (global auto-send: ${globalAuto ? "ON" : "OFF"}; per-channel overrides):
-${matrixLines}${continuity}${languageDirective(run.locale)}
+${matrixLines}${memory}${continuity}${languageDirective(run.locale)}
 
 The realtor's command follows as the first user message.`;
 }
@@ -403,6 +408,10 @@ async function onTerminal(runId: string, status: BossRunStatus): Promise<void> {
     // Cost + failure telemetry (HANDOFF PR-6).
     await recordRunCost(run);
     if (status === "failed") await alertOnFailureSpike(run.agent_id);
+
+    // Anything in this mission Max should still know next week? Awaited
+    // (a fire-and-forget dies with the invocation); never throws.
+    if (status === "completed") await extractMemoriesFromRun(run);
 
     // Overnight runs feed Top Priorities: one card per parked approval,
     // additive over the deterministic CRM-signal sync (HANDOFF PR-5).

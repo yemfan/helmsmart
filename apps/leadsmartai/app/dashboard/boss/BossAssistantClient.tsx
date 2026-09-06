@@ -2,6 +2,7 @@
 
 
 import BriefingScheduleCard from "@/components/dashboard/BriefingScheduleCard";
+import { MemoryLine } from "@/components/closeboss/MemoryLine";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 
@@ -841,6 +842,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </button>
         )}
         <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
+        <MemoryLine />
       </div>
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />

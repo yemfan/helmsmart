@@ -28,6 +28,7 @@ import { handOffToAgent } from "./impl/handoff";
 import { reportBug } from "./impl/bugs";
 import { getMarketSnapshot } from "./impl/market";
 import { getAccountSettings } from "./impl/accountSettings";
+import { rememberNote, forgetNote } from "./impl/memory";
 
 /**
  * The Boss v2 tool registry (HANDOFF_BOSS_V2 PR-2).
@@ -74,6 +75,8 @@ const ALL_TOOLS = [
   reportBug,
   queryCrm,
   getMarketSnapshot,
+  rememberNote,
+  forgetNote,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ] as BossTool<any>[];
 
