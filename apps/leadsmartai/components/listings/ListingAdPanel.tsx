@@ -43,6 +43,23 @@ function factsFromListing(l: ListingDetail): Facts {
   };
 }
 
+/**
+ * Why a button in this panel is grey.
+ *
+ * Every gated control here carried its reason in `title=` — "Paste a listing
+ * URL first", "Add at least one photo", "Build the ad first". A disabled
+ * button receives no mouse events, so none of those tooltips has ever opened
+ * in any browser: five explanations were written and not one was reachable.
+ * The agent saw a faded button and nothing else.
+ *
+ * The reason is rendered beside the button instead, off the same expression
+ * the button gates on, so the two cannot drift apart.
+ */
+function GateReason({ reason }: { reason: string | null }) {
+  if (!reason) return null;
+  return <span className="text-[11px] text-slate-500">{reason}</span>;
+}
+
 export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
@@ -410,15 +427,18 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             <h2 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h2>
             <p className="text-[11px] text-slate-500">{t("pages.listingAd.pullBlurb")}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => void pull()}
-            disabled={pulling || !pullUrl.trim()}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            title={pullUrl.trim() ? t("pages.listingAd.pullHint") : t("pages.listingAd.pullNeedsUrl")}
-          >
-            {pulling ? t("common:status.pulling") : hasFacts ? t("pages.listingAd.rePull") : t("pages.listingAd.pullFromUrl")}
-          </button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <GateReason reason={!pullUrl.trim() ? t("pages.listingAd.pullNeedsUrl") : null} />
+            <button
+              type="button"
+              onClick={() => void pull()}
+              disabled={pulling || !pullUrl.trim()}
+              className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              title={pullUrl.trim() ? t("pages.listingAd.pullHint") : t("pages.listingAd.pullNeedsUrl")}
+            >
+              {pulling ? t("common:status.pulling") : hasFacts ? t("pages.listingAd.rePull") : t("pages.listingAd.pullFromUrl")}
+            </button>
+          </div>
         </div>
 
         {/* Paste any listing URL (Zillow/Realtor/etc.). The create form has no
@@ -623,15 +643,18 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.cinematicClips")}</h3>
               <p className="text-[11px] text-slate-500">{t("pages.listingAd.animateBlurb")}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => void generateClips()}
-              disabled={generating || photosToAnimate.length === 0}
-              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-              title={photosToAnimate.length === 0 ? t("pages.listingAd.needPhoto") : t("pages.listingAd.generateClips")}
-            >
-              {generating ? t("common:status.rendering") : clipUrls.length > 0 ? t("pages.listingAd.regenerateClips") : t("pages.listingAd.generateClips")}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <GateReason reason={photosToAnimate.length === 0 ? t("pages.listingAd.needPhoto") : null} />
+              <button
+                type="button"
+                onClick={() => void generateClips()}
+                disabled={generating || photosToAnimate.length === 0}
+                className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                title={photosToAnimate.length === 0 ? t("pages.listingAd.needPhoto") : t("pages.listingAd.generateClips")}
+              >
+                {generating ? t("common:status.rendering") : clipUrls.length > 0 ? t("pages.listingAd.regenerateClips") : t("pages.listingAd.generateClips")}
+              </button>
+            </div>
           </div>
 
           {/* Length controls: per-clip seconds + a live total-length estimate. */}
@@ -693,15 +716,18 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h3>
               <p className="text-[11px] text-slate-500">{t("pages.listingAd.stitchBlurb")}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => void buildReel()}
-              disabled={building || clipUrls.length === 0}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-              title={clipUrls.length === 0 ? t("pages.listingAd.needClips") : t("pages.listingAd.buildAd")}
-            >
-              {building ? t("common:status.building") : reelUrl ? t("pages.listingAd.rebuildAd") : t("pages.listingAd.buildAd")}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <GateReason reason={clipUrls.length === 0 ? t("pages.listingAd.needClips") : null} />
+              <button
+                type="button"
+                onClick={() => void buildReel()}
+                disabled={building || clipUrls.length === 0}
+                className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                title={clipUrls.length === 0 ? t("pages.listingAd.needClips") : t("pages.listingAd.buildAd")}
+              >
+                {building ? t("common:status.building") : reelUrl ? t("pages.listingAd.rebuildAd") : t("pages.listingAd.buildAd")}
+              </button>
+            </div>
           </div>
 
           {reelNote ? <p className="mt-2 text-[12px] text-slate-600">{reelNote}</p> : null}
@@ -758,15 +784,18 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.scriptVoiceover")}</h3>
               <p className="text-[11px] text-slate-500">{t("pages.listingAd.narrationBlurb")}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => void generateScript()}
-              disabled={scripting || !reelUrl}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-              title={!reelUrl ? t("pages.listingAd.needAdFirst") : t("pages.listingAd.writeScript")}
-            >
-              {scripting ? t("common:status.writing") : script ? t("pages.listingAd.rewriteScript") : t("pages.listingAd.generateScript")}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <GateReason reason={!reelUrl ? t("pages.listingAd.needAdFirst") : null} />
+              <button
+                type="button"
+                onClick={() => void generateScript()}
+                disabled={scripting || !reelUrl}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                title={!reelUrl ? t("pages.listingAd.needAdFirst") : t("pages.listingAd.writeScript")}
+              >
+                {scripting ? t("common:status.writing") : script ? t("pages.listingAd.rewriteScript") : t("pages.listingAd.generateScript")}
+              </button>
+            </div>
           </div>
 
           {!reelUrl ? (
@@ -785,15 +814,18 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               </label>
 
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => void addVoiceover()}
-                  disabled={voicing || !script.trim()}
-                  className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-                  title={!script.trim() ? t("pages.listingAd.needScript") : t("pages.listingAd.speakScript")}
-                >
-                  {voicing ? t("common:status.adding") : voicedUrl ? t("pages.listingAd.redoVoiceover") : t("pages.listingAd.addVoiceover")}
-                </button>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <GateReason reason={!script.trim() ? t("pages.listingAd.needScript") : null} />
+                  <button
+                    type="button"
+                    onClick={() => void addVoiceover()}
+                    disabled={voicing || !script.trim()}
+                    className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                    title={!script.trim() ? t("pages.listingAd.needScript") : t("pages.listingAd.speakScript")}
+                  >
+                    {voicing ? t("common:status.adding") : voicedUrl ? t("pages.listingAd.redoVoiceover") : t("pages.listingAd.addVoiceover")}
+                  </button>
+                </div>
                 {voNote ? <span className="text-[11px] text-slate-600">{voNote}</span> : null}
               </div>
 
