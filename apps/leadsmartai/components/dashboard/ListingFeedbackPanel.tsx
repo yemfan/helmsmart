@@ -5,6 +5,7 @@ import { useConfirm } from "@/components/ui/useConfirm";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import type { ListingFeedbackRow } from "@/lib/listing-feedback/types";
+import { GateReason } from "@/components/ui/GateReason";
 
 const REACTION_EMOJI: Record<string, string> = {
   love: "❤️",
@@ -317,10 +318,11 @@ function PendingCard({
             onClick={onSend}
             disabled={!row.buyer_agent_email}
             className="rounded-lg bg-slate-900 px-3 py-1 text-[11px] font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            title={!row.buyer_agent_email ? "Add buyer-agent email to enable" : ""}
+            title={!row.buyer_agent_email ? t("pages.listingFeedback.needBuyerAgentEmail") : ""}
           >
             {row.request_email_sent_at ? "Resend" : t("pages.listingFeedback.sendRequest")}
           </button>
+          <GateReason reason={!row.buyer_agent_email ? t("pages.listingFeedback.needBuyerAgentEmail") : null} />
           <button
             type="button"
             onClick={onDelete}

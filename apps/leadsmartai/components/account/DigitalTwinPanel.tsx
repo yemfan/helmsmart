@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 import { extractVoiceSample } from "@/lib/audio/extractVoiceSample";
 import { AVATAR_PRESET_VOICES, CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
+import { GateReason } from "@/components/ui/GateReason";
 
 /**
  * Digital Twin (Phase A) — the agent uploads a short intro video; we transcribe
@@ -473,6 +474,7 @@ export default function DigitalTwinPanel() {
         >
           {uploading ? t("common:status.uploading") : hasVideo ? t("twin.replaceIntro") : t("twin.uploadIntro")}
         </button>
+        <GateReason reason={!consent ? t("twin.consentFirst") : null} />
         <input ref={fileRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
         <button
           type="button"
@@ -483,6 +485,7 @@ export default function DigitalTwinPanel() {
         >
           {photoUploading ? t("common:status.uploading") : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
+        <GateReason reason={!consent ? t("twin.consentFirst") : null} />
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
         <button
           type="button"
@@ -587,6 +590,7 @@ export default function DigitalTwinPanel() {
                 ? t("twin.recloneVoice")
                 : t("twin.cloneVoice")}
           </button>
+          <GateReason reason={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? t("twin.recordFirst") : null} />
 
           <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
             <input
@@ -767,6 +771,7 @@ export default function DigitalTwinPanel() {
               >
                 {avBusy === "render" ? t("common:status.queueing") : t("pages.digitalTwin.generateVideoUsesCredits")}
               </button>
+              <GateReason reason={!avAudioPath ? t("twin.previewFirst") : null} />
             </div>
 
             {/*

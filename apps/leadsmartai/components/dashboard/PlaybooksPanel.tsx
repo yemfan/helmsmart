@@ -7,6 +7,7 @@ import { intlLocale } from "@/lib/i18n/locale";
 import { Check, Plus } from "lucide-react";
 import { getPlaybook, type PlaybookAnchor } from "@/lib/playbooks/definitions";
 import type { PlaybookTaskRow } from "@/lib/playbooks/types";
+import { GateReason } from "@/components/ui/GateReason";
 
 type PlaybookMeta = {
   key: string;
@@ -225,7 +226,7 @@ export function PlaybooksPanel({
             disabled={selectedIds.size === 0 || addingToTasks}
             title={
               selectedIds.size === 0
-                ? "Tick the box on any open playbook item to enable"
+                ? t("pages.playbooksPanel.needSelection")
                 : `Add ${selectedIds.size} selected task${selectedIds.size === 1 ? "" : "s"} to your Tasks list`
             }
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-white"
@@ -234,6 +235,7 @@ export function PlaybooksPanel({
               ? t("common:status.adding")
               : `+ Add to Tasks List${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
           </button>
+          <GateReason reason={selectedIds.size === 0 ? t("pages.playbooksPanel.needSelection") : null} />
           {open > 0 ? (
             <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
               {t("pages.playbooksPanel.openCount", { count: open })}

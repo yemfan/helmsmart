@@ -68,3 +68,55 @@ describe("listing ad panel: gated buttons", () => {
     }
   });
 });
+
+/**
+ * The same trap, on the panels the listing panel was not the only one to set.
+ *
+ * `title=` on a disabled button is the house habit, and these four reasons —
+ * two of them never translated — were written the same way and were just as
+ * unreachable. The component is shared now so the next one has somewhere to
+ * go that is not a tooltip.
+ */
+const APP = join(__dirname, "..", "..", "..");
+const ELSEWHERE: Array<[file: string, unmet: string, key: string]> = [
+  ["components/account/DigitalTwinPanel.tsx", "!consent", "twin.consentFirst"],
+  ["components/account/DigitalTwinPanel.tsx", "!avAudioPath", "twin.previewFirst"],
+  // Two reasons behind one control: no voice consent, or no intro video yet.
+  ["components/account/DigitalTwinPanel.tsx", "!vc?.consent", "twin.cloneVoiceTitle"],
+  ["components/account/DigitalTwinPanel.tsx", "!vc?.consent", "twin.recordFirst"],
+  ["components/dashboard/ListingFeedbackPanel.tsx", "!row.buyer_agent_email", "pages.listingFeedback.needBuyerAgentEmail"],
+  ["components/dashboard/PlaybooksPanel.tsx", "selectedIds.size === 0", "pages.playbooksPanel.needSelection"],
+];
+
+describe("the other panels that hid their reasons", () => {
+  it.each(ELSEWHERE)("%s explains %s", (file, unmet, key) => {
+    const text = readFileSync(join(APP, file), "utf8");
+    expect(text, `${file} should import the shared component`).toContain(
+      'import { GateReason } from "@/components/ui/GateReason";',
+    );
+    expect(text).toContain(`<GateReason reason={${unmet} ?`);
+    expect(text).toContain(`t("${key}")`);
+  });
+
+  it("leaves no English literal behind in the tooltips it replaced", () => {
+    // Two of these reasons were hardcoded English on a translated page, so
+    // the half of the audience reading Chinese got an unreachable tooltip in
+    // a language they had not asked for.
+    for (const rel of ["components/dashboard/ListingFeedbackPanel.tsx", "components/dashboard/PlaybooksPanel.tsx"]) {
+      const text = readFileSync(join(APP, rel), "utf8");
+      expect(text, rel).not.toContain("Add buyer-agent email to enable");
+      expect(text, rel).not.toContain("Tick the box on any open playbook item to enable");
+    }
+  });
+
+  it("keeps one GateReason, not a copy per panel", () => {
+    // A second definition is how the two drift into different sizes, colours
+    // and rules about when a reason shows at all.
+    const shared = readFileSync(join(APP, "components", "ui", "GateReason.tsx"), "utf8");
+    expect(shared).toContain("export function GateReason");
+    for (const [file] of ELSEWHERE) {
+      expect(readFileSync(join(APP, file), "utf8")).not.toContain("function GateReason(");
+    }
+    expect(readFileSync(PANEL, "utf8")).not.toContain("function GateReason(");
+  });
+});

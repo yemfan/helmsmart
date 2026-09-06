@@ -11,6 +11,7 @@ import {
 } from "@/lib/listings/types";
 import { createClient } from "@/lib/supabase/client";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { GateReason } from "@/components/ui/GateReason";
 
 /**
  * Listing → video ad panel (Phase 1: intake).
@@ -41,23 +42,6 @@ function factsFromListing(l: ListingDetail): Facts {
     highlights: (l.highlights ?? []).join("\n"),
     photoUrls: l.photo_urls ?? [],
   };
-}
-
-/**
- * Why a button in this panel is grey.
- *
- * Every gated control here carried its reason in `title=` — "Paste a listing
- * URL first", "Add at least one photo", "Build the ad first". A disabled
- * button receives no mouse events, so none of those tooltips has ever opened
- * in any browser: five explanations were written and not one was reachable.
- * The agent saw a faded button and nothing else.
- *
- * The reason is rendered beside the button instead, off the same expression
- * the button gates on, so the two cannot drift apart.
- */
-function GateReason({ reason }: { reason: string | null }) {
-  if (!reason) return null;
-  return <span className="text-[11px] text-slate-500">{reason}</span>;
 }
 
 export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
