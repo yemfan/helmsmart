@@ -6,7 +6,6 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { estimateHomeValue } from "@/lib/property";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
-import PricingModal from "@/components/PricingModal";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
@@ -55,7 +54,6 @@ function HomePageInner() {
   const [userRole, setUserRole] = useState<"agent" | "user" | null>(null);
   const [isAuthed, setIsAuthed] = useState(false);
 
-  const [pricingModalOpen, setPricingModalOpen] = useState(false);
 
   async function handleLogout() {
     setIsAuthed(false);
@@ -373,11 +371,10 @@ function HomePageInner() {
             ) : null}
 
             {!authLoading && (!isAuthed || userRole !== "agent") ? (
-              <button
-                type="button"
-                onClick={() => setPricingModalOpen(true)}
+              <Link
+                href="/plans"
                 className="text-sm font-semibold px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50"
-              >{t("pages.homeValueFunnel.upgrade")}</button>
+              >{t("pages.homeValueFunnel.upgrade")}</Link>
             ) : null}
 
             {!authLoading && !isAuthed ? (
@@ -429,13 +426,12 @@ function HomePageInner() {
               <div className="text-sm font-semibold text-slate-900">{t("pages.homeValueFunnel.needMore")}</div>
               <div className="text-xs text-slate-600 mt-1">{t("pages.homeValueFunnel.needMoreBody")}</div>
             </div>
-            <button
-              type="button"
-              onClick={() => setPricingModalOpen(true)}
+            <Link
+              href="/plans"
               className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              🚀 Upgrade
-            </button>
+              🚀 {t("pages.homeValueFunnel.upgrade")}
+            </Link>
           </div>
         ) : null}
 
@@ -674,7 +670,6 @@ function HomePageInner() {
         </section>
       </main>
 
-        <PricingModal open={pricingModalOpen} onClose={() => setPricingModalOpen(false)} />
     </div>
   );
 }

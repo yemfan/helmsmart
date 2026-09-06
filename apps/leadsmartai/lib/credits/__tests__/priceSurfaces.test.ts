@@ -155,6 +155,41 @@ describe("retired feature-tier ladder", () => {
     }
   });
 
+  it("no longer ships the last storefront for the retired ladder", () => {
+    /*
+     * PricingModal was the one left. It sold Pro $79 and Premium $199 with a
+     * "7-day free trial" — a different number from the 14 days the funnel
+     * claimed, for a trial that does not exist — through
+     * /api/create-checkout-session, against price ids whose Stripe products
+     * were archived on 2026-09-04. It opened from two "Upgrade" buttons on a
+     * CONSUMER home-value funnel, so the one path a visitor there had to buy
+     * anything led to a checkout that could not complete.
+     */
+    expect(existsSync(join(ROOT, "components", "PricingModal.tsx"))).toBe(false);
+    const funnel = read("app/home-value-funnel/page.tsx");
+    expect(funnel).not.toContain("PricingModal");
+    expect(funnel).toMatch(/href="\/plans"/);
+  });
+
+  it("quotes the live catalogue in the structured data Google reads", () => {
+    /*
+     * /pricing published Pro $49, Pro annual $490, Premium $99 and a Team tier
+     * as JSON-LD, months after Stripe moved to 79/159/299/399 — and that is
+     * the number a search result quotes, so it misprices the product before a
+     * prospect ever reaches the site. It is also where the $49 a brokerage
+     * manager was quoted came from. Derived now, so it cannot drift again.
+     */
+    const src = read("app/pricing/page.tsx");
+    expect(src).toContain("CREDIT_TIERS.flatMap");
+    for (const dead of ["49", "490", "99", "249"]) {
+      expect(src, `JSON-LD still hardcodes ${dead}`).not.toMatch(
+        new RegExp(`price:\\s*"${dead}"`),
+      );
+    }
+    // A retired storefront must not be advertised as an offer URL either.
+    expect(src).not.toContain("/agent/pricing");
+  });
+
   it("keeps the old catalogue readable for existing subscriptions", () => {
     // Retiring it as a PRICE LIST is not deleting it as a DICTIONARY: a live
     // crm_signature subscriber's features resolve through PLANS[sub.plan].
