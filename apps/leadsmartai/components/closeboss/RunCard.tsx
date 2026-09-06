@@ -98,11 +98,11 @@ const LIVE = new Set(["planning", "running", "awaiting_approval"]);
  * That framing on a clarifying question was the single most-cited trust
  * problem in the 2026-09 UX audit.
  */
-const READ_ONLY_TOOLS = new Set(["query_crm", "get_market_snapshot"]);
+const READ_ONLY_TOOL = /^(get|query|list|search|find|read)_/;
 
 function didRealWork(steps: RunStep[]): boolean {
   return steps.some(
-    (s) => s.status === "completed" && (Boolean(s.output_json?.artifactUrl) || !READ_ONLY_TOOLS.has(s.tool_name)),
+    (s) => s.status === "completed" && (Boolean(s.output_json?.artifactUrl) || !READ_ONLY_TOOL.test(s.tool_name)),
   );
 }
 

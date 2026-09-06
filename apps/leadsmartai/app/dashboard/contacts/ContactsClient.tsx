@@ -819,7 +819,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     <button
                       type="button"
                       onClick={() => setProfileLeadId(c.id)}
-                      className="block max-w-full truncate text-left text-[15px] font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-700"
+                      className="block min-h-6 max-w-full truncate py-0.5 text-left text-[15px] font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-700"
                     >
                       {c.name ?? t("row.empty_value")}
                     </button>
@@ -933,7 +933,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                       <button
                         type="button"
                         onClick={() => setProfileLeadId(c.id)}
-                        className="block max-w-full truncate rounded text-left font-medium text-slate-900 dark:text-slate-100 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                        className="block min-h-6 max-w-full truncate rounded py-0.5 text-left font-medium text-slate-900 dark:text-slate-100 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
                         title={t("row.open_profile_tooltip")}
                       >
                         {c.name ?? t("row.empty_value")}

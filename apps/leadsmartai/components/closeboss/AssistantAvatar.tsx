@@ -12,12 +12,17 @@ export function AssistantAvatar({
   size = 40,
   alt = "",
   className,
+  eager = false,
 }: {
   id: string;
   url?: string | null;
   size?: number;
   alt?: string;
   className?: string;
+  /** Above-the-fold avatars (page headers) should not wait for a lazy-load
+   *  trigger — in a background tab that never comes, and the header shows an
+   *  empty circle until the tab is fronted. */
+  eager?: boolean;
 }) {
   // A custom photo whose URL no longer resolves (deleted upload, expired
   // signed link) used to render as an empty grey circle — Emma had no face on
@@ -37,7 +42,7 @@ export function AssistantAvatar({
       alt={alt}
       width={size}
       height={size}
-      loading="lazy"
+      loading={eager ? "eager" : "lazy"}
       className={className}
       style={{
         width: size,

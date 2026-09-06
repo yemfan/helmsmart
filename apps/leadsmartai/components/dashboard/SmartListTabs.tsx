@@ -47,7 +47,7 @@ export default function SmartListTabs({ lists, activeListId }: Props) {
                 {list.isDefault && (
                   <span
                     className={`ml-1.5 text-[10px] uppercase tracking-wide ${
-                      isActive ? "text-white/60" : "text-slate-400"
+                      isActive ? "text-white/80" : "text-slate-600 dark:text-slate-400"
                     }`}
                   >
                     {t("smart_lists.default_badge")}

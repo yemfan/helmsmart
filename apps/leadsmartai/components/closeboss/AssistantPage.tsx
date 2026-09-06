@@ -94,7 +94,7 @@ export function AssistantHeader({
     <>
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="flex items-start gap-3">
-        <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" />
+        <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" eager />
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("assistants.yourAiTeam")}</p>
           <h1 className="mt-0.5 text-xl font-semibold text-slate-900 dark:text-slate-100">{name}</h1>
