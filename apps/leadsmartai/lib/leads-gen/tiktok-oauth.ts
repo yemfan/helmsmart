@@ -26,7 +26,10 @@ const AUTH_URL = "https://www.tiktok.com/v2/auth/authorize/";
 const TOKEN_URL = "https://open.tiktokapis.com/v2/oauth/token/";
 const USERINFO_URL = "https://open.tiktokapis.com/v2/user/info/";
 
-export const TIKTOK_OAUTH_SCOPES = ["user.info.basic", "video.publish", "video.upload"] as const;
+// `video.list` is what /v2/video/query/ needs for view / like / comment /
+// share counts on the hourly metrics refresh. Existing connections keep
+// their grant until reconnected.
+export const TIKTOK_OAUTH_SCOPES = ["user.info.basic", "video.publish", "video.upload", "video.list"] as const;
 
 function clientKey(): string {
   // Trim: a stray newline/space makes TikTok reject the request with a bare

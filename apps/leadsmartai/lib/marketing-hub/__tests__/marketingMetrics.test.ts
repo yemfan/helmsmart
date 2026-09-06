@@ -7,7 +7,7 @@ describe("summariseSocial", () => {
       { platform: "instagram", status: "published", metrics: { likes: 3, comments: 1, impressions: null }, metrics_refreshed_at: "2026-09-06T10:00:00Z", caption: "A" },
       { platform: "instagram", status: "published", metrics: { likes: 2, comments: 0, impressions: 120 }, metrics_refreshed_at: "2026-09-06T11:00:00Z", caption: "B" },
       { platform: "facebook", status: "published", metrics: { likes: null, impressions: null } },
-      { platform: "threads", status: "published", metrics: {} },
+      { platform: "linkedin", status: "published", metrics: {} },
       { platform: "tiktok", status: "failed", metrics: {} },
     ]);
     const ig = s.platforms.find((p) => p.platform === "instagram")!;
@@ -21,8 +21,8 @@ describe("summariseSocial", () => {
     expect(fb.metrics).toBeNull();
     expect(fb.reason).toBe("no_data");
 
-    // Threads: the API offers nothing → unsupported.
-    expect(s.platforms.find((p) => p.platform === "threads")!.reason).toBe("unsupported");
+    // LinkedIn: personal-post analytics are not available to apps → unsupported.
+    expect(s.platforms.find((p) => p.platform === "linkedin")!.reason).toBe("unsupported");
     // Failed posts are not posts.
     expect(s.platforms.find((p) => p.platform === "tiktok")).toBeUndefined();
 
