@@ -158,7 +158,7 @@ export default function RunCard({
             "3/25 tools" figure is an internal budget the agent never set and
             reads as noise (or worse, as a score). */}
         {live && (
-          <div className="flex items-center gap-2 text-[10px] text-slate-400" title={`${tokens.toLocaleString()} / ${run.token_budget.toLocaleString()} tokens`}>
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 dark:text-slate-400" title={`${tokens.toLocaleString()} / ${run.token_budget.toLocaleString()} tokens`}>
             <span>
               {t("pages.runCard.toolCalls", { used: run.tool_calls, max: run.max_tool_calls })}
             </span>
@@ -353,7 +353,7 @@ function StepRow({
               <>
                 <AssistantAvatar id={persona.avatar} size={18} alt={persona.name} className="h-[18px] w-[18px]" />
                 <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{persona.name}</span>
-                <span className="truncate text-[10px] text-slate-400">· {persona.role}</span>
+                <span className="truncate text-[10px] text-slate-600 dark:text-slate-400">· {persona.role}</span>
               </>
             ) : (
               <span className="text-xs font-medium text-slate-800 dark:text-slate-200">{label}</span>

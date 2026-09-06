@@ -54,7 +54,7 @@ export function CloseBossLogo({ className, compact, tone = "light" }: Props) {
       <span className="flex flex-col items-center leading-none">
         <span className={cn("font-heading font-bold tracking-tight", compact ? "text-lg" : "text-2xl")}>
           <span style={{ color: body }}>{WORDMARK.first}</span>
-          <span style={{ color: GOLD }}>{WORDMARK.second}</span>
+          <span style={{ color: "var(--color-brand-accent-text, #b45309)" }}>{WORDMARK.second}</span>
         </span>
         {!compact && (
           <span
