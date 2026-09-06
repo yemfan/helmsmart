@@ -421,10 +421,10 @@ export default function SalesOutreachComposer({
       : singleVerb;
 
   return (
-    <section ref={rootRef} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section ref={rootRef} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
         <Send className="h-4 w-4 text-blue-600" strokeWidth={2} />
-        <h2 className="text-sm font-semibold text-slate-900">{t("outreach.heading")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("outreach.heading")}</h2>
       </div>
       <p className="mb-4 text-xs text-slate-500">{t("pages.outreachComposer.intro")}</p>
 
@@ -486,14 +486,14 @@ export default function SalesOutreachComposer({
                 type="button"
                 onClick={clearPick}
                 aria-label={t("outreach.clearSelected")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
               >
                 <X className="h-4 w-4" strokeWidth={2} />
               </button>
             )}
           </div>
           {open && reachable.length > 0 && (
-            <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+            <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-1 shadow-lg">
               {filtered.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-slate-400">{t("outreach.noMatching")}</div>
               ) : (
@@ -505,7 +505,7 @@ export default function SalesOutreachComposer({
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
                   >
                     <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
-                    <span className="min-w-0 flex-1 truncate text-slate-800">{c.name || t("outreach.unnamed")}</span>
+                    <span className="min-w-0 flex-1 truncate text-slate-800 dark:text-slate-200">{c.name || t("outreach.unnamed")}</span>
                     <span className="shrink-0 truncate text-xs text-slate-500">{channel === "email" ? c.email : c.phone}</span>
                   </button>
                 ))
@@ -558,7 +558,7 @@ export default function SalesOutreachComposer({
             type="datetime-local"
             value={scheduledFor}
             onChange={(e) => { setScheduledFor(e.target.value); resetFeedback(); }}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs focus:border-blue-400 focus:outline-none"
+            className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs focus:border-blue-400 focus:outline-none"
           />
         )}
       </div>
@@ -636,13 +636,13 @@ function ChannelTab({
         active
           ? "border-blue-500 bg-blue-50 text-blue-700"
           : disabled
-            ? "cursor-not-allowed border-slate-200 text-slate-400"
-            : "border-slate-200 text-slate-600 hover:bg-slate-50"
+            ? "cursor-not-allowed border-slate-200 dark:border-slate-700 text-slate-400"
+            : "border-slate-200 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
       }`}
     >
       <Icon className="h-4 w-4" strokeWidth={2} />
       {label}
-      {badge && <span className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">{badge}</span>}
+      {badge && <span className="ml-1 rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">{badge}</span>}
     </button>
   );
 }
@@ -665,7 +665,7 @@ function SegmentChip({
       {label}
       <span
         className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-          active ? "bg-blue-100 text-blue-700" : tone === "warn" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"
+          active ? "bg-blue-100 text-blue-700" : tone === "warn" ? "bg-amber-100 text-amber-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
         }`}
       >
         {count}

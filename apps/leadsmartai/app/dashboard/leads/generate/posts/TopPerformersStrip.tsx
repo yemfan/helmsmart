@@ -24,7 +24,7 @@ export default async function TopPerformersStrip({
   const locale = await getServerLocale();
   return (
     <section className="mb-6">
-      <h2 className="mb-3 flex items-baseline gap-2 text-sm font-semibold text-slate-700">
+      <h2 className="mb-3 flex items-baseline gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
         {t("top_performers.title", { ns: "web_posts" })}
         <span className="text-xs font-normal text-slate-500">
           {t("top_performers.window", { ns: "web_posts", days: windowDays })}
@@ -79,7 +79,7 @@ function Card({
     .slice(0, 3);
 
   const Inner = (
-    <article className="group relative h-full overflow-hidden rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-blue-200 hover:shadow-md">
+    <article className="group relative h-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm transition hover:border-blue-200 hover:shadow-md">
       <div className="flex gap-3">
         {item.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -89,7 +89,7 @@ function Card({
             className="h-16 w-16 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-400">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-lg font-bold text-slate-400">
             #{rank}
           </div>
         )}
@@ -100,14 +100,14 @@ function Card({
             >
               {platformLabel}
             </span>
-            <span className="truncate text-slate-600">{accountName}</span>
+            <span className="truncate text-slate-600 dark:text-slate-400">{accountName}</span>
           </div>
-          <p className="line-clamp-2 text-sm text-slate-800">{item.caption}</p>
+          <p className="line-clamp-2 text-sm text-slate-800 dark:text-slate-200">{item.caption}</p>
         </div>
       </div>
 
       <div className="mt-3 flex items-baseline gap-1.5">
-        <span className="text-2xl font-bold text-slate-900">
+        <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
           {item.engagementScore.toLocaleString(locale)}
         </span>
         <span className="text-xs font-medium text-slate-500">
@@ -119,7 +119,7 @@ function Card({
         <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
           {ranked.map((c) => (
             <span key={c.label}>
-              <strong className="text-slate-700">
+              <strong className="text-slate-700 dark:text-slate-300">
                 {c.value!.toLocaleString(locale)}
               </strong>{" "}
               {c.label}

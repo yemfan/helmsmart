@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Dark mode is OPT-IN via a `.dark` class on <html> (see lib/theme/theme.ts).
+   Tailwind v4 binds `dark:` to prefers-color-scheme by default, which meant
+   the handful of components that carried dark: classes went dark on their
+   own for anyone whose OS was dark — dark buttons and dialogs on light
+   pages. The class variant makes the whole dashboard flip together, and
+   only when the agent asks (Settings › Account › Appearance). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source "../**/*.{js,ts,jsx,tsx}";
 @source "../../../packages/ui/**/*.{js,ts,jsx,tsx}";
 
@@ -85,14 +93,14 @@
   --color-text: #333333;
 }
 
-/* Dark mode is media-driven here (no `.dark` class toggle), so the
-   accent-text variant flips by the same signal: on dark surfaces the
-   bright brand orange is what reads (7.7:1 on slate-900), so restore
-   it rather than the light-mode dark orange. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-brand-accent-text: #ff8c42;
-  }
+/* Dark surfaces: the bright brand orange is what reads (7.7:1 on
+   slate-900), so restore it there; and the page ground/text tokens the
+   body reads flip with the class. */
+.dark {
+  --color-brand-accent-text: #ff8c42;
+  --color-surface: #0f172a;
+  --color-text: #e2e8f0;
+  color-scheme: dark;
 }
 
 html, body {

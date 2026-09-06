@@ -136,9 +136,9 @@ export default function CampaignListClient({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-50/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <thead className="bg-slate-50/60 dark:bg-slate-900/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3">{t("campaigns.columns.campaign")}</th>
               <th className="px-3 py-3">{t("campaigns.columns.status")}</th>
@@ -151,7 +151,7 @@ export default function CampaignListClient({
               <th className="px-3 py-3 w-1" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {campaigns.map((c) => (
               <CampaignRowView
                 key={c.id}
@@ -195,9 +195,9 @@ function CampaignRowView({
     : null;
 
   return (
-    <tr className="text-slate-800">
+    <tr className="text-slate-800 dark:text-slate-200">
       <td className="px-4 py-3 align-top">
-        <div className="font-medium text-slate-900">{c.name}</div>
+        <div className="font-medium text-slate-900 dark:text-slate-100">{c.name}</div>
         <div className="text-xs text-slate-500">
           {c.pageName ?? t("campaigns.row.empty_value")}
           {c.igBusinessUsername ? t("campaigns.row.ig_handle", { user: c.igBusinessUsername }) : ""}
@@ -213,7 +213,7 @@ function CampaignRowView({
         <StatusBadge status={c.status} t={t} />
       </td>
 
-      <td className="px-3 py-3 align-top text-slate-700">
+      <td className="px-3 py-3 align-top text-slate-700 dark:text-slate-300">
         {c.dailyBudgetCents != null
           ? t("campaigns.row.budget_daily", { amount: (c.dailyBudgetCents / 100).toFixed(0) })
           : t("campaigns.row.empty_value")}
@@ -222,20 +222,20 @@ function CampaignRowView({
         </div>
       </td>
 
-      <td className="px-3 py-3 align-top text-slate-700">
+      <td className="px-3 py-3 align-top text-slate-700 dark:text-slate-300">
         {metrics.spendCents != null
           ? `$${(metrics.spendCents / 100).toFixed(2)}`
           : t("campaigns.row.empty_value")}
       </td>
 
-      <td className="px-3 py-3 align-top text-slate-700">
+      <td className="px-3 py-3 align-top text-slate-700 dark:text-slate-300">
         {metrics.impressions != null
           ? metrics.impressions.toLocaleString(locale)
           : t("campaigns.row.empty_value")}
       </td>
 
       <td className="px-3 py-3 align-top">
-        <span className="font-semibold text-slate-900">
+        <span className="font-semibold text-slate-900 dark:text-slate-100">
           {c.leadsReceivedCount}
         </span>
         {metrics.leads && metrics.leads > c.leadsReceivedCount ? (
@@ -248,7 +248,7 @@ function CampaignRowView({
         ) : null}
       </td>
 
-      <td className="px-3 py-3 align-top text-slate-700">
+      <td className="px-3 py-3 align-top text-slate-700 dark:text-slate-300">
         {metrics.cplCents != null
           ? `$${(metrics.cplCents / 100).toFixed(2)}`
           : t("campaigns.row.empty_value")}
@@ -309,7 +309,7 @@ function RowActions({
           type="button"
           onClick={() => onRefresh(c.id)}
           disabled={busy}
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          className="rounded-md border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
           title={t("campaigns.actions.refresh_tooltip")}
         >
           {busy ? t("campaigns.actions.busy") : t("campaigns.actions.refresh")}
@@ -340,7 +340,7 @@ function RowActions({
           type="button"
           onClick={() => onStatusChange(c.id, "archive")}
           disabled={busy}
-          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          className="rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
           title={t("campaigns.actions.archive_tooltip")}
         >
           {t("campaigns.actions.archive")}
@@ -351,7 +351,7 @@ function RowActions({
           href={adsManagerUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-md border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           title={t("campaigns.actions.ads_manager_tooltip")}
         >
           {t("campaigns.actions.ads_manager")}
@@ -416,7 +416,7 @@ function friendlyAgo(iso: string, t: CampaignsT): string {
 
 function EmptyState({ t }: { t: CampaignsT }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/40 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 p-8 text-center">
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
         <svg
           className="h-6 w-6"
@@ -432,7 +432,7 @@ function EmptyState({ t }: { t: CampaignsT }) {
           />
         </svg>
       </div>
-      <h2 className="text-base font-semibold text-slate-900">
+      <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
         {t("campaigns.empty.title")}
       </h2>
       <p className="mt-1 text-sm text-slate-500">{t("campaigns.empty.body")}</p>

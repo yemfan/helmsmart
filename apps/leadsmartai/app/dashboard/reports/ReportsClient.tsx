@@ -37,7 +37,7 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("pages.reports.heading")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.reports.heading")}</h1>
           <p className="text-sm text-slate-500">{t("pages.reports.count", { count: reports.length })}</p>
         </div>
         <Link href="/smart-cma-builder?save=1" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
@@ -46,12 +46,12 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
       </div>
 
       <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.reports.searchPlaceholder")}
-        className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        className="w-full max-w-md rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm" />
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colProperty")}</th>
                 <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colLead")}</th>
@@ -61,13 +61,13 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                 <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colActions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
               {filtered.map((r) => {
                 const reportLink = `/report/${encodeURIComponent(r.id)}`;
                 return (
-                  <tr key={r.id} className="hover:bg-slate-50/50">
-                    <td className="px-4 py-2.5 font-medium text-slate-900 max-w-[250px] truncate">{r.property_address ?? "\u2014"}</td>
-                    <td className="px-4 py-2.5 text-slate-600">
+                  <tr key={r.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
+                    <td className="px-4 py-2.5 font-medium text-slate-900 dark:text-slate-100 max-w-[250px] truncate">{r.property_address ?? "\u2014"}</td>
+                    <td className="px-4 py-2.5 text-slate-600 dark:text-slate-400">
                       {r.lead_name ?? "\u2014"}
                       {r.lead_email && <span className="block text-xs text-slate-400">{r.lead_email}</span>}
                     </td>
@@ -76,7 +76,7 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2">
-                        <Link href={reportLink} className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("pages.reports.open")}</Link>
+                        <Link href={reportLink} className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.reports.open")}</Link>
                         <ShareReport
                           shareUrl={origin ? `${origin}${reportLink}` : null}
                           subject={t("pages.reports.shareSubject", {

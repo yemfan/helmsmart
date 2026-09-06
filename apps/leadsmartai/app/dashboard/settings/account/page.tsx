@@ -6,6 +6,7 @@ import ProfileSettingsForm from "@/components/account/ProfileSettingsForm";
 import BrandingSettingsPanel from "@/components/dashboard/BrandingSettingsPanel";
 import DigitalTwinPanel from "@/components/account/DigitalTwinPanel";
 import LanguagePanel from "@/components/dashboard/LanguagePanel";
+import AppearancePanel from "@/components/settings/AppearancePanel";
 import AccountTimezonePanel from "@/components/dashboard/AccountTimezonePanel";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,6 +37,8 @@ export default async function AccountSettingsPage() {
       <DigitalTwinPanel />
 
       <LanguagePanel />
+
+      <AppearancePanel />
 
       {/* One timezone for briefings, the overnight run and the receptionist (#1554). */}
       <AccountTimezonePanel />

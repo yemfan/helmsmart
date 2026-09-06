@@ -186,19 +186,19 @@ export default function MarketingPlansClient() {
     const p = selectedPlan;
     return (
       <div className="space-y-4">
-        <button onClick={() => { setSelectedPlan(null); setSearch(""); setStatusFilter("all"); }} className="text-sm text-slate-600 hover:text-slate-900">{t("pages.marketingPlans.allPlans")}</button>
+        <button onClick={() => { setSelectedPlan(null); setSearch(""); setStatusFilter("all"); }} className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900">{t("pages.marketingPlans.allPlans")}</button>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">{p.title}</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{p.title}</h2>
               <p className="text-xs text-slate-500">{p.lead_name ?? `Lead #${p.contact_id}`} &middot; {p.template_key}</p>
               <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ""}`}>{p.status}</span>
             </div>
             <div className="flex gap-2">
               {p.status === "draft" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "approve")} className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">{t("pages.marketingPlans.approve")}</button>}
               {p.status === "approved" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "start")} className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">{t("pages.marketingPlans.start")}</button>}
-              {p.status === "active" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "pause")} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">{t("pages.marketingPlans.pause")}</button>}
+              {p.status === "active" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "pause")} className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50">{t("pages.marketingPlans.pause")}</button>}
               {["draft", "approved", "active", "paused"].includes(p.status) && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "cancel")} className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50">{t("more.playbooks.cancel")}</button>}
             </div>
           </div>
@@ -206,21 +206,21 @@ export default function MarketingPlansClient() {
 
         {/* Pipeline steps */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-slate-700">{t("pages.marketingPlans.pipelineSteps")}</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.marketingPlans.pipelineSteps")}</h3>
           {(p.steps ?? []).map((step) => (
-            <div key={step.id} className={`rounded-xl border p-4 ${!step.enabled ? "border-slate-100 bg-slate-50 opacity-60" : "border-slate-200 bg-white"}`}>
+            <div key={step.id} className={`rounded-xl border p-4 ${!step.enabled ? "border-slate-100 dark:border-slate-700 bg-slate-50 opacity-60" : "border-slate-200 bg-white dark:bg-slate-900"}`}>
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={step.enabled} onChange={(e) => toggleStep(p.id, step.id, e.target.checked)} disabled={p.status !== "draft"} className="h-4 w-4 rounded border-slate-300" />
+                  <input type="checkbox" checked={step.enabled} onChange={(e) => toggleStep(p.id, step.id, e.target.checked)} disabled={p.status !== "draft"} className="h-4 w-4 rounded border-slate-300 dark:border-slate-700" />
                 </label>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">{t("pages.dashFragments.day")} {step.delay_days}</span>
+                    <span className="rounded bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.dashFragments.day")} {step.delay_days}</span>
                     <span className="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">{CHANNEL_LABELS[step.channel] ?? step.channel}</span>
-                    <span className={`rounded px-2 py-0.5 text-xs font-medium ${step.status === "executed" ? "bg-green-50 text-green-700" : step.status === "failed" ? "bg-red-50 text-red-700" : "bg-slate-50 text-slate-500"}`}>{step.status}</span>
+                    <span className={`rounded px-2 py-0.5 text-xs font-medium ${step.status === "executed" ? "bg-green-50 text-green-700" : step.status === "failed" ? "bg-red-50 text-red-700" : "bg-slate-50 dark:bg-slate-900/60 text-slate-500"}`}>{step.status}</span>
                   </div>
-                  {step.subject && <p className="mt-1 text-sm font-medium text-slate-900">{step.subject}</p>}
-                  <p className="mt-0.5 text-sm text-slate-600 line-clamp-2">{step.body}</p>
+                  {step.subject && <p className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">{step.subject}</p>}
+                  <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{step.body}</p>
                 </div>
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function MarketingPlansClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("pages.marketingPlans.heading")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.marketingPlans.heading")}</h1>
           <p className="text-sm text-slate-500">{plans.length} {t("pages.dashFragments.totalPlans")}</p>
         </div>
       </div>
@@ -243,7 +243,7 @@ export default function MarketingPlansClient() {
       {/* Performance charts */}
       {stats && (
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <h3 className="text-xs font-semibold text-slate-500 mb-2">{t("pages.marketingPlans.performance")}</h3>
             <div className="flex items-center gap-3">
               <div className="h-[120px] w-[120px] shrink-0">
@@ -260,15 +260,15 @@ export default function MarketingPlansClient() {
                 {stats.performance.map((d) => (
                   <div key={d.name} className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-                    <span className="text-slate-600">{d.name}</span>
-                    <span className="font-semibold text-slate-900">{d.value}</span>
+                    <span className="text-slate-600 dark:text-slate-400">{d.name}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{d.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <h3 className="text-xs font-semibold text-slate-500 mb-2">{t("pages.marketingPlans.startedVsCompleted")}</h3>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -296,20 +296,20 @@ export default function MarketingPlansClient() {
 
       {/* Create form */}
       {showCreate && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-slate-900">{t("pages.marketingPlans.createHeading")}</h3>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.marketingPlans.createHeading")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("pages.marketingPlans.leadContact")}</label>
-              <input value={leadSearch} onChange={(e) => setLeadSearch(e.target.value)} placeholder={t("pages.marketingPlans.searchLeads")} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm mb-1" />
-              <select value={leadId} onChange={(e) => setLeadId(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+              <input value={leadSearch} onChange={(e) => setLeadSearch(e.target.value)} placeholder={t("pages.marketingPlans.searchLeads")} className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm mb-1" />
+              <select value={leadId} onChange={(e) => setLeadId(e.target.value)} className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm">
                 <option value="">{t("pages.marketingPlans.selectLead")}</option>
                 {filteredLeads.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("pages.marketingPlans.template")}</label>
-              <select value={templateKey} onChange={(e) => setTemplateKey(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm mt-6">
+              <select value={templateKey} onChange={(e) => setTemplateKey(e.target.value)} className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm mt-6">
                 <option value="">{t("pages.marketingPlans.selectTemplate")}</option>
                 {templates.map((t) => <option key={t.key} value={t.key}>{t.title}</option>)}
               </select>
@@ -328,8 +328,8 @@ export default function MarketingPlansClient() {
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.marketingPlans.searchPlans")}
-          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm" />
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
           <option value="all">{t("pages.marketingPlans.allStatuses")}</option>
           <option value="draft">{t("pages.marketingPlans.stDraft")}</option>
           <option value="approved">{t("pages.marketingPlans.stApproved")}</option>
@@ -341,10 +341,10 @@ export default function MarketingPlansClient() {
       </div>
 
       {/* Plans table */}
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
               <tr>
                 {([
                   { key: "title" as SortKey, labelKey: "pages.marketingPlans.colPlan" },
@@ -363,21 +363,21 @@ export default function MarketingPlansClient() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
               {filtered.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/50">
+                <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
                   <td className="px-4 py-2.5">
-                    <span className="font-medium text-slate-900">{p.title}</span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{p.title}</span>
                     <span className="ml-1.5 text-[10px] text-slate-400">{p.template_key}</span>
                   </td>
-                  <td className="px-4 py-2.5 text-slate-600">{p.lead_name ?? "\u2014"}</td>
+                  <td className="px-4 py-2.5 text-slate-600 dark:text-slate-400">{p.lead_name ?? "\u2014"}</td>
                   <td className="px-4 py-2.5">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[p.status] ?? ""}`}>{p.status}</span>
                   </td>
                   <td className="px-4 py-2.5 text-xs text-slate-500">{stepProgress(p)}</td>
                   <td className="px-4 py-2.5 text-xs text-slate-500 whitespace-nowrap">{timeAgo(p.updated_at)}</td>
                   <td className="px-4 py-2.5">
-                    <button onClick={() => loadPlanDetail(p.id)} className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("pages.marketingPlans.view")}</button>
+                    <button onClick={() => loadPlanDetail(p.id)} className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.marketingPlans.view")}</button>
                   </td>
                 </tr>
               ))}
@@ -394,12 +394,12 @@ export default function MarketingPlansClient() {
       </div>
 
       {/* Templates list */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-900 mb-3">{t("pages.marketingPlans.availableTemplates")}</h3>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">{t("pages.marketingPlans.availableTemplates")}</h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {templates.map((tpl) => (
-            <div key={tpl.key} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-              <p className="text-sm font-medium text-slate-900">{tpl.title}</p>
+            <div key={tpl.key} className="rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{tpl.title}</p>
               <p className="mt-1 text-xs text-slate-500">{tpl.description}</p>
               <button
                 type="button"

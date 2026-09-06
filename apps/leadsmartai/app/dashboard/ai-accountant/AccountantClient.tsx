@@ -108,9 +108,9 @@ export default function AccountantClient({
       </div>
 
       {/* ── Commission pipeline — the real paycheck ── */}
-      <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="min-w-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-900">{t("assistants.accountant.commissionPipeline")}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.accountant.commissionPipeline")}</h2>
           <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.revenueForecast")}</Link>
         </div>
         {pipelineDeals.length === 0 ? (
@@ -118,9 +118,9 @@ export default function AccountantClient({
         ) : (
           <div className="space-y-2">
             {pipelineDeals.map((d) => (
-              <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-slate-50">
+              <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-900">{d.property_address}</p>
+                  <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{d.property_address}</p>
                   <p className="text-xs text-slate-500">
                     {d.contact_name ?? "—"}{d.closing_date ? ` · closes ${fmtDay(d.closing_date, locale)}` : " · no closing date"}
                   </p>
@@ -128,7 +128,7 @@ export default function AccountantClient({
                 {d.commission_missing ? (
                   <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">{t("pages.accountant.commissionMissing")}</span>
                 ) : (
-                  <span className="shrink-0 text-sm font-semibold text-slate-900">{money(d.expected_net ?? 0, locale)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-slate-900 dark:text-slate-100">{money(d.expected_net ?? 0, locale)}</span>
                 )}
               </Link>
             ))}
@@ -138,15 +138,15 @@ export default function AccountantClient({
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* ── Spending this month (1099 life: every category counts) ── */}
-        <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <section className="min-w-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">{t("assistants.accountant.spendingThisMonth")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.accountant.spendingThisMonth")}</h2>
             <Link href="/dashboard/expenses" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allExpenses")}</Link>
           </div>
           {topCategories.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
               {topCategories.map((c) => (
-                <span key={c.category} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                <span key={c.category} className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:text-slate-400">
                   {c.category}: {money(c.total, locale)}
                 </span>
               ))}
@@ -157,12 +157,12 @@ export default function AccountantClient({
           ) : (
             <div className="space-y-2">
               {recentExpenses.map((e) => (
-                <div key={e.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2">
+                <div key={e.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-900">{e.vendor ?? e.category}</p>
+                    <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{e.vendor ?? e.category}</p>
                     <p className="text-xs text-slate-500">{e.category} · {fmtDay(e.expense_date, locale)}</p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-slate-700">{money(e.amount || 0, locale)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-slate-700 dark:text-slate-300">{money(e.amount || 0, locale)}</span>
                 </div>
               ))}
             </div>
@@ -170,9 +170,9 @@ export default function AccountantClient({
         </section>
 
         {/* ── Receivables — the side story (referral fees, rebills) ── */}
-        <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <section className="min-w-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
                   {t("pages.accountant.overdueCount", { count: overdueReceivables.length })}
                 </span>
@@ -186,12 +186,12 @@ export default function AccountantClient({
           ) : (
             <div className="space-y-2">
               {[...overdueReceivables, ...invoices.filter((i) => i.status !== "overdue")].slice(0, 5).map((i) => (
-                <Link key={i.id} href="/dashboard/books" className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-slate-50">
+                <Link key={i.id} href="/dashboard/books" className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-900">{i.invoice_number} · {i.client_name ?? "—"}</p>
+                    <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{i.invoice_number} · {i.client_name ?? "—"}</p>
                     <p className="text-xs text-slate-500">{money(i.total || 0, locale)}{i.due_date ? ` · due ${fmtDay(i.due_date, locale)}` : ""}</p>
                   </div>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CHIP[i.status] ?? "bg-slate-100 text-slate-600"}`}>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CHIP[i.status] ?? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
                     {i.status}
                   </span>
                 </Link>

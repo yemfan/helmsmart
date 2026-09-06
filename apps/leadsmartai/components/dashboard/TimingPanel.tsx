@@ -139,7 +139,7 @@ export default function TimingPanel() {
             aria-label={t("pages.timingPanel.quietStart")}
             value={state.quietHoursStart}
             onChange={(e) => setState((s) => ({ ...s, quietHoursStart: e.target.value }))}
-            className="mt-1 block w-full max-w-[8rem] rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-full max-w-[8rem] rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
         <div>
@@ -150,12 +150,12 @@ export default function TimingPanel() {
             aria-label={t("pages.timingPanel.quietEnd")}
             value={state.quietHoursEnd}
             onChange={(e) => setState((s) => ({ ...s, quietHoursEnd: e.target.value }))}
-            className="mt-1 block w-full max-w-[8rem] rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-full max-w-[8rem] rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
       </div>
 
-      <div className="space-y-3 border-t border-slate-100 pt-4">
+      <div className="space-y-3 border-t border-slate-100 dark:border-slate-700 pt-4">
         <CheckboxRow
           checked={state.useContactTimezone}
           onChange={(v) => setState((s) => ({ ...s, useContactTimezone: v }))}
@@ -176,7 +176,7 @@ export default function TimingPanel() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 border-t border-slate-100 pt-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 border-t border-slate-100 dark:border-slate-700 pt-4 sm:grid-cols-2">
         <div>
           <Label>{t("pages.timingPanel.maxPerDay")}</Label>
           <Hint>{t("pages.timingPanel.maxPerDayHint")}</Hint>
@@ -199,7 +199,7 @@ export default function TimingPanel() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
+      <div className="flex items-center gap-3 border-t border-slate-100 dark:border-slate-700 pt-4">
         <button
           type="button"
           onClick={() => void save()}
@@ -242,7 +242,7 @@ function CheckboxRow({
         className="mt-0.5 h-4 w-4 accent-brand-accent"
       />
       <span>
-        <span className="block text-sm font-medium text-slate-900">{label}</span>
+        <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">{label}</span>
         <span className="block text-xs text-slate-500">{hint}</span>
       </span>
     </label>
@@ -262,13 +262,13 @@ function Stepper({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="mt-1 inline-flex items-center rounded-lg border border-slate-300 bg-white">
+    <div className="mt-1 inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
         aria-label={t("pages.labels.decrement")}
-        className="px-3 py-2 text-slate-600 disabled:opacity-30"
+        className="px-3 py-2 text-slate-600 dark:text-slate-400 disabled:opacity-30"
       >
         −
       </button>
@@ -278,7 +278,7 @@ function Stepper({
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
         aria-label={t("pages.labels.increment")}
-        className="px-3 py-2 text-slate-600 disabled:opacity-30"
+        className="px-3 py-2 text-slate-600 dark:text-slate-400 disabled:opacity-30"
       >
         +
       </button>

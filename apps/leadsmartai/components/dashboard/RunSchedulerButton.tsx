@@ -69,10 +69,10 @@ export default function RunSchedulerButton() {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-slate-900">{t("pages.scheduler.scheduler")}</div>
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.scheduler.scheduler")}</div>
           <div className="mt-0.5 text-xs text-slate-500">
             Walk every sphere contact and fire date- and threshold-based triggers (anniversary,
             equity, dormancy, quarterly). Respects agent-of-record + opt-in guards per spec §2.8.
@@ -84,7 +84,7 @@ export default function RunSchedulerButton() {
             type="button"
             onClick={() => void run("preview")}
             disabled={pending !== null}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
           >
             {pending === "preview" ? t("common:status.previewing") : t("common:actions.preview")}
           </button>
@@ -114,11 +114,11 @@ export default function RunSchedulerButton() {
 
           {result.firings.length > 0 && (
             <details open={expanded} onToggle={(e) => setExpanded(e.currentTarget.open)}>
-              <summary className="cursor-pointer text-xs text-slate-600">{t("pages.runScheduler.showFirings", { count: result.firings.length })}
+              <summary className="cursor-pointer text-xs text-slate-600 dark:text-slate-400">{t("pages.runScheduler.showFirings", { count: result.firings.length })}
               </summary>
-              <div className="mt-2 max-h-80 overflow-auto rounded-lg border border-slate-200">
+              <div className="mt-2 max-h-80 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
                 <table className="w-full text-[11px]">
-                  <thead className="sticky top-0 bg-slate-50">
+                  <thead className="sticky top-0 bg-slate-50 dark:bg-slate-900/60">
                     <tr>
                       <Th>{t("pages.scheduler.colContact")}</Th>
                       <Th>{t("pages.scheduler.colTemplate")}</Th>
@@ -126,7 +126,7 @@ export default function RunSchedulerButton() {
                       <Th>{t("pages.scheduler.colOutcome")}</Th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {result.firings.map((f, i) => (
                       <tr key={i} className={f.outcome === "error" ? "bg-red-50/40" : ""}>
                         <Td>{f.contactName}</Td>

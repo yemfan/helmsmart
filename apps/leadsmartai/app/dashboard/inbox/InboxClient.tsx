@@ -265,13 +265,13 @@ export default function InboxClient() {
       {/* Two panes on lg+; ONE pane below it. The list and the thread used to
           share a 390px phone, which squeezed the list to a third of the width
           beside an empty "select a conversation" panel. */}
-      <div className="flex h-[calc(100dvh-180px)] min-h-[500px] rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex h-[calc(100dvh-180px)] min-h-[500px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
       {/* Left panel — conversation list */}
-      <div className={`${selectedLead ? "hidden lg:flex" : "flex"} w-full shrink-0 flex-col border-r border-slate-200 lg:max-w-sm`}>
-        <div className="shrink-0 border-b border-slate-100 p-3 space-y-2">
+      <div className={`${selectedLead ? "hidden lg:flex" : "flex"} w-full shrink-0 flex-col border-r border-slate-200 dark:border-slate-700 lg:max-w-sm`}>
+        <div className="shrink-0 border-b border-slate-100 dark:border-slate-700 p-3 space-y-2">
           <div>
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {t("inbox.heading")}
                 {unreadCount > 0 && <span className="ml-2 rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white">{unreadCount}</span>}
               </h2>
@@ -282,14 +282,14 @@ export default function InboxClient() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("inbox.searchPlaceholder")}
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 text-sm"
           />
           <div className="flex gap-1">
             {(["all", "unread", "sms", "email", "call"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-medium ${filter === f ? "bg-[#0072ce] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium ${filter === f ? "bg-[#0072ce] text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200"}`}
               >
                 {/* Rendering `f` directly printed the raw key — the same way the
                     Playbooks "all" tab did. Every key is translated explicitly. */}
@@ -334,18 +334,18 @@ export default function InboxClient() {
                   key={`${t.leadId}-${t.channel}`}
                   type="button"
                   onClick={() => loadThread(t.leadId, t.channel)}
-                  className={`w-full text-left px-3 py-3 border-b border-slate-50 transition ${isSelected ? "bg-blue-50" : "hover:bg-slate-50"}`}
+                  className={`w-full text-left px-3 py-3 border-b border-slate-50 transition ${isSelected ? "bg-blue-50" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >
                   <div className="flex items-start gap-2">
                     <span className="shrink-0 mt-1 text-slate-400"><ChannelIcon channel={t.channel} className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <span className={`text-sm truncate ${isUnread ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
+                        <span className={`text-sm truncate ${isUnread ? "font-semibold text-slate-900 dark:text-slate-100" : "font-medium text-slate-700"}`}>
                           {t.leadName ?? tr("inbox.leadFallback", { id: t.leadId })}
                         </span>
                         <span className="shrink-0 text-[10px] text-slate-400">{timeAgo(t.lastMessageAt, tr, locale)}</span>
                       </div>
-                      <p className={`text-xs truncate mt-0.5 ${isUnread ? "text-slate-700" : "text-slate-500"}`}>
+                      <p className={`text-xs truncate mt-0.5 ${isUnread ? "text-slate-700 dark:text-slate-300" : "text-slate-500"}`}>
                         {t.lastDirection === "outbound" && <span className="text-slate-400">{tr("inbox.youPrefix")}</span>}
                         {t.preview}
                       </p>
@@ -371,22 +371,22 @@ export default function InboxClient() {
         ) : (
           <>
             {/* Thread header */}
-            <div className="shrink-0 border-b border-slate-100 px-3 py-2.5 flex items-center gap-2 sm:px-4">
+            <div className="shrink-0 border-b border-slate-100 dark:border-slate-700 px-3 py-2.5 flex items-center gap-2 sm:px-4">
               <button
                 type="button"
                 onClick={() => setSelectedLead(null)}
                 aria-label={t("inbox.close")}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 lg:hidden"
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
               </button>
               <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm font-semibold text-slate-900">{lead?.name ?? t("inbox.leadFallback", { id: selectedLead.leadId })}</h3>
+                <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{lead?.name ?? t("inbox.leadFallback", { id: selectedLead.leadId })}</h3>
                 <p className="text-xs text-slate-500">
                   {lead?.phone && <span className="mr-3">{lead.phone}</span>}
                   {lead?.email && <span className="mr-3">{lead.email}</span>}
                   {lead?.rating && (
-                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${lead.rating === "hot" ? "bg-red-100 text-red-700" : lead.rating === "warm" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${lead.rating === "hot" ? "bg-red-100 text-red-700" : lead.rating === "warm" ? "bg-amber-100 text-amber-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
                       {/* A DB enum, shown raw. */}
                       {t(
                         lead.rating === "hot"
@@ -418,7 +418,7 @@ export default function InboxClient() {
                           <div className="text-center text-[10px] text-slate-400 py-2">{formatDate(m.created_at, locale)}</div>
                         )}
                         <div className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
-                          <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${isOutbound ? "bg-[#0072ce] text-white" : "bg-slate-100 text-slate-900"}`}>
+                          <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${isOutbound ? "bg-[#0072ce] text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100"}`}>
                             {m.subject && <p className="text-[10px] font-semibold opacity-70 mb-0.5">{m.subject}</p>}
                             <p className="text-sm whitespace-pre-wrap">{m.message}</p>
                             <div className={`flex items-center gap-1.5 mt-1 ${isOutbound ? "justify-end" : ""}`}>
@@ -440,7 +440,7 @@ export default function InboxClient() {
             </div>
 
             {/* Reply box */}
-            <div className="shrink-0 border-t border-slate-100 p-3">
+            <div className="shrink-0 border-t border-slate-100 dark:border-slate-700 p-3">
               {sendMsg && (
                 <p className={`text-xs mb-2 ${sendMsg.ok ? "text-green-700" : "text-red-600"}`}>
                   {sendMsg.text}
@@ -453,7 +453,7 @@ export default function InboxClient() {
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendReply(); } }}
                   placeholder={selectedLead.channel === "email" ? t("inbox.replyEmail") : t("inbox.replySms")}
                   aria-label={selectedLead.channel === "email" ? t("inbox.replyEmail") : t("inbox.replySms")}
-                  className="min-w-0 flex-1 basis-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm sm:basis-auto"
+                  className="min-w-0 flex-1 basis-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 text-sm sm:basis-auto"
                 />
                 <button
                   type="button"

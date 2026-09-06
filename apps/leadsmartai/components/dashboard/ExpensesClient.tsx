@@ -120,7 +120,7 @@ export default function ExpensesClient({
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs text-slate-500">{t("pages.expenses.breadcrumb")}</div>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
             <Wallet className="h-6 w-6 text-blue-600" strokeWidth={2} />{t("pages.expenses.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.expenses.intro")}</p>
         </div>
@@ -141,8 +141,8 @@ export default function ExpensesClient({
 
       {/* Log form */}
       {showForm && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.expenses.logHeading")}</h2>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.expenses.logHeading")}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.amount")}</span>
@@ -199,16 +199,16 @@ export default function ExpensesClient({
 
       {/* Year-to-date by category — what tax time cares about */}
       {yearTotals.byCategory.length > 0 && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.expenses.ytdByCategory")}</h2>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.expenses.ytdByCategory")}</h2>
           <ul className="space-y-2.5">
             {yearTotals.byCategory.map((c) => (
               <li key={c.category}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="text-slate-700">{c.category}</span>
-                  <span className="font-semibold text-slate-900">{formatMoney(c.total)}</span>
+                  <span className="text-slate-700 dark:text-slate-300">{c.category}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{formatMoney(c.total)}</span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div
                     className="h-full rounded-full bg-blue-500"
                     style={{ width: `${maxCat > 0 ? Math.max(4, (c.total / maxCat) * 100) : 0}%` }}
@@ -222,11 +222,11 @@ export default function ExpensesClient({
 
       {/* Expense list */}
       {initialExpenses.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 text-center">
           <p className="text-sm text-slate-500">{t("pages.expenses.empty")}</p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           {initialExpenses.map((ex) => (
             <li key={ex.id} className="flex items-center gap-3 px-4 py-3">
               <div className="min-w-0 flex-1">
@@ -252,12 +252,12 @@ export default function ExpensesClient({
                   {ex.notes ? ` · ${ex.notes}` : ""}
                 </p>
               </div>
-              <span className="shrink-0 text-sm font-semibold text-slate-900">{formatMoney(Number(ex.amount))}</span>
+              <span className="shrink-0 text-sm font-semibold text-slate-900 dark:text-slate-100">{formatMoney(Number(ex.amount))}</span>
               <button
                 type="button"
                 onClick={() => void removeExpense(ex.id)}
                 disabled={busyId === ex.id}
-                className="shrink-0 rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 disabled:opacity-50"
+                className="shrink-0 rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600 disabled:opacity-50"
                 aria-label={t("pages.expenses.deleteExpense")}
               >
                 <Trash2 className="h-4 w-4" />

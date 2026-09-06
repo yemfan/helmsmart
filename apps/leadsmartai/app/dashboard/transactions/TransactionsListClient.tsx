@@ -134,7 +134,7 @@ export function TransactionsListClient({
     <div className="space-y-5">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t("transactions.title")}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("transactions.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.transactionsList.sub")}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export function TransactionsListClient({
       </header>
 
       {/* KPI strip — mirrors /dashboard/transactions/coordinator. */}
-      <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200">
+      <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200">
         <KpiCell label={t("transactions.kpis.inFlight")} value={kpis.inFlight} tone="text-slate-900" />
         <KpiCell
           label={t("transactions.kpis.overdueTasks")}
@@ -173,7 +173,7 @@ export function TransactionsListClient({
               className={`rounded-full border px-3 py-1 text-xs font-medium ${
                 active
                   ? "border-slate-900 bg-slate-900 text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300"
               }`}
             >
               {f.label} ({count})
@@ -186,7 +186,7 @@ export function TransactionsListClient({
             id="txn-type-filter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
           >
             <option value="all">{t("transactions.typeFilters.all")}</option>
             <option value="buyer_rep">{t("transactions.typeFilters.buyer")}</option>
@@ -197,8 +197,8 @@ export function TransactionsListClient({
       </div>
 
       {visible.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-sm font-medium text-slate-900">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-10 text-center shadow-sm">
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
             {items.length === 0 ? t("transactions.empty") : t("transactions.noMatch")}
           </p>
           {items.length === 0 ? (
@@ -210,9 +210,9 @@ export function TransactionsListClient({
           >{t("pages.transactionsList.newTransaction")}</Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.property")}</th>
                 <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.client")}</th>
@@ -222,14 +222,14 @@ export function TransactionsListClient({
                 <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.tasks")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {visible.map((t) => {
                 return (
-                  <tr key={t.id} className="hover:bg-slate-50/60">
+                  <tr key={t.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800">
                     <td className="px-5 py-3">
                       <Link
                         href={`/dashboard/transactions/${t.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                       >
                         {t.property_address}
                       </Link>
@@ -240,14 +240,14 @@ export function TransactionsListClient({
                         </div>
                       ) : null}
                     </td>
-                    <td className="px-5 py-3 text-slate-700">{t.contact_name ?? "—"}</td>
+                    <td className="px-5 py-3 text-slate-700 dark:text-slate-300">{t.contact_name ?? "—"}</td>
                     <td className="px-5 py-3">
                       <TransactionTypeBadge type={t.transaction_type} />
                     </td>
                     <td className="px-5 py-3">
                       <TransactionStatusPill status={t.status} />
                     </td>
-                    <td className="px-5 py-3 text-slate-700">{formatClosingLabel(t.closing_date)}</td>
+                    <td className="px-5 py-3 text-slate-700 dark:text-slate-300">{formatClosingLabel(t.closing_date)}</td>
                     <td className="px-5 py-3">
                       <TransactionTasksBadge
                         total={t.task_total}
@@ -268,7 +268,7 @@ export function TransactionsListClient({
 
 function KpiCell({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="bg-white px-4 py-3">
+    <div className="bg-white dark:bg-slate-900 px-4 py-3">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className={`mt-1 text-xl font-bold tabular-nums ${tone}`}>{String(value)}</p>
     </div>

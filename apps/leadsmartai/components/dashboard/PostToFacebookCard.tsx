@@ -174,10 +174,10 @@ export default function PostToFacebookCard({
 
   return (
     <>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               {t("pages.postToFacebook.postButton")}
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">{t("pages.postToFacebook.intro")}</p>
@@ -199,11 +199,11 @@ export default function PostToFacebookCard({
             if (e.target === e.currentTarget) onClose();
           }}
         >
-          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
-            <h2 className="text-base font-semibold text-slate-900">{t("pages.postToFacebook.postListing")}</h2>
+          <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-xl">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.postToFacebook.postListing")}</h2>
 
             {loadingConns ? (
-              <div className="mt-4 h-20 animate-pulse rounded-lg bg-slate-100" />
+              <div className="mt-4 h-20 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
             ) : connections.length === 0 ? (
               <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.noPagesConnected")}{" "}
                 <Link
@@ -221,7 +221,7 @@ export default function PostToFacebookCard({
                       href={fbPostUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+                      className="rounded-lg border border-emerald-200 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
                     >
                       {t("pages.postToFacebook.viewOnFacebook")}
                     </a>
@@ -236,11 +236,11 @@ export default function PostToFacebookCard({
             ) : (
               <div className="mt-4 space-y-3">
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">{t("pages.postToFacebook.page")}</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.postToFacebook.page")}</span>
                   <select
                     value={connectionId}
                     onChange={(e) => setConnectionId(e.target.value)}
-                    className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   >
                     {connections.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -251,33 +251,33 @@ export default function PostToFacebookCard({
                 </label>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">{t("pages.postToFacebook.hook")}<span className="font-normal text-slate-400">(optional)</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.postToFacebook.hook")}<span className="font-normal text-slate-400">(optional)</span>
                   </span>
                   <input
                     type="text"
                     value={hook}
                     onChange={(e) => setHook(e.target.value)}
                     placeholder={t("pages.postToFacebook.hookPlaceholder")}
-                    className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   />
                   <span className="mt-1 block text-[10px] text-slate-400">{t("pages.postToFacebook.hookHint")}</span>
                 </label>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">{t("pages.postToFacebook.link")}<span className="font-normal text-slate-400">(optional)</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.postToFacebook.link")}<span className="font-normal text-slate-400">(optional)</span>
                   </span>
                   <input
                     type="url"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="https://your-marketing-site.com/listing/..."
-                    className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   />
                   <span className="mt-1 block text-[10px] text-slate-400">{t("pages.postToFacebook.linkHint")}</span>
                 </label>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">{t("pages.dashFragments.caption")}{" "}
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.dashFragments.caption")}{" "}
                     <span className="font-normal text-slate-400">
                       {drafting
                         ? t("pages.postToFacebook.drafting")
@@ -290,7 +290,7 @@ export default function PostToFacebookCard({
                     rows={6}
                     disabled={drafting}
                     placeholder={t("pages.postToFacebook.captionPlaceholder")}
-                    className="mt-1 block w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full resize-y rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   />
                 </label>
 
@@ -303,7 +303,7 @@ export default function PostToFacebookCard({
                     type="button"
                     onClick={onClose}
                     disabled={postState.kind === "submitting"}
-                    className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >{t("pages.postToFacebook.cancel")}</button>
                   <button
                     type="button"

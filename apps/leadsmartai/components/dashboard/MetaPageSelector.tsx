@@ -85,13 +85,13 @@ export default function MetaPageSelector({ onDone }: { onDone?: () => void }) {
 
   return (
     <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50/60 p-4">
-      <h3 className="text-sm font-semibold text-slate-900">{t("connect.meta.select_title")}</h3>
-      <p className="mt-1 text-xs leading-5 text-slate-600">{t("connect.meta.select_intro")}</p>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("connect.meta.select_title")}</h3>
+      <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">{t("connect.meta.select_intro")}</p>
 
       <ul className="mt-3 space-y-2">
         {list.map((p) => (
           <li key={p.id}>
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2">
               <input
                 type="checkbox"
                 checked={chosen.has(p.id)}
@@ -106,12 +106,12 @@ export default function MetaPageSelector({ onDone }: { onDone?: () => void }) {
                   className="h-8 w-8 shrink-0 rounded-full object-cover"
                 />
               ) : (
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600 dark:text-slate-400">
                   {(p.fb_page_name ?? "?").slice(0, 1).toUpperCase()}
                 </span>
               )}
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-slate-900">
+                <span className="block truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                   {p.fb_page_name ?? t("connect.meta.page_fallback")}
                 </span>
                 <span className="block truncate text-[11px] text-slate-500">

@@ -144,7 +144,7 @@ export function OffersListClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t("offers.title")}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("offers.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {contactFilterName ? (
               <>{t("pages.offersList.offersFor")}<strong>{contactFilterName}</strong>.{" "}
@@ -169,14 +169,14 @@ export function OffersListClient({
                 ? `/dashboard/offers/upload?contactId=${encodeURIComponent(initialContactFilter)}`
                 : "/dashboard/offers/upload"
             }
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             title={t("pages.offersList.uploadHint")}
           >
             ⬆ {t("offers.uploadOffer")}
           </Link>
           <Link
             href="/dashboard/contracts/review"
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             title={t("pages.offersList.reviewHint")}
           >
             🔍 {t("offers.reviewContract")}
@@ -211,12 +211,12 @@ export function OffersListClient({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("offers.searchPlaceholder")}
-          className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
+          className="min-w-[240px] flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
         />
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value as Filter)}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
         >
           <option value="all">{t("offers.filters.all")}</option>
           <option value="active">{t("offers.filters.active")}</option>
@@ -225,10 +225,10 @@ export function OffersListClient({
         </select>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2 text-left font-medium">{t("offers.columns.property")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("offers.columns.buyer")}</th>
@@ -240,13 +240,13 @@ export function OffersListClient({
                 <th className="px-3 py-2 text-right font-medium">{t("offers.columns.actions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filtered.map((o) => (
-                <tr key={o.id} className="align-top hover:bg-slate-50">
+                <tr key={o.id} className="align-top hover:bg-slate-50 dark:hover:bg-slate-800">
                   <td className="px-3 py-2">
                     <Link
                       href={`/dashboard/offers/${o.id}`}
-                      className="font-medium text-slate-900 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                     >
                       {o.property_address}
                     </Link>
@@ -256,18 +256,18 @@ export function OffersListClient({
                       </div>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2 text-slate-700">{o.contact_name ?? "—"}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                  <td className="px-3 py-2 text-slate-700 dark:text-slate-300">{o.contact_name ?? "—"}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                     {formatMoney(o.offer_price)}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
                     {o.current_price != null && o.current_price !== o.offer_price ? (
-                      <span className="font-semibold text-slate-900">{formatMoney(o.current_price)}</span>
+                      <span className="font-semibold text-slate-900 dark:text-slate-100">{formatMoney(o.current_price)}</span>
                     ) : (
                       <span className="text-slate-400">—</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-center tabular-nums text-slate-600">
+                  <td className="px-3 py-2 text-center tabular-nums text-slate-600 dark:text-slate-400">
                     {o.counter_count > 0 ? o.counter_count : <span className="text-slate-400">—</span>}
                   </td>
                   <td className="px-3 py-2">
@@ -441,7 +441,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "bl
           ? "text-slate-600"
           : "text-slate-900";
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`text-lg font-semibold ${color}`}>{value}</div>
     </div>

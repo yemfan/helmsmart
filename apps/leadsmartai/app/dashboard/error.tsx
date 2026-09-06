@@ -15,7 +15,7 @@ export default function DashboardError({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="min-h-[40vh] rounded-xl border border-red-200 bg-red-50/80 p-6 text-slate-900">
+    <div className="min-h-[40vh] rounded-xl border border-red-200 bg-red-50/80 p-6 text-slate-900 dark:text-slate-100">
       <h2 className="text-lg font-bold text-red-900">{t("pages.dashboardError.title")}</h2>
       <p className="mt-2 text-sm text-red-800/90">
         {process.env.NODE_ENV === "development" && error.message?.trim()

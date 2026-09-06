@@ -129,14 +129,14 @@ export default function PresentationsClient({
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 space-y-4">
         <label className="block space-y-2">
-          <span className="ui-card-subtitle block text-slate-700">{t("pages.presentations.propertyAddress")}</span>
+          <span className="ui-card-subtitle block text-slate-700 dark:text-slate-300">{t("pages.presentations.propertyAddress")}</span>
           <AddressAutocomplete
             value={address}
             onChange={setAddress}
             placeholder={t("pages.presentations.addressPlaceholder")}
-            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="w-full border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </label>
 
@@ -165,17 +165,17 @@ export default function PresentationsClient({
         </div>
       ) : null}
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-3">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 space-y-3">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
           <div>
             <div className="ui-card-title text-brand-text">{t("pages.presentations.recent")}</div>
-            <div className="text-xs text-slate-600 mt-1">{t("pages.presentations.openPast")}</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t("pages.presentations.openPast")}</div>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="ui-table-header text-left px-3 py-3">{t("pages.presentations.colProperty")}</th>
                 <th className="ui-table-header text-left px-3 py-3">{t("pages.presentations.colCreated")}</th>
@@ -185,13 +185,13 @@ export default function PresentationsClient({
             <tbody>
               {history.length ? (
                 history.map((p) => (
-                  <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
+                  <tr key={p.id} className="border-t border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
                     <td className="ui-table-cell px-3 py-3">
-                      <div className="ui-card-title text-slate-900">
+                      <div className="ui-card-title text-slate-900 dark:text-slate-100">
                         {p.property_address ?? "—"}
                       </div>
                     </td>
-                    <td className="ui-table-cell px-3 py-3 text-slate-600 whitespace-nowrap">
+                    <td className="ui-table-cell px-3 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">
                       {p.created_at ? new Date(p.created_at).toLocaleString(locale) : "—"}
                     </td>
                     <td className="px-3 py-3">
@@ -213,7 +213,7 @@ export default function PresentationsClient({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-3 py-6 text-sm text-slate-600">{t("pages.presentations.empty")}</td>
+                  <td colSpan={3} className="px-3 py-6 text-sm text-slate-600 dark:text-slate-400">{t("pages.presentations.empty")}</td>
                 </tr>
               )}
             </tbody>

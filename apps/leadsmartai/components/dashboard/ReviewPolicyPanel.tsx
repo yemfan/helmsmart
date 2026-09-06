@@ -138,8 +138,8 @@ export default function ReviewPolicyPanel() {
       </div>
 
       {state.reviewPolicy === "per_category" && (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 space-y-3">
-          <div className="text-xs font-semibold text-slate-700">{t("pages.reviewPolicy.policyByCategory")}</div>
+        <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-4 space-y-3">
+          <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.reviewPolicy.policyByCategory")}</div>
           <CategoryRow
             title={t("pages.reviewPolicy.catSphere")}
             description={t("pages.reviewPolicy.catSphereDesc")}
@@ -173,9 +173,9 @@ export default function ReviewPolicyPanel() {
         </div>
       )}
 
-      <div className="rounded-lg bg-slate-50 border border-slate-200 p-3">
+      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3">
         <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.reviewPolicy.whatThisMeans")}</div>
-        <div className="mt-1 text-sm text-slate-700">
+        <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">
           <EffectiveSummary state={state} />
         </div>
       </div>
@@ -237,24 +237,24 @@ function ChoiceItem({
       className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors cursor-pointer ${
         active
           ? "border-brand-accent bg-brand-accent/5"
-          : "border-slate-200 hover:border-slate-300"
+          : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
       }`}
     >
       <span
         className={`mt-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-          active ? "border-brand-accent" : "border-slate-300"
+          active ? "border-brand-accent" : "border-slate-300 dark:border-slate-700"
         }`}
       >
         {active && <span className="h-2 w-2 rounded-full bg-brand-accent" />}
       </span>
       <span className="flex-1">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-slate-900">{label}</span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{label}</span>
           {recommended && (
             <span className="inline-flex items-center rounded-full border border-brand-accent/40 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent-text">{t("pages.reviewPolicy.recommended")}</span>
           )}
         </span>
-        <span className="mt-0.5 block text-xs text-slate-600">{sublabel}</span>
+        <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">{sublabel}</span>
         {note && <span className="mt-1 block text-[11px] text-slate-500 italic">{note}</span>}
       </span>
     </button>
@@ -278,12 +278,12 @@ function CategoryRow({
 }) {
   return (
     <div
-      className={`flex items-start justify-between gap-3 rounded-md bg-white border border-slate-200 p-3 ${
+      className={`flex items-start justify-between gap-3 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 ${
         locked ? "opacity-75" : ""
       }`}
     >
       <div className="min-w-0">
-        <div className="text-sm font-medium text-slate-900">{title}</div>
+        <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{title}</div>
         <div className="text-xs text-slate-500">{description}</div>
         {locked && lockedReason && (
           <div className="mt-1 text-[11px] italic text-amber-700">{lockedReason}</div>
@@ -315,7 +315,7 @@ function SegToggle<T extends string>({
 }) {
   return (
     <div
-      className={`inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 text-xs ${
+      className={`inline-flex rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-0.5 text-xs ${
         disabled ? "opacity-60" : ""
       }`}
     >
@@ -327,7 +327,7 @@ function SegToggle<T extends string>({
           disabled={disabled}
           className={`rounded px-3 py-1 font-medium ${
             value === o.id
-              ? "bg-white text-slate-900 shadow-sm"
+              ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm"
               : "text-slate-500 hover:text-slate-700"
           }`}
         >

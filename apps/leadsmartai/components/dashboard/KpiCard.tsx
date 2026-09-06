@@ -62,7 +62,7 @@ export function KpiCard({ label, value, subtext, trend, deltaPct, spark, classNa
     >
       <div className="text-sm font-medium text-slate-500">{label}</div>
       <div className="mt-2 flex items-baseline justify-between gap-2">
-        <div className="text-2xl font-semibold tracking-tight text-slate-900">{value}</div>
+        <div className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{value}</div>
         {trend ? (
           <div className="shrink-0 text-xs font-medium text-emerald-600">{trend}</div>
         ) : hasSpark ? (

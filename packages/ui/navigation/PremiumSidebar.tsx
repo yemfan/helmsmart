@@ -186,7 +186,7 @@ export function PremiumSidebar({
               </div>
             ) : (
               <div className="min-w-0">
-                <div className="truncate text-[15px] font-semibold tracking-tight text-slate-900">{appName}</div>
+                <div className="truncate text-[15px] font-semibold tracking-tight text-slate-900 dark:text-slate-100">{appName}</div>
                 <div className="truncate text-[11px] font-medium uppercase tracking-wider text-slate-400">{workspaceLabel}</div>
               </div>
             )}
@@ -195,7 +195,7 @@ export function PremiumSidebar({
       ) : null}
 
       {topSlot ? (
-        <div className="shrink-0 border-b border-slate-200/80 bg-white/70 px-3 py-3 backdrop-blur-sm">
+        <div className="shrink-0 border-b border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900/70 px-3 py-3 backdrop-blur-sm">
           {topSlot}
         </div>
       ) : null}
@@ -208,7 +208,7 @@ export function PremiumSidebar({
               return (
                 <div
                   key={`nav-divider-${sectionIdx}`}
-                  className="my-0.5 border-t border-slate-200/90 pt-0.5"
+                  className="my-0.5 border-t border-slate-200/90 dark:border-slate-700 pt-0.5"
                   role="separator"
                   aria-hidden
                 />
@@ -379,7 +379,7 @@ export function PremiumSidebar({
       </div>
 
       {footer ? (
-        <div className="shrink-0 border-t border-slate-200/80 bg-white/60 px-3 py-2 backdrop-blur-sm">
+        <div className="shrink-0 border-t border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900/60 px-3 py-2 backdrop-blur-sm">
           <div className="transition-opacity duration-200">{footer}</div>
         </div>
       ) : null}

@@ -105,14 +105,14 @@ export function RevenuePanel() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+        <div className="flex gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-0.5 text-xs">
           {(["ytd", "12m", "all"] as Period[]).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
               className={`rounded-md px-3 py-1.5 font-medium transition-colors ${
-                period === p ? "bg-white text-slate-900 shadow" : "text-slate-600 hover:text-slate-900"
+                period === p ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               {PERIOD_LABEL[p]}
@@ -121,7 +121,7 @@ export function RevenuePanel() {
         </div>
         <a
           href={csvHref}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           ↓ {t("pages.revenuePanel.downloadCsv")}
         </a>
@@ -149,14 +149,14 @@ export function RevenuePanel() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.pipeline")}</h3>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.revenuePanel.pipeline")}</h3>
             <span className="text-[11px] text-slate-500">{t("pages.revenuePanel.activeDeals")}</span>
           </div>
           <div className="mt-2 flex items-baseline gap-3">
             <div>
-              <div className="text-2xl font-bold text-slate-900">{data.activePipelineCount}</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{data.activePipelineCount}</div>
               <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.activeTransactions")}</div>
             </div>
             <div className="text-slate-300">|</div>
@@ -169,11 +169,11 @@ export function RevenuePanel() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.offerFunnel")}</h3>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.revenuePanel.offerFunnel")}</h3>
           <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
             <div>
-              <div className="text-xl font-bold text-slate-900">{data.offersSubmitted}</div>
+              <div className="text-xl font-bold text-slate-900 dark:text-slate-100">{data.offersSubmitted}</div>
               <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.submitted")}</div>
             </div>
             <div>
@@ -189,8 +189,8 @@ export function RevenuePanel() {
       </div>
 
       {data.byMonth.length > 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.monthlyGross")}</h3>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.revenuePanel.monthlyGross")}</h3>
           <div className="mt-3 h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.byMonth} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
@@ -215,16 +215,16 @@ export function RevenuePanel() {
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.closedDeals")}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.revenuePanel.closedDeals")}</h3>
           <span className="text-[11px] text-slate-500">
             {data.closedDeals.length} {data.closedDeals.length === 1 ? "deal" : "deals"}
           </span>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2 text-left font-medium">{t("detail.offerDetail.closed")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("pages.revenuePanel.colProperty")}</th>
@@ -236,28 +236,28 @@ export function RevenuePanel() {
                 <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colDays")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {data.closedDeals.map((d) => (
-                <tr key={d.id} className="hover:bg-slate-50">
-                  <td className="whitespace-nowrap px-3 py-2 font-mono text-[11px] text-slate-600">
+                <tr key={d.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <td className="whitespace-nowrap px-3 py-2 font-mono text-[11px] text-slate-600 dark:text-slate-400">
                     {d.closing_date_actual ?? "—"}
                   </td>
                   <td className="px-3 py-2">
                     <Link
                       href={`/dashboard/transactions/${d.id}`}
-                      className="font-medium text-slate-900 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                     >
                       {d.property_address}
                     </Link>
                   </td>
-                  <td className="px-3 py-2 text-slate-700">{d.contact_name ?? "—"}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                  <td className="px-3 py-2 text-slate-700 dark:text-slate-300">{d.contact_name ?? "—"}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                     {formatMoney(d.purchase_price)}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-600">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-600 dark:text-slate-400">
                     {d.commission_pct != null ? `${d.commission_pct}%` : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-900">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-900 dark:text-slate-100">
                     {formatMoney(d.gross_commission)}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums font-semibold text-green-700">
@@ -294,7 +294,7 @@ function Stat({
 }) {
   const color = tone === "green" ? "text-green-700" : "text-slate-900";
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`mt-0.5 text-lg font-semibold ${color}`}>{value}</div>
       {hint ? <div className="text-[10px] text-slate-400">{hint}</div> : null}

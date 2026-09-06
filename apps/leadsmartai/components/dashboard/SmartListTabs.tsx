@@ -26,7 +26,7 @@ export default function SmartListTabs({ lists, activeListId }: Props) {
   const [manageOpen, setManageOpen] = useState(false);
 
   return (
-    <div className="border-b border-slate-200 bg-white">
+    <div className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
       <div className="flex items-center justify-between gap-3 px-4 py-2">
         <nav aria-label={t("smart_lists.nav_a11y")} className="flex flex-wrap items-center gap-1">
           {visible.map((list) => {
@@ -39,7 +39,7 @@ export default function SmartListTabs({ lists, activeListId }: Props) {
                 className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
                   isActive
                     ? "bg-slate-900 text-white"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300 hover:text-slate-900"
                 }`}
                 title={list.description ?? undefined}
               >
@@ -61,7 +61,7 @@ export default function SmartListTabs({ lists, activeListId }: Props) {
           <button
             type="button"
             onClick={() => setManageOpen((o) => !o)}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <Pencil className="h-3 w-3" aria-hidden /> {t("smart_lists.manage")}
           </button>
@@ -188,7 +188,7 @@ function SmartListManager({
   }
 
   return (
-    <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
+    <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
           {t("smart_lists.manager.heading")}
@@ -211,12 +211,12 @@ function SmartListManager({
         {lists.map((list) => (
           <li
             key={list.id}
-            className="flex items-center justify-between rounded-md bg-white px-3 py-1.5 text-sm shadow-sm"
+            className="flex items-center justify-between rounded-md bg-white dark:bg-slate-900 px-3 py-1.5 text-sm shadow-sm"
           >
             <span className="flex items-center gap-2">
-              <span className="text-slate-900">{list.name}</span>
+              <span className="text-slate-900 dark:text-slate-100">{list.name}</span>
               {list.isDefault && (
-                <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-500">
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-500">
                   {t("smart_lists.default_badge")}
                 </span>
               )}
@@ -231,7 +231,7 @@ function SmartListManager({
                 type="button"
                 onClick={() => toggleHidden(list)}
                 disabled={pendingId === list.id}
-                className="inline-flex h-7 items-center gap-1 rounded border border-slate-200 bg-white px-2 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                className="inline-flex h-7 items-center gap-1 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
               >
                 <Check className="h-3 w-3" />
                 {list.isHidden ? t("smart_lists.manager.show") : t("smart_lists.manager.hide")}
@@ -241,7 +241,7 @@ function SmartListManager({
                   type="button"
                   onClick={() => remove(list)}
                   disabled={pendingId === list.id}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-200 bg-white text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-red-600 hover:bg-red-50 disabled:opacity-50"
                   aria-label={t("smart_lists.manager.delete_a11y")}
                 >
                   <Trash2 className="h-3 w-3" />
@@ -258,7 +258,7 @@ function SmartListManager({
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder={t("smart_lists.manager.new_placeholder")}
-              className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm"
+              className="flex-1 rounded border border-slate-300 dark:border-slate-700 px-2 py-1 text-sm"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") create();
@@ -276,7 +276,7 @@ function SmartListManager({
             <button
               type="button"
               onClick={() => setCreating(false)}
-              className="rounded border border-slate-200 px-2 py-1 text-xs text-slate-600"
+              className="rounded border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs text-slate-600 dark:text-slate-400"
             >
               {t("smart_lists.manager.cancel")}
             </button>
@@ -285,7 +285,7 @@ function SmartListManager({
           <button
             type="button"
             onClick={() => setCreating(true)}
-            className="inline-flex items-center gap-1 rounded border border-dashed border-slate-300 px-2.5 py-1 text-xs text-slate-600 hover:bg-white"
+            className="inline-flex items-center gap-1 rounded border border-dashed border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs text-slate-600 dark:text-slate-400 hover:bg-white"
           >
             <Plus className="h-3 w-3" /> {t("smart_lists.manager.add_smart_list")}
           </button>

@@ -122,11 +122,11 @@ export default function SphereMonetizationPanel(
   const kpis = useMemo(() => computeKpis(rows), [rows]);
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-700 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-slate-900">{t("pages.sphereMonetization.title")}</h2>
-          <p className="mt-0.5 text-xs text-slate-600">{t("pages.sphereMonetization.intro")}</p>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.sphereMonetization.title")}</h2>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{t("pages.sphereMonetization.intro")}</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {FILTERS.map((f) => (
@@ -138,7 +138,7 @@ export default function SphereMonetizationPanel(
               className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${
                 filter === f.value
                   ? "bg-slate-900 text-white ring-slate-900"
-                  : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               {t(`pages.sphereMonetization.filter.${f.value}.label`)}
@@ -155,7 +155,7 @@ export default function SphereMonetizationPanel(
             {Array.from({ length: 6 }).map((_, i) => (
               <li
                 key={i}
-                className="h-16 animate-pulse rounded-xl bg-slate-100"
+                className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800"
                 aria-hidden
               />
             ))}
@@ -164,29 +164,29 @@ export default function SphereMonetizationPanel(
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadMonetization")} {error}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-6 text-center text-sm text-slate-600 dark:text-slate-400">
             {rows.length === 0
               ? t("pages.sphereMonetization.noPastClientsOr")
               : `No matches for "${filterCopy(filter)}". Try a different filter.`}
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {filtered.map((r) => (
               <li key={r.contactId}>
                 <Link
                   href={`/dashboard/contacts/${encodeURIComponent(r.contactId)}`}
-                  className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-2 py-3 hover:bg-slate-50 sm:gap-4"
+                  className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-2 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 sm:gap-4"
                 >
                   <CombinedBadge score={r.combinedScore} bothHigh={r.bothMediumOrHigh} />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {r.fullName}
                       </p>
                       <LifecyclePill stage={r.lifecycleStage} />
                       {r.enrollment ? <DripBadge enrollment={r.enrollment} /> : null}
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-slate-600">
+                    <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">
                       {bestReason(r)}
                     </p>
                     {r.closingAddress ? (
@@ -233,9 +233,9 @@ function KpiStrip({ kpis, loading }: { kpis: Kpis; loading: boolean }) {
     { label: "Buyer-leaning", value: kpis.buyerLeaning, tone: "text-amber-700" },
   ];
   return (
-    <div className="grid grid-cols-2 gap-px border-b border-slate-100 bg-slate-100 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-px border-b border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 sm:grid-cols-4">
       {cells.map((c) => (
-        <div key={c.label} className="bg-white px-4 py-3">
+        <div key={c.label} className="bg-white dark:bg-slate-900 px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             {c.label}
           </p>
@@ -313,7 +313,7 @@ function DripBadge({ enrollment }: { enrollment: EnrollmentInfo }) {
   if (enrollment.status === "exited") {
     return (
       <span
-        className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 ring-1 ring-slate-200"
+        className="inline-flex items-center gap-1 rounded-full bg-slate-50 dark:bg-slate-900/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 ring-1 ring-slate-200"
         title={t("pages.sphereMonetization.dripExitedTip")}
       >{t("pages.sphereMonetization.dripExited")}</span>
     );
@@ -367,7 +367,7 @@ function LifecyclePill({ stage }: { stage: MonetizationRow["lifecycleStage"] }) 
         ? "Sphere"
         : stage.replace(/_/g, " ");
   return (
-    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
       {copy}
     </span>
   );

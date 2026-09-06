@@ -328,22 +328,22 @@ export default function ConnectClient({
           status only ever appeared on the Calendar page and in Settings — so
           the one screen an agent opens to answer "what am I connected to?"
           was the one screen that didn't say. Same panel, rendered here too. */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <GoogleCalendarConnectPanel />
       </section>
 
       {/* Meta card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-2xl">
               📘
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {t("connect.meta.title")}
               </h2>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t("connect.meta.body")}
               </p>
             </div>
@@ -367,7 +367,7 @@ export default function ConnectClient({
             {metaConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -384,7 +384,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.fb_page_name ?? t("connect.meta.page_fallback")}
                     </p>
                     <p className="truncate text-xs text-slate-500">
@@ -427,7 +427,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -445,7 +445,7 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">
             {t("connect.meta.empty")}
           </p>
         )}
@@ -458,17 +458,17 @@ export default function ConnectClient({
       </section>
 
       {/* LinkedIn card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-2xl">
               💼
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {t("connect.linkedin.title")}
               </h2>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t("connect.linkedin.body")}
               </p>
             </div>
@@ -488,7 +488,7 @@ export default function ConnectClient({
             {linkedinConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -505,7 +505,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.account_display_name ?? t("connect.linkedin.member_fallback")}
                     </p>
                     <p className="truncate text-xs text-slate-500">
@@ -544,7 +544,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -562,7 +562,7 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">
             {t("connect.linkedin.empty")}
           </p>
         )}
@@ -575,17 +575,17 @@ export default function ConnectClient({
       </section>
 
       {/* Threads card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-2xl text-white">
               @
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 {t("connect.threads.title")}
               </h2>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t("connect.threads.body")}
               </p>
             </div>
@@ -605,7 +605,7 @@ export default function ConnectClient({
             {threadsConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -624,7 +624,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.account_display_name ??
                         c.threads_username ??
                         t("connect.threads.member_fallback")}
@@ -665,7 +665,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -683,7 +683,7 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">
             {t("connect.threads.empty")}
           </p>
         )}
@@ -694,15 +694,15 @@ export default function ConnectClient({
       </section>
 
       {/* Pinterest card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E60023] text-2xl font-bold text-white">
               P
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">Pinterest</h2>
-              <p className="text-sm text-slate-600">{t("connect.pinterest.body")}</p>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Pinterest</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{t("connect.pinterest.body")}</p>
             </div>
           </div>
           <a
@@ -718,7 +718,7 @@ export default function ConnectClient({
             {pinterestConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -735,7 +735,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.account_display_name ?? c.pinterest_username ?? t("dashboard:pages.connect.pinterestAccount")}
                     </p>
                     <p className="truncate text-xs text-slate-500">
@@ -763,7 +763,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -781,22 +781,22 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">{t("connect.pinterest.empty")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.pinterest.empty")}</p>
         )}
 
         <p className="mt-4 text-xs text-slate-400">{t("connect.pinterest.revoke_hint")}</p>
       </section>
 
       {/* TikTok card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black text-2xl font-bold text-white">
               t
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">TikTok</h2>
-              <p className="text-sm text-slate-600">{t("connect.tiktok.body")}</p>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">TikTok</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{t("connect.tiktok.body")}</p>
             </div>
           </div>
           <a
@@ -812,7 +812,7 @@ export default function ConnectClient({
             {tiktokConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -829,7 +829,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.account_display_name ?? c.tiktok_username ?? t("dashboard:pages.connect.tiktokAccount")}
                     </p>
                     <p className="truncate text-xs text-slate-500">
@@ -856,7 +856,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -874,22 +874,22 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">{t("connect.tiktok.empty")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.tiktok.empty")}</p>
         )}
 
         <p className="mt-4 text-xs text-slate-400">{t("connect.tiktok.revoke_hint")}</p>
       </section>
 
       {/* YouTube card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF0000] text-2xl font-bold text-white">
               ▶
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-900">YouTube</h2>
-              <p className="text-sm text-slate-600">{t("connect.youtube.body")}</p>
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">YouTube</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">{t("connect.youtube.body")}</p>
             </div>
           </div>
           <a
@@ -905,7 +905,7 @@ export default function ConnectClient({
             {youtubeConnections.map((c) => (
               <li
                 key={c.id}
-                className="rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2.5"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-3 py-2.5"
               >
                 <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -922,7 +922,7 @@ export default function ConnectClient({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {c.account_display_name ?? c.youtube_channel_title ?? t("dashboard:pages.connect.youtubeChannel")}
                     </p>
                     <p className="truncate text-xs text-slate-500">{t("youtubeChannel")}</p>
@@ -947,7 +947,7 @@ export default function ConnectClient({
                       )
                     }
                     disabled={disconnectingId === c.id}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-white disabled:opacity-50"
+                    className="rounded-md border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-white disabled:opacity-50"
                   >
                     {disconnectingId === c.id
                       ? t("connect.meta.disconnect_busy")
@@ -965,22 +965,22 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-sm text-slate-500">{t("connect.youtube.empty")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.youtube.empty")}</p>
         )}
 
         <p className="mt-4 text-xs text-slate-400">{t("connect.youtube.revoke_hint")}</p>
       </section>
 
       {/* Phase 3 placeholders */}
-      <section className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/40 p-5">
+      <section className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 p-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-2xl">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-2xl">
             🔍
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-700">
+            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300">
               {t("connect.google_ads.title")}{" "}
-              <span className="ml-1 rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+              <span className="ml-1 rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
                 {t("connect.google_ads.phase_badge")}
               </span>
             </h2>

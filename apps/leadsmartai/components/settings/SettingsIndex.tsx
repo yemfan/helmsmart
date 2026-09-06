@@ -54,7 +54,7 @@ export function SettingsIndex() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-5">
-        <h1 className="text-xl font-semibold text-slate-900">{t("settings.index.title")}</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("settings.index.title")}</h1>
         <p className="mt-0.5 text-sm text-slate-500">{t("settings.index.subtitle")}</p>
       </div>
       <input
@@ -63,10 +63,10 @@ export function SettingsIndex() {
         onChange={(e) => setQuery(e.target.value)}
         placeholder={t("settings.index.searchPlaceholder")}
         aria-label={t("settings.index.searchPlaceholder")}
-        className="mb-4 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
+        className="mb-4 w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
       />
       {visible.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+        <p className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 px-4 py-8 text-center text-sm text-slate-500">
           {t("settings.index.noMatch")}
         </p>
       ) : (
@@ -77,13 +77,13 @@ export function SettingsIndex() {
               <li key={g.id}>
                 <Link
                   href={g.href}
-                  className="group flex h-full items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-px hover:border-slate-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0072ce]/40"
+                  className="group flex h-full items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm transition hover:-translate-y-px hover:border-slate-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0072ce]/40"
                 >
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0072ce]">
                     <Icon className="h-4.5 w-4.5" strokeWidth={2} aria-hidden />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-slate-900 group-hover:text-[#0072ce]">{g.label}</span>
+                    <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-[#0072ce]">{g.label}</span>
                     <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">{g.description}</span>
                   </span>
                 </Link>

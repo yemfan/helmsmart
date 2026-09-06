@@ -136,22 +136,22 @@ export default function MissedCallSettingsPanel() {
           value={forwardingPhone}
           onChange={(e) => setForwardingPhone(e.target.value)}
           placeholder="(555) 123-4567"
-          className="mt-2 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="mt-2 block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
       </div>
 
       {/* Enable toggle */}
-      <div className="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
+      <div className="flex items-start gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 p-3">
         <input
           id="missed-call-enabled"
           type="checkbox"
           checked={enabled}
           onChange={(e) => setEnabled(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          className="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
         />
         <label htmlFor="missed-call-enabled" className="flex-1 cursor-pointer">
-          <span className="text-sm font-semibold text-slate-900">{t("pages.missedCall.enableTextBack")}</span>
-          <p className="mt-0.5 text-xs text-slate-600">{t("pages.missedCall.textBackHint")}</p>
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.missedCall.enableTextBack")}</span>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{t("pages.missedCall.textBackHint")}</p>
         </label>
       </div>
 
@@ -167,21 +167,21 @@ export default function MissedCallSettingsPanel() {
             onChange={(e) =>
               setRingTimeout(Math.max(5, Math.min(60, Number(e.target.value) || 20)))
             }
-            className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
           <p className="mt-1 text-xs text-slate-500">{t("pages.missedCall.ringTimeoutHint")}</p>
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.aiPersonalization")}</label>
-          <div className="mt-1 flex items-start gap-2 rounded-lg border border-slate-200 bg-white p-2.5">
+          <div className="mt-1 flex items-start gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2.5">
             <input
               id="missed-call-ai"
               type="checkbox"
               checked={useAi}
               onChange={(e) => setUseAi(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
             />
-            <label htmlFor="missed-call-ai" className="flex-1 cursor-pointer text-xs text-slate-700">{t("pages.missedCall.aiHint")}</label>
+            <label htmlFor="missed-call-ai" className="flex-1 cursor-pointer text-xs text-slate-700 dark:text-slate-300">{t("pages.missedCall.aiHint")}</label>
           </div>
         </div>
       </div>
@@ -193,12 +193,12 @@ export default function MissedCallSettingsPanel() {
           value={messageTemplate}
           onChange={(e) => setMessageTemplate(e.target.value)}
           rows={4}
-          className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
         <p className="mt-1 text-xs text-slate-500">{t("pages.dashFragments.tokens")}{" "}
-          <code className="rounded bg-slate-100 px-1">{"{{caller_name}}"}</code>,{" "}
-          <code className="rounded bg-slate-100 px-1">{"{{agent_first_name}}"}</code>,{" "}
-          <code className="rounded bg-slate-100 px-1">{"{{agent_brand}}"}</code>
+          <code className="rounded bg-slate-100 dark:bg-slate-800 px-1">{"{{caller_name}}"}</code>,{" "}
+          <code className="rounded bg-slate-100 dark:bg-slate-800 px-1">{"{{agent_first_name}}"}</code>,{" "}
+          <code className="rounded bg-slate-100 dark:bg-slate-800 px-1">{"{{agent_brand}}"}</code>
         </p>
       </div>
 
@@ -225,7 +225,7 @@ export default function MissedCallSettingsPanel() {
           Receptionist page already had a better version of it - 100 calls with
           callbacks and per-call detail, against the 20 rows shown here. Two
           lists of the same thing means one of them is always the stale one. */}
-      <p className="border-t border-slate-200 pt-4 text-xs text-slate-500">
+      <p className="border-t border-slate-200 dark:border-slate-700 pt-4 text-xs text-slate-500">
         <Link href="/dashboard/ai-receptionist" className="font-medium text-[#0072ce] underline hover:no-underline">
           {t("pages.missedCall.seeCallHistory")}
         </Link>

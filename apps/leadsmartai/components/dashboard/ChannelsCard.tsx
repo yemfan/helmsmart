@@ -67,8 +67,8 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
   const s = await loadChannelStatus(_agentId);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{t("pages.channelsCard.title")}</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.channelsCard.title")}</h2>
       <p className="mt-0.5 text-xs text-slate-500">{t("pages.channelsCard.sub")}</p>
 
       <div className="mt-4 space-y-4">
@@ -157,7 +157,7 @@ function ChannelBlock({
   const badgeCls =
     badgeTone === "email" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700";
   return (
-    <div className="rounded-lg border border-slate-200 p-3">
+    <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
       <div className="flex items-center gap-3">
         <span
           className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold ${badgeCls}`}
@@ -165,7 +165,7 @@ function ChannelBlock({
           {badge}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="truncate text-sm font-medium text-slate-900">{value}</div>
+          <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{value}</div>
           <div className="text-xs text-slate-500">{subtitle}</div>
         </div>
       </div>
@@ -182,7 +182,7 @@ function ChannelBlock({
                     : "bg-slate-300"
               }`}
             />
-            <span className="text-slate-700">
+            <span className="text-slate-700 dark:text-slate-300">
               {r.label}
               {r.hint && <span className="text-slate-400"> — {r.hint}</span>}
             </span>

@@ -44,5 +44,12 @@
     "deleting": "Deleting…",
     "error_generic": "Could not delete your account. Please try again or contact support.",
     "confirm_token": "DELETE"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "description": "Light, dark, or follow your device.",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }

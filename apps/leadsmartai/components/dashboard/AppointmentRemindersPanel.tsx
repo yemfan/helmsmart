@@ -70,11 +70,11 @@ export default function AppointmentRemindersPanel() {
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <CalendarClock className="h-4 w-4 text-slate-500" strokeWidth={2} />
-          <h2 className="text-sm font-semibold text-slate-900">{t("pages.appointmentReminders.title")}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.appointmentReminders.title")}</h2>
         </div>
         <button
           type="button"
@@ -95,12 +95,12 @@ export default function AppointmentRemindersPanel() {
       {loading ? (
         <p className="py-3 text-center text-sm text-slate-400"><LoadingText /></p>
       ) : appts.length === 0 ? (
-        <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">{t("pages.appointmentReminders.empty")}</p>
+        <p className="rounded-lg bg-slate-50 dark:bg-slate-900/60 px-3 py-4 text-center text-sm text-slate-500">{t("pages.appointmentReminders.empty")}</p>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
           {appts.map((a) => (
             <li key={a.id} className="flex items-center gap-2 px-3 py-2 text-sm">
-              <span className="min-w-0 flex-1 truncate text-slate-800">{a.name || a.phone || "—"}</span>
+              <span className="min-w-0 flex-1 truncate text-slate-800 dark:text-slate-200">{a.name || a.phone || "—"}</span>
               <span className="shrink-0 text-xs text-slate-500">{fmt(a.startAt)}</span>
               {!a.callable && <span className="shrink-0 text-[10px] font-medium text-amber-600">{t("pages.appointmentReminders.noPhone")}</span>}
             </li>

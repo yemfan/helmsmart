@@ -44,5 +44,12 @@
     "deleting": "正在删除…",
     "error_generic": "无法删除账户，请重试或联系客服。",
     "confirm_token": "DELETE"
+  },
+  "appearance": {
+    "title": "外观",
+    "description": "浅色、深色，或跟随设备。",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
   }
 }

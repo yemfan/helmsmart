@@ -112,7 +112,7 @@ export default function MarketingAssistantClient({
         <button
           type="button"
           onClick={() => setKnowledgeOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800"
           aria-expanded={knowledgeOpen}
         >
           <BookOpen className="h-3.5 w-3.5" strokeWidth={2} />{t("pages.dashFragments.brandKnowledge")}{knowledgeOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -120,8 +120,8 @@ export default function MarketingAssistantClient({
       </div>
 
       {knowledgeOpen && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-1 text-sm font-semibold text-slate-900">{t("pages.marketingAssistant.kbTitle")}</h2>
+        <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.marketingAssistant.kbTitle")}</h2>
           <p className="mb-4 text-xs text-slate-500">{t("pages.marketingAssistant.kbSub")}</p>
           <AssistantCallSettings
             type="marketing_assistant"
@@ -143,10 +143,10 @@ export default function MarketingAssistantClient({
 
       {/* Advanced — power-user customization, collapsed by default so the auto-
           rotating curated posts above stay the focus for busy agents. */}
-      <details className="group rounded-xl border border-slate-200 bg-white shadow-sm">
+      <details className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">{t("assistants.marketing.advanced")}</h3>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.advanced")}</h3>
             <p className="mt-0.5 text-sm text-slate-500">{t("pages.marketingAssistant.studioSub")}</p>
           </div>
           <span className="shrink-0 text-slate-400 transition group-open:rotate-180" aria-hidden>
@@ -154,11 +154,11 @@ export default function MarketingAssistantClient({
           </span>
         </summary>
 
-        <div className="space-y-5 border-t border-slate-100 p-5">
+        <div className="space-y-5 border-t border-slate-100 dark:border-slate-700 p-5">
           {/* Ad Composer entry — design a custom branded ad from a template */}
-          <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-5">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">{t("assistants.marketing.customAd")}</h3>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.customAd")}</h3>
               <p className="mt-0.5 text-sm text-slate-500">{t("pages.marketingAssistant.templateSub")}</p>
             </div>
             <Link
@@ -196,9 +196,9 @@ export default function MarketingAssistantClient({
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Publishing calendar */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">{t("assistants.marketing.comingUp")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.comingUp")}</h2>
             <Link
               href="/dashboard/leads/generate"
               className="text-xs font-medium text-blue-600 hover:text-blue-800"
@@ -214,10 +214,10 @@ export default function MarketingAssistantClient({
               {data.upcomingPosts.map((p) => (
                 <li
                   key={p.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 px-3 py-2"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm text-slate-900">
+                    <p className="truncate text-sm text-slate-900 dark:text-slate-100">
                       {p.caption?.trim() || "(no caption)"}
                     </p>
                     <p className="text-xs capitalize text-slate-500">{p.platform}</p>
@@ -230,16 +230,16 @@ export default function MarketingAssistantClient({
         </section>
 
         {/* What it's been doing */}
-        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("assistants.marketing.latestActivity")}</h2>
+        <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.latestActivity")}</h2>
           {data.activities.length === 0 ? (
             <p className="py-6 text-center text-sm text-slate-400">{t("pages.marketingAssistant.noActivity")}</p>
           ) : (
             <ul className="space-y-2">
               {data.activities.map((a) => (
-                <li key={a.id} className="rounded-lg border border-slate-100 px-3 py-2">
+                <li key={a.id} className="rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm text-slate-900">{a.summary}</p>
+                    <p className="text-sm text-slate-900 dark:text-slate-100">{a.summary}</p>
                     <span className="shrink-0 text-xs text-slate-400">{fmtWhen(a.created_at, locale)}</span>
                   </div>
                   {a.outcome && <p className="text-xs text-slate-500">{a.outcome}</p>}

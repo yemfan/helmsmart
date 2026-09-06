@@ -143,7 +143,7 @@ function QuickActionsDropdown() {
   const menuPanel = (
     <div
       ref={menuRef}
-      className="fixed z-[199] w-[min(100vw-1.5rem,17rem)] rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04]"
+      className="fixed z-[199] w-[min(100vw-1.5rem,17rem)] rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04] dark:ring-slate-100/10"
       role="menu"
       aria-label={t("topbar.quickActions")}
       style={
@@ -169,7 +169,7 @@ function QuickActionsDropdown() {
           key={href}
           href={href}
           role="menuitem"
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
           onClick={() => setOpen(false)}
         >
           <Icon className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
@@ -188,7 +188,7 @@ function QuickActionsDropdown() {
         // is translated, so it cannot be the handle.
         data-tour="quick-actions"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3 text-slate-700 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
+        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 text-slate-700 dark:text-slate-300 shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={open ? t("topbar.closeQuickActions") : t("topbar.openQuickActions")}
@@ -286,7 +286,7 @@ function ProfileMenu({
   const menuPanel = (
     <div
       ref={menuRef}
-      className="fixed z-[200] w-[min(100vw-2rem,15rem)] rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04]"
+      className="fixed z-[200] w-[min(100vw-2rem,15rem)] rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04] dark:ring-slate-100/10"
       role="menu"
       style={
         placement
@@ -294,9 +294,9 @@ function ProfileMenu({
           : { visibility: "hidden", pointerEvents: "none" }
       }
     >
-      <div className="border-b border-slate-100 px-3 py-2.5">
+      <div className="border-b border-slate-100 dark:border-slate-700 px-3 py-2.5">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{t("topbar.signedIn")}</p>
-        <p className="truncate text-sm font-medium text-slate-900">{name || email || t("topbar.account")}</p>
+        <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{name || email || t("topbar.account")}</p>
         {name && email ? (
           <p className="truncate text-xs text-slate-500">{email}</p>
         ) : null}
@@ -304,7 +304,7 @@ function ProfileMenu({
       </div>
       <Link
         href="/dashboard"
-        className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
@@ -313,7 +313,7 @@ function ProfileMenu({
       </Link>
       <Link
         href="/dashboard/settings/account"
-        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
@@ -322,7 +322,7 @@ function ProfileMenu({
       </Link>
       <Link
         href="/dashboard/settings"
-        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
@@ -334,7 +334,7 @@ function ProfileMenu({
           Agents were asking support for instructions that were already written. */}
       <Link
         href="/help"
-        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
@@ -343,7 +343,7 @@ function ProfileMenu({
       </Link>
       <Link
         href="/dashboard/credits"
-        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
@@ -355,7 +355,7 @@ function ProfileMenu({
           reopened by typing ?tour=1, which nobody would ever discover. */}
       <button
         type="button"
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
         role="menuitem"
         onClick={() => {
           setOpen(false);
@@ -365,7 +365,7 @@ function ProfileMenu({
         <Compass className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
         {t("topbar.takeTheTour")}
       </button>
-      <div className="mt-1 border-t border-slate-100 pt-1">
+      <div className="mt-1 border-t border-slate-100 dark:border-slate-700 pt-1">
         <button
           type="button"
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
@@ -388,7 +388,7 @@ function ProfileMenu({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-11 max-w-[220px] items-center gap-2.5 rounded-2xl border border-slate-200/90 bg-white px-2.5 py-1.5 text-left shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40 sm:gap-3 sm:px-3"
+        className="inline-flex h-11 max-w-[220px] items-center gap-2.5 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-left shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition hover:border-slate-300 hover:bg-slate-50/80 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40 sm:gap-3 sm:px-3"
         aria-expanded={open}
         aria-haspopup="menu"
         // Anchor for the guided tour — see lib/tour/steps.ts.
@@ -403,7 +403,7 @@ function ProfileMenu({
           )}
         </span>
         <span className="hidden min-w-0 flex-1 sm:block">
-          <span className="block truncate text-sm font-semibold text-slate-900">{name || email || t("topbar.account")}</span>
+          <span className="block truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{name || email || t("topbar.account")}</span>
         </span>
         <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
       </button>
@@ -532,14 +532,14 @@ export default function TopBar({
       <label htmlFor={inputId} className="sr-only">
         {t("topbar.searchLeads")}
       </label>
-      <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3.5 shadow-sm ring-1 ring-slate-900/[0.02] transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04] md:px-4">
+      <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/60 px-3.5 shadow-sm ring-1 ring-slate-900/[0.02] dark:ring-slate-100/10 transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04] md:px-4">
         <Search className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
         <input
           id={inputId}
           name="q"
           type="search"
           placeholder={t("topbar.search")}
-          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+          className="min-w-0 flex-1 border-0 bg-transparent py-2 text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-400"
         />
       </div>
     </form>
@@ -607,7 +607,7 @@ export default function TopBar({
               the daily-use path and fits beside the bell at 375px. */}
           <div className="flex items-center gap-2 md:hidden">
             <QuickActionsDropdown />
-            <NotificationsBell className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50" />
+            <NotificationsBell className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" />
           </div>
 
           <ProfileMenu

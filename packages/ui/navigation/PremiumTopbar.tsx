@@ -138,12 +138,12 @@ export function PremiumTopbar({
 
   const defaultProfileChip =
     hasBuiltInProfile && !profileSlot && profileVariant === "chip" ? (
-      <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:bg-slate-50">
+      <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
           {initials(profileName ?? "User")}
         </div>
         <div className="hidden min-w-0 text-left leading-tight sm:block">
-          <div className="truncate text-sm font-medium text-slate-900">{profileName}</div>
+          <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{profileName}</div>
           {profileEmail ? (
             <div className="max-w-[140px] truncate text-xs text-slate-500">{profileEmail}</div>
           ) : null}
@@ -196,7 +196,7 @@ export function PremiumTopbar({
   }
 
   const notificationBtn = (
-    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50">
+    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
       <Bell className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
     </span>
   );
@@ -215,12 +215,12 @@ export function PremiumTopbar({
 
         <div className="min-w-0 flex-1">
           {searchSlot ?? (
-            <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-4 shadow-sm ring-1 ring-slate-900/[0.02] transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04]">
+            <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/60 px-4 shadow-sm ring-1 ring-slate-900/[0.02] dark:ring-slate-100/10 transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04]">
               <Search className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
               <input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-400"
               />
             </div>
           )}
@@ -228,7 +228,7 @@ export function PremiumTopbar({
 
         <div className="hidden shrink-0 items-center gap-2 md:flex">
           {creditsLabel ? (
-            <div className="inline-flex max-w-[200px] items-center gap-2 truncate rounded-2xl border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm ring-1 ring-slate-900/[0.03]">
+            <div className="inline-flex max-w-[200px] items-center gap-2 truncate rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10">
               <CreditCard className="h-[15px] w-[15px] shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
               <span className="truncate font-medium tabular-nums tracking-tight">{creditsLabel}</span>
             </div>
@@ -264,7 +264,7 @@ export function PremiumTopbar({
       </div>
 
       {below ? (
-        <div className="border-t border-slate-100/90 bg-slate-50/40 px-4 py-2 backdrop-blur-sm md:px-6">{below}</div>
+        <div className="border-t border-slate-100/90 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-4 py-2 backdrop-blur-sm md:px-6">{below}</div>
       ) : null}
     </header>
   );

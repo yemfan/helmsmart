@@ -237,7 +237,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
     <li key={inv.id} className="flex items-center gap-3 px-4 py-3">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-slate-900">{inv.invoice_number}</span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{inv.invoice_number}</span>
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${STATUS_TONE[inv.status] ?? STATUS_TONE.draft}`}>
             {inv.status}
           </span>
@@ -254,13 +254,13 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           ) : null}
         </p>
       </div>
-      <span className="shrink-0 text-sm font-semibold text-slate-900">{formatMoney(Number(inv.total), inv.currency || "USD")}</span>
+      <span className="shrink-0 text-sm font-semibold text-slate-900 dark:text-slate-100">{formatMoney(Number(inv.total), inv.currency || "USD")}</span>
       <div className="flex shrink-0 items-center gap-1">
         <a
           href={`/api/dashboard/books/invoices/pdf?id=${inv.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+          className="rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           PDF
         </a>
@@ -270,7 +270,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           </button>
         )}
         {inv.status === "draft" && !inv.client_email && (
-          <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">{t("pages.books.markSent")}</button>
+          <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50">{t("pages.books.markSent")}</button>
         )}
         {inv.status !== "paid" && inv.status !== "void" && (
           <button type="button" onClick={() => void changeStatus(inv.id, "paid")} disabled={busyId === inv.id} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{t("pages.books.markPaid")}</button>
@@ -284,7 +284,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-xs text-slate-500">{t("pages.books.breadcrumb")}</div>
-          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
             <Receipt className="h-6 w-6 text-blue-600" strokeWidth={2} />{t("pages.books.books")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.books.intro")}</p>
         </div>
@@ -305,8 +305,8 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
       {/* Create form */}
       {showForm && (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.books.newInvoice")}</h2>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.books.newInvoice")}</h2>
 
           <div ref={contactBoxRef} className="relative mb-3">
             <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.billTo")}</span>
@@ -328,14 +328,14 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                   type="button"
                   onClick={clearContact}
                   aria-label={t("pages.books.clearContact")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
                 >
                   <X className="h-4 w-4" strokeWidth={2} />
                 </button>
               )}
             </div>
             {contactOpen && contacts.length > 0 && (
-              <div className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+              <div className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-1 shadow-lg">
                 {filteredContacts.length === 0 ? (
                   <div className="px-3 py-2 text-xs text-slate-400">{t("pages.books.noMatches")}</div>
                 ) : (
@@ -350,7 +350,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
                     >
                       <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
-                      <span className="min-w-0 flex-1 truncate text-slate-800">{c.name}</span>
+                      <span className="min-w-0 flex-1 truncate text-slate-800 dark:text-slate-200">{c.name}</span>
                       {c.email && <span className="shrink-0 truncate text-xs text-slate-500">{c.email}</span>}
                     </button>
                   ))
@@ -414,13 +414,13 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                     inputMode="decimal"
                     placeholder={t("pages.books.price")}
                   />
-                  <span className="w-24 text-right text-sm text-slate-600">
+                  <span className="w-24 text-right text-sm text-slate-600 dark:text-slate-400">
                     {formatMoney((Number(l.quantity) || 0) * (Number(l.unitPrice) || 0))}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeLine(i)}
-                    className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600"
+                    className="rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600"
                     aria-label={t("pages.books.removeLine")}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -464,18 +464,18 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
       {/* Invoice list */}
       {initialInvoices.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 text-center">
           <p className="text-sm text-slate-500">{t("pages.books.emptyAll")}</p>
         </div>
       ) : (
         <div className="space-y-5">
           {/* Outstanding — the working list you act on */}
           {activeInvoices.length > 0 ? (
-            <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <ul className="divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
               {activeInvoices.map(renderInvoiceRow)}
             </ul>
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center">
               <p className="text-sm text-slate-500">{t("pages.books.emptyOutstanding")}</p>
             </div>
           )}
@@ -487,7 +487,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                 <span>{t("pages.books.paid")}</span>
                 <span className="tabular-nums text-emerald-600">{formatMoney(paidTotal)}</span>
               </h2>
-              <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <ul className="divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
                 {paidInvoices.map(renderInvoiceRow)}
               </ul>
             </section>
@@ -514,7 +514,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: "sla
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
-    <div className={`flex items-center justify-between ${bold ? "border-t border-slate-200 pt-1 font-semibold text-slate-900" : "text-slate-600"}`}>
+    <div className={`flex items-center justify-between ${bold ? "border-t border-slate-200 dark:border-slate-700 pt-1 font-semibold text-slate-900 dark:text-slate-100" : "text-slate-600"}`}>
       <span>{label}</span>
       <span>{value}</span>
     </div>

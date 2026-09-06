@@ -89,8 +89,8 @@ export default function CmaEmailToSellerButton({
             if (e.target === e.currentTarget) onClose();
           }}
         >
-          <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
-            <h2 className="text-base font-semibold text-slate-900">{t("pages.cmaEmail.title")}</h2>
+          <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-xl">
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.cmaEmail.title")}</h2>
             <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaEmail.sub")}</p>
 
             {sent ? (
@@ -100,31 +100,31 @@ export default function CmaEmailToSellerButton({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="mt-4 rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+                  className="mt-4 rounded-lg border border-emerald-200 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
                 >{t("pages.cmaEmail.close")}</button>
               </div>
             ) : (
               <div className="mt-4 space-y-3">
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">To</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">To</span>
                   <input
                     type="email"
                     value={to}
                     onChange={(e) => setTo(e.target.value)}
                     placeholder="seller@example.com"
-                    className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                     disabled={submitting}
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">{t("pages.cmaEmail.coverNote")}<span className="font-normal text-slate-400">(optional)</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.cmaEmail.coverNote")}<span className="font-normal text-slate-400">(optional)</span>
                   </span>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={4}
                     placeholder={`Hi — I put together a quick CMA for your property. Happy to walk through the comps + the strategy whenever you're ready.`}
-                    className="mt-1 block w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                    className="mt-1 block w-full resize-y rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                     disabled={submitting}
                   />
                 </label>
@@ -138,7 +138,7 @@ export default function CmaEmailToSellerButton({
                       type="button"
                       onClick={onClose}
                       disabled={submitting}
-                      className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >{t("pages.cmaEmail.cancel")}</button>
                     <button
                       type="button"

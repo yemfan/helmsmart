@@ -161,9 +161,9 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
-      <div className="text-sm font-semibold text-slate-900">{t("pages.calendarBooking.heading")}</div>
-      <p className="text-xs text-slate-600">{t("pages.calendarBooking.storedNote")}</p>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 space-y-4">
+      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.calendarBooking.heading")}</div>
+      <p className="text-xs text-slate-600 dark:text-slate-400">{t("pages.calendarBooking.storedNote")}</p>
 
       {err ? (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">{err}</div>
@@ -182,11 +182,11 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
                 {events.map((ev) => (
                   <li
                     key={ev.id}
-                    className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2"
+                    className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2"
                   >
                     <div className="min-w-0">
-                      <div className="text-sm font-medium text-slate-900">{ev.title}</div>
-                      <div className="text-xs text-slate-600">
+                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{ev.title}</div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400">
                         {new Date(ev.starts_at).toLocaleString(locale)}
                         {ev.calendar_provider ? ` · ${ev.calendar_provider}` : ""}
                       </div>
@@ -195,7 +195,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
                       type="button"
                       disabled={busyId === ev.id}
                       onClick={() => void cancelEvent(ev.id)}
-                      className="shrink-0 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                      className="shrink-0 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
                     >
                       {busyId === ev.id ? "…" : t("pages.calendarBooking.cancel")}
                     </button>
@@ -205,26 +205,26 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
             )}
           </div>
 
-          <div className="border-t border-slate-100 pt-3 space-y-2">
-            <div className="text-xs font-semibold text-slate-700">{t("pages.calendarBooking.newAppointment")}</div>
+          <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-2">
+            <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.calendarBooking.newAppointment")}</div>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t("pages.calendarBooking.title")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <input
               type="datetime-local"
               value={startsLocal}
               onChange={(e) => setStartsLocal(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <textarea
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               placeholder={t("pages.calendarBooking.notes")}
               rows={2}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <button
               type="button"
@@ -262,19 +262,19 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
             )}
           </div>
 
-          <div className="border-t border-slate-100 pt-3 space-y-2">
-            <div className="text-xs font-semibold text-slate-700">{t("pages.calendarBooking.saveBookingLink")}</div>
+          <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-2">
+            <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.calendarBooking.saveBookingLink")}</div>
             <input
               value={bookingUrl}
               onChange={(e) => setBookingUrl(e.target.value)}
               placeholder={t("pages.calendarBooking.urlPlaceholder")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <input
               value={bookingLabel}
               onChange={(e) => setBookingLabel(e.target.value)}
               placeholder={t("pages.calendarBooking.labelOptional")}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <button
               type="button"

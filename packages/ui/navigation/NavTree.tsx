@@ -58,7 +58,7 @@ function renderSection(
   if (isNavDivider(section)) {
     return (
       <div
-        className="my-1 border-t border-slate-200/90 pt-1"
+        className="my-1 border-t border-slate-200/90 dark:border-slate-700 pt-1"
         role="separator"
         aria-hidden
       />

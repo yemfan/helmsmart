@@ -127,7 +127,7 @@ export function SkillsManager({
                           s.enabled ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
                         }`}
                       >
-                        <span className={`inline-block h-5 w-5 rounded-full bg-white transition ${s.enabled ? "translate-x-5" : "translate-x-0.5"}`} />
+                        <span className={`inline-block h-5 w-5 rounded-full bg-white dark:bg-slate-900 transition ${s.enabled ? "translate-x-5" : "translate-x-0.5"}`} />
                       </button>
                       <select
                         value={s.assignee}

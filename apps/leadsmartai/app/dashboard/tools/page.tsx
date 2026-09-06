@@ -53,13 +53,13 @@ export default async function ToolsPage() {
         <p className="ui-page-subtitle text-brand-text/80">{tr("more.tools.subtitle")}</p>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {tools.map((t) => (
             <Link
               key={t.href}
               href={t.href}
-              className="rounded-xl border border-slate-200 bg-brand-surface hover:bg-white hover:border-brand-primary/40 p-4 transition-colors"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-brand-surface hover:bg-white hover:border-brand-primary/40 p-4 transition-colors"
             >
               <div className="ui-card-title text-brand-text">{tr(`more.tools.items.${t.key}`)}</div>
               <div className="mt-2 text-xs font-semibold text-brand-primary">{tr("more.tools.open")}</div>

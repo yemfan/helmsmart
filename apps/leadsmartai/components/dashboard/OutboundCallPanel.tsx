@@ -132,8 +132,8 @@ export default function OutboundCallPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.outboundCall.heading")}</h2>
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.outboundCall.heading")}</h2>
         <p className="mt-0.5 mb-4 text-xs text-slate-500">{t("pages.outboundCall.intro")}</p>
 
         {/* Purpose picker */}
@@ -150,7 +150,7 @@ export default function OutboundCallPanel() {
               className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                 purpose === key
                   ? "border-blue-500 bg-blue-50 text-blue-700"
-                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                  : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               <Icon className="h-3.5 w-3.5" strokeWidth={2} />
@@ -187,7 +187,7 @@ export default function OutboundCallPanel() {
                 type="button"
                 onClick={clearPick}
                 aria-label={t("pages.outboundCall.clearContact")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
               >
                 <X className="h-4 w-4" strokeWidth={2} />
               </button>
@@ -195,7 +195,7 @@ export default function OutboundCallPanel() {
           </div>
 
           {open && contacts.length > 0 && (
-            <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+            <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-1 shadow-lg">
               {filtered.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-slate-400">{t("pages.outboundCall.noMatches")}</div>
               ) : (
@@ -211,7 +211,7 @@ export default function OutboundCallPanel() {
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
                   >
                     <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
-                    <span className="min-w-0 flex-1 truncate text-slate-800">{c.name}</span>
+                    <span className="min-w-0 flex-1 truncate text-slate-800 dark:text-slate-200">{c.name}</span>
                     <span className="shrink-0 text-xs text-slate-500">{c.phone}</span>
                   </button>
                 ))

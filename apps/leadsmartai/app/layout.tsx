@@ -9,6 +9,8 @@ import { ReferralCodeCapture } from "@/components/referrals/ReferralCodeCapture"
 import { AttributionCapture } from "@/components/attribution/AttributionCapture";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { cookies } from "next/headers";
+import { THEME_COOKIE, THEME_INIT_SCRIPT, htmlClassForTheme, isThemePreference } from "@/lib/theme/theme";
 import { getSiteUrl } from "@/lib/siteUrl";
 
 /**
@@ -213,6 +215,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // BCP-47 → HTML lang attribute. "zh-Hans" is valid HTML so we
   // pass it through unchanged.
   const htmlLang = locale === "zh-Hans" ? "zh-Hans" : "en";
+  // Theme for the first paint. "system" is resolved by THEME_INIT_SCRIPT
+  // below, before hydration, so there is no light flash either way.
+  const themeCookie = (await cookies()).get(THEME_COOKIE)?.value;
+  const themeClass = htmlClassForTheme(isThemePreference(themeCookie) ? themeCookie : null);
 
   // `suppressHydrationWarning` on <html>/<body> only: browser extensions
   // (Grammarly, password managers, dark-mode) and the locale script inject
@@ -221,8 +227,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // one level deep — it ignores attribute diffs on these tags alone and never
   // masks mismatches in the page content below.
   return (
-    <html lang={htmlLang} suppressHydrationWarning>
+    <html lang={htmlLang} suppressHydrationWarning className={themeClass || undefined}>
       <head>
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
+        />
         {jsonLd.map((schema, i) => (
           <script
             key={`ld-json-${i}`}

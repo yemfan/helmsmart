@@ -38,7 +38,7 @@ export default function SendDailyBriefingButton() {
         type="button"
         onClick={handleClick}
         disabled={loading}
-        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-60"
+        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
       >
         {loading ? "Generating…" : "Generate now"}
       </button>

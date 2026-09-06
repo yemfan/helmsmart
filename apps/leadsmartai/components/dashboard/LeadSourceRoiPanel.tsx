@@ -115,11 +115,11 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-700 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">{t("pages.leadSourceRoi.title")}</h2>
-          <p className="mt-0.5 text-xs text-slate-600">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadSourceRoi.title")}</h2>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
             Cohort: contacts captured in the window. &quot;Closes&quot; = lifecycle reached past_client.
           </p>
         </div>
@@ -132,7 +132,7 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
               className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${
                 windowDays === w.days
                   ? "bg-slate-900 text-white ring-slate-900"
-                  : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               {w.label}
@@ -146,16 +146,16 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
           <div className="space-y-3" aria-hidden>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-20 animate-pulse rounded-xl bg-slate-100" />
+                <div key={i} className="h-20 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
               ))}
             </div>
-            <div className="h-64 animate-pulse rounded-xl bg-slate-100" />
+            <div className="h-64 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
           </div>
         ) : error ? (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadReport")} {error}
           </div>
         ) : !report || report.rows.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">{t("pages.leadSourceRoi.empty")}</div>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-6 text-center text-sm text-slate-600 dark:text-slate-400">{t("pages.leadSourceRoi.empty")}</div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -173,25 +173,25 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
               />
             </div>
 
-            <div className="mt-5 overflow-x-auto rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50">
+            <div className="mt-5 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+              <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-sm">
+                <thead className="bg-slate-50 dark:bg-slate-900/60">
                   <tr>
                     <th
                       scope="col"
-                      className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-700"
+                      className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300"
                     >{t("pages.leadSourceRoi.source")}</th>
                     {SORTS.map((s) => (
                       <th
                         key={s.key}
                         scope="col"
-                        className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-700"
+                        className="px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300"
                       >
                         <button
                           type="button"
                           onClick={() => toggleSort(s.key)}
                           className={`inline-flex items-center gap-1 ${
-                            sortKey === s.key ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
+                            sortKey === s.key ? "text-slate-900 dark:text-slate-100" : "text-slate-600 hover:text-slate-900"
                           }`}
                         >
                           {s.label}
@@ -203,7 +203,7 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {sortedRows.map((r) => (
                     <SourceRow key={r.sourceKey} row={r} />
                   ))}
@@ -219,11 +219,11 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
 
 function Kpi(props: { label: string; value: string; subtext?: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-4">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {props.label}
       </div>
-      <div className="mt-1 text-xl font-bold tabular-nums text-slate-900 sm:text-2xl">
+      <div className="mt-1 text-xl font-bold tabular-nums text-slate-900 dark:text-slate-100 sm:text-2xl">
         {props.value}
       </div>
       {props.subtext ? (
@@ -239,7 +239,7 @@ function SourceRow({ row }: { row: LeadSourceRoiRow }) {
   return (
     <tr className={isUnknown ? "bg-slate-50/60" : undefined}>
       <td className="px-4 py-2.5">
-        <div className="text-sm font-semibold text-slate-900">{row.sourceLabel}</div>
+        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{row.sourceLabel}</div>
         {row.avgDaysToClose != null ? (
           <div className="mt-0.5 text-[11px] text-slate-500">{t("pages.dashFragments.avg")} {row.avgDaysToClose.toFixed(0)}{t("pages.dashFragments.dToClose")}</div>
         ) : null}

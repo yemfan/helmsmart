@@ -119,9 +119,9 @@ export default function DealCoachPanel() {
       {/* INPUT FORM */}
       <form
         onSubmit={submit}
-        className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"
+        className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm lg:col-span-2"
       >
-        <h2 className="text-base font-semibold text-slate-900">{t("pages.dealCoachPanel.dealContext")}</h2>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.dealCoachPanel.dealContext")}</h2>
 
         <fieldset>
           <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.stage")}</legend>
@@ -132,7 +132,7 @@ export default function DealCoachPanel() {
                 className={`cursor-pointer rounded-xl border px-3 py-2 transition ${
                   stage === s.value
                     ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-200"
-                    : "border-slate-200 bg-white hover:bg-slate-50"
+                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
                 }`}
               >
                 <input
@@ -143,8 +143,8 @@ export default function DealCoachPanel() {
                   onChange={() => setStage(s.value)}
                   className="sr-only"
                 />
-                <div className="text-sm font-semibold text-slate-900">{s.label}</div>
-                <div className="mt-0.5 text-[11px] text-slate-600">{s.description}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{s.label}</div>
+                <div className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">{s.description}</div>
               </label>
             ))}
           </div>
@@ -191,7 +191,7 @@ export default function DealCoachPanel() {
         <div className="grid gap-3 sm:grid-cols-2">
           <fieldset>
             <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.marketHeat")}</legend>
-            <div className="mt-1.5 inline-flex rounded-full bg-slate-100 p-0.5">
+            <div className="mt-1.5 inline-flex rounded-full bg-slate-100 dark:bg-slate-800 p-0.5">
               {HEAT_OPTIONS.map((h) => (
                 <button
                   key={h.value}
@@ -199,7 +199,7 @@ export default function DealCoachPanel() {
                   onClick={() => setMarketHeat(h.value)}
                   className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                     marketHeat === h.value
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -225,7 +225,7 @@ export default function DealCoachPanel() {
           placeholder="12"
         />
 
-        <label className="flex items-start gap-2 text-xs text-slate-700">
+        <label className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
           <input
             type="checkbox"
             checked={budgetTight}
@@ -243,7 +243,7 @@ export default function DealCoachPanel() {
             onChange={(e) => setBuyerNotes(e.target.value)}
             rows={3}
             placeholder={t("pages.dealCoachPanel.contextPlaceholder")}
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -265,13 +265,13 @@ export default function DealCoachPanel() {
       {/* OUTPUT REPORT */}
       <section className="space-y-4 lg:col-span-3">
         {!report ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500">{t("pages.dealCoach.emptyState")}</div>
+          <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-5 py-10 text-center text-sm text-slate-500">{t("pages.dealCoach.emptyState")}</div>
         ) : (
           <>
             {/* Headline */}
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.title")}</div>
-              <h2 className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">{report.headline}</h2>
+              <h2 className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100 sm:text-xl">{report.headline}</h2>
             </div>
 
             {/* Action plan */}
@@ -280,7 +280,7 @@ export default function DealCoachPanel() {
                 {report.actionPlan.actions.map((a) => (
                   <li
                     key={a.id}
-                    className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3"
+                    className="flex items-start gap-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3"
                   >
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${PRIORITY_TONE[a.priority]}`}
@@ -288,8 +288,8 @@ export default function DealCoachPanel() {
                       {a.priority}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-slate-900">{a.title}</div>
-                      <p className="mt-0.5 text-xs leading-relaxed text-slate-600">{a.rationale}</p>
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{a.title}</div>
+                      <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{a.rationale}</p>
                       <div className="mt-1 text-[11px] text-slate-400">
                         {t("pages.dealCoach.approxMinutes", { count: a.estimatedMinutes })}
                       </div>
@@ -307,7 +307,7 @@ export default function DealCoachPanel() {
                   <Kpi label={t("pages.dealCoachPanel.strategy")} value={report.strategy.strategy} />
                   <Kpi label={t("pages.dealCoachPanel.confidence")} value={`${report.strategy.confidence}%`} />
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-slate-700">
+                <p className="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                   {report.strategy.reasoning}
                 </p>
               </SectionCard>
@@ -335,15 +335,15 @@ export default function DealCoachPanel() {
                     const s = report.negotiation?.[key];
                     if (!s) return null;
                     return (
-                      <div key={key} className="rounded-xl border border-slate-100 bg-slate-50/60 p-4">
-                        <div className="text-sm font-semibold text-slate-900">{label}</div>
-                        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-700">
+                      <div key={key} className="rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-4">
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{label}</div>
+                        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                           {s.suggestedScript}
                         </p>
                         {s.talkingPoints.length > 0 ? (
                           <div className="mt-3">
                             <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.talkingPoints")}</div>
-                            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-700">
+                            <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-700 dark:text-slate-300">
                               {s.talkingPoints.map((p, i) => (
                                 <li key={i}>{p}</li>
                               ))}
@@ -389,7 +389,7 @@ function Input(props: {
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         placeholder={props.placeholder}
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-normal normal-case text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-normal normal-case text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </label>
   );
@@ -397,11 +397,11 @@ function Input(props: {
 
 function SectionCard(props: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <header className="mb-4">
-        <h3 className="text-base font-semibold text-slate-900">{props.title}</h3>
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{props.title}</h3>
         {props.subtitle ? (
-          <p className="mt-0.5 text-xs text-slate-600">{props.subtitle}</p>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{props.subtitle}</p>
         ) : null}
       </header>
       {props.children}
@@ -411,11 +411,11 @@ function SectionCard(props: { title: string; subtitle?: string; children: React.
 
 function Kpi(props: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+    <div className="rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {props.label}
       </div>
-      <div className="mt-1 text-lg font-bold tabular-nums text-slate-900">{props.value}</div>
+      <div className="mt-1 text-lg font-bold tabular-nums text-slate-900 dark:text-slate-100">{props.value}</div>
     </div>
   );
 }
@@ -423,7 +423,7 @@ function Kpi(props: { label: string; value: string }) {
 function RiskCard({ label, pillar }: { label: string; pillar: RiskPillar }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+    <div className="rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3">
       <div className="flex items-center justify-between">
         <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
           {label}
@@ -434,7 +434,7 @@ function RiskCard({ label, pillar }: { label: string; pillar: RiskPillar }) {
           {pillar.level}
         </span>
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-slate-700">{pillar.notes}</p>
+      <p className="mt-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300">{pillar.notes}</p>
       <div className="mt-1 text-[10px] text-slate-400">{t("pages.dashFragments.scoreOutOf", { score: pillar.score })}</div>
     </div>
   );

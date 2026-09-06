@@ -125,19 +125,19 @@ export function AddContactClient() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 py-8 pb-24 sm:pb-8">
-      <Link href="/dashboard/leads" className="text-sm font-medium text-slate-600">
+      <Link href="/dashboard/leads" className="text-sm font-medium text-slate-600 dark:text-slate-400">
         &larr; Leads
       </Link>
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.addContact.heading")}</h1>
-        <p className="text-sm text-slate-600">{t("pages.addContact.intro")}</p>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.addContact.heading")}</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">{t("pages.addContact.intro")}</p>
       </header>
 
       {/* Lead Queue Section */}
       {!queueLoading && queueLeads.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-700">{t("pages.addContact.availableLeads")}</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.addContact.availableLeads")}</h2>
             <Link href="/dashboard/lead-queue" className="text-xs font-medium text-blue-600 hover:underline">{t("pages.addContact.viewAll")}</Link>
           </div>
 
@@ -153,10 +153,10 @@ export function AddContactClient() {
               return (
                 <div
                   key={id}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+                  className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 shadow-sm"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-slate-900 truncate">
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                       {lead.name || t("pages.addContact.unnamed")}
                     </p>
                     <p className="text-xs text-slate-500 truncate">
@@ -179,42 +179,42 @@ export function AddContactClient() {
             })}
           </div>
 
-          <div className="border-b border-slate-200" />
+          <div className="border-b border-slate-200 dark:border-slate-700" />
           <p className="text-center text-xs text-slate-400">{t("pages.addContact.orManual")}</p>
         </div>
       )}
 
       {/* Manual Add Form */}
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <label className="block text-sm font-medium text-slate-800">{t("pages.addContact.name")}<input
-            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-base"
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">{t("pages.addContact.name")}<input
+            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 px-3 text-base"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-slate-800">{t("pages.addContact.email")}<input
-            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-base"
+        <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">{t("pages.addContact.email")}<input
+            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 px-3 text-base"
             inputMode="email"
             autoCapitalize="off"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-slate-800">{t("pages.addContact.phone")}<input
-            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-base"
+        <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">{t("pages.addContact.phone")}<input
+            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 px-3 text-base"
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-slate-800">{t("pages.addContact.property")}<input
-            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 px-3 text-base"
+        <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">{t("pages.addContact.property")}<input
+            className="mt-1 w-full min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 px-3 text-base"
             value={property_address}
             onChange={(e) => setPropertyAddress(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-slate-800">{t("pages.addContact.notes")}<textarea
-            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-base"
+        <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">{t("pages.addContact.notes")}<textarea
+            className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-base"
             rows={4}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -224,7 +224,7 @@ export function AddContactClient() {
         {dup ? <p className="text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">{dup}</p> : null}
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
           <input type="checkbox" checked={forceCreate} onChange={(e) => setForceCreate(e.target.checked)} />{t("pages.addContact.createAnyway")}</label>
 
         <button

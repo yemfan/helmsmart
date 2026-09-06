@@ -528,7 +528,7 @@ export default function AdCampaignWizardClient() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("pages.adWizard.newCampaign")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.adWizard.newCampaign")}</h1>
           <p className="text-sm text-slate-500">{t("pages.adWizard.newCampaignSub")}</p>
         </div>
         <Link
@@ -564,11 +564,11 @@ export default function AdCampaignWizardClient() {
           </div>
         ) : (
           <>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.page")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.page")}</label>
             <select
               value={connectionId ?? ""}
               onChange={(e) => setConnectionId(e.target.value || null)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
               <option value="">{t("pages.adWizard.pickPage")}</option>
               {connections.map((c) => (
@@ -581,7 +581,7 @@ export default function AdCampaignWizardClient() {
 
             {connectionId && (
               <div className="mt-3">
-                <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.adAccount")}</label>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.adAccount")}</label>
                 {adAccountsLoading ? (
                   <p className="mt-1 text-sm text-slate-500">{t("pages.adWizard.loadingAdAccounts")}</p>
                 ) : accountsError ? (
@@ -594,7 +594,7 @@ export default function AdCampaignWizardClient() {
                   <select
                     value={adAccountId ?? ""}
                     onChange={(e) => setAdAccountId(e.target.value || null)}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   >
                     <option value="">{t("pages.adWizard.pickAdAccount")}</option>
                     {adAccounts.map((a) => (
@@ -620,20 +620,20 @@ export default function AdCampaignWizardClient() {
           subtitle={t("pages.adWizard.whoSeesItSub")}
         >
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.zips")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.zips")}</label>
             <textarea
               value={zipCodes}
               onChange={(e) => setZipCodes(e.target.value)}
               rows={2}
               placeholder="90210, 90211, 90212"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
             <p className="mt-1 text-xs text-slate-500">{t("pages.adWizard.zipsHint")}</p>
           </div>
 
           {zipCodes.trim() && (
             <div className="mt-3">
-              <label className="block text-xs font-medium text-slate-700">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                 {t("pages.adWizard.radiusAround", { miles: radiusMiles })}
               </label>
               <input
@@ -650,7 +650,7 @@ export default function AdCampaignWizardClient() {
 
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.minAge")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.minAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -659,11 +659,11 @@ export default function AdCampaignWizardClient() {
                 onChange={(e) =>
                   setAgeMin(Math.max(18, Math.min(65, Number(e.target.value) || 25)))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.maxAge")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.maxAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -672,7 +672,7 @@ export default function AdCampaignWizardClient() {
                 onChange={(e) =>
                   setAgeMax(Math.max(18, Math.min(65, Number(e.target.value) || 65)))
                 }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
               />
             </div>
           </div>
@@ -723,19 +723,19 @@ export default function AdCampaignWizardClient() {
         >
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.campaignName")}<span className="text-slate-400">{t("pages.adWizard.internalLabel")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.campaignName")}<span className="text-slate-400">{t("pages.adWizard.internalLabel")}</span>
               </label>
               <input
                 value={campaignName}
                 onChange={(e) => setCampaignName(e.target.value)}
                 placeholder={t("pages.adWizard.defaultName", { date: new Date().toLocaleDateString(locale) })}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.adBody")}</label>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.adBody")}</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -770,7 +770,7 @@ export default function AdCampaignWizardClient() {
                       <button
                         type="button"
                         onClick={cycleSuggestVariant}
-                        className="rounded-md border border-purple-300 bg-white px-2.5 py-1 text-xs font-medium text-purple-700 hover:bg-purple-50"
+                        className="rounded-md border border-purple-300 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-purple-700 hover:bg-purple-50"
                       >
                         {t("pages.adWizard.differentAngle", {
                           n: suggestVariantIndex + 1,
@@ -789,35 +789,35 @@ export default function AdCampaignWizardClient() {
                 onChange={(e) => setAdBody(e.target.value)}
                 rows={4}
                 placeholder={t("pages.adWizard.briefPlaceholder")}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.headline")}<span className="text-slate-400">{t("pages.adWizard.headlineLimit")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.headline")}<span className="text-slate-400">{t("pages.adWizard.headlineLimit")}</span>
               </label>
               <input
                 value={adHeadline}
                 onChange={(e) => setAdHeadline(e.target.value)}
                 placeholder='e.g. "Just listed in Pasadena"'
                 maxLength={40}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.landingUrl")}<span className="text-slate-400">{t("pages.adWizard.thankYouHint")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.landingUrl")}<span className="text-slate-400">{t("pages.adWizard.thankYouHint")}</span>
               </label>
               <input
                 value={landingUrl}
                 onChange={(e) => setLandingUrl(e.target.value)}
                 placeholder={t("pages.adWizard.sitePlaceholder")}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.privacyUrl")}{" "}
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.privacyUrl")}{" "}
                 <span className="text-slate-400">{t("pages.adWizard.privacyNote")}</span>
               </label>
               <input
@@ -825,7 +825,7 @@ export default function AdCampaignWizardClient() {
                 value={privacyPolicyUrl}
                 onChange={(e) => setPrivacyPolicyUrl(e.target.value)}
                 placeholder={t("pages.adWizard.privacyPlaceholder")}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
               <p className="mt-1 text-[11px] text-slate-500">{t("pages.adWizard.mustBeHttps")}{" "}
                 <a
@@ -844,7 +844,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.image")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.image")}</label>
               {libraryLoading ? (
                 <p className="mt-1 text-sm text-slate-500">{t("pages.adWizard.loadingLibrary")}</p>
               ) : library.length === 0 ? (
@@ -859,7 +859,7 @@ export default function AdCampaignWizardClient() {
                       className={`relative aspect-square overflow-hidden rounded-lg border ${
                         selectedMediaId === m.id
                           ? "border-blue-500 ring-2 ring-blue-100"
-                          : "border-slate-200 hover:border-blue-300"
+                          : "border-slate-200 dark:border-slate-700 hover:border-blue-300"
                       }`}
                       title={m.fileName ?? "Library image"}
                     >
@@ -871,7 +871,7 @@ export default function AdCampaignWizardClient() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="h-full w-full bg-slate-100" />
+                        <div className="h-full w-full bg-slate-100 dark:bg-slate-800" />
                       )}
                     </button>
                   ))}
@@ -880,7 +880,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">{t("pages.adWizard.formQuestions")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.formQuestions")}</label>
               <p className="text-xs text-slate-500 mt-0.5 mb-2">
                 Tick the fields you want each lead to fill in. Fewer = higher
                 conversion; more = better-qualified leads.
@@ -889,13 +889,13 @@ export default function AdCampaignWizardClient() {
                 {(Object.keys(FORM_QUESTION_LABELS) as FormQuestion[]).map((q) => (
                   <label
                     key={q}
-                    className="flex items-center gap-2 text-sm text-slate-700"
+                    className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
                   >
                     <input
                       type="checkbox"
                       checked={questions.includes(q)}
                       onChange={() => toggleQuestion(q)}
-                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
                     />
                     {FORM_QUESTION_LABELS[q]}
                   </label>
@@ -915,7 +915,7 @@ export default function AdCampaignWizardClient() {
         >
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                 Daily budget: ${dailyBudget}/day
               </label>
               <input
@@ -934,7 +934,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                 {t("pages.adWizard.runForDays", {
                   days: durationDays,
                   unit: t(durationDays === 1 ? "pages.adWizard.dayOne" : "pages.adWizard.dayOther"),
@@ -955,35 +955,35 @@ export default function AdCampaignWizardClient() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5 text-sm">
+            <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-2.5 text-sm">
               <div className="flex items-baseline justify-between">
-                <span className="text-slate-600">{t("pages.adWizard.totalBudget")}</span>
-                <span className="font-semibold text-slate-900">
+                <span className="text-slate-600 dark:text-slate-400">{t("pages.adWizard.totalBudget")}</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
                   ${dailyBudget * durationDays}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-slate-500">{t("pages.adWizard.metaBills")}</p>
             </div>
 
-            <label className="flex items-start gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
+            <label className="flex items-start gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2.5">
               <input
                 type="checkbox"
                 checked={launchImmediately}
                 onChange={(e) => setLaunchImmediately(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
               />
               <div className="text-sm">
-                <span className="font-medium text-slate-900">{t("pages.adWizard.launchNow")}</span>
+                <span className="font-medium text-slate-900 dark:text-slate-100">{t("pages.adWizard.launchNow")}</span>
                 <p className="text-xs text-slate-500">
                   {t("pages.adWizard.pausedBefore")} <strong>{t("pages.adWizard.paused")}</strong> {t("pages.adWizard.pausedAfter")}
                 </p>
               </div>
             </label>
 
-            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-700 pt-4">
               <Link
                 href="/dashboard/leads/generate"
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >{t("pages.adWizard.cancel")}</Link>
               <button
                 type="button"
@@ -1017,13 +1017,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="mb-4 flex items-start gap-3">
         <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
           {n}
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <p className="text-xs text-slate-500">{subtitle}</p>
         </div>
       </div>
@@ -1072,7 +1072,7 @@ function DoneState({
         </div>
       </div>
 
-      <div className="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-mono text-emerald-900 space-y-0.5">
+      <div className="rounded-lg border border-emerald-200 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono text-emerald-900 space-y-0.5">
         <div>
           <span className="text-emerald-700">{t("pages.adWizard.campaign")}</span>{" "}
           {result.meta.campaignId}
@@ -1102,12 +1102,12 @@ function DoneState({
         <button
           type="button"
           onClick={onAnother}
-          className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
+          className="rounded-lg border border-emerald-300 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
         >{t("pages.adWizard.createAnother")}</button>
         <button
           type="button"
           onClick={onBack}
-          className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
+          className="rounded-lg border border-emerald-300 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
         >{t("pages.adWizard.backToGenerate")}</button>
       </div>
     </div>

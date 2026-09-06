@@ -72,8 +72,8 @@ export default function DraftsClient() {
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,400px)_1fr]">
-      <aside className="rounded-xl border border-slate-200 bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 p-3">
+      <aside className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 p-3">
           <div className="flex flex-wrap gap-1">
             {(Object.keys(STATUS_LABELS) as (DraftStatus | "all")[]).map((s) => (
               <button
@@ -83,7 +83,7 @@ export default function DraftsClient() {
                 className={`rounded-full px-2.5 py-1 text-xs ${
                   filter === s
                     ? "bg-slate-900 text-white"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300"
                 }`}
               >
                 {STATUS_LABELS[s]}
@@ -100,7 +100,7 @@ export default function DraftsClient() {
           ) : drafts.length === 0 ? (
             <EmptyState filter={filter} />
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
               {drafts.map((d) => (
                 <li key={d.id}>
                   <DraftListItem
@@ -115,7 +115,7 @@ export default function DraftsClient() {
         </div>
       </aside>
 
-      <main className="min-h-[400px] rounded-xl border border-slate-200 bg-white">
+      <main className="min-h-[400px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         {selected ? (
           <DraftDetail
             draft={selected}
@@ -137,7 +137,7 @@ function EmptyState({ filter }: { filter: DraftStatus | "all" }) {
   if (filter === "pending") {
     return (
       <div className="p-8 text-center text-sm text-slate-500">
-        <div className="font-medium text-slate-700">{t("pages.drafts.noDrafts")}</div>
+        <div className="font-medium text-slate-700 dark:text-slate-300">{t("pages.drafts.noDrafts")}</div>
         <p className="mt-1">{t("pages.dashFragments.draftLandsHere")}{" "}
           <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.drafts.openContact")}</Link>{" "}{t("pages.dashFragments.clickGenerate")}</p>
       </div>
@@ -164,7 +164,7 @@ function DraftListItem({
       type="button"
       onClick={onSelect}
       className={`grid w-full grid-cols-[auto_1fr_auto] gap-2 px-3 py-3 text-left transition-colors ${
-        active ? "bg-brand-accent/5" : "hover:bg-slate-50"
+        active ? "bg-brand-accent/5" : "hover:bg-slate-50 dark:hover:bg-slate-800"
       }`}
     >
       <span
@@ -175,7 +175,7 @@ function DraftListItem({
       </span>
       <span className="min-w-0">
         <span className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-medium text-slate-900">
+          <span className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
             {draft.contactFullName}
           </span>
           {draft.edited && (
@@ -359,12 +359,12 @@ function DraftDetail({
 
   return (
     <div className="flex h-full flex-col">
-      <header className="border-b border-slate-100 p-4">
+      <header className="border-b border-slate-100 dark:border-slate-700 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link
               href={`/dashboard/sphere/${draft.contactId}`}
-              className="text-sm font-semibold text-slate-900 hover:underline"
+              className="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:underline"
             >
               {draft.contactFullName}
             </Link>
@@ -398,7 +398,7 @@ function DraftDetail({
         </div>
       </header>
 
-      <section className="grid flex-1 grid-cols-1 divide-slate-100 lg:grid-cols-2 lg:divide-x">
+      <section className="grid flex-1 grid-cols-1 divide-slate-100 dark:divide-slate-800 lg:grid-cols-2 lg:divide-x">
         <div className="flex flex-col gap-3 p-4">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
             {isPending ? t("common:actions.edit") : t("common:actions.view")}
@@ -411,7 +411,7 @@ function DraftDetail({
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={!isPending}
-                className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-50"
+                className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm disabled:bg-slate-50"
               />
             </label>
           )}
@@ -422,17 +422,17 @@ function DraftDetail({
               onChange={(e) => setBody(e.target.value)}
               disabled={!isPending}
               rows={draft.channel === "sms" ? 6 : 14}
-              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono leading-relaxed disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-mono leading-relaxed disabled:bg-slate-50"
             />
           </label>
 
           {isPending ? (
-            <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+            <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-700 pt-3">
               <button
                 type="button"
                 onClick={() => void saveEdit()}
                 disabled={!dirty || saving !== null}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
               >
                 {saving === "edit" ? t("common:status.saving") : t("pages.drafts.saveEdit")}
               </button>
@@ -448,13 +448,13 @@ function DraftDetail({
                 type="button"
                 onClick={() => setShowRejectBox((v) => !v)}
                 disabled={saving !== null}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
               >{t("pages.drafts.reject")}</button>
               {message && <span className="text-sm text-green-700">{message}</span>}
               {error && <span className="text-sm text-red-600">{error}</span>}
             </div>
           ) : (
-            <div className="border-t border-slate-100 pt-3 text-xs text-slate-500 space-y-2">
+            <div className="border-t border-slate-100 dark:border-slate-700 pt-3 text-xs text-slate-500 space-y-2">
               {draft.status === "approved" && (
                 <div className="flex flex-wrap items-center gap-2">
                   <span>{t("pages.dashFragments.queuedCron")}{draft.scheduledFor && (
@@ -485,7 +485,7 @@ function DraftDetail({
           )}
 
           {showRejectBox && isPending && (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
               <label className="block">
                 <span className="text-[11px] font-medium text-slate-500">{t("pages.drafts.reason")}</span>
                 <input
@@ -493,7 +493,7 @@ function DraftDetail({
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder={t("pages.drafts.reasonPlaceholder")}
-                  className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                 />
               </label>
               <div className="mt-2 flex gap-2">
@@ -508,7 +508,7 @@ function DraftDetail({
                 <button
                   type="button"
                   onClick={() => setShowRejectBox(false)}
-                  className="rounded-lg px-3 py-2 text-xs text-slate-600 hover:bg-slate-100"
+                  className="rounded-lg px-3 py-2 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >{t("pages.drafts.cancel")}</button>
               </div>
             </div>
@@ -519,8 +519,8 @@ function DraftDetail({
           <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
             To
           </div>
-          <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-            <div className="font-medium text-slate-900">{draft.contactFullName}</div>
+          <div className="mt-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3 text-sm">
+            <div className="font-medium text-slate-900 dark:text-slate-100">{draft.contactFullName}</div>
             <div className="text-xs text-slate-500">
               {draft.channel === "sms" ? draft.contactPhone ?? "(no phone)" : draft.contactEmail ?? "(no email)"}
             </div>
@@ -529,7 +529,7 @@ function DraftDetail({
           {Object.keys(draft.triggerContext).length > 0 && (
             <>
               <div className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.drafts.triggerContext")}</div>
-              <pre className="mt-2 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-[11px] text-slate-700">
+              <pre className="mt-2 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3 text-[11px] text-slate-700 dark:text-slate-300">
                 {JSON.stringify(draft.triggerContext, null, 2)}
               </pre>
             </>

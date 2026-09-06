@@ -51,7 +51,7 @@ export function Toggle({
       } ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
       <span
-        className={`inline-block ${thumb} transform rounded-full bg-white shadow transition-transform ${shift}`}
+        className={`inline-block ${thumb} transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${shift}`}
       />
     </button>
   );

@@ -120,7 +120,7 @@ export default function AppDashboardShell({
     // bar with it. Pinning the shell to the viewport is what makes the content
     // pane the only thing that scrolls. dvh rather than vh so mobile browser
     // chrome doesn't cut the bottom off.
-    <div className="flex h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/70 text-slate-900">
+    <div className="flex h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/70 text-slate-900 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 dark:text-slate-100 dark:text-slate-100">
       {/* Left: sidebar spans full height (same as PropertyTools) */}
       <PremiumSidebarV2
         appName={APP_NAME}
@@ -145,7 +145,7 @@ export default function AppDashboardShell({
         </div>
         <main
           id="agent-portal-main"
-          className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/60 px-4 py-6 md:px-8 md:py-8 lg:px-10"
+          className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/60 dark:bg-slate-900/60 px-4 py-6 md:px-8 md:py-8 lg:px-10"
         >
           {/* The root layout's skip link targets #main-content; this is the
               focusable landing spot for it inside the dashboard shell. */}
@@ -181,9 +181,9 @@ export function DashboardShell({
   return (
     <div className={cn("min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6", className)}>
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="border-b border-slate-200/80 pb-6">
+        <div className="border-b border-slate-200/80 dark:border-slate-700 pb-6">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("pages.oneWord.admin")}</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">{title}</h1>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
         </div>
 

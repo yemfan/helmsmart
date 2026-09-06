@@ -184,7 +184,7 @@ export default async function ConnectPage({ searchParams }: PageProps) {
     <div className="mx-auto max-w-3xl px-4 py-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
             {t("connect.title", { ns: "web_generate_leads" })}
           </h1>
           <p className="text-sm text-slate-500">

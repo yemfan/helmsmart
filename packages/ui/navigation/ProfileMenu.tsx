@@ -138,7 +138,7 @@ export function ProfileMenu({
   const menuPanel = (
     <div
       ref={menuRef}
-      className="fixed z-[200] w-[min(100vw-2rem,15.5rem)] rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04]"
+      className="fixed z-[200] w-[min(100vw-2rem,15.5rem)] rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04] dark:ring-slate-100/10"
       role="menu"
       style={
         placement
@@ -146,9 +146,9 @@ export function ProfileMenu({
           : { visibility: "hidden", pointerEvents: "none" }
       }
     >
-      <div className="border-b border-slate-100 px-3 py-2.5">
+      <div className="border-b border-slate-100 dark:border-slate-700 px-3 py-2.5">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Signed in</p>
-        <p className="truncate text-sm font-medium text-slate-900">{name}</p>
+        <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{name}</p>
         {email ? <p className="truncate text-xs text-slate-500">{email}</p> : null}
       </div>
       <div className="mt-1 space-y-0.5">
@@ -156,7 +156,7 @@ export function ProfileMenu({
           <MenuLink
             href={profileHref}
             onClick={close}
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <User className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
             Profile
@@ -166,7 +166,7 @@ export function ProfileMenu({
           <MenuLink
             href={settingsHref}
             onClick={close}
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <Settings className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
             Settings
@@ -176,7 +176,7 @@ export function ProfileMenu({
           <MenuLink
             href={billingHref}
             onClick={close}
-            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             <CreditCard className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
             {billingLabel}
@@ -184,7 +184,7 @@ export function ProfileMenu({
         ) : null}
       </div>
       {onLogout ? (
-        <div className="mt-1 border-t border-slate-100 pt-1">
+        <div className="mt-1 border-t border-slate-100 dark:border-slate-700 pt-1">
           <button
             type="button"
             role="menuitem"
@@ -208,7 +208,7 @@ export function ProfileMenu({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white px-3 py-2 text-left shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300/90 hover:bg-slate-50/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
+        className="inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-left shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition hover:border-slate-300/90 hover:bg-slate-50/80 dark:hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
         aria-expanded={open}
         aria-haspopup="menu"
       >
@@ -216,7 +216,7 @@ export function ProfileMenu({
           {initials(name)}
         </div>
         <div className="hidden min-w-0 text-left leading-tight sm:block">
-          <div className="truncate text-sm font-medium text-slate-900">{name}</div>
+          <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{name}</div>
           {email ? <div className="max-w-[140px] truncate text-xs text-slate-500">{email}</div> : null}
         </div>
         <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />

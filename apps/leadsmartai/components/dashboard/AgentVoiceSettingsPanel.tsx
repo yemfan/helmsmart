@@ -115,7 +115,7 @@ export default function AgentVoiceSettingsPanel() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-slate-600">{t("pages.agentVoice.intro")}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-400">{t("pages.agentVoice.intro")}</p>
 
       <div className="space-y-1">
         <span className="block text-[11px] font-medium text-slate-500">{t("pages.oneWord.provider")}</span>
@@ -126,7 +126,7 @@ export default function AgentVoiceSettingsPanel() {
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer text-sm ${
                 settings.provider === p
                   ? "border-brand-accent bg-brand-accent/5"
-                  : "border-slate-200 hover:border-slate-300"
+                  : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
               }`}
             >
               <input
@@ -145,7 +145,7 @@ export default function AgentVoiceSettingsPanel() {
       <div className="space-y-1">
         <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.presetVoice")}</label>
         <select
-          className="w-full max-w-md border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+          className="w-full max-w-md border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.presetVoiceId}
           onChange={(e) => setSettings((s) => ({ ...s, presetVoiceId: e.target.value }))}
         >
@@ -166,7 +166,7 @@ export default function AgentVoiceSettingsPanel() {
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer text-sm capitalize ${
                 settings.speakingStyle === st
                   ? "border-brand-accent bg-brand-accent/5"
-                  : "border-slate-200 hover:border-slate-300"
+                  : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
               }`}
             >
               <input
@@ -185,7 +185,7 @@ export default function AgentVoiceSettingsPanel() {
       <div className="space-y-1">
         <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.defaultLanguage")}</label>
         <select
-          className="w-full max-w-xs border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+          className="w-full max-w-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.defaultLanguage}
           onChange={(e) =>
             setSettings((s) => ({
@@ -213,17 +213,17 @@ export default function AgentVoiceSettingsPanel() {
           Neither is something an agent picks; both were taking the same room
           as the voice and speaking style that are. */}
       <AdvancedSection count={2}>
-        <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50/80 p-3 space-y-2">
-          <div className="text-[11px] font-semibold text-slate-600">{t("pages.agentVoice.customVoice")}</div>
+        <div className="rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/60 p-3 space-y-2">
+          <div className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{t("pages.agentVoice.customVoice")}</div>
           <p className="text-[11px] text-slate-500">
             {t("pages.agentVoice.cloneBefore")} <span className="font-mono">voice_clone_*</span>{t("pages.agentVoice.cloneAfter")}
           </p>
         </div>
 
-        <div className="border-t border-slate-100 pt-4 space-y-2">
-          <div className="text-sm font-semibold text-slate-700">{t("pages.agentVoice.preview")}</div>
-          <p className="text-[11px] text-slate-500">{t("pages.agentVoice.englishLabel")}<span className="font-mono text-slate-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
-            <span className="font-mono text-slate-700">{previewPlayback.voiceZh}</span>
+        <div className="border-t border-slate-100 dark:border-slate-700 pt-4 space-y-2">
+          <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.agentVoice.preview")}</div>
+          <p className="text-[11px] text-slate-500">{t("pages.agentVoice.englishLabel")}<span className="font-mono text-slate-700 dark:text-slate-300">{previewPlayback.voiceEn}</span> · Chinese:{" "}
+            <span className="font-mono text-slate-700 dark:text-slate-300">{previewPlayback.voiceZh}</span>
             {previewPlayback.ratePercent ? (
               <>
                 {" "}
@@ -231,8 +231,8 @@ export default function AgentVoiceSettingsPanel() {
               </>
             ) : null}
           </p>
-          <p className="text-[11px] text-slate-600">{t("pages.dashFragments.disclosureSample")}{" "}
-            <span className="italic text-slate-800">{VOICE_BILINGUAL_GREETING_EN}</span>
+          <p className="text-[11px] text-slate-600 dark:text-slate-400">{t("pages.dashFragments.disclosureSample")}{" "}
+            <span className="italic text-slate-800 dark:text-slate-200">{VOICE_BILINGUAL_GREETING_EN}</span>
           </p>
           {activePreset ? (
             <p className="text-[10px] text-slate-500">{t("pages.agentVoice.futureVoiceId")}<span className="font-mono">{activePreset.openaiVoiceId}</span>

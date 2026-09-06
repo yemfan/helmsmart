@@ -207,7 +207,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
           </Link>
           {" / Record offer"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("pages.newListingOffer.recordOffer")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t("pages.newListingOffer.recordOffer")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.newListingOffer.recordOfferSub")}</p>
       </div>
 
@@ -232,14 +232,14 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
         }}
         className={`flex cursor-pointer items-center justify-between gap-3 rounded-2xl border-2 border-dashed px-4 py-4 text-sm transition-colors ${
           dragActive
-            ? "border-slate-700 bg-slate-50"
+            ? "border-slate-700 bg-slate-50 dark:bg-slate-900/60"
             : uploading
-              ? "border-slate-300 bg-slate-50"
-              : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+              ? "border-slate-300 dark:border-slate-700 bg-slate-50"
+              : "border-slate-300 hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         }`}
       >
         <div className="min-w-0">
-          <div className="font-medium text-slate-800">
+          <div className="font-medium text-slate-800 dark:text-slate-200">
             {uploading
               ? t("pages.newListingOffer.readingOfferPdf")
               : parsedSummary
@@ -274,7 +274,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
         <p className="-mt-3 text-xs text-rose-600">{uploadError}</p>
       ) : null}
 
-      <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         {/* ── Buyer ───────────────────────────────────────────── */}
         <fieldset className="space-y-3">
           <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.buyer")}</legend>
@@ -483,7 +483,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link
             href={`/dashboard/listings/${encodeURIComponent(listing.id)}`}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.newListingOffer.cancel")}</Link>
           <button
             type="button"
@@ -511,7 +511,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">{label}</label>
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       {children}
       {hint ? <p className="mt-1 text-[11px] text-slate-500">{hint}</p> : null}
     </div>

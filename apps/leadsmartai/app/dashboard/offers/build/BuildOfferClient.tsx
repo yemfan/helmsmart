@@ -138,13 +138,13 @@ export function BuildOfferClient() {
           <Link href="/dashboard/offers" className="hover:underline">{t("pages.buildOffer.offers")}</Link>
           {" / Build with AI"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.buildOffer.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.buildOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.buildOffer.sub")}</p>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.buyer")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.buildOffer.buyer")}</label>
           <ContactPicker value={contact} onChange={setContact} helperText="Who is this offer for?" className="mt-1" />
         </div>
         <Field label={t("pages.buildOffer.address")} value={address} onChange={setAddress} placeholder={t("pages.buildOffer.addressPlaceholder")} />
@@ -153,11 +153,11 @@ export function BuildOfferClient() {
           <Field label={t("pages.buildOffer.cmaValue")} value={estimatedValue} onChange={setEstimatedValue} type="number" placeholder="1220000" />
           <Field label={t("pages.buildOffer.maxBudget")} value={buyerMaxBudget} onChange={setBuyerMaxBudget} type="number" placeholder="1300000" />
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.financing")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.buildOffer.financing")}</label>
             <select
               value={financingType}
               onChange={(e) => setFinancingType(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             >
               <option value="">—</option>
               <option value="cash">{t("pages.buildOffer.cash")}</option>
@@ -168,11 +168,11 @@ export function BuildOfferClient() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.market")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.buildOffer.market")}</label>
             <select
               value={marketHeat}
               onChange={(e) => setMarketHeat(e.target.value as "" | "hot" | "balanced" | "cool")}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             >
               <option value="">—</option>
               <option value="hot">{t("pages.buildOffer.marketHot")}</option>
@@ -183,20 +183,20 @@ export function BuildOfferClient() {
           <Field label={t("pages.buildOffer.competingOffers")} value={competingOffers} onChange={setCompetingOffers} type="number" placeholder="3" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.buyerNotes")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.buildOffer.buyerNotes")}</label>
           <textarea
             value={motivation}
             onChange={(e) => setMotivation(e.target.value)}
             rows={2}
             placeholder={t("pages.buildOffer.buyerNotesPlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
         <div className="flex items-center justify-end gap-2 pt-1">
-          <Link href="/dashboard/offers" className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{t("pages.buildOffer.cancel")}</Link>
+          <Link href="/dashboard/offers" className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.buildOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void build()}
@@ -209,9 +209,9 @@ export function BuildOfferClient() {
       </div>
 
       {result ? (
-        <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.buildOffer.recommended")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.buildOffer.recommended")}</h2>
             <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700">
               {result.strategy}
             </span>
@@ -230,18 +230,18 @@ export function BuildOfferClient() {
               return (
                 <span
                   key={k}
-                  className={`rounded-full px-2 py-0.5 font-medium ${keep ? "bg-slate-100 text-slate-700" : "bg-amber-100 text-amber-800"}`}
+                  className={`rounded-full px-2 py-0.5 font-medium ${keep ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" : "bg-amber-100 text-amber-800"}`}
                 >
                   {k}: {keep ? t("pages.buildOffer.keep") : t("pages.buildOffer.waive")}
                 </span>
               );
             })}
           </div>
-          {result.rationale ? <p className="text-sm leading-relaxed text-slate-700">{result.rationale}</p> : null}
+          {result.rationale ? <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{result.rationale}</p> : null}
           {result.coverLetter ? (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.buildOffer.coverLetter")}</p>
-              <p className="mt-1 whitespace-pre-line text-sm text-slate-700">{result.coverLetter}</p>
+              <p className="mt-1 whitespace-pre-line text-sm text-slate-700 dark:text-slate-300">{result.coverLetter}</p>
             </div>
           ) : null}
           <p className="text-[10px] italic text-slate-400">{t("disclaimers.buildOffer")}</p>
@@ -279,13 +279,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">{label}</label>
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       <input
         type={type ?? "text"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+        className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
       />
     </div>
   );
@@ -293,9 +293,9 @@ function Field({
 
 function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+    <div className="rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2">
       <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
-      <div className={`mt-0.5 text-sm font-semibold ${highlight ? "text-[#0072ce]" : "text-slate-900"}`}>{value}</div>
+      <div className={`mt-0.5 text-sm font-semibold ${highlight ? "text-[#0072ce]" : "text-slate-900 dark:text-slate-100"}`}>{value}</div>
     </div>
   );
 }

@@ -210,7 +210,7 @@ export default function BrandingSettingsPanel() {
           onChange={(e) => setBranding((b) => ({ ...b, brandName: e.target.value }))}
           placeholder={t("branding.brandNamePlaceholder")}
           maxLength={200}
-          className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm"
         />
         <p className="text-[11px] text-slate-500">
           {t("branding.brandNameHelp")}
@@ -232,7 +232,7 @@ export default function BrandingSettingsPanel() {
           </label>
           {branding.logoUrl ? (
             <div className="flex items-center gap-3">
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+              <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-2">
                 <img
                   src={branding.logoUrl}
                   alt={t("branding.logoAlt")}
@@ -247,14 +247,14 @@ export default function BrandingSettingsPanel() {
                   type="button"
                   onClick={() => logoInputRef.current?.click()}
                   disabled={uploading}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   {uploading ? t("branding.uploading") : t("branding.change")}
                 </button>
                 <button
                   type="button"
                   onClick={removeLogo}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
                 >
                   {t("branding.remove")}
                 </button>
@@ -265,7 +265,7 @@ export default function BrandingSettingsPanel() {
               type="button"
               onClick={() => logoInputRef.current?.click()}
               disabled={uploading}
-              className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/50 px-4 py-3 text-sm text-slate-500 hover:border-blue-400 hover:bg-blue-50/30 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 px-4 py-3 text-sm text-slate-500 hover:border-blue-400 hover:bg-blue-50/30 disabled:opacity-50"
             >
               <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -323,7 +323,7 @@ export default function BrandingSettingsPanel() {
               placeholder={t("branding.signaturePlaceholder")}
               maxLength={2000}
               rows={6}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono"
+              className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-mono"
             />
             <p className="text-[11px] text-slate-500">{t("pages.branding.signatureHint")}</p>
             <button
@@ -333,11 +333,11 @@ export default function BrandingSettingsPanel() {
                 setBranding((b) => ({ ...b, signatureHtml: saved.signatureHtml }));
                 setPreview({ kind: "idle" });
               }}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >{t("pages.branding.cancel")}</button>
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50/60 p-4 text-xs text-slate-500">
+          <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-4 text-xs text-slate-500">
             {branding.signatureHtml ? (
               <>{t("branding.customSet")} <span className="font-medium">{t("branding.preview")}</span> {t("branding.previewTail")} <span className="font-medium">{t("branding.change")}</span> {t("branding.editTail")}</>
             ) : (
@@ -348,7 +348,7 @@ export default function BrandingSettingsPanel() {
 
         {/* Rendered preview — shown under either editor or the default hint */}
         {preview.kind === "ready" && (
-          <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
             <div className="mb-2 flex items-center justify-between">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t("branding.previewHeader")}
@@ -372,14 +372,14 @@ export default function BrandingSettingsPanel() {
                 </button>
               </div>
             </div>
-            <div className="rounded border border-slate-100 bg-white p-4">
-              <div className="text-sm text-slate-700">
+            <div className="rounded border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+              <div className="text-sm text-slate-700 dark:text-slate-300">
                 <em className="text-slate-400">
                   {t("branding.bodyEndsHere")}
                 </em>
               </div>
               <div
-                className="mt-2 text-sm text-slate-700"
+                className="mt-2 text-sm text-slate-700 dark:text-slate-300"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(preview.html) }}
               />
             </div>
@@ -387,7 +387,7 @@ export default function BrandingSettingsPanel() {
               <summary className="cursor-pointer text-[11px] text-slate-500 hover:text-slate-700">
                 {t("branding.plainTextVariant")}
               </summary>
-              <pre className="mt-1 whitespace-pre-wrap rounded bg-slate-50 p-2 text-[11px] text-slate-600">
+              <pre className="mt-1 whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-900/60 p-2 text-[11px] text-slate-600 dark:text-slate-400">
 {preview.text}
               </pre>
             </details>
@@ -428,7 +428,7 @@ export default function BrandingSettingsPanel() {
             }))
           }
           placeholder={t("branding.leadAdPlaceholder")}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
         <p className="text-[11px] text-slate-500">
           {t("branding.leadAdHelp")}

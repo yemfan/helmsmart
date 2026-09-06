@@ -120,7 +120,7 @@ export default function MissedCallActivityLog() {
         <button
           type="button"
           onClick={() => void refresh()}
-          className="ml-auto rounded-full border border-slate-200 px-3 py-1 font-medium text-slate-600 hover:bg-slate-50"
+          className="ml-auto rounded-full border border-slate-200 dark:border-slate-700 px-3 py-1 font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           disabled={loading}
         >
           {loading ? t("common:status.refreshing") : t("common:actions.refresh")}
@@ -133,7 +133,7 @@ export default function MissedCallActivityLog() {
       ) : loading && events.length === 0 ? (
         <p className="text-sm text-slate-500"><LoadingText /></p>
       ) : visible.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 text-center">
           <p className="text-sm text-slate-500">
             {events.length === 0
               ? t("pages.missedCallActivityLog.noCallActivityYet")
@@ -141,13 +141,13 @@ export default function MissedCallActivityLog() {
           </p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           {visible.map((ev) => (
             <li key={ev.id} className="px-4 py-3">
               <div className="flex items-start gap-3">
                 <CallStatusBadge status={ev.status} direction={ev.direction} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-900">
+                  <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                     {ev.contact_name ?? ev.from_phone ?? ev.to_phone ?? t("pages.missedCallActivityLog.unknown")}
                   </p>
                   <p className="truncate text-xs text-slate-500">
@@ -180,8 +180,8 @@ export default function MissedCallActivityLog() {
                   can expand to see the actual SMS that went out. */}
               {ev.textback_sent && ev.textback_message && (
                 <details className="ml-9 mt-2">
-                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.missedCallLog.showBody")}</summary>
-                  <blockquote className="mt-2 rounded-lg border-l-2 border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs leading-relaxed text-slate-700">
+                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900">{t("pages.missedCallLog.showBody")}</summary>
+                  <blockquote className="mt-2 rounded-lg border-l-2 border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
                     {ev.textback_message}
                     {ev.textback_sent_at && (
                       <span className="mt-1 block text-[10px] uppercase tracking-wider text-slate-400">
@@ -241,7 +241,7 @@ function FilterChip({
       className={`rounded-full px-3 py-1 font-medium ${
         active
           ? "bg-blue-600 text-white"
-          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
       }`}
     >
       {label}

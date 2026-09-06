@@ -243,9 +243,9 @@ export default function HouseSearchClient() {
   return (
     <div className="space-y-6">
       {/* Query */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
-          <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900">{t("pages.houseSearch.whatLookingFor")}</label>
+          <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.houseSearch.whatLookingFor")}</label>
           {quota ? <QuotaPill quota={quota} /> : null}
         </div>
         <textarea
@@ -254,7 +254,7 @@ export default function HouseSearchClient() {
           onChange={(e) => setQuery(e.target.value)}
           rows={3}
           placeholder={t("houseSearch.placeholder")}
-          className="mt-2 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+          className="mt-2 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
           disabled={loading}
         />
         <div className="mt-3 flex items-center justify-between gap-3">
@@ -281,7 +281,7 @@ export default function HouseSearchClient() {
       <SavedSearchesPanel contacts={contacts} onLoad={loadSavedSearch} activeId={tracked?.id ?? null} />
 
       {loading ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-10 text-center text-sm text-slate-600 dark:text-slate-400">
           {t("pages.houseSearch.searchingWeb")}
         </div>
       ) : null}
@@ -307,7 +307,7 @@ export default function HouseSearchClient() {
                 <select
                   value={tracked.autoRun ? tracked.autoRunFrequency ?? "daily" : "off"}
                   onChange={(e) => void setSchedule(e.target.value as "off" | "daily" | "weekly")}
-                  className="rounded-lg border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-slate-700"
+                  className="rounded-lg border border-emerald-300 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300"
                 >
                   <option value="off">{t("houseSearch.off")}</option>
                   <option value="daily">{t("houseSearch.daily")}</option>
@@ -333,15 +333,15 @@ export default function HouseSearchClient() {
           )}
 
           {/* Interpretation + refinements */}
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.howIReadThis")}</h2>
-            <p className="mt-1 text-sm text-slate-600">{result.interpreted}</p>
+          <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("houseSearch.howIReadThis")}</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{result.interpreted}</p>
             {result.criteria.length > 0 ? (
               <ul className="mt-2 flex flex-wrap gap-2">
                 {result.criteria.map((c, i) => (
                   <li
                     key={i}
-                    className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700"
+                    className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300"
                   >
                     {c}
                   </li>
@@ -350,11 +350,11 @@ export default function HouseSearchClient() {
             ) : null}
 
             {result.refinements.length > 0 ? (
-              <div className="mt-4 border-t border-slate-100 pt-4">
+              <div className="mt-4 border-t border-slate-100 dark:border-slate-700 pt-4">
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.houseSearch.refine")}</h3>
                 <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {result.refinements.map((r) => (
-                    <label key={r.id} className="flex items-center gap-2 text-sm text-slate-700">
+                    <label key={r.id} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <input
                         type="checkbox"
                         checked={checkedRefinements.has(r.id)}
@@ -366,7 +366,7 @@ export default function HouseSearchClient() {
                             return next;
                           });
                         }}
-                        className="h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600"
+                        className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-emerald-700 focus:ring-emerald-600"
                       />
                       {r.label}
                     </label>
@@ -376,7 +376,7 @@ export default function HouseSearchClient() {
                   type="button"
                   onClick={onRefine}
                   disabled={checkedRefinements.size === 0}
-                  className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >{t("pages.dashFragments.refineSearch")}{checkedRefinements.size})
                 </button>
               </div>
@@ -384,9 +384,9 @@ export default function HouseSearchClient() {
           </section>
 
           {/* Listings */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-              <h2 className="text-sm font-semibold text-slate-900">
+          <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+            <header className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {result.listings.length} {result.listings.length === 1 ? "listing" : "listings"}
               </h2>
               <span className="text-xs text-slate-500">{t("pages.houseSearch.selectedCount", { count: selected.size })}</span>
@@ -395,7 +395,7 @@ export default function HouseSearchClient() {
             {result.listings.length === 0 ? (
               <div className="px-5 py-8 text-center text-sm text-slate-500">{t("pages.houseSearch.noMatches")}</div>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                 {result.listings.map((l, i) => (
                   <li key={i} className="flex items-start gap-3 px-5 py-4">
                     <input
@@ -409,12 +409,12 @@ export default function HouseSearchClient() {
                           return next;
                         });
                       }}
-                      className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600"
+                      className="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-emerald-700 focus:ring-emerald-600"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-3">
-                        <p className="truncate text-sm font-semibold text-slate-900">{l.address}</p>
-                        <p className="shrink-0 text-sm font-bold tabular-nums text-slate-900">
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{l.address}</p>
+                        <p className="shrink-0 text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100">
                           {money(l.price, t)}
                         </p>
                       </div>
@@ -422,7 +422,7 @@ export default function HouseSearchClient() {
                         <p className="mt-0.5 text-xs text-slate-500">{metaLine(l)}</p>
                       ) : null}
                       {l.matchReason ? (
-                        <p className="mt-1 text-xs text-slate-600">{l.matchReason}</p>
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{l.matchReason}</p>
                       ) : null}
                       {l.listingUrl ? (
                         <a
@@ -525,9 +525,9 @@ function SavedSearchesPanel({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.savedSearches")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("houseSearch.savedSearches")}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -535,11 +535,11 @@ function SavedSearchesPanel({
         >{t("pages.houseSearch.close")}</button>
       </div>
       <label className="mt-2 block">
-        <span className="text-xs font-semibold text-slate-700">{t("tasks.columns.contact")}</span>
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("tasks.columns.contact")}</span>
         <select
           value={contactId}
           onChange={(e) => void load(e.target.value)}
-          className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+          className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
         >
           <option value="">— Select a contact —</option>
           {contacts.map((c) => (
@@ -554,11 +554,11 @@ function SavedSearchesPanel({
         <p className="mt-3 text-xs text-slate-500">{t("houseSearch.noSavedSearches")}</p>
       ) : null}
       {items && items.length > 0 ? (
-        <ul className="mt-3 divide-y divide-slate-100">
+        <ul className="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
           {items.map((s) => (
             <li key={s.id} className="flex items-center justify-between gap-3 py-2">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-slate-900">
+                <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {s.name}
                   {activeId === s.id ? " · open" : ""}
                 </p>
@@ -572,7 +572,7 @@ function SavedSearchesPanel({
               <button
                 type="button"
                 onClick={() => onLoad(s.id)}
-                className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                className="shrink-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >{t("pages.houseSearch.open")}</button>
             </li>
           ))}
@@ -646,7 +646,7 @@ function SaveToContactPanel({
           setOpen(true);
           setName(query.slice(0, 80));
         }}
-        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800"
       >
         ☆ Save this search to a contact
       </button>
@@ -654,9 +654,9 @@ function SaveToContactPanel({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.saveToContact")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("houseSearch.saveToContact")}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -665,11 +665,11 @@ function SaveToContactPanel({
       </div>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">{t("tasks.columns.contact")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("tasks.columns.contact")}</span>
           <select
             value={contactId}
             onChange={(e) => setContactId(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           >
             <option value="">— Select a contact —</option>
             {contacts.map((c) => (
@@ -680,12 +680,12 @@ function SaveToContactPanel({
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">{t("detail.transaction.name")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("detail.transaction.name")}</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Pasadena 3bd under $1.2M"
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           />
         </label>
       </div>
@@ -797,9 +797,9 @@ function EmailToBuyer({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.houseSearch.emailListingsToBuyer", { count: selectedListings.length })}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.houseSearch.emailListingsToBuyer", { count: selectedListings.length })}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -809,11 +809,11 @@ function EmailToBuyer({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.buyerFromContacts")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("houseSearch.buyerFromContacts")}</span>
           <select
             value={contactId}
             onChange={(e) => onPickContact(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           >
             <option value="">— Select a contact —</option>
             {contacts.map((c) => (
@@ -824,32 +824,32 @@ function EmailToBuyer({
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.firstName")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("houseSearch.firstName")}</span>
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="optional"
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           />
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.emailAddress")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("houseSearch.emailAddress")}</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="buyer@example.com"
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           />
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.personalNote")}</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("houseSearch.personalNote")}</span>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={2}
             placeholder={t("pages.houseSearch.quickLineToBuyer")}
-            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+            className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           />
         </label>
       </div>

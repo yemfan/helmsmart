@@ -41,8 +41,8 @@ export default async function AutomationPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{t("pages.automation.heading", { ns: "dashboard" })}</h1>
-        <p className="text-sm text-slate-600">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t("pages.automation.heading", { ns: "dashboard" })}</h1>
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           {t("pages.automation.intro", { ns: "dashboard" })}
         </p>
       </div>
@@ -51,20 +51,20 @@ export default async function AutomationPage() {
 
       <ReengagementPanel isAdmin={isAdmin} />
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-3">
-        <div className="text-sm font-semibold text-slate-900">{t("pages.automation.rules", { ns: "dashboard" })}</div>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 space-y-3">
+        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.automation.rules", { ns: "dashboard" })}</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {(rules as any[])?.map((r) => (
             <form
               key={r.id}
               action={`/api/dashboard/automation/rules/${r.id}`}
               method="post"
-              className="border border-slate-200 rounded-xl p-4 bg-slate-50"
+              className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50 dark:bg-slate-900/60"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-sm font-semibold text-slate-900">{r.name}</div>
-                  <div className="text-xs text-slate-600">
+                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{r.name}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">
                     {t("pages.automation.trigger", { ns: "dashboard" })} <span className="font-semibold">{r.trigger_type}</span>
                   </div>
                 </div>
@@ -73,7 +73,7 @@ export default async function AutomationPage() {
                   type="submit"
                   className={`text-xs font-semibold px-3 py-2 rounded-lg border ${
                     r.active
-                      ? "bg-white border-slate-300 text-slate-800 hover:bg-slate-100"
+                      ? "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                       : "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
                   }`}
                 >
@@ -88,13 +88,13 @@ export default async function AutomationPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-200">
-          <div className="text-sm font-semibold text-slate-900">{t("pages.automation.recentMessages", { ns: "dashboard" })}</div>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.automation.recentMessages", { ns: "dashboard" })}</div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="text-left px-4 py-3 font-semibold">{t("pages.automation.colWhen", { ns: "dashboard" })}</th>
                 <th className="text-left px-4 py-3 font-semibold">{t("pages.automation.colLead", { ns: "dashboard" })}</th>
@@ -105,8 +105,8 @@ export default async function AutomationPage() {
             </thead>
             <tbody>
               {(logs as any[])?.map((l) => (
-                <tr key={l.id} className="border-t border-slate-100">
-                  <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                <tr key={l.id} className="border-t border-slate-100 dark:border-slate-700">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">
                     {l.created_at ? new Date(l.created_at).toLocaleString(locale) : "—"}
                   </td>
                   <td className="px-4 py-3">{String(l.contact_id)}</td>
@@ -116,14 +116,14 @@ export default async function AutomationPage() {
                       {l.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-700 max-w-xl">
+                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300 max-w-xl">
                     <div className="line-clamp-3 whitespace-pre-line">{l.message}</div>
                   </td>
                 </tr>
               ))}
               {!(logs as any[])?.length ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-slate-600">
+                  <td colSpan={5} className="px-4 py-8 text-slate-600 dark:text-slate-400">
                     {t("pages.automation.empty", { ns: "dashboard" })}
                   </td>
                 </tr>

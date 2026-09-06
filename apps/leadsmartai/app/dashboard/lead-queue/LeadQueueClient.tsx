@@ -118,14 +118,14 @@ export function LeadQueueClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.leadQueue.heading")}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadQueue.heading")}</h1>
           <p className="text-sm text-slate-500">
             {t("pages.leadQueue.availableCount", { count: total })}
           </p>
         </div>
         <button
           onClick={() => { setLoading(true); fetchQueue(); }}
-          className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >{t("pages.leadQueue.refresh")}</button>
       </div>
 
@@ -136,7 +136,7 @@ export function LeadQueueClient() {
       {feedback && <FeedbackBanner feedback={feedback} />}
 
       {leads.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-6 py-16 text-center shadow-sm">
           <p className="text-slate-500">{t("pages.leadQueue.empty")}</p>
           <p className="mt-1 text-sm text-slate-400">{t("pages.leadQueue.emptyHint")}</p>
         </div>
@@ -147,10 +147,10 @@ export function LeadQueueClient() {
             return (
               <div
                 key={id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm"
               >
                 <div className="mb-3 space-y-1">
-                  <h3 className="font-medium text-slate-900 truncate">
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100 truncate">
                     {lead.name || t("pages.bossAssistant.unnamedLead")}
                   </h3>
                   {lead.email && (
@@ -165,7 +165,7 @@ export function LeadQueueClient() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                       {lead.source ?? "unknown"}
                     </span>
                     <span className="text-xs text-slate-400">

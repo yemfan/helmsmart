@@ -23,17 +23,17 @@ export default async function SchedulerActivityPage() {
             <Activity className="h-5 w-5" strokeWidth={2} aria-hidden />
           </span>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {t("pages.schedulerActivity.heading", { ns: "dashboard" })}
             </h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               {t("pages.schedulerActivity.intro", { ns: "dashboard" })}
             </p>
           </div>
         </div>
         <Link
           href="/dashboard/drafts"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           {t("pages.schedulerActivity.backToDrafts", { ns: "dashboard" })}
         </Link>

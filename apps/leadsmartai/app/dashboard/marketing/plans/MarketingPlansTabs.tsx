@@ -19,7 +19,7 @@ export default function MarketingPlansTabs({ initialTab }: { initialTab: "plans"
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-1 border-b border-slate-200">
+      <div className="mb-4 flex items-center gap-1 border-b border-slate-200 dark:border-slate-700">
         {(
           [
             { id: "plans", label: "Marketing Plans" },
@@ -47,18 +47,18 @@ export default function MarketingPlansTabs({ initialTab }: { initialTab: "plans"
       ) : (
         <div>
           <header className="mb-5 max-w-2xl">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">{t("pages.marketingPlansTabs.sphereTitle")}</h2>
-            <p className="mt-1 text-sm text-slate-600">{t("pages.marketingPlansTabs.sphereSub")}</p>
+            <h2 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t("pages.marketingPlansTabs.sphereTitle")}</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t("pages.marketingPlansTabs.sphereSub")}</p>
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
               <Link
                 href="/dashboard/sphere/likely-sellers"
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("pages.marketingPlans.sellerView")}
               </Link>
               <Link
                 href="/dashboard/sphere/likely-buyers"
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("pages.marketingPlans.buyerView")}
               </Link>

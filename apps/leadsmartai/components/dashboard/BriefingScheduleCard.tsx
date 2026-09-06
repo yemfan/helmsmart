@@ -108,7 +108,7 @@ export default function BriefingScheduleCard() {
             onChange={(e) =>
               setSettings((s) => ({ ...s, briefing_morning_time: e.target.value }))
             }
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-[11px] text-slate-500">
             {t("pages.briefingSchedule.morningBlurb")}
@@ -121,7 +121,7 @@ export default function BriefingScheduleCard() {
             onChange={(e) =>
               setSettings((s) => ({ ...s, briefing_evening_time: e.target.value }))
             }
-            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           <p className="mt-1 text-[11px] text-slate-500">
             {t("pages.briefingSchedule.eveningBlurb")}
@@ -173,7 +173,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-slate-700">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       {children}
     </div>
   );

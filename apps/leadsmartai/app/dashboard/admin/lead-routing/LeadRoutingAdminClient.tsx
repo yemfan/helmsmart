@@ -97,8 +97,8 @@ export default function LeadRoutingAdminClient() {
   if (loading) {
     return (
       <div className="space-y-3">
-        <div className="h-20 animate-pulse rounded-xl bg-slate-100" />
-        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
+        <div className="h-20 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
       </div>
     );
   }
@@ -120,13 +120,13 @@ export default function LeadRoutingAdminClient() {
 
       {!hasDbRules && roster.length > 0 ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.noDbRules")}{" "}
-          <code className="rounded bg-white/50 px-1 py-0.5 text-[12px]">
+          <code className="rounded bg-white dark:bg-slate-900/50 px-1 py-0.5 text-[12px]">
             IDX_ROUND_ROBIN_AGENT_IDS
           </code>{" "}{t("pages.dashFragments.envAllowlist")}</div>
       ) : null}
 
       {roster.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">{t("pages.leadRouting.noAgents")}</div>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-10 text-center text-sm text-slate-600 dark:text-slate-400">{t("pages.leadRouting.noAgents")}</div>
       ) : (
         <RosterTable roster={roster} />
       )}
@@ -155,9 +155,9 @@ function KpiStrip({
     },
   ];
   return (
-    <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200">
+    <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200">
       {cells.map((c) => (
-        <div key={c.label} className="bg-white px-4 py-3">
+        <div key={c.label} className="bg-white dark:bg-slate-900 px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             {c.label}
           </p>
@@ -172,11 +172,11 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
   const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.roster")}</h2>
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRouting.roster")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.sortedByActivity")}{" "}
-          <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">
+          <code className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-[11px]">
             in_round_robin = false
           </code>
           .
@@ -184,7 +184,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
       </header>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+          <thead className="bg-slate-50 dark:bg-slate-900/60 text-[11px] uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-2 text-left font-semibold">{t("pages.leadRouting.colAgent")}</th>
               <th className="px-4 py-2 text-center font-semibold">{t("pages.leadRouting.colSource")}</th>
@@ -199,9 +199,9 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
             {roster.map((r) => (
               <tr
                 key={r.agentId}
-                className={`border-t border-slate-100 ${r.inRoundRobin ? "" : "opacity-60"}`}
+                className={`border-t border-slate-100 dark:border-slate-700 ${r.inRoundRobin ? "" : "opacity-60"}`}
               >
-                <td className="px-4 py-2 text-slate-900">
+                <td className="px-4 py-2 text-slate-900 dark:text-slate-100">
                   <p className="font-semibold">{r.displayName ?? "—"}</p>
                   <p className="font-mono text-[10px] text-slate-400">{r.agentId}</p>
                 </td>
@@ -216,23 +216,23 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
                   {r.inRoundRobin ? (
                     <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">{t("pages.leadRouting.active")}</span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 ring-1 ring-slate-200">{t("pages.leadRouting.off")}</span>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400 ring-1 ring-slate-200">{t("pages.leadRouting.off")}</span>
                   )}
                 </td>
-                <td className="px-4 py-2 text-right text-xs text-slate-700">
+                <td className="px-4 py-2 text-right text-xs text-slate-700 dark:text-slate-300">
                   {r.zipCoverage.length === 0
                     ? <span className="text-slate-400">{t("pages.leadRouting.anyZip")}</span>
                     : r.zipCoverage.length <= 4
                       ? r.zipCoverage.join(", ")
                       : `${r.zipCoverage.slice(0, 3).join(", ")} +${r.zipCoverage.length - 3}`}
                 </td>
-                <td className="px-4 py-2 text-right tabular-nums text-slate-700">
+                <td className="px-4 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                   {r.priority}
                 </td>
-                <td className="px-4 py-2 text-right text-xs text-slate-700">
+                <td className="px-4 py-2 text-right text-xs text-slate-700 dark:text-slate-300">
                   {relativeAgo(r.lastAssignmentAt, t, locale)}
                 </td>
-                <td className="px-4 py-2 text-right tabular-nums text-slate-700">
+                <td className="px-4 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                   {r.assignmentCountLast30Days}
                 </td>
               </tr>
@@ -260,21 +260,21 @@ function ZipCoverageGrid({
   const entries = Array.from(zipMap.entries()).sort(([a], [b]) => (a < b ? -1 : 1));
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.colZip")}</h2>
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRouting.colZip")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">{t("pages.leadRouting.coverageNote")}</p>
       </header>
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
         {entries.map(([zip, agentIds]) => (
           <li
             key={zip}
             className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm"
           >
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-slate-700">
+            <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300">
               {zip}
             </span>
-            <span className="flex-1 text-slate-700">
+            <span className="flex-1 text-slate-700 dark:text-slate-300">
               {agentIds.map((id, i) => (
                 <span key={id}>
                   {nameById.get(id) ?? id}

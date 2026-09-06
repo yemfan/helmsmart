@@ -34,7 +34,7 @@ export function ActionsHub({ member }: { member: string }) {
         {t("actionsHub.overviewLink", { title })}
       </Link>
 
-      <h1 className="text-2xl font-semibold text-slate-900">
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
         {t("actionsHub.heading", { title })}
       </h1>
       <p className="mt-1 text-sm text-slate-500">{t("actionsHub.intro", { title })}</p>
@@ -44,13 +44,13 @@ export function ActionsHub({ member }: { member: string }) {
           <Link
             key={a.href}
             href={a.href}
-            className="group flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm"
+            className="group flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition hover:border-slate-300 hover:shadow-sm"
           >
-            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition group-hover:bg-indigo-50 group-hover:text-indigo-600">
+            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition group-hover:bg-indigo-50 group-hover:text-indigo-600">
               {a.icon}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1 text-sm font-semibold text-slate-900">
+              <span className="flex items-center gap-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {t(a.label, { ns: "dashboard_nav", defaultValue: a.label })}
                 <ArrowUpRight className="h-3.5 w-3.5 text-slate-300 transition group-hover:text-indigo-500" />
               </span>

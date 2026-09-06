@@ -250,7 +250,7 @@ export default function ImportFileClient() {
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("pages.importFile.title")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.importFile.title")}</h1>
           <p className="text-sm text-slate-500">{t("pages.importFile.sub")}</p>
         </div>
         <Link
@@ -275,10 +275,10 @@ export default function ImportFileClient() {
       )}
 
       {step === "extracting" && (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 text-center shadow-sm">
           <div className="mx-auto flex items-center justify-center gap-3">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
-            <span className="text-sm text-slate-700">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 dark:border-slate-700 border-t-slate-900" />
+            <span className="text-sm text-slate-700 dark:text-slate-300">
               {t("pages.importFile.readingFile", { name: fileName ?? t("pages.importFile.aFile") })}
             </span>
           </div>
@@ -309,10 +309,10 @@ export default function ImportFileClient() {
       )}
 
       {step === "saving" && (
-        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 text-center shadow-sm">
           <div className="mx-auto flex items-center justify-center gap-3">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
-            <span className="text-sm text-slate-700">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 dark:border-slate-700 border-t-slate-900" />
+            <span className="text-sm text-slate-700 dark:text-slate-300">
               {t("pages.importFile.savingN", { count: selectedCount })}
             </span>
           </div>
@@ -357,7 +357,7 @@ function DropZone({
       className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-16 transition ${
         dragOver
           ? "border-blue-500 bg-blue-50"
-          : "border-slate-300 bg-slate-50/50 hover:border-blue-400 hover:bg-blue-50/30"
+          : "border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 hover:border-blue-400 hover:bg-blue-50/30"
       }`}
     >
       <svg
@@ -373,7 +373,7 @@ function DropZone({
           d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
         />
       </svg>
-      <span className="mt-3 text-sm font-semibold text-slate-700">{t("pages.importFile.dropFile")}</span>
+      <span className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.importFile.dropFile")}</span>
       <span className="mt-1 text-xs text-slate-500">
         {t("pages.importFile.acceptedFormats")}
       </span>
@@ -435,10 +435,10 @@ function ReviewTable(props: {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 shadow-sm">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
           <span>
-            <span className="font-medium text-slate-900">{selectedCount}</span> of{" "}
+            <span className="font-medium text-slate-900 dark:text-slate-100">{selectedCount}</span> of{" "}
             {t("pages.importFile.ofNContactsSelected", { count: rows.length })}
           </span>
           <span className="text-slate-500">
@@ -458,9 +458,9 @@ function ReviewTable(props: {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-auto max-h-[60vh]">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-auto max-h-[60vh]">
         <table className="min-w-full text-sm">
-          <thead className="sticky top-0 z-10 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
+          <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-900/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
             <tr>
               <th className="px-3 py-2.5 w-10">
                 <input
@@ -484,7 +484,7 @@ function ReviewTable(props: {
               <th className="px-3 py-2.5 w-12" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {rows.map((r) => (
               <tr
                 key={r.rowKey}
@@ -599,13 +599,13 @@ function ReviewTable(props: {
         </button>
 
         <div className="flex items-center gap-3 text-sm">
-          <label className="text-slate-600">{t("pages.importFile.ifDuplicate")}</label>
+          <label className="text-slate-600 dark:text-slate-400">{t("pages.importFile.ifDuplicate")}</label>
           <select
             value={duplicateStrategy}
             onChange={(e) =>
               setDuplicateStrategy(e.target.value as DuplicateStrategy)
             }
-            className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="skip">{t("pages.importFile.skipDuplicates")}</option>
             <option value="merge">{t("pages.importFile.mergeExisting")}</option>
@@ -614,11 +614,11 @@ function ReviewTable(props: {
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-700 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >{t("pages.importFile.cancel")}</button>
         <button
           type="button"
@@ -650,7 +650,7 @@ function Cell({
       value={value ?? ""}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full min-w-[8rem] rounded-md border border-transparent bg-white px-2 py-1.5 text-sm hover:border-slate-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      className="w-full min-w-[8rem] rounded-md border border-transparent bg-white dark:bg-slate-900 px-2 py-1.5 text-sm hover:border-slate-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     />
   );
 }
@@ -668,7 +668,7 @@ function DoneSummary({
   const total =
     result.inserted + result.merged + result.skipped + result.errors;
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
           <svg
@@ -686,7 +686,7 @@ function DoneSummary({
           </svg>
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {t("pages.importFile.savedNofM", { saved: result.inserted + result.merged, total })}
           </p>
           <p className="text-xs text-slate-500">
@@ -719,7 +719,7 @@ function DoneSummary({
         <button
           type="button"
           onClick={onAnother}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >{t("pages.importFile.importAnother")}</button>
       </div>
     </div>

@@ -250,7 +250,7 @@ export function ListingOffersCompareClient({
           </Link>
           {" / Offers"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.offersCompare.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.offersCompare.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           {transaction.property_address}
           {transaction.city || transaction.state
@@ -274,8 +274,8 @@ export function ListingOffersCompareClient({
         </div>
       ) : null}
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.assumptions")}</h2>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.offersCompare.assumptions")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">{t("pages.offersCompare.adjustNote")}</p>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <AssumptionInput
@@ -309,7 +309,7 @@ export function ListingOffersCompareClient({
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           {offers.length} {offers.length === 1 ? "offer" : "offers"}
           {strongestNetId ? " · strongest net highlighted in green" : ""}
         </h2>
@@ -334,16 +334,16 @@ export function ListingOffersCompareClient({
       ) : null}
 
       {offers.length === 0 && !showAdd ? (
-        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+        <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-8 text-center text-sm text-slate-500">
           {t("pages.offersCompare.noOffersBefore")} <strong>+ Record offer</strong>{t("pages.offersCompare.noOffersAfter")}
         </div>
       ) : null}
 
       {offers.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-xs text-slate-600">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">{t("pages.offersCompare.colBuyerAgent")}</th>
                   <th className="px-3 py-2 text-right font-medium">{t("pages.offersCompare.colPrice")}</th>
@@ -356,7 +356,7 @@ export function ListingOffersCompareClient({
                   <th className="px-3 py-2 text-center font-medium">{t("pages.offersCompare.colActions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {enriched.map((o) => {
                   const isStrongestNet = o.id === strongestNetId && offers.length > 1;
                   const isHighestSticker =
@@ -373,7 +373,7 @@ export function ListingOffersCompareClient({
                       <td className="px-3 py-2">
                         <Link
                           href={`/dashboard/listing-offers/${o.id}`}
-                          className="font-medium text-slate-900 hover:underline"
+                          className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                         >
                           {o.buyer_name ?? "(unknown)"}
                         </Link>
@@ -387,7 +387,7 @@ export function ListingOffersCompareClient({
                       <td className="px-3 py-2 text-right tabular-nums">
                         <div
                           className={`font-medium ${
-                            isHighestSticker ? "text-blue-700" : "text-slate-900"
+                            isHighestSticker ? "text-blue-700" : "text-slate-900 dark:text-slate-100"
                           }`}
                         >
                           {formatMoney(o.price)}
@@ -401,7 +401,7 @@ export function ListingOffersCompareClient({
                       <td className="px-3 py-2 text-right tabular-nums">
                         <div
                           className={`font-semibold ${
-                            isStrongestNet ? "text-green-700" : "text-slate-900"
+                            isStrongestNet ? "text-green-700" : "text-slate-900 dark:text-slate-100"
                           }`}
                         >
                           {formatMoney(o.net)}
@@ -410,7 +410,7 @@ export function ListingOffersCompareClient({
                           <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">{t("pages.offersCompare.strongestNet")}</div>
                         ) : null}
                       </td>
-                      <td className="px-3 py-2 text-slate-600">
+                      <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
                         {o.financing_type ? (
                           <span className="capitalize">{o.financing_type}</span>
                         ) : (
@@ -426,14 +426,14 @@ export function ListingOffersCompareClient({
                             o.contingency_count === 0
                               ? "bg-green-100 text-green-800"
                               : o.contingency_count <= 2
-                                ? "bg-slate-100 text-slate-700"
+                                ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                                 : "bg-amber-100 text-amber-800"
                           }`}
                         >
                           {o.contingency_count}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-right tabular-nums text-slate-600">
+                      <td className="px-3 py-2 text-right tabular-nums text-slate-600 dark:text-slate-400">
                         {o.seller_concessions ? (
                           <span className="text-red-600">
                             {formatMoney(o.seller_concessions)}
@@ -481,9 +481,9 @@ export function ListingOffersCompareClient({
       ) : null}
 
       {offers.length > 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.aiSummary")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.offersCompare.aiSummary")}</h2>
             <button
               type="button"
               onClick={() => void summarize()}
@@ -501,10 +501,10 @@ export function ListingOffersCompareClient({
                   <p className="text-sm font-semibold text-green-900">{summary.recommendation.headline}</p>
                 ) : null}
                 {summary.recommendation.rationale ? (
-                  <p className="mt-1 text-sm text-slate-700">{summary.recommendation.rationale}</p>
+                  <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{summary.recommendation.rationale}</p>
                 ) : null}
                 {summary.recommendation.watchOuts.length > 0 ? (
-                  <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-slate-600">
+                  <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-slate-600 dark:text-slate-400">
                     {summary.recommendation.watchOuts.map((w, i) => (
                       <li key={i}>{w}</li>
                     ))}
@@ -517,19 +517,19 @@ export function ListingOffersCompareClient({
                     const o = enriched.find((x) => x.id === p.offerId);
                     return (
                       <div key={p.offerId} className="flex gap-2 text-xs">
-                        <span className="shrink-0 font-medium text-slate-900">
+                        <span className="shrink-0 font-medium text-slate-900 dark:text-slate-100">
                           {o?.buyer_name ?? t("pages.listingOffersCompare.offer")}:
                         </span>
-                        <span className="text-slate-600">{p.summary}</span>
+                        <span className="text-slate-600 dark:text-slate-400">{p.summary}</span>
                       </div>
                     );
                   })}
                 </div>
               ) : null}
               {summary.sellerNote ? (
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.offersCompare.sellerNote")}</p>
-                  <p className="mt-1 text-sm text-slate-700">{summary.sellerNote}</p>
+                  <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{summary.sellerNote}</p>
                 </div>
               ) : null}
               <p className="text-[10px] italic text-slate-400">{t("disclaimers.offerCompare")}</p>
@@ -564,7 +564,7 @@ function AssumptionInput({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">{label}</label>
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       <div className="mt-1 flex items-center gap-1">
         <input
           type="number"
@@ -572,7 +572,7 @@ function AssumptionInput({
           min={0}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-20 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm"
+          className="w-20 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm"
         />
         <span className="text-xs text-slate-500">{suffix}</span>
       </div>
@@ -657,8 +657,8 @@ function NewListingOfferForm({
   }
 
   return (
-    <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.recordIncoming")}</h3>
+    <div className="space-y-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.offersCompare.recordIncoming")}</h3>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <Field label={t("pages.offersCompare.buyerName")} value={buyerName} onChange={setBuyerName} placeholder={t("pages.offersCompare.buyerNamePlaceholder")} />
         <Field
@@ -696,7 +696,7 @@ function NewListingOfferForm({
           placeholder="250000"
         />
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.offersCompare.financing")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.offersCompare.financing")}</label>
           <select
             value={financingType}
             onChange={(e) =>
@@ -704,7 +704,7 @@ function NewListingOfferForm({
                 e.target.value as "" | "cash" | "conventional" | "fha" | "va" | "jumbo" | "other",
               )
             }
-            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           >
             <option value="">—</option>
             <option value="cash">{t("pages.offersCompare.cash")}</option>
@@ -730,8 +730,8 @@ function NewListingOfferForm({
         />
       </div>
 
-      <div className="space-y-1 rounded-lg bg-slate-50 p-3">
-        <div className="text-xs font-medium text-slate-700">{t("pages.offersCompare.colContingencies")}</div>
+      <div className="space-y-1 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3">
+        <div className="text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.offersCompare.colContingencies")}</div>
         <div className="flex flex-wrap gap-4 text-sm">
           <Check label={t("pages.offersCompare.inspection")} checked={inspectionContingency} onChange={setInspectionContingency} />
           <Check label={t("pages.labels.appraisal")} checked={appraisalContingency} onChange={setAppraisalContingency} />
@@ -745,12 +745,12 @@ function NewListingOfferForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
+        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("detail.offerDetail.notes")}</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
         />
       </div>
 
@@ -760,7 +760,7 @@ function NewListingOfferForm({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >{t("pages.offersCompare.cancel")}</button>
         <button
           type="button"
@@ -790,13 +790,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">{label}</label>
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       <input
         type={type ?? "text"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+        className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
       />
     </div>
   );

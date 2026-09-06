@@ -119,9 +119,9 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="h-8 w-1/3 animate-pulse rounded bg-slate-100" />
-        <div className="h-32 animate-pulse rounded-2xl bg-slate-100" />
-        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
+        <div className="h-8 w-1/3 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+        <div className="h-32 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
       </div>
     );
   }
@@ -131,7 +131,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         {t("pages.cmaDetail.couldntLoad", { reason: error ?? t("pages.cmaDetail.notFound") })}
         <div className="mt-2">
-          <Link href="/dashboard/cma" className="font-semibold text-slate-700 hover:underline">
+          <Link href="/dashboard/cma" className="font-semibold text-slate-700 dark:text-slate-300 hover:underline">
             {t("pages.cmaDetail.backToCmas")}
           </Link>
         </div>
@@ -155,11 +155,11 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           >
             {t("pages.cmaDetail.backToAll")}
           </Link>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             {cma.title || cma.subjectAddress}
           </h1>
           {cma.title ? (
-            <p className="text-sm text-slate-600">{cma.subjectAddress}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{cma.subjectAddress}</p>
           ) : null}
           <p className="mt-1 text-xs text-slate-400">
             {t("pages.cmaDetail.savedLine", {
@@ -194,7 +194,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         ) : (
           <Link
             href="/dashboard/cma"
-            className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="shrink-0 rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             {t("pages.cmaDetail.regenerate")}
           </Link>
@@ -214,8 +214,8 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       ) : null}
 
       {/* Headline value range */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.estimatedValue")}</h2>
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.cmaDetail.estimatedValue")}</h2>
         <div className="mt-3 grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-slate-200">
           <ValueCell label={t("pages.cmaDetail.low")} value={cma.lowEstimate} tone="text-slate-700" />
           <ValueCell label={t("pages.cmaDetail.estimated")} value={cma.estimatedValue} tone="text-emerald-700" />
@@ -244,19 +244,19 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       </section>
 
       {/* Listing strategies */}
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <header className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.strategies")}</h2>
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+        <header className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.cmaDetail.strategies")}</h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.scenarios")}</p>
         </header>
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {bands.map((b) => (
             <li key={b.key} className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-5 py-3">
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-700">
+              <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300">
                 {formatBandTag(b)}
               </span>
-              <p className="text-xs text-slate-600">{b.rationale}</p>
-              <span className="text-base font-bold tabular-nums text-slate-900">
+              <p className="text-xs text-slate-600 dark:text-slate-400">{b.rationale}</p>
+              <span className="text-base font-bold tabular-nums text-slate-900 dark:text-slate-100">
                 {formatMoney(b.price, locale)}
               </span>
             </li>
@@ -265,9 +265,9 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       </section>
 
       {/* Comps */}
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <header className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-900">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+        <header className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {t("pages.cmaDetail.comparableSales", { count: cma.snapshot.comps.length })}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">
@@ -279,7 +279,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 text-[11px] uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-2 text-left font-semibold">{t("pages.cmaDetail.colAddress")}</th>
                   <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colBeds")}</th>
@@ -295,29 +295,29 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
               </thead>
               <tbody>
                 {cma.snapshot.comps.map((c, i) => (
-                  <tr key={`${c.address}-${i}`} className="border-t border-slate-100">
-                    <td className="px-4 py-2 text-slate-900">
+                  <tr key={`${c.address}-${i}`} className="border-t border-slate-100 dark:border-slate-700">
+                    <td className="px-4 py-2 text-slate-900 dark:text-slate-100">
                       <p className="font-semibold">{c.address}</p>
                       {c.propertyType ? (
                         <p className="text-[11px] text-slate-500">{c.propertyType}</p>
                       ) : null}
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{c.beds ?? "—"}</td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{c.baths ?? "—"}</td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">{c.beds ?? "—"}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">{c.baths ?? "—"}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                       {c.sqft.toLocaleString()}
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                       {formatLot(c.lotSizeSqft, c.propertyType)}
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                       {formatHoa(c.hoaMonthly)}
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                       ${Math.round(c.pricePerSqft)}
                     </td>
-                    <td className="px-3 py-2 text-right text-slate-700">{c.soldDate}</td>
-                    <td className="px-4 py-2 text-right tabular-nums font-semibold text-slate-900">
+                    <td className="px-3 py-2 text-right text-slate-700 dark:text-slate-300">{c.soldDate}</td>
+                    <td className="px-4 py-2 text-right tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                       {formatMoney(c.price, locale)}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-slate-500">
@@ -332,17 +332,17 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       </section>
 
       {cma.snapshot.summary ? (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.summary")}</h2>
-          <p className="mt-2 whitespace-pre-line text-sm text-slate-600">
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.cmaDetail.summary")}</h2>
+          <p className="mt-2 whitespace-pre-line text-sm text-slate-600 dark:text-slate-400">
             {cma.snapshot.summary}
           </p>
         </section>
       ) : null}
 
       {cma.snapshot.sources && cma.snapshot.sources.length > 0 ? (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {t("pages.cmaDetail.sourcesN", { count: cma.snapshot.sources.length })}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.sources")}</p>
@@ -378,7 +378,7 @@ function ValueCell({
   const { i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   return (
-    <div className="bg-white px-4 py-3">
+    <div className="bg-white dark:bg-slate-900 px-4 py-3">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </p>

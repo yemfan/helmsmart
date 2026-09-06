@@ -317,7 +317,7 @@ export function UploadOfferClient() {
           <Link href="/dashboard/offers" className="hover:underline">{t("pages.uploadOffer.offers")}</Link>
           {" / Upload"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.uploadOffer.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.uploadOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.uploadOffer.blurb")}</p>
       </div>
 
@@ -341,9 +341,9 @@ export function UploadOfferClient() {
         </div>
       )}
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.buyer")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.uploadOffer.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -359,7 +359,7 @@ export function UploadOfferClient() {
             matches the rest of the form (raw <input type="file"> is
             ugly across browsers). */}
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.uploadPdf")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.uploadOffer.uploadPdf")}</label>
           <input
             ref={fileInputRef}
             type="file"
@@ -377,13 +377,13 @@ export function UploadOfferClient() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={parsing}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               {t("pages.uploadOffer.choosePdf")}
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (
-                <>{t("pages.uploadOffer.selected")}<strong className="font-medium text-slate-700">{pdfName}</strong>
+                <>{t("pages.uploadOffer.selected")}<strong className="font-medium text-slate-700 dark:text-slate-300">{pdfName}</strong>
                 </>
               ) : (
                 <>{t("pages.uploadOffer.maxSize")}</>
@@ -394,13 +394,13 @@ export function UploadOfferClient() {
 
         <div className="relative">
           <div className="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden />
-          <span className="relative inline-block bg-white px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
             Or
           </span>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.pasteText")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.uploadOffer.pasteText")}</label>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -408,7 +408,7 @@ export function UploadOfferClient() {
             placeholder={`Paste the full offer text here.
 
 Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to copy, then paste into this box. Bullet points and page breaks are fine.`}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs leading-relaxed"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 font-mono text-xs leading-relaxed"
           />
           <p className="mt-1 text-[11px] text-slate-500">
             {t("pages.uploadOffer.charCount", { used: text.length.toLocaleString(), max: MAX_INPUT_CHARS.toLocaleString() })}
@@ -420,7 +420,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link
             href="/dashboard/offers"
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.uploadOffer.cancel")}</Link>
           <button
             type="button"
@@ -434,19 +434,19 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
       </div>
 
       {parsed ? (
-        <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.uploadOffer.extracted")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.uploadOffer.extracted")}</h2>
             <p className="mt-1 text-[11px] text-slate-500">
               {t("pages.uploadOffer.extractedHelp")}
             </p>
           </div>
 
-          <dl className="divide-y divide-slate-100 text-sm">
+          <dl className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
             {summarize(parsed, t).map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-3 py-1.5">
                 <dt className="col-span-1 text-slate-500">{row.label}</dt>
-                <dd className="col-span-2 text-slate-900">{row.value}</dd>
+                <dd className="col-span-2 text-slate-900 dark:text-slate-100">{row.value}</dd>
               </div>
             ))}
           </dl>

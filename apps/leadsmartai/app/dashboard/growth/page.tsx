@@ -198,14 +198,14 @@ export default function GrowthPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.growth.heading")}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.growth.heading")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.growth.claudeReads", { ns: "dashboard" })}</p>
         </div>
         <button
           type="button"
           onClick={() => void loadOpportunities(true)}
           disabled={regenerating || oppLoading}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
         >
           {regenerating ? t("pages.growth.analyzing") : t("pages.growth.refresh")}
         </button>
@@ -222,8 +222,8 @@ export default function GrowthPage() {
         />
       )}
 
-      <section className="space-y-3 border-t border-slate-200 pt-6">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.growth.traffic")}</h2>
+      <section className="space-y-3 border-t border-slate-200 dark:border-slate-700 pt-6">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.growth.traffic")}</h2>
 
         {metrics?.traffic ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -246,23 +246,23 @@ export default function GrowthPage() {
         )}
 
         {metrics?.viral ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-slate-600">{t("pages.growth.viralReach")}</h3>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+            <h3 className="text-xs font-semibold text-slate-600 dark:text-slate-400">{t("pages.growth.viralReach")}</h3>
             <div className="mt-2 grid grid-cols-3 gap-3 text-center">
               <div>
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {(metrics.viral.invitesPerSharer ?? 0).toFixed(1)}
                 </p>
                 <p className="text-[10px] text-slate-500">{t("pages.growth.invitesPerSharer")}</p>
               </div>
               <div>
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {(metrics.viral.referralShare ?? 0).toFixed(1)}%
                 </p>
                 <p className="text-[10px] text-slate-500">{t("pages.growth.referralShare")}</p>
               </div>
               <div>
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {(metrics.viral.viralCoefficientEstimate ?? 0).toFixed(2)}
                 </p>
                 <p className="text-[10px] text-slate-500">{t("pages.growth.viralK")}</p>
@@ -273,14 +273,14 @@ export default function GrowthPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.growth.referralCodes")}</h2>
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.growth.referralCodes")}</h2>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <input
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               placeholder={t("pages.growth.codeLabelPlaceholder")}
-              className="min-w-[200px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="min-w-[200px] flex-1 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <button
               type="button"
@@ -294,7 +294,7 @@ export default function GrowthPage() {
           {codes.length > 0 ? (
             <div className="mt-3 overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 text-xs text-slate-600">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium">{t("pages.growth.colCode")}</th>
                     <th className="px-3 py-2 text-left font-medium">{t("pages.growth.colLabel")}</th>
@@ -303,11 +303,11 @@ export default function GrowthPage() {
                     <th className="px-3 py-2 text-right font-medium">{t("pages.growth.colShares")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {codes.map((c) => (
-                    <tr key={c.code} className="hover:bg-slate-50">
-                      <td className="px-3 py-2 font-mono text-xs text-slate-900">{c.code}</td>
-                      <td className="px-3 py-2 text-slate-600">{c.label ?? "—"}</td>
+                    <tr key={c.code} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <td className="px-3 py-2 font-mono text-xs text-slate-900 dark:text-slate-100">{c.code}</td>
+                      <td className="px-3 py-2 text-slate-600 dark:text-slate-400">{c.label ?? "—"}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{c.signups_count}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{c.conversions_count}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{c.shares_count}</td>
@@ -340,7 +340,7 @@ function OpportunitiesSection({
   const locale = intlLocale(i18n.language);
   if (loading) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+      <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-8 text-center text-sm text-slate-500">
         {t("pages.growth.loadingOpportunities")}
       </div>
     );
@@ -401,9 +401,9 @@ function OpportunitiesSection({
 
   if (data.opportunities.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center shadow-sm">
         <div className="text-lg">✨</div>
-        <div className="mt-1 text-sm font-medium text-slate-900">{t("pages.growth.nothingUrgent")}</div>
+        <div className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.growth.nothingUrgent")}</div>
         <p className="mt-1 text-xs text-slate-500">
           {t("pages.growth.nothingUrgentHint")}
         </p>
@@ -438,7 +438,7 @@ function OpportunityCard({
   const { t } = useTranslation("dashboard");
   return (
     <div
-      className={`rounded-xl border bg-white p-4 shadow-sm ${regenerating ? "opacity-70" : ""}`}
+      className={`rounded-xl border bg-white dark:bg-slate-900 p-4 shadow-sm ${regenerating ? "opacity-70" : ""}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -451,12 +451,12 @@ function OpportunityCard({
             </span>
             <span className="text-[10px] text-slate-500">{CATEGORY_LABEL[opp.category]}</span>
           </div>
-          <h3 className="mt-2 text-sm font-semibold text-slate-900">{opp.title}</h3>
+          <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{opp.title}</h3>
         </div>
       </div>
 
-      <p className="mt-2 text-[13px] leading-5 text-slate-700">{opp.insight}</p>
-      <p className="mt-2 text-[13px] leading-5 text-slate-900">
+      <p className="mt-2 text-[13px] leading-5 text-slate-700 dark:text-slate-300">{opp.insight}</p>
+      <p className="mt-2 text-[13px] leading-5 text-slate-900 dark:text-slate-100">
         <span className="font-medium">{t("pages.oneWord.action")}</span> {opp.action}
       </p>
 
@@ -465,7 +465,7 @@ function OpportunityCard({
           {opp.context.map((c, i) => (
             <span
               key={i}
-              className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700"
+              className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300"
             >
               {c}
             </span>
@@ -501,7 +501,7 @@ function Stat({
   const color =
     tone === "green" ? "text-green-700" : tone === "blue" ? "text-blue-700" : "text-slate-900";
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`mt-0.5 text-xl font-semibold ${color}`}>{value}</div>
       {hint ? <div className="text-[10px] text-slate-400">{hint}</div> : null}

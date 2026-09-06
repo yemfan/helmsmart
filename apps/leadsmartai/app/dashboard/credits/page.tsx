@@ -31,7 +31,7 @@ export default async function CreditsPage() {
   );
 
   return (
-    <Suspense fallback={<div className="p-4 text-sm text-slate-600">{t("pages.credits.loadingCredits", { ns: "dashboard" })}</div>}>
+    <Suspense fallback={<div className="p-4 text-sm text-slate-600 dark:text-slate-400">{t("pages.credits.loadingCredits", { ns: "dashboard" })}</div>}>
       <CreditsClient annualTierIds={annualTierIds} />
     </Suspense>
   );

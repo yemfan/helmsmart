@@ -74,10 +74,10 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
   }, [load]);
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {t("pages.dealReview.heading")}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.dealReview.intro")}</p>
@@ -87,7 +87,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
             type="button"
             onClick={() => void load(true)}
             disabled={regenerating || loading}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60"
           >
             {regenerating ? t("common:status.generating") : "↻ Regenerate"}
           </button>
@@ -95,7 +95,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
       </div>
 
       {loading && !resp ? (
-        <div className="mt-6 rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">{t("pages.dealReview.generating")}</div>
+        <div className="mt-6 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-6 text-center text-sm text-slate-500">{t("pages.dealReview.generating")}</div>
       ) : gate ? (
         <AiActionGateBanner reason={gate.reason} className="mt-4" />
       ) : error ? (
@@ -116,15 +116,15 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
   return (
     <div className={`mt-4 space-y-4 ${dimmed ? "opacity-60" : ""}`}>
       {/* Headline + summary */}
-      <div className="rounded-lg bg-slate-50 p-4">
-        <div className="text-base font-semibold text-slate-900">
+      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-4">
+        <div className="text-base font-semibold text-slate-900 dark:text-slate-100">
           {review.headline}
         </div>
         {review.summary ? (
-          <p className="mt-1 text-sm text-slate-700 leading-6">{review.summary}</p>
+          <p className="mt-1 text-sm text-slate-700 dark:text-slate-300 leading-6">{review.summary}</p>
         ) : null}
         {review.executionScore != null ? (
-          <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-600">
+          <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
             <span className="font-semibold">{t("pages.dealReview.executionScore")}</span>
             <span className="tabular-nums">
               {Math.round(review.executionScore * 100)}
@@ -160,7 +160,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
       </div>
 
       {/* Footer: provenance + fallback notice */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
+      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-700 pt-3 text-[11px] text-slate-400">
         <span>
           {t("pages.dealReview.generatedAt", { date: new Date(review.generatedAtIso).toLocaleString(locale) })}
           {resp.fromCache ? " (cached)" : ""}
@@ -169,7 +169,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
           <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">{t("pages.dealReview.aiUnavailable")}</span>
         ) : null}
         {!resp.aiConfigured ? (
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">
+          <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 font-medium text-slate-600 dark:text-slate-400">
             Set ANTHROPIC_API_KEY to enable AI commentary
           </span>
         ) : null}
@@ -204,7 +204,7 @@ function Section({
   return (
     <div className={`${wide ? "md:col-span-2" : ""} rounded-lg border p-3 ${style}`}>
       <div className={`text-xs font-semibold ${labelColor}`}>{title}</div>
-      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-800">
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-800 dark:text-slate-200">
         {items.map((item, i) => (
           <li key={i} className="leading-6">
             {item}

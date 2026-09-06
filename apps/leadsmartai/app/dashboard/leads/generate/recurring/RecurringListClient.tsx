@@ -123,7 +123,7 @@ export default function RecurringListClient() {
 
   if (recurrences === null) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center text-sm text-slate-500">
         {t("recurring.loading")}
       </div>
     );
@@ -137,8 +137,8 @@ export default function RecurringListClient() {
             {error}
           </div>
         )}
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center">
-          <p className="text-sm text-slate-600">{t("recurring.empty.title")}</p>
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-10 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t("recurring.empty.title")}</p>
           <p className="mt-1 text-xs text-slate-500">
             {t("recurring.empty.body_prefix")}
             <span className="font-medium">{t("recurring.empty.body_highlight")}</span>
@@ -252,7 +252,7 @@ function Section({
   return (
     <section>
       <div className="mb-2">
-        <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
         <p className="text-xs text-slate-500">{subtitle}</p>
       </div>
       <div className="space-y-2">{children}</div>
@@ -287,11 +287,11 @@ function Card({
     : t("recurring.card.posted", { count: r.occurrenceCount });
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="mb-1 flex items-center gap-2 text-xs">
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
+            <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 font-medium text-slate-700 dark:text-slate-300">
               {t(`recurring.platform.${r.platform}`, { defaultValue: r.platform })}
             </span>
             {r.socialAccountDisplay && (
@@ -301,10 +301,10 @@ function Card({
             )}
             <StatusBadge status={r.status} t={t} />
           </div>
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {describeCadence(r, t)}
           </p>
-          <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">
+          <p className="mt-0.5 line-clamp-2 text-xs text-slate-600 dark:text-slate-400">
             {r.caption}
           </p>
           <p className="mt-2 text-[11px] text-slate-500">
@@ -329,8 +329,8 @@ function Card({
                 disabled={busy}
                 className={`rounded-md border px-2.5 py-1 text-xs font-medium disabled:opacity-50 ${
                   a.variant === "danger"
-                    ? "border-red-300 bg-white text-red-700 hover:bg-red-50"
-                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                    ? "border-red-300 bg-white dark:bg-slate-900 text-red-700 hover:bg-red-50"
+                    : "border-slate-300 dark:border-slate-700 bg-white text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 }`}
               >
                 {busy ? t("recurring.actions.busy") : a.label}

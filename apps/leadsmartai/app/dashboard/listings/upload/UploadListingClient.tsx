@@ -289,7 +289,7 @@ export function UploadListingClient() {
           <Link href="/dashboard/transactions" className="hover:underline">{t("pages.uploadListing.transactions")}</Link>
           {" / Upload listing agreement"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.uploadListing.title")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.uploadListing.title")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.uploadListing.sub")}</p>
       </div>
 
@@ -311,9 +311,9 @@ export function UploadListingClient() {
         </div>
       )}
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadListing.seller")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.uploadListing.seller")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -324,7 +324,7 @@ export function UploadListingClient() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadListing.uploadPdf")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.uploadListing.uploadPdf")}</label>
           <input
             ref={fileInputRef}
             type="file"
@@ -341,7 +341,7 @@ export function UploadListingClient() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={parsing}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               {t("pages.uploadListing.choosePdf")}
             </button>
@@ -361,15 +361,15 @@ export function UploadListingClient() {
       </div>
 
       {summary && (
-        <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">{t("pages.uploadListing.review")}</h2>
+        <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.uploadListing.review")}</h2>
           <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
             {summary.map((row) => (
               <div key={row.label} className="contents">
                 <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   {row.label}
                 </dt>
-                <dd className="text-sm text-slate-800">{row.value}</dd>
+                <dd className="text-sm text-slate-800 dark:text-slate-200">{row.value}</dd>
               </div>
             ))}
           </dl>

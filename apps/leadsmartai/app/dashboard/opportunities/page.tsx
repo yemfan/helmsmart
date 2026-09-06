@@ -149,31 +149,31 @@ export default function OpportunitiesPage() {
 
       {metrics ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
             <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.available")}</div>
-            <div className="text-2xl font-bold text-slate-900">{metrics.availableCount}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{metrics.availableCount}</div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
             <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.sold")}</div>
-            <div className="text-2xl font-bold text-slate-900">{metrics.soldCount}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{metrics.soldCount}</div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
             <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.conversion")}</div>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {(metrics.conversionRate * 100).toFixed(1)}%
             </div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
             <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.revenuePerLead")}</div>
-            <div className="text-2xl font-bold text-slate-900">${Math.round(metrics.revenuePerLead).toLocaleString()}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">${Math.round(metrics.revenuePerLead).toLocaleString()}</div>
           </div>
         </div>
       ) : null}
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-4 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.location")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.opportunities.location")}</label>
             <input
               value={location}
               onChange={(e) => {
@@ -181,19 +181,19 @@ export default function OpportunitiesPage() {
                 setLocation(e.target.value);
               }}
               placeholder={t("pages.opportunities.locationPlaceholder")}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.leadType")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.opportunities.leadType")}</label>
             <select
               value={leadType}
               onChange={(e) => {
                 setPage(1);
                 setLeadType(e.target.value);
               }}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             >
               <option value="">{t("pages.opportunities.all")}</option>
               {leadTypeOptions.map((t) => (
@@ -205,7 +205,7 @@ export default function OpportunitiesPage() {
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.minPrice")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.opportunities.minPrice")}</label>
             <input
               value={minPrice}
               onChange={(e) => {
@@ -214,12 +214,12 @@ export default function OpportunitiesPage() {
               }}
               placeholder="10"
               inputMode="numeric"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.maxPrice")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.opportunities.maxPrice")}</label>
             <input
               value={maxPrice}
               onChange={(e) => {
@@ -228,7 +228,7 @@ export default function OpportunitiesPage() {
               }}
               placeholder="100"
               inputMode="numeric"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
         </div>
@@ -236,39 +236,39 @@ export default function OpportunitiesPage() {
 
       {error ? <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{error}</div> : null}
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-6 text-sm text-slate-600">{t("pages.opportunities.loading")}</div>
+          <div className="p-6 text-sm text-slate-600 dark:text-slate-400">{t("pages.opportunities.loading")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 dark:bg-slate-900/60">
                 <tr>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colAddress")}</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.leadType")}</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colIntent")}</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colPrice")}</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colAction")}</th>
+                  <th className="ui-table-header text-left text-slate-600 dark:text-slate-400 px-4 py-3">{t("pages.opportunities.colAddress")}</th>
+                  <th className="ui-table-header text-left text-slate-600 dark:text-slate-400 px-4 py-3">{t("pages.opportunities.leadType")}</th>
+                  <th className="ui-table-header text-left text-slate-600 dark:text-slate-400 px-4 py-3">{t("pages.opportunities.colIntent")}</th>
+                  <th className="ui-table-header text-left text-slate-600 dark:text-slate-400 px-4 py-3">{t("pages.opportunities.colPrice")}</th>
+                  <th className="ui-table-header text-left text-slate-600 dark:text-slate-400 px-4 py-3">{t("pages.opportunities.colAction")}</th>
                 </tr>
               </thead>
               <tbody>
                 {opportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-sm text-slate-600">{t("pages.opportunities.noMatches", { ns: "dashboard" })}</td>
+                    <td colSpan={5} className="px-4 py-6 text-sm text-slate-600 dark:text-slate-400">{t("pages.opportunities.noMatches", { ns: "dashboard" })}</td>
                   </tr>
                 ) : (
                   opportunities.map((o) => (
-                    <tr key={o.id} className="border-t border-slate-100">
-                      <td className="ui-table-cell px-4 py-3 text-slate-900">
+                    <tr key={o.id} className="border-t border-slate-100 dark:border-slate-700">
+                      <td className="ui-table-cell px-4 py-3 text-slate-900 dark:text-slate-100">
                         {o.property_address}
                       </td>
-                      <td className="ui-table-cell px-4 py-3 text-slate-700">
+                      <td className="ui-table-cell px-4 py-3 text-slate-700 dark:text-slate-300">
                         {o.lead_type}
                       </td>
-                      <td className="ui-table-cell px-4 py-3 text-slate-700">
+                      <td className="ui-table-cell px-4 py-3 text-slate-700 dark:text-slate-300">
                         <span className="font-semibold">{o.intent_score}</span>
                       </td>
-                      <td className="ui-table-cell px-4 py-3 text-slate-900 font-semibold">
+                      <td className="ui-table-cell px-4 py-3 text-slate-900 dark:text-slate-100 font-semibold">
                         ${o.price}
                       </td>
                       <td className="px-4 py-3">
@@ -305,13 +305,13 @@ export default function OpportunitiesPage() {
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="text-xs font-semibold px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
           >{t("pages.opportunities.prev", { ns: "dashboard" })}</button>
           <button
             type="button"
             disabled={opportunities.length < pageSize}
             onClick={() => setPage((p) => p + 1)}
-            className="text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="text-xs font-semibold px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
           >{t("pages.opportunities.next", { ns: "dashboard" })}</button>
         </div>
       </div>

@@ -167,7 +167,7 @@ function Section({
     <section>
       <h2
         className={`mb-2 text-sm font-semibold ${
-          accent === "red" ? "text-red-700" : "text-slate-900"
+          accent === "red" ? "text-red-700" : "text-slate-900 dark:text-slate-100"
         }`}
       >
         {title} <span className="text-slate-400">({count})</span>
@@ -193,9 +193,9 @@ function RowTable({
   locale: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
       <table className="min-w-full text-sm">
-        <thead className="bg-slate-50/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <thead className="bg-slate-50/60 dark:bg-slate-900/60 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-4 py-3">{t("scheduled.columns.caption")}</th>
             <th className="px-3 py-3">{t("scheduled.columns.platform_page")}</th>
@@ -206,11 +206,11 @@ function RowTable({
             <th className="px-3 py-3 w-1" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
           {rows.map((r) => (
-            <tr key={r.id} className="text-slate-800 align-top">
+            <tr key={r.id} className="text-slate-800 dark:text-slate-200 align-top">
               <td className="px-4 py-3 max-w-md">
-                <div className="line-clamp-2 text-sm text-slate-800">
+                <div className="line-clamp-2 text-sm text-slate-800 dark:text-slate-200">
                   {r.caption}
                 </div>
                 {r.hashtags.length > 0 && (
@@ -222,7 +222,7 @@ function RowTable({
                   <div className="mt-1 text-xs text-red-700">{r.lastError}</div>
                 )}
               </td>
-              <td className="px-3 py-3 text-slate-700">
+              <td className="px-3 py-3 text-slate-700 dark:text-slate-300">
                 <PlatformBadge platform={r.platform} t={t} />
                 <div className="mt-0.5 text-xs text-slate-500">
                   {r.platform === "instagram" && r.igBusinessUsername
@@ -230,7 +230,7 @@ function RowTable({
                     : r.pageName ?? t("scheduled.row.empty_value")}
                 </div>
               </td>
-              <td className="px-3 py-3 text-slate-700">
+              <td className="px-3 py-3 text-slate-700 dark:text-slate-300">
                 {variant === "recent" && r.publishedAt
                   ? new Date(r.publishedAt).toLocaleString(locale)
                   : new Date(r.scheduledFor).toLocaleString(locale)}
@@ -280,7 +280,7 @@ function RowActions({
           href={row.publishedUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-md border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           title={t("scheduled.row.view_tooltip")}
         >
           {t("scheduled.row.view")}
@@ -291,7 +291,7 @@ function RowActions({
           type="button"
           onClick={() => onCancel(row.id)}
           disabled={busy}
-          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          className="rounded-md border border-slate-200 dark:border-slate-700 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
           {busy ? t("scheduled.row.busy") : t("scheduled.row.cancel")}
         </button>
@@ -337,7 +337,7 @@ function StatusBadge({ status, t }: { status: string; t: ScheduledT }) {
 
 function EmptyState({ t }: { t: ScheduledT }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/40 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 p-8 text-center">
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700">
         <svg
           className="h-6 w-6"
@@ -353,7 +353,7 @@ function EmptyState({ t }: { t: ScheduledT }) {
           />
         </svg>
       </div>
-      <h2 className="text-base font-semibold text-slate-900">
+      <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
         {t("scheduled.empty.title")}
       </h2>
       <p className="mt-1 text-sm text-slate-500">{t("scheduled.empty.body")}</p>
