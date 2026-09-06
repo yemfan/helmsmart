@@ -3,6 +3,7 @@ import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { runHubChatTurn } from "@/lib/marketing-hub/chat/service";
 import { consumeHubChatMessage } from "@/lib/marketing-hub/chat/usage";
 import { loadHubByUsername } from "@/lib/marketing-hub/loadHub";
+import { verifyTurnstile } from "@/lib/marketing-hub/turnstile";
 import { SESSION_COOKIE, VISITOR_COOKIE, readCookieFromHeader } from "@/lib/marketing-hub/visitor";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -44,6 +45,15 @@ export async function POST(
     }
     if (!hub.assistantAvailable) {
       return NextResponse.json({ ok: false, error: "unavailable" }, { status: 503 });
+    }
+
+    // A token is required on the FIRST message of a conversation only; the
+    // conversation id then proves the thread was opened from a verified page.
+    if (typeof body.conversationId !== "string" || !body.conversationId) {
+      const human = await verifyTurnstile(body.turnstileToken, extractRequestMeta(req).ipAddress);
+      if (!human.ok) {
+        return NextResponse.json({ ok: false, error: "verification" }, { status: 403 });
+      }
     }
 
     const usage = await consumeHubChatMessage(req);

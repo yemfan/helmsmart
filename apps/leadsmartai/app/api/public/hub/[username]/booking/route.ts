@@ -3,6 +3,7 @@ import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { captureHubLead, hubLeadInputFromBody } from "@/lib/marketing-hub/leads";
 import { loadHubByUsername } from "@/lib/marketing-hub/loadHub";
 import { SESSION_COOKIE, VISITOR_COOKIE, readCookieFromHeader } from "@/lib/marketing-hub/visitor";
+import { verifyTurnstile } from "@/lib/marketing-hub/turnstile";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { bookAppointment, getAvailability } from "@/lib/voice-agent/booking";
 
@@ -61,6 +62,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ username: stri
       return NextResponse.json({ ok: false, error: "slot_required" }, { status: 400 });
     }
 
+    const meta = extractRequestMeta(req);
+    const human = await verifyTurnstile(body.turnstileToken, meta.ipAddress);
+    if (!human.ok) {
+      return NextResponse.json({ ok: false, error: "verification" }, { status: 403 });
+    }
+
     const input = hubLeadInputFromBody(body, "booking");
     if (!input.intent) input.intent = "consult";
     const cookieHeader = req.headers.get("cookie");
@@ -69,7 +76,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ username: stri
       username,
       input,
       cookieHeader,
-      requestMeta: extractRequestMeta(req),
+      requestMeta: meta,
       settings: hub.config.leadCapture,
     });
     if (!lead.ok) {

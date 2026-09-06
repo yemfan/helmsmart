@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { captureHubLead, hubLeadInputFromBody, type HubLeadChannel } from "@/lib/marketing-hub/leads";
 import { loadHubSettings, resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
+import { verifyTurnstile } from "@/lib/marketing-hub/turnstile";
 import { consumeHubQuota } from "@/lib/marketing-hub/usage";
 
 export const runtime = "nodejs";
@@ -44,6 +45,13 @@ export async function POST(
     }
 
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+    const meta = extractRequestMeta(req);
+    // Invisible Turnstile, when configured. A refused token is a refusal;
+    // Cloudflare being unreachable is not (see turnstile.ts).
+    const human = await verifyTurnstile(body.turnstileToken, meta.ipAddress);
+    if (!human.ok) {
+      return NextResponse.json({ ok: false, error: "verification" }, { status: 403 });
+    }
     const channel = CHANNELS.includes(body.channel as HubLeadChannel)
       ? (body.channel as HubLeadChannel)
       : "form";
@@ -54,7 +62,7 @@ export async function POST(
       username,
       input: hubLeadInputFromBody(body, channel),
       cookieHeader: req.headers.get("cookie"),
-      requestMeta: extractRequestMeta(req),
+      requestMeta: meta,
       settings: config.leadCapture,
     });
 

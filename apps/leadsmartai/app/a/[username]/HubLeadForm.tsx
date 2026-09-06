@@ -5,6 +5,7 @@ import { CalendarCheck, Mail, PhoneCall } from "lucide-react";
 import type { HubTheme } from "./theme";
 import { BTN } from "./theme";
 import { trackHubEvent } from "./hubEvents";
+import { useTurnstile } from "./HubTurnstile";
 
 /**
  * The contact form — one of several ways a hub visitor becomes a lead, and
@@ -63,6 +64,7 @@ export default function HubLeadForm({
 }) {
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
+  const { getToken } = useTurnstile();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,6 +78,7 @@ export default function HubLeadForm({
     setError(null);
     setState("sending");
     try {
+      const turnstileToken = await getToken();
       const res = await fetch(`/api/public/hub/${encodeURIComponent(username)}/lead`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -91,9 +94,11 @@ export default function HubLeadForm({
           utmSource,
           utmCampaign,
           locale,
+          turnstileToken,
         }),
       });
       if (!res.ok) throw new Error(String(res.status));
+      trackHubEvent(username, "lead_created", { channel: "form" }, { forwardOnly: true });
       setState("done");
     } catch {
       setState("idle");

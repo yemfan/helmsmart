@@ -31,7 +31,18 @@ export default async function MarketingPage() {
     .select("id", { count: "exact", head: true })
     .eq("status", "completed");
 
-  const homeValueSmartLink = `/home-value-widget?agentId=${encodeURIComponent(widgetAgentKey)}`;
+  // The hub's home-value page attributes the lead to THIS agent; the old
+  // widget never did (its API dropped the agentId). Prefer the hub whenever
+  // the agent has a handle.
+  const { data: handleRow } = await supabaseServer
+    .from("agents")
+    .select("username")
+    .eq("id", agentId as never)
+    .maybeSingle();
+  const handle = (handleRow as { username?: string | null } | null)?.username ?? null;
+  const homeValueSmartLink = handle
+    ? `/@${handle}/home-value`
+    : `/home-value-widget?agentId=${encodeURIComponent(widgetAgentKey)}`;
 
   // Traffic funnel snapshot (last 30 days)
   const sinceIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();

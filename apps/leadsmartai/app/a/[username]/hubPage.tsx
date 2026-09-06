@@ -11,6 +11,7 @@ import { availablePages, pageAvailable, type HubPageFacts, type HubPageKey } fro
 import { hasPrivacySignal } from "@/lib/marketing-hub/tracking";
 import { HubTags } from "./HubTags";
 import HubTracker from "./HubTracker";
+import { HubTurnstileProvider } from "./HubTurnstile";
 import { hubLabels, type HubLabels } from "./labels";
 import { displayNameOf, HubFooter, HubHeader } from "./sections";
 import { hubTheme, type HubTheme } from "./theme";
@@ -133,6 +134,7 @@ export function HubPageFrame({
       <HubTracker username={hub.username} utmSource={null} utmCampaign={null} />
       <HubTags decision={hub.tracking} />
       <HubHeader {...props} current={page} />
+      <HubTurnstileProvider siteKey={turnstileSiteKey()}>
       <main id="main-content">
         {heading ? (
           <div className="border-b border-slate-100 bg-white">
@@ -145,7 +147,13 @@ export function HubPageFrame({
         ) : null}
         {children}
       </main>
+      </HubTurnstileProvider>
       <HubFooter {...props} />
     </>
   );
+}
+
+/** The public Turnstile site key, or null when the challenge is not configured. */
+export function turnstileSiteKey(): string | null {
+  return process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || null;
 }

@@ -8,6 +8,8 @@ import { loadHubByUsername } from "@/lib/marketing-hub/loadHub";
 import { hasPrivacySignal } from "@/lib/marketing-hub/tracking";
 import { HubTags } from "../HubTags";
 import HubTracker from "../HubTracker";
+import { HubTurnstileProvider } from "../HubTurnstile";
+import { turnstileSiteKey } from "../hubPage";
 import { hubLabels } from "../labels";
 import { displayNameOf, HubFooter, HubHeader } from "../sections";
 import { hubTheme } from "../theme";
@@ -60,6 +62,7 @@ export default async function HubHomeValuePage({ params }: Props) {
       <HubTracker username={hub.username} utmSource={null} utmCampaign={null} />
       <HubTags decision={hub.tracking} />
       <HubHeader {...props} />
+      <HubTurnstileProvider siteKey={turnstileSiteKey()}>
       <main id="main-content" className="bg-slate-50 py-10 sm:py-16">
         <div className="mx-auto w-full max-w-4xl px-5 sm:px-8">
           <Link href={`/@${hub.username}`} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900">
@@ -104,6 +107,7 @@ export default async function HubHomeValuePage({ params }: Props) {
           </div>
         </div>
       </main>
+      </HubTurnstileProvider>
       <HubFooter {...props} />
     </>
   );
