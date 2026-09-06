@@ -1301,6 +1301,28 @@
     }
   },
   "notifications": {
+    "feed": {
+          "subtitle": "AI 团队为您标记的一切，最新在前。",
+          "unreadCount_one": "{{count}} 条未读",
+          "unreadCount_other": "{{count}} 条未读",
+          "allCaughtUp": "全部处理完了。",
+          "markAllRead": "全部标为已读",
+          "marking": "标记中…",
+          "markFailed": "无法更新通知，请重试。",
+          "empty": "这里还没有内容。热门线索、未接来电和提醒会随时出现在这里。",
+          "unread": "未读",
+          "today": "今天",
+          "yesterday": "昨天",
+          "needsYou": "今天需要您处理",
+          "none": "暂无待办",
+          "types": {
+                "hot_lead": "热门线索",
+                "missed_call": "未接来电",
+                "reminder": "提醒",
+                "new_lead": "新线索",
+                "avatar_ready": "数字分身已就绪"
+          }
+    },
     "title": "通知",
     "subtitle": "需要优先跟进的重点客户、可能漏接的来电，以及各环节的提醒。",
     "hotLeads": "重点客户",

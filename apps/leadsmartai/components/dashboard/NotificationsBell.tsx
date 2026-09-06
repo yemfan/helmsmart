@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BellRing } from "lucide-react";
+import { NOTIFICATIONS_READ_EVENT } from "@/components/dashboard/NotificationsFeed";
 
 /**
  * Notifications bell with an unread badge — the constitution's
@@ -13,18 +14,26 @@ import { BellRing } from "lucide-react";
 export function NotificationsBell({ className }: { className?: string }) {
   const [unread, setUnread] = useState(0);
 
-  useEffect(() => {
-    let cancelled = false;
+  const load = useCallback(() => {
     fetch("/api/dashboard/notifications/unread")
       .then((r) => r.json())
       .then((j) => {
-        if (!cancelled && j?.ok) setUnread(Number(j.count) || 0);
+        if (j?.ok) setUnread(Number(j.count) || 0);
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  // The bell lives in the persistent top bar, so it never remounts. Refetch
+  // when the feed clears things and when the tab regains focus.
+  useEffect(() => {
+    load();
+    window.addEventListener(NOTIFICATIONS_READ_EVENT, load);
+    window.addEventListener("focus", load);
+    return () => {
+      window.removeEventListener(NOTIFICATIONS_READ_EVENT, load);
+      window.removeEventListener("focus", load);
+    };
+  }, [load]);
 
   return (
     <Link
