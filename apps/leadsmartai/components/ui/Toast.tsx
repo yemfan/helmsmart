@@ -74,7 +74,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-lg border animate-slide-in-right ${
+            className={`pointer-events-auto flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-lg border motion-enter-right ${
               t.type === "success"
                 ? "bg-green-50 text-green-800 border-green-200"
                 : t.type === "error"

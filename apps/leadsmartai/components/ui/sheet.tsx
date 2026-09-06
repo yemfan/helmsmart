@@ -65,6 +65,11 @@ const SheetContent = forwardRef<ElementRef<typeof DialogPrimitive.Content>, Shee
           className={cn(
             "fixed z-50 flex flex-col overflow-y-auto border-slate-200 bg-white shadow-2xl transition-transform duration-200 ease-out dark:border-slate-700 dark:bg-slate-900",
             sideClass[side],
+            side === "right"
+              ? "data-[state=open]:motion-enter-right"
+              : side === "left"
+                ? "data-[state=open]:motion-enter-left"
+                : "data-[state=open]:motion-enter-up",
             className,
           )}
           {...props}
