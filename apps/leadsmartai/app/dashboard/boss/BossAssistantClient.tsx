@@ -2,6 +2,9 @@
 
 
 import BriefingScheduleCard from "@/components/dashboard/BriefingScheduleCard";
+import { Toggle } from "@/components/ui/Toggle";
+import { useAssistantNames } from "@/components/closeboss/useAssistantNames";
+import { ASSIGNEE_PERSONA } from "@/lib/closeboss/assigneePersona";
 import { MemoryLine } from "@/components/closeboss/MemoryLine";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
@@ -1389,22 +1392,24 @@ function SettingsModal({
 }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
+  // The realtor may have renamed a teammate on Manage AI Team; the roster
+  // persona (Emma, Chris, …) is the fallback, the role label the last resort.
+  const customNames = useAssistantNames();
+  const nameOf = (assignee: string) =>
+    customNames[assignee] ?? ASSIGNEE_PERSONA[assignee]?.name ?? tr(`boss.team.${assignee}`, { defaultValue: assignee });
   type Mode = "ask" | "assisted" | "auto";
+  const MODES: Mode[] = ["ask", "assisted", "auto"];
   const cellMode = (assignee: string, channel: Channel): Mode => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
     if (c) return c.mode as Mode;
     return global ? "auto" : "ask";
   };
-  // Tapping cycles you outward, one step at a time: you approve → Max approves →
-  // it just goes. Then back to the strictest, so the loop cannot leave someone
-  // on autopilot by accident.
-  const nextMode = (m: Mode): Mode => (m === "ask" ? "assisted" : m === "assisted" ? "auto" : "ask");
   // Colour carries the amount of trust being handed over: grey nothing, amber
   // some, green all of it.
   const modeClass: Record<Mode, string> = {
-    ask: "border border-slate-200 bg-white text-slate-500",
-    assisted: "bg-amber-100 text-amber-900",
-    auto: "bg-emerald-100 text-emerald-800",
+    ask: "border-slate-300 bg-slate-100 text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100",
+    assisted: "border-amber-300 bg-amber-100 text-amber-900",
+    auto: "border-emerald-300 bg-emerald-100 text-emerald-800",
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
@@ -1415,45 +1420,59 @@ function SettingsModal({
         </div>
         <p className="mt-1 text-xs text-slate-500">{tr("boss.approvals.subtitle")}</p>
 
-        <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+          <div className="pt-0.5"><Toggle checked={global} onChange={onGlobal} label={tr("boss.approvals.allChannels")} /></div>
           <div>
             <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{tr("boss.approvals.allChannels")}</p>
             <p className="text-xs text-slate-500">{tr("boss.approvals.allChannelsHelp")}</p>
           </div>
-          <AutopilotToggle on={global} onToggle={() => onGlobal(!global)} />
         </div>
 
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+        <div className="mt-3 flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+          <div className="pt-0.5"><Toggle checked={overnightMode} onChange={onOvernight} label={tr("pages.boss.overnightMode")} /></div>
           <div>
             <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{tr("pages.boss.overnightMode")}</p>
-            <p className="text-xs text-slate-500">
-              The Boss works your pipeline at ~4am: research + tasks done, outbound drafted for your
-              morning approval. Never calls, never sends overnight.
-            </p>
+            <p className="text-xs text-slate-500">{tr("boss.approvals.overnightHelp")}</p>
           </div>
-          <AutopilotToggle on={overnightMode} onToggle={() => onOvernight(!overnightMode)} />
         </div>
 
+        {/* One sentence per teammate and channel says exactly what will happen;
+            the three choices beside it change the sentence. The old grid of
+            "Text: auto" pills was the same policy written for an engineer. */}
         <div className="mt-3 space-y-2">
           {channels.map((row) => (
             <div key={row.assignee} className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
-              <p className="mb-2 text-sm font-medium text-slate-900 dark:text-slate-100">{tr(`boss.team.${row.assignee}`, { defaultValue: row.assignee })}</p>
-              <div className="flex flex-wrap gap-1.5">
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                {nameOf(row.assignee)}
+                <span className="ml-1.5 text-xs font-normal text-slate-500">{tr(`boss.team.${row.assignee}`, { defaultValue: row.assignee })}</span>
+              </p>
+              <ul className="mt-2 space-y-2">
                 {row.channels.map((ch) => {
                   const mode = cellMode(row.assignee, ch);
                   return (
-                    <button
-                      key={ch}
-                      type="button"
-                      onClick={() => onCell(row.assignee, ch, nextMode(mode))}
-                      title={tr(`boss.approval.${mode}Hint`)}
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${modeClass[mode]}`}
-                    >
-                      {tr(`boss.channel.${ch}`)}: {tr(`boss.approval.${mode}`)}
-                    </button>
+                    <li key={ch} className="text-sm text-slate-700 dark:text-slate-300">
+                      <p>{tr(`boss.approvalSentence.${ch}.${mode}`, { name: nameOf(row.assignee) })}</p>
+                      <div role="radiogroup" aria-label={`${nameOf(row.assignee)} · ${tr(`boss.channel.${ch}`)}`} className="mt-1 flex flex-wrap gap-1">
+                        {MODES.map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            role="radio"
+                            aria-checked={mode === m}
+                            onClick={() => { if (m !== mode) onCell(row.assignee, ch, m); }}
+                            title={tr(`boss.approval.${m}Hint`)}
+                            className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition ${
+                              mode === m ? modeClass[m] : "border-transparent bg-transparent text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                            }`}
+                          >
+                            {tr(`boss.approvalChoice.${m}`)}
+                          </button>
+                        ))}
+                      </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
           ))}
         </div>
