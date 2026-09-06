@@ -38,8 +38,17 @@ export const META_OAUTH_SCOPES = [
   "pages_show_list",
   "pages_manage_posts",
   "pages_read_engagement",
+  // Post performance. `pages_read_engagement` alone returns reactions and
+  // comments; impressions, reach and clicks come from /insights, which
+  // needs `read_insights` for Page posts and `instagram_manage_insights` for
+  // IG media. Without them the hourly metrics refresh stored nulls for every
+  // Facebook post and no reach for Instagram — the Marketing Hub analytics
+  // showed dashes where the platform had numbers. Existing connections keep
+  // their old grant until the agent reconnects.
+  "read_insights",
   "instagram_basic",
   "instagram_content_publish",
+  "instagram_manage_insights",
   // Phase 2B (Lead Ads) will request these too; keeping them in the
   // single grant means agents don't see a second OAuth dialog later.
   "ads_management",
