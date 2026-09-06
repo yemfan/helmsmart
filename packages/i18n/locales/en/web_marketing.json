@@ -55,7 +55,12 @@
     "partners": "Business partners",
     "rights": "All rights reserved.",
     "entity_name": "CloseBoss (formerly LeadSmart AI)",
-    "entity_line": "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
+    "entity_line": "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc.",
+    "partnerBlurbs": {
+      "propertyToolsAi": "Real estate tools & data",
+      "helmsmart": "AI operating system for business",
+      "marketingboss": "AI marketing creative"
+    }
   },
   "link": {
     "features": "Features",

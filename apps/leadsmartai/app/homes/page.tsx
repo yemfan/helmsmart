@@ -14,15 +14,17 @@ export async function generateMetadata(): Promise<Metadata> {
 };
 }
 
-const POPULAR_CITIES: { city: string; state: string; blurb: string }[] = [
-  { city: "Austin", state: "TX", blurb: "Hill country living, tech hub" },
-  { city: "Denver", state: "CO", blurb: "Outdoorsy, walkable neighborhoods" },
-  { city: "Charlotte", state: "NC", blurb: "Banking + booming suburbs" },
-  { city: "Phoenix", state: "AZ", blurb: "Sunbelt growth and value" },
-  { city: "Tampa", state: "FL", blurb: "Beaches + no state income tax" },
-  { city: "Nashville", state: "TN", blurb: "Music city, family-friendly" },
-  { city: "Raleigh", state: "NC", blurb: "Research Triangle, top schools" },
-  { city: "San Diego", state: "CA", blurb: "Coastal lifestyle, high demand" },
+/* Keys, not copy: a module constant is built before any locale is
+ * known, and `t` is not even in scope out here. */
+const POPULAR_CITIES: { city: string; state: string; key: string }[] = [
+  { city: "Austin", state: "TX", key: "austin" },
+  { city: "Denver", state: "CO", key: "denver" },
+  { city: "Charlotte", state: "NC", key: "charlotte" },
+  { city: "Phoenix", state: "AZ", key: "phoenix" },
+  { city: "Tampa", state: "FL", key: "tampa" },
+  { city: "Nashville", state: "TN", key: "nashville" },
+  { city: "Raleigh", state: "NC", key: "raleigh" },
+  { city: "San Diego", state: "CA", key: "sanDiego" },
 ];
 
 /**
@@ -77,7 +79,9 @@ export default async function HomesIndexPage() {
                 <div className="text-base font-semibold text-slate-900">
                   {c.city}, {c.state}
                 </div>
-                <div className="mt-1 text-xs text-slate-600">{c.blurb}</div>
+                <div className="mt-1 text-xs text-slate-600">
+                  {t(`pages.homesIndex.cityBlurb.${c.key}`, { ns: "dashboard" })}
+                </div>
               </Link>
             );
           })}

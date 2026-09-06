@@ -18,33 +18,10 @@ export type IdxLeadContext = {
   searchFilters?: Record<string, unknown> | null;
 };
 
-const ACTION_COPY: Record<IdxLeadAction, { title: string; subtitle: string; cta: string }> = {
-  favorite: {
-    title: "Save this home",
-    subtitle: "Get instant alerts when the price changes or it goes pending.",
-    cta: "Save home",
-  },
-  save_search: {
-    title: "Save this search",
-    subtitle: "We'll email you when new homes match your filters.",
-    cta: "Save search",
-  },
-  schedule_tour: {
-    title: "Schedule a tour",
-    subtitle: "We'll connect you with a local agent to schedule a showing.",
-    cta: "Request tour",
-  },
-  contact_agent: {
-    title: "Talk to a local agent",
-    subtitle: "Get fast answers about this home and the neighborhood.",
-    cta: "Contact agent",
-  },
-  view_threshold: {
-    title: "Save your search to keep browsing",
-    subtitle: "Free instant access — we'll email you new matches as they hit the market.",
-    cta: "Continue browsing",
-  },
-};
+/*
+ * The action IS the key. This was a Record of English copy at module scope;
+ * `t` cannot reach out here, so the lookup moved to the component.
+ */
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -69,7 +46,11 @@ export default function IdxLeadCaptureModal(props: {
   onCaptured?: (info: { leadId: string }) => void;
 }) {
   const { t } = useTranslation("dashboard");
-  const copy = ACTION_COPY[props.context.action];
+  const copy = {
+    title: t(`pages.idxCapture.action.${props.context.action}.title`),
+    subtitle: t(`pages.idxCapture.action.${props.context.action}.subtitle`),
+    cta: t(`pages.idxCapture.action.${props.context.action}.cta`),
+  };
   const requiresPhone =
     props.context.action === "schedule_tour" || props.context.action === "contact_agent";
 

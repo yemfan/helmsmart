@@ -55,7 +55,12 @@
     "partners": "合作伙伴",
     "rights": "保留所有权利。",
     "entity_name": "CloseBoss（原 LeadSmart AI）",
-    "entity_line": "CloseBoss（前身为 LeadSmart AI）是 MAXY Investment Inc. 旗下产品。"
+    "entity_line": "CloseBoss（前身为 LeadSmart AI）是 MAXY Investment Inc. 旗下产品。",
+    "partnerBlurbs": {
+      "propertyToolsAi": "房地产工具与数据",
+      "helmsmart": "面向企业的 AI 操作系统",
+      "marketingboss": "AI 营销创意"
+    }
   },
   "link": {
     "features": "功能",
