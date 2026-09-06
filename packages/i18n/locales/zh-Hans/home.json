@@ -196,6 +196,33 @@
       "email": "邮件",
       "social": "社交"
     },
+    "approvalChoice": {
+      "ask": "您审批",
+      "assisted": "Max 把关",
+      "auto": "自行执行"
+    },
+    "approvalSentence": {
+      "call": {
+        "ask": "{{name}} 会安排通话，但拨打前等您同意。",
+        "assisted": "{{name}} 会在 Max 核对方案后拨打；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在允许的通话时段内自行拨打，无需询问。"
+      },
+      "sms": {
+        "ask": "{{name}} 会起草短信，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送短信；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在免打扰时段和联系频率限制内自行发送短信，无需询问。"
+      },
+      "email": {
+        "ask": "{{name}} 会起草邮件，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送邮件；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在联系频率限制内自行发送邮件，无需询问。"
+      },
+      "social": {
+        "ask": "{{name}} 会起草帖子，发布前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发布帖子；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会自行发布帖子，无需询问。"
+      }
+    },
     "mode": {
       "ask": "问我",
       "assisted": "Max 审批",
