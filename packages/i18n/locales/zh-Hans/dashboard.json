@@ -1577,6 +1577,10 @@
     "metaDescription": "配置您的 CloseBoss AI 团队——暂停助理并选择他们的技能。"
   },
   "inbox": {
+    "draftWithMax": "让 Max 起草",
+    "drafting": "起草中…",
+    "draftFailed": "Max 暂时无法起草，请重试。",
+    "draftDefaultPrompt": "回复这段对话中最新的一条消息。",
     "metaTitle": "对话",
     "metaDescription": "与潜在客户和客户的短信与邮件统一对话——所有收发消息按联系人归档成会话。",
     "loading": "正在加载对话…",

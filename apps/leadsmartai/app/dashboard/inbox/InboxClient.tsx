@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { ArrowLeft, Mail, MessageSquare, Phone, Sparkles } from "lucide-react";
 
 import { canEmailThread } from "@/lib/inbox/replyTarget";
 import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
@@ -107,6 +107,7 @@ export default function InboxClient() {
    * successful send red. The outcome is a flag now; the message is derived.
    */
   const [sendMsg, setSendMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [drafting, setDrafting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const loadThreads = useCallback(async () => {
@@ -208,6 +209,35 @@ export default function InboxClient() {
     } finally { setSending(false); }
   }
 
+  /**
+   * "Draft with Max" — the per-contact drafting that used to live only in the
+   * floating AI Guide bubble, now in the reply box where the reply is written.
+   * Whatever the agent has typed becomes the brief; an empty box asks Max to
+   * answer the latest inbound message.
+   */
+  async function draftWithMax() {
+    if (!selectedLead || drafting) return;
+    setDrafting(true);
+    setSendMsg(null);
+    try {
+      const res = await fetch("/api/dashboard/sms/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contactId: selectedLead.leadId,
+          prompt: replyText.trim() || t("inbox.draftDefaultPrompt"),
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.ok) throw new Error(body.error ?? t("inbox.draftFailed"));
+      setReplyText(String(body.draft ?? ""));
+    } catch (e) {
+      setSendMsg({ ok: false, text: e instanceof Error ? e.message : t("inbox.draftFailed") });
+    } finally {
+      setDrafting(false);
+    }
+  }
+
   const filtered = threads.filter((t) => {
     if (filter === "unread" && t.lastDirection !== "inbound") return false;
     if (filter === "sms" && t.channel !== "sms") return false;
@@ -232,9 +262,12 @@ export default function InboxClient() {
         <InboundEmailSetupButton />
       </div>
 
-      <div className="flex h-[calc(100vh-180px)] min-h-[500px] rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      {/* Two panes on lg+; ONE pane below it. The list and the thread used to
+          share a 390px phone, which squeezed the list to a third of the width
+          beside an empty "select a conversation" panel. */}
+      <div className="flex h-[calc(100dvh-180px)] min-h-[500px] rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
       {/* Left panel — conversation list */}
-      <div className="w-full max-w-sm shrink-0 flex flex-col border-r border-gray-200">
+      <div className={`${selectedLead ? "hidden lg:flex" : "flex"} w-full shrink-0 flex-col border-r border-gray-200 lg:max-w-sm`}>
         <div className="shrink-0 border-b border-gray-100 p-3 space-y-2">
           <div>
             <div className="flex items-center justify-between">
@@ -256,7 +289,7 @@ export default function InboxClient() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-medium ${filter === f ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium ${filter === f ? "bg-[#0072ce] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
               >
                 {/* Rendering `f` directly printed the raw key — the same way the
                     Playbooks "all" tab did. Every key is translated explicitly. */}
@@ -328,7 +361,7 @@ export default function InboxClient() {
       </div>
 
       {/* Right panel — thread detail */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className={`${selectedLead ? "flex" : "hidden lg:flex"} min-w-0 flex-1 flex-col`}>
         {!selectedLead ? (
           <div className="flex flex-1 items-center justify-center text-sm text-gray-400">
             {t("inbox.selectPrompt")}
@@ -338,9 +371,17 @@ export default function InboxClient() {
         ) : (
           <>
             {/* Thread header */}
-            <div className="shrink-0 border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">{lead?.name ?? t("inbox.leadFallback", { id: selectedLead.leadId })}</h3>
+            <div className="shrink-0 border-b border-gray-100 px-3 py-2.5 flex items-center gap-2 sm:px-4">
+              <button
+                type="button"
+                onClick={() => setSelectedLead(null)}
+                aria-label={t("inbox.close")}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 lg:hidden"
+              >
+                <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+              </button>
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-sm font-semibold text-gray-900">{lead?.name ?? t("inbox.leadFallback", { id: selectedLead.leadId })}</h3>
                 <p className="text-xs text-gray-500">
                   {lead?.phone && <span className="mr-3">{lead.phone}</span>}
                   {lead?.email && <span className="mr-3">{lead.email}</span>}
@@ -358,7 +399,6 @@ export default function InboxClient() {
                   )}
                 </p>
               </div>
-              <button onClick={() => setSelectedLead(null)} className="text-xs text-gray-400 hover:text-gray-700 lg:hidden">{t("inbox.close")}</button>
             </div>
 
             {/* Messages */}
@@ -378,7 +418,7 @@ export default function InboxClient() {
                           <div className="text-center text-[10px] text-gray-400 py-2">{formatDate(m.created_at, locale)}</div>
                         )}
                         <div className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
-                          <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${isOutbound ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+                          <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${isOutbound ? "bg-[#0072ce] text-white" : "bg-gray-100 text-gray-900"}`}>
                             {m.subject && <p className="text-[10px] font-semibold opacity-70 mb-0.5">{m.subject}</p>}
                             <p className="text-sm whitespace-pre-wrap">{m.message}</p>
                             <div className={`flex items-center gap-1.5 mt-1 ${isOutbound ? "justify-end" : ""}`}>
@@ -406,19 +446,29 @@ export default function InboxClient() {
                   {sendMsg.text}
                 </p>
               )}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <input
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendReply(); } }}
                   placeholder={selectedLead.channel === "email" ? t("inbox.replyEmail") : t("inbox.replySms")}
-                  className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                  aria-label={selectedLead.channel === "email" ? t("inbox.replyEmail") : t("inbox.replySms")}
+                  className="min-w-0 flex-1 basis-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm sm:basis-auto"
                 />
+                <button
+                  type="button"
+                  onClick={() => void draftWithMax()}
+                  disabled={drafting || sending}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-[#0072ce] hover:bg-blue-100 disabled:opacity-50"
+                >
+                  <Sparkles className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  {drafting ? t("inbox.drafting") : t("inbox.draftWithMax")}
+                </button>
                 <button
                   type="button"
                   onClick={() => void sendReply()}
                   disabled={sending || !replyText.trim()}
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                  className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
                 >
                   {sending ? t("inbox.sending") : t("inbox.send")}
                 </button>
