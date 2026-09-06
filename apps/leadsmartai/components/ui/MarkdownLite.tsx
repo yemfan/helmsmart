@@ -2,23 +2,36 @@
 
 import type { ReactNode } from "react";
 
+import { parseInline } from "@/lib/markdown/inline";
+
 /**
  * Lightweight Markdown renderer for AI-authored text (Max's replies, run
  * reports, the AI Guide). Handles the cases the models actually emit —
- * `### headings`, `**bold**`, `- bullets` — with no dependency, so agents
- * see formatting instead of literal asterisks.
+ * `### headings`, `**bold**`, `[links](/somewhere)`, `- bullets` — with no
+ * dependency, so agents see formatting instead of literal punctuation.
+ *
+ * The decisions live in lib/markdown/inline.ts, which is pure and tested —
+ * including which hrefs are allowed to become anchors at all. This file only
+ * turns pieces into elements.
  */
 function renderInline(text: string): ReactNode[] {
-  // Split on **bold**; odd-indexed segments are the bold captures.
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
-    i % 2 === 1 ? (
-      <strong key={i} className="font-semibold text-gray-900">
-        {part}
-      </strong>
-    ) : (
-      <span key={i}>{part}</span>
-    ),
-  );
+  return parseInline(text).map((piece, i) => {
+    if (piece.kind === "bold") {
+      return (
+        <strong key={i} className="font-semibold text-gray-900">
+          {piece.text}
+        </strong>
+      );
+    }
+    if (piece.kind === "link") {
+      return (
+        <a key={i} href={piece.href} className="font-medium text-[#0072ce] underline hover:no-underline">
+          {piece.text}
+        </a>
+      );
+    }
+    return <span key={i}>{piece.text}</span>;
+  });
 }
 
 export function MarkdownLite({ text }: { text: string }) {

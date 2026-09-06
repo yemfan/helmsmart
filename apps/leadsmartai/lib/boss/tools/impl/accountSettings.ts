@@ -83,7 +83,7 @@ export const getAccountSettings = defineTool({
       summary:
         `Timezone: ${timezone} (it is ${localTime} there now). ` +
         `Briefings: ${morning} and ${evening} in that zone. ` +
-        `Both are changed under ${ACCOUNT_SETTINGS_LABEL} — link it as ${ACCOUNT_SETTINGS_HREF}, and name the place, not the path.`,
+        `Both are changed under ${ACCOUNT_SETTINGS_LABEL} — write it as the markdown link [${ACCOUNT_SETTINGS_LABEL}](${ACCOUNT_SETTINGS_HREF}), with no domain in front of the path.`,
       display: {
         key: "reads.accountSettings",
         params: { timezone, localTime, morning, evening },
