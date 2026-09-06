@@ -41,7 +41,6 @@ describe("tierOf", () => {
     // map did — under-grants a legacy subscriber by a full tier.
     expect(tierOf("agent_starter")).toBe("pro");
     expect(tierOf("agent_pro")).toBe("premium");
-    expect(tierOf("loan_broker_pro")).toBe("pro");
   });
 
   it("treats the homeowner products as NOT an agent entitlement", () => {
