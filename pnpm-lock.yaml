@@ -250,6 +250,9 @@ importers:
       '@leadsmart/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@leadsmart/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))
@@ -900,6 +903,12 @@ importers:
   packages/platform: {}
 
   packages/shared:
+    devDependencies:
+      typescript:
+        specifier: ^5.1.6
+        version: 5.9.3
+
+  packages/tokens:
     devDependencies:
       typescript:
         specifier: ^5.1.6
