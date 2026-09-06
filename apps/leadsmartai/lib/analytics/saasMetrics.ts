@@ -1,5 +1,6 @@
 import { SUBSCRIPTION_EVENT_TYPES } from "@/lib/analytics/eventCatalog";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { firstTenMinutes, type FirstMomentRow, type FirstTenMinutes } from "@/lib/analytics/firstTenMinutes";
 
 const PAYING_STATUSES = ["active", "trialing"] as const;
 
@@ -372,4 +373,15 @@ export async function countNewPayingEvents(sinceIso: string): Promise<number> {
   return new Set(
     (data ?? []).map((r) => (r as { user_id?: string }).user_id).filter(Boolean) as string[]
   ).size;
+}
+
+/**
+ * Time to first proposal / first approval per agent, from the
+ * `agent_first_moments()` SQL function (one round trip). See
+ * lib/analytics/firstTenMinutes.ts for what the numbers mean.
+ */
+export async function computeFirstTenMinutes(): Promise<FirstTenMinutes> {
+  const { data, error } = await supabaseAdmin.rpc("agent_first_moments");
+  if (error) throw error;
+  return firstTenMinutes((data ?? []) as FirstMomentRow[]);
 }

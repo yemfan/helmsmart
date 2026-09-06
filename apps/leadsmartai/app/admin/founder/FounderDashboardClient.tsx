@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { formatMinutes, type FirstTenMinutes } from "@/lib/analytics/firstTenMinutes";
 import { useTranslation } from "react-i18next";
 import {
   Bar,
@@ -36,6 +37,7 @@ type OverviewPayload = {
   payingUsersDistinct: number;
   mauUsage: number;
   activation: { rate: number | null; onboarded: number; activatedWithin7dOfOnboarding: number };
+  firstTenMinutes: (FirstTenMinutes & { definition: string }) | null;
   conversion: { rate: number | null; checkoutStartedUsers: number; convertedUsers: number };
   churn: { rate: number | null; churnedUsers: number; payingUsersNow: number };
   newPayingUsersInWindow: number;
@@ -180,6 +182,24 @@ export function FounderDashboardClient() {
               label={t("pages.adminPages.activationRate")}
               value={fmtPct(overview.activation.rate)}
               subtext={`${overview.activation.activatedWithin7dOfOnboarding} / ${overview.activation.onboarded} onboarded (7d reply)`}
+            />
+            <KpiCard
+              label={t("pages.founderDashboard.timeToFirstProposal")}
+              value={formatMinutes(overview.firstTenMinutes?.proposal.medianMinutes ?? null)}
+              subtext={
+                overview.firstTenMinutes
+                  ? `${overview.firstTenMinutes.proposal.reached} / ${overview.firstTenMinutes.agents} agents · ${fmtPct(overview.firstTenMinutes.proposal.within10m)} within 10 min`
+                  : "—"
+              }
+            />
+            <KpiCard
+              label={t("pages.founderDashboard.timeToFirstApproval")}
+              value={formatMinutes(overview.firstTenMinutes?.approval.medianMinutes ?? null)}
+              subtext={
+                overview.firstTenMinutes
+                  ? `${overview.firstTenMinutes.approval.reached} / ${overview.firstTenMinutes.agents} agents · ${fmtPct(overview.firstTenMinutes.approval.within10m)} within 10 min`
+                  : "—"
+              }
             />
             <KpiCard
               label={t("pages.founderDashboard.checkoutToPaid")}

@@ -9141,6 +9141,8 @@
       "onePerDaySpread": "1 (spread out)"
     },
     "founderDashboard": {
+      "timeToFirstProposal": "Time to first proposal",
+      "timeToFirstApproval": "Time to first approval",
       "loadingMetrics": "Loading metrics…",
       "checkoutToPaid": "Checkout → paid"
     },
