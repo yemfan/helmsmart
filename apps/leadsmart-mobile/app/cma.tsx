@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -46,6 +47,7 @@ import type { ThemeTokens } from "../lib/theme";
  * 402 response surfaces inline so they know to upgrade or wait.
  */
 export default function CmaScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -109,7 +111,7 @@ export default function CmaScreen() {
       >
         {/* Input form */}
         <View style={styles.formCard}>
-          <Text style={styles.sectionHeading}>Look up a property</Text>
+          <Text style={styles.sectionHeading}>{t("cma.lookUpAProperty")}</Text>
           <Text style={styles.label}>Address *</Text>
           <TextInput
             value={address}
@@ -121,7 +123,7 @@ export default function CmaScreen() {
           />
           <View style={styles.row}>
             <View style={styles.flex1}>
-              <Text style={styles.label}>Sqft (optional)</Text>
+              <Text style={styles.label}>{t("cma.sqftOptional")}</Text>
               <TextInput
                 value={sqft}
                 onChangeText={setSqft}
@@ -133,7 +135,7 @@ export default function CmaScreen() {
               />
             </View>
             <View style={styles.flex1}>
-              <Text style={styles.label}>Condition</Text>
+              <Text style={styles.label}>{t("cma.condition")}</Text>
               <View style={styles.conditionRow}>
                 {["Below", "Average", "Above"].map((c) => {
                   const active = condition === c;
@@ -168,7 +170,7 @@ export default function CmaScreen() {
             onPress={() => void onGenerate()}
             disabled={busy}
             accessibilityRole="button"
-            accessibilityLabel="Generate CMA"
+            accessibilityLabel={t("cma.generateCma")}
             style={({ pressed }) => [
               styles.generateBtn,
               pressed && styles.generateBtnPressed,
@@ -180,7 +182,7 @@ export default function CmaScreen() {
             ) : (
               <>
                 <Ionicons name="analytics" size={16} color={tokens.textOnAccent} />
-                <Text style={styles.generateBtnText}>Generate CMA</Text>
+                <Text style={styles.generateBtnText}>{t("cma.generateCma")}</Text>
               </>
             )}
           </Pressable>
@@ -202,6 +204,7 @@ function ReportView({
   styles: ReturnType<typeof createStyles>;
   tokens: ThemeTokens;
 }) {
+  const { t } = useTranslation("mobile_misc_screens");
   return (
     <View style={styles.reportCard}>
       {/* Subject */}
@@ -215,7 +218,7 @@ function ReportView({
 
       {/* Estimated value range */}
       <View style={styles.valueBlock}>
-        <Text style={styles.valueLabel}>Estimated value</Text>
+        <Text style={styles.valueLabel}>{t("cma.estimatedValue")}</Text>
         <Text style={styles.valueAmount}>{formatMoney(report.estimatedValue)}</Text>
         <View style={styles.rangeBar}>
           <Text style={styles.rangeLow}>{formatMoney(report.low)}</Text>
@@ -232,10 +235,10 @@ function ReportView({
 
       {/* Strategies */}
       <View style={styles.divider} />
-      <Text style={styles.sectionHeading}>Pricing strategies</Text>
+      <Text style={styles.sectionHeading}>{t("cma.pricingStrategies")}</Text>
       <View style={styles.strategyRow}>
         <StrategyCard
-          label="Aggressive"
+          label={t("cma.aggressive")}
           price={report.strategies.aggressive}
           dom={report.strategies.daysOnMarket.aggressive}
           tone="amber"
@@ -243,7 +246,7 @@ function ReportView({
           tokens={tokens}
         />
         <StrategyCard
-          label="Market"
+          label={t("cma.market")}
           price={report.strategies.market}
           dom={report.strategies.daysOnMarket.market}
           tone="blue"
@@ -251,7 +254,7 @@ function ReportView({
           tokens={tokens}
         />
         <StrategyCard
-          label="Premium"
+          label={t("cma.premium")}
           price={report.strategies.premium}
           dom={report.strategies.daysOnMarket.premium}
           tone="green"
@@ -267,8 +270,7 @@ function ReportView({
       </Text>
       {report.comps.length === 0 ? (
         <Text style={styles.muted}>
-          No comparable sales found in the area. Import MLS data to populate
-          comps for accurate pricing.
+          {t("cma.noComparableSalesFoundIn")}
         </Text>
       ) : (
         report.comps.map((c, idx) => (
@@ -280,7 +282,7 @@ function ReportView({
       {report.summary ? (
         <>
           <View style={styles.divider} />
-          <Text style={styles.sectionHeading}>Summary</Text>
+          <Text style={styles.sectionHeading}>{t("cma.summary")}</Text>
           <Text style={styles.summaryText}>{report.summary}</Text>
         </>
       ) : null}

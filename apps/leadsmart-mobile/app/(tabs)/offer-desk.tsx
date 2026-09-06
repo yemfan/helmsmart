@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -42,6 +43,7 @@ function fmtMoney(n: number | null | undefined): string {
 }
 
 export default function OfferDeskScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const s = useMemo(() => createStyles(tokens), [tokens]);
   const [tab, setTab] = useState<"build" | "review" | "compare">("build");
@@ -50,9 +52,9 @@ export default function OfferDeskScreen() {
     <SafeAreaView style={s.flex} edges={["bottom"]}>
       <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View style={s.segment}>
-          <SegBtn label="Build" active={tab === "build"} onPress={() => setTab("build")} s={s} />
-          <SegBtn label="Review" active={tab === "review"} onPress={() => setTab("review")} s={s} />
-          <SegBtn label="Compare" active={tab === "compare"} onPress={() => setTab("compare")} s={s} />
+          <SegBtn label={t("offerDesk.build")} active={tab === "build"} onPress={() => setTab("build")} s={s} />
+          <SegBtn label={t("offerDesk.review")} active={tab === "review"} onPress={() => setTab("review")} s={s} />
+          <SegBtn label={t("offerDesk.compare")} active={tab === "compare"} onPress={() => setTab("compare")} s={s} />
         </View>
         {tab === "build" ? (
           <BuildOffer tokens={tokens} s={s} />
@@ -77,6 +79,7 @@ function SegBtn({ label, active, onPress, s }: { label: string; active: boolean;
 // ── Build offer ────────────────────────────────────────────────────
 
 function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
+  const { t } = useTranslation("mobile_misc_screens");
   const [address, setAddress] = useState("");
   const [listPrice, setListPrice] = useState("");
   const [estimatedValue, setEstimatedValue] = useState("");
@@ -118,26 +121,26 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
   return (
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-      <Field label="Property address" s={s}>
+      <Field label={t("offerDesk.propertyAddress")} s={s}>
         <TextInput style={s.input} value={address} onChangeText={setAddress} placeholder="123 Oak St, Alhambra" placeholderTextColor={tokens.textSubtle} />
       </Field>
       <View style={s.row2}>
-        <Field label="List price" s={s} flex>
+        <Field label={t("offerDesk.listPrice")} s={s} flex>
           <TextInput style={s.input} value={listPrice} onChangeText={setListPrice} placeholder="850000" placeholderTextColor={tokens.textSubtle} keyboardType="numeric" />
         </Field>
-        <Field label="CMA value (optional)" s={s} flex>
+        <Field label={t("offerDesk.cmaValueOptional")} s={s} flex>
           <TextInput style={s.input} value={estimatedValue} onChangeText={setEstimatedValue} placeholder="—" placeholderTextColor={tokens.textSubtle} keyboardType="numeric" />
         </Field>
       </View>
       <View style={s.row2}>
-        <Field label="Buyer max budget" s={s} flex>
+        <Field label={t("offerDesk.buyerMaxBudget")} s={s} flex>
           <TextInput style={s.input} value={buyerMaxBudget} onChangeText={setBuyerMaxBudget} placeholder="—" placeholderTextColor={tokens.textSubtle} keyboardType="numeric" />
         </Field>
-        <Field label="Competing offers" s={s} flex>
+        <Field label={t("offerDesk.competingOffers")} s={s} flex>
           <TextInput style={s.input} value={competingOffers} onChangeText={setCompetingOffers} placeholder="0" placeholderTextColor={tokens.textSubtle} keyboardType="numeric" />
         </Field>
       </View>
-      <Field label="Financing" s={s}>
+      <Field label={t("offerDesk.financing")} s={s}>
         <View style={s.pillRow}>
           {FINANCING.map((f) => (
             <Pressable key={f} style={[s.pill, financingType === f && s.pillOn]} onPress={() => setFinancingType(financingType === f ? null : f)}>
@@ -146,7 +149,7 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
           ))}
         </View>
       </Field>
-      <Field label="Market heat" s={s}>
+      <Field label={t("offerDesk.marketHeat")} s={s}>
         <View style={s.pillRow}>
           {HEAT.map((h) => (
             <Pressable key={h} style={[s.pill, marketHeat === h && s.pillOn]} onPress={() => setMarketHeat(marketHeat === h ? null : h)}>
@@ -155,12 +158,12 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
           ))}
         </View>
       </Field>
-      <Field label="Buyer motivation (optional)" s={s}>
-        <TextInput style={[s.input, s.multiline]} value={motivation} onChangeText={setMotivation} placeholder="How badly do they want it? Anything special?" placeholderTextColor={tokens.textSubtle} multiline />
+      <Field label={t("offerDesk.buyerMotivationOptional")} s={s}>
+        <TextInput style={[s.input, s.multiline]} value={motivation} onChangeText={setMotivation} placeholder={t("offerDesk.howBadlyDoTheyWant")} placeholderTextColor={tokens.textSubtle} multiline />
       </Field>
 
       <Pressable style={[s.primaryBtn, busy && { opacity: 0.6 }]} disabled={busy} onPress={() => void run()}>
-        {busy ? <ActivityIndicator color={tokens.textOnAccent} /> : <Text style={s.primaryBtnText}>Build offer with AI</Text>}
+        {busy ? <ActivityIndicator color={tokens.textOnAccent} /> : <Text style={s.primaryBtnText}>{t("offerDesk.buildOfferWithAi")}</Text>}
       </Pressable>
       {error ? <Text style={s.errorText}>{error}</Text> : null}
 
@@ -173,11 +176,11 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
             <Text style={s.bigPrice}>{fmtMoney(offer.offerPrice)}</Text>
           </View>
           <View style={s.termGrid}>
-            <Term label="Earnest" value={fmtMoney(offer.earnestMoney)} s={s} />
-            <Term label="Down" value={fmtMoney(offer.downPayment)} s={s} />
-            <Term label="Escalation cap" value={fmtMoney(offer.escalationCap)} s={s} />
-            <Term label="Close" value={offer.closeDays ? `${offer.closeDays} days` : "—"} s={s} />
-            <Term label="Financing" value={offer.financingType ?? "—"} s={s} />
+            <Term label={t("offerDesk.earnest")} value={fmtMoney(offer.earnestMoney)} s={s} />
+            <Term label={t("offerDesk.down")} value={fmtMoney(offer.downPayment)} s={s} />
+            <Term label={t("offerDesk.escalationCap")} value={fmtMoney(offer.escalationCap)} s={s} />
+            <Term label={t("offerDesk.close")} value={offer.closeDays ? `${offer.closeDays} days` : "—"} s={s} />
+            <Term label={t("offerDesk.financing")} value={offer.financingType ?? "—"} s={s} />
           </View>
           <View style={s.contingRow}>
             {(["inspection", "appraisal", "loan"] as const).map((c) => (
@@ -188,9 +191,9 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
               </View>
             ))}
           </View>
-          <Text style={s.sectionLabel}>Why</Text>
+          <Text style={s.sectionLabel}>{t("offerDesk.why")}</Text>
           <Text style={s.bodyText}>{offer.rationale}</Text>
-          <Text style={s.sectionLabel}>Cover letter</Text>
+          <Text style={s.sectionLabel}>{t("offerDesk.coverLetter")}</Text>
           <View style={s.letterBox}>
             <Text style={s.bodyText}>{offer.coverLetter}</Text>
           </View>
@@ -213,6 +216,7 @@ function Term({ label, value, s }: { label: string; value: string; s: Styles }) 
 // ── Contract review ──────────────────────────────────────────────────
 
 function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
+  const { t } = useTranslation("mobile_misc_screens");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -234,18 +238,18 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
   return (
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-      <Field label="Paste the contract text" s={s}>
+      <Field label={t("offerDesk.pasteTheContractText")} s={s}>
         <TextInput
           style={[s.input, { minHeight: 160, textAlignVertical: "top" }]}
           value={text}
           onChangeText={setText}
-          placeholder="Paste the purchase contract text here…"
+          placeholder={t("offerDesk.pasteThePurchaseContractText")}
           placeholderTextColor={tokens.textSubtle}
           multiline
         />
       </Field>
       <Pressable style={[s.primaryBtn, busy && { opacity: 0.6 }]} disabled={busy} onPress={() => void run()}>
-        {busy ? <ActivityIndicator color={tokens.textOnAccent} /> : <Text style={s.primaryBtnText}>Review contract with AI</Text>}
+        {busy ? <ActivityIndicator color={tokens.textOnAccent} /> : <Text style={s.primaryBtnText}>{t("offerDesk.reviewContractWithAi")}</Text>}
       </Pressable>
       {error ? <Text style={s.errorText}>{error}</Text> : null}
 
@@ -257,7 +261,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
           {review.keyTerms.length > 0 ? (
             <>
-              <Text style={s.sectionLabel}>Key terms</Text>
+              <Text style={s.sectionLabel}>{t("offerDesk.keyTerms")}</Text>
               {review.keyTerms.map((k, i) => (
                 <View key={i} style={s.kvRow}>
                   <Text style={s.kvLabel}>{k.label}</Text>
@@ -269,7 +273,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
           {review.deadlines.length > 0 ? (
             <>
-              <Text style={s.sectionLabel}>Deadlines</Text>
+              <Text style={s.sectionLabel}>{t("offerDesk.deadlines")}</Text>
               {review.deadlines.map((d, i) => (
                 <View key={i} style={s.kvRow}>
                   <Text style={s.kvLabel}>{d.label}</Text>
@@ -281,7 +285,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
           {review.flags.length > 0 ? (
             <>
-              <Text style={s.sectionLabel}>Flags</Text>
+              <Text style={s.sectionLabel}>{t("offerDesk.flags")}</Text>
               {review.flags.map((f, i) => (
                 <View key={i} style={[s.flagRow, { borderLeftColor: sevColor(f.severity) }]}>
                   <Text style={[s.flagTitle, { color: sevColor(f.severity) }]}>
@@ -295,7 +299,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
           {review.missing.length > 0 ? (
             <>
-              <Text style={s.sectionLabel}>Blank / missing</Text>
+              <Text style={s.sectionLabel}>{t("offerDesk.blankMissing")}</Text>
               {review.missing.map((m, i) => (
                 <Text key={i} style={s.bullet}>• {m}</Text>
               ))}
@@ -304,7 +308,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
           {review.questions.length > 0 ? (
             <>
-              <Text style={s.sectionLabel}>Ask your broker / attorney</Text>
+              <Text style={s.sectionLabel}>{t("offerDesk.askYourBrokerAttorney")}</Text>
               {review.questions.map((q, i) => (
                 <Text key={i} style={s.bullet}>• {q}</Text>
               ))}
@@ -321,6 +325,7 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 // ── Compare offers ───────────────────────────────────────────────────
 
 function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
+  const { t } = useTranslation("mobile_misc_screens");
   const [listings, setListings] = useState<MobileCompareListing[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -366,7 +371,7 @@ function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
         <Text style={s.fieldLabel}>List price {fmtMoney(result.listing.listPrice)}</Text>
 
         <View style={[s.resultCard, { borderColor: tokens.accent }]}>
-          <Text style={s.sectionLabel}>AI recommendation</Text>
+          <Text style={s.sectionLabel}>{t("offerDesk.aiRecommendation")}</Text>
           <Text style={s.cardTitleStrong}>{result.summary.recommendation.headline}</Text>
           <Text style={s.bodyText}>{result.summary.recommendation.rationale}</Text>
           {result.summary.recommendation.watchOuts.map((w, i) => (
@@ -380,13 +385,13 @@ function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
               <Text style={s.offerName}>{o.buyerName || "Offer"}</Text>
               {o.id === top ? (
                 <View style={[s.badge, { backgroundColor: tokens.successBg }]}>
-                  <Text style={[s.badgeText, { color: tokens.successTextDark }]}>Recommended</Text>
+                  <Text style={[s.badgeText, { color: tokens.successTextDark }]}>{t("offerDesk.recommended")}</Text>
                 </View>
               ) : null}
             </View>
             <View style={s.termGrid}>
-              <Term label="Price" value={fmtMoney(o.price)} s={s} />
-              <Term label="Net to seller" value={fmtMoney(o.net)} s={s} />
+              <Term label={t("offerDesk.price")} value={fmtMoney(o.price)} s={s} />
+              <Term label={t("offerDesk.netToSeller")} value={fmtMoney(o.net)} s={s} />
             </View>
             <Text style={s.metaLine}>
               {[o.isCash ? "cash" : o.financing || "financing n/a", `${o.contingencyCount} contingenc${o.contingencyCount === 1 ? "y" : "ies"}`, o.status]
@@ -398,7 +403,7 @@ function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
         ))}
 
         <View style={s.resultCard}>
-          <Text style={s.sectionLabel}>Note for the seller</Text>
+          <Text style={s.sectionLabel}>{t("offerDesk.noteForTheSeller")}</Text>
           <Text style={s.bodyText}>{result.summary.sellerNote}</Text>
         </View>
         <Text style={s.disclaimer}>{result.summary.disclaimer}</Text>
@@ -408,12 +413,12 @@ function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
 
   return (
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
-      <Text style={s.fieldLabel}>Pick a listing to compare its offers</Text>
+      <Text style={s.fieldLabel}>{t("offerDesk.pickAListingToCompare")}</Text>
       {loadingList ? (
         <ActivityIndicator color={tokens.accent} style={{ marginTop: 16 }} />
       ) : listings.length === 0 ? (
         <Text style={s.emptyText}>
-          No listings with offers yet. Offers forwarded in by email show up here automatically once they match one of your listings.
+          {t("offerDesk.noListingsWithOffersYet")}
         </Text>
       ) : (
         listings.map((l) => (

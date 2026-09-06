@@ -1,4 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Toggle } from "../components/Toggle";
+import { useTranslation } from "react-i18next";
 import { Stack, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -6,7 +8,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
@@ -53,6 +54,7 @@ function fmtTime(h: number, m: number): string {
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
 
 export default function WeeklyScheduleScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -149,15 +151,12 @@ export default function WeeklyScheduleScreen() {
       <Stack.Screen options={{ title: "Weekly Schedule", headerBackTitle: "Back" }} />
 
       <Text style={styles.intro}>
-        Pick the days you want a post. For each, choose a content type, time, channels, and a topic — or let AI pick
-        the time and topic — and how many posts that day. AI researches the topic and posts automatically. Text →
-        Facebook, LinkedIn, Threads. Image adds a branded card + Instagram &amp; Pinterest. Video films your digital
-        twin → TikTok, YouTube &amp; more.
+        {t("weeklySchedule.pickTheDaysYouWant")}
       </Text>
 
       {data && !data.configured ? (
         <View style={styles.warnBox}>
-          <Text style={styles.warnText}>Not enabled yet (server needs ANTHROPIC_API_KEY).</Text>
+          <Text style={styles.warnText}>{t("weeklySchedule.notEnabledYetServerNeeds")}</Text>
         </View>
       ) : null}
 
@@ -188,7 +187,7 @@ export default function WeeklyScheduleScreen() {
               <View style={styles.dayBody}>
                 {/* Time */}
                 <View style={styles.row}>
-                  <Text style={styles.label}>Time</Text>
+                  <Text style={styles.label}>{t("weeklySchedule.time")}</Text>
                   {d.timeMode === "ai" ? (
                     <Text style={styles.aiNote}>AI picks the best time each {WEEKDAYS[d.weekday]}</Text>
                   ) : (
@@ -207,24 +206,24 @@ export default function WeeklyScheduleScreen() {
                   )}
                 </View>
                 <View style={styles.switchRow}>
-                  <Text style={styles.switchLabel}>Let AI pick the time</Text>
-                  <Switch
+                  <Text style={styles.switchLabel}>{t("weeklySchedule.letAiPickTheTime")}</Text>
+                  <Toggle
                     value={d.timeMode === "ai"}
                     onValueChange={(on) => patch(d.weekday, { timeMode: on ? "ai" : "fixed" })}
-                    accessibilityLabel="Let AI pick the time"
+                    accessibilityLabel={t("weeklySchedule.letAiPickTheTime")}
                   />
                 </View>
 
                 {/* Posts per day */}
                 <View style={styles.row}>
-                  <Text style={styles.label}>Per day</Text>
+                  <Text style={styles.label}>{t("weeklySchedule.perDay")}</Text>
                   <View style={styles.stepper}>
                     <Pressable
                       onPress={() => stepPostsPerDay(d, -1)}
                       style={styles.stepBtn}
                       hitSlop={8}
                       disabled={d.postsPerDay <= 1}
-                      accessibilityLabel="Fewer posts per day"
+                      accessibilityLabel={t("weeklySchedule.fewerPostsPerDay")}
                     >
                       <Ionicons name="remove" size={16} color={d.postsPerDay <= 1 ? tokens.textSubtle : tokens.text} />
                     </Pressable>
@@ -234,7 +233,7 @@ export default function WeeklyScheduleScreen() {
                       style={styles.stepBtn}
                       hitSlop={8}
                       disabled={d.postsPerDay >= 5}
-                      accessibilityLabel="More posts per day"
+                      accessibilityLabel={t("weeklySchedule.morePostsPerDay")}
                     >
                       <Ionicons name="add" size={16} color={d.postsPerDay >= 5 ? tokens.textSubtle : tokens.text} />
                     </Pressable>
@@ -244,7 +243,7 @@ export default function WeeklyScheduleScreen() {
 
                 {/* Content type */}
                 <View style={styles.row}>
-                  <Text style={styles.label}>Type</Text>
+                  <Text style={styles.label}>{t("weeklySchedule.type")}</Text>
                   <View style={styles.segment}>
                     {MEDIA_TYPES.map((t) => (
                       <Pressable
@@ -261,14 +260,13 @@ export default function WeeklyScheduleScreen() {
                 </View>
                 {d.mediaType === "video" && data && !data.videoReady ? (
                   <Text style={styles.hint}>
-                    Video uses your digital twin — set up your intro video + cloned voice first, or this day won&apos;t
-                    post.
+                    {t("weeklySchedule.videoUsesYourDigitalTwin")}
                   </Text>
                 ) : null}
 
                 {/* Channels */}
                 <View style={styles.chipsRow}>
-                  <Text style={styles.label}>Channels</Text>
+                  <Text style={styles.label}>{t("weeklySchedule.channels")}</Text>
                   {all.map((p) => (
                     <Pressable
                       key={p}
@@ -285,21 +283,21 @@ export default function WeeklyScheduleScreen() {
 
                 {/* Topic */}
                 <View style={styles.switchRow}>
-                  <Text style={styles.switchLabel}>Let AI pick the topic</Text>
-                  <Switch
+                  <Text style={styles.switchLabel}>{t("weeklySchedule.letAiPickTheTopic")}</Text>
+                  <Toggle
                     value={d.topicMode === "ai"}
                     onValueChange={(on) => patch(d.weekday, { topicMode: on ? "ai" : "fixed" })}
-                    accessibilityLabel="Let AI pick the topic"
+                    accessibilityLabel={t("weeklySchedule.letAiPickTheTopic")}
                   />
                 </View>
                 {d.topicMode === "ai" ? (
                   <Text style={styles.aiNote}>
-                    AI searches the web for what is timely and useful that day and writes about that.
+                    {t("weeklySchedule.aiSearchesTheWebFor")}
                   </Text>
                 ) : (
                   <>
                     <View style={styles.chipsRow}>
-                      <Text style={styles.label}>Topic</Text>
+                      <Text style={styles.label}>{t("weeklySchedule.topic")}</Text>
                       {(data?.topicPresets ?? []).map((topic) => (
                         <Pressable
                           key={topic}
@@ -328,7 +326,7 @@ export default function WeeklyScheduleScreen() {
       })}
 
       <Pressable onPress={() => void save()} disabled={saving} style={[styles.saveBtn, saving && styles.saveBtnBusy]}>
-        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>Save schedule</Text>}
+        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>{t("weeklySchedule.saveSchedule")}</Text>}
       </Pressable>
       {note ? <Text style={styles.savedNote}>{note}</Text> : null}
       <View style={{ height: 40 }} />
@@ -401,8 +399,8 @@ function createStyles(tokens: ThemeTokens) {
     countText: { fontSize: 14, fontWeight: "600", color: tokens.text, minWidth: 28, textAlign: "center" },
     tz: { fontSize: 10, color: tokens.textSubtle },
     aiNote: { flex: 1, fontSize: 12, lineHeight: 16, color: tokens.textSecondary },
-    switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
-    switchLabel: { flex: 1, fontSize: 13, color: tokens.textSecondary },
+    switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10 },
+    switchLabel: { flexShrink: 1, fontSize: 13, color: tokens.textSecondary },
     segment: { flexDirection: "row", borderWidth: 1, borderColor: tokens.border, borderRadius: 10, overflow: "hidden" },
     segBtn: { paddingHorizontal: 14, paddingVertical: 6, backgroundColor: tokens.surface },
     segBtnOn: { backgroundColor: tokens.accent },

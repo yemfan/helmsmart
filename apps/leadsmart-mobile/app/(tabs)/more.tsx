@@ -17,12 +17,15 @@ import { useThemeTokens } from "../../lib/useThemeTokens";
  * Every tile here points to a screen that already exists in the app.
  */
 
+type TileColorKey = "success" | "accent" | "danger" | "infoAccent" | "warning" | "textMuted";
+
 type MoreSection = {
   key: string;
   labelKey: string;
   accentKey: "accent" | "success" | "warning" | "textMuted";
   /** `ns` lets a tile borrow a label from another namespace (the tab names). */
-  tiles: (HomeFeatureTileConfig & { color: string; ns?: string })[];
+  /** `colorKey` names a theme token, so tiles follow dark mode and the brand ramp. */
+  tiles: (HomeFeatureTileConfig & { colorKey: TileColorKey; ns?: string })[];
 };
 
 const MORE_SECTIONS: readonly MoreSection[] = [
@@ -37,7 +40,7 @@ const MORE_SECTIONS: readonly MoreSection[] = [
         labelKey: "v2.tiles.tasks",
         iconName: "checkmark-circle-outline",
         href: "/tasks",
-        color: "#16a34a",
+        colorKey: "success",
       },
     ],
   },
@@ -52,28 +55,28 @@ const MORE_SECTIONS: readonly MoreSection[] = [
         ns: "nav",
         iconName: "people-circle-outline",
         href: "/(tabs)/team",
-        color: "#0072ce",
+        colorKey: "accent",
       },
       {
         key: "sphere",
         labelKey: "v2.tiles.sphere",
         iconName: "people-outline",
         href: "/sphere",
-        color: "#e11d48",
+        colorKey: "danger",
       },
       {
         key: "coaching",
         labelKey: "v2.tiles.coaching",
         iconName: "school-outline",
         href: "/coaching",
-        color: "#2563eb",
+        colorKey: "accent",
       },
       {
         key: "briefings",
         labelKey: "v2.tiles.briefings",
         iconName: "newspaper-outline",
         href: "/briefings",
-        color: "#0891b2",
+        colorKey: "infoAccent",
       },
     ],
   },
@@ -87,14 +90,14 @@ const MORE_SECTIONS: readonly MoreSection[] = [
         labelKey: "v2.tiles.settings",
         iconName: "settings-outline",
         href: "/(tabs)/settings",
-        color: "#475569",
+        colorKey: "textMuted",
       },
       {
         key: "notifications",
         labelKey: "v2.tiles.notifications",
         iconName: "notifications-outline",
         href: "/notifications",
-        color: "#dc2626",
+        colorKey: "danger",
       },
     ],
   },
@@ -123,7 +126,7 @@ export default function MoreScreen() {
                   key={tile.key}
                   icon={<Ionicons name={tile.iconName} size={24} color="#ffffff" />}
                   label={t(tile.labelKey, tile.ns ? { ns: tile.ns } : undefined)}
-                  accentColor={tile.color}
+                  accentColor={tokens[tile.colorKey]}
                   href={tile.href}
                 />
               ))}

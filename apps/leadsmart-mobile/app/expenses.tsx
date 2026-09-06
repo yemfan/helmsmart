@@ -1,4 +1,5 @@
 import type { MobileExpenseDto, MobileExpenseTotalsDto } from "@leadsmart/shared";
+import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -44,6 +45,7 @@ function todayLocalIso(): string {
 }
 
 export default function ExpensesScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -140,7 +142,7 @@ export default function ExpensesScreen() {
   }, []);
 
   const attachReceipt = useCallback(() => {
-    Alert.alert("Add a receipt", "Attach a photo of the receipt for your records.", [
+    Alert.alert(t("expenses.addAReceipt"), t("expenses.attachAPhotoOfThe"), [
       {
         text: "Take photo",
         onPress: async () => {
@@ -200,7 +202,7 @@ export default function ExpensesScreen() {
 
   const confirmDelete = useCallback(
     (item: MobileExpenseDto) => {
-      Alert.alert("Delete expense", `Remove this ${money(item.amount)} expense?`, [
+      Alert.alert(t("expenses.deleteExpense"), `Remove this ${money(item.amount)} expense?`, [
         { text: "Cancel", style: "cancel" },
         {
           text: "Delete",
@@ -210,7 +212,7 @@ export default function ExpensesScreen() {
             const res = await deleteMobileExpense(item.id);
             setDeletingId(null);
             if (res.ok === false) {
-              Alert.alert("Couldn't delete", res.message);
+              Alert.alert(t("expenses.couldnTDelete"), res.message);
               return;
             }
             void load("refresh");
@@ -222,14 +224,14 @@ export default function ExpensesScreen() {
   );
 
   if (loading && expenses.length === 0) {
-    return <ScreenLoading message="Loading expenses…" />;
+    return <ScreenLoading message={t("expenses.loadingExpenses")} />;
   }
 
   if (error && expenses.length === 0) {
     return (
       <View style={styles.centered}>
         <ErrorBanner
-          title="Unable to load expenses"
+          title={t("expenses.unableToLoadExpenses")}
           message={error.message}
           onRetry={() => void load("full")}
         />
@@ -249,11 +251,11 @@ export default function ExpensesScreen() {
       {/* Stat cards */}
       <View style={styles.statRow}>
         <View style={[styles.statCard, { backgroundColor: tokens.infoBg }]}>
-          <Text style={[styles.statLabel, { color: tokens.infoText }]}>This month</Text>
+          <Text style={[styles.statLabel, { color: tokens.infoText }]}>{t("expenses.thisMonth")}</Text>
           <Text style={[styles.statValue, { color: tokens.infoTextDeep }]}>{money(month.total)}</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: tokens.successBg }]}>
-          <Text style={[styles.statLabel, { color: tokens.successTextDark }]}>Year to date</Text>
+          <Text style={[styles.statLabel, { color: tokens.successTextDark }]}>{t("expenses.yearToDate")}</Text>
           <Text style={[styles.statValue, { color: tokens.successText }]}>{money(year.total)}</Text>
         </View>
       </View>
@@ -262,13 +264,13 @@ export default function ExpensesScreen() {
       {!showForm ? (
         <Pressable style={styles.addBtn} onPress={() => setShowForm(true)}>
           <Ionicons name="add" size={18} color={tokens.textOnAccent} />
-          <Text style={styles.addBtnText}>Log expense</Text>
+          <Text style={styles.addBtnText}>{t("expenses.logExpense")}</Text>
         </Pressable>
       ) : (
         <View style={styles.formCard}>
-          <Text style={styles.formTitle}>Log a business expense</Text>
+          <Text style={styles.formTitle}>{t("expenses.logABusinessExpense")}</Text>
 
-          <Text style={styles.label}>Amount</Text>
+          <Text style={styles.label}>{t("expenses.amount")}</Text>
           <TextInput
             style={styles.input}
             value={amount}
@@ -279,7 +281,7 @@ export default function ExpensesScreen() {
             autoFocus
           />
 
-          <Text style={styles.label}>Category</Text>
+          <Text style={styles.label}>{t("expenses.category")}</Text>
           <View style={styles.chipWrap}>
             {categories.map((c) => {
               const active = c === selectedCategory;
@@ -297,18 +299,18 @@ export default function ExpensesScreen() {
 
           <View style={styles.formRow}>
             <View style={styles.formCol}>
-              <Text style={styles.label}>Date</Text>
+              <Text style={styles.label}>{t("expenses.date")}</Text>
               <TextInput
                 style={styles.input}
                 value={expenseDate}
                 onChangeText={setExpenseDate}
-                placeholder="YYYY-MM-DD"
+                placeholder={t("expenses.yyyyMmDd")}
                 placeholderTextColor={tokens.textSubtle}
                 autoCapitalize="none"
               />
             </View>
             <View style={styles.formCol}>
-              <Text style={styles.label}>Vendor</Text>
+              <Text style={styles.label}>{t("expenses.vendor")}</Text>
               <TextInput
                 style={styles.input}
                 value={vendor}
@@ -319,12 +321,12 @@ export default function ExpensesScreen() {
             </View>
           </View>
 
-          <Text style={styles.label}>Notes (optional)</Text>
+          <Text style={styles.label}>{t("expenses.notesOptional")}</Text>
           <TextInput
             style={[styles.input, styles.inputMultiline]}
             value={notes}
             onChangeText={setNotes}
-            placeholder="What was this for?"
+            placeholder={t("expenses.whatWasThisFor")}
             placeholderTextColor={tokens.textSubtle}
             multiline
           />
@@ -360,7 +362,7 @@ export default function ExpensesScreen() {
                 setShowForm(false);
               }}
             >
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <Text style={styles.cancelBtnText}>{t("expenses.cancel")}</Text>
             </Pressable>
             <Pressable style={[styles.submitBtn, saving && styles.btnDisabled]} onPress={() => void submit()} disabled={saving}>
               <Text style={styles.submitBtnText}>{saving ? "Saving…" : "Log expense"}</Text>
@@ -372,7 +374,7 @@ export default function ExpensesScreen() {
       {/* Year-to-date by category */}
       {year.byCategory.length > 0 ? (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Year to date by category</Text>
+          <Text style={styles.sectionTitle}>{t("expenses.yearToDateByCategory")}</Text>
           <View style={styles.breakdownCard}>
             {year.byCategory.map((c) => (
               <View key={c.category} style={styles.breakdownRow}>
@@ -396,9 +398,9 @@ export default function ExpensesScreen() {
 
       {/* Expense list */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent</Text>
+        <Text style={styles.sectionTitle}>{t("expenses.recent")}</Text>
         {expenses.length === 0 ? (
-          <EmptyState title="No expenses yet" subtitle="Log your first business cost above." />
+          <EmptyState title={t("expenses.noExpensesYet")} subtitle={t("expenses.logYourFirstBusinessCost")} />
         ) : (
           <View style={styles.listCard}>
             {expenses.map((ex, i) => (

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { Stack, useFocusEffect } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useMemo, useState } from "react";
@@ -35,6 +36,7 @@ import type { ThemeTokens } from "../lib/theme";
 type Stage = "idle" | "uploading" | "processing";
 
 export default function DigitalTwinScreen() {
+  const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -153,13 +155,12 @@ export default function DigitalTwinScreen() {
       <Stack.Screen options={{ title: "Digital Twin", headerBackTitle: "Back" }} />
 
       <Text style={styles.intro}>
-        Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into
-        your brand profile, used across your posts and assistants. Your video stays private.
+        {t("digitalTwin.recordAShortIntroVideo")}
       </Text>
 
       {state && !state.configured ? (
         <View style={styles.warnBox}>
-          <Text style={styles.warnText}>Not available yet (server needs FAL_KEY + ANTHROPIC_API_KEY).</Text>
+          <Text style={styles.warnText}>{t("digitalTwin.notAvailableYetServerNeeds")}</Text>
         </View>
       ) : null}
 
@@ -183,7 +184,7 @@ export default function DigitalTwinScreen() {
           {consent ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
         </View>
         <Text style={styles.consentText}>
-          I consent to AI use of <Text style={{ fontWeight: "700" }}>my own</Text> likeness and voice from my intro
+          {t("digitalTwin.iConsentToAiUse")} <Text style={{ fontWeight: "700" }}>my own</Text> likeness and voice from my intro
           video. I can revoke this anytime.
         </Text>
       </Pressable>
@@ -196,7 +197,7 @@ export default function DigitalTwinScreen() {
           style={[styles.captureBtn, (!consent || busy) && styles.btnDisabled]}
         >
           <Ionicons name="videocam" size={16} color="#fff" />
-          <Text style={styles.captureText}>Record</Text>
+          <Text style={styles.captureText}>{t("digitalTwin.record")}</Text>
         </Pressable>
         <Pressable
           onPress={onPickVideo}
@@ -204,7 +205,7 @@ export default function DigitalTwinScreen() {
           style={[styles.captureBtnAlt, (!consent || busy) && styles.btnDisabled]}
         >
           <Ionicons name="folder-open-outline" size={16} color={tokens.accent} />
-          <Text style={styles.captureTextAlt}>Choose video</Text>
+          <Text style={styles.captureTextAlt}>{t("digitalTwin.chooseVideo")}</Text>
         </Pressable>
       </View>
 
@@ -222,9 +223,9 @@ export default function DigitalTwinScreen() {
       {/* Profile */}
       {profile ? (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Your brand profile</Text>
+          <Text style={styles.cardTitle}>{t("digitalTwin.yourBrandProfile")}</Text>
 
-          <Text style={styles.fieldLabel}>Bio</Text>
+          <Text style={styles.fieldLabel}>{t("digitalTwin.bio")}</Text>
           <TextInput
             value={profile.bio}
             onChangeText={(bio) => setProfile((p) => (p ? { ...p, bio } : p))}
@@ -233,7 +234,7 @@ export default function DigitalTwinScreen() {
             placeholderTextColor={tokens.textSubtle}
           />
 
-          <Text style={styles.fieldLabel}>Tagline</Text>
+          <Text style={styles.fieldLabel}>{t("digitalTwin.tagline")}</Text>
           <TextInput
             value={profile.tagline}
             onChangeText={(tagline) => setProfile((p) => (p ? { ...p, tagline } : p))}
@@ -243,7 +244,7 @@ export default function DigitalTwinScreen() {
 
           {profile.specialties.length > 0 ? (
             <>
-              <Text style={styles.fieldLabel}>Specialties</Text>
+              <Text style={styles.fieldLabel}>{t("digitalTwin.specialties")}</Text>
               <View style={styles.chipsWrap}>
                 {profile.specialties.map((s) => (
                   <View key={s} style={styles.chip}>
@@ -256,13 +257,13 @@ export default function DigitalTwinScreen() {
 
           {profile.market ? (
             <>
-              <Text style={styles.fieldLabel}>Market</Text>
+              <Text style={styles.fieldLabel}>{t("digitalTwin.market")}</Text>
               <Text style={styles.readText}>{profile.market}</Text>
             </>
           ) : null}
           {profile.tone ? (
             <>
-              <Text style={styles.fieldLabel}>Tone</Text>
+              <Text style={styles.fieldLabel}>{t("digitalTwin.tone")}</Text>
               <Text style={styles.readText}>{profile.tone}</Text>
             </>
           ) : null}
@@ -272,12 +273,11 @@ export default function DigitalTwinScreen() {
             disabled={savingProfile}
             style={[styles.saveBtn, savingProfile && styles.btnDisabled]}
           >
-            {savingProfile ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>Save profile</Text>}
+            {savingProfile ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveText}>{t("digitalTwin.saveProfile")}</Text>}
           </Pressable>
 
           <Text style={styles.helperText}>
-            Voice cloning and talking-avatar videos are on the dashboard. Re-record above anytime to refresh your
-            profile.
+            {t("digitalTwin.voiceCloningAndTalkingAvatar")}
           </Text>
         </View>
       ) : null}

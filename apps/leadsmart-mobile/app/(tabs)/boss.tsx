@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { Toggle } from "../../components/Toggle";
 import {
   ActivityIndicator,
   Image,
@@ -9,7 +10,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
@@ -577,7 +577,7 @@ function SettingsModal({
                 <Text style={s.teamName}>{t("boss.autopilotAll")}</Text>
                 <Text style={s.bossSub}>{t("boss.autopilotAllSub")}</Text>
               </View>
-              <Switch value={global} onValueChange={onGlobal} />
+              <Toggle value={global} onValueChange={onGlobal} />
             </View>
             {channels.map((row) => (
               <View key={row.assignee} style={s.matrixRow}>
