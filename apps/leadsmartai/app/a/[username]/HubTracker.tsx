@@ -47,7 +47,9 @@ export default function HubTracker({
     void fetch(`/api/public/hub/${encodeURIComponent(username)}/view`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ utmSource, utmCampaign, referrerHost }),
+      // The page within the hub, so the overview can tell the home page from
+      // /services or an area page. Validated server-side against the handle.
+      body: JSON.stringify({ utmSource, utmCampaign, referrerHost, path: window.location.pathname }),
       keepalive: true,
 credentials: "same-origin",
     }).catch(() => {});

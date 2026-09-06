@@ -10338,7 +10338,13 @@
           "slate": "Slate"
         },
         "disclosure": "Footer disclosure",
-        "disclosureHint": "Any disclosure your brokerage or state requires, shown in the footer."
+        "disclosureHint": "Any disclosure your brokerage or state requires, shown in the footer.",
+        "layout": "Site layout",
+        "layouts": {
+          "pages": "Separate pages (Home, About, Services, Tools, Areas, Posts, Contact)",
+          "single": "One long page with a menu of anchors"
+        },
+        "layoutHint": "Separate pages read like a professional website and give each topic its own address for search engines."
       },
       "settings": {
         "title": "Publish",

@@ -48,6 +48,8 @@ import { areaSlug } from "@/lib/marketing-hub/areas";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
 import type { FeedItem } from "@/lib/marketing-hub/feedItems";
 import type { Hub } from "@/lib/marketing-hub/loadHub";
+import { availablePages, sectionHref, type HubPageFacts } from "@/lib/marketing-hub/pages";
+import HubMobileNav from "./HubMobileNav";
 import { hubTool, hubToolHref, resolveHubTools, type HubToolIcon } from "@/lib/marketing-hub/tools";
 import type { HubLabels } from "./labels";
 import { BTN, BTN_SM, type HubTheme } from "./theme";
@@ -62,7 +64,27 @@ import TrackedLink from "./TrackedLink";
  * an empty grid is the "giant blank area" the spec forbids.
  */
 
-export type SectionProps = { hub: Hub; L: HubLabels; theme: HubTheme };
+export type SectionProps = {
+  hub: Hub;
+  L: HubLabels;
+  theme: HubTheme;
+  /** True on the home page, where in-page anchors can scroll; false on subpages. */
+  fromHome?: boolean;
+};
+
+/**
+ * An in-page anchor from a CTA (`#assistant`, `#contact`) resolved for where
+ * it is rendered: on the home page it scrolls; on a subpage it navigates
+ * home (or, in the pages layout, to the Contact page).
+ */
+function anchorHref(href: string, hub: Hub, fromHome: boolean | undefined): string {
+  if (!href.startsWith("#")) return href;
+  const key = href.slice(1);
+  const layout = hub.config.appearance.layout;
+  if (key === "contact") return sectionHref(hub.username, "contact", layout, { fromHome });
+  if (key === "assistant") return sectionHref(hub.username, "assistant", layout, { fromHome });
+  return fromHome ? href : `/@${hub.username}${href}`;
+}
 
 export function displayNameOf(hub: Hub): string {
   return hub.agent?.name?.trim() || hub.brandName || `@${hub.username}`;
@@ -78,13 +100,18 @@ function ctaContext(hub: Hub) {
 }
 
 /** A configured CTA resolved to label + href, or null when its channel is missing. */
-export function resolveCta(cta: HubCta, hub: Hub, L: HubLabels): { label: string; href: string; kind: string } | null {
+export function resolveCta(
+  cta: HubCta,
+  hub: Hub,
+  L: HubLabels,
+  fromHome?: boolean,
+): { label: string; href: string; kind: string } | null {
   if (cta.action.kind === "book" && hub.booking.mode === "off") return null;
   if (cta.action.kind === "ai_chat" && !hub.assistantAvailable) return null;
-  const href = actionHref(cta.action, ctaContext(hub));
-  if (!href) return null;
+  const raw = actionHref(cta.action, ctaContext(hub));
+  if (!raw) return null;
   const label = cta.label?.trim() || L.cta[cta.action.kind] || L.cta.contact;
-  return { label, href, kind: cta.action.kind };
+  return { label, href: anchorHref(raw, hub, fromHome), kind: cta.action.kind };
 }
 
 const CTA_ICON: Record<string, LucideIcon> = {
@@ -103,11 +130,12 @@ export function CtaButtons({
   hub,
   L,
   theme,
+  fromHome,
   event,
   className,
   onBand,
 }: SectionProps & { ctas: HubCta[]; event: string; className?: string; onBand?: boolean }) {
-  const resolved = ctas.map((c) => resolveCta(c, hub, L)).filter((c): c is NonNullable<typeof c> => Boolean(c));
+  const resolved = ctas.map((c) => resolveCta(c, hub, L, fromHome)).filter((c): c is NonNullable<typeof c> => Boolean(c));
   if (!resolved.length) return null;
   return (
     <div className={className ?? "flex flex-col gap-3 sm:flex-row sm:flex-wrap"}>
@@ -185,18 +213,37 @@ export function Section({
   );
 }
 
-export function HubHeader({ hub, L, theme }: SectionProps) {
+/** The menu: pages in the pages layout, anchors in the single layout. */
+export function hubMenu(hub: Hub, L: HubLabels, fromHome: boolean | undefined): { key: string; href: string; label: string }[] {
+  const layout = hub.config.appearance.layout;
+  const facts: HubPageFacts = {
+    config: hub.config,
+    hasSavedConfig: hub.hasSavedConfig,
+    areaCount: (hub.config.areas.items.length ? hub.config.areas.items : hub.serviceAreas).length,
+    feedCount: hub.feed.length,
+    hasAbout: Boolean(
+      hub.bio || hub.specialties.length || hub.workforce.length || hub.testimonials.length || hub.config.trust.points.length,
+    ),
+  };
+  const pages = availablePages(facts);
+  const items: { key: string; href: string; label: string }[] = pages.map((key) => ({
+    key,
+    href: sectionHref(hub.username, key, layout, { fromHome }),
+    label: L.nav[key],
+  }));
+  if (hub.assistantAvailable) {
+    items.splice(1, 0, { key: "assistant", href: sectionHref(hub.username, "assistant", layout, { fromHome }), label: L.nav.assistant });
+  }
+  if (layout === "pages" && !fromHome) items.unshift({ key: "home", href: `/@${hub.username}`, label: L.nav.home });
+  return items;
+}
+
+export function HubHeader({ hub, L, theme, fromHome, current }: SectionProps & { current?: string }) {
   const name = displayNameOf(hub);
-  const items: { href: string; label: string; show: boolean }[] = [
-    { href: "#about", label: L.nav.about, show: true },
-    { href: "#assistant", label: L.nav.assistant, show: hub.assistantAvailable },
-    { href: "#services", label: L.nav.services, show: hub.config.services.enabled && servicesToRender(hub.config, hub.hasSavedConfig).length > 0 },
-    { href: "#tools", label: L.nav.tools, show: hub.config.tools.enabled && toolKeysToRender(hub.config, hub.hasSavedConfig).length > 0 },
-    { href: "#areas", label: L.nav.areas, show: hub.config.areas.enabled && hub.serviceAreas.length > 0 },
-    { href: "#posts", label: L.nav.posts, show: hub.config.content.showFeed && hub.feed.length > 0 },
-    { href: "#contact", label: L.nav.contact, show: hub.config.leadCapture.showForm },
-  ];
-  const primaryHref = hub.assistantAvailable ? "#assistant" : "#contact";
+  const items = hubMenu(hub, L, fromHome);
+  const primaryHref = hub.assistantAvailable
+    ? sectionHref(hub.username, "assistant", hub.config.appearance.layout, { fromHome })
+    : sectionHref(hub.username, "contact", hub.config.appearance.layout, { fromHome });
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
@@ -208,13 +255,19 @@ export function HubHeader({ hub, L, theme }: SectionProps) {
         </Link>
         <nav className="hidden items-center gap-6 lg:flex" aria-label={L.nav.menu}>
           {items
-            .filter((i) => i.show)
+            .filter((i) => i.key !== "home")
             .map((i) => (
-              <a key={i.href} href={i.href} className="text-sm font-medium text-slate-600 hover:text-slate-900">
+              <Link
+                key={i.key}
+                href={i.href}
+                aria-current={current === i.key ? "page" : undefined}
+                className={`text-sm font-medium hover:text-slate-900 ${current === i.key ? "text-slate-900 underline decoration-2 underline-offset-8" : "text-slate-600"}`}
+              >
                 {i.label}
-              </a>
+              </Link>
             ))}
         </nav>
+        <HubMobileNav items={items.map(({ href, label }) => ({ href, label }))} label={L.nav.menu} closeLabel={L.nav.close} />
         {/* Phones get the sticky bottom bar instead; two display utilities on
             one element (`hidden` + `inline-flex`) do not reliably cascade. */}
         <div className="hidden shrink-0 sm:block">
@@ -235,9 +288,10 @@ export function HubHeader({ hub, L, theme }: SectionProps) {
 }
 
 /** Thumb-reach actions on phones: the primary CTA and the assistant. */
-export function MobileStickyBar({ hub, L, theme }: SectionProps) {
-  const primary = heroCtasToRender(hub.config).map((c) => resolveCta(c, hub, L)).find(Boolean);
+export function MobileStickyBar({ hub, L, theme, fromHome }: SectionProps) {
+  const primary = heroCtasToRender(hub.config).map((c) => resolveCta(c, hub, L, fromHome)).find(Boolean);
   if (!primary && !hub.assistantAvailable) return null;
+  const assistantHref = sectionHref(hub.username, "assistant", hub.config.appearance.layout, { fromHome });
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
       <div className="flex gap-2">
@@ -255,7 +309,7 @@ export function MobileStickyBar({ hub, L, theme }: SectionProps) {
         {hub.assistantAvailable && primary?.kind !== "ai_chat" ? (
           <TrackedLink
             username={hub.username}
-            href="#assistant"
+            href={assistantHref}
             event="hero_cta_click"
             meta={{ action: "ai_chat", label: "sticky" }}
             className={`${BTN} ${primary ? "" : "flex-1"} ${theme.secondary} ${theme.ring}`}
@@ -272,13 +326,22 @@ export function MobileStickyBar({ hub, L, theme }: SectionProps) {
 
 // ── hero ─────────────────────────────────────────────────────────────────
 
-export function Hero({ hub, L, theme }: SectionProps) {
+export function Hero({ hub, L, theme, fromHome, bio = "full" }: SectionProps & { bio?: "full" | "excerpt" | "none" }) {
   const name = displayNameOf(hub);
   const p = hub.config.profile;
   const headline = hub.config.hero.headline?.trim() || L.hero.headline(name);
   // The bio is rendered in full just below; the subheadline is its own line.
   const sub = hub.config.hero.subheadline?.trim() || L.hero.subheadline;
   const meta = [p.title, p.location].filter(Boolean).join(" · ");
+  // In the pages layout the full bio lives on About; the home page shows the
+  // first paragraph and a way to read the rest.
+  const bioText =
+    bio === "none" || !hub.bio
+      ? null
+      : bio === "excerpt"
+        ? (hub.bio.split(/\n\s*\n/)[0] ?? hub.bio).slice(0, 320)
+        : hub.bio;
+  const aboutHref = sectionHref(hub.username, "about", hub.config.appearance.layout, { fromHome });
   return (
     <section id="about" className="scroll-mt-20 bg-white pb-12 pt-10 sm:pb-16 sm:pt-16">
       <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
@@ -316,7 +379,7 @@ export function Hero({ hub, L, theme }: SectionProps) {
               </div>
             ) : null}
           </dl>
-          <CtaButtons ctas={heroCtasToRender(hub.config)} hub={hub} L={L} theme={theme} event="hero_cta_click" className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap" />
+          <CtaButtons ctas={heroCtasToRender(hub.config)} hub={hub} L={L} theme={theme} fromHome={fromHome} event="hero_cta_click" className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap" />
         </div>
         <div className="order-1 lg:order-2">
           {hub.portraitUrl ? (
@@ -330,10 +393,16 @@ export function Hero({ hub, L, theme }: SectionProps) {
           )}
         </div>
       </div>
-      {hub.bio ? (
+      {bioText ? (
         <div className="mx-auto mt-10 w-full max-w-6xl px-5 sm:px-8">
-          <p className="max-w-3xl whitespace-pre-line text-base leading-relaxed text-slate-700">{hub.bio}</p>
-          {hub.specialties.length ? (
+          <p className="max-w-3xl whitespace-pre-line text-base leading-relaxed text-slate-700">{bioText}</p>
+          {bio === "excerpt" ? (
+            <Link href={aboutHref} className={`mt-3 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold ${theme.text} hover:underline`}>
+              {L.seeAll.about}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          ) : null}
+          {bio !== "excerpt" && hub.specialties.length ? (
             <ul className="mt-4 flex flex-wrap gap-2">
               {hub.specialties.map((s) => (
                 <li key={s} className="rounded-full bg-slate-50 px-3 py-1 text-sm text-slate-700 ring-1 ring-inset ring-slate-200">
@@ -451,10 +520,22 @@ const SERVICE_ICON: Record<ServiceIcon, LucideIcon> = {
   globe: Globe,
 };
 
-export function Services({ hub, L, theme }: SectionProps) {
+/** "All services →" under a teaser, when the section was cut short. */
+function SeeAll({ href, label, theme }: { href: string; label: string; theme: HubTheme }) {
+  return (
+    <Link href={href} className={`mt-6 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold ${theme.text} hover:underline`}>
+      {label}
+      <ArrowRight className="h-4 w-4" aria-hidden />
+    </Link>
+  );
+}
+
+export function Services({ hub, L, theme, fromHome, limit }: SectionProps & { limit?: number }) {
   if (!hub.config.services.enabled) return null;
-  const items = servicesToRender(hub.config, hub.hasSavedConfig);
-  if (!items.length) return null;
+  const all = servicesToRender(hub.config, hub.hasSavedConfig);
+  if (!all.length) return null;
+  const items = limit ? all.slice(0, limit) : all;
+  const cut = items.length < all.length;
   return (
     <Section id="services" kicker={L.services.kicker} title={hub.config.services.headline?.trim() || L.services.title} theme={theme}>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -463,7 +544,7 @@ export function Services({ hub, L, theme }: SectionProps) {
           const name = s.name?.trim() || preset.name;
           const desc = s.description?.trim() || preset.desc;
           const Icon = SERVICE_ICON[s.icon] ?? Home;
-          const cta = resolveCta(s.cta, hub, L);
+          const cta = resolveCta(s.cta, hub, L, fromHome);
           return (
             <li key={s.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-[var(--shadow-raised)]">
               <span className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${theme.tint}`}>
@@ -487,6 +568,7 @@ export function Services({ hub, L, theme }: SectionProps) {
           );
         })}
       </ul>
+      {cut ? <SeeAll href={sectionHref(hub.username, "services", hub.config.appearance.layout, { fromHome })} label={L.seeAll.services} theme={theme} /> : null}
     </Section>
   );
 }
@@ -507,10 +589,12 @@ const TOOL_ICON: Record<HubToolIcon, LucideIcon> = {
   refresh: RefreshCw,
 };
 
-export function Tools({ hub, L, theme }: SectionProps) {
+export function Tools({ hub, L, theme, fromHome, limit }: SectionProps & { limit?: number }) {
   if (!hub.config.tools.enabled) return null;
-  const tools = resolveHubTools(toolKeysToRender(hub.config, hub.hasSavedConfig));
-  if (!tools.length) return null;
+  const all = resolveHubTools(toolKeysToRender(hub.config, hub.hasSavedConfig));
+  if (!all.length) return null;
+  const tools = limit ? all.slice(0, limit) : all;
+  const cut = tools.length < all.length;
   return (
     <Section id="tools" kicker={L.tools.kicker} title={L.tools.title} blurb={L.tools.blurb} theme={theme} tone="tint">
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -546,6 +630,7 @@ export function Tools({ hub, L, theme }: SectionProps) {
           );
         })}
       </ul>
+      {cut ? <SeeAll href={sectionHref(hub.username, "tools", hub.config.appearance.layout, { fromHome })} label={L.seeAll.tools} theme={theme} /> : null}
     </Section>
   );
 }
@@ -582,12 +667,14 @@ export function HomeValueBand({ hub, L, theme }: SectionProps) {
 
 // ── areas ────────────────────────────────────────────────────────────────
 
-export function Areas({ hub, L, theme }: SectionProps) {
+export function Areas({ hub, L, theme, fromHome, limit }: SectionProps & { limit?: number }) {
   if (!hub.config.areas.enabled) return null;
-  const items = hub.config.areas.items.length
+  const all = hub.config.areas.items.length
     ? hub.config.areas.items
     : hub.serviceAreas.map((name) => ({ name, note: null }));
-  if (!items.length) return null;
+  if (!all.length) return null;
+  const items = limit ? all.slice(0, limit) : all;
+  const cut = items.length < all.length;
   const title = hub.config.areas.headline?.trim() || L.areas.title(hub.config.profile.location || hub.serviceAreas[0] || "");
   return (
     <Section id="areas" kicker={L.areas.kicker} title={title} blurb={L.areas.blurb} theme={theme}>
@@ -615,10 +702,11 @@ export function Areas({ hub, L, theme }: SectionProps) {
           </li>
         ))}
       </ul>
+      {cut ? <SeeAll href={sectionHref(hub.username, "areas", hub.config.appearance.layout, { fromHome })} label={L.seeAll.areas} theme={theme} /> : null}
       {hub.assistantAvailable ? (
         <TrackedLink
           username={hub.username}
-          href="#assistant"
+          href={sectionHref(hub.username, "assistant", hub.config.appearance.layout, { fromHome })}
           event="hero_cta_click"
           meta={{ action: "ai_chat", label: "areas" }}
           className={`mt-6 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold ${theme.text} hover:underline`}

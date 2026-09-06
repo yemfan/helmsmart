@@ -559,7 +559,9 @@
       "areas": "服务区域",
       "posts": "动态",
       "contact": "联系",
-      "menu": "页面栏目"
+      "menu": "页面栏目",
+      "home": "首页",
+      "close": "关闭菜单"
     },
     "cta": {
       "home_value": "我的房子值多少钱？",
@@ -866,6 +868,39 @@
       "otherAreas": "我服务的其他区域",
       "back": "返回",
       "viewArea": "查看区域"
+    },
+    "pages": {
+      "about": {
+        "title": "关于",
+        "blurb": "了解 {{name}}：工作方式，以及背后的 AI 团队。"
+      },
+      "services": {
+        "title": "服务",
+        "blurb": "无论买房、卖房、投资还是搬迁，{{name}} 都能帮到你。"
+      },
+      "tools": {
+        "title": "工具",
+        "blurb": "免费的计算器和估算工具。自己算一算，再向 {{name}} 咨询第二意见。"
+      },
+      "areas": {
+        "title": "区域",
+        "blurb": "{{name}} 服务的社区和城市。"
+      },
+      "posts": {
+        "title": "动态",
+        "blurb": "来自 {{name}} 的市场快报、建议和资讯。"
+      },
+      "contact": {
+        "title": "联系",
+        "blurb": "通过留言、电话、邮件联系 {{name}}，或预约时间面谈。"
+      }
+    },
+    "seeAll": {
+      "services": "全部服务",
+      "tools": "全部工具",
+      "areas": "全部区域",
+      "posts": "全部动态",
+      "about": "更多关于我"
     }
   }
 }

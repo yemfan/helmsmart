@@ -559,7 +559,9 @@
       "areas": "Areas",
       "posts": "Posts",
       "contact": "Contact",
-      "menu": "Page sections"
+      "menu": "Page sections",
+      "home": "Home",
+      "close": "Close menu"
     },
     "cta": {
       "home_value": "What's my home worth?",
@@ -866,6 +868,39 @@
       "otherAreas": "Other areas I serve",
       "back": "Back",
       "viewArea": "View area"
+    },
+    "pages": {
+      "about": {
+        "title": "About",
+        "blurb": "Who {{name}} is, how they work, and the AI team behind the practice."
+      },
+      "services": {
+        "title": "Services",
+        "blurb": "How {{name}} can help, whether you're buying, selling, investing or relocating."
+      },
+      "tools": {
+        "title": "Tools",
+        "blurb": "Free calculators and estimators. Run the numbers yourself, then ask {{name}} for a second opinion."
+      },
+      "areas": {
+        "title": "Areas",
+        "blurb": "The neighborhoods and cities {{name}} serves."
+      },
+      "posts": {
+        "title": "Posts",
+        "blurb": "Market updates, tips and news from {{name}}."
+      },
+      "contact": {
+        "title": "Contact",
+        "blurb": "Reach {{name}} by message, phone, email, or book a time to talk."
+      }
+    },
+    "seeAll": {
+      "services": "All services",
+      "tools": "All tools",
+      "areas": "All areas",
+      "posts": "All posts",
+      "about": "More about me"
     }
   }
 }

@@ -8,6 +8,7 @@ import { Toggle } from "@/components/ui/Toggle";
 import {
   BOOKING_MODES,
   HUB_ACCENTS,
+  HUB_LAYOUTS,
   SOCIAL_NETWORKS,
   type FeaturedItem,
   type HubConfig,
@@ -513,6 +514,28 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
               );
             })}
           </div>
+        </fieldset>
+        <fieldset>
+          <legend className="text-sm font-medium text-slate-700">{k("layout")}</legend>
+          <div className="mt-2 grid gap-2">
+            {HUB_LAYOUTS.map((l) => {
+              const on = d.layout === l;
+              return (
+                <button
+                  key={l}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setD({ ...d, layout: l })}
+                  className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm ${on ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
+                >
+                  <span className={`h-3.5 w-3.5 shrink-0 rounded-full border-2 ${on ? "border-white bg-white" : "border-slate-400"}`} aria-hidden />
+                  {t(`pages.hubEditor.appearance.layouts.${l}`)}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-1 text-xs text-slate-500">{k("layoutHint")}</p>
         </fieldset>
         <SaveButton state={state} error={error} onClick={() => void save(d)} />
       </Card>

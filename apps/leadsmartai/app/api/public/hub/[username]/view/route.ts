@@ -61,7 +61,12 @@ export async function POST(
     // later in-site navigation must not overwrite how they originally arrived.
     const { error } = await supabaseAdmin.from("traffic_events").insert({
       event_type: "page_view",
-      page_path: `/@${username}`,
+      // Only a path under this hub is accepted; anything else is the root.
+      page_path:
+        typeof body.path === "string" &&
+        (body.path === `/@${username}` || body.path.startsWith(`/@${username}/`))
+          ? body.path.slice(0, 200)
+          : `/@${username}`,
       agent_id: agentId,
       visitor_id: ids.visitorId,
       session_id: ids.sessionId,
