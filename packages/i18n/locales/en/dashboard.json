@@ -4626,7 +4626,9 @@
       "captionPlaceholder": "Leave blank to auto-build from the listing details when you click Post.",
       "cancel": "Cancel",
       "postButton": "📣 Post to Facebook",
-      "viewOnFacebook": "View on Facebook ↗"
+      "viewOnFacebook": "View on Facebook ↗",
+      "drafting": "(writing a draft…)",
+      "captionHint": "(AI draft, editable)"
     },
     "leadCapture": {
       "close": "Close",

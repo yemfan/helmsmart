@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { publishPost } from "@/lib/leads-gen/publish";
 import { buildListingCaption } from "@/lib/social/captionBuilder";
+import { draftListingCaption } from "@/lib/social/draftListingCaption";
 import {
   listConnectionsForAgent,
   touchLastUsedAt,
@@ -26,6 +27,56 @@ export const runtime = "nodejs";
  *   4. Return { ok, postId, caption, logId } so the UI can flash a
  *      "Posted to <page>" success and surface the link to the post.
  */
+/**
+ * GET /api/dashboard/transactions/[id]/post-to-facebook
+ *
+ * Returns `{ ok, caption, source }` — a ready-to-edit draft for the compose
+ * modal, which used to open with an empty textarea because the caption was
+ * built only inside POST. The agent saw a blank box and either wrote the post
+ * themselves or sent it blank and found out what published afterwards.
+ *
+ * Read-only: it drafts, it does not post. Falls back to the deterministic
+ * caption when the model is unavailable, so the box is never empty.
+ */
+export async function GET(
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { agentId } = await getCurrentAgentContext();
+    const { id: transactionId } = await ctx.params;
+
+    const txn = await loadTransactionForListing(String(agentId), transactionId);
+    if (!txn) {
+      return NextResponse.json(
+        { ok: false, error: "Transaction not found." },
+        { status: 404 },
+      );
+    }
+    const agentMeta = await loadAgentDisplayMeta(String(agentId));
+
+    const { caption, source } = await draftListingCaption({
+      hook: null,
+      propertyAddress: txn.property_address,
+      city: txn.city,
+      state: txn.state,
+      beds: null,
+      baths: null,
+      sqft: null,
+      listPrice: txn.purchase_price,
+      agentName: agentMeta.name,
+      agentBrokerage: agentMeta.brokerage,
+    });
+
+    return NextResponse.json({ ok: true, caption, source });
+  } catch (e) {
+    // A failed draft must not block composing — the modal falls back to its
+    // own empty state and the agent can still write and post.
+    console.error("post-to-facebook draft failed", e);
+    return NextResponse.json({ ok: false, error: "Could not draft a caption." }, { status: 500 });
+  }
+}
+
 export async function POST(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
