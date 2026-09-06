@@ -230,7 +230,9 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
                 ? null
                 : basis.newestSoldMonthsAgo === 0
                   ? t("pages.cmaConfidence.recencyThisMonth")
-                  : t("pages.cmaConfidence.recencyMonths", { count: basis.newestSoldMonthsAgo });
+                  : basis.newestSoldMonthsAgo === 1
+                    ? t("pages.cmaConfidence.recencyOneMonth")
+                    : t("pages.cmaConfidence.recencyMonths", { count: basis.newestSoldMonthsAgo });
             return (
               <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
                 <span className={`font-semibold ${tone}`}>
