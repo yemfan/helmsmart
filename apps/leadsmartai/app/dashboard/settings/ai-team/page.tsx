@@ -4,6 +4,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import { SettingsCard, SettingsGroupPage } from "@/components/settings/SettingsGroupPage";
 import AgentAiSettingsPanel from "@/components/dashboard/AgentAiSettingsPanel";
+import MaxMemoryPanel from "@/components/settings/MaxMemoryPanel";
 import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPanel";
 import VoiceReceptionistSettingsPanel from "@/components/dashboard/VoiceReceptionistSettingsPanel";
 import MissedCallSettingsPanel from "@/components/dashboard/MissedCallSettingsPanel";
@@ -35,6 +36,12 @@ export default async function AiTeamSettingsPage() {
       <SettingsCard title={tr("settings.aiStyle")}>
         <AgentAiSettingsPanel canCustomizeBrand={canCustomizeBrand} />
       </SettingsCard>
+
+      <div id="max-memory">
+        <SettingsCard title={tr("settings.maxMemory.title")} description={tr("settings.maxMemory.description")}>
+          <MaxMemoryPanel />
+        </SettingsCard>
+      </div>
 
       <SettingsCard title={tr("settings.phoneVoice")}>
         <AgentVoiceSettingsPanel />

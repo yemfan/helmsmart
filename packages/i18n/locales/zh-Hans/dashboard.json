@@ -218,6 +218,12 @@
     "noEvents": "当天没有安排。"
   },
   "boss": {
+    "memoryLine": {
+      "count_one": "Max 记得您最近的任务和 {{count}} 条笔记。",
+      "count_other": "Max 记得您最近的任务和 {{count}} 条笔记。",
+      "none": "Max 记得您最近的任务。说“记住……”即可保存一条笔记。",
+      "manage": "查看笔记"
+    },
     "captain": "您的 AI 房产团队队长",
     "greeting": {
       "welcome": "欢迎回来",
@@ -389,6 +395,27 @@
     "replyToCustomer": "回复客户"
   },
   "settings": {
+    "maxMemory": {
+      "title": "Max 记得什么",
+      "description": "Max 在每次任务中都会带上的笔记——您的偏好、决定，以及谁是谁。Max 会从对话中记录；您也可以随时添加或删除。",
+      "add": "添加笔记",
+      "adding": "添加中…",
+      "added": "已添加！",
+      "placeholder": "例如：陈太太请在下午 5 点后再发短信",
+      "empty": "还没有笔记。对 Max 说“记住……”，或在这里添加。",
+      "remove": "删除",
+      "byMax": "Max 记录",
+      "byYou": "您添加",
+      "loadFailed": "无法加载笔记。",
+      "addFailed": "无法添加这条笔记。",
+      "removeFailed": "无法删除这条笔记。",
+      "kinds": {
+        "preference": "偏好",
+        "decision": "决定",
+        "person": "谁是谁",
+        "fact": "笔记"
+      }
+    },
     "aiStyle": "AI 助理风格",
     "phoneVoice": "通话语音",
     "voiceReceptionist": "AI 电话接待",
@@ -10424,6 +10451,13 @@
     "offerCompare": "AI 摘要仅供辅助判断 — 并非法律或财务意见。向卖方提供建议前，请核实每份报价的条款与净收益数字。"
   },
   "tools": {
+    "memory": {
+      "saved": "已记下：“{{note}}”",
+      "alreadyKnown": "笔记里已有：“{{note}}”",
+      "forgot_one": "已忘记 {{count}} 条笔记。",
+      "forgot_other": "已忘记 {{count}} 条笔记。",
+      "nothingToForget": "没有包含“{{query}}”的笔记，无需忘记。"
+    },
     "bugs": {
       "logged": "已记录并创建支持工单，同时已通知支持团队 — 我们正在处理（编号 {{ref}}）。"
     },

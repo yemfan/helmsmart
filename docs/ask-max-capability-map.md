@@ -23,7 +23,9 @@ There is a **second, older engine** — the action registry (`lib/closeboss/acti
 > - Phase 1 shipped — `run_skill` (#1113) + `setup_open_house`, `coordinate_closing`, `start_selling_playbook`, `start_buying_playbook` (#1114). All five verified end-to-end in production. Buyer-saved-search and cold-call-qualify turned out already-reachable by composition, so no separate tools.
 > - Phase 2 (read tools) COMPLETE — `get_pipeline`, `get_deals`, `get_financials` (#1115) + `get_calendar`, `get_sphere_signals`, `get_performance` (#1117).
 >
-> Ask Max is now at **26 tools**.
+> - Phase 4 (UX audit) — Max memory: `remember_note` + `forget_note`, post-run extraction into `boss_memories`, Settings › AI team › What Max remembers. Max no longer starts fresh.
+>
+> Ask Max is now at **29 tools**.
 
 ## Ask Max today — the core tools
 

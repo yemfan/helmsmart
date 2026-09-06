@@ -218,6 +218,12 @@
     "noEvents": "No events on this day."
   },
   "boss": {
+    "memoryLine": {
+      "count_one": "Max remembers your recent missions and {{count}} saved note.",
+      "count_other": "Max remembers your recent missions and {{count}} saved notes.",
+      "none": "Max remembers your recent missions. Say “remember…” to save a note.",
+      "manage": "See notes"
+    },
     "captain": "Captain of your AI Real Estate Team",
     "greeting": {
       "welcome": "Welcome back",
@@ -389,6 +395,27 @@
     "replyToCustomer": "Reply to customer"
   },
   "settings": {
+    "maxMemory": {
+      "title": "What Max remembers",
+      "description": "Notes Max carries into every mission — your preferences, decisions, and who’s who. Max adds them from your conversations; you can add or remove any.",
+      "add": "Add note",
+      "adding": "Adding…",
+      "added": "Added!",
+      "placeholder": "e.g. Always text Mrs. Chen after 5pm",
+      "empty": "Nothing saved yet. Tell Max “remember that…” or add a note here.",
+      "remove": "Remove",
+      "byMax": "Max noted",
+      "byYou": "You added",
+      "loadFailed": "Couldn’t load notes.",
+      "addFailed": "Couldn’t add that note.",
+      "removeFailed": "Couldn’t remove that note.",
+      "kinds": {
+        "preference": "Preference",
+        "decision": "Decision",
+        "person": "Who’s who",
+        "fact": "Note"
+      }
+    },
     "aiStyle": "AI Assistant Style",
     "phoneVoice": "Phone Voice",
     "voiceReceptionist": "AI Voice Receptionist",
@@ -10424,6 +10451,13 @@
     "offerCompare": "AI summary to support your judgment — not legal or financial advice. Verify each offer's terms and the net figures before advising the seller."
   },
   "tools": {
+    "memory": {
+      "saved": "Noted: “{{note}}”",
+      "alreadyKnown": "Already in my notes: “{{note}}”",
+      "forgot_one": "Forgot {{count}} note.",
+      "forgot_other": "Forgot {{count}} notes.",
+      "nothingToForget": "No note matched “{{query}}” — nothing to forget."
+    },
     "bugs": {
       "logged": "Logged it, opened a support ticket, and emailed support — we're on it (ref {{ref}})."
     },

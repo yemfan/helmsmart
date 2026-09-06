@@ -129,6 +129,8 @@ describe("boss tool registry", () => {
         "report_bug",
         "query_crm",
         "get_market_snapshot",
+        "remember_note",
+        "forget_note",
       ].sort(),
     );
   });
