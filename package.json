@@ -28,6 +28,7 @@
     "lint": "turbo lint",
     "boundaries": "node scripts/check-boundaries.mjs",
     "env:check": "node scripts/check-env-allowlist.mjs",
+    "deploy:ignore-matrix": "node scripts/vercel-ignore-matrix.mjs",
     "smoke:db:all": "node scripts/smoke-db-all.mjs",
     "test:integration:leadsmart": "pnpm --filter leadsmartai run test:integration",
     "db:generate": "prisma generate",
