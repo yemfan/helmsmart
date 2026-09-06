@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     // Fetch lead info
     const { data: lead } = await supabaseAdmin
       .from("contacts")
-      .select("id, name, email, phone, rating, property_address")
+      .select("id, name, email, phone, rating, property_address, auto_pilot")
       .eq("id", leadId)
       .eq("agent_id", agent.id)
       .maybeSingle();
@@ -90,6 +90,7 @@ export async function GET(req: Request) {
         phone: (lead as any).phone,
         rating: (lead as any).rating,
         property_address: (lead as any).property_address,
+        auto_pilot: Boolean((lead as any).auto_pilot),
       },
       messages,
     });

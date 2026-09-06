@@ -116,7 +116,7 @@ unified-timeline view across all three channels is a natural follow-up.
 
 (The `SmsConversationPanel` / `EmailConversationPanel` components this section
 originally named were removed — nothing imported them. The live SMS and email
-threads render from `AiChatPanel` and the inbox.)
+threads render from the inbox.)
 
 ## Safety gates
 

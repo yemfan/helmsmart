@@ -1602,6 +1602,9 @@
     "metaDescription": "配置您的 CloseBoss AI 团队——暂停助理并选择他们的技能。"
   },
   "inbox": {
+    "autoPilot": "自动驾驶",
+    "autoPilotHint": "由 AI 销售助理自动回复这位联系人的短信。",
+    "autoPilotFailed": "无法更改自动驾驶，请重试。",
     "draftWithMax": "让 Max 起草",
     "drafting": "起草中…",
     "draftFailed": "Max 暂时无法起草，请重试。",
@@ -3377,34 +3380,6 @@
       "cloneAfter": "字段。目前尚未开放——只能使用预设声音。",
       "englishLabel": "英语：",
       "futureVoiceId": "未来的 OpenAI Realtime 声音 ID："
-    },
-    "aiChatPanel": {
-      "open": "打开 CloseBoss",
-      "close": "关闭 CloseBoss",
-      "subtitle": "使用指引 + 针对单个联系人的短信草拟",
-      "guideTab": "AI 指引",
-      "newContactTab": "新建联系人标签页",
-      "tabNotFound": "未找到该标签页。",
-      "dragWidth": "拖动可调整宽度",
-      "resizeWidth": "调整宽度",
-      "dragHeight": "拖动可调整高度",
-      "resizeHeight": "调整高度",
-      "dragPanel": "拖动可调整大小",
-      "resizePanel": "调整面板大小",
-      "closeTab": "关闭标签页",
-      "tryAsking": "试着问：",
-      "askPlaceholder": "向 CloseBoss 提问…",
-      "pickDifferent": "换一位联系人",
-      "noMatches": "没有匹配的联系人。",
-      "autoPilot": "自动驾驶",
-      "send": "发送",
-      "whatToSay": "您想说什么？",
-      "draftEditable": "草稿（可编辑）",
-      "noMessages": "还没有消息。",
-      "pickContact": "请先在上方选择一位联系人，再开始拟写短信。",
-      "autoPilotHint": "自动驾驶——针对这位联系人自动发送草稿，并自动回复其来信短信。",
-      "searchContact": "按姓名、邮箱、电话搜索联系人…",
-      "dragHint": "拖动可移动 · 双击可重置位置与大小"
     },
     "comparisonReportView": {
       "yourAgent": "您的经纪人",
@@ -9338,11 +9313,6 @@
     },
     "addSignalButton": {
       "addSignal": "添加信号"
-    },
-    "aiChat": {
-      "generateDraft": "生成草稿",
-      "autoPilotSending": "自动驾驶发送中…",
-      "autoPilotWillSend": "自动驾驶会发送这份草稿。"
     },
     "brandingSettings": {
       "loadingPreview": "正在加载预览…"

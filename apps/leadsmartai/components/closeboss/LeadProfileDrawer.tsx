@@ -162,7 +162,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                 href={`/dashboard/leads/${encodeURIComponent(p.id)}`}
                 className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
               >{t("pages.leadDrawer.openFullProfile")}</Link>
-              <Link href="/dashboard/inbox" className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadDrawer.conversations")}</Link>
+              <Link href={`/dashboard/inbox?lead=${encodeURIComponent(p.id)}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadDrawer.conversations")}</Link>
               {p.phone && (
                 <a href={`tel:${p.phone}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.dashFragments.call")} {p.first_name ?? ""}
                 </a>
