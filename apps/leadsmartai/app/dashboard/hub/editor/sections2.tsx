@@ -66,22 +66,22 @@ export function ToolsSection({ data, onSaved }: SectionProps) {
   return (
     <Card title={k("title")} description={k("desc")}>
       <SwitchRow checked={d.enabled} onChange={(v) => setD({ ...d, enabled: v })} label={k("enabled")} />
-      <p className="text-xs text-gray-500">{k("hint")}</p>
+      <p className="text-xs text-slate-500">{k("hint")}</p>
       {selected.length === 0 ? <Empty>{k("empty")}</Empty> : null}
       <ul className="space-y-2">
         {selected.map((key, i) => (
-          <li key={key} className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2">
+          <li key={key} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2">
             <div className="flex items-center gap-3">
               <Toggle checked onChange={() => setD({ ...d, keys: selected.filter((x) => x !== key) })} label={name(key)} />
-              <span className="text-sm font-medium text-gray-900">{name(key)}</span>
+              <span className="text-sm font-medium text-slate-900">{name(key)}</span>
             </div>
             <RowControls index={i} count={selected.length} onMove={(a, b) => setD({ ...d, keys: move(selected, a, b) })} onRemove={() => setD({ ...d, keys: selected.filter((x) => x !== key) })} />
           </li>
         ))}
         {unselected.map((tool) => (
-          <li key={tool.key} className="flex items-center gap-3 rounded-lg border border-dashed border-gray-200 px-3 py-2">
+          <li key={tool.key} className="flex items-center gap-3 rounded-lg border border-dashed border-slate-200 px-3 py-2">
             <Toggle checked={false} onChange={() => setD({ ...d, keys: [...selected, tool.key] })} label={name(tool.key)} />
-            <span className="text-sm text-gray-600">{name(tool.key)}</span>
+            <span className="text-sm text-slate-600">{name(tool.key)}</span>
           </li>
         ))}
       </ul>
@@ -107,7 +107,7 @@ export function AreasSection({ data, onSaved }: SectionProps) {
       {items.length === 0 ? <Empty>{k("empty")}</Empty> : null}
       <div className="space-y-2">
         {items.map((a, i) => (
-          <div key={i} className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 sm:flex-row sm:items-end">
+          <div key={i} className="flex flex-col gap-2 rounded-lg border border-slate-200 p-3 sm:flex-row sm:items-end">
             <Field label={k("name")} className="flex-1">
               <TextInput value={a.name} onChange={(v) => setD({ ...d, items: items.map((x, j) => (j === i ? { ...x, name: v } : x)) })} maxLength={80} />
             </Field>
@@ -163,7 +163,7 @@ export function ContentSection({ data, onSaved }: SectionProps) {
         {items.length === 0 ? <Empty>{k("empty")}</Empty> : null}
         <div className="space-y-3">
           {items.map((f, i) => (
-            <div key={f.id} className="space-y-3 rounded-lg border border-gray-200 p-3">
+            <div key={f.id} className="space-y-3 rounded-lg border border-slate-200 p-3">
               <div className="flex items-end justify-between gap-3">
                 <Field label={k("kind")} className="w-40">
                   <Select value={f.kind} options={kinds} onChange={(v) => set(i, { kind: v as FeaturedItem["kind"], ref: "" })} />
@@ -176,7 +176,7 @@ export function ContentSection({ data, onSaved }: SectionProps) {
                     <Select value={f.ref} options={[{ value: "", label: "—" }, ...posts]} onChange={(v) => set(i, { ref: v })} />
                   </Field>
                 ) : (
-                  <p className="text-xs text-gray-500">{k("noPosts")}</p>
+                  <p className="text-xs text-slate-500">{k("noPosts")}</p>
                 )
               ) : f.kind === "tool" ? (
                 <Field label={k("tool")}>
@@ -230,7 +230,7 @@ export function SocialSection({ data, onSaved }: SectionProps) {
   const k = (s: string) => t(`pages.hubEditor.social.${s}`);
   return (
     <Card title={k("title")} description={k("desc")}>
-      <p className="text-xs text-gray-500">{k("hint")}</p>
+      <p className="text-xs text-slate-500">{k("hint")}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {SOCIAL_NETWORKS.map((n) => (
           <Field key={n} label={NETWORK_LABEL[n]}>
@@ -260,7 +260,7 @@ export function LeadCaptureSection({ data, onSaved }: SectionProps) {
       <Card title={k("title")} description={k("desc")}>
         <SwitchRow checked={d.showForm} onChange={(v) => setD({ ...d, showForm: v })} label={k("showForm")} />
         <div>
-          <p className="text-sm font-semibold text-gray-900">{k("bookingTitle")}</p>
+          <p className="text-sm font-semibold text-slate-900">{k("bookingTitle")}</p>
           <Field label={k("bookingMode")} hint={t(`pages.hubEditor.leadCapture.modeHint.${d.bookingMode}`)}>
             <Select value={d.bookingMode} options={modes} onChange={(v) => setD({ ...d, bookingMode: v as typeof d.bookingMode })} />
           </Field>
@@ -270,7 +270,7 @@ export function LeadCaptureSection({ data, onSaved }: SectionProps) {
           </Field>
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-900">{k("notifyTitle")}</p>
+          <p className="text-sm font-semibold text-slate-900">{k("notifyTitle")}</p>
           <SwitchRow checked={d.notifyEmail} onChange={(v) => setD({ ...d, notifyEmail: v })} label={k("notifyEmail")} />
           <SwitchRow checked={d.notifyPush} onChange={(v) => setD({ ...d, notifyPush: v })} label={k("notifyPush")} />
           <SwitchRow checked={d.createTask} onChange={(v) => setD({ ...d, createTask: v })} label={k("createTask")} />
@@ -377,23 +377,23 @@ function TestimonialsCard() {
   return (
     <Card title={k("testimonialsTitle")} description={k("testimonialsDesc")}>
       {list === null ? (
-        <div className="h-16 animate-pulse rounded-lg bg-gray-100" />
+        <div className="h-16 animate-pulse rounded-lg bg-slate-100" />
       ) : list.length === 0 ? (
         <Empty>{k("empty")}</Empty>
       ) : (
         <ul className="space-y-2">
           {list.map((item) => (
-            <li key={item.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-200 p-3">
+            <li key={item.id} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 p-3">
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-gray-800">{item.body}</p>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="text-sm text-slate-800">{item.body}</p>
+                <p className="mt-1 text-xs text-slate-500">
                   {[item.authorName, item.authorTitle].filter(Boolean).join(" · ")}
                   {item.rating ? ` · ${"★".repeat(item.rating)}` : ""}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <Toggle checked={item.published} onChange={(v) => void call("PATCH", { id: item.id, published: v }).catch(() => {})} label={item.published ? k("published") : k("unpublished")} />
-                <span className="text-xs text-gray-500">{item.published ? k("published") : k("unpublished")}</span>
+                <span className="text-xs text-slate-500">{item.published ? k("published") : k("unpublished")}</span>
                 <button
                   type="button"
                   onClick={() => void call("DELETE", undefined, `?id=${encodeURIComponent(item.id)}`).catch(() => {})}
@@ -406,7 +406,7 @@ function TestimonialsCard() {
           ))}
         </ul>
       )}
-      <div className="grid gap-3 rounded-lg border border-dashed border-gray-300 p-3">
+      <div className="grid gap-3 rounded-lg border border-dashed border-slate-300 p-3">
         <Field label={k("body")}>
           <TextArea value={body} onChange={setBody} rows={3} maxLength={1200} />
         </Field>
@@ -462,11 +462,11 @@ export function SeoSection({ data, onSaved }: SectionProps) {
         <TextInput type="url" value={d.ogImageUrl ?? ""} onChange={(v) => setD({ ...d, ogImageUrl: v || null })} placeholder="https://" />
       </Field>
       <SwitchRow checked={d.noindex} onChange={(v) => setD({ ...d, noindex: v })} label={k("noindex")} hint={k("noindexHint")} />
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{k("preview")}</p>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{k("preview")}</p>
         <p className="mt-1 text-base font-medium text-[#1a0dab]">{previewTitle}</p>
         <p className="text-xs text-emerald-700">closebossai.com/@{data.identity.username ?? "…"}</p>
-        <p className="mt-1 text-sm text-gray-700">{previewDesc}</p>
+        <p className="mt-1 text-sm text-slate-700">{previewDesc}</p>
       </div>
       <SaveButton state={state} error={error} onClick={() => void save(d)} />
     </Card>
@@ -494,7 +494,7 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
     <>
       <Card title={k("title")} description={k("desc")}>
         <fieldset>
-          <legend className="text-sm font-medium text-gray-700">{k("accent")}</legend>
+          <legend className="text-sm font-medium text-slate-700">{k("accent")}</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {HUB_ACCENTS.map((a) => {
               const on = d.accent === a;
@@ -505,7 +505,7 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
                   role="radio"
                   aria-checked={on}
                   onClick={() => setD({ ...d, accent: a })}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${on ? "border-gray-900 bg-gray-900 text-white" : "border-gray-300 bg-white text-gray-800 hover:bg-gray-50"}`}
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${on ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
                 >
                   <span className={`h-4 w-4 rounded-full ${SWATCH[a]}`} aria-hidden />
                   {t(`pages.hubEditor.appearance.accents.${a}`)}
@@ -599,18 +599,18 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
       <Card title={k("title")} description={k("desc")}>
         <div className="flex items-center gap-3">
           <Toggle checked={data.identity.published} onChange={(v) => void saveIdentity({ published: v })} label={k("publish")} />
-          <span className="text-sm font-medium text-gray-900">{k("publish")}</span>
+          <span className="text-sm font-medium text-slate-900">{k("publish")}</span>
         </div>
-        <p className="text-xs text-gray-500">{data.identity.published ? k("publishHintOn") : k("publishHintOff")}</p>
+        <p className="text-xs text-slate-500">{data.identity.published ? k("publishHintOn") : k("publishHintOff")}</p>
         {meta ? (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {t("pages.hubEditor.settings.postedItems", { count: meta.postedItems })} · {meta.willBeIndexed ? k("willBeIndexed") : k("willNotBeIndexed")}
           </p>
         ) : null}
         <Field label={k("username")} hint={k("usernameHint")}>
           <div className="mt-1 flex items-center gap-1">
-            <span className="text-gray-400">@</span>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-[#0072ce] focus:ring-2 focus:ring-[#0072ce]/20" autoComplete="off" spellCheck={false} />
+            <span className="text-slate-400">@</span>
+            <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0072ce] focus:ring-2 focus:ring-[#0072ce]/20" autoComplete="off" spellCheck={false} />
           </div>
         </Field>
         <SaveButton state={state} error={err} onClick={() => void saveIdentity({ username: username.trim() })} />
@@ -622,7 +622,7 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
         <Field label={k("pixel")} hint={`${k("pixelHint")}${pixel && tracking ? ` · ${tracking.pixelActive ? k("pixelActive") : k("pixelNeedsPremium")}` : ""}`}>
           <TextInput value={pixel} onChange={setPixel} />
         </Field>
-        <p className="text-xs text-gray-500">{k("privacyNote")}</p>
+        <p className="text-xs text-slate-500">{k("privacyNote")}</p>
         <SaveButton state={tState} onClick={() => void saveTracking()} />
       </Card>
       <Card title={k("dangerTitle")} description={k("dangerDesc")}>

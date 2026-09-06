@@ -94,17 +94,17 @@ export default function HubEditorClient() {
     <div className="mx-auto max-w-6xl">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{t("pages.hubEditor.title")}</h1>
-          <p className="mt-1 text-sm text-gray-600">{t("pages.hubEditor.blurb")}</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.hubEditor.title")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.hubEditor.blurb")}</p>
         </div>
         {data ? (
           <div className="flex items-center gap-3">
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                data.identity.published ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-600"
+                data.identity.published ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"
               }`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${data.identity.published ? "bg-emerald-500" : "bg-gray-400"}`} aria-hidden />
+              <span className={`h-1.5 w-1.5 rounded-full ${data.identity.published ? "bg-emerald-500" : "bg-slate-400"}`} aria-hidden />
               {data.identity.published ? t("pages.hubEditor.statusLive") : t("pages.hubEditor.statusDraft")}
             </span>
             {hubUrl ? (
@@ -112,7 +112,7 @@ export default function HubEditorClient() {
                 href={hubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-50"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-50"
               >
                 {data.identity.published ? t("pages.hubEditor.viewHub") : t("pages.hubEditor.previewHub")}
                 <ExternalLink className="h-3.5 w-3.5" aria-hidden />
@@ -134,7 +134,7 @@ export default function HubEditorClient() {
                     onClick={() => goTo(item.key)}
                     aria-current={active ? "page" : undefined}
                     className={`min-h-9 w-full whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-sm font-medium transition ${
-                      active ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"
+                      active ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >
                     {item.label}
@@ -148,8 +148,8 @@ export default function HubEditorClient() {
         <div className="min-w-0 space-y-4">
           {!data ? (
             <div className="space-y-3" aria-busy>
-              <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
-              <div className="h-40 animate-pulse rounded-xl bg-gray-100" />
+              <div className="h-24 animate-pulse rounded-xl bg-slate-100" />
+              <div className="h-40 animate-pulse rounded-xl bg-slate-100" />
             </div>
           ) : (
             <SectionBody key={section} section={section} data={data} onSaved={setData} goTo={goTo} />
