@@ -111,6 +111,12 @@ export const CREDIT_TIERS: ReadonlyArray<{
   priceEnv: string;
   /** One-time setup fee in USD, or null. */
   setupFeeUsd: number | null;
+  /**
+   * Env var holding the one-time Stripe price for `setupFeeUsd`. Checkout adds
+   * it as a second line item; without it the fee is advertised and never
+   * collected, which is how Signature sold for five weeks with free onboarding.
+   */
+  setupFeePriceEnv?: string;
   blurb: string;
 }> = [
   {
@@ -156,6 +162,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     monthlyCredits: 4000,
     priceEnv: "STRIPE_PRICE_ID_CB_SIGNATURE",
     setupFeeUsd: 499,
+    setupFeePriceEnv: "STRIPE_PRICE_ID_CB_SIGNATURE_SETUP",
     blurb: "Everything in Premium, plus a specialist who sets it all up with you.",
   },
 ] as const;
@@ -209,6 +216,17 @@ export function annualPriceEnv(tierId: CreditTierId): string {
  */
 export function annualPriceConfigured(tierId: CreditTierId): boolean {
   return Boolean((process.env[annualPriceEnv(tierId)] ?? "").trim());
+}
+
+/**
+ * Whether a tier's advertised setup fee can actually be charged right now.
+ * True for tiers without a fee. Server-side only, like `annualPriceConfigured`.
+ */
+export function setupFeeConfigured(tierId: CreditTierId): boolean {
+  const tier = CREDIT_TIERS.find((t) => t.id === tierId);
+  if (!tier?.setupFeeUsd) return true;
+  if (!tier.setupFeePriceEnv) return false;
+  return (process.env[tier.setupFeePriceEnv] ?? "").trim().startsWith("price_");
 }
 
 /**

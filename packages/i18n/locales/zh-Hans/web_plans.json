@@ -20,6 +20,7 @@
     "creditsPerMo": "额度 / 月",
     "usage": "约 {{minutes}} 分钟 AI 通话，或 {{videos}} 条视频",
     "cta": "升级",
+    "ctaContact": "联系我们",
     "blurb": {
       "free": "包含全部功能，单个席位。足够体验 AI 前台接待。",
       "solo": "包含全部功能，单个席位。适合稳步开展的个人营销。",

@@ -20,6 +20,7 @@
     "creditsPerMo": "credits / month",
     "usage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
     "cta": "Upgrade",
+    "ctaContact": "Talk to us",
     "blurb": {
       "free": "Every feature, one seat. Enough to try the AI receptionist.",
       "solo": "Every feature, one seat. For steady solo marketing.",

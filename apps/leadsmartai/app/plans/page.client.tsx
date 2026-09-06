@@ -39,9 +39,12 @@ const BRAND = "#0072ce";
  */
 export default function PlansClientPage({
   annualTierIds = [],
+  unbuyableTierIds = [],
 }: {
   /** Tiers with a real annual Stripe price, decided on the server. */
   annualTierIds?: CreditTierId[];
+  /** Tiers whose one-time setup fee has no Stripe price configured yet. */
+  unbuyableTierIds?: CreditTierId[];
 }) {
   const { t } = useTranslation("web_plans");
   const sp = useSearchParams();
@@ -216,13 +219,23 @@ export default function PlansClientPage({
                 <p className="mt-1 flex-1 text-xs text-gray-500">
                   {t(`plans.blurb.${tier.id}`, { defaultValue: tier.blurb })}
                 </p>
-                <a
-                  href={creditsHref}
-                  className="mt-5 w-full rounded-xl py-2.5 text-center text-sm font-bold text-white shadow transition hover:opacity-90"
-                  style={{ background: BRAND }}
-                >
-                  {t("plans.cta")}
-                </a>
+                {unbuyableTierIds.includes(tier.id) ? (
+                  <a
+                    href="/contact?topic=signature"
+                    className="mt-5 w-full rounded-xl border-2 py-2.5 text-center text-sm font-bold shadow-sm transition hover:opacity-90"
+                    style={{ borderColor: BRAND, color: BRAND }}
+                  >
+                    {t("plans.ctaContact")}
+                  </a>
+                ) : (
+                  <a
+                    href={creditsHref}
+                    className="mt-5 w-full rounded-xl py-2.5 text-center text-sm font-bold text-white shadow transition hover:opacity-90"
+                    style={{ background: BRAND }}
+                  >
+                    {t("plans.cta")}
+                  </a>
+                )}
               </div>
             ))}
           </div>
