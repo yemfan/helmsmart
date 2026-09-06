@@ -314,12 +314,12 @@ export default function LeadSmartLandingV2() {
                   <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 </div>
-                <span className="ml-2 text-[10px] font-medium text-slate-400">
+                <span className="ml-2 text-[10px] font-medium text-slate-600 dark:text-slate-400">
                   {t("mock.example_label")}
                 </span>
                 <div className="ml-auto flex items-center gap-1">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                  <span className="text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="text-[9px] font-medium text-emerald-700 dark:text-emerald-400">
                     {t("mock.auto_replying")}
                   </span>
                 </div>
@@ -357,12 +357,12 @@ export default function LeadSmartLandingV2() {
                           {t(`mock.lead_status.${lead.statusKey}`)}
                         </span>
                       </div>
-                      <span className="text-[10px] text-slate-400">{t(`mock.time.${lead.timeKey}`)}</span>
+                      <span className="text-[10px] text-slate-600 dark:text-slate-400">{t(`mock.time.${lead.timeKey}`)}</span>
                     </div>
                   ))}
                 </div>
                 <div>
-                  <div className="flex items-center justify-between text-[10px] font-medium text-slate-400">
+                  <div className="flex items-center justify-between text-[10px] font-medium text-slate-600 dark:text-slate-400">
                     <span>{t("mock.pipeline_health")}</span>
                     <span>72%</span>
                   </div>
@@ -801,7 +801,7 @@ function DashStat({ n, l, tone }: { n: string; l: string; tone: "blue" | "green"
   return (
     <div className={`rounded-xl ${palette.bg} p-3 text-center dark:bg-slate-700/50`}>
       <p className={`text-2xl font-extrabold ${palette.color}`}>{n}</p>
-      <p className="text-[10px] font-medium text-gray-500 dark:text-slate-400">{l}</p>
+      <p className="text-[10px] font-medium text-gray-600 dark:text-slate-400">{l}</p>
     </div>
   );
 }
