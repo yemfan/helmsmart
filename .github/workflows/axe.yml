@@ -1,0 +1,49 @@
+# axe-core accessibility scan — CloseBoss public routes.
+#
+# The UX audit (docs/ux/closeboss-ui-ux-audit-2026-09-05.html, §13) found
+# critical WCAG failures by running axe by hand. This makes the scan a
+# standing check so the next one is caught by a job, not a person.
+#
+# Scope: the routes reachable without a session. The dashboard needs a
+# login and its coverage came from the audit's hand-run; wiring an
+# authenticated scan is the follow-up (a test account + storage state).
+#
+# Gate: any violation tagged WCAG 2.x A/AA fails the job (`--exit`). Rule
+# IDs are printed so a fix targets the exact check. Runs on a weekday
+# schedule and on demand, against production — the same posture as
+# lighthouse.yml.
+
+name: axe accessibility
+
+on:
+  schedule:
+    - cron: "30 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      target_host:
+        description: "Override target host (defaults to production)"
+        required: false
+        default: "https://www.closebossai.com"
+
+jobs:
+  axe:
+    name: Scan public routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Scan
+        env:
+          HOST: ${{ github.event.inputs.target_host || 'https://www.closebossai.com' }}
+        run: |
+          set -euo pipefail
+          # ubuntu-latest ships Chrome + a matching chromedriver at $CHROMEWEBDRIVER.
+          npx --yes @axe-core/cli@4 \
+            "$HOST/" \
+            "$HOST/login" \
+            "$HOST/signup" \
+            "$HOST/plans" \
+            "$HOST/pricing" \
+            --chromedriver-path "$CHROMEWEBDRIVER/chromedriver" \
+            --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
+            --timeout 60 \
+            --exit
