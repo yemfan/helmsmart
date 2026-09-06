@@ -9,9 +9,11 @@
     "leads": "客户",
     "calendar": "日历",
     "settings": "设置",
-    "boss": "老板",
+    "boss": "问 Max",
     "team": "团队",
-    "more": "更多"
+    "more": "更多",
+    "tasks": "任务",
+    "deals": "交易"
   },
   "stack": {
     "tasks": "任务",
@@ -20,5 +22,6 @@
     "deleteAccount": "删除账户",
     "lead": "线索",
     "assistant": "助理"
-  }
+  },
+  "profile": "个人资料与设置"
 }

@@ -9,9 +9,11 @@
     "leads": "Leads",
     "calendar": "Calendar",
     "settings": "Settings",
-    "boss": "Boss",
+    "boss": "Ask Max",
     "team": "Team",
-    "more": "More"
+    "more": "More",
+    "tasks": "Tasks",
+    "deals": "Deals"
   },
   "stack": {
     "tasks": "Tasks",
@@ -20,5 +22,6 @@
     "deleteAccount": "Delete account",
     "lead": "Lead",
     "assistant": "Assistant"
-  }
+  },
+  "profile": "Your profile and settings"
 }

@@ -9,15 +9,15 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { EmptyState } from "../components/EmptyState";
-import { ErrorBanner } from "../components/ErrorBanner";
-import { ScreenLoading } from "../components/ScreenLoading";
-import { BrandRefreshControl } from "../components/BrandRefreshControl";
-import { TaskCard } from "../components/tasks/TaskCard";
-import { fetchMobileTasks, patchMobileTask } from "../lib/leadsmartMobileApi";
-import type { MobileApiFailure } from "../lib/leadsmartMobileApi";
-import { useThemeTokens } from "../lib/useThemeTokens";
-import type { ThemeTokens } from "../lib/theme";
+import { EmptyState } from "../../components/EmptyState";
+import { ErrorBanner } from "../../components/ErrorBanner";
+import { ScreenLoading } from "../../components/ScreenLoading";
+import { BrandRefreshControl } from "../../components/BrandRefreshControl";
+import { TaskCard } from "../../components/tasks/TaskCard";
+import { fetchMobileTasks, patchMobileTask } from "../../lib/leadsmartMobileApi";
+import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
+import { useThemeTokens } from "../../lib/useThemeTokens";
+import type { ThemeTokens } from "../../lib/theme";
 
 function Section({
   title,

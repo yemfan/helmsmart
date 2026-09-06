@@ -130,7 +130,7 @@ function navigateForDeepLink(
   const kind = classify(n);
 
   if (screen === "task" && taskId) {
-    router.push({ pathname: "/tasks", params: { focusTaskId: taskId } });
+    router.push({ pathname: "/(tabs)/tasks", params: { focusTaskId: taskId } });
     return;
   }
   if (screen === "call_log" && contactId) {

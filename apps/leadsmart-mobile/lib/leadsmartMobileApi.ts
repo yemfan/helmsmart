@@ -276,6 +276,31 @@ async function mobileDelete<T extends MobileJsonError>(
  * marks the agent row for purge. Apple Guideline 5.1.1(v) / Play account
  * deletion policy — see Settings → Delete account.
  */
+export type MobileAccount = {
+  email: string | null;
+  brandName: string | null;
+  photoUrl: string | null;
+};
+
+type MobileAccountJson = MobileJsonError & { account?: Partial<MobileAccount> };
+
+/** Who is signed in — for the header avatar. */
+export async function fetchMobileAccount(): Promise<
+  { ok: true; account: MobileAccount } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileAccountJson>(MOBILE_API_PATHS.account);
+  if (res.ok === false) return res;
+  const a = res.data.account ?? {};
+  return {
+    ok: true,
+    account: {
+      email: a.email ?? null,
+      brandName: a.brandName ?? null,
+      photoUrl: a.photoUrl ?? null,
+    },
+  };
+}
+
 export async function deleteMobileAccount(): Promise<
   { ok: true } | MobileApiFailure
 > {

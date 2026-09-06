@@ -67,7 +67,7 @@ export function TodayAgenda() {
         return;
       }
       if (item.type === "task") {
-        router.push("/tasks");
+        router.push("/(tabs)/tasks");
         return;
       }
       if (item.type === "appointment") {
