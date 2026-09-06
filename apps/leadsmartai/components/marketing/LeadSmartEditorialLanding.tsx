@@ -566,90 +566,28 @@ function TestimonialsSection() {
 
 // ---------- PRICING ----------
 
+/*
+ * The pricing cards are gone, not translated.
+ *
+ * They sold Pro $79 / Elite $199 / Team $199. "Elite" is in no catalogue and
+ * $199 is not a price this product charges — the ladder lives in
+ * `lib/credits/pricing.ts` (Free / Solo $79 / Pro $159 / Premium $299 /
+ * Signature $399) and /plans renders it from there. A second hand-maintained
+ * copy is how these drifted in the first place, so this section points at the
+ * one page that reads the catalogue rather than restating it.
+ */
 function PricingSection() {
   const { t } = useTranslation("dashboard");
-  const tiers = [
-    {
-      // Internal plan key stays "free" (DB plan_type, Stripe price keys,
-      // ~60 other call sites). User-facing name only → "Starter".
-      name: "Starter",
-      price: "$0",
-      interval: "forever",
-      desc: "Limited functions and usages.",
-      features: ["25 leads / month", "Email follow-up only", "Pipeline dashboard", "Basic lead scoring", "1 drip sequence"],
-      cta: "Get started",
-      ctaHref: "/signup",
-      variant: "secondary" as const,
-      badge: null,
-      featured: false,
-    },
-    {
-      name: "Pro",
-      price: "$79",
-      interval: "per month · billed monthly",
-      desc: "Full CRM and AI for active agents.",
-      features: ["500 leads / month", "SMS + email AI follow-up", "Advanced lead scoring", "Unlimited drip sequences", "Tour and offer tracking", "CRM integrations"],
-      cta: "Start free",
-      ctaHref: "/signup",
-      variant: "primary" as const,
-      badge: "Most popular",
-      featured: true,
-    },
-    {
-      name: "Elite",
-      price: "$199",
-      interval: "per month · billed monthly",
-      desc: "For top producers closing 10+ deals a month.",
-      features: ["Unlimited leads", "Priority AI routing", "Multi-channel automation", "Predictive lead scoring", "Custom drip campaigns", "Dedicated onboarding"],
-      cta: "Start free",
-      ctaHref: "/signup",
-      variant: "secondary" as const,
-      badge: null,
-      featured: false,
-    },
-    {
-      name: "Team",
-      price: "$199",
-      interval: "per month · billed monthly",
-      desc: "Multiple agents, one shared pipeline.",
-      features: ["Up to 10 agents", "Shared lead pool and routing", "Team performance dashboard", "Admin controls", "White-label option", "Priority support SLA"],
-      cta: "Contact sales",
-      ctaHref: "/contact",
-      variant: "secondary" as const,
-      badge: null,
-      featured: false,
-    },
-  ];
   return (
     <section className="ed-pricing" id="pricing">
-      <div className="ed-container">
-        <SectionLabel num="07" category="Pricing" />
-        <h2 className="ed-section-headline">
+      <div className="ed-pricing-inner">
+        <h2 className="ed-pricing-title">
           {t("pages.editorialLanding.pricingBefore")} <em>{t("pages.editorialLanding.pricingEm")}</em>
         </h2>
         <div className="ed-pricing-sub">{t("pages.editorialLanding.pricingSub")}</div>
-        <div className="ed-pricing-table">
-          {tiers.map((t) => (
-            <div key={t.name} className={`ed-pricing-tier ${t.featured ? "ed-featured" : ""}`}>
-              {t.badge && <div className="ed-pricing-badge">{t.badge}</div>}
-              <div className="ed-pricing-name">{t.name}</div>
-              <div className="ed-pricing-price">
-                {t.price}
-                <em>/mo</em>
-              </div>
-              <div className="ed-pricing-interval">{t.interval}</div>
-              <div className="ed-pricing-desc">{t.desc}</div>
-              <ul className="ed-pricing-features">
-                {t.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-              <a href={t.ctaHref} className={`ed-btn ed-btn-${t.variant} ed-pricing-cta`}>
-                {t.cta}
-              </a>
-            </div>
-          ))}
-        </div>
+        <a href="/plans" className="ed-btn ed-btn-primary ed-pricing-cta">
+          {t("pages.editorialLanding.pricingSeePlans")}
+        </a>
       </div>
     </section>
   );

@@ -5734,7 +5734,8 @@
       "smsScore": "Hot · 92/100",
       "videoLabel": "Captions on · Muted",
       "pricingSub": "Free plan never expires · Cancel a paid plan anytime",
-      "copyright": "© 2026 CloseBoss · All rights reserved"
+      "copyright": "© 2026 CloseBoss · All rights reserved",
+      "pricingSeePlans": "See all plans"
     },
     "salesModelDashboard": {
       "title": "Sales Model",

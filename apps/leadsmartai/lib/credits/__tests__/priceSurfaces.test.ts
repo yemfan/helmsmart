@@ -176,18 +176,33 @@ describe("retired feature-tier ladder", () => {
      * /pricing published Pro $49, Pro annual $490, Premium $99 and a Team tier
      * as JSON-LD, months after Stripe moved to 79/159/299/399 — and that is
      * the number a search result quotes, so it misprices the product before a
-     * prospect ever reaches the site. It is also where the $49 a brokerage
-     * manager was quoted came from. Derived now, so it cannot drift again.
+     * prospect ever reaches the site. It is where the $49 a brokerage manager
+     * was quoted came from.
+     *
+     * It is a redirect now. Its last shape was the tell: the JSON-LD had been
+     * fixed to derive from CREDIT_TIERS while the cards underneath still
+     * rendered a fifth ladder from web_pricing.json, so the prices a visitor
+     * read and the prices Google read had drifted apart inside one file. The
+     * structured data lives on the page it describes.
      */
-    const src = read("app/pricing/page.tsx");
-    expect(src).toContain("CREDIT_TIERS.flatMap");
-    for (const dead of ["49", "490", "99", "249"]) {
-      expect(src, `JSON-LD still hardcodes ${dead}`).not.toMatch(
+    const retired = read("app/pricing/page.tsx");
+    expect(retired).toContain('redirect("/plans")');
+    expect(retired).not.toMatch(/price\s*:/);
+
+    const plans = read("app/plans/page.tsx");
+    expect(plans).toContain("CREDIT_TIERS");
+    expect(plans).toContain("JsonLd");
+    for (const dead of ["49", "490", "99", "249", "199"]) {
+      expect(plans, `JSON-LD still hardcodes ${dead}`).not.toMatch(
         new RegExp(`price:\\s*"${dead}"`),
       );
     }
-    // A retired storefront must not be advertised as an offer URL either.
-    expect(src).not.toContain("/agent/pricing");
+    /*
+     * A retired storefront must not be advertised as an offer URL either.
+     * Usage, not mention: the page comment explains what it replaced, and
+     * that history is worth keeping — a link or an offer url is not.
+     */
+    expect(plans).not.toMatch(/(?:url|href)[:=]\s*"[^"]*\/(?:agent\/)?pricing/);
   });
 
   it("keeps the old catalogue readable for existing subscriptions", () => {

@@ -15,5 +15,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function PricingAgentRedirectPage() {
-  redirect("/agent/pricing");
+  redirect("/plans");
 }
