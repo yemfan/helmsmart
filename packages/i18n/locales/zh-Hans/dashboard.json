@@ -3422,7 +3422,59 @@
       "noCardCancel": "无需信用卡 · 可随时取消",
       "teamSeats": "最多 5 个席位 · 轮流分配客源 · 每位成员都享 Top Producer Track。",
       "incoming": "来电 ·",
-      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟"
+      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟",
+      "availableLanguages": "支持英文与中文界面。",
+      "ctaTrial": "开始 14 天试用",
+      "ctaGetStarted": "免费开始",
+      "trialFooter": "14 天免费试用",
+      "forever": "永久免费",
+      "perMo": "/月",
+      "billedMonthly": "按月计费",
+      "billedYearly": "${{annual}} 按年计费 · 节省 ${{save}}",
+      "badgePopular": "最受欢迎",
+      "badgeSignature": "双语 · 尊享",
+      "creditsPerMo": "每月 {{credits}} 额度",
+      "approxCallMinutes": "≈ {{minutes}} 分钟 AI 通话",
+      "approxVideos": "≈ {{videos}} 条 AI 视频",
+      "plan": {
+        "starter": {
+          "tagline": "适合刚开始试用平台的经纪人。",
+          "leads": "5 条线索 · 50 位联系人",
+          "cma": "每日 2 份 CMA 报告",
+          "sms": "AI 短信 + 邮件（基础版）",
+          "actions": "每月 100 次 AI 操作",
+          "noSms": "不含短信自动化",
+          "limitedAi": "AI 功能受限"
+        },
+        "pro": {
+          "tagline": "适合持续成交的活跃经纪人。",
+          "leads": "500 条线索 · 500 位联系人",
+          "bilingual": "中英双语 AI",
+          "coaching": "Producer Track 教练课程",
+          "cma": "每日 5 份 CMA 报告",
+          "sms": "短信 + 邮件 AI（60 秒内响应）",
+          "bookkeeping": "记账 — 发票与支出",
+          "actions": "每月 5,000 次 AI 操作"
+        },
+        "premium": {
+          "tagline": "适合单打独斗的顶尖经纪人。",
+          "leads": "线索与联系人不限量",
+          "receptionist": "AI 前台接待 + AI 专属助理",
+          "coaching": "Top Producer Track 教练课程",
+          "isa": "ISA 内勤销售流程",
+          "esign": "电子签名（Dotloop / DocuSign）",
+          "actions": "AI 操作不限量"
+        },
+        "signature": {
+          "tagline": "适合服务高净值客户、以关系取胜的经纪人。",
+          "everything": "涵盖 Premium 全部内容，另加：",
+          "sphere": "人脉智能 Pro",
+          "onboarding": "专属上线服务",
+          "concierge": "专属客服支持",
+          "calendar": "文化节庆日历自动化",
+          "voice": "定制语音调校"
+        }
+      }
     },
     "deepReportView": {
       "title": "房产深度报告",
