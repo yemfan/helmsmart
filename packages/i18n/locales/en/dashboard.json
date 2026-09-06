@@ -1301,6 +1301,28 @@
     }
   },
   "notifications": {
+    "feed": {
+          "subtitle": "Everything your AI team flagged for you, newest first.",
+          "unreadCount_one": "{{count}} unread",
+          "unreadCount_other": "{{count}} unread",
+          "allCaughtUp": "You're all caught up.",
+          "markAllRead": "Mark all read",
+          "marking": "Marking…",
+          "markFailed": "Couldn't update notifications. Try again.",
+          "empty": "Nothing here yet. Hot leads, missed calls and reminders will show up as they happen.",
+          "unread": "Unread",
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "needsYou": "Needs you today",
+          "none": "Nothing waiting",
+          "types": {
+                "hot_lead": "Hot lead",
+                "missed_call": "Missed call",
+                "reminder": "Reminder",
+                "new_lead": "New lead",
+                "avatar_ready": "Avatar ready"
+          }
+    },
     "title": "Notifications",
     "subtitle": "Hot leads to prioritize, calls you may have missed, and reminders across your pipeline.",
     "hotLeads": "Hot leads",
