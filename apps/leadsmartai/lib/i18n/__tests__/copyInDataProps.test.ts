@@ -90,10 +90,6 @@ const EXEMPT = new Map<string, string>([
     "Editorial landing: whole page held as data; convert the block, not four keys",
   ],
   [
-    "components/PricingModal.tsx",
-    "Plan modal: whole plan block in English, same conversion as the pricing pages",
-  ],
-  [
     "components/marketing/voice-ai/VoiceAiComparisonTable.tsx",
     /*
      * A competitor comparison table. Every row is a claim about a named
