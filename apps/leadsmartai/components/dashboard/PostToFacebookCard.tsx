@@ -44,6 +44,45 @@ export default function PostToFacebookCard({
   const [link, setLink] = useState(defaultLink ?? "");
   const [captionPreview, setCaptionPreview] = useState<string | null>(null);
   const [postState, setPostState] = useState<PostState>({ kind: "idle" });
+  const [drafting, setDrafting] = useState(false);
+
+  /*
+   * Draft the caption when the modal opens.
+   *
+   * It used to open with an empty box: the caption was built inside the POST
+   * handler, so the agent either wrote the post themselves or sent it blank
+   * and found out what published afterwards.
+   *
+   * Only fills an EMPTY box. Reopening after an edit — or after a failed
+   * send — must not overwrite what the agent wrote, which is the one thing
+   * worse than starting blank.
+   */
+  useEffect(() => {
+    if (!open) return;
+    if (captionPreview !== null && captionPreview.trim() !== "") return;
+    let cancelled = false;
+    setDrafting(true);
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/dashboard/transactions/${encodeURIComponent(transactionId)}/post-to-facebook`,
+          { credentials: "include" },
+        );
+        const data = (await res.json().catch(() => ({}))) as { caption?: string };
+        if (!cancelled && data.caption) setCaptionPreview(data.caption);
+      } catch {
+        // Leave the box empty and editable; composing still works by hand.
+      } finally {
+        if (!cancelled) setDrafting(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // captionPreview is deliberately not a dependency: this runs on open, and
+    // re-running as the agent types would fight the textarea.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, transactionId]);
 
   const loadConnections = useCallback(async () => {
     setLoadingConns(true);
@@ -240,13 +279,16 @@ export default function PostToFacebookCard({
                 <label className="block">
                   <span className="text-xs font-semibold text-slate-700">{t("pages.dashFragments.caption")}{" "}
                     <span className="font-normal text-slate-400">
-                      (auto-built, editable)
+                      {drafting
+                        ? t("pages.postToFacebook.drafting")
+                        : t("pages.postToFacebook.captionHint")}
                     </span>
                   </span>
                   <textarea
                     value={captionPreview ?? ""}
                     onChange={(e) => setCaptionPreview(e.target.value)}
                     rows={6}
+                    disabled={drafting}
                     placeholder={t("pages.postToFacebook.captionPlaceholder")}
                     className="mt-1 block w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   />

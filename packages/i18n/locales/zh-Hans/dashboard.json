@@ -4626,7 +4626,9 @@
       "captionPlaceholder": "留空则在点击发布时，根据房源信息自动生成。",
       "cancel": "取消",
       "postButton": "📣 发布到 Facebook",
-      "viewOnFacebook": "在 Facebook 上查看 ↗"
+      "viewOnFacebook": "在 Facebook 上查看 ↗",
+      "drafting": "（正在生成草稿…）",
+      "captionHint": "（AI 草稿，可编辑）"
     },
     "leadCapture": {
       "close": "关闭",
