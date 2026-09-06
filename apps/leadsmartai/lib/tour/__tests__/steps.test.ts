@@ -56,8 +56,10 @@ describe("visibleSteps extra", () => {
 });
 
 describe("shouldAutoStart", () => {
-  it("opens for someone who has not seen it", () => {
-    expect(shouldAutoStart({ seen: false, requested: false, availableStepCount: 6 })).toBe(true);
+  it("does not open by itself, even for someone who has not seen it", () => {
+    // Max's welcome is the first-run experience; a second guide on top of it
+    // is what the 2026-09 UX audit flagged. The tour waits to be asked.
+    expect(shouldAutoStart({ seen: false, requested: false, availableStepCount: 6 })).toBe(false);
   });
 
   it("stays shut once it has been seen", () => {

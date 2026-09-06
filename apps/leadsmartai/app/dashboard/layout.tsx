@@ -8,7 +8,6 @@ import { AgentWorkspaceProviders } from "@/components/entitlements/AgentWorkspac
 import { ADMIN_SUPPORT_HOME_PATH, isAdminOrSupportRole } from "@/lib/rolePortalPaths";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -140,7 +139,6 @@ export default async function DashboardLayout({
           avatarUrl={avatarUrl}
           isPaid={isPaid}
         >
-          <OnboardingGate />
           <ErrorBoundary>
             {children}
           </ErrorBoundary>

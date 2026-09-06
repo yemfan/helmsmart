@@ -90,6 +90,8 @@ export function shouldAutoStart(args: {
   availableStepCount: number;
 }): boolean {
   if (args.availableStepCount === 0) return false;
-  if (args.requested) return true;
-  return !args.seen;
+  // Opt-in only. The tour used to open itself on the first dashboard visit,
+  // right after Max's welcome and on top of the setup wizard — three guides
+  // in one session. It now waits to be asked (?tour=1 or the account menu).
+  return args.requested;
 }
