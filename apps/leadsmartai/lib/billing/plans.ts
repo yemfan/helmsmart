@@ -93,7 +93,13 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     tagline: "For new agents testing the platform",
     price: 0,
     annualPrice: null,
-    features: ["basic_crm"],
+    /*
+     * `ai_calling` is on every tier: /plans sells the free tier as "enough
+     * to try the AI receptionist", and gating it made that sentence false.
+     * The spend is bounded by CREDITS, not by this flag — voice costs 8
+     * credits a minute, so 100 free credits buys about twelve.
+     */
+    features: ["basic_crm", "ai_calling"],
     stripePriceEnvVar: null,
     stripePriceEnvVarAnnual: null,
     internalPlan: "crm_starter",
@@ -110,6 +116,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "bilingual_ai",
       "producer_track_coaching",
       "bookkeeping",
+      "ai_calling",
     ],
     // Reuses the existing STRIPE_PRICE_ID_PRO env var — historically
     // the $49 product was wired to this name (the old "starter" CRM
