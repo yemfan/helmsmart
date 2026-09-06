@@ -168,7 +168,7 @@ export default function IdxLeadCaptureModal(props: {
               <input
                 value={phone}
                 onChange={(e) => setPhone(formatUsPhone(e.target.value))}
-                placeholder={requiresPhone ? "Phone (required)" : "Phone (optional, for SMS updates)"}
+                placeholder={requiresPhone ? t("pages.idxCapture.phoneRequired") : t("pages.idxCapture.phoneOptional")}
                 inputMode="tel"
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

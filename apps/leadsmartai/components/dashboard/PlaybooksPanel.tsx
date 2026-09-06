@@ -328,8 +328,8 @@ export function PlaybooksPanel({
                                   onClick={() => toggleSelected(task.id)}
                                   title={
                                     isSelected
-                                      ? "Remove from Tasks list selection"
-                                      : "Select to add to Tasks list"
+                                      ? t("pages.playbooksPanel.deselectTask")
+                                      : t("pages.playbooksPanel.selectTask")
                                   }
                                   ariaLabel={`Select "${task.title}" to add to Tasks list`}
                                   tone="select"
@@ -340,7 +340,7 @@ export function PlaybooksPanel({
                               <PlaybookActionButton
                                 active={complete}
                                 onClick={() => void toggleTask(task, !complete)}
-                                title={complete ? "Mark incomplete" : "Mark complete"}
+                                title={complete ? t("pages.playbooksPanel.markIncomplete") : t("pages.playbooksPanel.markComplete")}
                                 ariaLabel={`Mark "${task.title}" ${complete ? "incomplete" : "complete"}`}
                                 tone="complete"
                               >

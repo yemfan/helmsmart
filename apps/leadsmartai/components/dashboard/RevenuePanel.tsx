@@ -134,7 +134,7 @@ export function RevenuePanel() {
         <Stat
           label={t("pages.revenuePanel.avgDaysToClose")}
           value={data.avgDaysToClose != null ? String(data.avgDaysToClose) : "—"}
-          hint={data.avgDaysToClose != null ? "days from mutual accept" : undefined}
+          hint={data.avgDaysToClose != null ? t("pages.revenuePanel.daysFromMutualAccept") : undefined}
         />
         <Stat
           label={t("pages.revenuePanel.closeRate")}
@@ -142,7 +142,7 @@ export function RevenuePanel() {
           hint={
             data.closeRatePct != null
               ? `${data.offersAccepted}/${data.offersAccepted + data.offersLost} offers`
-              : "no offers in period"
+              : t("pages.revenuePanel.noOffersInPeriod")
           }
           tone={data.closeRatePct != null && data.closeRatePct >= 50 ? "green" : undefined}
         />

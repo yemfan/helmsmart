@@ -553,8 +553,8 @@ export function AiSmsModal({
                   rows={3}
                   placeholder={
                     messages.length === 0
-                      ? "Click 'Generate Draft' to have AI write the first message — or type your own."
-                      : "Compose your reply, or click 'Generate Draft' to have AI write one."
+                      ? t("pages.aiSms.composeFirstPlaceholder")
+                      : t("pages.aiSms.composeReplyPlaceholder")
                   }
                   className="block w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />

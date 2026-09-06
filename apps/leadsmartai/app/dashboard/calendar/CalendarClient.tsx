@@ -571,7 +571,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                   setSelectedDate(date);
                   setView("list");
                 }}
-                title={isValid ? "Click to select · Double-click to open in list view" : undefined}
+                title={isValid ? tr("calendar.dayHint") : undefined}
                 className={`min-h-[60px] border-b border-r border-slate-50 px-1 py-1 text-left transition ${
                   !isValid ? "bg-slate-50/50 dark:bg-slate-900/60" :
                   isSelected ? "bg-blue-50" :

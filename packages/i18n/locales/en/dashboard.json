@@ -215,7 +215,8 @@
       "list": "List"
     },
     "today": "Today",
-    "noEvents": "No events on this day."
+    "noEvents": "No events on this day.",
+    "dayHint": "Click to select · Double-click to open in list view"
   },
   "boss": {
     "approvalChoice": {
@@ -1292,7 +1293,10 @@
       "emailFailed": "Failed to send the email.",
       "bulkEmailFailed": "Bulk email failed.",
       "generic": "Something went wrong."
-    }
+    },
+    "loadingContacts": "Loading your contacts…",
+    "searchByEmail": "Search contacts by name or email…",
+    "searchByPhone": "Search contacts by name or number…"
   },
   "social": {
     "weeklyHeading": "This week's social posts",
@@ -3037,7 +3041,8 @@
       "whereItRunsSub": "Pick a connected Facebook Page and an ad account.",
       "whoSeesItSub": "Real-estate ads are HOUSING-restricted by Meta — only broad geo + age targeting allowed.",
       "budgetLaunchSub": "Daily spend cap and how long the campaign runs.",
-      "whatItSaysSub": "The ad's body, image, headline, and what the lead form asks for."
+      "whatItSaysSub": "The ad's body, image, headline, and what the lead form asks for.",
+      "libraryImage": "Library image"
     },
     "dealCoachPanel": {
       "dealContext": "Deal context",
@@ -3146,7 +3151,9 @@
       "colGross": "Gross",
       "colNet": "Net (you)",
       "colDays": "Days",
-      "downloadCsv": "Download CSV"
+      "downloadCsv": "Download CSV",
+      "daysFromMutualAccept": "days from mutual accept",
+      "noOffersInPeriod": "no offers in period"
     },
     "timingPanel": {
       "quietStart": "Quiet hours begin",
@@ -3379,7 +3386,10 @@
       "creditsNote": "Outbound calls go out from your receptionist number and require Retell calling credits. Need to reach several people at once? Select multiple contacts to call them in one batch.",
       "whatShouldLucyAsk": "What should Lucy ask?",
       "aiCall": "AI Call",
-      "placingCall": "Placing call…"
+      "placingCall": "Placing call…",
+      "loadingContacts": "Loading your contacts…",
+      "searchPlaceholder": "Search contacts by name or number…",
+      "noSavedContacts": "No saved contacts yet — enter a number below"
     },
     "dealReview": {
       "executionScore": "Execution score:",
@@ -4215,7 +4225,8 @@
       "noExpenses": "No expenses logged yet — track them and your AI Accountant keeps the categories clean for tax time.",
       "nothingOutstanding": "Nothing outstanding — commissions are tracked in the pipeline above.",
       "overdueCount_one": "{{count}} overdue",
-      "overdueCount_other": "{{count}} overdue"
+      "overdueCount_other": "{{count}} overdue",
+      "noClosingScheduled": "no closing scheduled"
     },
     "calendarPage": {
       "connect": "Connect",
@@ -4789,7 +4800,11 @@
       "timelinePending": "Per-contact SMS / email history lands here once the send-log integration is wired. Pulls from",
       "scopedToContact": "scoped to this contact.",
       "paidEquity": "Paid {{price}} · equity {{equity}}",
-      "backToSphere": "← Back to Sphere"
+      "backToSphere": "← Back to Sphere",
+      "yes": "Yes",
+      "no": "No",
+      "anniversaryCanFire": "Anniversary trigger can fire",
+      "anniversaryOptInRequired": "Required before anniversary trigger fires per spec §2.8"
     },
     "reelPanel": {
       "title": "Create a video reel",
@@ -5075,7 +5090,9 @@
       "yourEmail": "Your email",
       "subject": "Subject (optional)",
       "describeIssue": "Start by describing your question or issue below.",
-      "refreshing": "Refreshing…"
+      "refreshing": "Refreshing…",
+      "writeMessage": "Write your message...",
+      "describeIssuePlaceholder": "Describe your issue to start the chat..."
     },
     "cookieConsent": {
       "title": "Cookies on closebossai.com",
@@ -5187,7 +5204,9 @@
           "subtitle": "Free instant access — we'll email you new matches as they hit the market.",
           "cta": "Continue browsing"
         }
-      }
+      },
+      "phoneRequired": "Phone (required)",
+      "phoneOptional": "Phone (optional, for SMS updates)"
     },
     "accountMenu": {
       "signedInAs": "Signed in as",
@@ -5271,7 +5290,11 @@
       "cancel": "Cancel",
       "whatShouldLucyAsk": "What should Lucy ask each contact?",
       "whatSTheAnnouncement": "What's the announcement?",
-      "callContacts": "Call contacts"
+      "callContacts": "Call contacts",
+      "surveyPlaceholder": "e.g. \"How was your home tour? Would you leave us a Google review?\"",
+      "promoPlaceholder": "e.g. \"A new listing just hit your target neighborhood — want a private showing?\"",
+      "loadingContacts": "Loading contacts…",
+      "searchPlaceholder": "Search by name or number…"
     },
     "cmaEmail": {
       "title": "Email this CMA to the seller",
@@ -5303,7 +5326,11 @@
       "doneCount_other": "{{count}} done",
       "batchDone": "· {{done}}/{{total}} done",
       "taskCount_one": "{{count}} task",
-      "taskCount_other": "{{count}} tasks"
+      "taskCount_other": "{{count}} tasks",
+      "deselectTask": "Remove from Tasks list selection",
+      "selectTask": "Select to add to Tasks list",
+      "markIncomplete": "Mark incomplete",
+      "markComplete": "Mark complete"
     },
     "growthCapture": {
       "thanks": "Thanks — we'll follow up with next steps.",
@@ -5653,7 +5680,9 @@
       "hint": "Include the lead's name, what you want from this message, and any context they've shared (objections, timeline, etc.).",
       "generateScript": "Generate Script",
       "aiGenerated": "AI-generated",
-      "templateFallback": "Template fallback"
+      "templateFallback": "Template fallback",
+      "copied": "Copied to clipboard",
+      "copyScript": "Copy script to clipboard"
     },
     "switchModel": {
       "title": "Switch sales model",
@@ -5878,7 +5907,8 @@
       "happyBirthday": "Happy Birthday,",
       "anotherYear": "Another year in your home,",
       "thinkingOfYou": "Thinking of you,",
-      "anniversaryCongrats": "Congrats on the anniversary 🎊"
+      "anniversaryCongrats": "Congrats on the anniversary 🎊",
+      "agentAlt": "Agent"
     },
     "salesModelBits": {
       "operatingIdentity": "Operating identity",
@@ -5901,7 +5931,9 @@
       "enterManually": "Enter manually…",
       "loadingContacts": "Loading contacts…",
       "openMessagingApp": "Open messaging app",
-      "openEmailApp": "Open email app"
+      "openEmailApp": "Open email app",
+      "phonePlaceholder": "Phone number",
+      "emailPlaceholder": "Email address"
     },
     "misc": {
       "close": "Close",
@@ -9457,7 +9489,9 @@
     },
     "serviceAreasPicker": {
       "pickAStateFirst": "Pick a state first",
-      "selectCounty": "Select county…"
+      "selectCounty": "Select county…",
+      "pickACountyFirst": "Pick a county first",
+      "cityPlaceholder": "e.g. Alhambra"
     },
     "bulkSendPostcard": {
       "pickADesign": "Pick a design"
@@ -9482,7 +9516,9 @@
       "draftBlockedNeedsHuman": "Reply personally — AI drafting paused for this thread.",
       "draftBlockedNoEntitlement": "Pick a plan that includes AI actions to enable this.",
       "draftBlockedAiCap": "You've hit this period's AI cap. Upgrade for a higher limit.",
-      "sendBlockedOptedOut": "Sending blocked — contact opted out."
+      "sendBlockedOptedOut": "Sending blocked — contact opted out.",
+      "composeFirstPlaceholder": "Click 'Generate Draft' to have AI write the first message — or type your own.",
+      "composeReplyPlaceholder": "Compose your reply, or click 'Generate Draft' to have AI write one."
     },
     "modelToolsGrid": {
       "copyPrompt": "Copy prompt"
@@ -10040,7 +10076,9 @@
       "freeNoSignup": "Free · No signup"
     },
     "aiEmailModal": {
-      "eyebrow": "AI Email · {{model}}"
+      "eyebrow": "AI Email · {{model}}",
+      "subjectPlaceholder": "Subject line (4-9 words is the sweet spot)",
+      "bodyPlaceholder": "Email body. Generate with AI above or write your own."
     },
     "accountTimezone": {
       "title": "Timezone",

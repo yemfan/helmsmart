@@ -249,7 +249,7 @@ export default function ShareReport({
                 <input
                   value={manualTo}
                   onChange={(e) => setManualTo(e.target.value)}
-                  placeholder={channel === "sms" ? "Phone number" : "Email address"}
+                  placeholder={channel === "sms" ? t("pages.shareReport.phonePlaceholder") : t("pages.shareReport.emailPlaceholder")}
                   inputMode={channel === "sms" ? "tel" : "email"}
                   className="mt-2 block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                 />

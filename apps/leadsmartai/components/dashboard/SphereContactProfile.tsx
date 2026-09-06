@@ -115,11 +115,11 @@ export default async function SphereContactProfile({
         />
         <StatCard
           label={t("pages.sphereProfile.anniversaryOptIn")}
-          value={contact.anniversaryOptIn ? "Yes" : "No"}
+          value={contact.anniversaryOptIn ? t("pages.sphereProfile.yes") : t("pages.sphereProfile.no")}
           hint={
             contact.anniversaryOptIn
-              ? "Anniversary trigger can fire"
-              : "Required before anniversary trigger fires per spec §2.8"
+              ? t("pages.sphereProfile.anniversaryCanFire")
+              : t("pages.sphereProfile.anniversaryOptInRequired")
           }
         />
       </section>

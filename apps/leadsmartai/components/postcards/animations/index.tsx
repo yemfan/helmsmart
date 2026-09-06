@@ -79,7 +79,7 @@ function MessageBlock({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={agentPhotoUrl}
-            alt={agentName ?? "Agent"}
+            alt={agentName ?? t("pages.postcardAnimations.agentAlt")}
             className="h-12 w-12 rounded-full border-2 border-white object-cover shadow-md"
           />
         ) : (

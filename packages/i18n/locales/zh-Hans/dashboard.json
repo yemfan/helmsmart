@@ -215,7 +215,8 @@
       "list": "列表"
     },
     "today": "今天",
-    "noEvents": "当天没有安排。"
+    "noEvents": "当天没有安排。",
+    "dayHint": "单击选中 · 双击在列表视图中打开"
   },
   "boss": {
     "approvalChoice": {
@@ -1292,7 +1293,10 @@
       "emailFailed": "邮件发送失败。",
       "bulkEmailFailed": "批量邮件发送失败。",
       "generic": "出了点问题。"
-    }
+    },
+    "loadingContacts": "正在加载您的联系人…",
+    "searchByEmail": "按姓名或邮箱搜索联系人…",
+    "searchByPhone": "按姓名或号码搜索联系人…"
   },
   "social": {
     "weeklyHeading": "本周社交帖子",
@@ -3037,7 +3041,8 @@
       "whereItRunsSub": "选择一个已连接的 Facebook 主页和广告账户。",
       "whoSeesItSub": "房地产广告被 Meta 列为「住房类」受限广告 — 仅允许宽泛的地域与年龄定向。",
       "budgetLaunchSub": "每日预算上限与投放时长。",
-      "whatItSaysSub": "广告正文、图片、标题，以及留资表单要收集的信息。"
+      "whatItSaysSub": "广告正文、图片、标题，以及留资表单要收集的信息。",
+      "libraryImage": "素材库图片"
     },
     "dealCoachPanel": {
       "dealContext": "交易背景",
@@ -3146,7 +3151,9 @@
       "colNet": "净收入（您）",
       "colDays": "天数",
       "deal_one": "笔交易",
-      "downloadCsv": "下载 CSV"
+      "downloadCsv": "下载 CSV",
+      "daysFromMutualAccept": "从双方接受报价算起的天数",
+      "noOffersInPeriod": "本期没有报价"
     },
     "timingPanel": {
       "quietStart": "免打扰开始时间",
@@ -3379,7 +3386,10 @@
       "creditsNote": "外呼使用您的接待号码，需要消耗 Retell 通话额度。需要一次联系多个人？可以选中多位联系人，批量拨打。",
       "whatShouldLucyAsk": "希望 Lucy 问什么？",
       "aiCall": "AI 通话",
-      "placingCall": "正在拨号…"
+      "placingCall": "正在拨号…",
+      "loadingContacts": "正在加载您的联系人…",
+      "searchPlaceholder": "按姓名或号码搜索联系人…",
+      "noSavedContacts": "还没有保存的联系人——请在下方输入号码"
     },
     "dealReview": {
       "executionScore": "执行评分：",
@@ -4215,7 +4225,8 @@
       "noExpenses": "还没有记录支出——记下来，AI 会计会帮您把类别整理好，报税时省事。",
       "nothingOutstanding": "没有待收款项——佣金都在上方的流程里跟踪。",
       "overdueCount_one": "{{count}} 笔逾期",
-      "overdueCount_other": "{{count}} 笔逾期"
+      "overdueCount_other": "{{count}} 笔逾期",
+      "noClosingScheduled": "暂无预定的成交"
     },
     "calendarPage": {
       "connect": "连接",
@@ -4789,7 +4800,11 @@
       "timelinePending": "接通发送日志之后，这位联系人的短信／邮件往来记录会显示在这里。数据来自",
       "scopedToContact": "，仅限这位联系人。",
       "paidEquity": "买入价 {{price}} · 净值 {{equity}}",
-      "backToSphere": "← 返回人脉圈"
+      "backToSphere": "← 返回人脉圈",
+      "yes": "是",
+      "no": "否",
+      "anniversaryCanFire": "纪念日提醒可以触发",
+      "anniversaryOptInRequired": "按规范 §2.8，纪念日提醒触发前必须先获得同意"
     },
     "reelPanel": {
       "title": "制作短视频",
@@ -5075,7 +5090,9 @@
       "yourEmail": "您的邮箱",
       "subject": "主题（选填）",
       "describeIssue": "请在下方描述您的问题或需求。",
-      "refreshing": "刷新中…"
+      "refreshing": "刷新中…",
+      "writeMessage": "写下您的消息…",
+      "describeIssuePlaceholder": "描述您的问题以开始对话…"
     },
     "cookieConsent": {
       "title": "closebossai.com 的 Cookie",
@@ -5187,7 +5204,9 @@
           "subtitle": "免费即时访问——有新房源上市符合条件时，我们会发邮件给你。",
           "cta": "继续浏览"
         }
-      }
+      },
+      "phoneRequired": "电话（必填）",
+      "phoneOptional": "电话（选填，用于接收短信更新）"
     },
     "accountMenu": {
       "signedInAs": "当前登录",
@@ -5271,7 +5290,11 @@
       "cancel": "取消",
       "whatShouldLucyAsk": "希望 Lucy 问每位联系人什么？",
       "whatSTheAnnouncement": "要宣布什么？",
-      "callContacts": "致电联系人"
+      "callContacts": "致电联系人",
+      "surveyPlaceholder": "例如：“您的看房体验如何？方便给我们留个 Google 评价吗？”",
+      "promoPlaceholder": "例如：“您关注的小区刚上新房源——要安排一次私人看房吗？”",
+      "loadingContacts": "正在加载联系人…",
+      "searchPlaceholder": "按姓名或号码搜索…"
     },
     "cmaEmail": {
       "title": "把这份 CMA 发给卖方",
@@ -5303,7 +5326,11 @@
       "doneCount_other": "{{count}} 项已完成",
       "batchDone": "· 已完成 {{done}}/{{total}}",
       "taskCount_one": "{{count}} 项任务",
-      "taskCount_other": "{{count}} 项任务"
+      "taskCount_other": "{{count}} 项任务",
+      "deselectTask": "从任务清单选择中移除",
+      "selectTask": "勾选以加入任务清单",
+      "markIncomplete": "标为未完成",
+      "markComplete": "标为已完成"
     },
     "growthCapture": {
       "thanks": "谢谢——我们会联系您安排下一步。",
@@ -5653,7 +5680,9 @@
       "hint": "写清楚客户的名字、您希望这条消息达成什么，以及对方提到过的情况（顾虑、时间安排等）。",
       "generateScript": "生成脚本",
       "aiGenerated": "AI 生成",
-      "templateFallback": "使用模板兜底"
+      "templateFallback": "使用模板兜底",
+      "copied": "已复制到剪贴板",
+      "copyScript": "复制话术到剪贴板"
     },
     "switchModel": {
       "title": "切换销售模式",
@@ -5878,7 +5907,8 @@
       "happyBirthday": "生日快乐，",
       "anotherYear": "又在这个家住满一年了，",
       "thinkingOfYou": "想起你了，",
-      "anniversaryCongrats": "恭喜迎来这个纪念日 🎊"
+      "anniversaryCongrats": "恭喜迎来这个纪念日 🎊",
+      "agentAlt": "经纪人"
     },
     "salesModelBits": {
       "operatingIdentity": "工作身份",
@@ -5901,7 +5931,9 @@
       "enterManually": "手动输入…",
       "loadingContacts": "正在加载联系人…",
       "openMessagingApp": "打开短信应用",
-      "openEmailApp": "打开邮件应用"
+      "openEmailApp": "打开邮件应用",
+      "phonePlaceholder": "电话号码",
+      "emailPlaceholder": "邮箱地址"
     },
     "misc": {
       "close": "关闭",
@@ -9457,7 +9489,9 @@
     },
     "serviceAreasPicker": {
       "pickAStateFirst": "请先选择州",
-      "selectCounty": "选择县…"
+      "selectCounty": "选择县…",
+      "pickACountyFirst": "请先选择一个县",
+      "cityPlaceholder": "例如：Alhambra"
     },
     "bulkSendPostcard": {
       "pickADesign": "挑选一个版式"
@@ -9482,7 +9516,9 @@
       "draftBlockedNeedsHuman": "请您亲自回复——这个会话的 AI 起草已暂停。",
       "draftBlockedNoEntitlement": "请选择包含 AI 操作的套餐来启用此功能。",
       "draftBlockedAiCap": "本周期的 AI 用量已达上限。升级可获得更高额度。",
-      "sendBlockedOptedOut": "无法发送——该联系人已退订。"
+      "sendBlockedOptedOut": "无法发送——该联系人已退订。",
+      "composeFirstPlaceholder": "点击“生成初稿”让 AI 写第一条消息——也可以自己输入。",
+      "composeReplyPlaceholder": "撰写您的回复，或点击“生成初稿”让 AI 代写。"
     },
     "modelToolsGrid": {
       "copyPrompt": "复制提示词"
@@ -10040,7 +10076,9 @@
       "freeNoSignup": "免费 · 无需注册"
     },
     "aiEmailModal": {
-      "eyebrow": "AI 邮件 · {{model}}"
+      "eyebrow": "AI 邮件 · {{model}}",
+      "subjectPlaceholder": "邮件主题（4–9 个词最合适）",
+      "bodyPlaceholder": "邮件正文。可用上方的 AI 生成，也可以自己写。"
     },
     "accountTimezone": {
       "title": "时区",

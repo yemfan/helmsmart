@@ -220,7 +220,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
           <button
             type="button"
             onClick={() => void onCopy()}
-            aria-label={copied ? "Copied to clipboard" : "Copy script to clipboard"}
+            aria-label={copied ? t("pages.scriptGenerator.copied") : t("pages.scriptGenerator.copyScript")}
             className={[
               "inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition",
               copied
@@ -267,7 +267,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
           <button
             type="button"
             onClick={() => void onCopy()}
-            aria-label={copied ? "Copied to clipboard" : "Copy script to clipboard"}
+            aria-label={copied ? t("pages.scriptGenerator.copied") : t("pages.scriptGenerator.copyScript")}
             className={[
               "absolute right-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium shadow-sm transition",
               copied

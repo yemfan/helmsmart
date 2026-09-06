@@ -144,7 +144,7 @@ export function ServiceAreasPicker({
                 }
               }}
               disabled={disabled || !county}
-              placeholder={county ? "e.g. Alhambra" : "Pick a county first"}
+              placeholder={county ? t("pages.serviceAreasPicker.cityPlaceholder") : t("pages.serviceAreasPicker.pickACountyFirst")}
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none disabled:bg-gray-50"
             />
           </label>
