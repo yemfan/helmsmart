@@ -129,7 +129,26 @@ export async function placeRetellDemoCall(args: {
 
     if (!res.ok) {
       const reason = body.error_message || body.message || `HTTP ${res.status}`;
-      console.error("[voice-ai-demo] Retell refused the call:", reason);
+      /*
+       * Say WHAT was not found.
+       *
+       * Retell answers a create-call it cannot fulfil with a bare "Not Found",
+       * and this line used to log exactly that. It is the least useful true
+       * sentence available: a 404 here means the from-number is not registered
+       * on the account this key opens, OR the agent id does not exist on it —
+       * two different fixes, in two different places, and the log picked
+       * neither. A demo silently fell back to the legacy Twilio engine and the
+       * only clue was two words.
+       *
+       * The number and the agent id are ours and safe to log; the API key is
+       * not logged. On a 404 specifically, name both inputs so the next reader
+       * can check them against the Retell dashboard without another round trip.
+       */
+      const detail =
+        res.status === 404
+          ? ` (from_number=${fromNumber}, override_agent_id=${agentId} — one of these is not on the account this RETELL_API_KEY opens)`
+          : "";
+      console.error(`[voice-ai-demo] Retell refused the call: HTTP ${res.status} ${reason}${detail}`);
       return { ok: false, code: "retell_error", reason };
     }
 
