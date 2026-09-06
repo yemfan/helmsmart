@@ -1,4 +1,5 @@
 import * as Device from "expo-device";
+import { HOME_ROUTE } from "./homeRoute";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -68,7 +69,7 @@ function navigateFromPushData(
   }
 
   if (screen === "home") {
-    router.push("/(tabs)/home" as never);
+    router.push(HOME_ROUTE);
     return;
   }
 

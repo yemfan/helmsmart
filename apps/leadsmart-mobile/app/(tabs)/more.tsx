@@ -21,7 +21,8 @@ type MoreSection = {
   key: string;
   labelKey: string;
   accentKey: "accent" | "success" | "warning" | "textMuted";
-  tiles: (HomeFeatureTileConfig & { color: string })[];
+  /** `ns` lets a tile borrow a label from another namespace (the tab names). */
+  tiles: (HomeFeatureTileConfig & { color: string; ns?: string })[];
 };
 
 const MORE_SECTIONS: readonly MoreSection[] = [
@@ -30,13 +31,7 @@ const MORE_SECTIONS: readonly MoreSection[] = [
     labelKey: "more.sections.schedule",
     accentKey: "accent",
     tiles: [
-      {
-        key: "calendar",
-        labelKey: "v2.tiles.calendar",
-        iconName: "calendar-outline",
-        href: "/(tabs)/calendar",
-        color: "#4f46e5",
-      },
+      // Calendar left this grid for the tab bar (2026-09 UX audit).
       {
         key: "tasks",
         labelKey: "v2.tiles.tasks",
@@ -51,6 +46,14 @@ const MORE_SECTIONS: readonly MoreSection[] = [
     labelKey: "more.sections.insights",
     accentKey: "warning",
     tiles: [
+      {
+        key: "team",
+        labelKey: "tabs.team",
+        ns: "nav",
+        iconName: "people-circle-outline",
+        href: "/(tabs)/team",
+        color: "#0072ce",
+      },
       {
         key: "sphere",
         labelKey: "v2.tiles.sphere",
@@ -119,7 +122,7 @@ export default function MoreScreen() {
                 <HomeFeatureTile
                   key={tile.key}
                   icon={<Ionicons name={tile.iconName} size={24} color="#ffffff" />}
-                  label={t(tile.labelKey)}
+                  label={t(tile.labelKey, tile.ns ? { ns: tile.ns } : undefined)}
                   accentColor={tile.color}
                   href={tile.href}
                 />
