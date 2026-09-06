@@ -21,6 +21,16 @@
  * that bullet, doesn't render "—" or "0".
  */
 
+/**
+ * Where the property actually is in its life, as far as the transaction knows.
+ *
+ * The caption opened "Just listed!" for every property regardless — including
+ * one under contract with a closing date three weeks out, which the AI draft
+ * then published as #JustListed. Advertising a property that is spoken for as
+ * newly on the market is a claim an agent makes under their own licence.
+ */
+export type ListingStatus = "on_market" | "under_contract" | "sold";
+
 export type ListingCaptionInput = {
   /** Free-form headline override. When omitted, defaults to a generic
    *  "Just listed!" hook. */
@@ -36,6 +46,8 @@ export type ListingCaptionInput = {
    *  Falls back to a neutral close when missing. */
   agentName: string | null;
   agentBrokerage: string | null;
+  /** Omitted only by callers that genuinely cannot tell; see DEFAULT_HOOK. */
+  listingStatus?: ListingStatus | null;
 };
 
 export type ListingCaptionResult = {
@@ -45,13 +57,26 @@ export type ListingCaptionResult = {
   hashtags: string[];
 };
 
+/**
+ * Openings that state the status rather than assuming it. Each is standard
+ * US practice and each is checkable against the transaction.
+ */
+const STATUS_HOOKS: Record<ListingStatus, string> = {
+  on_market: "Now on the market",
+  under_contract: "Under contract",
+  sold: "Just sold",
+};
+
+/** Only for callers that pass no status at all. */
 const DEFAULT_HOOK = "Just listed!";
 const HARD_CAP_CHARS = 1500;
 
 export function buildListingCaption(input: ListingCaptionInput): ListingCaptionResult {
   const lines: string[] = [];
 
-  const hook = (input.hook ?? "").trim() || DEFAULT_HOOK;
+  const hook =
+    (input.hook ?? "").trim() ||
+    (input.listingStatus ? STATUS_HOOKS[input.listingStatus] : DEFAULT_HOOK);
 
   const locationSuffix = formatLocationSuffix(input.city, input.state);
   const headline = locationSuffix
