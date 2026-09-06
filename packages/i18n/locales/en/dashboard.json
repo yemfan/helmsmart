@@ -2227,8 +2227,8 @@
       "basis": "based on {{count}} sold comps within {{miles}} mi, the latest {{recency}}; the range is ±{{spread}}% around the estimate.",
       "basisNoComps": "no sold comps were found, so this is a market-level estimate — treat the range as wide.",
       "recencyThisMonth": "this month",
-      "recencyMonths_one": "{{count}} month ago",
-      "recencyMonths_other": "{{count}} months ago",
+      "recencyOneMonth": "1 month ago",
+      "recencyMonths": "{{count}} months ago",
       "recencyUnknown": "undated"
     },
     "cmaDetail": {
