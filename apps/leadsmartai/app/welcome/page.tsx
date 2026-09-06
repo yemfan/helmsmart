@@ -119,30 +119,17 @@ export default function WelcomePage() {
     if (!uid) return;
     const a = answersRef.current;
     try {
+      // Through the API (service role, scoped to this agent). The direct
+      // browser update this replaced resolved cleanly and saved nothing —
+      // every agent in production had `onboarding = {}`.
+      const res = await fetch("/api/dashboard/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ onboarding: a }),
+      });
+      if (!res.ok) console.error("[welcome] could not save your answers:", res.status);
       const supabase = supabaseBrowser();
-      const agentUpdate: Record<string, unknown> = {
-        onboarding: { ...a, completed_at: new Date().toISOString() },
-      };
-      if (a.brokerage?.trim()) agentUpdate.brokerage = a.brokerage.trim();
-      // `.select()` so a write that matches NO rows is visible. Supabase resolves
-      // rather than throws on a failed update, so the old bare await reported
-      // success for a write that never happened — which is how every agent
-      // finished onboarding with `onboarding = {}` and no service area, while
-      // the prompt quietly rendered "" everywhere it expected their market.
-      const { data: updated, error: agentErr } = await supabase
-        .from("agents")
-        .update(agentUpdate)
-        .eq("auth_user_id", uid)
-        .select("id");
-      if (agentErr) {
-        console.error("[welcome] could not save your answers to agents:", agentErr.message);
-      } else if (!updated || updated.length === 0) {
-        console.error(
-          "[welcome] onboarding answers matched no agent row for auth_user_id",
-          uid,
-          "— answers were not saved.",
-        );
-      }
       if (a.name?.trim()) {
         const { error: profErr } = await supabase
           .from("user_profiles")

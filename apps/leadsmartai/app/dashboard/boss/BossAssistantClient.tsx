@@ -2,6 +2,7 @@
 
 
 import BriefingScheduleCard from "@/components/dashboard/BriefingScheduleCard";
+import { suggestionKeys, type GoalKey } from "@/lib/closeboss/goal";
 import { Toggle } from "@/components/ui/Toggle";
 import { useAssistantNames } from "@/components/closeboss/useAssistantNames";
 import { ASSIGNEE_PERSONA } from "@/lib/closeboss/assigneePersona";
@@ -135,8 +136,6 @@ type TeamLive = { type: string; state: TeamState; verb: string };
  * it is not a translation key.
  */
 const CHANNEL_KEYS: Channel[] = ["call", "sms", "email", "social"];
-const QUICK_COMMAND_KEYS = ["checkIn", "justListed", "planDay"] as const;
-
 // Live status verbs for the team ribbon — present tense when busy, a calm
 // standby phrase when idle. Keeps the "company floor" feeling: someone is
 // always on.
@@ -217,7 +216,7 @@ function deadlineAlerts(transactions: TransactionItem[], tr: (k: string, o?: Rec
 
 // ── main ─────────────────────────────────────────────────────────────
 
-export default function BossAssistantClient({ greetingName }: { greetingName: string }) {
+export default function BossAssistantClient({ greetingName, goal = null }: { greetingName: string; goal?: GoalKey | null }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
@@ -844,7 +843,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             <span aria-hidden>↓</span>
           </button>
         )}
-        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} goal={goal} />
         <MemoryLine />
       </div>
 
@@ -1251,7 +1250,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
   );
 }
 
-function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
+function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText, goal = null }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string; goal?: GoalKey | null }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   const [text, setText] = useState("");
@@ -1318,7 +1317,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
         </div>
       ) : (
         <div className="mb-2 flex flex-wrap gap-1.5">
-          {QUICK_COMMAND_KEYS.map((k) => (
+          {suggestionKeys(goal).map((k) => (
             <button key={k} type="button" onClick={() => onSubmit(tr(`boss.suggestions.${k}`))} className="rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2.5 py-1 text-[11px] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">{tr(`boss.suggestions.${k}`)}</button>
           ))}
         </div>

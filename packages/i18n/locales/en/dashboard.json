@@ -264,6 +264,12 @@
       "ask": "Tell your team what to do…"
     },
     "suggestions": {
+      "findLeads": "Find me new leads this week",
+      "sphereReach": "Who in my sphere should I reach out to?",
+      "coldLeads": "Which leads are going cold?",
+      "clearTasks": "Help me clear my overdue tasks",
+      "likelySellers": "Who in my sphere might sell soon?",
+      "weekPosts": "Plan this week's social posts",
       "checkIn": "Text my hot leads a check-in",
       "justListed": "Draft a just-listed social post",
       "planDay": "Plan my day"
