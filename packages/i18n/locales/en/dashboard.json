@@ -1577,6 +1577,10 @@
     "metaDescription": "Configure your CloseBoss AI team — pause assistants and choose their skills."
   },
   "inbox": {
+    "draftWithMax": "Draft with Max",
+    "drafting": "Drafting…",
+    "draftFailed": "Max couldn't draft that. Try again.",
+    "draftDefaultPrompt": "Reply to the latest message in this conversation.",
     "metaTitle": "Conversations",
     "metaDescription": "Unified SMS + email conversations with leads and clients — every sent and received message threaded by contact.",
     "loading": "Loading conversations…",
