@@ -243,7 +243,7 @@ export function MobileSidebar({
                 }}
               >
                 {/* Workspace header */}
-                <div className="flex shrink-0 items-center gap-2.5 border-b border-slate-200/80 bg-white px-3 py-3">
+                <div className="flex shrink-0 items-center gap-2.5 border-b border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3">
                   <div
                     className={cn(
                       "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-slate-900 to-slate-700 text-[13px] font-bold text-white",
@@ -254,7 +254,7 @@ export function MobileSidebar({
                     {titleInitial}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13.5px] font-semibold tracking-tight text-slate-900">
+                    <div className="truncate text-[13.5px] font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                       {appName}
                     </div>
                     {workspaceLabel ? (
@@ -318,7 +318,7 @@ export function MobileSidebar({
                         return (
                           <div
                             key={`nav-divider-${sectionIdx}`}
-                            className="my-2 border-t border-slate-200/70"
+                            className="my-2 border-t border-slate-200/70 dark:border-slate-700"
                             role="separator"
                             aria-hidden
                           />
@@ -489,7 +489,7 @@ export function MobileSidebar({
                 {/* Footer — optional consumer slot above the user card */}
                 {footer || user ? (
                   <div
-                    className="shrink-0 border-t border-slate-200/80 bg-white/80 p-2 backdrop-blur-sm"
+                    className="shrink-0 border-t border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900/80 p-2 backdrop-blur-sm"
                     style={{
                       paddingBottom:
                         "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)",
@@ -497,7 +497,7 @@ export function MobileSidebar({
                   >
                     {footer ? <div className="mb-2">{footer}</div> : null}
                     {user ? (
-                      <div className="flex items-center gap-2.5 rounded-xl bg-white px-2 py-2 ring-1 ring-slate-200/80">
+                      <div className="flex items-center gap-2.5 rounded-xl bg-white dark:bg-slate-900 px-2 py-2 ring-1 ring-slate-200/80">
                         <div
                           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-[12px] font-bold text-white shadow-sm ring-1 ring-inset ring-white/15"
                           aria-hidden
@@ -506,7 +506,7 @@ export function MobileSidebar({
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <span className="truncate text-[13px] font-semibold text-slate-900">
+                            <span className="truncate text-[13px] font-semibold text-slate-900 dark:text-slate-100">
                               {user.name}
                             </span>
                             {user.planLabel ? (

@@ -210,8 +210,8 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
             {" / "}
             <span>{txn.property_address}</span>
           </div>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900">{txn.property_address}</h1>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{txn.property_address}</h1>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <span>{initial.contactName ?? "—"}</span>
             {txn.purchase_price ? (
               <>
@@ -224,9 +224,9 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-center shadow-sm">
             <div className="text-[11px] uppercase tracking-wide text-slate-500">{t("pages.transactionDetail.daysToClose")}</div>
-            <div className="mt-1 text-2xl font-semibold text-slate-900">
+            <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
               {(() => {
                 const d = daysUntil(txn.closing_date);
                 if (d == null) return "—";
@@ -235,9 +235,9 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
               })()}
             </div>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-center shadow-sm">
             <div className="text-[11px] uppercase tracking-wide text-slate-500">{t("detail.transaction.tasks")}</div>
-            <div className="mt-1 text-2xl font-semibold text-slate-900">
+            <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
               {totals.completed}/{totals.total}
             </div>
             {totals.overdue > 0 ? (
@@ -280,18 +280,18 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
           and ListingFeedback stay as full sections below — they're UI
           components, not nav links. Buyer-rep deals skip the strip. */}
       {txn.transaction_type === "listing_rep" || txn.transaction_type === "dual" ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 text-xs">
           <span className="mr-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.transactionDetail.listingTools")}</span>
           <Link
             href={`/dashboard/transactions/${txn.id}/offers`}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             title={t("tips.compareOffers")}
           >
             📬 Offers
           </Link>
           <Link
             href="/dashboard/seller-presentation"
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             title={t("tips.openCma")}
           >
             🎯 Presentation
@@ -403,7 +403,7 @@ function DateRow({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <label className="text-xs text-slate-600">{label}</label>
+        <label className="text-xs text-slate-600 dark:text-slate-400">{label}</label>
         {saving ? <span className="text-[10px] text-slate-400">saving…</span> : null}
       </div>
       <input
@@ -414,7 +414,7 @@ function DateRow({
           const v = draft || null;
           if (v !== value) onChange(v);
         }}
-        className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+        className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
       />
       {help ? <p className="mt-1 text-[10px] leading-relaxed text-slate-500">{help}</p> : null}
     </div>
@@ -477,19 +477,19 @@ function StageBlock({
   return (
     <section
       id={`stage-${stage}`}
-      className="scroll-mt-16 rounded-2xl border border-slate-200 bg-white shadow-sm"
+      className="scroll-mt-16 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm"
     >
       <button
         type="button"
         onClick={onToggleOpen}
         aria-expanded={open}
         aria-controls={`stage-body-${stage}`}
-        className="flex w-full items-center justify-between gap-3 px-5 py-3 text-left transition hover:bg-slate-50/60"
+        className="flex w-full items-center justify-between gap-3 px-5 py-3 text-left transition hover:bg-slate-50/60 dark:hover:bg-slate-800"
       >
         <span className="flex min-w-0 items-center gap-2.5">
           <ChevronGlyph open={open} />
           <span className="min-w-0">
-            <span className="block text-sm font-semibold text-slate-900">
+            <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
               {tr(`detail.transaction.stage.${stage}`)}
               {allDone ? (
                 <span className="ml-2 align-middle text-[10px] font-medium text-emerald-700">
@@ -505,24 +505,24 @@ function StageBlock({
       </button>
 
       {open ? (
-        <div id={`stage-body-${stage}`} className="border-t border-slate-100">
+        <div id={`stage-body-${stage}`} className="border-t border-slate-100 dark:border-slate-700">
           <div className="flex items-center justify-end px-5 py-2">
             <button
               type="button"
               onClick={() => setAdding((v) => !v)}
-              className="text-xs font-medium text-slate-600 hover:text-slate-900"
+              className="text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900"
             >
               {adding ? tr("detail.transaction.cancel") : "+ Add task"}
             </button>
           </div>
 
           {adding ? (
-            <div className="border-y border-slate-100 bg-slate-50/50 px-5 py-3">
+            <div className="border-y border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 px-5 py-3">
               <input
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder={tr("detail.transaction.taskTitle")}
-                className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
                 autoFocus
               />
               <div className="mt-2 flex items-center gap-2">
@@ -530,7 +530,7 @@ function StageBlock({
                   type="date"
                   value={newDue}
                   onChange={(e) => setNewDue(e.target.value)}
-                  className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
                 />
                 <button
                   type="button"
@@ -542,7 +542,7 @@ function StageBlock({
             </div>
           ) : null}
 
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {tasks.length === 0 ? (
               <li className="px-5 py-4 text-xs text-slate-500">{tr("detail.transaction.noTasksInStage")}</li>
             ) : (
@@ -557,7 +557,7 @@ function StageBlock({
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div
-                        className={`text-sm ${t.completed_at ? "text-slate-400 line-through" : "text-slate-800"}`}
+                        className={`text-sm ${t.completed_at ? "text-slate-400 line-through" : "text-slate-800 dark:text-slate-200"}`}
                       >
                         {t.title}
                         {t.seed_key === "verify_wire_instructions" ? (
@@ -649,7 +649,7 @@ function StagePipeline({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="sticky top-0 z-10 -mx-1 rounded-2xl border border-slate-200 bg-white/90 px-2 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/75">
+    <div className="sticky top-0 z-10 -mx-1 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/90 px-2 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/75">
       <div className="flex items-stretch gap-1 overflow-x-auto">
         {STAGE_ORDER.map((stage, idx) => {
           const m = metrics[stage];
@@ -678,7 +678,7 @@ function StagePipeline({
               className={`group flex min-w-0 flex-1 items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-left transition ${tone}`}
             >
               <span className="flex min-w-0 items-center gap-2">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[10px] font-bold tabular-nums">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white dark:bg-slate-900/80 text-[10px] font-bold tabular-nums">
                   {idx + 1}
                 </span>
                 <span className="min-w-0 truncate text-xs font-semibold">
@@ -779,18 +779,18 @@ function CounterpartiesBlockBody({
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
-          className="text-xs font-medium text-slate-600 hover:text-slate-900"
+          className="text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900"
         >
           {adding ? t("detail.transaction.cancel") : "+ Add"}
         </button>
       </header>
 
       {adding ? (
-        <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
+        <div className="mt-3 space-y-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 p-3">
           <select
             value={form.role}
             onChange={(e) => setForm((f) => ({ ...f, role: e.target.value as CounterpartyRole }))}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
           >
             {COUNTERPARTY_ROLES.map((r) => (
               <option key={r} value={r}>
@@ -802,25 +802,25 @@ function CounterpartiesBlockBody({
             placeholder={t("detail.transaction.name")}
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
           />
           <input
             placeholder={t("detail.transaction.companyOptional")}
             value={form.company}
             onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
           />
           <input
             placeholder={t("detail.transaction.emailOptional")}
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
           />
           <input
             placeholder={t("detail.transaction.phoneOptional")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
           />
           <button
             type="button"
@@ -838,15 +838,15 @@ function CounterpartiesBlockBody({
           {counterparties.map((cp) => (
             <li
               key={cp.id}
-              className="group rounded-lg border border-slate-100 bg-slate-50/30 px-3 py-2"
+              className="group rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/60 px-3 py-2"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-[11px] uppercase tracking-wide text-slate-500">
                     {t(`detail.transaction.counterparty.${cp.role}`)}
                   </div>
-                  <div className="font-medium text-slate-900">{cp.name}</div>
-                  {cp.company ? <div className="text-xs text-slate-600">{cp.company}</div> : null}
+                  <div className="font-medium text-slate-900 dark:text-slate-100">{cp.name}</div>
+                  {cp.company ? <div className="text-xs text-slate-600 dark:text-slate-400">{cp.company}</div> : null}
                 </div>
                 <button
                   type="button"
@@ -864,7 +864,7 @@ function CounterpartiesBlockBody({
                 </button>
               </div>
               {cp.email || cp.phone ? (
-                <div className="mt-1 text-xs text-slate-600">
+                <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                   {cp.email ? (
                     <a href={`mailto:${cp.email}`} className="underline hover:text-slate-900">
                       {cp.email}
@@ -944,7 +944,7 @@ function SellerUpdateInlineToggle({
       className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 font-medium transition disabled:opacity-50 ${
         enabled
           ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"
+          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
       }`}
     >
       <span aria-hidden>📧</span>
@@ -1001,8 +1001,8 @@ function RightRailTabs({
   ];
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div className="flex items-center gap-0.5 border-b border-slate-100 bg-slate-50 px-2 py-1.5">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+      <div className="flex items-center gap-0.5 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2 py-1.5">
         {tabs.map((t) => {
           const active = t.key === tab;
           return (
@@ -1013,8 +1013,8 @@ function RightRailTabs({
               aria-current={active ? "page" : undefined}
               className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
                 active
-                  ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200"
-                  : "text-slate-600 hover:bg-slate-100"
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
               {t.label}
@@ -1063,13 +1063,13 @@ function RightRailTabs({
               />
             </div>
 
-            <div className="mt-4 border-t border-slate-100 pt-3">
+            <div className="mt-4 border-t border-slate-100 dark:border-slate-700 pt-3">
               <label className="block text-[11px] font-medium text-slate-500">{t("detail.transaction.status")}</label>
               <select
                 value={txn.status}
                 onChange={(e) => patchTransaction({ status: e.target.value }, "status")}
                 disabled={savingField === "status"}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm"
               >
                 <option value="active">{t("detail.transaction.statusValues.active")}</option>
                 <option value="pending">{t("detail.transaction.statusValues.pending")}</option>
@@ -1100,7 +1100,7 @@ function RightRailTabs({
                 }
               }}
               rows={9}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
               placeholder={t("detail.transaction.notesPlaceholder")}
             />
             {savingField === "notes" ? (
@@ -1125,16 +1125,16 @@ function PostCloseReviewExpander({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(true);
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-slate-50"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800"
       >
         <div className="flex items-center gap-2">
           <span aria-hidden className="text-base">🏁</span>
-          <h2 className="text-sm font-semibold text-slate-900">{t("detail.transaction.postCloseReview")}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("detail.transaction.postCloseReview")}</h2>
         </div>
         <span
           aria-hidden
@@ -1143,7 +1143,7 @@ function PostCloseReviewExpander({ children }: { children: React.ReactNode }) {
           ▾
         </span>
       </button>
-      {open ? <div className="border-t border-slate-100 px-4 py-3">{children}</div> : null}
+      {open ? <div className="border-t border-slate-100 dark:border-slate-700 px-4 py-3">{children}</div> : null}
     </section>
   );
 }

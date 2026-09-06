@@ -116,7 +116,7 @@ export default function CoachingClient() {
         {Array.from({ length: 3 }).map((_, i) => (
           <li
             key={i}
-            className="h-28 animate-pulse rounded-2xl bg-slate-100"
+            className="h-28 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800"
             aria-hidden
           />
         ))}
@@ -133,8 +133,8 @@ export default function CoachingClient() {
 
   if (insights.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm text-slate-600">
-        <p className="text-base font-semibold text-slate-900">{t("more.coaching.allClear")}</p>
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-6 py-12 text-center text-sm text-slate-600 dark:text-slate-400">
+        <p className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("more.coaching.allClear")}</p>
         <p className="mt-1">
           {t("more.coaching.allClearBody")}
         </p>
@@ -153,7 +153,7 @@ export default function CoachingClient() {
         {insights.map((i) => (
           <li
             key={i.id}
-            className={`rounded-2xl border bg-white p-5 shadow-sm ${SEVERITY_TONE[i.severity].ring}`}
+            className={`rounded-2xl border bg-white dark:bg-slate-900 p-5 shadow-sm ${SEVERITY_TONE[i.severity].ring}`}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -162,15 +162,15 @@ export default function CoachingClient() {
                 >
                   {t(`more.coaching.severity.${SEVERITY_TONE[i.severity].tagKey}`)}
                 </span>
-                <h2 className="mt-2 text-base font-semibold text-slate-900">
+                <h2 className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">
                   {i.title}
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">{i.description}</p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{i.description}</p>
               </div>
               <div className="flex shrink-0 items-start gap-2">
                 {i.metric ? (
                   <div className="text-right">
-                    <p className="text-2xl font-bold tabular-nums text-slate-900">
+                    <p className="text-2xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
                       {i.metric.value}
                     </p>
                     <p className="text-[10px] uppercase tracking-wide text-slate-500">
@@ -184,7 +184,7 @@ export default function CoachingClient() {
                   disabled={dismissingId === i.id}
                   title={t("tips.snooze7d")}
                   aria-label={`Dismiss ${i.title} for 7 days`}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   ×
                 </button>
@@ -194,7 +194,7 @@ export default function CoachingClient() {
               <div className="mt-3">
                 <Link
                   href={i.cta.href}
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 hover:text-slate-900 hover:underline"
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 hover:underline"
                 >
                   {i.cta.label} →
                 </Link>

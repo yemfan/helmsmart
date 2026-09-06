@@ -154,7 +154,7 @@ function MorningBriefingPane() {
   if (!loading && (hidden || !briefing)) {
     // Read (or none yet): a quiet one-liner instead of an empty box.
     return (
-      <article className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/60 px-4 py-3">
+      <article className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 px-4 py-3">
         <span aria-hidden>☀️</span>
         <p className="text-xs text-slate-400">
           {briefing
@@ -183,7 +183,7 @@ function MorningBriefingPane() {
           <button
             type="button"
             onClick={markRead}
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-amber-200 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900 shadow-sm hover:bg-amber-50"
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-amber-200 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-amber-900 shadow-sm hover:bg-amber-50"
           >
             <Check className="h-3 w-3" strokeWidth={2.5} />{t("pages.briefings.markRead")}</button>
         )}
@@ -206,8 +206,8 @@ function BriefingBody({ row }: { row: BriefingRow }) {
   const headline = row.headline?.trim() || row.summary.split(/[.!?]\s/)[0] || "";
   return (
     <>
-      <p className="text-base font-semibold leading-snug text-slate-900">{headline}</p>
-      <p className="mt-2 text-sm leading-relaxed text-slate-700">{row.summary}</p>
+      <p className="text-base font-semibold leading-snug text-slate-900 dark:text-slate-100">{headline}</p>
+      <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{row.summary}</p>
       {insights.topOpportunity ? (
         <div className="mt-4 rounded-lg bg-amber-50 p-3 text-amber-900 ring-1 ring-inset ring-amber-200">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
@@ -298,7 +298,7 @@ function BossInstructionsPane() {
           placeholder='e.g. "Text Jane about Saturday, schedule a just-listed post for Rosewood Dr, and chase the Hillcrest referral fee."'
           maxLength={4000}
           rows={2}
-          className="w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
+          className="w-full resize-y rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
         />
         <div className="mt-1.5 flex justify-end">
           <button
@@ -347,7 +347,7 @@ function InstructionItem({
         : null;
 
   return (
-    <div className="rounded-lg border border-slate-100 bg-white/70 p-3">
+    <div className="rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900/70 p-3">
       <p className="text-xs italic text-slate-500">&ldquo;{truncate(instruction.content, 140)}&rdquo;</p>
       {statusLine ? (
         <p className={`mt-1.5 text-[11px] ${instruction.status === "failed" ? "text-red-600" : "text-slate-400"}`}>
@@ -403,7 +403,7 @@ function TaskItem({
     <li>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-sm text-slate-800">
+          <p className="text-sm text-slate-800 dark:text-slate-200">
             {(t.status === "sent" || t.status === "completed") && (
               <span className="mr-1 text-emerald-600">✓</span>
             )}
@@ -441,9 +441,9 @@ function TaskItem({
             {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
           {t.draft_subject && (
-            <p className="mt-1 text-xs font-medium text-slate-800">{t.draft_subject}</p>
+            <p className="mt-1 text-xs font-medium text-slate-800 dark:text-slate-200">{t.draft_subject}</p>
           )}
-          <p className="mt-1 whitespace-pre-wrap text-xs text-slate-700">{t.draft_body}</p>
+          <p className="mt-1 whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-300">{t.draft_body}</p>
           <div className="mt-2 flex items-center gap-2">
             <button
               type="button"
@@ -457,7 +457,7 @@ function TaskItem({
               type="button"
               disabled={busy !== null}
               onClick={() => act("dismiss")}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >{tr("pages.briefings.dismiss")}</button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
@@ -483,7 +483,7 @@ function TaskItem({
                 }
               }}
               placeholder={tr("pages.briefings.typeAnswer")}
-              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
+              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
             />
             <button
               type="button"
@@ -523,8 +523,8 @@ function SkeletonBody() {
   return (
     <div className="animate-pulse space-y-2">
       <div className="h-4 w-3/4 rounded bg-slate-200" />
-      <div className="h-3 w-full rounded bg-slate-100" />
-      <div className="h-3 w-5/6 rounded bg-slate-100" />
+      <div className="h-3 w-full rounded bg-slate-100 dark:bg-slate-800" />
+      <div className="h-3 w-5/6 rounded bg-slate-100 dark:bg-slate-800" />
     </div>
   );
 }

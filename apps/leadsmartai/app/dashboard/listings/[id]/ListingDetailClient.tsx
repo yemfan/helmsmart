@@ -479,7 +479,7 @@ export function ListingDetailClient({
         </div>
         <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {listing.property_address}
             </h1>
             {fullLocation ? (
@@ -491,7 +491,7 @@ export function ListingDetailClient({
             <p className="mt-0.5 text-[12px] text-slate-500">
               {listing.contactName ? (
                 <>{t("pages.dashFragments.seller")}{" "}
-                  <span className="font-medium text-slate-700">
+                  <span className="font-medium text-slate-700 dark:text-slate-300">
                     {listing.contactName}
                   </span>
                 </>
@@ -590,7 +590,7 @@ export function ListingDetailClient({
           <DetailRow
             label={t("pages.listingDetail.listPrice")}
             value={
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {formatMoney(listing.list_price, locale)}
               </span>
             }
@@ -624,7 +624,7 @@ export function ListingDetailClient({
       {listing.notes ? (
         <section>
           <Card title={t("pages.listingDetail.notes")}>
-            <p className="whitespace-pre-wrap text-sm text-slate-700">
+            <p className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
               {listing.notes}
             </p>
           </Card>
@@ -652,7 +652,7 @@ export function ListingDetailClient({
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.offers")}{offers.length})
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.dashFragments.offers")}{offers.length})
             </h2>
             {offers.length > 1 ? (
               <button
@@ -661,7 +661,7 @@ export function ListingDetailClient({
                 className={`rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
                   sortBy.field === "strength"
                     ? "bg-emerald-100 text-emerald-800"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200"
                 }`}
                 title={t("pages.listingDetail.rankHint")}
               >{t("pages.listingDetail.strongestFirst")}</button>
@@ -677,14 +677,14 @@ export function ListingDetailClient({
         </div>
 
         {offers.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+          <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-8 text-center text-sm text-slate-500">
             {t("pages.listingDetail.noOffersBefore")} <strong>{t("pages.listingDetail.addOffer")}</strong> {t("pages.listingDetail.noOffersAfter")}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 text-xs text-slate-600">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
                   <tr>
                     <SortableTh field="buyer" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.buyer")}</SortableTh>
                     <SortableTh field="status" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.status")}</SortableTh>
@@ -696,7 +696,7 @@ export function ListingDetailClient({
                     <th className="px-3 py-2 text-right font-medium">{t("pages.listingDetail.actions")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {sortedOffers(offers, sortBy).map((o) => {
                     const isClosed =
                       o.status === "accepted" ||
@@ -709,9 +709,9 @@ export function ListingDetailClient({
                     const showCounterForm = counterFormForOfferId === o.id;
                     return (
                       <Fragment key={o.id}>
-                        <tr className="align-top hover:bg-slate-50">
+                        <tr className="align-top hover:bg-slate-50 dark:hover:bg-slate-800">
                           <td className="px-3 py-2.5">
-                            <div className="font-medium text-slate-900">
+                            <div className="font-medium text-slate-900 dark:text-slate-100">
                               {o.buyer_name ?? t("pages.listingDetail.unnamedBuyer")}
                             </div>
                             {o.counter_count > 0 ? (
@@ -728,7 +728,7 @@ export function ListingDetailClient({
                             </span>
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums">
-                            <div className="font-medium text-slate-900">
+                            <div className="font-medium text-slate-900 dark:text-slate-100">
                               {formatMoney(o.current_price ?? o.offer_price, locale)}
                             </div>
                             {o.current_price != null && o.current_price !== o.offer_price ? (
@@ -742,13 +742,13 @@ export function ListingDetailClient({
                               {o.is_cash ? (
                                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">{t("pages.listingDetail.cash")}</span>
                               ) : (
-                                <span className="text-slate-700">
+                                <span className="text-slate-700 dark:text-slate-300">
                                   {o.financing_type ?? "—"}
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-3 py-2.5 text-slate-700">
+                          <td className="px-3 py-2.5 text-slate-700 dark:text-slate-300">
                             {o.closing_date_proposed
                               ? formatDate(o.closing_date_proposed, locale)
                               : "—"}
@@ -757,12 +757,12 @@ export function ListingDetailClient({
                             {o.contingency_count === 0 ? (
                               <span className="text-emerald-700">0</span>
                             ) : (
-                              <span className="text-slate-700">
+                              <span className="text-slate-700 dark:text-slate-300">
                                 {o.contingency_count}
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-2.5 text-right tabular-nums text-slate-700">
+                          <td className="px-3 py-2.5 text-right tabular-nums text-slate-700 dark:text-slate-300">
                             {formatMoney(o.earnest_money, locale)}
                           </td>
                           <td className="px-3 py-2.5">
@@ -790,7 +790,7 @@ export function ListingDetailClient({
                                     setOfferActionError(null);
                                   }}
                                   disabled={isAccepting || isDeclining}
-                                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                                   title={t("pages.listingDetail.counterHint")}
                                 >
                                   {showCounterForm ? t("pages.listingDetail.cancel") : t("pages.listingDetail.counter")}
@@ -799,7 +799,7 @@ export function ListingDetailClient({
                                   type="button"
                                   onClick={() => void declineOffer(o.id)}
                                   disabled={isAccepting || isDeclining || isCountering}
-                                  className="rounded-lg border border-rose-200 bg-white px-2.5 py-1 text-xs font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+                                  className="rounded-lg border border-rose-200 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50"
                                   title={t("pages.listingDetail.declineHint")}
                                 >
                                   {isDeclining ? "…" : t("pages.listingDetail.decline")}
@@ -813,11 +813,11 @@ export function ListingDetailClient({
                           </td>
                         </tr>
                         {showCounterForm ? (
-                          <tr className="bg-slate-50">
+                          <tr className="bg-slate-50 dark:bg-slate-900/60">
                             <td colSpan={8} className="px-3 py-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.counterPrice")}</label>
+                                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.listingDetail.counterPrice")}</label>
                                   <input
                                     type="number"
                                     value={counterPrice}
@@ -825,16 +825,16 @@ export function ListingDetailClient({
                                     placeholder={String(
                                       o.current_price ?? o.offer_price,
                                     )}
-                                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                    className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.notes")}</label>
+                                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.listingDetail.notes")}</label>
                                   <input
                                     value={counterNotes}
                                     onChange={(e) => setCounterNotes(e.target.value)}
                                     placeholder={t("pages.listingDetail.counterPlaceholder")}
-                                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                                    className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
                                   />
                                 </div>
                               </div>
@@ -842,7 +842,7 @@ export function ListingDetailClient({
                                 <button
                                   type="button"
                                   onClick={() => setCounterFormForOfferId(null)}
-                                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                                 >{t("pages.listingDetail.cancel")}</button>
                                 <button
                                   type="button"
@@ -901,7 +901,7 @@ function SortableTh({
         type="button"
         onClick={() => onClick(field)}
         className={`inline-flex items-center gap-1 transition-colors ${
-          active ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
+          active ? "text-slate-900 dark:text-slate-100" : "text-slate-600 hover:text-slate-900"
         }`}
       >
         {children}
@@ -921,7 +921,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
         {title}
       </div>
@@ -940,7 +940,7 @@ function DetailRow({
   return (
     <div className="flex items-baseline justify-between gap-3 text-sm">
       <dt className="shrink-0 text-xs font-medium text-slate-500">{label}</dt>
-      <dd className="min-w-0 truncate text-right text-slate-900">{value}</dd>
+      <dd className="min-w-0 truncate text-right text-slate-900 dark:text-slate-100">{value}</dd>
     </div>
   );
 }

@@ -525,13 +525,13 @@ function NewOfferForm() {
           <Link href="/dashboard/offers" className="hover:underline">{t("pages.newOffer.offers")}</Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newOffer.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.newOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.newOffer.sub")}</p>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.buyer")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -547,7 +547,7 @@ function NewOfferForm() {
             offer so the detail page can deep-link back. Optional — a
             blank URL just leaves the rest of the form to manual entry. */}
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.listingUrl")}<span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.listingUrl")}<span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
           </label>
           <input
             type="url"
@@ -557,7 +557,7 @@ function NewOfferForm() {
               void detectListingUrl(e.target.value);
             }}
             placeholder={t("pages.newOffer.urlPlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           {listingUrlDetected ? (
             <div
@@ -579,7 +579,7 @@ function NewOfferForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.address")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.address")}</label>
 
           {/* Recent-addresses quick-pick was removed once the
               ?showingId prefill landed — that path covers the
@@ -604,13 +604,13 @@ function NewOfferForm() {
               void applyListPriceFromWarehouse(val.formattedAddress);
             }}
             placeholder={t("pages.newOffer.addressHint")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           {(city || state || zip) ? (
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
-              {city ? <span className="rounded-full bg-slate-100 px-2 py-0.5">{city}</span> : null}
-              {state ? <span className="rounded-full bg-slate-100 px-2 py-0.5">{state}</span> : null}
-              {zip ? <span className="rounded-full bg-slate-100 px-2 py-0.5">{zip}</span> : null}
+              {city ? <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{city}</span> : null}
+              {state ? <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{state}</span> : null}
+              {zip ? <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{zip}</span> : null}
             </div>
           ) : null}
           {prefillNote ? (
@@ -620,28 +620,28 @@ function NewOfferForm() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.listPrice")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.listPrice")}</label>
             <input
               type="number"
               value={listPrice}
               onChange={(e) => setListPrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.offerPrice")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.offerPrice")}</label>
             <input
               type="number"
               value={offerPrice}
               onChange={(e) => setOfferPrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.earnestMoney")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.earnestMoney")}</label>
             <input
               type="number"
               value={earnestMoney}
@@ -652,7 +652,7 @@ function NewOfferForm() {
                 setEarnestMoney(e.target.value);
                 setEarnestPct(null);
               }}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <PctChips
               value={earnestPct}
@@ -661,7 +661,7 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.downPayment")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.downPayment")}</label>
             <input
               type="number"
               value={downPayment}
@@ -669,7 +669,7 @@ function NewOfferForm() {
                 setDownPayment(e.target.value);
                 setDownPct(null);
               }}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <PctChips
               value={downPct}
@@ -678,11 +678,11 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.financing")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.financing")}</label>
             <select
               value={financingType}
               onChange={(e) => setFinancingType(e.target.value as FinancingType | "")}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             >
               <option value="">—</option>
               <option value="cash">{t("pages.newOffer.cash")}</option>
@@ -697,27 +697,27 @@ function NewOfferForm() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.proposedClosing")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.proposedClosing")}</label>
             <input
               type="date"
               value={closingDateProposed}
               onChange={(e) => setClosingDateProposed(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.offerExpires")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.offerExpires")}</label>
             <input
               type="datetime-local"
               value={offerExpiresAt}
               onChange={(e) => setOfferExpiresAt(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
-        <div className="space-y-2 rounded-lg bg-slate-50 p-3">
-          <div className="text-xs font-medium text-slate-700">{t("pages.newOffer.contingencies")}</div>
+        <div className="space-y-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3">
+          <div className="text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.contingencies")}</div>
           <div className="flex flex-wrap gap-4 text-sm">
             <label className="inline-flex items-center gap-2">
               <input
@@ -745,17 +745,17 @@ function NewOfferForm() {
             value={contingencyNotes}
             onChange={(e) => setContingencyNotes(e.target.value)}
             placeholder={t("pages.newOffer.otherContingencies")}
-            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.notes")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
 
@@ -767,7 +767,7 @@ function NewOfferForm() {
             className="mt-0.5 h-4 w-4"
           />
           <span>
-            <span className="font-medium text-slate-800">{t("pages.newOffer.alreadySubmitted")}</span>
+            <span className="font-medium text-slate-800 dark:text-slate-200">{t("pages.newOffer.alreadySubmitted")}</span>
             <span className="mt-0.5 block text-[11px] text-slate-500">{t("pages.newOffer.skipsDraft")}</span>
           </span>
         </label>
@@ -777,7 +777,7 @@ function NewOfferForm() {
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link
             href="/dashboard/offers"
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.newOffer.cancel")}</Link>
           <button
             type="button"

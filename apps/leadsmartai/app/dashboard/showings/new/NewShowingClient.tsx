@@ -603,7 +603,7 @@ function NewShowingForm() {
           <Link href="/dashboard/showings" className="hover:underline">{t("pages.newShowing.showings")}</Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newShowing.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.newShowing.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.newShowing.sub")}</p>
       </div>
 
@@ -626,9 +626,9 @@ function NewShowingForm() {
         </div>
       )}
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.buyer")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -639,7 +639,7 @@ function NewShowingForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.address")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.address")}</label>
 
           {/* Recent addresses from this buyer's showings + offers
               history. Vertical list with source tag (Showing / Offer)
@@ -670,7 +670,7 @@ function NewShowingForm() {
             }}
             onSelect={onAddressPick}
             placeholder={t("pages.newShowing.addressHint")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           {/* Parsed city/state/zip render as small chips beneath the
               input — only when autocomplete actually fired so we don't
@@ -679,13 +679,13 @@ function NewShowingForm() {
           {addressVerified && (city || state || zip) ? (
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
               {city ? (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5">{city}</span>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{city}</span>
               ) : null}
               {state ? (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5">{state}</span>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{state}</span>
               ) : null}
               {zip ? (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5">{zip}</span>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">{zip}</span>
               ) : null}
             </div>
           ) : null}
@@ -695,28 +695,28 @@ function NewShowingForm() {
               inputs so the showing can still be saved with location
               data. */}
           {!addressVerified && propertyAddress.trim().length > 4 ? (
-            <div className="mt-2 space-y-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-              <p className="text-[11px] text-slate-600">{t("pages.newShowing.pickSuggestion")}</p>
+            <div className="mt-2 space-y-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">{t("pages.newShowing.pickSuggestion")}</p>
               <div className="grid grid-cols-4 gap-2">
                 <input
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder={t("pages.newShowing.city")}
-                  className="col-span-2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
+                  className="col-span-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                 />
                 <input
                   value={state}
                   onChange={(e) => setStateValue(e.target.value.toUpperCase())}
                   placeholder={t("pages.newShowing.state")}
                   maxLength={2}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                 />
                 <input
                   value={zip}
                   onChange={(e) => setZip(e.target.value)}
                   placeholder={t("pages.newShowing.zip")}
                   maxLength={10}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                 />
               </div>
             </div>
@@ -732,7 +732,7 @@ function NewShowingForm() {
                   ? "border-amber-200 bg-amber-50 text-amber-900"
                   : statusBanner.tone === "ok"
                     ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                    : "border-slate-200 bg-slate-50 text-slate-700"
+                    : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300"
               }`}
             >
               {statusBanner.text}
@@ -742,48 +742,48 @@ function NewShowingForm() {
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.date")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.date")}</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.time")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.time")}</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.duration")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.duration")}</label>
             <input
               type="number"
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
               min={5}
               max={240}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.mls")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.mls")}</label>
             <input
               value={mlsNumber}
               onChange={(e) => setMlsNumber(e.target.value)}
               placeholder={t("pages.newShowing.mlsPlaceholder")}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.listingUrl")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.listingUrl")}</label>
             <input
               value={mlsUrl}
               onChange={(e) => {
@@ -806,7 +806,7 @@ function NewShowingForm() {
                 }
               }}
               placeholder={t("pages.newShowing.urlPlaceholder")}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
             {listingUrlDetected && (
               <div className="mt-1 text-[11px]">
@@ -839,25 +839,25 @@ function NewShowingForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.accessNotes")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.accessNotes")}</label>
           <input
             value={accessNotes}
             onChange={(e) => setAccessNotes(e.target.value)}
             placeholder={t("pages.newShowing.accessPlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           <p className="mt-1 text-[11px] text-slate-500">{t("pages.newShowing.copyFromShowingTime")}</p>
         </div>
 
-        <div className="space-y-3 rounded-lg bg-slate-50 p-3">
-          <div className="text-xs font-medium text-slate-700">{t("pages.newShowing.listingAgent")}</div>
+        <div className="space-y-3 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3">
+          <div className="text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.listingAgent")}</div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-[11px] text-slate-500">{t("pages.newShowing.name")}</label>
               <input
                 value={listingAgentName}
                 onChange={(e) => setListingAgentName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -866,7 +866,7 @@ function NewShowingForm() {
                 type="email"
                 value={listingAgentEmail}
                 onChange={(e) => setListingAgentEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -874,19 +874,19 @@ function NewShowingForm() {
               <input
                 value={listingAgentPhone}
                 onChange={(e) => setListingAgentPhone(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
               />
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.notes")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newShowing.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
 
@@ -895,7 +895,7 @@ function NewShowingForm() {
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link
             href="/dashboard/showings"
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.newShowing.cancel")}</Link>
           <button
             type="button"

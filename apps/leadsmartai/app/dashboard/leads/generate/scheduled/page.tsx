@@ -133,7 +133,7 @@ export default async function ScheduledPostsPage() {
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
             {t("scheduled.title", { ns: "web_generate_leads" })}
           </h1>
           <p className="text-sm text-slate-500">
@@ -143,13 +143,13 @@ export default async function ScheduledPostsPage() {
         <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/dashboard/leads/generate"
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             {t("scheduled.nav.back_to_generate", { ns: "web_generate_leads" })}
           </Link>
           <Link
             href="/dashboard/leads/generate/recurring"
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             {t("scheduled.nav.recurring", { ns: "web_generate_leads" })}
           </Link>

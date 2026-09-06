@@ -47,7 +47,7 @@ export default function GenerateDraftButton({
         type="button"
         onClick={() => void generate()}
         disabled={pending}
-        className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+        className="rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
       >
         {pending ? "…" : "Generate draft"}
       </button>

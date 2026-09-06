@@ -77,8 +77,8 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-[300] flex items-start justify-center pt-[15vh]">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
+      <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-700">
           <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -90,7 +90,7 @@ export function CommandPalette() {
             placeholder={t("pages.commandPalette.searchPlaceholder")}
             className="flex-1 text-sm bg-transparent outline-none placeholder-slate-400"
           />
-          <kbd className="hidden sm:inline-block text-[10px] text-slate-400 border border-slate-200 rounded px-1.5 py-0.5">
+          <kbd className="hidden sm:inline-block text-[10px] text-slate-400 border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">
             Esc
           </kbd>
         </div>
@@ -104,7 +104,7 @@ export function CommandPalette() {
                 onClick={() => go(cmd.path)}
                 onMouseEnter={() => setSelectedIdx(i)}
                 className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 ${
-                  i === selectedIdx ? "bg-blue-50 text-blue-700" : "text-slate-700 hover:bg-slate-50"
+                  i === selectedIdx ? "bg-blue-50 text-blue-700" : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 }`}
               >
                 <span className="font-medium">{cmd.label}</span>
@@ -112,10 +112,10 @@ export function CommandPalette() {
             ))
           )}
         </div>
-        <div className="border-t border-slate-100 px-4 py-2 flex gap-4 text-[10px] text-slate-400">
-          <span><kbd className="border border-slate-200 rounded px-1">↑↓</kbd>{t("pages.commandPalette.navigate")}</span>
-          <span><kbd className="border border-slate-200 rounded px-1">↵</kbd>{t("pages.commandPalette.open")}</span>
-          <span><kbd className="border border-slate-200 rounded px-1">Esc</kbd>{t("pages.commandPalette.close")}</span>
+        <div className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 flex gap-4 text-[10px] text-slate-400">
+          <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">↑↓</kbd>{t("pages.commandPalette.navigate")}</span>
+          <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">↵</kbd>{t("pages.commandPalette.open")}</span>
+          <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">Esc</kbd>{t("pages.commandPalette.close")}</span>
         </div>
       </div>
     </div>

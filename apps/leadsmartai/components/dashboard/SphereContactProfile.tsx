@@ -61,7 +61,7 @@ export default async function SphereContactProfile({
         </div>
       </div>
 
-      <header className="rounded-xl border border-slate-200 bg-white p-5">
+      <header className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
         <div className="flex items-start gap-4">
           <span
             className="flex h-14 w-14 items-center justify-center rounded-full text-lg font-semibold text-white"
@@ -70,7 +70,7 @@ export default async function SphereContactProfile({
             {contact.initials}
           </span>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-semibold text-slate-900">{contact.fullName}</h1>
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{contact.fullName}</h1>
             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-slate-500">
               <span>{relationshipLabel(contact.relationshipType)}</span>
               {contact.relationshipTag && (
@@ -84,7 +84,7 @@ export default async function SphereContactProfile({
               {contact.phone && <span>📞 {contact.phone}</span>}
               {contact.email && <span>✉️ {contact.email}</span>}
               {contact.preferredLanguage === "zh" && (
-                <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px]">
+                <span className="rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-1.5 py-0.5 text-[10px]">
                   Prefers 中文
                 </span>
               )}
@@ -128,14 +128,14 @@ export default async function SphereContactProfile({
         className={`rounded-xl border p-5 ${
           contact.signals.length > 0
             ? "border-amber-200 bg-amber-50"
-            : "border-slate-200 bg-white"
+            : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
         }`}
       >
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2
               className={`text-sm font-semibold ${
-                contact.signals.length > 0 ? "text-amber-900" : "text-slate-900"
+                contact.signals.length > 0 ? "text-amber-900" : "text-slate-900 dark:text-slate-100"
               }`}
             >{t("pages.sphereProfile.openSignals")}</h2>
             <p
@@ -151,15 +151,15 @@ export default async function SphereContactProfile({
         {contact.signals.length > 0 ? (
           <ul className="mt-3 space-y-2">
             {contact.signals.map((s) => (
-              <li key={s.id} className="rounded-lg border border-amber-200 bg-white p-3">
+              <li key={s.id} className="rounded-lg border border-amber-200 bg-white dark:bg-slate-900 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-slate-900">{s.label}</span>
+                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{s.label}</span>
                   <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
                     {s.confidence}
                   </span>
                 </div>
                 {s.suggestedAction && (
-                  <div className="mt-1 text-xs text-slate-600">{s.suggestedAction}</div>
+                  <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{s.suggestedAction}</div>
                 )}
                 <div className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">
                   {t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}
@@ -172,10 +172,10 @@ export default async function SphereContactProfile({
         )}
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.sphereProfile.upcomingTriggers")}</h2>
+      <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.sphereProfile.upcomingTriggers")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">{t("pages.sphereProfile.triggersHint")}</p>
-        <ul className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
+        <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
           {applicableTemplates.length === 0 ? (
             <li className="p-6 text-center text-sm text-slate-400">{t("pages.sphereProfile.noTemplates")}</li>
           ) : (
@@ -194,7 +194,7 @@ export default async function SphereContactProfile({
                       {tpl.channel}
                     </span>
                   </div>
-                  <div className="mt-0.5 text-sm font-medium text-slate-900">{tpl.name}</div>
+                  <div className="mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100">{tpl.name}</div>
                   {tpl.notes && (
                     <div className="mt-0.5 text-[11px] text-slate-500 italic">{tpl.notes}</div>
                   )}
@@ -206,7 +206,7 @@ export default async function SphereContactProfile({
                   <GenerateDraftButton contactId={contact.id} templateId={tpl.id} />
                   <Link
                     href={`/dashboard/templates#${tpl.id}`}
-                    className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50"
+                    className="rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-[11px] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >{t("pages.sphereProfile.editTemplate")}</Link>
                 </div>
               </li>
@@ -226,8 +226,8 @@ export default async function SphereContactProfile({
 
       <VoiceCallTimelinePanel contactId={contact.id} />
 
-      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5">
-        <h2 className="text-sm font-semibold text-slate-700">{t("pages.sphereProfile.messageTimeline")}</h2>
+      <section className="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-5">
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.sphereProfile.messageTimeline")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           {t("pages.sphereProfile.timelinePending")}{" "}
           <code className="font-mono">communications</code>{t("pages.sphereProfile.scopedToContact")}
@@ -246,7 +246,7 @@ async function EquityCard({ contact }: { contact: ContactView }) {
     contact.equityDelta === null
   ) {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
         <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sphereProfile.equity")}</div>
         <div className="mt-1 text-sm text-slate-500">{t("pages.sphereProfile.equityHint")}</div>
       </div>
@@ -254,7 +254,7 @@ async function EquityCard({ contact }: { contact: ContactView }) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
+    <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <div className="flex items-start justify-between">
         <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sphereProfile.equity")}</div>
         <div className="text-[10px] uppercase tracking-wide text-slate-400">
@@ -262,7 +262,7 @@ async function EquityCard({ contact }: { contact: ContactView }) {
         </div>
       </div>
       <div className="mt-1 flex items-baseline gap-2">
-        <span className="text-2xl font-semibold text-slate-900 tabular-nums">
+        <span className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tabular-nums">
           {currencyFormat(contact.avmCurrent)}
         </span>
         <span className="text-sm text-emerald-700">
@@ -281,9 +281,9 @@ async function EquityCard({ contact }: { contact: ContactView }) {
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
+    <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-slate-900">{value}</div>
+      <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{value}</div>
       {hint && <div className="mt-0.5 text-xs text-slate-500">{hint}</div>}
     </div>
   );

@@ -146,16 +146,16 @@ export function NotificationsFeed({ initial }: { initial: Item[] }) {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200/90 bg-white shadow-sm ring-1 ring-slate-900/[0.03]">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
-        <p className="text-sm text-slate-600">
+    <section className="rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 px-4 py-3">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           {unread > 0 ? t("notifications.feed.unreadCount", { count: unread }) : t("notifications.feed.allCaughtUp")}
         </p>
         <button
           type="button"
           onClick={() => void markAllRead()}
           disabled={busy || unread === 0}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40"
         >
           <CheckCheck className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
           {busy ? t("notifications.feed.marking") : t("notifications.feed.markAllRead")}
@@ -172,24 +172,24 @@ export function NotificationsFeed({ initial }: { initial: Item[] }) {
       ) : (
         groups.map((g) => (
           <div key={g.label}>
-            <p className="bg-slate-50/80 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{g.label}</p>
-            <ul className="divide-y divide-slate-100">
+            <p className="bg-slate-50/80 dark:bg-slate-900/60 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{g.label}</p>
+            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
               {g.items.map((n) => (
                 <li key={n.id}>
                   <button
                     type="button"
                     onClick={() => void open(n)}
-                    className={`flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50 focus:outline-none focus-visible:bg-slate-50 ${n.read ? "" : "bg-blue-50/40"}`}
+                    className={`flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus-visible:bg-slate-50 ${n.read ? "" : "bg-blue-50/40"}`}
                   >
-                    <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${TYPE_TONE[n.type] ?? "bg-slate-100 text-slate-600"}`}>
+                    <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${TYPE_TONE[n.type] ?? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
                       <TypeIcon type={n.type} />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
-                        <span className={`truncate text-sm ${n.read ? "font-medium text-slate-700" : "font-semibold text-slate-900"}`}>{n.title}</span>
+                        <span className={`truncate text-sm ${n.read ? "font-medium text-slate-700" : "font-semibold text-slate-900 dark:text-slate-100"}`}>{n.title}</span>
                         {!n.read ? <span className="h-2 w-2 shrink-0 rounded-full bg-[#0072ce]" aria-label={t("notifications.feed.unread")} /> : null}
                       </span>
-                      {n.body ? <span className="mt-0.5 line-clamp-2 block text-xs text-slate-600">{n.body}</span> : null}
+                      {n.body ? <span className="mt-0.5 line-clamp-2 block text-xs text-slate-600 dark:text-slate-400">{n.body}</span> : null}
                       <span className="mt-1 block text-[11px] text-slate-400">
                         {new Date(n.created_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
                         {" · "}

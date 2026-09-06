@@ -565,7 +565,7 @@ export function AiChatPanel() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 hidden h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-blue-100 transition-transform hover:scale-105 hover:ring-blue-200 md:flex"
+        className="fixed bottom-6 right-6 z-50 hidden h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-900 shadow-lg ring-1 ring-blue-100 transition-transform hover:scale-105 hover:ring-blue-200 md:flex"
         aria-label={t("pages.aiChatPanel.open")}
       >
         {/* Max, not the old house mascot. The panel is a conversation with a
@@ -599,7 +599,7 @@ export function AiChatPanel() {
 
   return (
     <div
-      className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${positionedClass} ${dragging || resizing ? "select-none" : ""}`}
+      className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl ${positionedClass} ${dragging || resizing ? "select-none" : ""}`}
       style={positionedStyle}
     >
       {/* Header — also the drag handle. */}
@@ -610,7 +610,7 @@ export function AiChatPanel() {
         className={`flex items-center justify-between gap-3 bg-blue-600 px-4 py-3 text-white touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/95 ring-1 ring-white/40">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white dark:bg-slate-900/95 ring-1 ring-white/40">
             <img src="/avatars/personas/max.png" alt="" aria-hidden className="h-8 w-8 rounded-full object-cover" />
           </span>
           <div className="min-w-0">
@@ -629,7 +629,7 @@ export function AiChatPanel() {
             {minimized ? (
               <span aria-hidden className="block h-2.5 w-2.5 rounded-sm border border-white" />
             ) : (
-              <span aria-hidden className="block h-px w-3.5 bg-white" />
+              <span aria-hidden className="block h-px w-3.5 bg-white dark:bg-slate-900" />
             )}
           </button>
           <button
@@ -645,7 +645,7 @@ export function AiChatPanel() {
       {/* Tab strip + body — hidden when minimized so only the header shows. */}
       {!minimized ? (
         <>
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200 bg-slate-50 px-2 py-1">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2 py-1">
             <TabPill
               label={t("pages.aiChatPanel.guideTab")}
               active={activeTabId === "guide"}
@@ -756,7 +756,7 @@ function TabPill({
             : "bg-blue-600 text-white"
           : tone === "autopilot"
             ? "bg-amber-100 text-amber-800 hover:bg-amber-200"
-            : "bg-white text-slate-700 hover:bg-slate-100"
+            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
       }`}
     >
       <button type="button" onClick={onClick} className="max-w-[140px] truncate">
@@ -825,7 +825,7 @@ function GuideTabBody({
             className={`text-sm leading-relaxed ${
               m.role === "user"
                 ? "ml-8 rounded-xl rounded-br-sm bg-blue-50 px-3 py-2 text-blue-900"
-                : "mr-8 rounded-xl rounded-bl-sm bg-slate-50 px-3 py-2 text-slate-800"
+                : "mr-8 rounded-xl rounded-bl-sm bg-slate-50 dark:bg-slate-900/60 px-3 py-2 text-slate-800 dark:text-slate-200"
             }`}
           >
             {m.role === "assistant" ? (
@@ -836,7 +836,7 @@ function GuideTabBody({
           </div>
         ))}
         {loading && (
-          <div className="mr-8 rounded-xl rounded-bl-sm bg-slate-50 px-3 py-2">
+          <div className="mr-8 rounded-xl rounded-bl-sm bg-slate-50 dark:bg-slate-900/60 px-3 py-2">
             <div className="flex gap-1">
               <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: "0ms" }} />
               <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: "150ms" }} />
@@ -845,7 +845,7 @@ function GuideTabBody({
           </div>
         )}
       </div>
-      <div className="flex gap-2 border-t border-slate-100 px-3 py-3">
+      <div className="flex gap-2 border-t border-slate-100 dark:border-slate-700 px-3 py-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -856,7 +856,7 @@ function GuideTabBody({
             }
           }}
           placeholder={t("pages.aiChatPanel.askPlaceholder")}
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
           disabled={loading}
         />
         <button
@@ -894,11 +894,11 @@ function ContactTabBody({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Top: contact picker + auto-pilot toggle */}
-      <div className="space-y-2 border-b border-slate-100 px-3 py-3">
+      <div className="space-y-2 border-b border-slate-100 dark:border-slate-700 px-3 py-3">
         {tab.contact ? (
-          <div className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2">
+          <div className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 px-3 py-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-slate-900">
+              <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {contactLabel(tab.contact)}
               </p>
               <p className="truncate text-[11px] text-slate-500">
@@ -937,7 +937,7 @@ function ContactTabBody({
                 onChange={(e) => updateTab(tab.tabId, { prompt: e.target.value })}
                 rows={2}
                 placeholder='e.g. "Confirm tomorrow at 3pm" or "Ask about their financing"'
-                className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+                className="w-full resize-y rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
               />
               <button
                 type="button"
@@ -1003,7 +1003,7 @@ function ContactTabBody({
             <div>
               <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">{t("pages.dashFragments.smsThread")} {tab.threadLoading ? "(loading…)" : ""}
               </label>
-              <div ref={threadRef} className="space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/60 p-2 max-h-44 overflow-y-auto">
+              <div ref={threadRef} className="space-y-1.5 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-2 max-h-44 overflow-y-auto">
                 {tab.thread.length === 0 && !tab.threadLoading && (
                   <p className="px-1 py-2 text-center text-[11px] text-slate-400">{t("pages.aiChatPanel.noMessages")}</p>
                 )}
@@ -1020,7 +1020,7 @@ function ContactTabBody({
                             ? badge?.tone === "error"
                               ? "bg-rose-600 text-white"
                               : "bg-blue-600 text-white"
-                            : "bg-white text-slate-800 ring-1 ring-slate-200"
+                            : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 ring-1 ring-slate-200"
                         }`}
                       >
                         <div className="whitespace-pre-wrap">{m.message}</div>
@@ -1091,10 +1091,10 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
         }}
         onFocus={() => setOpen(true)}
         placeholder={t("pages.aiChatPanel.searchContact")}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+        className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
       />
       {open && q.trim() ? (
-        <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+        <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg">
           {loading && <div className="px-3 py-2 text-xs text-slate-500">{t("pages.contactPicker.searching")}</div>}
           {!loading && results.length === 0 && (
             <div className="px-3 py-2 text-xs text-slate-500">{t("pages.aiChatPanel.noMatches")}</div>
@@ -1110,7 +1110,7 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
               }}
               className="block w-full border-b border-slate-50 px-3 py-2 text-left text-sm hover:bg-blue-50 last:border-b-0"
             >
-              <div className="truncate font-medium text-slate-900">{contactLabel(c)}</div>
+              <div className="truncate font-medium text-slate-900 dark:text-slate-100">{contactLabel(c)}</div>
               <div className="truncate text-[11px] text-slate-500">
                 {c.phone || c.email || c.id}
               </div>
@@ -1134,7 +1134,7 @@ function AutoPilotSwitch({
   return (
     <label
       className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
-        checked ? "bg-amber-500 text-white" : "bg-slate-200 text-slate-700"
+        checked ? "bg-amber-500 text-white" : "bg-slate-200 text-slate-700 dark:text-slate-300"
       }`}
       title={t("pages.aiChatPanel.autoPilotHint")}
     >

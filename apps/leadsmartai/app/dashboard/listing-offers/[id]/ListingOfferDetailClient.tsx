@@ -119,10 +119,10 @@ export function ListingOfferDetailClient({
           {" / "}
           <span>{offer.buyer_name ?? "(unknown buyer)"}</span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
           {offer.buyer_name ?? t("pages.listingOfferDetail.incomingOffer")}
         </h1>
-        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
           {offer.buyer_agent_name ? (
             <span>{t("pages.dashFragments.agent")} {offer.buyer_agent_name}
               {offer.buyer_brokerage ? ` · ${offer.buyer_brokerage}` : ""}
@@ -157,7 +157,7 @@ export function ListingOfferDetailClient({
                 label={t("pages.listingOffer.currentPrice")}
                 value={
                   offer.current_price != null && offer.current_price !== offer.offer_price ? (
-                    <span className="font-semibold text-slate-900">
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
                       {formatMoney(offer.current_price, locale)}
                     </span>
                   ) : (
@@ -229,7 +229,7 @@ export function ListingOfferDetailClient({
                   className={`rounded-lg border px-3 py-1.5 text-sm ${
                     offer.status === s
                       ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   } disabled:opacity-60`}
                 >
                   {STATUS_LABEL[s]}
@@ -261,20 +261,20 @@ export function ListingOfferDetailClient({
             <div className="space-y-2">
               <Link
                 href={`/dashboard/transactions/${transaction.id}/offers`}
-                className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="block rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("pages.listingOffer.backToCompare")}
               </Link>
               <a
                 href={`/api/dashboard/listing-offers/${offer.id}/net-to-seller-pdf`}
-                className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="block rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("pages.listingOffer.downloadNetSheetPdf")}
               </a>
               <button
                 type="button"
                 onClick={() => void onDelete()}
-                className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                className="block w-full rounded-lg border border-red-200 bg-white dark:bg-slate-900 px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
                 {t("pages.listingOffer.deleteOffer")}
               </button>
@@ -349,14 +349,14 @@ function CounterTimeline({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("pages.listingOffer.counterHistory")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.listingOffer.counterHistory")}</h2>
         {!adding && !disabled ? (
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             + Add counter
           </button>
@@ -372,53 +372,53 @@ function CounterTimeline({
       {counters.length > 0 ? (
         <ol className="mt-3 space-y-2">
           {counters.map((c) => (
-            <li key={c.id} className="rounded-lg border border-slate-100 p-3 text-sm">
+            <li key={c.id} className="rounded-lg border border-slate-100 dark:border-slate-700 p-3 text-sm">
               <div className="flex items-center justify-between">
-                <div className="font-medium text-slate-900">
+                <div className="font-medium text-slate-900 dark:text-slate-100">
                   #{c.counter_number} ·{" "}
                   {c.direction === "seller_to_buyer" ? t("pages.listingOffer.sellerToBuyer") : t("pages.listingOffer.buyerToSeller")}
                 </div>
                 <div className="text-[11px] text-slate-500">{formatDateTime(c.created_at, locale)}</div>
               </div>
               {c.price != null ? (
-                <div className="mt-1 tabular-nums text-slate-700">{t("pages.dashFragments.price")} {formatMoney(c.price, locale)}</div>
+                <div className="mt-1 tabular-nums text-slate-700 dark:text-slate-300">{t("pages.dashFragments.price")} {formatMoney(c.price, locale)}</div>
               ) : null}
-              {c.notes ? <div className="mt-1 text-slate-600">{c.notes}</div> : null}
+              {c.notes ? <div className="mt-1 text-slate-600 dark:text-slate-400">{c.notes}</div> : null}
             </li>
           ))}
         </ol>
       ) : null}
 
       {adding ? (
-        <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
+        <div className="mt-3 space-y-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.listingOffer.direction")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.listingOffer.direction")}</label>
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value as CounterDirection)}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             >
               <option value="seller_to_buyer">{t("pages.listingOffer.weCountered")}</option>
               <option value="buyer_to_seller">{t("pages.listingOffer.theyCountered")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("pages.listingOffer.newPrice")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.listingOffer.newPrice")}</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="1280000"
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("detail.offerDetail.notes")}</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t("pages.listingOffer.counterNotesPlaceholder")}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             />
           </div>
           {err ? <p className="text-xs text-red-600">{err}</p> : null}
@@ -426,7 +426,7 @@ function CounterTimeline({
             <button
               type="button"
               onClick={() => setAdding(false)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             >{t("pages.listingOfferDetail.cancel")}</button>
             <button
               type="button"
@@ -445,8 +445,8 @@ function CounterTimeline({
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
       <div className="mt-3">{children}</div>
     </div>
   );
@@ -464,14 +464,14 @@ function Detail({
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-800">{value ?? <span className="text-slate-400">—</span>}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-400">—</span>}</dd>
     </div>
   );
 }
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">
+    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300">
       {children}
     </span>
   );

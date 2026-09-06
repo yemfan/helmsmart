@@ -203,7 +203,7 @@ export default function PropertyLookupField({
 
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
         {t("pages.propertyLookup.label")}
       </label>
       <div className="mt-1 flex gap-2">
@@ -222,7 +222,7 @@ export default function PropertyLookupField({
           }}
           placeholder={t("pages.propertyLookup.placeholder")}
           disabled={disabled || busy}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm disabled:bg-slate-50"
+          className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm disabled:bg-slate-50"
         />
         <button
           type="button"
@@ -250,7 +250,7 @@ export default function PropertyLookupField({
           {detailChips(facts, t).map((chip) => (
             <span
               key={chip}
-              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-700"
+              className="rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-2 py-0.5 text-[11px] text-slate-700 dark:text-slate-300"
             >
               {chip}
             </span>

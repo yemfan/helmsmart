@@ -149,10 +149,10 @@ export default function HubSettingsClient() {
   return (
     <div className="max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
           {t("pages.hubSettings.title")}
         </h1>
-        <p className="mt-1 text-sm text-slate-600">{t("pages.hubSettings.blurb")}</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t("pages.hubSettings.blurb")}</p>
       </div>
 
       {fieldError ? (
@@ -162,14 +162,14 @@ export default function HubSettingsClient() {
       ) : null}
 
       {/* ── Live switch. Green on / gray off, right next to its label. ── */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
         <div className="flex items-center gap-3">
           <Toggle
             checked={profile.published}
             onChange={(next) => void saveProfile({ published: next })}
             label={t("pages.hubSettings.publishLabel")}
           />
-          <span className="text-sm font-medium text-slate-900">
+          <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
             {t("pages.hubSettings.publishLabel")}
           </span>
           {profile.published && profile.username ? (
@@ -196,7 +196,7 @@ export default function HubSettingsClient() {
       </div>
 
       {/* ── Identity and words ── */}
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+      <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
         <label className={labelCls}>
           {t("pages.hubSettings.usernameLabel")}
           <div className="mt-1 flex items-center gap-1">
@@ -243,8 +243,8 @@ export default function HubSettingsClient() {
       </div>
 
       {/* ── The agent's own analytics ── */}
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-slate-900">
+      <div className="space-y-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           {t("pages.hubSettings.trackingTitle")}
         </h2>
 

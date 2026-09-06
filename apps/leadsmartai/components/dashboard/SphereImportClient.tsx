@@ -144,8 +144,8 @@ export default function SphereImportClient() {
         {t("pages.sphereImport.backToSphere")}
       </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h1 className="text-lg font-semibold text-slate-900">{t("pages.sphereImport.title")}</h1>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("pages.sphereImport.title")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.sphereImport.sub")}</p>
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
           <strong>Spec §2.8:</strong> anniversary triggers do not fire until you explicitly
@@ -158,7 +158,7 @@ export default function SphereImportClient() {
             type="file"
             accept=".csv,text/csv"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="block text-sm text-slate-700"
+            className="block text-sm text-slate-700 dark:text-slate-300"
           />
           <button
             type="button"
@@ -173,10 +173,10 @@ export default function SphereImportClient() {
       </div>
 
       {rows && (
-        <div className="rounded-xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-100 p-4">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="border-b border-slate-100 dark:border-slate-700 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-sm text-slate-700">
+              <div className="text-sm text-slate-700 dark:text-slate-300">
                 {t("pages.sphereImport.rowsIncluded", { included: stats.included, total: stats.total })}{" "}
                 <strong>{stats.optIns}</strong> {t("pages.dashFragments.anniversaryOptIn")}{skipped > 0 && <> · {skipped} {t("pages.dashFragments.emptyRowsSkipped")}</>}
                 {stats.withErrors > 0 && (
@@ -187,12 +187,12 @@ export default function SphereImportClient() {
                 <button
                   type="button"
                   onClick={() => bulkOptIn(true)}
-                  className="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
+                  className="rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >{t("pages.sphereImport.confirmAll")}</button>
                 <button
                   type="button"
                   onClick={() => bulkOptIn(false)}
-                  className="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
+                  className="rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >{t("pages.sphereImport.uncheckAll")}</button>
                 <button
                   type="button"
@@ -226,7 +226,7 @@ export default function SphereImportClient() {
 
           <div className="max-h-[70vh] overflow-auto">
             <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-slate-50">
+              <thead className="sticky top-0 bg-slate-50 dark:bg-slate-900/60">
                 <tr>
                   <Th>{t("pages.sphereImport.include")}</Th>
                   <Th>{t("pages.sphereImport.name")}</Th>
@@ -237,7 +237,7 @@ export default function SphereImportClient() {
                   <Th>{t("pages.sphereImport.warnings")}</Th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {rows.map((r, i) => (
                   <tr key={i} className={r.errors.length ? "bg-amber-50/40" : ""}>
                     <td className="px-3 py-2">
@@ -250,7 +250,7 @@ export default function SphereImportClient() {
                       />
                     </td>
                     <td className="px-3 py-2">
-                      <div className="font-medium text-slate-900">
+                      <div className="font-medium text-slate-900 dark:text-slate-100">
                         {r.firstName} {r.lastName ?? ""}
                       </div>
                       {r.address && (
@@ -258,7 +258,7 @@ export default function SphereImportClient() {
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-600">
+                      <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-600 dark:text-slate-400">
                         {r.relationshipType.replace("_", " ")}
                       </span>
                       {r.relationshipTag && (
@@ -282,7 +282,7 @@ export default function SphereImportClient() {
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      {r.email && <div className="truncate text-slate-700">{r.email}</div>}
+                      {r.email && <div className="truncate text-slate-700 dark:text-slate-300">{r.email}</div>}
                       {r.phone && <div className="text-[11px] text-slate-500">{r.phone}</div>}
                       {!r.email && !r.phone && <span className="text-slate-400">—</span>}
                     </td>

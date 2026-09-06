@@ -517,7 +517,7 @@ function NewTransactionForm() {
           </Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{headingText}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{headingText}</h1>
         <p className="mt-1 text-sm text-slate-500">{tr("pages.dashFragments.seedsA")} {isListing ? "listing-rep" : "buyer-rep"} {tr("pages.dashFragments.checklistAutofills")}</p>
         {offerBanner ? (
           <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
@@ -527,7 +527,7 @@ function NewTransactionForm() {
         ) : null}
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div ref={uploaderRef}>
           {isListing ? (
             <ContractUploader
@@ -555,7 +555,7 @@ function NewTransactionForm() {
             to a side yet. */}
         {!typePinnedFromUrl ? (
           <div>
-            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.dealType")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.dealType")}</label>
             <div className="mt-1 flex gap-2">
               {(["buyer_rep", "listing_rep", "dual"] as const).map((t) => (
                 <button
@@ -565,7 +565,7 @@ function NewTransactionForm() {
                   className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${
                     transactionType === t
                       ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   }`}
                 >
                   {t === "buyer_rep" ? tr("pages.newTransaction.buyerSide") : t === "listing_rep" ? tr("pages.newTransaction.listingSide") : tr("pages.newTransaction.dualAgent")}
@@ -576,7 +576,7 @@ function NewTransactionForm() {
         ) : null}
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
             {isListing ? tr("pages.newTransaction.seller") : tr("pages.newTransaction.buyer")}
           </label>
           <ContactPicker
@@ -598,7 +598,7 @@ function NewTransactionForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.address")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.address")}</label>
           <AddressAutocomplete
             value={propertyAddress}
             onChange={setPropertyAddress}
@@ -614,7 +614,7 @@ function NewTransactionForm() {
               void applyListPriceFromWarehouse(val.formattedAddress);
             }}
             placeholder={tr("pages.newTransaction.addressHint")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           {addressNote ? (
             <div className="mt-1.5 text-[11px] text-emerald-700">{addressNote}</div>
@@ -623,55 +623,55 @@ function NewTransactionForm() {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="col-span-2">
-            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.city")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.city")}</label>
             <input
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.state")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.state")}</label>
             <input
               value={state}
               onChange={(e) => setStateValue(e.target.value.toUpperCase())}
               maxLength={2}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.zip")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.zip")}</label>
             <input
               value={zip}
               onChange={(e) => setZip(e.target.value)}
               maxLength={10}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
               {isListing ? tr("pages.newTransaction.listPrice") : tr("pages.newTransaction.purchasePrice")}
             </label>
             <input
               type="number"
               value={purchasePrice}
               onChange={(e) => setPurchasePrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
         {isListing && (
           <div>
-            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.listingStart")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.listingStart")}</label>
             <input
               type="date"
               value={listingStartDate}
               onChange={(e) => setListingStartDate(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
             />
             <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.rlaSigned")}</p>
           </div>
@@ -688,22 +688,22 @@ function NewTransactionForm() {
         {(!isListing || fromListing) && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.mutualAcceptance")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.mutualAcceptance")}</label>
               <input
                 type="date"
                 value={mutualAcceptanceDate}
                 onChange={(e) => setMutualAcceptanceDate(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.anchorsDeadlines")}</p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.closingDate")}</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.closingDate")}</label>
               <input
                 type="date"
                 value={closingDate}
                 onChange={(e) => setClosingDate(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.autoFills30")}</p>
             </div>
@@ -711,12 +711,12 @@ function NewTransactionForm() {
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.notes")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{tr("pages.newTransaction.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
 
@@ -725,7 +725,7 @@ function NewTransactionForm() {
         <div className="flex items-center justify-end gap-2 pt-1">
           <Link
             href={breadcrumbHref}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{tr("pages.newTransaction.cancel")}</Link>
           <button
             type="button"

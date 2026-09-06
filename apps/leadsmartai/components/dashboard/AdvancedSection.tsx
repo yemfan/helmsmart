@@ -29,7 +29,7 @@ export default function AdvancedSection({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-t border-slate-100 pt-4">
+    <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

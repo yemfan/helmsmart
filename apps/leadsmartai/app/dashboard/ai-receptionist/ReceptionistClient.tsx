@@ -174,9 +174,9 @@ export default function ReceptionistClient() {
       </div>
 
       {/* The call list */}
-      <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">{t("assistants.receptionist.allCalls")}</h2>
+      <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-4 py-3">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.receptionist.allCalls")}</h2>
           <p className="text-[11px] text-slate-400">{t("assistants.receptionist.doubleClickHint")}</p>
         </div>
         {calls.length === 0 ? (
@@ -189,7 +189,7 @@ export default function ReceptionistClient() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-400">
+                <tr className="border-b border-slate-100 dark:border-slate-700 text-[11px] uppercase tracking-wide text-slate-400">
                   <th className="px-4 py-2 font-medium">{t("assistants.receptionist.columns.when")}</th>
                   <th className="px-4 py-2 font-medium">{t("assistants.receptionist.columns.phone")}</th>
                   <th className="px-4 py-2 font-medium">{t("assistants.receptionist.columns.name")}</th>
@@ -205,19 +205,19 @@ export default function ReceptionistClient() {
                     <tr
                       key={c.id}
                       onDoubleClick={() => setSelected(c)}
-                      className="cursor-pointer border-b border-slate-50 last:border-0 hover:bg-slate-50"
+                      className="cursor-pointer border-b border-slate-50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800"
                       title={t("tips.callDoubleClick")}
                     >
                       <td className="whitespace-nowrap px-4 py-2.5 text-xs text-slate-500">
                         {fmtWhen(c.created_at, locale)}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-2.5 text-xs text-slate-600">
+                      <td className="whitespace-nowrap px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">
                         {callerPhone(c)}
                       </td>
-                      <td className="max-w-[10rem] truncate px-4 py-2.5 font-medium text-slate-900">
+                      <td className="max-w-[10rem] truncate px-4 py-2.5 font-medium text-slate-900 dark:text-slate-100">
                         {c.contact_name ?? t("assistants.unknownCaller")}
                       </td>
-                      <td className="max-w-[18rem] truncate px-4 py-2.5 text-xs text-slate-600">
+                      <td className="max-w-[18rem] truncate px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400">
                         {c.reason}
                       </td>
                       <td className="max-w-[16rem] px-4 py-2.5">
@@ -231,7 +231,7 @@ export default function ReceptionistClient() {
                                 className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                                   a.kind === "callback"
                                     ? "bg-[#D4A017]/10 text-[#8a6a0e]"
-                                    : "bg-slate-100 text-slate-600"
+                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                                 }`}
                               >
                                 {a.label}
@@ -281,15 +281,15 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
       aria-label={t("assistants.receptionist.voicePanel")}
     >
       <div
-        className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+        className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
-          <h2 className="text-base font-semibold text-slate-900">{t("assistants.receptionist.voicePanel")}</h2>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("assistants.receptionist.voicePanel")}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
             aria-label={t("assistants.common.close")}
           >
             <X className="h-4 w-4" />
@@ -297,7 +297,7 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Tabs */}
-        <div className="mb-4 flex gap-1 rounded-lg bg-slate-100 p-1" role="tablist">
+        <div className="mb-4 flex gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 p-1" role="tablist">
           {VOICE_TABS.map((voiceTab) => (
             <button
               key={voiceTab.key}
@@ -307,7 +307,7 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
               onClick={() => setTab(voiceTab.key)}
               className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                 tab === voiceTab.key
-                  ? "bg-white text-[#0B1F44] shadow-sm"
+                  ? "bg-white dark:bg-slate-900 text-[#0B1F44] shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
               }`}
             >
@@ -317,16 +317,16 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {tab === "inbound" && (
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-1 text-sm font-semibold text-slate-900">{t("pages.receptionist.inboundTitle")}</h3>
+          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.receptionist.inboundTitle")}</h3>
             <p className="mb-4 text-xs text-slate-500">{t("pages.receptionist.inboundSub")}</p>
             <ReceptionistVoiceForm />
           </section>
         )}
 
         {tab === "outbound" && (
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-1 text-sm font-semibold text-slate-900">{t("pages.receptionist.outboundTitle")}</h3>
+          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.receptionist.outboundTitle")}</h3>
             <p className="mb-4 text-xs text-slate-500">{t("pages.receptionist.outboundSub")}</p>
             <AssistantCallSettings
               type="receptionist"
@@ -337,8 +337,8 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
         )}
 
         {tab === "missed" && (
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-1 text-sm font-semibold text-slate-900">{t("assistants.receptionist.missedCallSettings")}</h3>
+          <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.receptionist.missedCallSettings")}</h3>
             <p className="mb-4 text-xs text-slate-500">{t("pages.receptionist.automationSub")}</p>
             <MissedCallSettingsForm />
           </section>
@@ -362,12 +362,12 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
       aria-label={t("assistants.receptionist.callDetails")}
     >
       <div
-        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-slate-900">
+            <h3 className="truncate text-base font-semibold text-slate-900 dark:text-slate-100">
               {call.contact_name ?? t("assistants.unknownCaller")}
             </h3>
             <p className="text-xs text-slate-500">
@@ -378,7 +378,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
             aria-label={t("assistants.common.close")}
           >
             <X className="h-4 w-4" />
@@ -395,7 +395,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
         <div className="mt-4 space-y-4 text-sm">
           <section>
             <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.receptionist.callReason")}</h4>
-            <p className="mt-1 whitespace-pre-wrap text-slate-700">{call.reason}</p>
+            <p className="mt-1 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{call.reason}</p>
           </section>
 
           {call.actions.length > 0 && (
@@ -403,7 +403,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
               <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.receptionist.whatItDid")}</h4>
               <ul className="mt-1 space-y-1">
                 {call.actions.map((a, i) => (
-                  <li key={`${a.kind}-${i}`} className="flex items-center gap-2 text-slate-700">
+                  <li key={`${a.kind}-${i}`} className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#D4A017]" />
                     {a.href ? (
                       <Link href={a.href} className="text-[#0B1F44] underline-offset-2 hover:underline">
@@ -422,7 +422,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
             <section>
               <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.dashFragments.textBackSent")}{call.textback_status ? ` · ${call.textback_status}` : ""}
               </h4>
-              <p className="mt-1 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs text-slate-700">
+              <p className="mt-1 whitespace-pre-wrap rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-xs text-slate-700 dark:text-slate-300">
                 {call.textback_message ?? t("pages.receptionist.messageBodyUnavailable")}
               </p>
             </section>
@@ -431,7 +431,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
           {call.callback && (
             <section>
               <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.receptionist.callbackSchedule")}</h4>
-              <p className="mt-1 text-slate-700">
+              <p className="mt-1 text-slate-700 dark:text-slate-300">
                 {call.callback.status === "scheduled" &&
                   `${call.callback.attempts} of 3 attempts placed — next one ${
                     call.callback.next_attempt_at ? `at ${fmtWhen(call.callback.next_attempt_at, locale)}` : "soon"
@@ -446,7 +446,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
           )}
 
           {call.contact_id && (
-            <div className="border-t border-slate-100 pt-3">
+            <div className="border-t border-slate-100 dark:border-slate-700 pt-3">
               <Link
                 href={`/dashboard/leads/${call.contact_id}`}
                 className="text-xs font-medium text-[#0B1F44] underline-offset-2 hover:underline"

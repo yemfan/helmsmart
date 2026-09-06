@@ -135,7 +135,7 @@ function PctInput({
   }, [value]);
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700">{label}</label>
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       <div className="mt-1 flex items-center gap-1">
         <input
           type="number"
@@ -154,7 +154,7 @@ function PctInput({
             if (n === value) return;
             onBlur(Math.max(0, Math.min(max, n)));
           }}
-          className="w-20 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm disabled:opacity-50"
+          className="w-20 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm disabled:opacity-50"
         />
         <span className="text-sm text-slate-500">%</span>
       </div>

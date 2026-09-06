@@ -154,10 +154,10 @@ export default function AISuggestedPropertiesPanel({
   }
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
+    <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
             <Sparkles className="h-4 w-4 text-indigo-500" aria-hidden />{t("pages.aiSuggestedProperties.title")}</h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.aiSuggestedProperties.sub")}</p>
         </div>
@@ -165,7 +165,7 @@ export default function AISuggestedPropertiesPanel({
           type="button"
           onClick={load}
           disabled={state.kind === "loading"}
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
           <RefreshCw className={`h-3 w-3 ${state.kind === "loading" ? "animate-spin" : ""}`} aria-hidden />
           {state.kind === "closed" ? t("common:actions.suggest") : state.kind === "loading" ? t("common:status.thinking") : t("common:actions.refresh")}
@@ -187,10 +187,10 @@ export default function AISuggestedPropertiesPanel({
       {state.kind === "ready" && (
         <>
           <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-slate-500">
-            <span className="rounded bg-slate-50 px-1.5 py-0.5">
+            <span className="rounded bg-slate-50 dark:bg-slate-900/60 px-1.5 py-0.5">
               {t("pages.aiSuggestedProperties.favorites", { count: state.context.favoriteCount })}
             </span>
-            <span className="rounded bg-slate-50 px-1.5 py-0.5">
+            <span className="rounded bg-slate-50 dark:bg-slate-900/60 px-1.5 py-0.5">
               {state.context.savedSearchCount} {t("pages.dashFragments.savedSearches")}</span>
             {state.context.usedLlm && (
               <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-indigo-700">{t("pages.aiSuggestedProperties.rationale")}</span>
@@ -198,7 +198,7 @@ export default function AISuggestedPropertiesPanel({
           </div>
 
           {state.candidates.length === 0 ? (
-            <div className="mt-3 rounded border border-dashed border-slate-200 p-4 text-center text-xs text-slate-500">{t("pages.aiSuggestedProperties.empty")}</div>
+            <div className="mt-3 rounded border border-dashed border-slate-200 dark:border-slate-700 p-4 text-center text-xs text-slate-500">{t("pages.aiSuggestedProperties.empty")}</div>
           ) : (
             <>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -212,7 +212,7 @@ export default function AISuggestedPropertiesPanel({
                         className={`flex w-full items-start gap-3 rounded-lg border p-2 text-left transition-colors ${
                           isPicked
                             ? "border-emerald-300 bg-emerald-50"
-                            : "border-slate-200 bg-white hover:border-slate-300"
+                            : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-300"
                         }`}
                       >
                         {c.listing.photoUrl ? (
@@ -222,18 +222,18 @@ export default function AISuggestedPropertiesPanel({
                             className="h-16 w-16 shrink-0 rounded object-cover"
                           />
                         ) : (
-                          <div className="h-16 w-16 shrink-0 rounded bg-slate-100" />
+                          <div className="h-16 w-16 shrink-0 rounded bg-slate-100 dark:bg-slate-800" />
                         )}
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-semibold text-slate-900">
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                               {money(c.listing.price)}
                             </span>
-                            <span className="rounded bg-slate-100 px-1 py-0.5 text-[9px] font-medium text-slate-600">
+                            <span className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-[9px] font-medium text-slate-600 dark:text-slate-400">
                               {c.score}
                             </span>
                           </div>
-                          <div className="truncate text-xs text-slate-600">
+                          <div className="truncate text-xs text-slate-600 dark:text-slate-400">
                             {c.listing.address}
                           </div>
                           <div className="mt-0.5 text-[10px] text-slate-400">

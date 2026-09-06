@@ -118,7 +118,7 @@ export function ContractUploader(props: Props) {
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-medium text-slate-700">
+      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
         {kind === "listing" ? t("pages.newTransaction.rlaPdf") : t("pages.newTransaction.rpaPdf")}{" "}
         <span className="font-normal text-slate-400">{t("pages.newTransaction.optional")}</span>
       </label>
@@ -140,20 +140,20 @@ export function ContractUploader(props: Props) {
         }}
         className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg border-2 border-dashed px-4 py-3 text-sm transition-colors ${
           dragActive
-            ? "border-slate-700 bg-slate-50"
+            ? "border-slate-700 bg-slate-50 dark:bg-slate-900/60"
             : loading
-              ? "border-slate-300 bg-slate-50"
-              : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+              ? "border-slate-300 dark:border-slate-700 bg-slate-50"
+              : "border-slate-300 hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
         } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
       >
         <div className="min-w-0">
           {loading ? (
-            <div className="text-slate-700">
+            <div className="text-slate-700 dark:text-slate-300">
               <div className="font-medium">{t("pages.newTransaction.reading")}</div>
               <div className="text-[11px] text-slate-500">{t("pages.newTransaction.readingHint")}</div>
             </div>
           ) : justExtracted ? (
-            <div className="text-slate-700">
+            <div className="text-slate-700 dark:text-slate-300">
               <div className="font-medium text-green-700">
                 {t("pages.contractUploader.filledFrom", { filename: justExtracted.filename })}
               </div>
@@ -162,7 +162,7 @@ export function ContractUploader(props: Props) {
               </div>
             </div>
           ) : (
-            <div className="text-slate-700">
+            <div className="text-slate-700 dark:text-slate-300">
               <div className="font-medium">
                 {kind === "listing"
                   ? t("pages.contractUploader.dropASignedListing")

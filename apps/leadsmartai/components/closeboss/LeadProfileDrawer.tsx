@@ -61,10 +61,10 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
         {p && (
           <>
             {/* ── Who they are ── */}
-            <div className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-4 pb-3 pt-4">
+            <div className="border-b border-slate-100 dark:border-slate-700 bg-gradient-to-b from-slate-50 to-white px-4 pb-3 pt-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <h2 className="truncate text-lg font-semibold text-slate-900">{p.name ?? t("pages.leadDrawer.unnamed")}</h2>
+                  <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">{p.name ?? t("pages.leadDrawer.unnamed")}</h2>
                   <p className="text-xs text-slate-500">
                     {[p.source, t("pages.leadDrawer.withYouSince", { date: new Date(p.created_at).toLocaleDateString(locale, { month: "short", day: "numeric" }) })]
                       .filter(Boolean)
@@ -73,17 +73,17 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
                   {p.rating && (
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${p.rating === "hot" ? "bg-red-100 text-red-700" : p.rating === "warm" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${p.rating === "hot" ? "bg-red-100 text-red-700" : p.rating === "warm" ? "bg-amber-100 text-amber-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
                       {p.rating}{typeof p.engagement_score === "number" ? ` · ${p.engagement_score}` : ""}
                     </span>
                   )}
-                  <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("pages.leadDrawer.closePanel")}>
+                  <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700" aria-label={t("pages.leadDrawer.closePanel")}>
                     ✕
                   </button>
                 </div>
               </div>
               {(p.intent || story) && (
-                <p className="mt-2 text-sm text-slate-700">{p.intent ?? story}</p>
+                <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{p.intent ?? story}</p>
               )}
               {p.intent && story && <p className="mt-0.5 text-xs text-slate-500">{story}</p>}
               {p.auto_pilot && (
@@ -96,8 +96,8 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
               {data?.nextBestAction && (
                 <div className="rounded-xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-white p-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">{t("pages.leadDrawer.nextBestAction")}</p>
-                  <p className="mt-0.5 text-sm font-medium text-slate-900">{data.nextBestAction.title}</p>
-                  {data.nextBestAction.reason && <p className="text-xs text-slate-600">{data.nextBestAction.reason}</p>}
+                  <p className="mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100">{data.nextBestAction.title}</p>
+                  {data.nextBestAction.reason && <p className="text-xs text-slate-600 dark:text-slate-400">{data.nextBestAction.reason}</p>}
                   {data.nextBestAction.expected_outcome && (
                     <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {data.nextBestAction.expected_outcome}</p>
                   )}
@@ -111,7 +111,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
               {p.notes && (
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.leadDrawer.whatYouKnow")}</p>
-                  <p className="mt-1 text-sm leading-snug text-slate-700">{p.notes}</p>
+                  <p className="mt-1 text-sm leading-snug text-slate-700 dark:text-slate-300">{p.notes}</p>
                 </div>
               )}
 
@@ -121,7 +121,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.leadDrawer.openFollowUps")}</p>
                   <ul className="mt-1 space-y-1">
                     {data.tasks.map((t) => (
-                      <li key={t.id} className="flex items-center justify-between gap-2 text-sm text-slate-700">
+                      <li key={t.id} className="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-slate-300">
                         <span className="min-w-0 truncate">☐ {t.title}</span>
                         {t.due_at && (
                           <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-slate-400"}`}>
@@ -145,7 +145,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                       <li key={item.id} className="flex gap-2">
                         <span className="mt-0.5 text-sm" aria-hidden>{item.icon}</span>
                         <div className="min-w-0">
-                          <p className="text-sm text-slate-800">{item.title}</p>
+                          <p className="text-sm text-slate-800 dark:text-slate-200">{item.title}</p>
                           {item.detail && <p className="line-clamp-2 text-xs text-slate-500">{item.detail}</p>}
                           <p className="text-[10px] text-slate-400">{fmtAgo(item.at)}</p>
                         </div>
@@ -157,14 +157,14 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
             </div>
 
             {/* ── Footer actions ── */}
-            <div className="mt-auto flex items-center gap-2 border-t border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="mt-auto flex items-center gap-2 border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-4 py-3">
               <Link
                 href={`/dashboard/leads/${encodeURIComponent(p.id)}`}
                 className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
               >{t("pages.leadDrawer.openFullProfile")}</Link>
-              <Link href="/dashboard/inbox" className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("pages.leadDrawer.conversations")}</Link>
+              <Link href="/dashboard/inbox" className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadDrawer.conversations")}</Link>
               {p.phone && (
-                <a href={`tel:${p.phone}`} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("pages.dashFragments.call")} {p.first_name ?? ""}
+                <a href={`tel:${p.phone}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.dashFragments.call")} {p.first_name ?? ""}
                 </a>
               )}
             </div>

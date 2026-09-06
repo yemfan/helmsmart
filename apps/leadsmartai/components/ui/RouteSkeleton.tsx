@@ -17,13 +17,13 @@ export function DashboardPageSkeleton() {
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <Skeleton className="mb-3 h-3 w-20" />
             <Skeleton className="h-7 w-16" />
           </div>
         ))}
       </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="flex items-center gap-3">
@@ -60,8 +60,8 @@ export function ListPageSkeleton() {
 /** Two panes: a conversation list and an empty thread (Conversations). */
 export function ThreadPageSkeleton() {
   return (
-    <div className="flex h-[calc(100dvh-180px)] min-h-[500px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-busy="true" aria-live="polite">
-      <div className="w-full shrink-0 border-r border-slate-200 p-3 lg:max-w-sm">
+    <div className="flex h-[calc(100dvh-180px)] min-h-[500px] overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm" aria-busy="true" aria-live="polite">
+      <div className="w-full shrink-0 border-r border-slate-200 dark:border-slate-700 p-3 lg:max-w-sm">
         <Skeleton className="mb-3 h-4 w-32" />
         <Skeleton className="mb-3 h-8 w-full" />
         <div className="space-y-3">

@@ -96,7 +96,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
       onFocus={(e) => e.currentTarget.select()}
       onClick={(e) => e.currentTarget.select()}
       aria-label={t("pages.smartLinkShare.copyFull")}
-      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-700"
+      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono text-slate-700 dark:text-slate-300"
     />
   ) : null;
 
@@ -111,7 +111,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
       <button type="button" className={btnBase} onClick={shareLink}>
         <Share2 className="h-4 w-4 shrink-0" />{t("pages.smartLinkShare.share")}</button>
       {shareHint && !copied && (
-        <span className="text-xs text-slate-600" role="status">{t("pages.smartLinkShare.copiedNote")}</span>
+        <span className="text-xs text-slate-600 dark:text-slate-400" role="status">{t("pages.smartLinkShare.copiedNote")}</span>
       )}
       </div>
     </div>

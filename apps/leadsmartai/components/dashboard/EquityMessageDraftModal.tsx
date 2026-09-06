@@ -166,30 +166,30 @@ export default function EquityMessageDraftModal(props: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-3 sm:items-center">
-      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-        <header className="flex items-start justify-between gap-3 border-b border-slate-100 p-5">
+      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl">
+        <header className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-700 p-5">
           <div className="min-w-0">
-            <div className="text-base font-semibold text-slate-900">{t("pages.draftModal.equityTitle")}</div>
-            <div className="mt-0.5 truncate text-xs text-slate-600">
+            <div className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.draftModal.equityTitle")}</div>
+            <div className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">
               {props.contactName ?? t("pages.buyerOutreachDraft.contact")} · review and copy — not auto-sent
             </div>
           </div>
           <button
             type="button"
             onClick={props.onClose}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.draftModal.close")}</button>
         </header>
 
-        <div className="border-b border-slate-100 px-5 py-3">
-          <div className="inline-flex rounded-full bg-slate-100 p-0.5">
+        <div className="border-b border-slate-100 dark:border-slate-700 px-5 py-3">
+          <div className="inline-flex rounded-full bg-slate-100 dark:bg-slate-800 p-0.5">
             {(["sms", "email"] as const).map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setChannel(c)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                  channel === c ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
+                  channel === c ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {c === "sms" ? "SMS" : t("pages.drafts.email")}
@@ -201,8 +201,8 @@ export default function EquityMessageDraftModal(props: {
         <div className="space-y-3 p-5">
           {loading ? (
             <div className="space-y-2">
-              <div className="h-4 animate-pulse rounded bg-slate-100" />
-              <div className="h-24 animate-pulse rounded bg-slate-100" />
+              <div className="h-4 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+              <div className="h-24 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
               <p className="text-xs text-slate-500">{t("pages.draftModal.drafting")}</p>
             </div>
           ) : error ? (
@@ -217,7 +217,7 @@ export default function EquityMessageDraftModal(props: {
                   value={draft.sms}
                   onChange={(e) => patch("sms", e.target.value)}
                   rows={5}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-[11px] text-slate-500">
                   {draft.sms.length} / 320 chars
@@ -229,14 +229,14 @@ export default function EquityMessageDraftModal(props: {
                 <input
                   value={draft.emailSubject}
                   onChange={(e) => patch("emailSubject", e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <label className="mt-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.draftModal.emailBody")}</label>
                 <textarea
                   value={draft.emailBody}
                   onChange={(e) => patch("emailBody", e.target.value)}
                   rows={10}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </>
             )
@@ -244,7 +244,7 @@ export default function EquityMessageDraftModal(props: {
         </div>
 
         {draft ? (
-          <footer className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/40 px-5 py-3">
+          <footer className="flex flex-col gap-3 border-t border-slate-100 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/60 px-5 py-3">
             {sendStatus.kind === "blocked" ? (
               <SendBlockedBanner status={sendStatus} onSwitchChannel={() => setChannel(channel === "sms" ? "email" : "sms")} currentChannel={channel} />
             ) : sendStatus.kind === "sent" ? (
@@ -263,7 +263,7 @@ export default function EquityMessageDraftModal(props: {
                   type="button"
                   onClick={copyCurrent}
                   disabled={sendStatus.kind === "sending" || sendStatus.kind === "sent"}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {copied === channel ? t("common:actions.copied_bang") : t("common:actions.copy")}
                 </button>
@@ -324,7 +324,7 @@ function SendBlockedBanner(props: {
         <button
           type="button"
           onClick={props.onSwitchChannel}
-          className="shrink-0 rounded-lg border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-100"
+          className="shrink-0 rounded-lg border border-amber-300 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-100"
         >{t("pages.dashFragments.tryWord")} {otherChannel}
         </button>
       ) : null}

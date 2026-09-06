@@ -41,9 +41,9 @@ export default function GoogleCalendarConnectPanel() {
   if (!status?.configured) return null;
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
+    <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <div>
-        <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+        <p className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
           {status.connected ? tr("calendar.gcal.connected") : tr("calendar.gcal.connect")}
           <ConnectionPill
             state={status.connected ? "connected" : "disconnected"}
@@ -68,7 +68,7 @@ export default function GoogleCalendarConnectPanel() {
             setDisconnecting(false);
           }}
           disabled={disconnecting}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           {disconnecting ? tr("calendar.gcal.working") : tr("calendar.gcal.disconnect")}
         </button>

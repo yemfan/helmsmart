@@ -92,22 +92,22 @@ export default function InboundDeliveryClient({
             {t("pages.inbound.breadcrumbCalendar")}
           </Link>
           {t("pages.inbound.breadcrumbForwarded")}
-          <span className="text-slate-700">{intentLabel}</span>
+          <span className="text-slate-700 dark:text-slate-300">{intentLabel}</span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
           {current.subject ?? t("pages.inbound.noSubject")}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           {t("pages.inbound.forwardedAt", {
             when: new Date(current.created_at).toLocaleString(locale),
           })}{" "}
-          <span className="font-medium text-slate-700">{intentLabel}</span>
+          <span className="font-medium text-slate-700 dark:text-slate-300">{intentLabel}</span>
         </p>
       </div>
 
       {/* ── Envelope ─────────────────────────────────────────────── */}
-      <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-700">{t("pages.inbound.email")}</h2>
+      <section className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.inbound.email")}</h2>
         <dl className="grid gap-3 text-sm sm:grid-cols-[120px_1fr]">
           <Field label={t("pages.inbound.from")} value={current.from_header} />
           <Field label="To" value={current.to_header} />
@@ -123,8 +123,8 @@ export default function InboundDeliveryClient({
         </dl>
         {current.text_preview && (
           <details className="group">
-            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.inboundDelivery.showBody")}</summary>
-            <pre className="mt-2 max-h-80 overflow-y-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
+            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900">{t("pages.inboundDelivery.showBody")}</summary>
+            <pre className="mt-2 max-h-80 overflow-y-auto whitespace-pre-wrap rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
               {current.text_preview}
             </pre>
           </details>
@@ -132,9 +132,9 @@ export default function InboundDeliveryClient({
       </section>
 
       {/* ── Extraction ───────────────────────────────────────────── */}
-      <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">{t("pages.inboundDelivery.aiExtraction")}</h2>
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.inboundDelivery.aiExtraction")}</h2>
           <ExtractionStatusPill status={current.extraction_status} />
         </div>
 
@@ -151,7 +151,7 @@ export default function InboundDeliveryClient({
               type="button"
               onClick={runExtraction}
               disabled={retrying}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               {retrying ? t("pages.inbound.retrying") : t("pages.inbound.retry")}
             </button>
@@ -163,7 +163,7 @@ export default function InboundDeliveryClient({
               type="button"
               onClick={runExtraction}
               disabled={retrying}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               {retrying ? t("pages.inbound.running") : t("pages.inbound.run")}
             </button>
@@ -208,7 +208,7 @@ export default function InboundDeliveryClient({
               className={`rounded-lg px-3 py-1.5 font-medium ${
                 useSuggestedContact
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-blue-700 ring-1 ring-blue-200 hover:bg-blue-100"
+                  : "bg-white dark:bg-slate-900 text-blue-700 ring-1 ring-blue-200 hover:bg-blue-100"
               }`}
             >{t("pages.inboundDelivery.useThisContact")}</button>
             <button
@@ -217,7 +217,7 @@ export default function InboundDeliveryClient({
               className={`rounded-lg px-3 py-1.5 font-medium ${
                 !useSuggestedContact
                   ? "bg-slate-700 text-white"
-                  : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >{t("pages.inboundDelivery.differentPerson")}</button>
             <Link
@@ -266,7 +266,7 @@ function Field({ label, value }: { label: string; value: string | null }) {
       <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
         {label}
       </dt>
-      <dd className="text-sm text-slate-800">{value ?? "—"}</dd>
+      <dd className="text-sm text-slate-800 dark:text-slate-200">{value ?? "—"}</dd>
     </>
   );
 }

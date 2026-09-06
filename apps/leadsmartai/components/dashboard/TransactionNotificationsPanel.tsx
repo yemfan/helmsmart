@@ -77,7 +77,7 @@ export function TransactionNotificationsPanel() {
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.dailyDigest")}</div>
+          <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.transactionNotifications.dailyDigest")}</div>
           <p className="mt-0.5 text-xs text-slate-500">
             Email summary of overdue + upcoming-72h transaction tasks. Sent at ~8am Pacific.
           </p>
@@ -89,9 +89,9 @@ export function TransactionNotificationsPanel() {
         />
       </div>
 
-      <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
+      <div className="flex items-start justify-between gap-4 border-t border-slate-100 dark:border-slate-700 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.frequency")}</div>
+          <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.transactionNotifications.frequency")}</div>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.frequencyHint")}</p>
         </div>
         <select
@@ -102,7 +102,7 @@ export function TransactionNotificationsPanel() {
             })
           }
           disabled={saving || !prefs.transactionDigestEnabled}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm disabled:opacity-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm disabled:opacity-50"
         >
           <option value="daily">{t("pages.transactionNotifications.daily")}</option>
           <option value="weekly">{t("pages.transactionNotifications.weeklyMonday")}</option>
@@ -110,9 +110,9 @@ export function TransactionNotificationsPanel() {
         </select>
       </div>
 
-      <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
+      <div className="flex items-start justify-between gap-4 border-t border-slate-100 dark:border-slate-700 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.wireFraud")}</div>
+          <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.transactionNotifications.wireFraud")}</div>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.wireFraudHint")}</p>
         </div>
         <Toggle
@@ -122,9 +122,9 @@ export function TransactionNotificationsPanel() {
         />
       </div>
 
-      <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
+      <div className="flex items-start justify-between gap-4 border-t border-slate-100 dark:border-slate-700 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.growthDigest")}</div>
+          <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.transactionNotifications.growthDigest")}</div>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.growthDigestHint")}</p>
         </div>
         <Toggle
@@ -167,7 +167,7 @@ function Toggle({
       }`}
     >
       <span
-        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+        className={`inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${
           checked ? "translate-x-5" : "translate-x-0.5"
         }`}
       />

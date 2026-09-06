@@ -41,7 +41,7 @@ export function CancelSubscriptionButton({ planType }: Props) {
         type="button"
         disabled={loading}
         onClick={() => void openPortal()}
-        className="inline-flex items-center justify-center rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+        className="inline-flex items-center justify-center rounded-xl border border-red-200 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
       >
         {loading ? "Loading..." : "Cancel Subscription"}
       </button>

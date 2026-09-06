@@ -151,10 +151,10 @@ export function ShowingDetailClient({
           {" / "}
           <span>{showing.property_address}</span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
           {showing.property_address}
         </h1>
-        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
           <span>{formatDateTime(showing.scheduled_at, locale)}</span>
           <span className="text-slate-400">·</span>
           <span>{t("pages.dashFragments.withWord")}{" "}
@@ -244,7 +244,7 @@ export function ShowingDetailClient({
                   className={`rounded-lg border px-3 py-1.5 text-sm ${
                     status === s
                       ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   } disabled:opacity-60`}
                 >
                   {STATUS_LABEL[s]}
@@ -303,7 +303,7 @@ export function ShowingDetailClient({
                 })}
                 className={`block rounded-lg border px-3 py-2 text-sm ${
                   showing.listing_agent_email
-                    ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    ? "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                     : "border-slate-200 bg-slate-50 text-slate-400 pointer-events-none"
                 }`}
               >
@@ -318,14 +318,14 @@ export function ShowingDetailClient({
                   subject: `Your showing at ${showing.property_address}`,
                   body: buyerSummaryDraft,
                 })}
-                className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="block rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("pages.showingDetail.sendSummaryToBuyer")}
               </a>
               <button
                 type="button"
                 onClick={() => void onDelete()}
-                className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                className="block w-full rounded-lg border border-red-200 bg-white dark:bg-slate-900 px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
                 {t("pages.showingDetail.deleteShowing")}
               </button>
@@ -341,9 +341,9 @@ export function ShowingDetailClient({
                   <li key={s.id}>
                     <Link
                       href={`/dashboard/showings/${s.id}`}
-                      className="block rounded-lg border border-slate-100 p-2 hover:bg-slate-50"
+                      className="block rounded-lg border border-slate-100 dark:border-slate-700 p-2 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
-                      <div className="font-medium text-slate-900">{s.property_address}</div>
+                      <div className="font-medium text-slate-900 dark:text-slate-100">{s.property_address}</div>
                       <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500">
                         <span>{formatDateTime(s.scheduled_at, locale)}</span>
                         {s.feedback_reaction ? (
@@ -383,7 +383,7 @@ function FeedbackEditor({
   const { t } = useTranslation("dashboard");
   if (disabled) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
+      <div className="rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-4 text-center text-sm text-slate-500">
         {t("pages.showingDetail.feedbackBefore")} <strong>{t("pages.showingDetail.attended")}</strong>{t("pages.showingDetail.feedbackAfter")}
       </div>
     );
@@ -392,7 +392,7 @@ function FeedbackEditor({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.overallReaction")}</label>
+        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.showingDetail.overallReaction")}</label>
         <div className="mt-1 flex flex-wrap gap-2">
           {(Object.keys(REACTION_LABEL) as OverallReaction[]).map((r) => {
             const selected = feedback?.overall_reaction === r;
@@ -403,7 +403,7 @@ function FeedbackEditor({
                 type="button"
                 onClick={() => onChange({ overall_reaction: selected ? null : r })}
                 disabled={saving}
-                className={`rounded-lg border px-3 py-1.5 text-sm ${selected ? conf.tone : "border-slate-200 bg-white hover:bg-slate-50"} disabled:opacity-60`}
+                className={`rounded-lg border px-3 py-1.5 text-sm ${selected ? conf.tone : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"} disabled:opacity-60`}
               >
                 <span className="mr-1">{conf.emoji}</span>
                 {t(conf.labelKey)}
@@ -414,7 +414,7 @@ function FeedbackEditor({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.rating")}</label>
+        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.showingDetail.rating")}</label>
         <div className="mt-1 flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => {
             const active = (feedback?.rating ?? 0) >= n;
@@ -444,39 +444,39 @@ function FeedbackEditor({
 
       <div className="grid gap-3 md:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.whatWorked")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.showingDetail.whatWorked")}</label>
           <textarea
             defaultValue={feedback?.pros ?? ""}
             onBlur={(e) => onChange({ pros: e.target.value.trim() || null })}
             rows={3}
             placeholder={t("pages.showingDetail.whatWorkedPlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.concerns")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.showingDetail.concerns")}</label>
           <textarea
             defaultValue={feedback?.cons ?? ""}
             onBlur={(e) => onChange({ cons: e.target.value.trim() || null })}
             rows={3}
             placeholder={t("pages.showingDetail.concernsPlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.internalNotes")}</label>
+        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.showingDetail.internalNotes")}</label>
         <textarea
           defaultValue={feedback?.notes ?? ""}
           onBlur={(e) => onChange({ notes: e.target.value.trim() || null })}
           rows={2}
           placeholder={t("pages.showingDetail.internalNotesPlaceholder")}
-          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
         />
       </div>
 
-      <div className="flex flex-wrap gap-4 border-t border-slate-100 pt-3">
+      <div className="flex flex-wrap gap-4 border-t border-slate-100 dark:border-slate-700 pt-3">
         <ConcernCheckbox
           label={t("pages.showingDetail.wouldOffer")}
           checked={feedback?.would_offer ?? false}
@@ -538,8 +538,8 @@ function ConcernCheckbox({
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
       <div className="mt-3">{children}</div>
     </div>
   );
@@ -557,7 +557,7 @@ function Detail({
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-800">{value ?? <span className="text-slate-400">—</span>}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-400">—</span>}</dd>
     </div>
   );
 }

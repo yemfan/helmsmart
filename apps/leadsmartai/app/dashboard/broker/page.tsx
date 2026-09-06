@@ -44,28 +44,28 @@ export default async function BrokerDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Link
           href="/dashboard/leads"
-          className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 hover:border-brand-primary/40 hover:shadow-md transition"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 hover:border-brand-primary/40 hover:shadow-md transition"
         >
           <div className="ui-card-subtitle text-slate-500">{t("pages.brokerHome.teamLeads", { ns: "dashboard" })}</div>
           <div className="mt-2 text-3xl font-extrabold text-brand-text">{totalLeads}</div>
         </Link>
         <Link
           href="/dashboard/leads?filter=hot"
-          className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 hover:border-brand-accent/40 hover:shadow-md transition"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 hover:border-brand-accent/40 hover:shadow-md transition"
         >
           <div className="ui-card-subtitle text-slate-500">{t("pages.brokerHome.hotLeads", { ns: "dashboard" })}</div>
           <div className="mt-2 text-3xl font-extrabold text-brand-text">{hotLeads}</div>
         </Link>
         <Link
           href="/dashboard/growth"
-          className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 hover:border-emerald-300/60 hover:shadow-md transition"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 hover:border-emerald-300/60 hover:shadow-md transition"
         >
           <div className="ui-card-subtitle text-slate-500">{t("pages.brokerHome.growthSeo", { ns: "dashboard" })}</div>
           <div className="mt-2 text-sm font-semibold text-brand-text">{t("pages.brokerHome.growthSeoCta", { ns: "dashboard" })}</div>
         </Link>
         <Link
           href="/dashboard/marketing"
-          className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 hover:border-violet-300/60 hover:shadow-md transition"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-5 hover:border-violet-300/60 hover:shadow-md transition"
         >
           <div className="ui-card-subtitle text-slate-500">{t("pages.brokerHome.marketing", { ns: "dashboard" })}</div>
           <div className="mt-2 text-sm font-semibold text-brand-text">{t("pages.brokerHome.marketingCta", { ns: "dashboard" })}</div>
@@ -75,14 +75,14 @@ export default async function BrokerDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link
           href="/dashboard/opportunities"
-          className="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-brand-primary/40 hover:shadow-md"
+          className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm transition hover:border-brand-primary/40 hover:shadow-md"
         >
           <span className="text-sm font-semibold text-brand-text">{t("pages.brokerHome.marketplace", { ns: "dashboard" })}</span>
           <span className="mt-1 text-xs text-brand-text/80">{t("pages.brokerHome.marketplaceHint", { ns: "dashboard" })}</span>
         </Link>
         <Link
           href="/dashboard/overview"
-          className="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-slate-300 hover:shadow-md"
+          className="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm transition hover:border-slate-300 hover:shadow-md"
         >
           <span className="text-sm font-semibold text-brand-text">{t("pages.brokerHome.agentOverview", { ns: "dashboard" })}</span>
           <span className="mt-1 text-xs text-brand-text/80">
@@ -91,11 +91,11 @@ export default async function BrokerDashboardPage() {
         </Link>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-xs text-slate-600">
-        {t("pages.brokerHome.plan", { ns: "dashboard" })} <span className="font-semibold text-slate-900">{String(usage.planType ?? "").toUpperCase()}</span>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/60 px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
+        {t("pages.brokerHome.plan", { ns: "dashboard" })} <span className="font-semibold text-slate-900 dark:text-slate-100">{String(usage.planType ?? "").toUpperCase()}</span>
         {" · "}
         {t("pages.brokerHome.leadUsage", { ns: "dashboard" })}{" "}
-        <span className="font-semibold text-slate-900">
+        <span className="font-semibold text-slate-900 dark:text-slate-100">
           {usage.used}
           {Number.isFinite(usage.limit) ? ` / ${usage.limit}` : ""}
         </span>

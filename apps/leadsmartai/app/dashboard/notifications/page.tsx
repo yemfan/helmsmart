@@ -59,52 +59,52 @@ export default async function NotificationsPage() {
 
         {/* Needs you today — the reminder counts, each a link to where the work is. */}
         <aside className="space-y-3">
-          <h2 className="text-sm font-semibold text-slate-900">{tr("notifications.feed.needsYou")}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{tr("notifications.feed.needsYou")}</h2>
           <ul className="space-y-2">
             <li>
-              <Link href="/dashboard/tasks" className="flex items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-3 text-sm shadow-sm hover:bg-slate-50">
+              <Link href="/dashboard/tasks" className="flex items-center gap-3 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
                   <ListTodo className="h-4 w-4" strokeWidth={2} aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-slate-900">{tr("notifications.overdueTasks")}</span>
+                  <span className="block font-medium text-slate-900 dark:text-slate-100">{tr("notifications.overdueTasks")}</span>
                   <span className="block text-xs text-slate-500">
                     {overdueTasks.length > 0 ? overdueTasks.slice(0, 2).map((t) => t.title).join(" · ") : tr("notifications.feed.none")}
                   </span>
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-slate-700">{overdueTasks.length}</span>
+                <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-300">{overdueTasks.length}</span>
               </Link>
             </li>
             <li>
-              <Link href="/dashboard/contacts" className="flex items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-3 text-sm shadow-sm hover:bg-slate-50">
+              <Link href="/dashboard/contacts" className="flex items-center gap-3 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-800">
                   <PhoneCall className="h-4 w-4" strokeWidth={2} aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-slate-900">{tr("notifications.followUps")}</span>
+                  <span className="block font-medium text-slate-900 dark:text-slate-100">{tr("notifications.followUps")}</span>
                   <span className="block text-xs text-slate-500">
                     {followUps.length > 0
                       ? followUps.slice(0, 2).map((f) => f.lead_name ?? tr("pages.notifications.lead")).join(" · ")
                       : tr("notifications.feed.none")}
                   </span>
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-slate-700">{followUps.length}</span>
+                <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-300">{followUps.length}</span>
               </Link>
             </li>
             <li>
-              <Link href="/dashboard/calendar" className="flex items-center gap-3 rounded-xl border border-slate-200/90 bg-white px-3 py-3 text-sm shadow-sm hover:bg-slate-50">
+              <Link href="/dashboard/calendar" className="flex items-center gap-3 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
                   <CalendarDays className="h-4 w-4" strokeWidth={2} aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-slate-900">{tr("pages.notifications.appointments")}</span>
+                  <span className="block font-medium text-slate-900 dark:text-slate-100">{tr("pages.notifications.appointments")}</span>
                   <span className="block text-xs text-slate-500">
                     {appointments.length > 0 && appointments[0].starts_at
                       ? `${appointments[0].title} · ${new Date(appointments[0].starts_at).toLocaleString(locale, { weekday: "short", hour: "numeric", minute: "2-digit" })}`
                       : tr("notifications.feed.none")}
                   </span>
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-slate-700">{appointments.length}</span>
+                <span className="text-sm font-semibold tabular-nums text-slate-700 dark:text-slate-300">{appointments.length}</span>
               </Link>
             </li>
           </ul>

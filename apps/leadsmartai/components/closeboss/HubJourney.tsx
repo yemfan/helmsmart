@@ -61,7 +61,7 @@ export function HubJourney({ contactId }: { contactId: string | null }) {
         {t("pages.leadDrawer.howTheyFoundYou")}
       </p>
       {views > 0 ? (
-        <p className="mt-1 text-sm leading-snug text-slate-700">{readLine}</p>
+        <p className="mt-1 text-sm leading-snug text-slate-700 dark:text-slate-300">{readLine}</p>
       ) : (
         <p className="mt-1 text-sm leading-snug text-slate-500">
           {t("pages.leadDrawer.journeyStillBrowsing")}

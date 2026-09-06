@@ -100,7 +100,7 @@ export function OpenHousesListClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.openHouses.heading")}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouses.heading")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.openHouses.intro")}</p>
         </div>
         <Link
@@ -116,14 +116,14 @@ export function OpenHousesListClient({
         <Stat label={t("pages.openHouses.optedIn")} value={String(stats.totalConsent)} tone="green" />
       </div>
 
-      <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
+      <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-0.5 text-xs">
         {(["upcoming", "past", "all"] as const).map((f) => (
           <button
             key={f}
             type="button"
             onClick={() => setFilter(f)}
             className={`rounded-md px-3 py-1.5 font-medium transition-colors ${
-              filter === f ? "bg-white text-slate-900 shadow" : "text-slate-600 hover:text-slate-900"
+              filter === f ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             {f === "upcoming" ? t("pages.openHousesList.upcoming") : f === "past" ? t("pages.openHouses.tabPast") : t("pages.openHouses.tabAll")}
@@ -131,10 +131,10 @@ export function OpenHousesListClient({
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-xs text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colWhen")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colProperty")}</th>
@@ -144,12 +144,12 @@ export function OpenHousesListClient({
                 <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colStatus")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filtered.map((oh) => (
-                <tr key={oh.id} className="hover:bg-slate-50">
+                <tr key={oh.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
                   <td className="whitespace-nowrap px-3 py-2">
                     <Link href={`/dashboard/open-houses/${oh.id}`} className="block">
-                      <div className="font-medium text-slate-900">{formatDate(oh.start_at, locale)}</div>
+                      <div className="font-medium text-slate-900 dark:text-slate-100">{formatDate(oh.start_at, locale)}</div>
                       <div className="text-[11px] text-slate-500">
                         {formatTimeRange(oh.start_at, oh.end_at, locale)}
                       </div>
@@ -159,7 +159,7 @@ export function OpenHousesListClient({
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/dashboard/open-houses/${oh.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                       >
                         {oh.property_address}
                       </Link>
@@ -178,7 +178,7 @@ export function OpenHousesListClient({
                       </div>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                     {oh.visitor_total}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">
@@ -188,7 +188,7 @@ export function OpenHousesListClient({
                       <span className="text-slate-400">0</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                     {oh.visitor_with_consent}
                   </td>
                   <td className="px-3 py-2">
@@ -242,7 +242,7 @@ function Stat({
           ? "text-red-600"
           : "text-slate-900";
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`text-xl font-semibold ${color}`}>{value}</div>
     </div>

@@ -29,7 +29,7 @@ export default async function DraftsPage() {
             <Inbox className="h-5 w-5" strokeWidth={2} aria-hidden />
           </span>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {t("pages.drafts.heading", { ns: "dashboard" })}
               {pending > 0 && (
                 <span className="ml-3 rounded-full bg-amber-100 px-2.5 py-0.5 align-middle text-xs font-semibold text-amber-800">
@@ -37,14 +37,14 @@ export default async function DraftsPage() {
                 </span>
               )}
             </h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               {t("pages.drafts.intro", { ns: "dashboard" })}
             </p>
           </div>
         </div>
         <Link
           href="/dashboard/drafts/activity"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           <Activity className="h-4 w-4" aria-hidden />
           {t("pages.drafts.activityLog", { ns: "dashboard" })}

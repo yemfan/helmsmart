@@ -94,7 +94,7 @@ export default function CoordinatorClient() {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="h-72 animate-pulse rounded-2xl bg-slate-100"
+            className="h-72 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800"
             aria-hidden
           />
         ))}
@@ -175,7 +175,7 @@ function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
             className={`rounded-full border px-3 py-1 text-xs font-medium ${
               role === r
                 ? "border-slate-900 bg-slate-900 text-white"
-                : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300"
             }`}
           >
             {t(ROLE_KEYS[r])}
@@ -184,11 +184,11 @@ function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
       </div>
 
       {board.totals.transactionCount === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm text-slate-600">
-          <p className="text-base font-semibold text-slate-900">{t("pages.coordinator.noDeals")}</p>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-6 py-12 text-center text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.coordinator.noDeals")}</p>
           <p className="mt-1">
             {t("pages.coordinator.noDealsHint")}{" "}
-            <Link href="/dashboard/transactions" className="font-semibold text-slate-700 underline">
+            <Link href="/dashboard/transactions" className="font-semibold text-slate-700 dark:text-slate-300 underline">
               {t("pages.coordinator.transactions")}
             </Link>
           </p>
@@ -224,9 +224,9 @@ function KpiStrip({ totals }: { totals: CoordinatorBoard["totals"] }) {
     },
   ];
   return (
-    <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200">
+    <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200">
       {cells.map((c) => (
-        <div key={c.label} className="bg-white px-4 py-3">
+        <div key={c.label} className="bg-white dark:bg-slate-900 px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             {c.label}
           </p>
@@ -268,12 +268,12 @@ function StageColumn({ column }: { column: CoordinatorStageColumn }) {
   const overdueCards = column.cards.filter((c) => c.byStage[column.stage]?.overdueCount > 0).length;
 
   return (
-    <section className="flex min-h-[200px] flex-col rounded-2xl border border-slate-200 bg-slate-50">
-      <header className="flex items-center justify-between border-b border-slate-200 px-3 py-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-700">
+    <section className="flex min-h-[200px] flex-col rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60">
+      <header className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-3 py-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300">
           {column.label}
         </h2>
-        <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold tabular-nums text-slate-700">
+        <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold tabular-nums text-slate-700 dark:text-slate-300">
           {column.cards.length}
         </span>
       </header>
@@ -281,7 +281,7 @@ function StageColumn({ column }: { column: CoordinatorStageColumn }) {
       {/* Bottleneck signal — only render when at least one card has a
           dated deadline. Negative avg = column is running overdue. */}
       {avg != null ? (
-        <div className="flex items-center justify-between border-b border-slate-200/70 px-3 py-1.5 text-[10px]">
+        <div className="flex items-center justify-between border-b border-slate-200/70 dark:border-slate-700 px-3 py-1.5 text-[10px]">
           <span className={avg < 0 ? "font-semibold text-rose-700" : "text-slate-500"}>
             {avg < 0
               ? t("pages.coordinator.avgPast", { days: -avg })
@@ -329,12 +329,12 @@ function CardForStage({
   return (
     <Link
       href={`/dashboard/transactions/${encodeURIComponent(txn.id)}`}
-      className={`block rounded-xl border bg-white px-3 py-2.5 shadow-sm transition hover:shadow ${
-        isPastDue ? "border-rose-200" : "border-slate-200"
+      className={`block rounded-xl border bg-white dark:bg-slate-900 px-3 py-2.5 shadow-sm transition hover:shadow ${
+        isPastDue ? "border-rose-200" : "border-slate-200 dark:border-slate-700"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="line-clamp-2 text-xs font-semibold text-slate-900">
+        <p className="line-clamp-2 text-xs font-semibold text-slate-900 dark:text-slate-100">
           {txn.property_address}
         </p>
         {isPastDue ? (
@@ -353,7 +353,7 @@ function CardForStage({
       </div>
 
       {stageMetrics.nextUpTitle ? (
-        <p className="mt-2 line-clamp-2 text-[11px] text-slate-700">
+        <p className="mt-2 line-clamp-2 text-[11px] text-slate-700 dark:text-slate-300">
           <span className="font-semibold">{t("pages.coordinator.next")}</span> {stageMetrics.nextUpTitle}
         </p>
       ) : null}
@@ -370,7 +370,7 @@ function CardForStage({
         </span>
         {dueLabel ? (
           <span
-            className={`font-semibold ${isPastDue ? "text-rose-700" : "text-slate-700"}`}
+            className={`font-semibold ${isPastDue ? "text-rose-700" : "text-slate-700 dark:text-slate-300"}`}
           >
             {dueLabel}
           </span>

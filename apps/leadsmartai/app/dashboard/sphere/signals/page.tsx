@@ -26,10 +26,10 @@ export default async function SignalsPage() {
           <Sparkles className="h-5 w-5" strokeWidth={2} aria-hidden />
         </span>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             {t("pages.sphereSignals.heading", { ns: "dashboard" })}
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
             {t("pages.sphereSignals.intro", { ns: "dashboard" })}
           </p>
         </div>

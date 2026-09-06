@@ -252,8 +252,8 @@ export default function ComparisonReportBuilderClient({
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">{t("pages.comparisonReport.heading")}</h1>
-        <p className="mt-2 text-slate-600">{t("pages.comparisonBuilder.intro")}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{t("pages.comparisonReport.heading")}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">{t("pages.comparisonBuilder.intro")}</p>
         {isFree ? (
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             {t("pages.comparisonBuilder.requiresBefore")} <strong>Pro</strong> or <strong>Premium</strong>{t("pages.comparisonBuilder.requiresAfter")}{" "}
@@ -264,18 +264,18 @@ export default function ComparisonReportBuilderClient({
 
       <form onSubmit={onSubmit} className="space-y-8">
         <div>
-          <label className="block text-sm font-medium text-slate-700">{t("pages.comparisonReport.clientName")}</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{t("pages.comparisonReport.clientName")}</label>
           <input
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
-            className="mt-1 w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full max-w-md rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
             placeholder={t("pages.comparisonReport.clientPlaceholder")}
           />
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">{t("pages.comparisonReport.properties")}</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("pages.comparisonReport.properties")}</h2>
             <button
               type="button"
               onClick={addRow}
@@ -286,14 +286,14 @@ export default function ComparisonReportBuilderClient({
           </div>
 
           {rows.map((row, idx) => (
-            <div key={row.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={row.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-800">{t("pages.dashFragments.property")} {idx + 1}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{t("pages.dashFragments.property")} {idx + 1}</span>
                 {rows.length > 2 ? (
                   <button
                     type="button"
                     onClick={() => removeRow(row.id)}
-                    className="rounded-lg border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                    className="rounded-lg border border-red-200 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
                   >{t("pages.comparisonBuilder.remove")}</button>
                 ) : null}
               </div>
@@ -326,7 +326,7 @@ export default function ComparisonReportBuilderClient({
                         );
                       }
                     }}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                     placeholder={t("pages.comparisonReport.addressPlaceholder")}
                   />
                   {detect[row.id] && (
@@ -365,7 +365,7 @@ export default function ComparisonReportBuilderClient({
                     min={1}
                     value={row.price}
                     onChange={(e) => updateRow(row.id, { price: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
@@ -376,7 +376,7 @@ export default function ComparisonReportBuilderClient({
                     min={1}
                     value={row.sqft}
                     onChange={(e) => updateRow(row.id, { sqft: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
@@ -386,7 +386,7 @@ export default function ComparisonReportBuilderClient({
                     min={0}
                     value={row.beds}
                     onChange={(e) => updateRow(row.id, { beds: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
@@ -397,7 +397,7 @@ export default function ComparisonReportBuilderClient({
                     step={0.5}
                     value={row.baths}
                     onChange={(e) => updateRow(row.id, { baths: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
@@ -407,7 +407,7 @@ export default function ComparisonReportBuilderClient({
                     min={0}
                     value={row.rent}
                     onChange={(e) => updateRow(row.id, { rent: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm"
                   />
                 </label>
               </div>

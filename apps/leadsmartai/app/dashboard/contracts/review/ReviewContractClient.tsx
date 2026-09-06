@@ -68,15 +68,15 @@ export function ReviewContractClient() {
           <Link href="/dashboard/transactions" className="hover:underline">{t("pages.reviewContract.transactions")}</Link>
           {` / ${t("pages.contractReview.breadcrumb")}`}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.contractReview.heading")}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("pages.contractReview.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.contractReviewBody")}{" "}
           <strong>{t("pages.contractReview.disclaimer")}</strong>
         </p>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.contractReview.contractPdf")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.contractReview.contractPdf")}</label>
           <input
             ref={fileRef}
             type="file"
@@ -93,13 +93,13 @@ export function ReviewContractClient() {
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={reviewing}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               📄 {t("pages.contractReview.choosePdf")}
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (
-                <>{t("pages.reviewContract.selected")}<strong className="font-medium text-slate-700">{pdfName}</strong>
+                <>{t("pages.reviewContract.selected")}<strong className="font-medium text-slate-700 dark:text-slate-300">{pdfName}</strong>
                 </>
               ) : (
                 <>{t("pages.contractReview.maxSize")}</>
@@ -110,19 +110,19 @@ export function ReviewContractClient() {
 
         <div className="relative">
           <div className="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden />
-          <span className="relative inline-block bg-white px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
             Or
           </span>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">{t("pages.contractReview.pasteHeading")}</label>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.contractReview.pasteHeading")}</label>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={8}
             placeholder={t("pages.contractReview.pastePlaceholder")}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs leading-relaxed"
+            className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 font-mono text-xs leading-relaxed"
           />
         </div>
 
@@ -146,9 +146,9 @@ export function ReviewContractClient() {
 
       {review ? (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.summary")}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-700">{review.summary}</p>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.contractReview.summary")}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{review.summary}</p>
             {review.parties || review.property ? (
               <p className="mt-2 text-xs text-slate-500">
                 {review.property ? <>📍 {review.property} </> : null}
@@ -158,18 +158,18 @@ export function ReviewContractClient() {
           </div>
 
           {review.flags.length > 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.flagsToReview")}{review.flags.length})</h2>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.dashFragments.flagsToReview")}{review.flags.length})</h2>
               <ul className="mt-2 space-y-2">
                 {review.flags.map((f, i) => (
-                  <li key={i} className="rounded-lg border border-slate-100 p-3">
+                  <li key={i} className="rounded-lg border border-slate-100 dark:border-slate-700 p-3">
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${SEV_BADGE[f.severity]}`}>
                         {f.severity}
                       </span>
-                      <span className="text-sm font-medium text-slate-900">{f.title}</span>
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{f.title}</span>
                     </div>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">{f.detail}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{f.detail}</p>
                   </li>
                 ))}
               </ul>
@@ -177,13 +177,13 @@ export function ReviewContractClient() {
           ) : null}
 
           {review.deadlines.length > 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.dates")}</h2>
-              <ul className="mt-2 divide-y divide-slate-100 text-sm">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.contractReview.dates")}</h2>
+              <ul className="mt-2 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                 {review.deadlines.map((d, i) => (
                   <li key={i} className="flex items-start justify-between gap-3 py-1.5">
-                    <span className="text-slate-700">{d.label}</span>
-                    <span className="shrink-0 text-right text-slate-900">
+                    <span className="text-slate-700 dark:text-slate-300">{d.label}</span>
+                    <span className="shrink-0 text-right text-slate-900 dark:text-slate-100">
                       {d.date ?? "—"}
                       {d.note ? <span className="block text-[11px] text-slate-400">{d.note}</span> : null}
                     </span>
@@ -195,13 +195,13 @@ export function ReviewContractClient() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {review.keyTerms.length > 0 ? (
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.keyTerms")}</h2>
-                <dl className="mt-2 divide-y divide-slate-100 text-sm">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.contractReview.keyTerms")}</h2>
+                <dl className="mt-2 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                   {review.keyTerms.map((t, i) => (
                     <div key={i} className="grid grid-cols-2 gap-2 py-1.5">
                       <dt className="text-slate-500">{t.label}</dt>
-                      <dd className="text-slate-900">{t.value}</dd>
+                      <dd className="text-slate-900 dark:text-slate-100">{t.value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -221,9 +221,9 @@ export function ReviewContractClient() {
           </div>
 
           {review.questions.length > 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.confirm")}</h2>
-              <ul className="mt-2 list-disc space-y-0.5 pl-4 text-sm text-slate-700">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.contractReview.confirm")}</h2>
+              <ul className="mt-2 list-disc space-y-0.5 pl-4 text-sm text-slate-700 dark:text-slate-300">
                 {review.questions.map((q, i) => (
                   <li key={i}>{q}</li>
                 ))}
@@ -231,7 +231,7 @@ export function ReviewContractClient() {
             </div>
           ) : null}
 
-          <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[11px] italic text-slate-500">
+          <p className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3 text-[11px] italic text-slate-500">
             {t("disclaimers.contractReview")}
           </p>
         </div>

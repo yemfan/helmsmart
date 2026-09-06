@@ -162,14 +162,14 @@ export default function RunCard({
             <span>
               {t("pages.runCard.toolCalls", { used: run.tool_calls, max: run.max_tool_calls })}
             </span>
-            <span className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-100">
+            <span className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
               <span className="block h-full rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
             </span>
           </div>
         )}
       </div>
 
-      {plan && live && <div className="text-xs text-slate-600"><MarkdownLite text={plan} /></div>}
+      {plan && live && <div className="text-xs text-slate-600 dark:text-slate-400"><MarkdownLite text={plan} /></div>}
 
       {steps.length > 0 && (
         <ol className="space-y-1">
@@ -189,7 +189,7 @@ export default function RunCard({
         <MissionCompleteCard run={run} steps={steps} />
       ) : (
         run.report && (
-          <div className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 text-sm text-slate-800">
+          <div className="rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-2.5 text-sm text-slate-800 dark:text-slate-200">
             <MarkdownLite text={run.report} />
           </div>
         )
@@ -239,7 +239,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
         <AssistantAvatar id="max" size={30} alt="Max" className="mt-0.5 h-[30px] w-[30px]" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <p className="text-sm font-semibold text-slate-900">{t("pages.runCard.missionAccomplished")}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.runCard.missionAccomplished")}</p>
             <span className="text-xs tracking-tight text-amber-500" aria-label={t("pages.runCard.fiveStars")}>★★★★★</span>
           </div>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-slate-500">
@@ -257,9 +257,9 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
           <span className="text-[10px] uppercase tracking-[0.12em] text-slate-400">{t("pages.runCard.deliveredBy")}</span>
           <span className="flex items-center gap-1.5">
             {crew.map((c) => (
-              <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-white/80 px-1.5 py-0.5 ring-1 ring-emerald-100">
+              <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-900/80 px-1.5 py-0.5 ring-1 ring-emerald-100">
                 <AssistantAvatar id={c.avatar} size={16} alt={c.name} className="h-4 w-4" />
-                <span className="text-[10px] font-semibold text-slate-700">{c.name}</span>
+                <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">{c.name}</span>
               </span>
             ))}
           </span>
@@ -268,7 +268,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
 
       {/* Max's report — his voice, already ending with a proactive next step */}
       {run.report && (
-        <div className="px-3 pt-2.5 text-sm text-slate-800">
+        <div className="px-3 pt-2.5 text-sm text-slate-800 dark:text-slate-200">
           <MarkdownLite text={run.report} />
         </div>
       )}
@@ -280,7 +280,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
             <Link
               key={`${d.url}-${i}`}
               href={d.url}
-              className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50"
+              className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white dark:bg-slate-900 px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50"
             >
               {d.label} →
             </Link>
@@ -342,7 +342,7 @@ function StepRow({
           : "text-slate-400";
 
   return (
-    <li className="rounded-lg border border-slate-100 bg-white px-2.5 py-1.5">
+    <li className="rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1.5">
       <div className="flex items-start gap-2">
         <span className={`mt-0.5 text-xs font-bold ${iconCls}`} aria-hidden>
           {icon}
@@ -352,15 +352,15 @@ function StepRow({
             {persona ? (
               <>
                 <AssistantAvatar id={persona.avatar} size={18} alt={persona.name} className="h-[18px] w-[18px]" />
-                <span className="text-xs font-semibold text-slate-900">{persona.name}</span>
+                <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">{persona.name}</span>
                 <span className="truncate text-[10px] text-slate-400">· {persona.role}</span>
               </>
             ) : (
-              <span className="text-xs font-medium text-slate-800">{label}</span>
+              <span className="text-xs font-medium text-slate-800 dark:text-slate-200">{label}</span>
             )}
             {duration && <span className="ml-auto shrink-0 text-[10px] font-medium text-slate-400">{duration}</span>}
           </div>
-          {persona && <p className="mt-0.5 text-[11px] font-medium text-slate-700">{label}</p>}
+          {persona && <p className="mt-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300">{label}</p>}
           {/*
             Prefer the localised form. Steps recorded before `display` existed
             have only `summary`, and English is a better answer there than a
@@ -439,13 +439,13 @@ function ApprovalControls({
   }
 
   return (
-    <div className="mt-1.5 border-t border-slate-100 pt-1.5">
+    <div className="mt-1.5 border-t border-slate-100 dark:border-slate-700 pt-1.5">
       {editing && (
         <textarea
           value={editBody}
           onChange={(e) => setEditBody(e.target.value)}
           rows={3}
-          className="mb-1.5 w-full rounded-lg border border-slate-200 p-2 text-xs"
+          className="mb-1.5 w-full rounded-lg border border-slate-200 dark:border-slate-700 p-2 text-xs"
           placeholder={t("pages.runCard.editBeforeSending")}
         />
       )}
@@ -462,14 +462,14 @@ function ApprovalControls({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >{t("pages.runCard.edit")}</button>
         )}
         <button
           type="button"
           disabled={busy !== null}
           onClick={() => void decide("rejected")}
-          className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-400 hover:bg-slate-50 disabled:opacity-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
           {busy === "rejected" ? t("common:status.rejecting") : t("common:actions.reject")}
         </button>

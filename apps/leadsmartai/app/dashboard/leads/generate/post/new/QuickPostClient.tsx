@@ -845,7 +845,7 @@ export default function QuickPostClient() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("header.title")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("header.title")}</h1>
           <p className="text-sm text-slate-500">{t("header.subtitle")}</p>
         </div>
         <Link
@@ -889,11 +889,11 @@ export default function QuickPostClient() {
               className={`group rounded-xl border p-4 text-left transition ${
                 trigger === opt.id
                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-100"
-                  : "border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/30"
+                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-300 hover:bg-blue-50/30"
               }`}
             >
               <div className="text-2xl">{opt.icon}</div>
-              <div className="mt-2 text-sm font-semibold text-slate-900">{t(`triggers.${opt.id}.label`)}</div>
+              <div className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{t(`triggers.${opt.id}.label`)}</div>
               <div className="mt-0.5 text-xs text-slate-500">{t(`triggers.${opt.id}.hint`)}</div>
             </button>
           ))}
@@ -940,7 +940,7 @@ export default function QuickPostClient() {
                   value={lookupInput}
                   onChange={(e) => setLookupInput(e.target.value)}
                   placeholder={t("step2.lookup.input_placeholder")}
-                  className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !lookupBusy) {
                       e.preventDefault();
@@ -998,14 +998,14 @@ export default function QuickPostClient() {
                   generating. */}
               {subjectId === "by_address" && (
                 <div className="space-y-2 pt-2">
-                  <label className="block text-xs font-semibold text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t("step2.lookup.brief_label")}
                   </label>
                   <textarea
                     value={brief}
                     onChange={(e) => setBrief(e.target.value)}
                     rows={6}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   />
                   <p className="text-[11px] text-slate-500">
                     {t("step2.lookup.brief_help")}
@@ -1031,7 +1031,7 @@ export default function QuickPostClient() {
             />
           ) : subjectsLoading ? (
             <div className="flex items-center gap-2 text-sm text-slate-500">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 dark:border-slate-700 border-t-slate-900" />
               {t("step2.loading")}
             </div>
           ) : subjectsError ? (
@@ -1051,7 +1051,7 @@ export default function QuickPostClient() {
                     className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
                       subjectId === s.id
                         ? "border-blue-500 bg-blue-50"
-                        : "border-slate-200 bg-white hover:border-blue-300"
+                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-300"
                     }`}
                   >
                     <input
@@ -1063,7 +1063,7 @@ export default function QuickPostClient() {
                       className="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-slate-900">{s.label}</div>
+                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{s.label}</div>
                       {s.sub && <div className="text-xs text-slate-500">{s.sub}</div>}
                     </div>
                   </label>
@@ -1075,11 +1075,11 @@ export default function QuickPostClient() {
                   flavor (e.g. old price for a drop, multiple-offers
                   for a just-sold) to the model. */}
               {subjectId && (
-                <details className="mt-4 rounded-lg border border-slate-200 bg-slate-50/60">
-                  <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-slate-700 hover:text-slate-900">
+                <details className="mt-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60">
+                  <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900">
                     {t("step2.add_angle")}
                   </summary>
-                  <div className="border-t border-slate-200 px-3 py-3">
+                  <div className="border-t border-slate-200 dark:border-slate-700 px-3 py-3">
                     <BriefInput
                       value={brief}
                       onChange={setBrief}
@@ -1107,7 +1107,7 @@ export default function QuickPostClient() {
           subtitle={t("step3.subtitle")}
         >
           <div className="space-y-3">
-            <div className="flex items-center gap-1 border-b border-slate-200">
+            <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-700">
               {PLATFORM_TABS.map((p) => (
                 <button
                   key={p.id}
@@ -1125,8 +1125,8 @@ export default function QuickPostClient() {
             </div>
 
             {!currentDraft ? (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-6 text-center">
-                <p className="text-sm text-slate-600">
+              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-6 text-center">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   {t("step3.no_draft", { platform: PLATFORM_TABS.find((p) => p.id === platform)?.label })}
                 </p>
                 <button
@@ -1144,14 +1144,14 @@ export default function QuickPostClient() {
                   value={currentDraft.caption}
                   onChange={(e) => updateCaption(e.target.value)}
                   rows={8}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />
                 {currentDraft.hashtags.length > 0 && platform !== "instagram" && (
                   <div className="flex flex-wrap gap-1.5">
                     {currentDraft.hashtags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                        className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400"
                       >
                         #{tag}
                       </span>
@@ -1195,7 +1195,7 @@ export default function QuickPostClient() {
                     platform. Single connection auto-selects. */}
                 {eligibleConnections.length > 1 && activeConnection && (
                   <div className="flex items-center gap-2 text-xs">
-                    <label className="text-slate-600">{t("step3.post_to")}</label>
+                    <label className="text-slate-600 dark:text-slate-400">{t("step3.post_to")}</label>
                     <select
                       value={activeConnection.id}
                       onChange={(e) =>
@@ -1204,7 +1204,7 @@ export default function QuickPostClient() {
                           [platform]: e.target.value,
                         }))
                       }
-                      className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs"
+                      className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                     >
                       {eligibleConnections.map((c) => (
                         <option key={c.id} value={c.id}>
@@ -1228,7 +1228,7 @@ export default function QuickPostClient() {
                     type="button"
                     onClick={generate}
                     disabled={drafting}
-                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                   >
                     {drafting ? t("step3.regenerating") : t("step3.regenerate")}
                   </button>
@@ -1237,7 +1237,7 @@ export default function QuickPostClient() {
                     onClick={() =>
                       navigator.clipboard.writeText(currentDraft.caption).catch(() => {})
                     }
-                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     {t("step3.copy_caption")}
                   </button>
@@ -1246,7 +1246,7 @@ export default function QuickPostClient() {
                     <button
                       type="button"
                       onClick={downloadSelectedImage}
-                      className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       {t("step3.save_image")}
                     </button>
@@ -1318,7 +1318,7 @@ export default function QuickPostClient() {
                       </svg>
                     </a>
                   ) : (
-                    <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-600">
+                    <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400">
                       {platform === "instagram"
                         ? t("actions.ig_no_compose")
                         : t("actions.no_share")}
@@ -1339,7 +1339,7 @@ export default function QuickPostClient() {
                     platform === "linkedin" ||
                     platform === "threads") &&
                   !recurringMode && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50/60 px-3 py-2.5 text-sm">
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-2.5 text-sm">
                       {!scheduleMode ? (
                         <div className="flex flex-wrap items-center gap-3">
                           <button
@@ -1366,7 +1366,7 @@ export default function QuickPostClient() {
                           <div className="flex items-center justify-between">
                             <label
                               htmlFor="schedule-datetime"
-                              className="text-xs font-semibold text-slate-900"
+                              className="text-xs font-semibold text-slate-900 dark:text-slate-100"
                             >
                               {t("schedule.label")}
                             </label>
@@ -1389,7 +1389,7 @@ export default function QuickPostClient() {
                               const pad = (n: number) => String(n).padStart(2, "0");
                               return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
                             })()}
-                            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-sm"
+                            className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm"
                           />
                           <p className="text-[11px] text-slate-500">
                             {t("schedule.cron_hint")}
@@ -1427,7 +1427,7 @@ export default function QuickPostClient() {
 
                       <div className="grid grid-cols-2 gap-2">
                         <label className="text-xs">
-                          <span className="mb-1 block font-medium text-slate-700">
+                          <span className="mb-1 block font-medium text-slate-700 dark:text-slate-300">
                             {t("recurring.cadence_label")}
                           </span>
                           <select
@@ -1437,7 +1437,7 @@ export default function QuickPostClient() {
                                 e.target.value as "daily" | "weekly",
                               )
                             }
-                            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs"
+                            className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                           >
                             <option value="weekly">{t("recurring.cadence_weekly")}</option>
                             <option value="daily">{t("recurring.cadence_daily")}</option>
@@ -1446,7 +1446,7 @@ export default function QuickPostClient() {
 
                         {recurringCadence === "weekly" && (
                           <label className="text-xs">
-                            <span className="mb-1 block font-medium text-slate-700">
+                            <span className="mb-1 block font-medium text-slate-700 dark:text-slate-300">
                               {t("recurring.weekday_label")}
                             </span>
                             <select
@@ -1454,7 +1454,7 @@ export default function QuickPostClient() {
                               onChange={(e) =>
                                 setRecurringWeekday(Number(e.target.value))
                               }
-                              className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs"
+                              className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                             >
                               <option value={0}>{t("recurring.weekdays.sun")}</option>
                               <option value={1}>{t("recurring.weekdays.mon")}</option>
@@ -1468,7 +1468,7 @@ export default function QuickPostClient() {
                         )}
 
                         <label className="text-xs">
-                          <span className="mb-1 block font-medium text-slate-700">
+                          <span className="mb-1 block font-medium text-slate-700 dark:text-slate-300">
                             {t("recurring.time_label", { tz: recurringTimezone })}
                           </span>
                           <input
@@ -1481,12 +1481,12 @@ export default function QuickPostClient() {
                               if (Number.isFinite(h)) setRecurringHour(h);
                               if (Number.isFinite(m)) setRecurringMinute(m);
                             }}
-                            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs"
+                            className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                           />
                         </label>
 
                         <label className="text-xs">
-                          <span className="mb-1 block font-medium text-slate-700">
+                          <span className="mb-1 block font-medium text-slate-700 dark:text-slate-300">
                             {t("recurring.max_label")}
                           </span>
                           <input
@@ -1506,12 +1506,12 @@ export default function QuickPostClient() {
                               }
                             }}
                             placeholder={t("recurring.max_placeholder")}
-                            className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 text-xs"
+                            className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs"
                           />
                         </label>
                       </div>
 
-                      <p className="text-[11px] text-slate-600">
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400">
                         {t("recurring.hint_prefix")}
                         <a
                           href="/dashboard/leads/generate/recurring"
@@ -1663,7 +1663,7 @@ export default function QuickPostClient() {
                       href="/dashboard/leads/generate/connect"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium text-slate-900 hover:underline"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                     >
                       {t("connect_nudge.threads_link")}
                     </a>
@@ -1706,13 +1706,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="mb-4 flex items-start gap-3">
         <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
           {n}
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <p className="text-xs text-slate-500">{subtitle}</p>
         </div>
       </div>
@@ -1757,7 +1757,7 @@ function BriefInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={inline ? 3 : 4}
-        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        className="w-full rounded-xl border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
       />
       <p className="text-xs text-slate-500">{help}</p>
       {!inline && (
@@ -1817,7 +1817,7 @@ function ImagePicker({
 
   if (selected) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3">
         <div className="flex items-start gap-3">
           {selected.signedUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -1830,7 +1830,7 @@ function ImagePicker({
             <div className="h-20 w-20 shrink-0 rounded-lg bg-slate-200" />
           )}
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-slate-900 truncate">
+            <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
               {selected.label ?? selected.fileName ?? t("image.attached_fallback")}
             </div>
             <div className="text-xs text-slate-500">
@@ -1843,14 +1843,14 @@ function ImagePicker({
               <button
                 type="button"
                 onClick={onOpenLibrary}
-                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("image.change")}
               </button>
               <button
                 type="button"
                 onClick={onClear}
-                className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {t("image.remove")}
               </button>
@@ -1863,9 +1863,9 @@ function ImagePicker({
 
   if (showLibrary) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-3 space-y-3">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">{t("image.your_library")}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("image.your_library")}</h3>
           <button
             type="button"
             onClick={onCloseLibrary}
@@ -1881,7 +1881,7 @@ function ImagePicker({
         ) : libraryLoading ? (
           <p className="text-xs text-slate-500">{t("image.library_loading")}</p>
         ) : library.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 p-4 text-center">
+          <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-4 text-center">
             <p className="text-xs text-slate-500">{t("image.library_empty")}</p>
           </div>
         ) : (
@@ -1891,7 +1891,7 @@ function ImagePicker({
                 key={m.id}
                 type="button"
                 onClick={() => onSelect(m)}
-                className="group relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100 hover:border-blue-400"
+                className="group relative aspect-square overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:border-blue-400"
                 title={m.label ?? m.fileName ?? t("image.library_image_alt_fallback")}
               >
                 {m.signedUrl ? (
@@ -1909,7 +1909,7 @@ function ImagePicker({
 
         <label
           htmlFor={inputId}
-          className="block cursor-pointer rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/60 px-3 py-3 text-center text-xs text-slate-600 hover:border-blue-400 hover:bg-blue-50/30"
+          className="block cursor-pointer rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-center text-xs text-slate-600 dark:text-slate-400 hover:border-blue-400 hover:bg-blue-50/30"
         >
           {uploading ? t("image.upload_busy") : t("image.upload_label")}
           <input
@@ -1938,15 +1938,15 @@ function ImagePicker({
         const f = e.dataTransfer.files?.[0];
         if (f) onUpload(f);
       }}
-      className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 px-3 py-2.5 text-xs"
+      className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-2.5 text-xs"
     >
-      <span className="text-slate-600">
-        <span className="font-medium text-slate-900">{t("image.prompt_prefix_emphasis")}</span>{t("image.prompt_suffix")}
+      <span className="text-slate-600 dark:text-slate-400">
+        <span className="font-medium text-slate-900 dark:text-slate-100">{t("image.prompt_prefix_emphasis")}</span>{t("image.prompt_suffix")}
       </span>
       <div className="flex shrink-0 gap-2">
         <label
           htmlFor={inputId}
-          className="cursor-pointer rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="cursor-pointer rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           {uploading ? t("image.upload_busy") : t("image.upload_short")}
           <input
@@ -1965,7 +1965,7 @@ function ImagePicker({
         <button
           type="button"
           onClick={onOpenLibrary}
-          className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
         >
           {t("image.open_library")}
         </button>

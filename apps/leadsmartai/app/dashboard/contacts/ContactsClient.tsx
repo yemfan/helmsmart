@@ -127,7 +127,7 @@ function MiniPie({
 }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <h2 className="text-xs font-semibold text-slate-500 mb-2">{title}</h2>
       <div className="flex items-center gap-3">
         <div className="h-[120px] w-[120px] shrink-0">
@@ -144,8 +144,8 @@ function MiniPie({
           {data.map((d) => (
             <div key={d.key} className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-              <span className="text-slate-600">{labelFor(d.key)}</span>
-              <span className="font-semibold text-slate-900">{d.value}</span>
+              <span className="text-slate-600 dark:text-slate-400">{labelFor(d.key)}</span>
+              <span className="font-semibold text-slate-900 dark:text-slate-100">{d.value}</span>
               {total > 0 && <span className="text-slate-400">({Math.round((d.value / total) * 100)}%)</span>}
             </div>
           ))}
@@ -525,7 +525,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
         </div>
         <div className="flex gap-2">
           <button onClick={() => void saveEdit(editingId as string)} disabled={actionLoading} className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">{t("row.save")}</button>
-          <button onClick={() => setEditingId(null)} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t("row.cancel")}</button>
+          <button onClick={() => setEditingId(null)} className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("row.cancel")}</button>
         </div>
       </div>
     );
@@ -552,7 +552,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">{t("header.title")}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{t("header.title")}</h1>
           <p className="text-sm text-slate-500">
             {t("header.subtitle_total", { count: leads.length })}
           </p>
@@ -562,7 +562,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             type="button"
             onClick={toggleInsights}
             aria-expanded={showInsights}
-            className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            className="shrink-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             {showInsights ? t("insights.hide") : t("insights.show")}
           </button>
@@ -586,7 +586,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             labelFor={(key) => t(`contactedBucket.${key}`, { defaultValue: key })}
           />
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <h2 className="text-xs font-semibold text-slate-500 mb-2">{t("charts.growth")}</h2>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -627,7 +627,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           {addMenuOpen ? (
             <div
               role="menu"
-              className="absolute right-0 z-20 mt-2 w-56 origin-top-right overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg ring-1 ring-black/5"
+              className="absolute right-0 z-20 mt-2 w-56 origin-top-right overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg ring-1 ring-black/5"
             >
               <button
                 type="button"
@@ -636,7 +636,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   setShowAddForm(true);
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <UserPlus className="h-4 w-4 text-slate-500" />
                 {t("add_menu.enter_contact")}
@@ -645,7 +645,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 href="/dashboard/contacts/scan"
                 role="menuitem"
                 onClick={() => setAddMenuOpen(false)}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <ScanLine className="h-4 w-4 text-slate-500" />
                 {t("add_menu.scan_card")}
@@ -654,7 +654,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 href="/dashboard/contacts/import-file"
                 role="menuitem"
                 onClick={() => setAddMenuOpen(false)}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <Sparkles className="h-4 w-4 text-slate-500" />
                 {t("add_menu.ai_extract")}
@@ -666,7 +666,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   setCsvImportOpen(true);
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <Upload className="h-4 w-4 text-slate-500" />
                 {t("add_menu.upload_csv")}
@@ -678,7 +678,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   setAddMenuOpen(false);
                   downloadTemplate();
                 }}
-                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <Download className="h-4 w-4 text-slate-500" />
                 {t("add_menu.download_template")}
@@ -690,40 +690,40 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
 
       {/* Inline add form */}
       {showAddForm && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-slate-900">{t("add_form.title")}</h3>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("add_form.title")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("add_form.placeholder_name")}
               <Input value={addFields.name} onChange={(e) => setAddFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("add_form.placeholder_name")}
                 className="mt-1" aria-invalid={Boolean(addErrors.name?.length)} />
               {addErrors.name?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.name.join(" ")}</p> : null}
             </label>
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("add_form.placeholder_email")}
               <Input value={addFields.email} onChange={(e) => setAddFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("add_form.placeholder_email")} type="email" inputMode="email" autoCapitalize="off"
                 className="mt-1" aria-invalid={Boolean(addErrors.email?.length)} />
               {addErrors.email?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.email.join(" ")}</p> : null}
             </label>
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("add_form.placeholder_phone")}
               <Input value={addFields.phone} onChange={(e) => setAddFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("add_form.placeholder_phone")} inputMode="tel"
                 className="mt-1" aria-invalid={Boolean(addErrors.phone?.length)} />
               {addErrors.phone?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.phone.join(" ")}</p> : null}
             </label>
-            <div className="block text-sm font-medium text-slate-700">
+            <div className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("add_form.placeholder_address")}
               <AddressAutocomplete
                 value={addFields.property_address}
                 onChange={(v) => setAddFields((f) => ({ ...f, property_address: v }))}
                 onSelect={(v) => setAddFields((f) => ({ ...f, property_address: v.formattedAddress }))}
                 placeholder={t("add_form.placeholder_address")}
-                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.property_address?.length ? "border-red-400" : "border-slate-300"}`}
+                className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${addErrors.property_address?.length ? "border-red-400" : "border-slate-300 dark:border-slate-700"}`}
               />
               {addErrors.property_address?.length ? <p className="mt-1 text-xs text-red-600">{addErrors.property_address.join(" ")}</p> : null}
             </div>
           </div>
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("add_form.placeholder_notes")}
             <Input value={addFields.notes} onChange={(e) => setAddFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("add_form.placeholder_notes")}
               className="mt-1" aria-invalid={Boolean(addErrors.notes?.length)} />
@@ -794,7 +794,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             <button
               type="button"
               onClick={() => setDeleteConfirmOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
             >
               {t("bulk_bar.delete", { count: selectedIds.size })}
             </button>
@@ -803,7 +803,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       ) : null}
 
       {/* Phones: cards. The table below is md+ only. */}
-      <div className="md:hidden rounded-xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
+      <div className="md:hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
         {filtered.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-slate-400">
             {search ? t("empty.no_match") : t("empty.no_contacts")}
@@ -819,7 +819,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     <button
                       type="button"
                       onClick={() => setProfileLeadId(c.id)}
-                      className="block max-w-full truncate text-left text-[15px] font-semibold text-slate-900 hover:text-blue-700"
+                      className="block max-w-full truncate text-left text-[15px] font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-700"
                     >
                       {c.name ?? t("row.empty_value")}
                     </button>
@@ -845,10 +845,10 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       </div>
 
       {/* Table (md+) */}
-      <div className="hidden md:block rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="hidden md:block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-slate-50 text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
               <tr>
                 {/* Select-all for bulk actions (postcards, etc).
                     Toggles all currently filtered contacts. */}
@@ -867,7 +867,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         return next;
                       });
                     }}
-                    className="h-4 w-4 rounded border-slate-300"
+                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-700"
                     aria-label={t("row.select_all_a11y")}
                   />
                 </th>
@@ -896,7 +896,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
               {filtered.map((c) => {
                 const isEditing = editingId === c.id;
                 if (isEditing) {
@@ -908,7 +908,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   );
                 }
                 return (
-                  <tr key={c.id} className="hover:bg-slate-50/50">
+                  <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
                     <td className="w-8 px-3 py-2.5">
                       <input
                         type="checkbox"
@@ -921,7 +921,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                             return next;
                           });
                         }}
-                        className="h-4 w-4 rounded border-slate-300"
+                        className="h-4 w-4 rounded border-slate-300 dark:border-slate-700"
                         aria-label={
                           c.name
                             ? t("row.select_contact_a11y", { name: c.name })
@@ -933,7 +933,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                       <button
                         type="button"
                         onClick={() => setProfileLeadId(c.id)}
-                        className="block max-w-full truncate rounded text-left font-medium text-slate-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                        className="block max-w-full truncate rounded text-left font-medium text-slate-900 dark:text-slate-100 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
                         title={t("row.open_profile_tooltip")}
                       >
                         {c.name ?? t("row.empty_value")}
@@ -944,7 +944,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         </a>
                       ) : null}
                     </td>
-                    <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-slate-600 dark:text-slate-400 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span>{c.phone ?? t("row.empty_value")}</span>
                         <CallButton contactId={c.id} hasPhone={Boolean(c.phone)} />
@@ -1023,17 +1023,17 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-slate-900">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {t("delete_dialog.title", { count: selectedIds.size })}
             </h3>
-            <p className="mt-2 text-sm text-slate-600">{t("delete_dialog.body")}</p>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t("delete_dialog.body")}</p>
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setDeleteConfirmOpen(false)}
                 disabled={deleting}
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-60"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-60"
               >
                 {t("delete_dialog.cancel")}
               </button>
@@ -1063,7 +1063,7 @@ function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {c.rating ? (
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-slate-100 text-slate-600"}`}>
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
           {t(`rating.${c.rating.toLowerCase()}`, { defaultValue: c.rating })}
         </span>
       ) : (
@@ -1080,7 +1080,7 @@ function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
       {c.showing_total && c.showing_total > 0 ? (
         <Link
           href={`/dashboard/showings?contactId=${encodeURIComponent(c.id)}`}
-          className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-200"
+          className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title={
             c.showing_loved && c.showing_loved > 0
               ? t("row.showings_tooltip_with_loved", { count: c.showing_total, loved: c.showing_loved })
@@ -1170,12 +1170,12 @@ function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900"
       >
         <MoreHorizontal className="h-4 w-4" strokeWidth={2} aria-hidden />
       </button>
       {open ? (
-        <div role="menu" className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg ring-1 ring-black/5">
+        <div role="menu" className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-1 shadow-lg ring-1 ring-black/5">
           {items.map((it) =>
             it.href ? (
               <Link key={it.label} href={it.href} role="menuitem" onClick={() => setOpen(false)} className={itemCls}>

@@ -27,7 +27,7 @@ export function SettingsGroupPage({
         {back}
       </Link>
       <div className="mb-5 mt-3">
-        <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
         <p className="mt-0.5 text-sm text-slate-500">{description}</p>
       </div>
       <div className="space-y-4">{children}</div>
@@ -46,8 +46,8 @@ export function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
       {description ? <p className="mt-0.5 mb-3 text-xs text-slate-500">{description}</p> : <div className="mb-3" />}
       {children}
     </div>

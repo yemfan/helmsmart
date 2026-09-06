@@ -43,10 +43,10 @@ export function OnboardingClient() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
           {t("pages.salesModelOnboarding.eyebrow")}
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
           {t("pages.salesModelOnboarding.heading")}
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-slate-600">
+        <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400">
           {t("pages.salesModelOnboarding.intro")}
         </p>
       </header>

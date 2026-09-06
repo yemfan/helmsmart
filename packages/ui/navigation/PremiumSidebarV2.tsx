@@ -212,7 +212,7 @@ export function PremiumSidebarV2({
     >
       {/* Brand header (when provided) or the classic workspace switcher */}
       {brandHeader ? (
-        <div className="shrink-0 border-b border-slate-200/80 bg-white/60 px-3 py-3">
+        <div className="shrink-0 border-b border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900/60 px-3 py-3">
           {brandHeader}
         </div>
       ) : (
@@ -236,7 +236,7 @@ export function PremiumSidebarV2({
           {initial}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[13.5px] font-semibold tracking-tight text-slate-900">
+          <div className="truncate text-[13.5px] font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             {appName}
           </div>
           <div className="truncate text-[11px] font-medium text-slate-500">
@@ -271,7 +271,7 @@ export function PremiumSidebarV2({
           <span className="flex-1 truncate text-[13px] text-slate-500">
             Search or jump to…
           </span>
-          <kbd className="shrink-0 rounded border border-slate-300/80 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-500 shadow-sm">
+          <kbd className="shrink-0 rounded border border-slate-300/80 dark:border-slate-700 bg-white dark:bg-slate-900 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 shadow-sm">
             ⌘K
           </kbd>
         </button>
@@ -300,7 +300,7 @@ export function PremiumSidebarV2({
               return (
                 <div
                   key={`div-${idx}`}
-                  className="my-2 border-t border-slate-200/70"
+                  className="my-2 border-t border-slate-200/70 dark:border-slate-700"
                   role="separator"
                   aria-hidden
                 />
@@ -456,10 +456,10 @@ export function PremiumSidebarV2({
 
       {/* Footer — optional consumer slot above the user card */}
       {footer || user ? (
-        <div className="shrink-0 border-t border-slate-200/80 bg-white/70 p-2 backdrop-blur-sm">
+        <div className="shrink-0 border-t border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-900/70 p-2 backdrop-blur-sm">
           {footer ? <div className="mb-2">{footer}</div> : null}
           {user ? (
-          <div className="flex items-center gap-2.5 rounded-xl bg-white px-2 py-2 ring-1 ring-slate-200/80">
+          <div className="flex items-center gap-2.5 rounded-xl bg-white dark:bg-slate-900 px-2 py-2 ring-1 ring-slate-200/80">
             <div
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-[11px] font-bold text-white shadow-sm ring-1 ring-inset ring-white/15"
               aria-hidden
@@ -468,7 +468,7 @@ export function PremiumSidebarV2({
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="truncate text-[12.5px] font-semibold text-slate-900">
+                <span className="truncate text-[12.5px] font-semibold text-slate-900 dark:text-slate-100">
                   {user.name}
                 </span>
                 {user.planLabel ? (

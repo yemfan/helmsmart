@@ -34,8 +34,8 @@ export default function ToolUsagePage() {
   return (
     <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{t("pages.toolUsage.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t("pages.toolUsage.heading")}</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {t("pages.toolUsage.totals", {
             events: data.totalEvents.toLocaleString(),
             leads: data.leadCount.toLocaleString(),
@@ -44,9 +44,9 @@ export default function ToolUsagePage() {
       </div>
 
       {/* Tool breakdown table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-200">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+          <thead className="bg-slate-50 dark:bg-slate-900/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
             <tr>
               <th className="px-4 py-3">{t("pages.toolUsage.colTool")}</th>
               <th className="px-4 py-3 text-right">{t("pages.toolUsage.colTotal")}</th>
@@ -54,10 +54,10 @@ export default function ToolUsagePage() {
               <th className="px-4 py-3 text-right">{t("pages.toolUsage.col30d")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {toolNames.map((tool) => (
-              <tr key={tool} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-slate-900">
+              <tr key={tool} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
                   {tool.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </td>
                 <td className="px-4 py-3 text-right font-mono">{data.tools[tool].total}</td>
@@ -71,24 +71,24 @@ export default function ToolUsagePage() {
 
       {/* Daily breakdown */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">{t("pages.toolUsage.dailyHeading")}</h2>
-        <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t("pages.toolUsage.dailyHeading")}</h2>
+        <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+            <thead className="bg-slate-50 dark:bg-slate-900/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">{t("pages.toolUsage.colDate")}</th>
                 <th className="px-4 py-3 text-right">{t("pages.toolUsage.colEvents")}</th>
                 <th className="px-4 py-3">{t("pages.toolUsage.colActivity")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {dailyDays.map((day) => {
                 const count = data.daily[day];
                 const maxCount = Math.max(...Object.values(data.daily));
                 const barWidth = maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
                 return (
-                  <tr key={day} className="hover:bg-slate-50">
-                    <td className="px-4 py-2 text-slate-700">{day}</td>
+                  <tr key={day} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <td className="px-4 py-2 text-slate-700 dark:text-slate-300">{day}</td>
                     <td className="px-4 py-2 text-right font-mono">{count}</td>
                     <td className="px-4 py-2">
                       <div className="h-4 rounded-full bg-blue-100" style={{ width: "100%" }}>

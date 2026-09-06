@@ -177,8 +177,8 @@ export function OpenHouseDetailClient({
           {" / "}
           <span>{oh.property_address}</span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{oh.property_address}</h1>
-        <div className="mt-1 text-sm text-slate-600">
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{oh.property_address}</h1>
+        <div className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           {formatDate(oh.start_at, locale)} · {formatTime(oh.start_at, locale)} – {formatTime(oh.end_at, locale)}
           {locationLine ? ` · ${locationLine}` : ""}
           {oh.list_price ? ` · ${formatMoney(oh.list_price, locale)}` : ""}
@@ -203,8 +203,8 @@ export function OpenHouseDetailClient({
             since that's where the QR code lives at the door. The Open
             iPad kiosk button + Copy link cover the digital paths. */}
         <div className="space-y-4 md:col-span-1">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.visitorSignIn")}</h2>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouseDetail.visitorSignIn")}</h2>
             <p className="mt-1 text-xs text-slate-500">{t("pages.openHouseDetail.flyerNote")}</p>
 
             <Link
@@ -215,14 +215,14 @@ export function OpenHouseDetailClient({
             </Link>
             <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.flyerIncludes")}</p>
 
-            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2 text-center font-mono text-[11px] text-slate-700 break-all">
+            <div className="mt-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-2 text-center font-mono text-[11px] text-slate-700 dark:text-slate-300 break-all">
               {publicUrl}
             </div>
             <div className="mt-2 flex gap-2">
               <button
                 type="button"
                 onClick={() => void copyUrl()}
-                className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 {copied ? t("pages.openHouseDetail.copied") : t("pages.openHouseDetail.copyLink")}
               </button>
@@ -230,7 +230,7 @@ export function OpenHouseDetailClient({
                 href={publicUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >{t("pages.openHouseDetail.open")}</a>
             </div>
             <a
@@ -244,8 +244,8 @@ export function OpenHouseDetailClient({
             <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.kioskNote")}</p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.status")}</h3>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouseDetail.status")}</h3>
             <div className="mt-2 flex flex-wrap gap-2">
               {(["scheduled", "completed", "cancelled"] as OpenHouseStatus[]).map((s) => (
                 <button
@@ -256,7 +256,7 @@ export function OpenHouseDetailClient({
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium ${
                     oh.status === s
                       ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   } disabled:opacity-60`}
                 >
                   {STATUS_LABEL[s]}
@@ -267,9 +267,9 @@ export function OpenHouseDetailClient({
           </div>
 
           {oh.host_notes ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.hostNotes")}</h3>
-              <p className="mt-2 whitespace-pre-line text-sm text-slate-700">{oh.host_notes}</p>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouseDetail.hostNotes")}</h3>
+              <p className="mt-2 whitespace-pre-line text-sm text-slate-700 dark:text-slate-300">{oh.host_notes}</p>
             </div>
           ) : null}
 
@@ -280,7 +280,7 @@ export function OpenHouseDetailClient({
               <button
                 type="button"
                 onClick={() => void onCancelSeries()}
-                className="mt-2 w-full rounded-lg border border-purple-300 bg-white px-3 py-2 text-xs font-medium text-purple-800 hover:bg-purple-100"
+                className="mt-2 w-full rounded-lg border border-purple-300 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-medium text-purple-800 hover:bg-purple-100"
               >{t("pages.openHouseDetail.cancelSeries")}</button>
             </div>
           ) : null}
@@ -288,7 +288,7 @@ export function OpenHouseDetailClient({
           <button
             type="button"
             onClick={() => void onDelete()}
-            className="w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+            className="w-full rounded-lg border border-red-200 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-red-700 hover:bg-red-50"
           >
             {t("pages.openHouseDetail.deleteOpenHouse")}
           </button>
@@ -296,9 +296,9 @@ export function OpenHouseDetailClient({
 
         {/* RIGHT: visitors */}
         <div className="space-y-4 md:col-span-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {t("pages.openHouseDetail.visitorsN", { count: visitors.length })}
               </h2>
               <span className="text-[11px] text-slate-500">
@@ -311,7 +311,7 @@ export function OpenHouseDetailClient({
             ) : (
               <div className="mt-3 overflow-x-auto">
                 <table className="min-w-full text-sm">
-                  <thead className="text-xs text-slate-600">
+                  <thead className="text-xs text-slate-600 dark:text-slate-400">
                     <tr>
                       <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colNameContact")}</th>
                       <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colTimeline")}</th>
@@ -320,19 +320,19 @@ export function OpenHouseDetailClient({
                       <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colSignedIn")}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {visitors.map((v) => (
                       <tr key={v.id} className="align-top">
                         <td className="px-2 py-2">
                           {v.contact_id ? (
                             <Link
                               href={`/dashboard/contacts?list=leads&highlight=${encodeURIComponent(v.contact_id)}`}
-                              className="font-medium text-slate-900 hover:underline"
+                              className="font-medium text-slate-900 dark:text-slate-100 hover:underline"
                             >
                               {v.name ?? "(no name)"}
                             </Link>
                           ) : (
-                            <span className="font-medium text-slate-900">
+                            <span className="font-medium text-slate-900 dark:text-slate-100">
                               {v.name ?? "(no name)"}
                             </span>
                           )}
@@ -352,7 +352,7 @@ export function OpenHouseDetailClient({
                             <span className="text-slate-400">—</span>
                           )}
                         </td>
-                        <td className="px-2 py-2 text-[12px] text-slate-600">
+                        <td className="px-2 py-2 text-[12px] text-slate-600 dark:text-slate-400">
                           {v.is_buyer_agented ? (
                             <span>
                               {t("pages.openHouseDetail.yes")}
@@ -387,10 +387,10 @@ export function OpenHouseDetailClient({
             )}
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.followUp")}</h3>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouseDetail.followUp")}</h3>
             <p className="mt-1 text-xs text-slate-500">{t("pages.openHouseDetail.followUpNote")}</p>
-            <ul className="mt-3 space-y-1 text-[12px] text-slate-600">
+            <ul className="mt-3 space-y-1 text-[12px] text-slate-600 dark:text-slate-400">
               <li>
                 📧{" "}
                 {t("pages.openHouseDetail.thankYouSent", {

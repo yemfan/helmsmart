@@ -34,10 +34,10 @@ export function CreditBalancePill() {
     <Link
       href="/dashboard/credits"
       title={t("pages.misc.creditsTip")}
-      className={`inline-flex h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-sm font-semibold shadow-sm ring-1 ring-slate-900/[0.03] transition ${
+      className={`inline-flex h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-sm font-semibold shadow-sm ring-1 ring-slate-900/[0.03] dark:ring-slate-100/10 transition ${
         low
           ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-          : "border-slate-200/90 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+          : "border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
       }`}
     >
       <Coins className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />

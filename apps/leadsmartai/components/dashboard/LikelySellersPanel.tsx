@@ -95,11 +95,11 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
   );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="flex flex-col gap-3 border-b border-slate-100 dark:border-slate-700 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.likelySellers")}</h2>
-          <p className="mt-0.5 text-xs text-slate-600">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.misc.likelySellers")}</h2>
+          <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
             Past clients + sphere ranked by likelihood to list in the next ~90 days. Click a row for the full factor breakdown.
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
               className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${
                 filter === f.value
                   ? "bg-slate-900 text-white ring-slate-900"
-                  : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               {f.label}
@@ -127,7 +127,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
             {Array.from({ length: 5 }).map((_, i) => (
               <li
                 key={i}
-                className="h-16 animate-pulse rounded-xl bg-slate-100"
+                className="h-16 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800"
                 aria-hidden
               />
             ))}
@@ -136,17 +136,17 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadSellers")} {error}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-4 py-6 text-center text-sm text-slate-600 dark:text-slate-400">
             {rows.length === 0
               ? t("pages.likelySellers.noPastClientsOr")
               : `No ${filter} candidates. Try a different filter.`}
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {filtered.map((r) => (
               <li
                 key={r.contactId}
-                className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-slate-50 sm:gap-4"
+                className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 sm:gap-4"
               >
                 <Link
                   href={`/dashboard/contacts/${encodeURIComponent(r.contactId)}`}
@@ -155,12 +155,12 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
                   <ScoreBadge score={r.score} label={r.label} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {r.fullName}
                       </p>
                       <LifecyclePill stage={r.lifecycleStage} />
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-slate-600">{r.topReason}</p>
+                    <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">{r.topReason}</p>
                     {r.closingAddress ? (
                       <p className="mt-0.5 truncate text-[11px] text-slate-400">
                         {r.closingAddress}
@@ -171,7 +171,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
                 <button
                   type="button"
                   onClick={() => setDraftFor({ id: r.contactId, name: r.fullName })}
-                  className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  className="shrink-0 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >{t("pages.misc.draftMessage")}</button>
               </li>
             ))}
@@ -206,7 +206,7 @@ function ScoreBadge({ score, label }: { score: number; label: SphereSellerLabel 
 function LifecyclePill({ stage }: { stage: "past_client" | "sphere" }) {
   const copy = stage === "past_client" ? "Past client" : "Sphere";
   return (
-    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
       {copy}
     </span>
   );

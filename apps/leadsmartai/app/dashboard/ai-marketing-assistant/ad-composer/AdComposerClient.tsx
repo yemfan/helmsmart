@@ -198,10 +198,10 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                 type="button"
                 onClick={() => set("template", t.key)}
                 className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
-                  f.template === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 hover:border-slate-300"
+                  f.template === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                 }`}
               >
-                <div className="font-semibold text-slate-900">{tr(t.labelKey)}</div>
+                <div className="font-semibold text-slate-900 dark:text-slate-100">{tr(t.labelKey)}</div>
                 <div className="text-xs text-slate-500">{tr(t.hintKey)}</div>
               </button>
             ))}
@@ -217,7 +217,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   type="button"
                   onClick={() => set("theme", t.key)}
                   className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition ${
-                    f.theme === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 hover:border-slate-300"
+                    f.theme === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <span className="h-4 w-4 rounded-full border border-black/10" style={{ background: t.swatch }} />
@@ -234,7 +234,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   type="button"
                   onClick={() => set("format", t.key)}
                   className={`rounded-lg border px-3 py-1.5 text-sm transition ${
-                    f.format === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 hover:border-slate-300"
+                    f.format === t.key ? "border-[#0072ce] bg-blue-50" : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                   }`}
                 >
                   {tr(t.labelKey)}
@@ -278,7 +278,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   type="button"
                   onClick={() => set("photoUrl", "")}
                   className={`flex h-16 w-16 items-center justify-center rounded-lg border text-xs ${
-                    !f.photoUrl ? "border-[#0072ce] bg-blue-50" : "border-slate-200"
+                    !f.photoUrl ? "border-[#0072ce] bg-blue-50" : "border-slate-200 dark:border-slate-700"
                   }`}
                 >{tr("pages.adComposer.none")}</button>
                 {photos.map((p) => (
@@ -287,7 +287,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                     type="button"
                     onClick={() => set("photoUrl", p.url)}
                     className={`h-16 w-16 overflow-hidden rounded-lg border ${
-                      f.photoUrl === p.url ? "border-[#0072ce] ring-2 ring-[#0072ce]" : "border-slate-200"
+                      f.photoUrl === p.url ? "border-[#0072ce] ring-2 ring-[#0072ce]" : "border-slate-200 dark:border-slate-700"
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -320,8 +320,8 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-4">
-          <button type="button" disabled={busy} onClick={() => save({ schedule: false })} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{tr("pages.adComposer.saveToPool")}</button>
+        <div className="flex flex-wrap gap-3 border-t border-slate-100 dark:border-slate-700 pt-4">
+          <button type="button" disabled={busy} onClick={() => save({ schedule: false })} className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50">{tr("pages.adComposer.saveToPool")}</button>
           <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: false })} className="rounded-lg border border-[#0072ce] px-4 py-2 text-sm font-semibold text-[#0072ce] hover:bg-blue-50 disabled:opacity-50">{tr("pages.adComposer.queueForApproval")}</button>
           <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: true })} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{tr("pages.adComposer.publishNow")}</button>
           <Link href="/dashboard/ai-marketing-assistant" className="ml-auto self-center text-sm text-slate-500 hover:text-slate-700">
@@ -333,7 +333,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
       {/* ---- live preview ---- */}
       <div className="lg:sticky lg:top-4 lg:self-start">
         <div className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">{tr("pages.adComposer.livePreview")}</div>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={previewUrl} alt={tr("pages.adComposer.adPreview")} className="mx-auto w-full max-w-[380px] rounded-lg" />
         </div>
@@ -345,7 +345,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="mb-2 text-sm font-semibold text-slate-900">{title}</h3>
+      <h3 className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
       {children}
     </section>
   );
@@ -366,14 +366,14 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-slate-600">{label}</span>
+      <span className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{label}</span>
       {textarea ? (
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={2}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]"
         />
       ) : (
         <input
@@ -381,7 +381,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]"
         />
       )}
     </label>

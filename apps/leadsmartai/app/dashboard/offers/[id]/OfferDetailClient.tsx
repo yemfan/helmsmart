@@ -151,8 +151,8 @@ export function OfferDetailClient({
           {" / "}
           <span>{offer.property_address}</span>
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{offer.property_address}</h1>
-        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{offer.property_address}</h1>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
           <span>{t("pages.dashFragments.buyer")}{" "}
             <Link
               href={`/dashboard/offers?contactId=${encodeURIComponent(offer.contact_id)}`}
@@ -201,7 +201,7 @@ export function OfferDetailClient({
                 label={t("detail.offerDetail.currentPrice")}
                 value={
                   offer.current_price != null && offer.current_price !== offer.offer_price ? (
-                    <span className="font-semibold text-slate-900">{formatMoney(offer.current_price, locale)}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{formatMoney(offer.current_price, locale)}</span>
                   ) : (
                     formatMoney(offer.current_price ?? offer.offer_price, locale)
                   )
@@ -248,7 +248,7 @@ export function OfferDetailClient({
                   className={`rounded-lg border px-3 py-1.5 text-sm ${
                     offer.status === s
                       ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   } disabled:opacity-60`}
                 >
                   {t(`detail.offerDetail.status.${STATUS_KEY[s]}`)}
@@ -297,7 +297,7 @@ export function OfferDetailClient({
               {offer.showing_id ? (
                 <Link
                   href={`/dashboard/showings/${offer.showing_id}`}
-                  className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                  className="block rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   {t("pages.offerDetail.backToShowing")}
                 </Link>
@@ -306,7 +306,7 @@ export function OfferDetailClient({
               <button
                 type="button"
                 onClick={() => void onDelete()}
-                className="block w-full rounded-lg border border-red-200 bg-white px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                className="block w-full rounded-lg border border-red-200 bg-white dark:bg-slate-900 px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50"
               >
                 {t("pages.offerDetail.deleteOffer")}
               </button>
@@ -330,8 +330,8 @@ export function OfferDetailClient({
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
       <div className="mt-3">{children}</div>
     </div>
   );
@@ -349,7 +349,7 @@ function Detail({
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-800">{value ?? <span className="text-slate-400">—</span>}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-400">—</span>}</dd>
     </div>
   );
 }
@@ -357,7 +357,7 @@ function Detail({
 function Chip({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation("dashboard");
   return (
-    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">
+    <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300">
       {children}
     </span>
   );
@@ -531,14 +531,14 @@ function ActivityTimeline({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">{t("detail.offerDetail.activity")}</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("detail.offerDetail.activity")}</h2>
         {!adding && !disabled ? (
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             + Add counter
           </button>
@@ -546,34 +546,34 @@ function ActivityTimeline({
       </div>
 
       {adding ? (
-        <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
+        <div className="mt-3 space-y-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.direction")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("detail.offerDetail.direction")}</label>
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value as CounterDirection)}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             >
               <option value="seller_to_buyer">{t("pages.offerDetail.sellerToBuyer")}</option>
               <option value="buyer_to_seller">{t("pages.offerDetail.buyerToSeller")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("offers.newPriceOptional")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("offers.newPriceOptional")}</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("detail.offerDetail.notes")}</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t("pages.offerDetail.counterExample")}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
             />
           </div>
           {err ? <p className="text-xs text-red-600">{err}</p> : null}
@@ -584,7 +584,7 @@ function ActivityTimeline({
                 setAdding(false);
                 setErr(null);
               }}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >{t("pages.offerDetail.cancel")}</button>
             <button
               type="button"
@@ -607,15 +607,15 @@ function ActivityTimeline({
           {events.map((e, i) => (
             <li
               key={`${e.at}-${i}`}
-              className="flex gap-3 rounded-lg border border-slate-100 px-3 py-2"
+              className="flex gap-3 rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2"
             >
               <div className="shrink-0 text-base leading-snug" aria-hidden>
                 {e.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-slate-900">{e.label}</div>
+                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{e.label}</div>
                 {e.detail ? (
-                  <div className="mt-0.5 text-[12px] text-slate-600">{e.detail}</div>
+                  <div className="mt-0.5 text-[12px] text-slate-600 dark:text-slate-400">{e.detail}</div>
                 ) : null}
               </div>
               <div className="shrink-0 text-right text-[11px] text-slate-500">

@@ -78,7 +78,7 @@ export default function InboundEmailSetupButton({
       onClick={() => setOpen(true)}
       title={t("calendar.inbound.settingsLabel")}
       aria-label={t("calendar.inbound.settingsLabel")}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
     >
       <Settings className="h-4 w-4" aria-hidden />
       <span className="hidden sm:inline">{t("calendar.inbound.settingsLabel")}</span>
@@ -90,7 +90,7 @@ export default function InboundEmailSetupButton({
       {variant === "row" ? (
         <div className="flex items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-900">{t("calendar.inbound.heading")}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("calendar.inbound.heading")}</p>
             <p className="mt-0.5 text-xs text-slate-500">{t("calendar.inbound.body")}</p>
           </div>
           {gear}
@@ -107,7 +107,7 @@ export default function InboundEmailSetupButton({
           </DialogHeader>
 
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 font-mono text-[12px] text-slate-900">
+            <code className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 font-mono text-[12px] text-slate-900 dark:text-slate-100">
               {alias.address}
             </code>
             <button
@@ -117,14 +117,14 @@ export default function InboundEmailSetupButton({
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1500);
               }}
-              className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               {copied ? t("calendar.inbound.copied") : t("calendar.inbound.copy")}
             </button>
           </div>
 
-          <div className="text-xs text-slate-600">
-            <p className="font-medium text-slate-700">{t("calendar.inbound.setupSummary")}</p>
+          <div className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="font-medium text-slate-700 dark:text-slate-300">{t("calendar.inbound.setupSummary")}</p>
             {/* Steps quote Gmail's own menu labels, so the translations use
                 Google's published Chinese strings rather than literal ones. */}
             <ol className="mt-2 list-decimal space-y-1 pl-5 leading-relaxed">
@@ -132,21 +132,21 @@ export default function InboundEmailSetupButton({
               <li>{t("calendar.inbound.step2")}</li>
               <li>
                 {t("calendar.inbound.step3")}{" "}
-                <code className="rounded bg-slate-100 px-1 font-mono">
+                <code className="rounded bg-slate-100 dark:bg-slate-800 px-1 font-mono">
                   offer OR &quot;purchase agreement&quot; OR &quot;listing agreement&quot; OR &quot;showing request&quot;
                 </code>
               </li>
               <li>{t("calendar.inbound.step4")}</li>
               <li>
                 {t("calendar.inbound.step5")}{" "}
-                <code className="rounded bg-slate-100 px-1 font-mono">{alias.address}</code>
+                <code className="rounded bg-slate-100 dark:bg-slate-800 px-1 font-mono">{alias.address}</code>
               </li>
               <li>{t("calendar.inbound.step6")}</li>
             </ol>
             <p className="mt-2 text-[11px] text-slate-500">{t("calendar.inbound.verifyNote")}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 pt-3 text-[11px] text-slate-600">
+          <div className="flex flex-wrap items-center gap-3 border-t border-slate-200 dark:border-slate-700 pt-3 text-[11px] text-slate-600 dark:text-slate-400">
             <span>{t("calendar.inbound.imported", { count: alias.inboundCount })}</span>
             {alias.lastReceivedAt && (
               <span>

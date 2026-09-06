@@ -169,7 +169,7 @@ export default function SocialAutopilotController() {
         className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
           aiOn
             ? "border-[#0072ce] bg-blue-50/50 ring-1 ring-[#0072ce]"
-            : "border-slate-200 bg-white hover:bg-slate-50"
+            : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
         }`}
       >
         <input
@@ -180,8 +180,8 @@ export default function SocialAutopilotController() {
           className="mt-0.5 h-4 w-4 shrink-0 accent-[#0072ce]"
         />
         <span className="min-w-0">
-          <span className="block text-sm font-semibold text-slate-900">{t("pages.socialAutopilot.letAiRun")}</span>
-          <span className="mt-0.5 block text-xs text-slate-600">{t("pages.socialAutopilot.letAiRunSub")}</span>
+          <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.socialAutopilot.letAiRun")}</span>
+          <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">{t("pages.socialAutopilot.letAiRunSub")}</span>
         </span>
       </label>
 
@@ -191,8 +191,8 @@ export default function SocialAutopilotController() {
 
       {/* ── Where ───────────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-slate-900">{t("pages.socialAutopilot.whereToPost")}</h3>
-        <p className="mt-0.5 text-xs text-slate-600">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.socialAutopilot.whereToPost")}</h3>
+        <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
           {config.platforms === null
             ? t("pages.socialAutopilot.allConnectedAccounts")
             : t("pages.socialAutopilot.onlyTheAccountsYou")}
@@ -211,7 +211,7 @@ export default function SocialAutopilotController() {
                   explicit
                     ? "border-[#0072ce] bg-[#0072ce] text-white"
                     : on
-                      ? "border-slate-300 bg-white text-slate-700"
+                      ? "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
                       : "border-slate-200 bg-slate-50 text-slate-400"
                 }`}
               >
@@ -224,8 +224,8 @@ export default function SocialAutopilotController() {
 
       {/* ── What ────────────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-slate-900">{t("pages.socialAutopilot.whatToPost")}</h3>
-        <p className="mt-0.5 text-xs text-slate-600">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.socialAutopilot.whatToPost")}</h3>
+        <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
           {config.contentCategories === null
             ? t("pages.socialAutopilot.anyTopicFromYour")
             : t("pages.socialAutopilot.onlyTheTopicsYou")}
@@ -247,7 +247,7 @@ export default function SocialAutopilotController() {
                   explicit
                     ? "border-[#0072ce] bg-[#0072ce] text-white"
                     : on
-                      ? "border-slate-300 bg-white text-slate-700"
+                      ? "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
                       : "border-slate-200 bg-slate-50 text-slate-400"
                 }`}
               >
@@ -264,21 +264,21 @@ export default function SocialAutopilotController() {
             onChange={() => save({ includeTimely: !config.includeTimely })}
             className="h-4 w-4 accent-[#0072ce]"
           />
-          <span className="text-xs text-slate-700">{t("pages.socialAutopilot.marketNews")}</span>
+          <span className="text-xs text-slate-700 dark:text-slate-300">{t("pages.socialAutopilot.marketNews")}</span>
         </label>
       </section>
 
       {/* ── How often ───────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-slate-900">{t("pages.socialAutopilot.howOften")}</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.socialAutopilot.howOften")}</h3>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-700">{t("pages.socialAutopilot.postsPerWeek")}</span>
+            <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.socialAutopilot.postsPerWeek")}</span>
             <select
               value={config.postsPerWeek}
               disabled={saving}
               onChange={(e) => save({ postsPerWeek: Number(e.target.value) })}
-              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+              className="mt-1 w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 text-sm"
             >
               {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                 <option key={n} value={n}>
@@ -289,14 +289,14 @@ export default function SocialAutopilotController() {
           </label>
 
           <label className="block">
-            <span className="block text-xs font-medium text-slate-700">{t("pages.socialAutopilot.maxPerDay")}</span>
+            <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.socialAutopilot.maxPerDay")}</span>
             <select
               value={config.postsPerDay ?? ""}
               disabled={saving}
               onChange={(e) =>
                 save({ postsPerDay: e.target.value === "" ? null : Number(e.target.value) })
               }
-              className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+              className="mt-1 w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 text-sm"
             >
               <option value="">{t("pages.dashFragments.onePerDaySpread")}</option>
               {[1, 2, 3, 4, 5].map((n) => (
@@ -308,7 +308,7 @@ export default function SocialAutopilotController() {
         </div>
 
         <div className="mt-3">
-          <span className="block text-xs font-medium text-slate-700">{t("pages.socialAutopilot.daysToPost")}</span>
+          <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.socialAutopilot.daysToPost")}</span>
           <p className="mt-0.5 text-[11px] text-slate-500">
             {config.postDays === null
               ? t("pages.socialAutopilot.spreadAutomaticallyAcrossThe")
@@ -326,7 +326,7 @@ export default function SocialAutopilotController() {
                   className={`w-12 rounded-md border px-2 py-1.5 text-xs font-medium transition ${
                     explicit
                       ? "border-[#0072ce] bg-[#0072ce] text-white"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                   }`}
                 >
                   {d.label}
@@ -337,7 +337,7 @@ export default function SocialAutopilotController() {
         </div>
 
         <label className="mt-3 block max-w-[220px]">
-          <span className="block text-xs font-medium text-slate-700">{t("pages.socialAutopilot.timeOfDay")}</span>
+          <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.socialAutopilot.timeOfDay")}</span>
           <select
             value={config.postHourUtc === null ? "" : utcHourToLocal(config.postHourUtc)}
             disabled={saving}
@@ -347,7 +347,7 @@ export default function SocialAutopilotController() {
                   e.target.value === "" ? null : localHourToUtc(Number(e.target.value)),
               })
             }
-            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 text-sm"
           >
             <option value="">{t("pages.socialAutopilot.defaultTime")}</option>
             {Array.from({ length: 24 }, (_, h) => (
@@ -360,7 +360,7 @@ export default function SocialAutopilotController() {
 
       {/* ── Who approves ────────────────────────────────────────────── */}
       <section>
-        <h3 className="text-sm font-semibold text-slate-900">{t("pages.socialAutopilot.whoApproves")}</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.socialAutopilot.whoApproves")}</h3>
         <div className="mt-2 space-y-2">
           {APPROVAL_OPTIONS.map((opt) => {
             // Legacy 'ask' (drafts-only) has no control here; show it as the
@@ -373,7 +373,7 @@ export default function SocialAutopilotController() {
                 className={`flex cursor-pointer gap-3 rounded-lg border p-3 transition ${
                   active
                     ? "border-[#0072ce] bg-blue-50/40 ring-1 ring-[#0072ce]"
-                    : "border-slate-200 bg-white hover:bg-slate-50"
+                    : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
                 } ${saving ? "opacity-60" : ""}`}
               >
                 <input
@@ -386,10 +386,10 @@ export default function SocialAutopilotController() {
                   className="mt-0.5 h-4 w-4 shrink-0 accent-[#0072ce]"
                 />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-slate-900">
+                  <span className="block text-sm font-medium text-slate-900 dark:text-slate-100">
                     {t(`pages.socialAutopilot.mode.${opt.value}.label`)}
                   </span>
-                  <span className="mt-0.5 block text-xs text-slate-600">
+                  <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">
                     {t(`pages.socialAutopilot.mode.${opt.value}.blurb`)}
                   </span>
                 </span>

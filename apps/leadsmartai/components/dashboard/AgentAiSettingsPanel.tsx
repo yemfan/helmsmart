@@ -111,7 +111,7 @@ export default function AgentAiSettingsPanel({
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-slate-600">{t("pages.agentAiSettings.intro")}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-400">{t("pages.agentAiSettings.intro")}</p>
 
       <div className="space-y-2">
         <span className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.personality")}</span>
@@ -122,7 +122,7 @@ export default function AgentAiSettingsPanel({
               className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer text-sm ${
                 settings.personality === p
                   ? "border-brand-accent bg-brand-accent/5"
-                  : "border-slate-200 hover:border-slate-300"
+                  : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
               }`}
             >
               <input
@@ -141,7 +141,7 @@ export default function AgentAiSettingsPanel({
       <div className="space-y-1">
         <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
         <select
-          className="w-full max-w-xs border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white"
+          className="w-full max-w-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.defaultLanguage}
           onChange={(e) =>
             setSettings((s) => ({
@@ -183,7 +183,7 @@ export default function AgentAiSettingsPanel({
           <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-slate-400 font-normal">(optional, max 500 chars)</span>
           </label>
           <textarea
-            className="w-full min-h-[88px] border border-slate-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full min-h-[88px] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm"
             placeholder={t("pages.agentAiSettings.stylePlaceholder")}
             maxLength={500}
             value={settings.styleNotes ?? ""}
@@ -191,7 +191,7 @@ export default function AgentAiSettingsPanel({
           />
         </div>
 
-        <div className="space-y-1 border-t border-slate-100 pt-4">
+        <div className="space-y-1 border-t border-slate-100 dark:border-slate-700 pt-4">
           <div className="flex items-center justify-between">
             <label className="block text-[11px] font-medium text-slate-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
               <span className="font-normal text-slate-400">(social cards)</span>
@@ -211,7 +211,7 @@ export default function AgentAiSettingsPanel({
                   : "#0072ce"
               }
               onChange={(e) => setSettings((s) => ({ ...s, brandColor: e.target.value }))}
-              className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-slate-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-1 disabled:cursor-not-allowed disabled:opacity-50"
             />
             <input
               id="brand-color"
@@ -224,7 +224,7 @@ export default function AgentAiSettingsPanel({
               onChange={(e) =>
                 setSettings((s) => ({ ...s, brandColor: e.target.value || null }))
               }
-              className="w-32 rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
+              className="w-32 rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
             />
             {settings.brandColor && (
               <button
@@ -248,8 +248,8 @@ export default function AgentAiSettingsPanel({
           )}
         </div>
 
-        <div className="border-t border-slate-100 pt-4">
-          <div className="text-sm font-semibold text-slate-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
+        <div className="border-t border-slate-100 dark:border-slate-700 pt-4">
+          <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("pages.dashFragments.preview")}{settings.personality})</div>
           <PersonalityPreview personality={settings.personality} />
         </div>
       </AdvancedSection>

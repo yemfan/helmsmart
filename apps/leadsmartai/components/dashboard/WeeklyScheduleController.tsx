@@ -176,7 +176,7 @@ export default function WeeklyScheduleController() {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-slate-600">
+      <p className="text-xs text-slate-600 dark:text-slate-400">
         {t("pages.weeklySchedule.intro")}
       </p>
 
@@ -186,7 +186,7 @@ export default function WeeklyScheduleController() {
         </p>
       ) : null}
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 px-3 py-2">
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -194,7 +194,7 @@ export default function WeeklyScheduleController() {
             onChange={(e) => setEveryDay(e.target.checked)}
             className="accent-brand-accent"
           />
-          <span className="text-sm font-semibold text-slate-900">{t("pages.weeklySchedule.everyDay")}</span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.weeklySchedule.everyDay")}</span>
         </label>
         <p className="mt-0.5 pl-6 text-[11px] text-slate-500">{t("pages.weeklySchedule.everyDayHint")}</p>
       </div>
@@ -207,7 +207,7 @@ export default function WeeklyScheduleController() {
           const aiTime = d.timeMode === "ai";
           const aiTopic = d.topicMode === "ai";
           return (
-            <li key={d.weekday} className="rounded-xl border border-slate-200 bg-white p-3">
+            <li key={d.weekday} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -215,7 +215,7 @@ export default function WeeklyScheduleController() {
                   onChange={(e) => patch(d.weekday, { enabled: e.target.checked })}
                   className="accent-brand-accent"
                 />
-                <span className="text-sm font-semibold text-slate-900">{WEEKDAYS[d.weekday]}</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{WEEKDAYS[d.weekday]}</span>
               </label>
 
               {d.enabled ? (
@@ -224,7 +224,7 @@ export default function WeeklyScheduleController() {
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-medium text-slate-500">{t("pages.weeklySchedule.time")}</span>
                       {aiTime ? (
-                        <span className="rounded-lg border border-dashed border-slate-300 px-2 py-1 text-sm text-slate-500">
+                        <span className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 px-2 py-1 text-sm text-slate-500">
                           {t("pages.weeklySchedule.aiPicksTimeValue")}
                         </span>
                       ) : (
@@ -235,13 +235,13 @@ export default function WeeklyScheduleController() {
                             const [h, m] = e.target.value.split(":").map((n) => parseInt(n, 10));
                             patch(d.weekday, { postHour: h || 0, postMinute: m || 0 });
                           }}
-                          className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
+                          className="rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-sm"
                         />
                       )}
                       <span className="text-[10px] text-slate-400">{d.timezone}</span>
                     </div>
 
-                    <label className="flex items-center gap-2 text-[11px] text-slate-600">
+                    <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400">
                       <input
                         type="checkbox"
                         checked={aiTime}
@@ -258,7 +258,7 @@ export default function WeeklyScheduleController() {
                       <select
                         value={d.postsPerDay}
                         onChange={(e) => patch(d.weekday, { postsPerDay: Number(e.target.value) })}
-                        className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm"
+                        className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm"
                       >
                         {POSTS_PER_DAY_CHOICES.map((n) => (
                           <option key={n} value={n}>
@@ -275,14 +275,14 @@ export default function WeeklyScheduleController() {
                       </p>
                     ) : null}
 
-                    <div className="inline-flex overflow-hidden rounded-lg border border-slate-300 text-[11px] font-medium">
+                    <div className="inline-flex overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700 text-[11px] font-medium">
                       {(["text", "image", "video"] as MediaType[]).map((t) => (
                         <button
                           key={t}
                           type="button"
                           onClick={() => setMediaType(d, t)}
                           className={`px-3 py-1 ${
-                            d.mediaType === t ? "bg-brand-accent text-white" : "bg-white text-slate-600"
+                            d.mediaType === t ? "bg-brand-accent text-white" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400"
                           }`}
                         >
                           {t === "text"
@@ -308,8 +308,8 @@ export default function WeeklyScheduleController() {
                           onClick={() => togglePlatform(d, p)}
                           className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
                             selected.includes(p)
-                              ? "border-brand-accent bg-brand-accent/10 text-slate-900"
-                              : "border-slate-200 text-slate-500"
+                              ? "border-brand-accent bg-brand-accent/10 text-slate-900 dark:text-slate-100"
+                              : "border-slate-200 dark:border-slate-700 text-slate-500"
                           }`}
                         >
                           {LABELS[p]}
@@ -323,7 +323,7 @@ export default function WeeklyScheduleController() {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[11px] font-medium text-slate-500">{t("pages.weeklySchedule.topic")}</span>
                       {aiTopic ? (
-                        <span className="rounded-lg border border-dashed border-slate-300 px-2 py-1 text-sm text-slate-500">
+                        <span className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 px-2 py-1 text-sm text-slate-500">
                           {t("pages.weeklySchedule.aiPicksTopicValue")}
                         </span>
                       ) : (
@@ -331,7 +331,7 @@ export default function WeeklyScheduleController() {
                           <select
                             value={presets.includes(d.topic) ? d.topic : ""}
                             onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm"
+                            className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-sm"
                           >
                             <option value="">{t("pages.weeklySchedule.pickTopic")}</option>
                             {presets.map((t) => (
@@ -345,13 +345,13 @@ export default function WeeklyScheduleController() {
                             value={d.topic}
                             onChange={(e) => patch(d.weekday, { topic: e.target.value })}
                             placeholder={t("pages.weeklySchedule.typeYourOwn")}
-                            className="min-w-[180px] flex-1 rounded-lg border border-slate-300 px-2 py-1 text-sm"
+                            className="min-w-[180px] flex-1 rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-sm"
                           />
                         </>
                       )}
                     </div>
 
-                    <label className="flex items-center gap-2 text-[11px] text-slate-600">
+                    <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400">
                       <input
                         type="checkbox"
                         checked={aiTopic}

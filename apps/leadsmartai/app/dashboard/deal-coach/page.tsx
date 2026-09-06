@@ -23,10 +23,10 @@ export default async function DealCoachPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
           {t("pages.dealCoach.heading", { ns: "dashboard" })}
         </h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           {t("pages.dealCoach.intro", { ns: "dashboard" })}
         </p>
       </header>

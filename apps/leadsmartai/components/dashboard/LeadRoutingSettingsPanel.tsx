@@ -109,15 +109,15 @@ export default function LeadRoutingSettingsPanel() {
   }, [inRoundRobin, zipText]);
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-100 px-5 py-4">
+    <section className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+      <header className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">{t("pages.leadRoutingSettings.title")}</h2>
-            <p className="mt-0.5 text-xs text-slate-600">{t("pages.leadRoutingSettings.intro")}</p>
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRoutingSettings.title")}</h2>
+            <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{t("pages.leadRoutingSettings.intro")}</p>
           </div>
           {updatedAt ? (
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{t("pages.dashFragments.saved")} {formatDate(updatedAt)}
+            <span className="shrink-0 rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">{t("pages.dashFragments.saved")} {formatDate(updatedAt)}
             </span>
           ) : null}
         </div>
@@ -126,8 +126,8 @@ export default function LeadRoutingSettingsPanel() {
       <div className="space-y-5 p-5">
         {loading ? (
           <div className="space-y-3">
-            <div className="h-10 animate-pulse rounded-lg bg-slate-100" />
-            <div className="h-24 animate-pulse rounded-lg bg-slate-100" />
+            <div className="h-10 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+            <div className="h-24 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
           </div>
         ) : (
           <>
@@ -136,23 +136,23 @@ export default function LeadRoutingSettingsPanel() {
                 type="checkbox"
                 checked={inRoundRobin}
                 onChange={(e) => setInRoundRobin(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-slate-900"
               />
               <span>
-                <span className="text-sm font-semibold text-slate-900">{t("pages.leadRoutingSettings.includeMe")}</span>
-                <span className="mt-0.5 block text-xs text-slate-600">{t("pages.leadRoutingSettings.includeHint")}</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRoutingSettings.includeMe")}</span>
+                <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">{t("pages.leadRoutingSettings.includeHint")}</span>
               </span>
             </label>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900">{t("pages.leadRoutingSettings.zipCoverage")}</label>
-              <p className="mt-0.5 text-xs text-slate-600">{t("pages.leadRoutingSettings.zipHint")}</p>
+              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRoutingSettings.zipCoverage")}</label>
+              <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{t("pages.leadRoutingSettings.zipHint")}</p>
               <textarea
                 value={zipText}
                 onChange={(e) => setZipText(e.target.value)}
                 rows={3}
                 placeholder="78701, 78702, 78703"
-                className="mt-2 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                className="mt-2 block w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
               />
               <ZipPreview parsed={parsedZips} />
             </div>
@@ -193,7 +193,7 @@ function ZipPreview({ parsed }: { parsed: string[] }) {
       {parsed.map((z) => (
         <span
           key={z}
-          className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-slate-700"
+          className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-slate-700 dark:text-slate-300"
         >
           {z}
         </span>
