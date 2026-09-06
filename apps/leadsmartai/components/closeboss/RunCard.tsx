@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
 import { ASSIGNEE_PERSONA } from "@/lib/closeboss/assigneePersona";
+import { MarkdownLite } from "@/components/ui/MarkdownLite";
 
 /**
  * Live Boss v2 run card (HANDOFF_BOSS_V2 PR-4): plan + step timeline with
@@ -90,6 +91,21 @@ const TOOL_LABEL: Record<string, string> = {
 
 const LIVE = new Set(["planning", "running", "awaiting_approval"]);
 
+/**
+ * Tools that only READ. A run whose completed steps are all of this kind (or
+ * that ran no steps at all — Max just answered or asked a question) did no
+ * work for the agent, so it must not be framed as a mission accomplished.
+ * That framing on a clarifying question was the single most-cited trust
+ * problem in the 2026-09 UX audit.
+ */
+const READ_ONLY_TOOLS = new Set(["query_crm", "get_market_snapshot"]);
+
+function didRealWork(steps: RunStep[]): boolean {
+  return steps.some(
+    (s) => s.status === "completed" && (Boolean(s.output_json?.artifactUrl) || !READ_ONLY_TOOLS.has(s.tool_name)),
+  );
+}
+
 export default function RunCard({
   runId,
   onChanged,
@@ -129,23 +145,31 @@ export default function RunCard({
   const plan = run.plan_json?.plan ?? null;
   const pct = Math.min(100, Math.round((run.tool_calls / Math.max(run.max_tool_calls, 1)) * 100));
   const tokens = run.input_tokens + run.output_tokens;
+  const realWork = didRealWork(steps);
+  // "Done" is only true when something was done. A run that ended with Max
+  // asking a question or answering one reads as a reply, not a completion.
+  const displayStatus = run.status === "completed" && !realWork ? "replied" : run.status;
 
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-2">
-        <StatusPill status={run.status} />
-        {/* budget meter */}
-        <div className="flex items-center gap-2 text-[10px] text-gray-400" title={`${tokens.toLocaleString()} / ${run.token_budget.toLocaleString()} tokens`}>
-          <span>
-            {t("pages.runCard.toolCalls", { used: run.tool_calls, max: run.max_tool_calls })}
-          </span>
-          <span className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-100">
-            <span className="block h-full rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
-          </span>
-        </div>
+        <StatusPill status={displayStatus} />
+        {/* Budget meter — only while the run is live. Once it has finished the
+            "3/25 tools" figure is an internal budget the agent never set and
+            reads as noise (or worse, as a score). */}
+        {live && (
+          <div className="flex items-center gap-2 text-[10px] text-gray-400" title={`${tokens.toLocaleString()} / ${run.token_budget.toLocaleString()} tokens`}>
+            <span>
+              {t("pages.runCard.toolCalls", { used: run.tool_calls, max: run.max_tool_calls })}
+            </span>
+            <span className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-100">
+              <span className="block h-full rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
+            </span>
+          </div>
+        )}
       </div>
 
-      {plan && <p className="whitespace-pre-line text-xs text-gray-600">{plan}</p>}
+      {plan && live && <div className="text-xs text-gray-600"><MarkdownLite text={plan} /></div>}
 
       {steps.length > 0 && (
         <ol className="space-y-1">
@@ -161,12 +185,12 @@ export default function RunCard({
         </p>
       )}
 
-      {run.status === "completed" ? (
+      {run.status === "completed" && realWork ? (
         <MissionCompleteCard run={run} steps={steps} />
       ) : (
         run.report && (
-          <div className="rounded-lg border border-gray-100 bg-gray-50 p-2.5">
-            <p className="whitespace-pre-line text-sm text-gray-800">{run.report}</p>
+          <div className="rounded-lg border border-gray-100 bg-gray-50 p-2.5 text-sm text-gray-800">
+            <MarkdownLite text={run.report} />
           </div>
         )
       )}
@@ -244,7 +268,9 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
 
       {/* Max's report — his voice, already ending with a proactive next step */}
       {run.report && (
-        <p className="whitespace-pre-line px-3 pt-2.5 text-sm text-gray-800">{run.report}</p>
+        <div className="px-3 pt-2.5 text-sm text-gray-800">
+          <MarkdownLite text={run.report} />
+        </div>
       )}
 
       {/* deliverables */}
@@ -273,6 +299,7 @@ function StatusPill({ status }: { status: string }) {
     running: { label: "Working", cls: "bg-blue-50 text-blue-700" },
     awaiting_approval: { label: "Needs your approval", cls: "bg-amber-100 text-amber-800" },
     completed: { label: "Done", cls: "bg-emerald-50 text-emerald-700" },
+    replied: { label: "Replied", cls: "bg-gray-100 text-gray-600" },
     failed: { label: "Failed", cls: "bg-red-50 text-red-700" },
     budget_exceeded: { label: "Budget reached", cls: "bg-amber-50 text-amber-700" },
     cancelled: { label: "Cancelled", cls: "bg-gray-100 text-gray-500" },

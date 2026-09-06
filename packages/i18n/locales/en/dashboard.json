@@ -4465,7 +4465,20 @@
       "skipFinish": "Skip & Finish",
       "finishSetup": "Finish Setup",
       "pickYourArea": "Pick the state, county, and city you serve so we can match you with local leads. Check “all cities” if you cover the whole county.",
-      "stepOfFour": "Step {{step}} of 4"
+      "stepOfFour": "Step {{step}} of 4",
+      "steps": {
+        "serviceAreas": "Service areas",
+        "branding": "Branding",
+        "aiAssistant": "AI assistant",
+        "notifications": "Notifications"
+      },
+      "doLater": "Do this later",
+      "notifHotLead": "Hot lead alerts",
+      "notifHotLeadDesc": "When a high-intent lead comes in",
+      "notifReminder": "Follow-up reminders",
+      "notifReminderDesc": "When it's time to contact a lead",
+      "notifMissedCall": "Missed call alerts",
+      "notifMissedCallDesc": "When a lead calls and you miss it"
     },
     "coaching": {
       "brand": "CloseBoss Coaching",

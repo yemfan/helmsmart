@@ -4465,7 +4465,20 @@
       "skipFinish": "跳过并完成",
       "finishSetup": "完成设置",
       "pickYourArea": "选择您服务的州、县与城市，以便为您匹配当地线索。若您服务整个县，请勾选「全部城市」。",
-      "stepOfFour": "第 {{step}} 步／共 4 步"
+      "stepOfFour": "第 {{step}} 步／共 4 步",
+      "steps": {
+        "serviceAreas": "服务区域",
+        "branding": "品牌",
+        "aiAssistant": "AI 助理",
+        "notifications": "通知"
+      },
+      "doLater": "稍后再做",
+      "notifHotLead": "热门线索提醒",
+      "notifHotLeadDesc": "有高意向线索进来时",
+      "notifReminder": "跟进提醒",
+      "notifReminderDesc": "到了该联系线索的时候",
+      "notifMissedCall": "未接来电提醒",
+      "notifMissedCallDesc": "线索来电而你未接时"
     },
     "coaching": {
       "brand": "CloseBoss 教练",

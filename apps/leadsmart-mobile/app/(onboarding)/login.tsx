@@ -19,6 +19,7 @@ import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
 import { BackRow } from "../../components/onboarding/BackRow";
+import { HOME_ROUTE } from "../../lib/homeRoute";
 
 /**
  * OAuth button styles — factory form so Google button surface
@@ -92,7 +93,7 @@ export default function OnboardingLoginScreen() {
 
   function goAfterSignIn() {
     if (onboardingComplete) {
-      router.replace("/(tabs)/inbox");
+      router.replace(HOME_ROUTE);
     } else {
       router.replace("/(onboarding)/notifications");
     }
@@ -208,13 +209,15 @@ export default function OnboardingLoginScreen() {
               Paste a JWT only for troubleshooting or if email sign-in is unavailable.
             </Text>
           )}
+          {/* Endpoint readout and the token fallback are developer tools. In a
+              release build they read as an unfinished app to the agent. */}
           {!apiUrl ? (
             <Text style={s.error}>Missing API URL — set EXPO_PUBLIC_LEADSMART_API_URL in .env or app config.</Text>
-          ) : (
+          ) : __DEV__ ? (
             <Text style={s.muted} numberOfLines={2}>
               Endpoint: {apiUrl}
             </Text>
-          )}
+          ) : null}
 
           {!showTokenFallback && oauthAvailable ? (
             <>
@@ -319,19 +322,21 @@ export default function OnboardingLoginScreen() {
             When off, you&apos;ll be signed out after you fully close the app.
           </Text>
 
-          <Pressable
-            onPress={() => {
-              setShowTokenFallback((v) => !v);
-              setError(null);
-            }}
-            disabled={busy}
-            accessibilityRole="button"
-            accessibilityLabel={showTokenFallback ? "Use email sign-in" : "Use token instead"}
-          >
-            <Text style={[s.muted, { textDecorationLine: "underline", marginTop: 8 }]}>
-              {showTokenFallback ? "← Sign in with email" : "Advanced: sign in with token"}
-            </Text>
-          </Pressable>
+          {__DEV__ ? (
+            <Pressable
+              onPress={() => {
+                setShowTokenFallback((v) => !v);
+                setError(null);
+              }}
+              disabled={busy}
+              accessibilityRole="button"
+              accessibilityLabel={showTokenFallback ? "Use email sign-in" : "Use token instead"}
+            >
+              <Text style={[s.muted, { textDecorationLine: "underline", marginTop: 8 }]}>
+                {showTokenFallback ? "← Sign in with email" : "Advanced: sign in with token"}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
         <View style={{ marginTop: 24 }}>
           {!showTokenFallback ? (

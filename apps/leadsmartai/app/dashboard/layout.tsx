@@ -14,6 +14,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { getServerT } from "@/lib/i18n/server";
+import { isPaidPlanCached } from "@/lib/credits/cachedPlan";
 
 export default async function DashboardLayout({
   children,
@@ -125,6 +126,10 @@ export default async function DashboardLayout({
     // Non-blocking — fall back to email-derived label below.
   }
 
+  // Upsell chrome (Upgrade pill, sidebar promo) is keyed on the plan, not the
+  // role: a Signature subscriber was being asked to upgrade on every page.
+  const isPaid = await isPaidPlanCached(ctx.userId);
+
   return (
     <AgentWorkspaceProviders>
       <ToastProvider>
@@ -133,6 +138,7 @@ export default async function DashboardLayout({
           appRole={appRole}
           fullName={fullName}
           avatarUrl={avatarUrl}
+          isPaid={isPaid}
         >
           <OnboardingGate />
           <ErrorBoundary>

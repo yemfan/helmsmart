@@ -70,11 +70,14 @@ export default function AppDashboardShell({
   appRole,
   fullName,
   avatarUrl,
+  isPaid = false,
   children,
   navConfigOverride,
 }: {
   email: string | null | undefined;
   appRole?: string | null;
+  /** Live subscription on the account — hides the Upgrade pill and sidebar promo. */
+  isPaid?: boolean;
   /** `user_profiles.full_name` — single identity source shared with TopBar. */
   fullName?: string | null;
   /** `user_profiles.avatar_url` — server-provided so the avatar is SSR-stable. */
@@ -100,7 +103,7 @@ export default function AppDashboardShell({
   }, [appRole, navConfigOverride, t, i18n.language]);
 
   const activeNavConfig = navConfigOverride === "broker" ? brokerNavConfig : navConfig;
-  const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
+  const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole) && !isPaid;
   const sidebarUser = useMemo(
     () => buildSidebarUser(email, appRole, fullName),
     [email, appRole, fullName]
@@ -138,13 +141,17 @@ export default function AppDashboardShell({
       {/* Right: header then scrollable content */}
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
         <div className="shrink-0">
-          <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} />
+          <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} isPaid={isPaid} />
         </div>
         <main
           id="agent-portal-main"
           className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/60 px-4 py-6 md:px-8 md:py-8 lg:px-10"
         >
-          {children}
+          {/* The root layout's skip link targets #main-content; this is the
+              focusable landing spot for it inside the dashboard shell. */}
+          <div id="main-content" tabIndex={-1} className="outline-none">
+            {children}
+          </div>
           {/* Points at the live sidebar, so it cannot drift from the app. */}
           <SiteTour />
         </main>

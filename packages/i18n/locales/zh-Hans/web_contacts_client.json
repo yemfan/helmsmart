@@ -70,7 +70,8 @@
     "rating": "评级",
     "last_contacted": "最近联系",
     "memo": "备注",
-    "address": "地址"
+    "address": "地址",
+    "actions": "操作"
   },
   "time_ago": {
     "today": "今天",

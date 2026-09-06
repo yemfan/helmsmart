@@ -62,7 +62,15 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
 
   let subs;
   try {
-    subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+    subs = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "all",
+      limit: 10,
+      // The product name is the fallback plan label for subscriptions that
+      // predate the credit tiers (legacy CRM ladder) — "Signature" beats
+      // "Subscribed" on the billing card.
+      expand: ["data.items.data.price.product"],
+    });
   } catch {
     return FREE_PLAN; // Stripe unreachable — don't invent a plan.
   }
@@ -93,9 +101,18 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
   const itemPeriod = firstItem as unknown as { current_period_end?: number } | undefined;
   const periodEnd = subPeriod.current_period_end ?? itemPeriod?.current_period_end;
 
+  const product = firstItem?.price?.product;
+  const productName =
+    product && typeof product === "object" && "name" in product && typeof product.name === "string"
+      ? product.name
+      : null;
+  const metaName = metaPlan
+    ? metaPlan.replace(/^crm_/, "").replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : null;
+
   return {
     planId: tier?.id ?? metaPlan ?? "unknown",
-    name: tier?.name ?? "Subscribed",
+    name: tier?.name ?? productName ?? metaName ?? "Subscribed",
     priceUsd: tier?.priceUsd ?? null,
     monthlyCredits: tier?.monthlyCredits ?? null,
     renewsAt: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,

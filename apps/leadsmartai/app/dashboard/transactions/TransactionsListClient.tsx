@@ -85,7 +85,11 @@ export function TransactionsListClient({
 }) {
   const { t } = useTranslation("dashboard");
   const [items] = useState(initialItems);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
+  // Land on the first filter that has something in it. "Active (0)" beside
+  // "All (2)" opened the page on an empty state while records existed.
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    () => STATUS_FILTERS.find((f) => initialItems.some((t) => statusMatches(t, f.key)))?.key ?? "active",
+  );
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
 
   /**
@@ -137,7 +141,7 @@ export function TransactionsListClient({
           <TransactionsViewToggle current="list" />
           <Link
             href="/dashboard/transactions/new"
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
           >{t("pages.transactionsList.newTransaction")}</Link>
         </div>
       </header>
@@ -202,7 +206,7 @@ export function TransactionsListClient({
           ) : null}
           <Link
             href="/dashboard/transactions/new"
-            className="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="mt-4 inline-flex rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
           >{t("pages.transactionsList.newTransaction")}</Link>
         </div>
       ) : (

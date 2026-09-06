@@ -428,7 +428,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             {monthStats.events} {tr("pages.dashFragments.appointments")} {monthStats.tasks} {tr("pages.dashFragments.tasksSep")} {monthStats.followups} {tr("pages.dashFragments.followUps")} {monthStats.drafts} {tr("pages.dashFragments.drafts")}
           </p>
         </div>
-        <button onClick={() => (showAdd ? resetForm() : setShowAdd(true))} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
+        <button onClick={() => (showAdd ? resetForm() : setShowAdd(true))} className="rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8]">
           {showAdd ? tr("calendar.cancel") : tr("calendar.addEvent")}
         </button>
       </div>
@@ -473,7 +473,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             )}
           </div>
           {addMsg && <p className={`text-xs ${addMsg === "Added!" ? "text-green-700" : "text-red-600"}`}>{addMsg}</p>}
-          <button onClick={() => void addItem()} disabled={addLoading || !addFields.title.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
+          <button onClick={() => void addItem()} disabled={addLoading || !addFields.title.trim()} className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {addLoading
               ? editingEventId ? tr("calendar.saving") : tr("calendar.adding")
               : editingEventId ? tr("calendar.save") : tr("calendar.add")}

@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { useOnboardingStyles } from "../../lib/onboarding/styles";
 import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
 import { BackRow } from "../../components/onboarding/BackRow";
+import { HOME_ROUTE } from "../../lib/homeRoute";
 
 export default function OnboardingNotificationsScreen() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function OnboardingNotificationsScreen() {
       await markOnboardingComplete();
     } finally {
       setBusy(false);
-      router.replace("/(tabs)/inbox");
+      router.replace(HOME_ROUTE);
     }
   };
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 
 import { canEmailThread } from "@/lib/inbox/replyTarget";
 import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
@@ -39,7 +40,13 @@ type LeadInfo = {
   property_address: string | null;
 };
 
-const CHANNEL_ICON: Record<string, string> = { sms: "💬", email: "✉️", call: "📞" };
+/** Channel glyph — the same icon family as the rest of the app, not emoji. */
+function ChannelIcon({ channel, className }: { channel: string; className?: string }) {
+  const cls = className ?? "h-3.5 w-3.5";
+  if (channel === "email") return <Mail className={cls} strokeWidth={2} aria-hidden />;
+  if (channel === "call") return <Phone className={cls} strokeWidth={2} aria-hidden />;
+  return <MessageSquare className={cls} strokeWidth={2} aria-hidden />;
+}
 
 /** Call length as m:ss. Locale-neutral, so it needs no translated string. */
 function callLength(seconds: number | null | undefined): string | null {
@@ -297,7 +304,7 @@ export default function InboxClient() {
                   className={`w-full text-left px-3 py-3 border-b border-gray-50 transition ${isSelected ? "bg-blue-50" : "hover:bg-gray-50"}`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="shrink-0 text-sm mt-0.5">{CHANNEL_ICON[t.channel] ?? "💬"}</span>
+                    <span className="shrink-0 mt-1 text-gray-400"><ChannelIcon channel={t.channel} className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className={`text-sm truncate ${isUnread ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
@@ -375,7 +382,7 @@ export default function InboxClient() {
                             {m.subject && <p className="text-[10px] font-semibold opacity-70 mb-0.5">{m.subject}</p>}
                             <p className="text-sm whitespace-pre-wrap">{m.message}</p>
                             <div className={`flex items-center gap-1.5 mt-1 ${isOutbound ? "justify-end" : ""}`}>
-                              <span className="text-[10px] opacity-50">{CHANNEL_ICON[m.channel] ?? ""}</span>
+                              <span className="opacity-50"><ChannelIcon channel={m.channel} className="h-3 w-3" /></span>
                               <span className="text-[10px] opacity-50">{formatTime(m.created_at, locale)}</span>
                               {/* Only calls have a length; m:ss needs no translation. */}
                               {callLength(m.durationSeconds) && (

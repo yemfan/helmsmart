@@ -70,7 +70,8 @@
     "rating": "Rating",
     "last_contacted": "Last Contacted",
     "memo": "Memo",
-    "address": "Address"
+    "address": "Address",
+    "actions": "Actions"
   },
   "time_ago": {
     "today": "Today",

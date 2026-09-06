@@ -41,8 +41,9 @@ import {
   type MobileBossTask,
 } from "../../lib/leadsmartMobileApi";
 
-// Max's profile avatar — the CloseBoss app icon.
-const BOSS_AVATAR = require("../../assets/icon.png");
+// Max's portrait — the same persona the web app shows beside his replies.
+// (Was the app icon, which made the captain look like a different product.)
+const BOSS_AVATAR = require("../../assets/team/max.png");
 
 /**
  * Boss Assistant — the mobile command center. Mirrors the web
@@ -239,6 +240,7 @@ export default function BossScreen() {
             <Pressable
               onPress={() => void setGlobal(!autopilot)}
               style={[s.autoPill, autopilot ? s.autoPillOn : s.autoPillOff]}
+              hitSlop={8}
               accessibilityRole="switch"
               accessibilityState={{ checked: autopilot }}
             >
@@ -247,7 +249,7 @@ export default function BossScreen() {
                 {autopilot ? "Autopilot on" : "Autopilot off"}
               </Text>
             </Pressable>
-            <Pressable onPress={() => setSettingsOpen(true)} style={s.gear} accessibilityLabel="Approval settings">
+            <Pressable onPress={() => setSettingsOpen(true)} style={s.gear} hitSlop={4} accessibilityRole="button" accessibilityLabel="Approval settings">
               <Ionicons name="options-outline" size={18} color={tokens.textMuted} />
             </Pressable>
           </View>
@@ -338,7 +340,7 @@ export default function BossScreen() {
             {/* Quick commands */}
             <View style={s.chipRow}>
               {QUICK_COMMANDS.map((q) => (
-                <Pressable key={q} style={s.chip} onPress={() => void submitCommand(q)}>
+                <Pressable key={q} style={s.chip} hitSlop={6} accessibilityRole="button" onPress={() => void submitCommand(q)}>
                   <Text style={s.chipText}>{q}</Text>
                 </Pressable>
               ))}
@@ -627,11 +629,12 @@ const createStyles = (t: ThemeTokens) =>
     bossName: { fontSize: 17, fontWeight: "700", color: t.text },
     bossSub: { fontSize: 12, color: t.textMuted },
     headerActions: { flexDirection: "row", alignItems: "center", gap: 8 },
-    autoPill: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20 },
+    autoPill: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 12, paddingVertical: 8, minHeight: 36, borderRadius: 20 },
     autoPillOn: { backgroundColor: t.successBg },
     autoPillOff: { backgroundColor: t.surface, borderWidth: 1, borderColor: t.border },
     autoPillText: { fontSize: 12, fontWeight: "600" },
-    gear: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: t.border, backgroundColor: t.surface },
+    // 44pt is the practical minimum touch target (WCAG 2.5.8 / HIG).
+    gear: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: t.border, backgroundColor: t.surface },
     loadingBox: { paddingVertical: 40, alignItems: "center" },
     dashboardBlock: {
       backgroundColor: t.surface,
@@ -661,7 +664,7 @@ const createStyles = (t: ThemeTokens) =>
     userBubbleRow: { alignItems: "flex-end", marginVertical: 6 },
     userBubble: { maxWidth: "85%", backgroundColor: t.accent, color: t.textOnAccent, borderRadius: 14, borderTopRightRadius: 4, paddingHorizontal: 12, paddingVertical: 9, fontSize: 14, overflow: "hidden" },
     chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 4 },
-    chip: { backgroundColor: t.surfaceElevated, borderWidth: 1, borderColor: t.border, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7 },
+    chip: { backgroundColor: t.surfaceElevated, borderWidth: 1, borderColor: t.border, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8, minHeight: 36, justifyContent: "center" },
     chipText: { fontSize: 12, color: t.textSecondary },
     teamSection: { marginTop: 12, backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 14, padding: 12, gap: 8 },
     sectionTitle: { fontSize: 14, fontWeight: "700", color: t.text, marginBottom: 2 },

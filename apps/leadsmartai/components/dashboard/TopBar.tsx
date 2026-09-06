@@ -420,6 +420,7 @@ export default function TopBar({
   appRole,
   fullName: fullNameProp,
   avatarUrl: avatarUrlProp,
+  isPaid = false,
 }: {
   email: string | null | undefined;
   appRole?: string | null;
@@ -428,6 +429,8 @@ export default function TopBar({
   fullName?: string | null;
   /** Server-provided `user_profiles.avatar_url` — seeds the avatar likewise. */
   avatarUrl?: string | null;
+  /** Live subscription on the account — no Upgrade pill, no upsell promo. */
+  isPaid?: boolean;
 }) {
   // Same English-keyed translation the desktop sidebar uses, so the mobile
   // drawer doesn't stay English after the agent switches language.
@@ -442,7 +445,7 @@ export default function TopBar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [appRole, tNav, i18n.language]
   );
-  const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
+  const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole) && !isPaid;
   const hideCommercialPricing = isAdminOrSupportRole(appRole);
   const slimAccountBillingOnly =
     isAgentOrBrokerProfileRole(appRole) && !isAdminOrSupportRole(appRole);

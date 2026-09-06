@@ -493,7 +493,7 @@ export default function TasksClient({
       {actionMsg && <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">{actionMsg}</div>}
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={() => setShowAddForm((v) => !v)}
-          className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
+          className="rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8]">
           {showAddForm ? tr("tasks.cancel") : tr("tasks.addTask")}
         </button>
       </div>
@@ -518,7 +518,7 @@ export default function TasksClient({
           </div>
           <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
           <button type="button" onClick={() => void addTask()} disabled={actionLoading || !addFields.title.trim()}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {actionLoading ? tr("tasks.saving") : tr("tasks.createTask")}
           </button>
         </div>

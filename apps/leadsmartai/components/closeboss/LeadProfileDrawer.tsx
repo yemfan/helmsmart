@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { HubJourney } from "./HubJourney";
@@ -47,6 +47,25 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
   // Merge every interaction into one relationship timeline.
   const timeline = useMemo(() => (data ? buildTimeline(data, 14) : []), [data]);
 
+  // Keyboard contract for a modal panel: Escape closes it, focus moves into it
+  // on open and returns to whatever opened it on close. Verified missing in
+  // the 2026-09 UX audit — the drawer trapped keyboard users with no way out.
+  const panelRef = useRef<HTMLElement>(null);
+  const restoreRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!leadId) return;
+    restoreRef.current = (document.activeElement as HTMLElement | null) ?? null;
+    panelRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      restoreRef.current?.focus?.();
+    };
+  }, [leadId, onClose]);
+
   if (!leadId) return null;
   const p = data?.person;
   const story = p ? buildStory(p) : "";
@@ -54,7 +73,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={t("pages.leadDrawer.leadProfile")}>
       <button type="button" aria-label={t("pages.leadDrawer.close")} onClick={onClose} className="absolute inset-0 bg-slate-900/30" />
-      <aside className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
+      <aside ref={panelRef} tabIndex={-1} className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl outline-none">
         {error && <p className="m-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
         {!data && !error && <p className="m-6 text-center text-sm text-gray-400">{t("pages.leadProfile.gettingFullPicture")}</p>}
         {p && (
