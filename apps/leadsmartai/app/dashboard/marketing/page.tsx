@@ -35,16 +35,21 @@ export default async function MarketingPage() {
 
   // Traffic funnel snapshot (last 30 days)
   const sinceIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  // Platform traffic only (`agent_id is null`). Rows with an agent id are
+  // visits to that agent's marketing hub; without this filter every agent's
+  // hub visitors were folded into the funnel numbers shown here.
   const { count: trafficViews } = await supabaseServer
     .from("traffic_events")
     .select("id", { count: "exact", head: true })
     .eq("event_type", "page_view")
+    .is("agent_id", null)
     .gte("created_at", sinceIso);
 
   const { count: trafficConversions } = await supabaseServer
     .from("traffic_events")
     .select("id", { count: "exact", head: true })
     .eq("event_type", "conversion")
+    .is("agent_id", null)
     .gte("created_at", sinceIso);
 
   const conversionRate =
@@ -55,6 +60,7 @@ export default async function MarketingPage() {
   const { data: sourceRows } = await supabaseServer
     .from("traffic_events")
     .select("source,event_type")
+    .is("agent_id", null)
     .gte("created_at", sinceIso)
     .limit(2000);
 

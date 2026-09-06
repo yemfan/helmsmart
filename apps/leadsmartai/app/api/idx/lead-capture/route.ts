@@ -16,6 +16,7 @@ import {
   idxFiltersToSavedSearchCriteria,
 } from "@/lib/idx/savedSearch";
 import { assignNextAgentForIdxLead } from "@/lib/leadAssignment/service";
+import { resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
 import { extractZipFromAddress } from "@/lib/leadAssignment/zipCoverage";
 
 /**
@@ -55,6 +56,9 @@ type Body = {
   searchFilters?: Record<string, unknown> | null;
   /** TCPA consent: must be set true for SMS path. Captured from a checkbox. */
   smsConsent?: boolean;
+  /** Referring agent's public handle. A handle, never an id: it is resolved
+   *  server-side, so a caller cannot plant a lead in an arbitrary CRM. */
+  agent?: string | null;
 };
 
 function isValidEmail(email: string) {
@@ -117,7 +121,16 @@ export async function POST(req: Request) {
     })();
     const leadZip = filterZip ?? extractZipFromAddress(body.listingAddress ?? null);
 
-    const agentId = await assignNextAgentForIdxLead({ zip: leadZip });
+    // A visitor who arrived from an agent's marketing hub is that agent's
+    // lead. Only when there is no referrer does the ZIP round-robin decide.
+    const referredAgentId =
+      typeof body.agent === "string" && body.agent.trim()
+        ? await resolveAgentIdByUsername(body.agent)
+        : null;
+    const agentId =
+      referredAgentId !== null
+        ? String(referredAgentId)
+        : await assignNextAgentForIdxLead({ zip: leadZip });
 
     const notesPayload = {
       idx_action: action,

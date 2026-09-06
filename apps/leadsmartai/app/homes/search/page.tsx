@@ -9,9 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const title = t("routeMeta.homesSearch.title", { ns: "web_marketing" });
   const description = t("routeMeta.homesSearch.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
+  return {
+  title,
+  description,
 };
 }
 
@@ -61,7 +61,13 @@ export default async function HomesSearchPage(props: {
         <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.findNextHomeBody", { ns: "dashboard" })}</p>
       </header>
 
-      <HomesSearchClient initialQuery={initialQuery} initialParams={initialParams} />
+      <HomesSearchClient
+        initialQuery={initialQuery}
+        initialParams={initialParams}
+        // The referring agent's handle (from their marketing hub), resolved
+        // server-side by the lead-capture route — never trusted as an id.
+        agent={asString(sp.agent)?.trim().toLowerCase().slice(0, 30) || null}
+      />
     </main>
   );
 }

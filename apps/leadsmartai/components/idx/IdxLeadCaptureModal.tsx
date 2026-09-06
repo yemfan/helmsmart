@@ -16,6 +16,8 @@ export type IdxLeadContext = {
   listingAddress?: string | null;
   listingPrice?: number | null;
   searchFilters?: Record<string, unknown> | null;
+  /** Referring agent's public handle (from their marketing hub). Resolved server-side. */
+  agent?: string | null;
 };
 
 /*
@@ -99,6 +101,7 @@ export default function IdxLeadCaptureModal(props: {
           listingAddress: props.context.listingAddress ?? null,
           listingPrice: props.context.listingPrice ?? null,
           searchFilters: props.context.searchFilters ?? null,
+          agent: props.context.agent ?? null,
         }),
       });
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; leadId?: string; error?: string };

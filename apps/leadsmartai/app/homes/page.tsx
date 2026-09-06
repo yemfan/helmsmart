@@ -8,9 +8,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const title = t("routeMeta.homes.title", { ns: "web_marketing" });
   const description = t("routeMeta.homes.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
+  return {
+  title,
+  description,
 };
 }
 
@@ -34,8 +34,15 @@ const POPULAR_CITIES: { city: string; state: string; key: string }[] = [
  * page (no client JS needed), popular-city tiles that deep-link into an
  * AI-brief search, and the value-prop section.
  */
-export default async function HomesIndexPage() {
+export default async function HomesIndexPage(props: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const t = await getServerT();
+  // `?agent=<handle>` arrives from an agent's marketing hub. Carried through
+  // the search so the lead the visitor becomes belongs to that agent rather
+  // than to whoever the ZIP round-robin picks.
+  const sp = (await props.searchParams) ?? {};
+  const agent = typeof sp.agent === "string" ? sp.agent.trim().toLowerCase().slice(0, 30) : "";
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 max-w-2xl">
@@ -50,6 +57,7 @@ export default async function HomesIndexPage() {
         className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row"
       >
         <label htmlFor="homes-q" className="sr-only">{t("pages.homesIndex.describeHome", { ns: "dashboard" })}</label>
+        {agent ? <input type="hidden" name="agent" value={agent} /> : null}
         <input
           id="homes-q"
           name="q"

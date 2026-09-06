@@ -550,6 +550,322 @@
     "submitting": "Sending",
     "thanksBody": "Your message is in. I'll be in touch shortly.",
     "thanksTitle": "Thank you",
-    "topics": "Topics"
+    "topics": "Topics",
+    "nav": {
+      "about": "About",
+      "assistant": "AI assistant",
+      "services": "Services",
+      "tools": "Tools",
+      "areas": "Areas",
+      "posts": "Posts",
+      "contact": "Contact",
+      "menu": "Page sections"
+    },
+    "cta": {
+      "home_value": "What's my home worth?",
+      "find_home": "Find a home",
+      "ai_chat": "Talk to my AI assistant",
+      "book": "Schedule a consultation",
+      "contact": "Contact me",
+      "call": "Call me",
+      "email": "Email me",
+      "url": "Learn more"
+    },
+    "hero": {
+      "defaultHeadline": "Helping buyers, sellers and investors make smarter real estate decisions.",
+      "defaultSubheadline": "Get a home value, search homes, or ask my AI assistant anything. I'll follow up personally.",
+      "serving": "Serving",
+      "years": "{{count}}+ years of experience",
+      "languages": "Languages",
+      "aiPowered": "AI-powered real estate team"
+    },
+    "assistant": {
+      "kicker": "Ask anything, any time",
+      "title": "Meet my AI real estate assistant",
+      "blurb": "Have a question about buying, selling, financing, neighborhoods or the market? Start a conversation. I'll pick up where the assistant leaves off.",
+      "greeting": "Hi! I'm {{name}}'s AI assistant. Ask me anything about buying, selling, financing or the local market, or tell me what you're trying to do and I'll point you the right way.",
+      "placeholder": "Ask a question…",
+      "send": "Send",
+      "thinking": "Thinking…",
+      "disclaimer": "AI assistant for {{name}}. Answers are general information, not advice.",
+      "error": "Something went wrong. Please try again.",
+      "retry": "Try again",
+      "limit": "That's all for today. Send a message below and I'll get back to you personally.",
+      "leadCaptured": "Got it. I'll follow up with you personally.",
+      "suggested": "Try asking",
+      "unavailable": "The assistant is taking a break. Send a message below instead.",
+      "newChat": "Start over",
+      "you": "You",
+      "assistantName": "{{name}}'s assistant",
+      "prompts": {
+        "find_homes": "Find homes for me",
+        "home_worth": "What's my home worth?",
+        "afford": "How much home can I afford?",
+        "market": "What's happening in the market?",
+        "sell": "Help me sell my home",
+        "invest": "Analyze an investment property",
+        "schedule": "Schedule a consultation"
+      }
+    },
+    "workforce": {
+      "kicker": "Always on",
+      "title": "My AI real estate team",
+      "blurb": "{{name}} runs a modern practice: an AI team handles the first response so no call, message or lead is missed.",
+      "tagline": "Your AI team never stops working.",
+      "roles": {
+        "receptionist": {
+          "title": "AI Receptionist",
+          "desc": "Answers calls and makes sure no opportunity is missed, day or night."
+        },
+        "sales_assistant": {
+          "title": "AI Sales Assistant",
+          "desc": "Qualifies enquiries, follows up, and helps move you toward an appointment."
+        },
+        "marketing_assistant": {
+          "title": "AI Marketing Assistant",
+          "desc": "Creates and shares market updates and content so you stay informed."
+        },
+        "transaction_assistant": {
+          "title": "AI Transaction Coordinator",
+          "desc": "Tracks every deadline and document once you're under contract."
+        },
+        "accountant": {
+          "title": "AI Financial Analyst",
+          "desc": "Runs the numbers on deals, cash flow and returns."
+        }
+      },
+      "howTitle": "Watch my AI work",
+      "howBlurb": "How an enquiry moves from first contact to a conversation with me.",
+      "howNote": "An illustration of the workflow, not a record of real activity.",
+      "steps": {
+        "missed_call": "A call or message arrives",
+        "receptionist": "AI receptionist answers",
+        "lead": "Lead captured",
+        "qualify": "AI qualification",
+        "followup": "AI follow-up",
+        "appointment": "Appointment booked",
+        "crm": "Handed to me"
+      }
+    },
+    "services": {
+      "kicker": "How I can help",
+      "title": "How I can help",
+      "presets": {
+        "buy": {
+          "name": "Buy a home",
+          "desc": "From first search to keys in hand: pricing, offers, inspections and negotiation."
+        },
+        "sell": {
+          "name": "Sell a home",
+          "desc": "Pricing strategy, preparation, marketing and negotiation to get the most for your home."
+        },
+        "invest": {
+          "name": "Invest",
+          "desc": "Cash flow, cap rates and long-term returns, with the numbers to back every decision."
+        },
+        "relocate": {
+          "name": "Relocate",
+          "desc": "Moving into the area? Neighborhoods, commutes, schools and timing, explained."
+        },
+        "new_construction": {
+          "name": "New construction",
+          "desc": "Builder incentives, upgrades and timelines, with representation on your side."
+        },
+        "analysis": {
+          "name": "Real estate analysis",
+          "desc": "Valuations, comparables and market data for a decision you can stand behind."
+        },
+        "custom": {
+          "name": "Service"
+        }
+      }
+    },
+    "tools": {
+      "kicker": "Free tools",
+      "title": "Smart tools for smarter real estate decisions",
+      "blurb": "Run the numbers yourself. Every tool is free, and I'm one message away when you want a second opinion.",
+      "open": "Open",
+      "free": "Free",
+      "items": {
+        "home_value": {
+          "name": "What's my home worth?",
+          "desc": "A free estimate for your home, with a range you can act on."
+        },
+        "find_home": {
+          "name": "Find a home",
+          "desc": "Describe what you want in plain language and search."
+        },
+        "mortgage": {
+          "name": "Mortgage calculator",
+          "desc": "Monthly payment for any price, rate and term."
+        },
+        "affordability": {
+          "name": "Affordability calculator",
+          "desc": "How much home your income supports."
+        },
+        "down_payment": {
+          "name": "Down payment calculator",
+          "desc": "What to save, and what it changes."
+        },
+        "closing_cost": {
+          "name": "Closing cost estimator",
+          "desc": "What to expect at the closing table."
+        },
+        "rent_vs_buy": {
+          "name": "Rent vs buy",
+          "desc": "Which comes out ahead for you, and when."
+        },
+        "refinance": {
+          "name": "Refinance calculator",
+          "desc": "Whether a new rate is worth the cost."
+        },
+        "cash_flow": {
+          "name": "Cash flow calculator",
+          "desc": "Rental income, expenses and what's left."
+        },
+        "cap_rate_roi": {
+          "name": "Cap rate & ROI",
+          "desc": "Yield and return on an investment property."
+        },
+        "roi": {
+          "name": "ROI calculator",
+          "desc": "Return on the cash you put in."
+        },
+        "investment_analyzer": {
+          "name": "Investment property analyzer",
+          "desc": "A full picture of a rental before you buy."
+        }
+      }
+    },
+    "homeValue": {
+      "kicker": "Thinking of selling?",
+      "title": "What's my home worth?",
+      "body": "Enter your address for a free estimate. I'll follow up with a detailed, personal analysis.",
+      "cta": "Get my home value",
+      "address": "Property address",
+      "addressPlaceholder": "123 Main St, City, State",
+      "estimate": "Get my estimate",
+      "estimating": "Looking at recent nearby sales. This can take up to a minute.",
+      "estimateFailed": "We couldn't estimate that address. Check it and try again, or send me a message.",
+      "estimateTitle": "Estimated value",
+      "rangeLabel": "Likely range",
+      "unlockTitle": "Get the full analysis",
+      "unlockBody": "{{name}} will review the estimate against current comparables and send you a personal report.",
+      "unlockCta": "Send me the full report",
+      "doneTitle": "Thank you!",
+      "doneBody": "{{name}} will review your home and be in touch shortly.",
+      "disclaimer": "Automated estimate for information only, not an appraisal. Actual value depends on condition, upgrades and current market activity.",
+      "back": "Back",
+      "steps": {
+        "address": "Address",
+        "estimate": "Estimate",
+        "report": "Full report"
+      }
+    },
+    "areas": {
+      "kicker": "Local expertise",
+      "title": "Areas I serve",
+      "blurb": "Neighborhoods I know street by street.",
+      "ask": "Ask my assistant about an area"
+    },
+    "featured": {
+      "kicker": "Featured",
+      "title": "Featured for you",
+      "open": "Open",
+      "post": "Post",
+      "tool": "Tool",
+      "link": "Guide"
+    },
+    "trust": {
+      "kicker": "Why work with me",
+      "title": "Why work with me",
+      "years": "Experience",
+      "yearsValue": "{{count}}+ years",
+      "areas": "Areas served",
+      "specialties": "Specialties",
+      "languages": "Languages",
+      "credentials": "Credentials",
+      "tech": "Technology advantage",
+      "techBody": "An AI team that responds immediately, so you're never waiting on a callback.",
+      "testimonials": "What clients say",
+      "brokerage": "Brokerage"
+    },
+    "finalCta": {
+      "title": "Ready to make your next move?",
+      "body": "Whether you're buying, selling or just curious, {{name}} is one message away."
+    },
+    "contact": {
+      "intent": "I'm interested in",
+      "intents": {
+        "buy": "Buying a home",
+        "sell": "Selling a home",
+        "invest": "Investing",
+        "rent": "Renting",
+        "relocate": "Relocating",
+        "consult": "A consultation",
+        "other": "Something else"
+      },
+      "orCall": "Or call",
+      "orEmail": "Or email",
+      "orBook": "Or schedule a consultation"
+    },
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "fairHousing": "Equal Housing Opportunity. Information is provided for general purposes and does not constitute legal, tax or financial advice.",
+      "social": "Social profiles"
+    },
+    "sticky": {
+      "chat": "Chat"
+    },
+    "book": {
+      "kicker": "Let's talk",
+      "title": "Schedule a consultation with {{name}}",
+      "blurb": "Pick a time that suits you. No obligation, just a conversation about what you're trying to do.",
+      "pickDate": "Date",
+      "pickTime": "Available times",
+      "closed": "No availability on that day. Try another date.",
+      "noSlots": "Nothing open that day. Try another date.",
+      "loadingSlots": "Checking availability…",
+      "yourDetails": "Your details",
+      "meetingMode": "How would you like to meet?",
+      "modes": {
+        "phone": "Phone call",
+        "video": "Video call",
+        "in_person": "In person"
+      },
+      "notes": "Anything I should know?",
+      "confirm": "Confirm appointment",
+      "confirming": "Booking…",
+      "doneTitle": "You're booked!",
+      "doneBody": "{{name}} will confirm the details with you shortly.",
+      "requestTitle": "Request a consultation",
+      "requestBody": "Tell me a little about what you need and {{name}} will reach out to set up a time.",
+      "externalTitle": "Pick a time",
+      "externalBody": "Scheduling opens in a new tab.",
+      "externalCta": "Open scheduler",
+      "failed": "Something went wrong. Please try again.",
+      "slotTaken": "That time was just taken. Please choose another.",
+      "back": "Back",
+      "duration": "{{count}}-minute consultation"
+    },
+    "common": {
+      "example": "Example",
+      "previewBanner": "Preview: only you can see this page until you publish it.",
+      "previewPublish": "Publish"
+    },
+    "area": {
+      "kicker": "Local expertise",
+      "title": "{{area}} real estate",
+      "intro": "{{name}} helps buyers, sellers and investors in {{area}}. Get a home value, search homes, or ask the AI assistant about the area.",
+      "metaDescription": "{{area}} homes with {{name}}: free home value, home search, and answers about buying and selling in {{area}}.",
+      "posts": "Posts about {{area}}",
+      "noPosts": "Updates about this area will appear here.",
+      "askAbout": "Ask about {{area}}",
+      "searchIn": "Search homes in {{area}}",
+      "otherAreas": "Other areas I serve",
+      "back": "Back",
+      "viewArea": "View area"
+    }
   }
 }

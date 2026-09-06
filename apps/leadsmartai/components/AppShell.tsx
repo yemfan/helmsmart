@@ -73,6 +73,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
     pathname === "/onboarding" ||
     pathname === "/forgot-password" ||
     pathname.startsWith("/auth/");
+  // An agent's public marketing hub (/@handle, served from /a/handle) is THEIR
+  // page, not ours. It draws its own header and footer; wrapping it in the
+  // CloseBoss top nav, the Ask-Max band and the floating signup CTA made a
+  // visitor unable to tell whose site they were on.
+  const isAgentHub = pathname.startsWith("/a/") || pathname.startsWith("/@");
+
+  if (isAgentHub) {
+    return <div className="min-h-screen bg-white text-slate-900">{children}</div>;
+  }
 
   if (isPublicReport) {
     return (

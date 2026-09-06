@@ -550,6 +550,322 @@
     "submitting": "发送中",
     "thanksBody": "我已收到您的信息，会尽快与您联系。",
     "thanksTitle": "感谢您的留言",
-    "topics": "话题"
+    "topics": "话题",
+    "nav": {
+      "about": "关于我",
+      "assistant": "AI 助理",
+      "services": "服务",
+      "tools": "工具",
+      "areas": "服务区域",
+      "posts": "动态",
+      "contact": "联系",
+      "menu": "页面栏目"
+    },
+    "cta": {
+      "home_value": "我的房子值多少钱？",
+      "find_home": "找房子",
+      "ai_chat": "和我的 AI 助理聊聊",
+      "book": "预约咨询",
+      "contact": "联系我",
+      "call": "打电话给我",
+      "email": "给我发邮件",
+      "url": "了解更多"
+    },
+    "hero": {
+      "defaultHeadline": "帮助买家、卖家和投资者做出更明智的房产决策。",
+      "defaultSubheadline": "查询房屋估值、搜索房源，或向我的 AI 助理提问，我会亲自跟进。",
+      "serving": "服务区域",
+      "years": "{{count}}+ 年从业经验",
+      "languages": "语言",
+      "aiPowered": "AI 驱动的房产团队"
+    },
+    "assistant": {
+      "kicker": "随时提问",
+      "title": "认识我的 AI 房产助理",
+      "blurb": "关于买房、卖房、贷款、社区或市场有任何疑问？现在就开始对话，助理之后由我亲自接手。",
+      "greeting": "你好！我是 {{name}} 的 AI 助理。关于买房、卖房、贷款或本地市场的任何问题都可以问我，或者告诉我你的目标，我来为你指路。",
+      "placeholder": "输入你的问题…",
+      "send": "发送",
+      "thinking": "思考中…",
+      "disclaimer": "{{name}} 的 AI 助理。回答仅为一般信息，不构成专业建议。",
+      "error": "出了点问题，请重试。",
+      "retry": "重试",
+      "limit": "今天的对话到此为止。请在下方留言，我会亲自回复你。",
+      "leadCaptured": "收到，我会亲自跟进。",
+      "suggested": "试着问问",
+      "unavailable": "助理暂时休息中，请在下方留言。",
+      "newChat": "重新开始",
+      "you": "你",
+      "assistantName": "{{name}} 的助理",
+      "prompts": {
+        "find_homes": "帮我找房子",
+        "home_worth": "我的房子值多少钱？",
+        "afford": "我能负担多贵的房子？",
+        "market": "现在市场行情如何？",
+        "sell": "帮我卖房",
+        "invest": "分析一个投资房",
+        "schedule": "预约咨询"
+      }
+    },
+    "workforce": {
+      "kicker": "全天候在线",
+      "title": "我的 AI 房产团队",
+      "blurb": "{{name}} 采用现代化经营方式：AI 团队负责第一时间响应，不错过任何来电、消息或客户。",
+      "tagline": "你的 AI 团队永不停歇。",
+      "roles": {
+        "receptionist": {
+          "title": "AI 前台",
+          "desc": "全天候接听来电，确保不错过任何机会。"
+        },
+        "sales_assistant": {
+          "title": "AI 销售助理",
+          "desc": "筛选咨询、持续跟进，帮你顺利约到面谈。"
+        },
+        "marketing_assistant": {
+          "title": "AI 营销助理",
+          "desc": "制作并分享市场资讯和内容，让你随时掌握动态。"
+        },
+        "transaction_assistant": {
+          "title": "AI 交易协调员",
+          "desc": "签约后追踪每一个截止日期和文件。"
+        },
+        "accountant": {
+          "title": "AI 财务分析师",
+          "desc": "计算交易、现金流和回报率。"
+        }
+      },
+      "howTitle": "看看我的 AI 如何工作",
+      "howBlurb": "一条咨询如何从第一次接触变成与我的面谈。",
+      "howNote": "流程示意，不代表真实活动记录。",
+      "steps": {
+        "missed_call": "来电或消息到达",
+        "receptionist": "AI 前台应答",
+        "lead": "记录客户信息",
+        "qualify": "AI 需求筛选",
+        "followup": "AI 跟进",
+        "appointment": "预约面谈",
+        "crm": "交由我接手"
+      }
+    },
+    "services": {
+      "kicker": "我能帮你什么",
+      "title": "我能帮你什么",
+      "presets": {
+        "buy": {
+          "name": "买房",
+          "desc": "从初次看房到拿到钥匙：定价、出价、验房与谈判。"
+        },
+        "sell": {
+          "name": "卖房",
+          "desc": "定价策略、房屋准备、营销和谈判，帮你卖出最好的价格。"
+        },
+        "invest": {
+          "name": "投资",
+          "desc": "现金流、资本化率与长期回报，每个决定都有数据支撑。"
+        },
+        "relocate": {
+          "name": "搬迁",
+          "desc": "准备搬来本地？社区、通勤、学校和时机，为你一一讲清。"
+        },
+        "new_construction": {
+          "name": "新建房",
+          "desc": "开发商优惠、升级选项与工期，站在你这边的代理。"
+        },
+        "analysis": {
+          "name": "房产分析",
+          "desc": "估值、可比房源和市场数据，让你的决定有据可依。"
+        },
+        "custom": {
+          "name": "服务"
+        }
+      }
+    },
+    "tools": {
+      "kicker": "免费工具",
+      "title": "更聪明的工具，更明智的决策",
+      "blurb": "自己算一算。所有工具免费，想听第二意见时给我发条消息即可。",
+      "open": "打开",
+      "free": "免费",
+      "items": {
+        "home_value": {
+          "name": "我的房子值多少钱？",
+          "desc": "免费估算你的房屋价值，并给出可参考的区间。"
+        },
+        "find_home": {
+          "name": "找房子",
+          "desc": "用日常语言描述你的需求，开始搜索。"
+        },
+        "mortgage": {
+          "name": "房贷计算器",
+          "desc": "任意房价、利率和期限下的月供。"
+        },
+        "affordability": {
+          "name": "购房能力计算器",
+          "desc": "你的收入能支撑多贵的房子。"
+        },
+        "down_payment": {
+          "name": "首付计算器",
+          "desc": "需要存多少，以及它带来的变化。"
+        },
+        "closing_cost": {
+          "name": "过户费用估算",
+          "desc": "过户时会有哪些费用。"
+        },
+        "rent_vs_buy": {
+          "name": "租房还是买房",
+          "desc": "哪种更划算，以及何时更划算。"
+        },
+        "refinance": {
+          "name": "再贷款计算器",
+          "desc": "换新利率是否值得。"
+        },
+        "cash_flow": {
+          "name": "现金流计算器",
+          "desc": "租金收入、支出与结余。"
+        },
+        "cap_rate_roi": {
+          "name": "资本化率与回报率",
+          "desc": "投资房的收益率与回报。"
+        },
+        "roi": {
+          "name": "投资回报计算器",
+          "desc": "投入资金的回报。"
+        },
+        "investment_analyzer": {
+          "name": "投资房分析器",
+          "desc": "买入前全面了解一套出租房。"
+        }
+      }
+    },
+    "homeValue": {
+      "kicker": "考虑卖房？",
+      "title": "我的房子值多少钱？",
+      "body": "输入地址获取免费估值。我会跟进提供详细的个人分析。",
+      "cta": "获取估值",
+      "address": "房产地址",
+      "addressPlaceholder": "123 Main St, City, State",
+      "estimate": "获取估值",
+      "estimating": "正在查看附近近期成交，最多需要一分钟。",
+      "estimateFailed": "无法估算该地址。请检查后重试，或给我留言。",
+      "estimateTitle": "估计价值",
+      "rangeLabel": "可能区间",
+      "unlockTitle": "获取完整分析",
+      "unlockBody": "{{name}} 会结合当前可比房源复核估值，并发送一份个人报告给你。",
+      "unlockCta": "发送完整报告给我",
+      "doneTitle": "谢谢！",
+      "doneBody": "{{name}} 会审阅你的房产并尽快与你联系。",
+      "disclaimer": "自动估算仅供参考，不构成评估报告。实际价值取决于房况、装修及当前市场。",
+      "back": "返回",
+      "steps": {
+        "address": "地址",
+        "estimate": "估值",
+        "report": "完整报告"
+      }
+    },
+    "areas": {
+      "kicker": "本地专长",
+      "title": "我的服务区域",
+      "blurb": "我熟悉每一条街道的社区。",
+      "ask": "向我的助理询问某个区域"
+    },
+    "featured": {
+      "kicker": "精选",
+      "title": "为你精选",
+      "open": "打开",
+      "post": "文章",
+      "tool": "工具",
+      "link": "指南"
+    },
+    "trust": {
+      "kicker": "为什么选择我",
+      "title": "为什么选择我",
+      "years": "从业经验",
+      "yearsValue": "{{count}}+ 年",
+      "areas": "服务区域",
+      "specialties": "专长",
+      "languages": "语言",
+      "credentials": "资质",
+      "tech": "技术优势",
+      "techBody": "AI 团队即时响应，你无需等待回电。",
+      "testimonials": "客户评价",
+      "brokerage": "经纪公司"
+    },
+    "finalCta": {
+      "title": "准备好迈出下一步了吗？",
+      "body": "无论是买房、卖房还是只是想了解一下，{{name}} 就在一条消息之外。"
+    },
+    "contact": {
+      "intent": "我想了解",
+      "intents": {
+        "buy": "买房",
+        "sell": "卖房",
+        "invest": "投资",
+        "rent": "租房",
+        "relocate": "搬迁",
+        "consult": "咨询",
+        "other": "其他"
+      },
+      "orCall": "或致电",
+      "orEmail": "或发邮件",
+      "orBook": "或预约咨询"
+    },
+    "footer": {
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "fairHousing": "平等住房机会。信息仅供一般参考，不构成法律、税务或财务建议。",
+      "social": "社交媒体"
+    },
+    "sticky": {
+      "chat": "聊天"
+    },
+    "book": {
+      "kicker": "聊一聊",
+      "title": "预约与 {{name}} 咨询",
+      "blurb": "选一个方便的时间。没有任何义务，只是聊聊你的计划。",
+      "pickDate": "日期",
+      "pickTime": "可选时间",
+      "closed": "当天没有空档，请换一天。",
+      "noSlots": "当天已约满，请换一天。",
+      "loadingSlots": "正在查询空档…",
+      "yourDetails": "你的信息",
+      "meetingMode": "你希望如何沟通？",
+      "modes": {
+        "phone": "电话",
+        "video": "视频通话",
+        "in_person": "面谈"
+      },
+      "notes": "有什么需要我提前了解的？",
+      "confirm": "确认预约",
+      "confirming": "预约中…",
+      "doneTitle": "预约成功！",
+      "doneBody": "{{name}} 会尽快与你确认细节。",
+      "requestTitle": "申请咨询",
+      "requestBody": "简单说说你的需求，{{name}} 会联系你安排时间。",
+      "externalTitle": "选择时间",
+      "externalBody": "预约页面将在新标签页打开。",
+      "externalCta": "打开预约页面",
+      "failed": "出了点问题，请重试。",
+      "slotTaken": "该时段刚被预约，请选择其他时间。",
+      "back": "返回",
+      "duration": "{{count}} 分钟咨询"
+    },
+    "common": {
+      "example": "示例",
+      "previewBanner": "预览：发布之前只有你能看到此页面。",
+      "previewPublish": "发布"
+    },
+    "area": {
+      "kicker": "本地专长",
+      "title": "{{area}} 房产",
+      "intro": "{{name}} 为 {{area}} 的买家、卖家和投资者提供服务。查询房屋估值、搜索房源，或向 AI 助理咨询该区域。",
+      "metaDescription": "与 {{name}} 一起了解 {{area}} 房产：免费估值、房源搜索，以及关于在 {{area}} 买卖房产的解答。",
+      "posts": "关于 {{area}} 的动态",
+      "noPosts": "有关该区域的更新将显示在这里。",
+      "askAbout": "咨询 {{area}}",
+      "searchIn": "搜索 {{area}} 的房源",
+      "otherAreas": "我服务的其他区域",
+      "back": "返回",
+      "viewArea": "查看区域"
+    }
   }
 }
