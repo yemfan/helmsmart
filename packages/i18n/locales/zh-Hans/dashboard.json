@@ -3318,6 +3318,7 @@
       "heading": "🧠 AI 交易复盘"
     },
     "listingFeedback": {
+      "needBuyerAgentEmail": "请填写买方经纪人邮箱",
       "agentName": "买方经纪人姓名",
       "agentEmail": "买方经纪人邮箱",
       "brokerage": "所属经纪公司（可选）",
@@ -5235,6 +5236,7 @@
       "emailToSeller": "✉ 发邮件给卖家"
     },
     "playbooksPanel": {
+      "needSelection": "请先勾选一项未完成的行动手册任务",
       "intro": "套用一份精选清单，按部就班往下走。做完一项就勾一项。",
       "empty": "还没有套用任何行动方案。点击“套用方案”挑一个。",
       "remove": "移除方案",

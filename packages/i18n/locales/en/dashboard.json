@@ -3318,6 +3318,7 @@
       "heading": "🧠 AI deal review"
     },
     "listingFeedback": {
+      "needBuyerAgentEmail": "add the buyer agent's email",
       "agentName": "Buyer agent name",
       "agentEmail": "Buyer agent email",
       "brokerage": "Brokerage (optional)",
@@ -5235,6 +5236,7 @@
       "emailToSeller": "✉ Email to seller"
     },
     "playbooksPanel": {
+      "needSelection": "tick a box on an open playbook item",
       "intro": "Apply a curated checklist to stay on track. Tick items as you go.",
       "empty": "No playbooks applied yet. Click “Apply playbook” to pick one.",
       "remove": "Remove playbook",
