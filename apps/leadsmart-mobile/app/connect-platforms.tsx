@@ -54,6 +54,27 @@ const RETURN_TO_DEEP_LINK = "leadsmart://leads-gen/connect/callback";
 
 type Network = "meta" | "linkedin" | "tiktok" | "youtube";
 
+/**
+ * The revoke-from-the-provider instructions used to sit under every card as
+ * a paragraph of grey text, four times over, on a screen whose one job is a
+ * Connect button. They matter about once a year. Behind an "i" now; the
+ * alert is the phone's equivalent of hover.
+ */
+function InfoButton({ network, body }: { network: string; body: string }) {
+  const { t } = useTranslation("mobile_misc_screens");
+  const tokens = useThemeTokens();
+  return (
+    <Pressable
+      onPress={() => Alert.alert(network, body)}
+      hitSlop={10}
+      accessibilityRole="button"
+      accessibilityLabel={t("connectPlatforms.about", { network })}
+    >
+      <Ionicons name="information-circle-outline" size={18} color={tokens.textSubtle} />
+    </Pressable>
+  );
+}
+
 export default function ConnectPlatformsScreen() {
   const { t } = useTranslation("mobile_misc_screens");
   const tokens = useThemeTokens();
@@ -255,10 +276,14 @@ export default function ConnectPlatformsScreen() {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>{t("connectPlatforms.facebookInstagram")}</Text>
-            <Text style={styles.cardSubtitle}>
-              {t("connectPlatforms.connectAFacebookPageIf")}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.cardTitle}>{t("connectPlatforms.facebookInstagram")}</Text>
+              <InfoButton
+                network={t("connectPlatforms.facebookInstagram")}
+                body={t("connectPlatforms.meta.details")}
+              />
+            </View>
+            <Text style={styles.cardSubtitle}>{t("connectPlatforms.meta.subtitle")}</Text>
           </View>
         </View>
 
@@ -291,7 +316,7 @@ export default function ConnectPlatformsScreen() {
         ) : metaConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
             <Text style={styles.emptyText}>
-              {t("connectPlatforms.noPagesConnectedYetTap")}
+              {t("connectPlatforms.meta.empty")}
             </Text>
           </View>
         ) : (
@@ -343,19 +368,20 @@ export default function ConnectPlatformsScreen() {
           </View>
         )}
 
-        <Text style={styles.helperText}>
-          {t("connectPlatforms.tokensAreStoredEncryptedDisconnect")}
-        </Text>
       </View>
 
       {/* LinkedIn card */}
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>{t("connectPlatforms.linkedin")}</Text>
-            <Text style={styles.cardSubtitle}>
-              {t("connectPlatforms.postToYourPersonalLinkedin")}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.cardTitle}>{t("connectPlatforms.linkedin")}</Text>
+              <InfoButton
+                network={t("connectPlatforms.linkedin")}
+                body={t("connectPlatforms.li.details")}
+              />
+            </View>
+            <Text style={styles.cardSubtitle}>{t("connectPlatforms.li.subtitle")}</Text>
           </View>
         </View>
 
@@ -385,7 +411,7 @@ export default function ConnectPlatformsScreen() {
         {connections === null ? null : linkedinConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
             <Text style={styles.emptyText}>
-              {t("connectPlatforms.notConnectedSignInWith")}
+              {t("connectPlatforms.notConnected")}
             </Text>
           </View>
         ) : (
@@ -435,19 +461,20 @@ export default function ConnectPlatformsScreen() {
           </View>
         )}
 
-        <Text style={styles.helperText}>
-          {t("connectPlatforms.postsGoToYourPersonal")}
-        </Text>
       </View>
 
       {/* TikTok card */}
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>{t("connectPlatforms.tiktok")}</Text>
-            <Text style={styles.cardSubtitle}>
-              {t("connectPlatforms.publishVideosToYourTiktok")}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.cardTitle}>{t("connectPlatforms.tiktok")}</Text>
+              <InfoButton
+                network={t("connectPlatforms.tiktok")}
+                body={t("connectPlatforms.tt.details")}
+              />
+            </View>
+            <Text style={styles.cardSubtitle}>{t("connectPlatforms.tt.subtitle")}</Text>
           </View>
         </View>
 
@@ -470,7 +497,7 @@ export default function ConnectPlatformsScreen() {
 
         {connections === null ? null : tiktokConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
-            <Text style={styles.emptyText}>{t("connectPlatforms.notConnectedSignInWith2")}</Text>
+            <Text style={styles.emptyText}>{t("connectPlatforms.notConnected")}</Text>
           </View>
         ) : (
           <View style={styles.connectionsList}>
@@ -504,19 +531,20 @@ export default function ConnectPlatformsScreen() {
           </View>
         )}
 
-        <Text style={styles.helperText}>
-          {t("connectPlatforms.videosPostToYourConnected")}
-        </Text>
       </View>
 
       {/* YouTube card */}
       <View style={[styles.card, { marginTop: 16 }]}>
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
-            <Text style={styles.cardTitle}>{t("connectPlatforms.youtube")}</Text>
-            <Text style={styles.cardSubtitle}>
-              {t("connectPlatforms.uploadVideosToYourYoutube")}
-            </Text>
+            <View style={styles.titleRow}>
+              <Text style={styles.cardTitle}>{t("connectPlatforms.youtube")}</Text>
+              <InfoButton
+                network={t("connectPlatforms.youtube")}
+                body={t("connectPlatforms.yt.details")}
+              />
+            </View>
+            <Text style={styles.cardSubtitle}>{t("connectPlatforms.yt.subtitle")}</Text>
           </View>
         </View>
 
@@ -539,7 +567,7 @@ export default function ConnectPlatformsScreen() {
 
         {connections === null ? null : youtubeConnections.length === 0 ? (
           <View style={styles.emptyBlock}>
-            <Text style={styles.emptyText}>{t("connectPlatforms.notConnectedSignInWith3")}</Text>
+            <Text style={styles.emptyText}>{t("connectPlatforms.notConnected")}</Text>
           </View>
         ) : (
           <View style={styles.connectionsList}>
@@ -573,9 +601,6 @@ export default function ConnectPlatformsScreen() {
           </View>
         )}
 
-        <Text style={styles.helperText}>
-          {t("connectPlatforms.uploadsGoToYourConnected")}
-        </Text>
       </View>
     </ScrollView>
   );
@@ -633,6 +658,7 @@ function createStyles(tokens: ThemeTokens) {
     cardHeaderText: {
       flex: 1,
     },
+    titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
     cardTitle: {
       fontSize: 16,
       fontWeight: "700",
@@ -758,12 +784,6 @@ function createStyles(tokens: ThemeTokens) {
       fontSize: 11,
       fontWeight: "700",
       color: tokens.text,
-    },
-    helperText: {
-      marginTop: 14,
-      fontSize: 11,
-      lineHeight: 16,
-      color: tokens.textSubtle,
     },
   });
 }

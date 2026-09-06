@@ -215,22 +215,29 @@
   },
   "connectPlatforms": {
     "facebookInstagram": "Facebook 与 Instagram",
-    "connectAFacebookPageIf": "连接一个 Facebook 主页。如果它已关联 Instagram 商业账号，会自动一并连接 —— 一次授权覆盖两者。",
-    "noPagesConnectedYetTap": "尚未连接主页。点击连接，即可从快速发帖直接发布。",
-    "tokensAreStoredEncryptedDisconnect": "令牌加密存储，随时可断开。若要同时从 Facebook 侧撤销授权，请在 Facebook 账号的「应用和网站」中移除 LeadSmart AI。",
     "linkedin": "LinkedIn",
-    "postToYourPersonalLinkedin": "发布到您的个人 LinkedIn 动态。房产专业人士在这里互动很高 —— 房源、市场动态和客户成交都很受欢迎。",
-    "notConnectedSignInWith": "未连接。使用 LinkedIn 登录即可发布到个人动态。",
-    "postsGoToYourPersonal": "帖子发布到您的个人 LinkedIn 动态。若要从 LinkedIn 侧撤销，请到 设置 → 数据隐私 → 已授权服务 中移除 LeadSmart AI。",
     "tiktok": "TikTok",
-    "publishVideosToYourTiktok": "把视频发布到您的 TikTok。适合房源实拍、市场观点和幕后花絮。",
-    "notConnectedSignInWith2": "未连接。使用 TikTok 登录即可发布视频。",
-    "videosPostToYourConnected": "视频发布到已连接的 TikTok 账号。新的 TikTok 应用在获批公开发布前，只能发布为仅自己可见。",
     "youtube": "YouTube",
-    "uploadVideosToYourYoutube": "把视频上传到您的 YouTube 频道，作为 Shorts 或普通视频 —— 适合短视频和看房实录。",
-    "notConnectedSignInWith3": "未连接。使用 Google 登录即可上传到您的频道。",
-    "uploadsGoToYourConnected": "上传到已连接的 YouTube 频道。若要从 Google 侧撤销，请到 Google 账号 → 安全 → 第三方访问。",
-    "disconnectFailed": "断开失败"
+    "disconnectFailed": "断开失败",
+    "about": "关于 {{network}}",
+    "notConnected": "未连接。",
+    "meta": {
+      "subtitle": "一次连接即可覆盖您的 Facebook 主页及其 Instagram 账号。",
+      "empty": "尚未连接主页。",
+      "details": "访问令牌加密存储，随时可断开。若要同时从 Facebook 侧撤销，请在 Facebook 账号的「应用和网站」中移除 CloseBoss。"
+    },
+    "li": {
+      "subtitle": "发布到您的个人 LinkedIn 动态。",
+      "details": "帖子发布到您的个人 LinkedIn 动态。若要从 LinkedIn 侧撤销，请到 设置 → 数据隐私 → 已授权服务 中移除 CloseBoss。"
+    },
+    "tt": {
+      "subtitle": "把视频发布到您的 TikTok。",
+      "details": "视频发布到已连接的 TikTok 账号。在 TikTok 批准公开发布前，只能发布到私密账号。"
+    },
+    "yt": {
+      "subtitle": "把 Shorts 和视频上传到您的 YouTube 频道。",
+      "details": "上传到已连接的 YouTube 频道。若要从 Google 侧撤销，请到 Google 账号 → 安全 → 第三方访问。"
+    }
   },
   "digitalTwin": {
     "recordAShortIntroVideo": "录一段简短的自我介绍视频（对着镜头说说您是谁、您的市场、您的专长）。AI 会把它变成您的品牌档案，用于您的帖子和助理。视频不会公开。",
