@@ -260,6 +260,7 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
             stepIndex,
             assignee: tool?.assignee ?? "sales_assistant",
             runState,
+            locale: run.locale,
             overnight: run.trigger === "overnight",
           };
           const execDeps: ExecuteDeps = {

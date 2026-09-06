@@ -41,7 +41,25 @@ const ACCOUNT_SETTINGS_HREF = "/dashboard/settings/account";
  * and a link separately lets it say where in the words the nav actually uses
  * and keep the path as the destination.
  */
-const ACCOUNT_SETTINGS_LABEL = "Settings → Account";
+const ACCOUNT_SETTINGS_LABELS: Record<string, string> = {
+  en: "Settings → Account",
+  "zh-Hans": "设置 → 账户",
+};
+
+/**
+ * Say it in the words on the realtor's own screen.
+ *
+ * Asked in Chinese, Max answered in Chinese and then quoted the English
+ * "Settings → Account", because this label was a single hard-coded string —
+ * while the sidebar beside it read 设置 and 账户. The model translates its own
+ * prose; it will not second-guess a literal it was handed, and it should not
+ * have to.
+ */
+export function accountSettingsLabel(locale: string | null | undefined): string {
+  const key = (locale ?? "en").toLowerCase();
+  if (key.startsWith("zh")) return ACCOUNT_SETTINGS_LABELS["zh-Hans"];
+  return ACCOUNT_SETTINGS_LABELS.en;
+}
 
 export const getAccountSettings = defineTool({
   name: "get_account_settings",
@@ -51,6 +69,7 @@ export const getAccountSettings = defineTool({
   riskClass: "research",
   assignee: "receptionist",
   execute: async (ctx) => {
+    const label = accountSettingsLabel(ctx.locale);
     const { data, error } = await supabaseAdmin
       .from("agents")
       .select("timezone, briefing_morning_time, briefing_evening_time")
@@ -83,7 +102,7 @@ export const getAccountSettings = defineTool({
       summary:
         `Timezone: ${timezone} (it is ${localTime} there now). ` +
         `Briefings: ${morning} and ${evening} in that zone. ` +
-        `Both are changed under ${ACCOUNT_SETTINGS_LABEL} — write it as the markdown link [${ACCOUNT_SETTINGS_LABEL}](${ACCOUNT_SETTINGS_HREF}), with no domain in front of the path.`,
+        `Both are changed under ${label} — write it as the markdown link [${label}](${ACCOUNT_SETTINGS_HREF}), with no domain in front of the path.`,
       display: {
         key: "reads.accountSettings",
         params: { timezone, localTime, morning, evening },
@@ -93,7 +112,7 @@ export const getAccountSettings = defineTool({
         localTimeNow: localTime,
         briefingMorningTime: morning,
         briefingEveningTime: evening,
-        whereToChange: ACCOUNT_SETTINGS_LABEL,
+        whereToChange: label,
         whereToChangeLink: ACCOUNT_SETTINGS_HREF,
       },
     };
