@@ -168,7 +168,7 @@ export default function CreditsClient({
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-6">
+    <div className="mx-auto max-w-6xl space-y-8 py-6">
       {/* Header + balance */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="h-1.5 w-full" style={{ background: BRAND }} />
@@ -236,7 +236,7 @@ export default function CreditsClient({
 
       {/* Monthly plans */}
       <section>
-        <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.monthlyPlans")}</h2>
+        <h2 className="mb-1 text-lg font-bold text-brand-text">{cadence === "annual" ? tr("more.credits.annualPlans") : tr("more.credits.monthlyPlans")}</h2>
         <p className="mb-4 text-sm text-gray-500">
           {tr("more.credits.monthlyHelp")}
         </p>
@@ -274,7 +274,7 @@ export default function CreditsClient({
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {CREDIT_TIERS.map((t) => {
             const isCurrent = plan?.planId === t.id;
             const annualYear = annualFor(t.id);
