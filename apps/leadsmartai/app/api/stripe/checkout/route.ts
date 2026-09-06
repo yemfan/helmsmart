@@ -122,6 +122,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
+    /*
+     * Signature's one-time setup fee. It has been on /plans since 2026-09-03
+     * and, until now, never reached Stripe: checkout carried only the
+     * recurring price, so every Signature buyer got the $499 specialist
+     * onboarding for free. It refuses rather than falling back — selling the
+     * plan without the fee IS the bug, not a degraded mode — and /plans hides
+     * the button for the same reason (see setupFeeConfigured).
+     */
+    let setupPrice: string | undefined;
+    if (tier?.setupFeeUsd && tier.setupFeePriceEnv) {
+      const resolved = readStripePriceId(tier.setupFeePriceEnv);
+      if ("error" in resolved) {
+        return NextResponse.json(
+          { error: "This plan's setup isn't available online yet. Contact support and we'll get you started." },
+          { status: 503 },
+        );
+      }
+      setupPrice = resolved.id;
+    }
+
     // Monthly credit allotment carried in the subscription metadata so each
     // paid invoice (first + renewals) grants the right number of credits.
     const credits = tier ? tier.monthlyCredits : monthlyCreditsForPlan(plan);
@@ -140,6 +160,23 @@ export async function POST(req: Request) {
       }
 
       const prevCredits = Number.parseInt(existing.metadata?.credits ?? "", 10);
+
+      // The setup fee rides on the proration invoice: a pending invoice item on
+      // the customer is swept into the next invoice, and `always_invoice`
+      // below creates that invoice immediately.
+      if (setupPrice) {
+        const customerId =
+          typeof existing.customer === "string" ? existing.customer : existing.customer.id;
+        await stripe.invoiceItems.create({
+          customer: customerId,
+          subscription: existing.id,
+          // 2025-08-27.basil: the price moved under `pricing`.
+          pricing: { price: setupPrice },
+          quantity: 1,
+          description: `${tier?.name ?? plan} one-time setup with a specialist`,
+        });
+      }
+
       const updated = await stripe.subscriptions.update(existing.id, {
         items: [{ id: item.id, price }],
         // Bill (or credit) the difference for the remainder of the period now.
@@ -171,7 +208,9 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: user.email,
-      line_items: [{ price, quantity: 1 }],
+      // A one-time price beside the recurring one is billed on the first
+      // invoice only — that is the setup fee.
+      line_items: setupPrice ? [{ price, quantity: 1 }, { price: setupPrice, quantity: 1 }] : [{ price, quantity: 1 }],
       success_url: `${origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/pricing?canceled=true`,
       allow_promotion_codes: true,

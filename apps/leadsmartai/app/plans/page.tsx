@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import PlansClientPage from "./page.client";
 import JsonLd from "@/components/JsonLd";
-import { CREDIT_TIERS, annualPriceConfigured } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, annualPriceConfigured, setupFeeConfigured } from "@/lib/credits/pricing";
 import { getServerT } from "@/lib/i18n/server";
 import { pageMetadata } from "@/lib/seo";
 
@@ -49,6 +49,12 @@ export default async function PlansPage() {
       />
       <PlansClientPage
         annualTierIds={CREDIT_TIERS.filter((tier) => annualPriceConfigured(tier.id)).map(
+          (tier) => tier.id,
+        )}
+        // A tier whose setup fee has no Stripe price yet gets "Talk to us"
+        // instead of a buy button — the same rule as the annual toggle:
+        // never advertise a purchase checkout cannot complete.
+        unbuyableTierIds={CREDIT_TIERS.filter((tier) => !setupFeeConfigured(tier.id)).map(
           (tier) => tier.id,
         )}
       />

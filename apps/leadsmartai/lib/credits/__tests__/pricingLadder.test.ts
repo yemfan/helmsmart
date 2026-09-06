@@ -61,6 +61,8 @@ describe("volume actually gets cheaper", () => {
     expect(signature.monthlyCredits).toBe(premium.monthlyCredits);
     expect(rate(signature)).toBeGreaterThan(rate(premium));
     expect(signature.setupFeeUsd).toBe(499);
+    // A fee without a Stripe price is a fee that is never collected.
+    expect(signature.setupFeePriceEnv).toBe("STRIPE_PRICE_ID_CB_SIGNATURE_SETUP");
   });
 });
 
