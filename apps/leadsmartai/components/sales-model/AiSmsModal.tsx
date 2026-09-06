@@ -567,13 +567,13 @@ export function AiSmsModal({
                       className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300 hover:bg-blue-100 disabled:opacity-60"
                       title={
                         optedOut
-                          ? "Contact opted out — AI drafting disabled."
+                          ? t("pages.aiSms.draftBlockedOptedOut")
                           : needsHuman
-                            ? "Reply personally — AI drafting paused for this thread."
+                            ? t("pages.aiSms.draftBlockedNeedsHuman")
                             : gate
                               ? gate.reason === "no_agent_entitlement"
-                                ? "Pick a plan that includes AI actions to enable this."
-                                : "You've hit this period's AI cap. Upgrade for a higher limit."
+                                ? t("pages.aiSms.draftBlockedNoEntitlement")
+                                : t("pages.aiSms.draftBlockedAiCap")
                               : undefined
                       }
                     >
@@ -593,7 +593,7 @@ export function AiSmsModal({
                     onClick={() => void onSend()}
                     disabled={sending || drafting || !compose.trim() || optedOut}
                     className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-                    title={optedOut ? "Sending blocked — contact opted out." : undefined}
+                    title={optedOut ? t("pages.aiSms.sendBlockedOptedOut") : undefined}
                   >
                     {sending ? t("common:status.sending") : t("pages.outboundSmsComposer.sendSms")}
                   </button>
