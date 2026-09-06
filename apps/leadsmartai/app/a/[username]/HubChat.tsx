@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles } from "lucide-react";
+import { MarkdownLite } from "@/components/ui/MarkdownLite";
 import { trackHubEvent } from "./hubEvents";
 import type { HubTheme } from "./theme";
 
@@ -38,7 +39,6 @@ type Labels = {
 
 export default function HubChat({
   username,
-  agentName,
   prompts,
   labels,
   theme,
@@ -47,7 +47,6 @@ export default function HubChat({
   utmCampaign,
 }: {
   username: string;
-  agentName: string;
   prompts: string[];
   labels: Labels;
   theme: HubTheme;
@@ -192,7 +191,7 @@ export default function HubChat({
         </Bubble>
         {messages.map((m, i) => (
           <Bubble key={i} role={m.role} name={labels.assistantName} you={labels.you}>
-            {m.content}
+            {m.role === "assistant" ? <MarkdownLite text={m.content} /> : m.content}
           </Bubble>
         ))}
         {busy ? (
@@ -288,7 +287,7 @@ export default function HubChat({
       <div className="flex items-center justify-between gap-3 px-4 pb-3 text-[11px] text-slate-500 sm:px-5">
         <p className="inline-flex items-center gap-1">
           <Sparkles className="h-3 w-3" aria-hidden />
-          {labels.disclaimer.replace("{{name}}", agentName)}
+          {labels.disclaimer}
         </p>
         {!empty ? (
           <button type="button" onClick={reset} className="shrink-0 font-medium text-slate-600 underline-offset-2 hover:underline">

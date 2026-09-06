@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { loadHubByUsername } from "@/lib/marketing-hub/loadHub";
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
   const base = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.closebossai.com").replace(/\/+$/, "");
   return {
-    title: `${t("hub.homeValue.title", { ns: "web_marketing" })} — ${displayNameOf(hub)}`,
+    title: { absolute: `${t("hub.homeValue.title", { ns: "web_marketing" })} — ${displayNameOf(hub)}` },
     description: t("hub.homeValue.body", { ns: "web_marketing" }),
     alternates: { canonical: `${base}/@${hub.username}/home-value` },
     robots: hub.indexable ? { index: true, follow: true } : { index: false, follow: true },
@@ -48,14 +49,7 @@ export default async function HubHomeValuePage({ params }: Props) {
   const { username } = await params;
   const hub = await loadHubByUsername(username, hasPrivacySignal(await headers()));
 
-  if (hub.status !== "ready") {
-    return (
-      <main className="mx-auto w-full max-w-3xl px-5 py-16">
-        <h1 className="text-2xl font-semibold">{L.common.notFoundTitle}</h1>
-        <p className="mt-3 text-slate-600">{L.common.notFoundBody}</p>
-      </main>
-    );
-  }
+  if (hub.status !== "ready") notFound();
 
   const theme = hubTheme(hub.config.appearance.accent);
   const name = displayNameOf(hub);

@@ -43,7 +43,7 @@ export default function HubEditorClient() {
   const { t } = useTranslation("dashboard");
   const router = useRouter();
   const params = useSearchParams();
-  const requested = params.get("section") as SectionKey | null;
+  const requested = (params?.get("section") ?? null) as SectionKey | null;
   const section: SectionKey = requested && SECTION_KEYS.includes(requested) ? requested : "overview";
 
   const [data, setData] = useState<EditorData | null>(null);

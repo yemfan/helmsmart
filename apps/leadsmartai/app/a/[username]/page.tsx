@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
@@ -103,7 +104,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = hub.config.seo.ogImageUrl ?? hub.portraitUrl;
 
   return {
-    title,
+    // Absolute: the root layout appends "| CloseBoss AI" to every title, and
+    // this page is the agent's, not ours.
+    title: { absolute: title },
     description,
     keywords: hub.config.seo.keywords.length ? hub.config.seo.keywords : undefined,
     // A parent generateMetadata MERGES rather than resets, so the canonical is
@@ -160,14 +163,8 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
     preview = hub.status === "ready";
   }
 
-  if (hub.status === "not_found") {
-    return (
-      <Plain>
-        <h1 className="text-2xl font-semibold">{L.common.notFoundTitle}</h1>
-        <p className="mt-3 text-slate-600">{L.common.notFoundBody}</p>
-      </Plain>
-    );
-  }
+  // A real 404, so an unknown handle is never indexed as a page.
+  if (hub.status === "not_found") notFound();
 
   if (hub.status === "coming_soon") {
     return (
@@ -253,7 +250,6 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
             <div className="mx-auto max-w-3xl">
               <HubChat
                 username={hub.username}
-                agentName={name}
                 prompts={prompts}
                 theme={theme}
                 locale={locale}
@@ -264,7 +260,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
                   placeholder: L.assistant.placeholder,
                   send: L.assistant.send,
                   thinking: L.assistant.thinking,
-                  disclaimer: L.assistant.disclaimer,
+                  disclaimer: L.assistant.disclaimer(name),
                   error: L.assistant.error,
                   retry: L.assistant.retry,
                   limit: L.assistant.limit,

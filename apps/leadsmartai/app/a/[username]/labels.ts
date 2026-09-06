@@ -56,7 +56,7 @@ export function hubLabels(t: T) {
       placeholder: h("assistant.placeholder"),
       send: h("assistant.send"),
       thinking: h("assistant.thinking"),
-      disclaimer: h("assistant.disclaimer"),
+      disclaimer: (name: string) => h("assistant.disclaimer", { name }),
       error: h("assistant.error"),
       retry: h("assistant.retry"),
       limit: h("assistant.limit"),
@@ -79,7 +79,7 @@ export function hubLabels(t: T) {
     workforce: {
       kicker: h("workforce.kicker"),
       title: h("workforce.title"),
-      blurb: h("workforce.blurb"),
+      blurb: (name: string) => h("workforce.blurb", { name }),
       tagline: h("workforce.tagline"),
       roles: {
         receptionist: { title: h("workforce.roles.receptionist.title"), desc: h("workforce.roles.receptionist.desc") },
@@ -170,7 +170,7 @@ export function hubLabels(t: T) {
     },
     areas: {
       kicker: h("areas.kicker"),
-      title: h("areas.title"),
+      title: (location: string) => h("areas.title", { location }),
       blurb: h("areas.blurb"),
       ask: h("areas.ask"),
     },

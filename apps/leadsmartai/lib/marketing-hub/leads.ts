@@ -178,17 +178,27 @@ export async function captureHubLead(args: {
   let contactId: string | null = null;
   let created = false;
   try {
-    const orFilter = [phone ? `phone.eq.${phone}` : null, email ? `email.eq.${email}` : null]
-      .filter(Boolean)
-      .join(",");
-    const existing = await supabaseAdmin
+    // The unique indexes compare lower(email) and the LAST TEN DIGITS of the
+    // phone, whatever punctuation it was typed with. PostgREST cannot express
+    // that, so pull the few candidates (same agent, email match or same last
+    // four digits) and decide in code with the index's own rules.
+    const digits = phone.replace(/\D/g, "").slice(-10);
+    const ors = [
+      email ? `email.ilike."${email.replace(/"/g, "")}"` : null,
+      digits.length >= 7 ? `phone.ilike."%${digits.slice(-4)}%"` : null,
+    ].filter((s): s is string => Boolean(s));
+    const candidates = await supabaseAdmin
       .from("contacts")
-      .select("id, notes")
+      .select("id, notes, email, phone")
       .eq("agent_id", agentId as never)
-      .or(orFilter)
-      .limit(1)
-      .maybeSingle();
-    const existingRow = existing.data as { id: string; notes: string | null } | null;
+      .or(ors.join(","))
+      .limit(20);
+    const existingRow =
+      ((candidates.data as { id: string; notes: string | null; email: string | null; phone: string | null }[] | null) ?? []).find(
+        (r) =>
+          (email && (r.email ?? "").toLowerCase() === email) ||
+          (digits.length >= 7 && (r.phone ?? "").replace(/\D/g, "").slice(-10) === digits),
+      ) ?? null;
 
     if (existingRow?.id) {
       contactId = existingRow.id;
@@ -198,11 +208,17 @@ export async function captureHubLead(args: {
         .update({
           // Fill blanks; never overwrite what the agent curated. A second
           // enquiry is appended to the notes so nothing said is lost.
-          ...(email ? { email } : {}),
-          ...(phone ? { phone } : {}),
+          ...(email && !existingRow.email ? { email } : {}),
+          ...(phone && !existingRow.phone ? { phone } : {}),
           ...(input.smsConsent ? { sms_opt_in: true, tcpa_consent_at: nowIso, tcpa_consent_source: "web_form" } : {}),
           ...(input.propertyAddress ? { property_address: input.propertyAddress } : {}),
-          ...(input.estimatedValue ? { estimated_home_value: input.estimatedValue } : {}),
+          ...(input.estimatedValue
+            ? {
+                estimated_home_value: input.estimatedValue,
+                estimate_low: input.estimateLow ?? null,
+                estimate_high: input.estimateHigh ?? null,
+              }
+            : {}),
           notes: priorNotes ? `${priorNotes}\n\n— ${nowIso.slice(0, 10)} —\n${note}` : note,
           last_activity_at: nowIso,
           updated_at: nowIso,

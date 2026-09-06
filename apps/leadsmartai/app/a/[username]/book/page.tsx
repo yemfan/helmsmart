@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { loadHubByUsername } from "@/lib/marketing-hub/loadHub";
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: t("hub.notFoundTitle", { ns: "web_marketing" }), robots: { index: false, follow: false } };
   }
   return {
-    title: t("hub.book.title", { ns: "web_marketing", name: displayNameOf(hub) }),
+    title: { absolute: t("hub.book.title", { ns: "web_marketing", name: displayNameOf(hub) }) },
     robots: { index: false, follow: true },
   };
 }
@@ -39,14 +40,7 @@ export default async function HubBookPage({ params }: Props) {
   const { username } = await params;
   const hub = await loadHubByUsername(username, hasPrivacySignal(await headers()));
 
-  if (hub.status !== "ready" || hub.booking.mode === "off") {
-    return (
-      <main className="mx-auto w-full max-w-3xl px-5 py-16">
-        <h1 className="text-2xl font-semibold">{L.common.notFoundTitle}</h1>
-        <p className="mt-3 text-slate-600">{L.common.notFoundBody}</p>
-      </main>
-    );
-  }
+  if (hub.status !== "ready" || hub.booking.mode === "off") notFound();
 
   const theme = hubTheme(hub.config.appearance.accent);
   const name = displayNameOf(hub);

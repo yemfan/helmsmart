@@ -214,16 +214,20 @@ export function HubHeader({ hub, L, theme }: SectionProps) {
               </a>
             ))}
         </nav>
-        <TrackedLink
-          username={hub.username}
-          href={primaryHref}
-          event="hero_cta_click"
-          meta={{ action: hub.assistantAvailable ? "ai_chat" : "contact", label: "header" }}
-          className={`${BTN_SM} hidden sm:inline-flex ${theme.primary} ${theme.ring}`}
-        >
-          <MessageCircle className="h-4 w-4" aria-hidden />
-          {hub.assistantAvailable ? L.cta.ai_chat : L.cta.contact}
-        </TrackedLink>
+        {/* Phones get the sticky bottom bar instead; two display utilities on
+            one element (`hidden` + `inline-flex`) do not reliably cascade. */}
+        <div className="hidden shrink-0 sm:block">
+          <TrackedLink
+            username={hub.username}
+            href={primaryHref}
+            event="hero_cta_click"
+            meta={{ action: hub.assistantAvailable ? "ai_chat" : "contact", label: "header" }}
+            className={`${BTN_SM} whitespace-nowrap ${theme.primary} ${theme.ring}`}
+          >
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            {hub.assistantAvailable ? L.cta.ai_chat : L.cta.contact}
+          </TrackedLink>
+        </div>
       </div>
     </header>
   );
@@ -271,7 +275,8 @@ export function Hero({ hub, L, theme }: SectionProps) {
   const name = displayNameOf(hub);
   const p = hub.config.profile;
   const headline = hub.config.hero.headline?.trim() || L.hero.headline(name);
-  const sub = hub.config.hero.subheadline?.trim() || hub.bio?.split(/\n+/)[0]?.slice(0, 220) || L.hero.subheadline;
+  // The bio is rendered in full just below; the subheadline is its own line.
+  const sub = hub.config.hero.subheadline?.trim() || L.hero.subheadline;
   const meta = [p.title, p.location].filter(Boolean).join(" · ");
   return (
     <section id="about" className="scroll-mt-20 bg-white pb-12 pt-10 sm:pb-16 sm:pt-16">
@@ -356,7 +361,7 @@ export function Workforce({ hub, L, theme }: SectionProps) {
   if (!hub.workforce.length) return null;
   const name = displayNameOf(hub);
   return (
-    <Section id="team" kicker={L.workforce.kicker} title={L.workforce.title} blurb={L.workforce.blurb.replace("{{name}}", name)} theme={theme} tone="tint">
+    <Section id="team" kicker={L.workforce.kicker} title={L.workforce.title} blurb={L.workforce.blurb(name)} theme={theme} tone="tint">
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {hub.workforce.map((m) => {
           const role = L.workforce.roles[m.type];
@@ -582,7 +587,7 @@ export function Areas({ hub, L, theme }: SectionProps) {
     ? hub.config.areas.items
     : hub.serviceAreas.map((name) => ({ name, note: null }));
   if (!items.length) return null;
-  const title = hub.config.areas.headline?.trim() || L.areas.title.replace("{{location}}", hub.config.profile.location || hub.serviceAreas[0] || "");
+  const title = hub.config.areas.headline?.trim() || L.areas.title(hub.config.profile.location || hub.serviceAreas[0] || "");
   return (
     <Section id="areas" kicker={L.areas.kicker} title={title} blurb={L.areas.blurb} theme={theme}>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
