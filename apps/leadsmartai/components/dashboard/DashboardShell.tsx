@@ -179,12 +179,12 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className={cn("min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-4 md:p-6", className)}>
+    <div className={cn("min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6", className)}>
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="border-b border-gray-200/80 pb-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">{t("pages.oneWord.admin")}</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{title}</h1>
-          <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+        <div className="border-b border-slate-200/80 pb-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("pages.oneWord.admin")}</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">{title}</h1>
+          <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
         </div>
 
         <div className={cn("grid gap-4 md:grid-cols-3 xl:grid-cols-5", kpiGridClassName)}>{kpis}</div>

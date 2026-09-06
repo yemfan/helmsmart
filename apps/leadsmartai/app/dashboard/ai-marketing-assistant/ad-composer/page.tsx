@@ -30,8 +30,8 @@ export default async function AdComposerPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="mb-5">
-        <h1 className="text-xl font-semibold text-gray-900">{t("pages.adComposer.heading", { ns: "dashboard" })}</h1>
-        <p className="mt-0.5 text-sm text-gray-500">
+        <h1 className="text-xl font-semibold text-slate-900">{t("pages.adComposer.heading", { ns: "dashboard" })}</h1>
+        <p className="mt-0.5 text-sm text-slate-500">
           {t("pages.adComposer.intro", { ns: "dashboard" })}
         </p>
       </div>

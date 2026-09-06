@@ -170,7 +170,7 @@ export default function OpportunitiesPage() {
         </div>
       ) : null}
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
           <div className="flex-1">
             <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.location")}</label>
@@ -181,7 +181,7 @@ export default function OpportunitiesPage() {
                 setLocation(e.target.value);
               }}
               placeholder={t("pages.opportunities.locationPlaceholder")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
@@ -193,7 +193,7 @@ export default function OpportunitiesPage() {
                 setPage(1);
                 setLeadType(e.target.value);
               }}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             >
               <option value="">{t("pages.opportunities.all")}</option>
               {leadTypeOptions.map((t) => (
@@ -214,7 +214,7 @@ export default function OpportunitiesPage() {
               }}
               placeholder="10"
               inputMode="numeric"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
@@ -228,7 +228,7 @@ export default function OpportunitiesPage() {
               }}
               placeholder="100"
               inputMode="numeric"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function OpportunitiesPage() {
 
       {error ? <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">{error}</div> : null}
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-6 text-sm text-slate-600">{t("pages.opportunities.loading")}</div>
         ) : (

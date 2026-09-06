@@ -69,11 +69,11 @@ export default function RunSchedulerButton() {
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-gray-900">{t("pages.scheduler.scheduler")}</div>
-          <div className="mt-0.5 text-xs text-gray-500">
+          <div className="text-sm font-semibold text-slate-900">{t("pages.scheduler.scheduler")}</div>
+          <div className="mt-0.5 text-xs text-slate-500">
             Walk every sphere contact and fire date- and threshold-based triggers (anniversary,
             equity, dormancy, quarterly). Respects agent-of-record + opt-in guards per spec §2.8.
             Runs automatically every day at 09:00 UTC.
@@ -84,7 +84,7 @@ export default function RunSchedulerButton() {
             type="button"
             onClick={() => void run("preview")}
             disabled={pending !== null}
-            className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           >
             {pending === "preview" ? t("common:status.previewing") : t("common:actions.preview")}
           </button>
@@ -114,11 +114,11 @@ export default function RunSchedulerButton() {
 
           {result.firings.length > 0 && (
             <details open={expanded} onToggle={(e) => setExpanded(e.currentTarget.open)}>
-              <summary className="cursor-pointer text-xs text-gray-600">{t("pages.runScheduler.showFirings", { count: result.firings.length })}
+              <summary className="cursor-pointer text-xs text-slate-600">{t("pages.runScheduler.showFirings", { count: result.firings.length })}
               </summary>
-              <div className="mt-2 max-h-80 overflow-auto rounded-lg border border-gray-200">
+              <div className="mt-2 max-h-80 overflow-auto rounded-lg border border-slate-200">
                 <table className="w-full text-[11px]">
-                  <thead className="sticky top-0 bg-gray-50">
+                  <thead className="sticky top-0 bg-slate-50">
                     <tr>
                       <Th>{t("pages.scheduler.colContact")}</Th>
                       <Th>{t("pages.scheduler.colTemplate")}</Th>
@@ -126,15 +126,15 @@ export default function RunSchedulerButton() {
                       <Th>{t("pages.scheduler.colOutcome")}</Th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-slate-100">
                     {result.firings.map((f, i) => (
                       <tr key={i} className={f.outcome === "error" ? "bg-red-50/40" : ""}>
                         <Td>{f.contactName}</Td>
                         <Td>
                           <span className="font-mono">{f.templateId}</span>{" "}
-                          <span className="text-gray-400">· {f.channel}</span>
+                          <span className="text-slate-400">· {f.channel}</span>
                         </Td>
-                        <Td className="font-mono text-gray-500">{f.periodKey}</Td>
+                        <Td className="font-mono text-slate-500">{f.periodKey}</Td>
                         <Td>
                           <OutcomePill outcome={f.outcome} draftStatus={f.draftStatus} />
                           {f.error && (
@@ -170,7 +170,7 @@ function Chip({
         ? "border-amber-200 bg-amber-50 text-amber-800"
         : tone === "red"
           ? "border-red-200 bg-red-50 text-red-800"
-          : "border-gray-200 bg-gray-50 text-gray-700";
+          : "border-slate-200 bg-slate-50 text-slate-700";
   return (
     <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${cls}`}>
       <span className="font-semibold tabular-nums">{value}</span>
@@ -202,7 +202,7 @@ function OutcomePill({
       : outcome === "dry_run"
         ? "bg-blue-50 text-blue-700"
         : outcome === "already_fired"
-          ? "bg-gray-100 text-gray-500"
+          ? "bg-slate-100 text-slate-500"
           : outcome === "error"
             ? "bg-red-50 text-red-700"
             : "bg-amber-50 text-amber-700";
@@ -215,7 +215,7 @@ function OutcomePill({
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-slate-500">
       {children}
     </th>
   );

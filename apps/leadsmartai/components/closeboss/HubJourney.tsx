@@ -57,18 +57,18 @@ export function HubJourney({ contactId }: { contactId: string | null }) {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
         {t("pages.leadDrawer.howTheyFoundYou")}
       </p>
       {views > 0 ? (
-        <p className="mt-1 text-sm leading-snug text-gray-700">{readLine}</p>
+        <p className="mt-1 text-sm leading-snug text-slate-700">{readLine}</p>
       ) : (
-        <p className="mt-1 text-sm leading-snug text-gray-500">
+        <p className="mt-1 text-sm leading-snug text-slate-500">
           {t("pages.leadDrawer.journeyStillBrowsing")}
         </p>
       )}
       {firstSource ? (
-        <p className="mt-0.5 text-xs text-gray-500">
+        <p className="mt-0.5 text-xs text-slate-500">
           {t("pages.leadDrawer.journeyFirstVia", { source: firstSource })}
           {firstCampaign
             ? ` · ${t("pages.leadDrawer.journeyCampaign", { campaign: firstCampaign })}`

@@ -197,22 +197,22 @@ export default function BrandingSettingsPanel() {
   }
 
   if (loading) {
-    return <div className="text-sm text-gray-500 py-4">{t("branding.loading")}</div>;
+    return <div className="text-sm text-slate-500 py-4">{t("branding.loading")}</div>;
   }
 
   return (
     <div className="space-y-5">
       {/* Brand Name */}
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">{t("branding.brandName")}</label>
+        <label className="block text-[11px] font-medium text-slate-500">{t("branding.brandName")}</label>
         <input
           value={branding.brandName}
           onChange={(e) => setBranding((b) => ({ ...b, brandName: e.target.value }))}
           placeholder={t("branding.brandNamePlaceholder")}
           maxLength={200}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
         />
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-slate-500">
           {t("branding.brandNameHelp")}
         </p>
       </div>
@@ -227,12 +227,12 @@ export default function BrandingSettingsPanel() {
       <div className="grid gap-5">
         {/* Brokerage logo */}
         <div className="space-y-2">
-          <label className="block text-[11px] font-medium text-gray-500">
-            {t("branding.logoLabel")} <span className="text-gray-400 font-normal">{t("branding.optional")}</span>
+          <label className="block text-[11px] font-medium text-slate-500">
+            {t("branding.logoLabel")} <span className="text-slate-400 font-normal">{t("branding.optional")}</span>
           </label>
           {branding.logoUrl ? (
             <div className="flex items-center gap-3">
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-2">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
                 <img
                   src={branding.logoUrl}
                   alt={t("branding.logoAlt")}
@@ -247,14 +247,14 @@ export default function BrandingSettingsPanel() {
                   type="button"
                   onClick={() => logoInputRef.current?.click()}
                   disabled={uploading}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                 >
                   {uploading ? t("branding.uploading") : t("branding.change")}
                 </button>
                 <button
                   type="button"
                   onClick={removeLogo}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
                 >
                   {t("branding.remove")}
                 </button>
@@ -265,9 +265,9 @@ export default function BrandingSettingsPanel() {
               type="button"
               onClick={() => logoInputRef.current?.click()}
               disabled={uploading}
-              className="flex items-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50/50 px-4 py-3 text-sm text-gray-500 hover:border-blue-400 hover:bg-blue-50/30 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/50 px-4 py-3 text-sm text-slate-500 hover:border-blue-400 hover:bg-blue-50/30 disabled:opacity-50"
             >
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
               {uploading ? t("branding.uploading") : t("branding.uploadLogo")}
@@ -284,7 +284,7 @@ export default function BrandingSettingsPanel() {
               e.target.value = "";
             }}
           />
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-slate-500">
             {t("branding.logoHelp")}
           </p>
         </div>
@@ -293,7 +293,7 @@ export default function BrandingSettingsPanel() {
       {/* Email Signature */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-medium text-gray-500">{t("branding.emailSignature")}</label>
+          <label className="block text-[11px] font-medium text-slate-500">{t("branding.emailSignature")}</label>
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -323,9 +323,9 @@ export default function BrandingSettingsPanel() {
               placeholder={t("branding.signaturePlaceholder")}
               maxLength={2000}
               rows={6}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono"
             />
-            <p className="text-[11px] text-gray-500">{t("pages.branding.signatureHint")}</p>
+            <p className="text-[11px] text-slate-500">{t("pages.branding.signatureHint")}</p>
             <button
               type="button"
               onClick={() => {
@@ -333,11 +333,11 @@ export default function BrandingSettingsPanel() {
                 setBranding((b) => ({ ...b, signatureHtml: saved.signatureHtml }));
                 setPreview({ kind: "idle" });
               }}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
             >{t("pages.branding.cancel")}</button>
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50/60 p-4 text-xs text-gray-500">
+          <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50/60 p-4 text-xs text-slate-500">
             {branding.signatureHtml ? (
               <>{t("branding.customSet")} <span className="font-medium">{t("branding.preview")}</span> {t("branding.previewTail")} <span className="font-medium">{t("branding.change")}</span> {t("branding.editTail")}</>
             ) : (
@@ -348,9 +348,9 @@ export default function BrandingSettingsPanel() {
 
         {/* Rendered preview — shown under either editor or the default hint */}
         {preview.kind === "ready" && (
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="rounded-lg border border-slate-200 bg-white p-4">
             <div className="mb-2 flex items-center justify-between">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t("branding.previewHeader")}
               </div>
               <div className="flex items-center gap-2">
@@ -366,28 +366,28 @@ export default function BrandingSettingsPanel() {
                 <button
                   type="button"
                   onClick={() => setPreview({ kind: "idle" })}
-                  className="text-[11px] text-gray-400 hover:text-gray-600"
+                  className="text-[11px] text-slate-400 hover:text-slate-600"
                 >
                   {t("branding.hide")}
                 </button>
               </div>
             </div>
-            <div className="rounded border border-gray-100 bg-white p-4">
-              <div className="text-sm text-gray-700">
-                <em className="text-gray-400">
+            <div className="rounded border border-slate-100 bg-white p-4">
+              <div className="text-sm text-slate-700">
+                <em className="text-slate-400">
                   {t("branding.bodyEndsHere")}
                 </em>
               </div>
               <div
-                className="mt-2 text-sm text-gray-700"
+                className="mt-2 text-sm text-slate-700"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(preview.html) }}
               />
             </div>
             <details className="mt-2">
-              <summary className="cursor-pointer text-[11px] text-gray-500 hover:text-gray-700">
+              <summary className="cursor-pointer text-[11px] text-slate-500 hover:text-slate-700">
                 {t("branding.plainTextVariant")}
               </summary>
-              <pre className="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2 text-[11px] text-gray-600">
+              <pre className="mt-1 whitespace-pre-wrap rounded bg-slate-50 p-2 text-[11px] text-slate-600">
 {preview.text}
               </pre>
             </details>
@@ -415,7 +415,7 @@ export default function BrandingSettingsPanel() {
           it because it looks paid runs lead ads against our bundled URL, which
           is worse for their compliance than for our revenue.
         */}
-        <label className="block text-[11px] font-medium text-gray-500">
+        <label className="block text-[11px] font-medium text-slate-500">
           {t("branding.leadAdUrl")}
         </label>
         <input
@@ -428,9 +428,9 @@ export default function BrandingSettingsPanel() {
             }))
           }
           placeholder={t("branding.leadAdPlaceholder")}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-slate-500">
           {t("branding.leadAdHelp")}
         </p>
       </div>

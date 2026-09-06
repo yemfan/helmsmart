@@ -65,10 +65,10 @@ export default function VoiceCallTimelinePanel({ contactId }: { contactId: strin
   }, [contactId]);
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
+    <section className="rounded-xl border border-slate-200 bg-white p-5">
       <header className="mb-3">
-        <h2 className="text-sm font-semibold text-gray-900">{t("pages.voiceCallTimeline.title")}</h2>
-        <p className="mt-0.5 text-xs text-gray-600">{t("pages.voiceCallTimeline.sub")}</p>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.voiceCallTimeline.title")}</h2>
+        <p className="mt-0.5 text-xs text-slate-600">{t("pages.voiceCallTimeline.sub")}</p>
       </header>
 
       {loading ? (

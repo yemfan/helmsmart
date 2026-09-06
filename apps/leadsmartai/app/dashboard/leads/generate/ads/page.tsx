@@ -122,17 +122,17 @@ export default async function AdCampaignsPage() {
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-slate-900">
             {t("ads.title", { ns: "web_generate_leads" })}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             {t("ads.subtitle", { ns: "web_generate_leads" })}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/dashboard/leads/generate"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             {t("ads.nav.back_to_generate", { ns: "web_generate_leads" })}
           </Link>

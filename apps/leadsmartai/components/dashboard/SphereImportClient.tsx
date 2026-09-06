@@ -139,14 +139,14 @@ export default function SphereImportClient() {
     <div className="space-y-5">
       <Link
         href="/dashboard/sphere"
-        className="inline-flex text-sm font-medium text-gray-500 hover:text-gray-800"
+        className="inline-flex text-sm font-medium text-slate-500 hover:text-slate-800"
       >
         {t("pages.sphereImport.backToSphere")}
       </Link>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h1 className="text-lg font-semibold text-gray-900">{t("pages.sphereImport.title")}</h1>
-        <p className="mt-1 text-sm text-gray-500">{t("pages.sphereImport.sub")}</p>
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h1 className="text-lg font-semibold text-slate-900">{t("pages.sphereImport.title")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.sphereImport.sub")}</p>
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
           <strong>Spec §2.8:</strong> anniversary triggers do not fire until you explicitly
           confirm each contact has consented to SMS. The CSV can pre-fill this column, but we
@@ -158,7 +158,7 @@ export default function SphereImportClient() {
             type="file"
             accept=".csv,text/csv"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="block text-sm text-gray-700"
+            className="block text-sm text-slate-700"
           />
           <button
             type="button"
@@ -173,10 +173,10 @@ export default function SphereImportClient() {
       </div>
 
       {rows && (
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 p-4">
+        <div className="rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-slate-700">
                 {t("pages.sphereImport.rowsIncluded", { included: stats.included, total: stats.total })}{" "}
                 <strong>{stats.optIns}</strong> {t("pages.dashFragments.anniversaryOptIn")}{skipped > 0 && <> · {skipped} {t("pages.dashFragments.emptyRowsSkipped")}</>}
                 {stats.withErrors > 0 && (
@@ -187,12 +187,12 @@ export default function SphereImportClient() {
                 <button
                   type="button"
                   onClick={() => bulkOptIn(true)}
-                  className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
+                  className="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
                 >{t("pages.sphereImport.confirmAll")}</button>
                 <button
                   type="button"
                   onClick={() => bulkOptIn(false)}
-                  className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
+                  className="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
                 >{t("pages.sphereImport.uncheckAll")}</button>
                 <button
                   type="button"
@@ -226,7 +226,7 @@ export default function SphereImportClient() {
 
           <div className="max-h-[70vh] overflow-auto">
             <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-gray-50">
+              <thead className="sticky top-0 bg-slate-50">
                 <tr>
                   <Th>{t("pages.sphereImport.include")}</Th>
                   <Th>{t("pages.sphereImport.name")}</Th>
@@ -237,7 +237,7 @@ export default function SphereImportClient() {
                   <Th>{t("pages.sphereImport.warnings")}</Th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {rows.map((r, i) => (
                   <tr key={i} className={r.errors.length ? "bg-amber-50/40" : ""}>
                     <td className="px-3 py-2">
@@ -250,19 +250,19 @@ export default function SphereImportClient() {
                       />
                     </td>
                     <td className="px-3 py-2">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-slate-900">
                         {r.firstName} {r.lastName ?? ""}
                       </div>
                       {r.address && (
-                        <div className="text-[11px] text-gray-500">{r.address}</div>
+                        <div className="text-[11px] text-slate-500">{r.address}</div>
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-gray-600">
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-slate-600">
                         {r.relationshipType.replace("_", " ")}
                       </span>
                       {r.relationshipTag && (
-                        <div className="mt-0.5 text-[11px] text-gray-500 italic">
+                        <div className="mt-0.5 text-[11px] text-slate-500 italic">
                           {r.relationshipTag}
                         </div>
                       )}
@@ -272,19 +272,19 @@ export default function SphereImportClient() {
                         <>
                           <div>{r.closingDate}</div>
                           {r.closingPrice && (
-                            <div className="text-[11px] text-gray-500">
+                            <div className="text-[11px] text-slate-500">
                               ${r.closingPrice.toLocaleString()}
                             </div>
                           )}
                         </>
                       ) : (
-                        <span className="text-gray-400">—</span>
+                        <span className="text-slate-400">—</span>
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      {r.email && <div className="truncate text-gray-700">{r.email}</div>}
-                      {r.phone && <div className="text-[11px] text-gray-500">{r.phone}</div>}
-                      {!r.email && !r.phone && <span className="text-gray-400">—</span>}
+                      {r.email && <div className="truncate text-slate-700">{r.email}</div>}
+                      {r.phone && <div className="text-[11px] text-slate-500">{r.phone}</div>}
+                      {!r.email && !r.phone && <span className="text-slate-400">—</span>}
                     </td>
                     <td className="px-3 py-2">
                       <label className="inline-flex items-center gap-1">
@@ -298,7 +298,7 @@ export default function SphereImportClient() {
                         />
                         {r.csvAnniversaryOptIn && (
                           <span
-                            className="text-[9px] uppercase tracking-wide text-gray-400"
+                            className="text-[9px] uppercase tracking-wide text-slate-400"
                             title={t("pages.sphereImport.csvOptIn")}
                           >
                             csv
@@ -328,7 +328,7 @@ export default function SphereImportClient() {
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-slate-500">
       {children}
     </th>
   );

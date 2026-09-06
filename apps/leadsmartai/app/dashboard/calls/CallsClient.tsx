@@ -45,17 +45,17 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">{t("pages.calls.heading")}</h1>
-        <p className="text-sm text-gray-500">{calls.length} {t("pages.dashFragments.totalCalls")}</p>
+        <h1 className="text-xl font-semibold text-slate-900">{t("pages.calls.heading")}</h1>
+        <p className="text-sm text-slate-500">{calls.length} {t("pages.dashFragments.totalCalls")}</p>
       </div>
 
       <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.calls.search")}
-        className="w-full max-w-md rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+        className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm" />
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
                 <th className="text-left px-4 py-2.5 font-medium">{t("pages.calls.colContact")}</th>
                 <th className="text-left px-4 py-2.5 font-medium">{t("pages.calls.colDirection")}</th>
@@ -65,30 +65,30 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                 <th className="text-left px-4 py-2.5 font-medium"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-50">
               {filtered.map((c) => (
                 <>
-                  <tr key={c.id} className="hover:bg-gray-50/50">
+                  <tr key={c.id} className="hover:bg-slate-50/50">
                     <td className="px-4 py-2.5">
-                      <p className="font-medium text-gray-900">{c.lead_name ?? c.from_phone}</p>
-                      <p className="text-xs text-gray-500">{c.from_phone} → {c.to_phone}</p>
+                      <p className="font-medium text-slate-900">{c.lead_name ?? c.from_phone}</p>
+                      <p className="text-xs text-slate-500">{c.from_phone} → {c.to_phone}</p>
                       {c.hot_lead && <span className="text-[10px] text-red-600">{t("pages.calls.hot")}</span>}
                       {c.needs_human && <span className="ml-1 text-[10px] text-amber-600">{t("pages.calls.needsFollowUp")}</span>}
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${c.direction === "inbound" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${c.direction === "inbound" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
                         {c.direction}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600">{formatDuration(c.duration_seconds)}</td>
-                    <td className="px-4 py-2.5 text-xs text-gray-600 max-w-[250px] truncate">{c.summary ?? "\u2014"}</td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-slate-600">{formatDuration(c.duration_seconds)}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-600 max-w-[250px] truncate">{c.summary ?? "\u2014"}</td>
+                    <td className="px-4 py-2.5 text-xs text-slate-500 whitespace-nowrap">
                       {new Date(c.started_at ?? c.created_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                       {" "}
                       {new Date(c.started_at ?? c.created_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
                     </td>
                     <td className="px-4 py-2.5 whitespace-nowrap">
-                      <button onClick={() => setExpandedId(expandedId === c.id ? null : c.id)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">
+                      <button onClick={() => setExpandedId(expandedId === c.id ? null : c.id)} className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
                         {expandedId === c.id ? t("pages.calls.close") : t("pages.calls.details")}
                       </button>
                       {c.lead_name && (
@@ -98,28 +98,28 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                   </tr>
                   {expandedId === c.id && (
                     <tr key={`${c.id}-detail`}>
-                      <td colSpan={6} className="bg-gray-50 px-6 py-4">
+                      <td colSpan={6} className="bg-slate-50 px-6 py-4">
                         <div className="space-y-3">
                           {c.summary && (
                             <div>
-                              <h4 className="text-xs font-semibold text-gray-500">{t("pages.calls.aiSummary")}</h4>
-                              <p className="mt-1 text-sm text-gray-700">{c.summary}</p>
+                              <h4 className="text-xs font-semibold text-slate-500">{t("pages.calls.aiSummary")}</h4>
+                              <p className="mt-1 text-sm text-slate-700">{c.summary}</p>
                             </div>
                           )}
                           {c.transcript && (
                             <div>
-                              <h4 className="text-xs font-semibold text-gray-500">{t("pages.calls.transcript")}</h4>
-                              <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap max-h-40 overflow-y-auto">{c.transcript}</p>
+                              <h4 className="text-xs font-semibold text-slate-500">{t("pages.calls.transcript")}</h4>
+                              <p className="mt-1 text-sm text-slate-700 whitespace-pre-wrap max-h-40 overflow-y-auto">{c.transcript}</p>
                             </div>
                           )}
                           {c.recording_url && (
                             <div>
-                              <h4 className="text-xs font-semibold text-gray-500">{t("pages.calls.recording")}</h4>
+                              <h4 className="text-xs font-semibold text-slate-500">{t("pages.calls.recording")}</h4>
                               <audio controls src={c.recording_url} className="mt-1 w-full max-w-md" />
                             </div>
                           )}
                           {!c.summary && !c.transcript && !c.recording_url && (
-                            <p className="text-sm text-gray-400">{t("pages.calls.noDetails")}</p>
+                            <p className="text-sm text-slate-400">{t("pages.calls.noDetails")}</p>
                           )}
                         </div>
                       </td>
@@ -128,7 +128,7 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                 </>
               ))}
               {!filtered.length && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">{t("pages.calls.empty")}</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">{t("pages.calls.empty")}</td></tr>
               )}
             </tbody>
           </table>

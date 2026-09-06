@@ -73,13 +73,13 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
   high: "bg-amber-100 text-amber-700",
   normal: "bg-blue-100 text-blue-700",
-  low: "bg-gray-100 text-gray-600",
+  low: "bg-slate-100 text-slate-600",
 };
 
 const STATUS_COLORS: Record<string, string> = {
   open: "bg-blue-100 text-blue-700",
   done: "bg-green-100 text-green-700",
-  cancelled: "bg-gray-100 text-gray-500",
+  cancelled: "bg-slate-100 text-slate-500",
 };
 
 /** Module-level (no hook available), so the caller passes its `t` in. */
@@ -132,13 +132,13 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold text-gray-500">
+        <h3 className="text-xs font-semibold text-slate-500">
           {isDrilled ? (
             <span>
-              {title} <span className="text-gray-400">·</span>{" "}
-              <span className="text-gray-700">{drillSlice ? sliceLabel(drillSlice) : drillName}</span>
+              {title} <span className="text-slate-400">·</span>{" "}
+              <span className="text-slate-700">{drillSlice ? sliceLabel(drillSlice) : drillName}</span>
             </span>
           ) : (
             title
@@ -194,10 +194,10 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
                   className="h-2.5 w-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: d.color }}
                 />
-                <span className="text-gray-600">{sliceLabel(d)}</span>
-                <span className="font-semibold text-gray-900">{d.value}</span>
+                <span className="text-slate-600">{sliceLabel(d)}</span>
+                <span className="font-semibold text-slate-900">{d.value}</span>
                 {total > 0 && (
-                  <span className="text-gray-400">
+                  <span className="text-slate-400">
                     ({Math.round((d.value / total) * 100)}%)
                   </span>
                 )}
@@ -208,11 +208,11 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
                 key={d.name}
                 type="button"
                 onClick={() => onSliceClick(d)}
-                className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-gray-50"
+                className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-slate-50"
                 title={sliceLabel(d)}
               >
                 {Row}
-                <span className="text-gray-300">›</span>
+                <span className="text-slate-300">›</span>
               </button>
             ) : (
               <div key={d.name} className="flex items-center gap-2 px-1 -mx-1">
@@ -221,7 +221,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
             );
           })}
           {!isDrilled && hasAnyDrill && (
-            <p className="pt-1 text-[10px] text-gray-400">{tr("pages.tasksPage.clickSlice")}</p>
+            <p className="pt-1 text-[10px] text-slate-400">{tr("pages.tasksPage.clickSlice")}</p>
           )}
         </div>
       </div>
@@ -463,8 +463,8 @@ export default function TasksClient({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{tr("tasks.title")}</h1>
-          <p className="text-sm text-gray-500">{tr("tasks.openCount", { count: tasks.filter((t) => t.status === "open").length })}</p>
+          <h1 className="text-xl font-semibold text-slate-900">{tr("tasks.title")}</h1>
+          <p className="text-sm text-slate-500">{tr("tasks.openCount", { count: tasks.filter((t) => t.status === "open").length })}</p>
         </div>
       </div>
 
@@ -472,8 +472,8 @@ export default function TasksClient({
       {stats && (
         <div className="grid gap-3 md:grid-cols-2">
           <MiniPie data={stats.completion} title={tr("tasks.completion")} />
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-gray-500 mb-2">{tr("tasks.doneByDay", { count: stats.performed })}</h3>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h3 className="text-xs font-semibold text-slate-500 mb-2">{tr("tasks.doneByDay", { count: stats.performed })}</h3>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.performedByDay} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -500,23 +500,23 @@ export default function TasksClient({
 
       {/* Add task form */}
       {showAddForm && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900">{tr("tasks.newTask")}</h3>
-          <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("tasks.titlePlaceholder")} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900">{tr("tasks.newTask")}</h3>
+          <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("tasks.titlePlaceholder")} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           <div className="grid gap-3 sm:grid-cols-3">
-            <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
               <option value="low">{tr("tasks.priority.low")}</option>
               <option value="normal">{tr("tasks.priority.normal")}</option>
               <option value="high">{tr("tasks.priority.high")}</option>
               <option value="urgent">{tr("tasks.priority.urgent")}</option>
             </select>
-            <input type="datetime-local" value={addFields.due_at} onChange={(e) => setAddFields((f) => ({ ...f, due_at: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-            <select value={addFields.contact_id} onChange={(e) => setAddFields((f) => ({ ...f, contact_id: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <input type="datetime-local" value={addFields.due_at} onChange={(e) => setAddFields((f) => ({ ...f, due_at: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <select value={addFields.contact_id} onChange={(e) => setAddFields((f) => ({ ...f, contact_id: e.target.value }))} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
               <option value="">{tr("tasks.noContact")}</option>
               {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
             </select>
           </div>
-          <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} rows={2} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           <button type="button" onClick={() => void addTask()} disabled={actionLoading || !addFields.title.trim()}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {actionLoading ? tr("tasks.saving") : tr("tasks.createTask")}
@@ -527,7 +527,7 @@ export default function TasksClient({
       {/* Status tabs — clickable counts replace the old select.
           Always show all four so the agent can see at a glance how
           much of each bucket exists. */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200">
         {([
           { key: "open", label: tr("tasks.status.open") },
           { key: "done", label: tr("tasks.status.done") },
@@ -547,13 +547,13 @@ export default function TasksClient({
               className={`-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition ${
                 active
                   ? "border-blue-600 text-blue-700"
-                  : "border-transparent text-gray-500 hover:text-gray-800"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
               }`}
             >
               {tab.label}
               <span
                 className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
-                  active ? "bg-blue-50 text-blue-700" : "bg-gray-100 text-gray-600"
+                  active ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {count}
@@ -585,7 +585,7 @@ export default function TasksClient({
               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition ${
                 active
                   ? "border-blue-200 bg-blue-50 text-blue-700"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
               }`}
             >
               {chip.emoji ? <span aria-hidden>{chip.emoji}</span> : null}
@@ -599,14 +599,14 @@ export default function TasksClient({
       {/* Search */}
       <div className="flex flex-wrap gap-2">
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={tr("tasks.searchPlaceholder")}
-          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       </div>
 
       {/* Tasks table */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
                 <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.task")}</th>
                 <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.contact")}</th>
@@ -617,29 +617,29 @@ export default function TasksClient({
                 <th className="text-left px-4 py-2.5 font-medium"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-50">
               {filtered.map((t) => {
                 const isEditing = editingId === t.id;
                 if (isEditing) {
                   return (
                     <tr key={t.id} className="bg-blue-50/30">
-                      <td className="px-4 py-2"><input value={editFields.title ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, title: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" /></td>
-                      <td className="px-4 py-2 text-xs text-gray-500">{t.contact_id ? leadMap.get(String(t.contact_id)) ?? t.contact_id : "\u2014"}</td>
-                      <td className="px-4 py-2"><input type="datetime-local" value={editFields.due_at ? new Date(editFields.due_at).toISOString().slice(0, 16) : ""} onChange={(e) => setEditFields((f) => ({ ...f, due_at: e.target.value ? new Date(e.target.value).toISOString() : null }))} className="rounded border border-gray-300 px-2 py-1 text-sm" /></td>
+                      <td className="px-4 py-2"><input value={editFields.title ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, title: e.target.value }))} className="w-full rounded border border-slate-300 px-2 py-1 text-sm" /></td>
+                      <td className="px-4 py-2 text-xs text-slate-500">{t.contact_id ? leadMap.get(String(t.contact_id)) ?? t.contact_id : "\u2014"}</td>
+                      <td className="px-4 py-2"><input type="datetime-local" value={editFields.due_at ? new Date(editFields.due_at).toISOString().slice(0, 16) : ""} onChange={(e) => setEditFields((f) => ({ ...f, due_at: e.target.value ? new Date(e.target.value).toISOString() : null }))} className="rounded border border-slate-300 px-2 py-1 text-sm" /></td>
                       <td className="px-4 py-2">
-                        <select value={editFields.priority ?? "normal"} onChange={(e) => setEditFields((f) => ({ ...f, priority: e.target.value }))} className="rounded border border-gray-300 px-2 py-1 text-sm">
+                        <select value={editFields.priority ?? "normal"} onChange={(e) => setEditFields((f) => ({ ...f, priority: e.target.value }))} className="rounded border border-slate-300 px-2 py-1 text-sm">
                           <option value="low">{tr("tasks.priority.low")}</option><option value="normal">{tr("tasks.priority.normal")}</option><option value="high">{tr("tasks.priority.high")}</option><option value="urgent">{tr("tasks.priority.urgent")}</option>
                         </select>
                       </td>
                       <td className="px-4 py-2">
-                        <select value={editFields.status ?? t.status} onChange={(e) => setEditFields((f) => ({ ...f, status: e.target.value }))} className="rounded border border-gray-300 px-2 py-1 text-sm">
+                        <select value={editFields.status ?? t.status} onChange={(e) => setEditFields((f) => ({ ...f, status: e.target.value }))} className="rounded border border-slate-300 px-2 py-1 text-sm">
                           <option value="open">{tr("tasks.status.open")}</option><option value="done">{tr("tasks.status.done")}</option><option value="cancelled">{tr("tasks.status.cancelled")}</option>
                         </select>
                       </td>
-                      <td className="px-4 py-2"><input value={editFields.description ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, description: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" placeholder={tr("pages.labels.notes")} /></td>
+                      <td className="px-4 py-2"><input value={editFields.description ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, description: e.target.value }))} className="w-full rounded border border-slate-300 px-2 py-1 text-sm" placeholder={tr("pages.labels.notes")} /></td>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <button onClick={() => void updateTask(t.id, { title: editFields.title, description: editFields.description, priority: editFields.priority, status: editFields.status, dueAt: editFields.due_at })} disabled={actionLoading} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 mr-2">{tr("branding.save")}</button>
-                        <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("tasks.cancel")}</button>
+                        <button onClick={() => setEditingId(null)} className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">{tr("tasks.cancel")}</button>
                       </td>
                     </tr>
                   );
@@ -647,7 +647,7 @@ export default function TasksClient({
                 const isPlaybookRow = t.source === "playbook" || t.source === "coaching";
                 const taskLinkUrl = firstUrlFromDescription(t.description);
                 return (
-                  <tr key={t.id} className="hover:bg-gray-50/50">
+                  <tr key={t.id} className="hover:bg-slate-50/50">
                     <td className="px-4 py-2.5">
                       <div className="flex flex-col gap-0.5">
                         {taskLinkUrl ? (
@@ -668,17 +668,17 @@ export default function TasksClient({
                             {t.title}
                           </a>
                         ) : (
-                          <span className="font-medium text-gray-900">{t.title}</span>
+                          <span className="font-medium text-slate-900">{t.title}</span>
                         )}
                         <SourceChip task={t} />
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-600">
+                    <td className="px-4 py-2.5 text-xs text-slate-600">
                       {t.contact_name ? t.contact_name : t.contact_id ? leadMap.get(String(t.contact_id)) ?? `#${t.contact_id}` : "\u2014"}
                     </td>
                     <td className="px-4 py-2.5 text-xs whitespace-nowrap">
                       {t.due_at ? (
-                        <span className={t.status === "open" && t.due_at && new Date(t.due_at).getTime() < Date.now() ? "text-red-600 font-medium" : "text-gray-600"}>
+                        <span className={t.status === "open" && t.due_at && new Date(t.due_at).getTime() < Date.now() ? "text-red-600 font-medium" : "text-slate-600"}>
                           {timeLabel(t.due_at, tr)}
                         </span>
                       ) : "\u2014"}
@@ -689,7 +689,7 @@ export default function TasksClient({
                     <td className="px-4 py-2.5">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[t.status] ?? ""}`}>{t.status}</span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 max-w-[200px] truncate">
+                    <td className="px-4 py-2.5 text-xs text-slate-500 max-w-[200px] truncate">
                       {/* When the description has a URL (inbound-email
                           review pages, etc.), render the link as a
                           clickable anchor so the agent can jump
@@ -775,7 +775,7 @@ export default function TasksClient({
               })}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
                     {search ? tr("tasks.noMatch") : statusFilter === "open" ? tr("tasks.noOpen") : tr("tasks.none")}
                   </td>
                 </tr>
@@ -816,7 +816,7 @@ function SourceChip({ task }: { task: TaskRow }) {
     <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${tone}`}>
       <span aria-hidden>{emoji}</span>
       {title}
-      {section ? <span className="text-gray-400">· {section}</span> : null}
+      {section ? <span className="text-slate-400">· {section}</span> : null}
     </span>
   );
 }
@@ -847,7 +847,7 @@ function TaskIconButton({
       ? "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
       : tone === "danger"
         ? "text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-        : "text-gray-500 hover:bg-gray-100 hover:text-gray-900";
+        : "text-slate-500 hover:bg-slate-100 hover:text-slate-900";
   return (
     <button
       type="button"
@@ -916,7 +916,7 @@ function SnoozeMenu({
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-1 w-36 origin-top-right overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg ring-1 ring-black/5"
+          className="absolute right-0 z-20 mt-1 w-36 origin-top-right overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg ring-1 ring-black/5"
         >
           {presets.map((p) => (
             <button
@@ -927,7 +927,7 @@ function SnoozeMenu({
                 setOpen(false);
                 onSnooze(p.days);
               }}
-              className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
             >
               {p.label}
             </button>

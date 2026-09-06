@@ -52,8 +52,8 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
 
   if (!signals.length) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500">
-        <div className="font-medium text-gray-700">{t("pages.sphereSignals.empty")}</div>
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+        <div className="font-medium text-slate-700">{t("pages.sphereSignals.empty")}</div>
         <p className="mt-1">{t("pages.dashFragments.signalsFire")}{" "}
           <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.sphereSignals.openContact")}</Link>{" "}{t("pages.dashFragments.addSignalManually")}</p>
       </div>
@@ -67,7 +67,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
         {signals.map((s) => (
           <li
             key={s.id}
-            className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
           >
             <div className="flex items-start gap-4">
               <span
@@ -82,7 +82,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/dashboard/sphere/${s.contact.id}`}
-                    className="truncate text-sm font-semibold text-gray-900 hover:underline"
+                    className="truncate text-sm font-semibold text-slate-900 hover:underline"
                   >
                     {s.contact.firstName} {s.contact.lastName ?? ""}
                   </Link>
@@ -90,11 +90,11 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                     {s.confidence}
                   </span>
                 </div>
-                <div className="mt-0.5 text-sm text-gray-700">{s.label}</div>
+                <div className="mt-0.5 text-sm text-slate-700">{s.label}</div>
                 {s.suggestedAction && (
-                  <div className="mt-1 text-xs text-gray-500">{s.suggestedAction}</div>
+                  <div className="mt-1 text-xs text-slate-500">{s.suggestedAction}</div>
                 )}
-                <div className="mt-1 flex items-center gap-3 text-[10px] uppercase tracking-wide text-gray-400">
+                <div className="mt-1 flex items-center gap-3 text-[10px] uppercase tracking-wide text-slate-400">
                   <span>{t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}</span>
                   {s.contact.phone && <span>· {s.contact.phone}</span>}
                 </div>
@@ -111,14 +111,14 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                     type="button"
                     onClick={() => void acknowledge(s.id)}
                     disabled={pendingId === s.id}
-                    className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                     title={t("pages.sphereSignals.markSeen")}
                   >
                     {pendingId === s.id ? "…" : t("common:actions.acknowledge")}
                   </button>
                 )}
                 {s.acknowledgedAt && (
-                  <span className="rounded-lg bg-gray-50 px-3 py-2 text-center text-xs text-gray-500">
+                  <span className="rounded-lg bg-slate-50 px-3 py-2 text-center text-xs text-slate-500">
                     ✓ Acknowledged
                   </span>
                 )}
@@ -126,7 +126,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                   type="button"
                   onClick={() => void dismiss(s.id)}
                   disabled={pendingId === s.id}
-                  className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-50"
                 >
                   {pendingId === s.id ? t("common:status.dismissing") : t("common:actions.dismiss")}
                 </button>

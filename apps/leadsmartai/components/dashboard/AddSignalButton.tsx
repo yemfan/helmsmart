@@ -108,7 +108,7 @@ export default function AddSignalButton({
       className={
         variant === "primary"
           ? "rounded-lg bg-brand-accent px-3 py-2 text-xs font-medium text-white hover:opacity-90"
-          : "rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          : "rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
       }
     >
       + {label ?? t("pages.addSignalButton.addSignal")}
@@ -130,22 +130,22 @@ export default function AddSignalButton({
       >
         <form
           onSubmit={(e) => void submit(e)}
-          className="w-full max-w-md space-y-4 rounded-xl border border-gray-200 bg-white p-5 shadow-xl"
+          className="w-full max-w-md space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-xl"
         >
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{t("pages.addSignal.title")}</h3>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <h3 className="text-lg font-semibold text-slate-900">{t("pages.addSignal.title")}</h3>
+            <p className="mt-0.5 text-xs text-slate-500">
               Signals surface on the contact profile and the Signals page. Per spec §2.6.3, they
               never auto-send — they&apos;re a calling list.
             </p>
           </div>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.type")}</span>
+            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.type")}</span>
             <select
               value={type}
               onChange={(e) => pickType(e.target.value as ContactSignalType)}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             >
               {TYPES.map((t) => (
                 <option key={t.value} value={t.value}>
@@ -156,21 +156,21 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.label")}</span>
+            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.label")}</span>
             <input
               type="text"
               value={signalLabel}
               onChange={(e) => setSignalLabel(e.target.value)}
               placeholder={t("pages.addSignal.labelPlaceholder")}
               maxLength={200}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
               autoFocus
             />
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.confidence")}</span>
-            <div className="mt-1 inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs">
+            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.confidence")}</span>
+            <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 text-xs">
               {CONFIDENCE.map((c) => (
                 <button
                   key={c}
@@ -178,8 +178,8 @@ export default function AddSignalButton({
                   onClick={() => setConfidence(c)}
                   className={`rounded px-3 py-1 font-medium capitalize ${
                     confidence === c
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
                   }`}
                 >
                   {c}
@@ -189,27 +189,27 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.suggestedAction")}<span className="text-gray-400">(optional)</span>
+            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.suggestedAction")}<span className="text-slate-400">(optional)</span>
             </span>
             <textarea
               value={suggestedAction}
               onChange={(e) => setSuggestedAction(e.target.value)}
               rows={2}
               maxLength={500}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
           </label>
 
           {error && <div className="text-sm text-red-600">{error}</div>}
 
-          <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-3">
+          <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
                 reset();
               }}
-              className="rounded-lg px-3 py-2 text-xs text-gray-600 hover:bg-gray-50"
+              className="rounded-lg px-3 py-2 text-xs text-slate-600 hover:bg-slate-50"
             >{t("pages.addSignal.cancel")}</button>
             <button
               type="submit"

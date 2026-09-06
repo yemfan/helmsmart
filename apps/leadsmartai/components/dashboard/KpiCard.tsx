@@ -31,7 +31,7 @@ function Sparkline({ points }: { points: number[] }) {
       width={w}
       height={h}
       viewBox={`0 0 ${w} ${h}`}
-      className="shrink-0 self-center text-gray-300"
+      className="shrink-0 self-center text-slate-300"
       fill="none"
       preserveAspectRatio="none"
       aria-hidden
@@ -56,13 +56,13 @@ export function KpiCard({ label, value, subtext, trend, deltaPct, spark, classNa
   return (
     <div
       className={cn(
-        "rounded-2xl border border-gray-200/90 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)] ring-1 ring-gray-900/[0.03]",
+        "rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.06)] ring-1 ring-slate-900/[0.03]",
         className
       )}
     >
-      <div className="text-sm font-medium text-gray-500">{label}</div>
+      <div className="text-sm font-medium text-slate-500">{label}</div>
       <div className="mt-2 flex items-baseline justify-between gap-2">
-        <div className="text-2xl font-semibold tracking-tight text-gray-900">{value}</div>
+        <div className="text-2xl font-semibold tracking-tight text-slate-900">{value}</div>
         {trend ? (
           <div className="shrink-0 text-xs font-medium text-emerald-600">{trend}</div>
         ) : hasSpark ? (
@@ -78,10 +78,10 @@ export function KpiCard({ label, value, subtext, trend, deltaPct, spark, classNa
         >
           <span aria-hidden>{up ? "▲" : "▼"}</span>
           <span>{Math.abs(deltaPct as number).toFixed(0)}%</span>
-          <span className="font-normal text-gray-400">{t("pages.misc.vsPrevPeriod")}</span>
+          <span className="font-normal text-slate-400">{t("pages.misc.vsPrevPeriod")}</span>
         </div>
       ) : subtext ? (
-        <div className="mt-1 text-xs text-gray-400">{subtext}</div>
+        <div className="mt-1 text-xs text-slate-400">{subtext}</div>
       ) : null}
     </div>
   );

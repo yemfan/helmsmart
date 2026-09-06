@@ -599,7 +599,7 @@ export function AiChatPanel() {
 
   return (
     <div
-      className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ${positionedClass} ${dragging || resizing ? "select-none" : ""}`}
+      className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${positionedClass} ${dragging || resizing ? "select-none" : ""}`}
       style={positionedStyle}
     >
       {/* Header — also the drag handle. */}
@@ -645,7 +645,7 @@ export function AiChatPanel() {
       {/* Tab strip + body — hidden when minimized so only the header shows. */}
       {!minimized ? (
         <>
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 bg-gray-50 px-2 py-1">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200 bg-slate-50 px-2 py-1">
             <TabPill
               label={t("pages.aiChatPanel.guideTab")}
               active={activeTabId === "guide"}
@@ -664,7 +664,7 @@ export function AiChatPanel() {
             <button
               type="button"
               onClick={openNewContactTab}
-              className="ml-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-blue-50 hover:text-blue-600"
+              className="ml-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               aria-label={t("pages.aiChatPanel.newContactTab")}
               title={t("pages.aiChatPanel.newContactTab")}
             >
@@ -692,7 +692,7 @@ export function AiChatPanel() {
               onPickContact={onPickContact}
             />
           ) : (
-            <div className="flex-1 p-4 text-sm text-gray-500">{t("pages.aiChatPanel.tabNotFound")}</div>
+            <div className="flex-1 p-4 text-sm text-slate-500">{t("pages.aiChatPanel.tabNotFound")}</div>
           )}
 
           {/* Resize handles — right edge, bottom edge, and bottom-right corner.
@@ -703,7 +703,7 @@ export function AiChatPanel() {
             title={t("pages.aiChatPanel.dragWidth")}
             aria-label={t("pages.aiChatPanel.resizeWidth")}
             className={`absolute right-0 top-14 bottom-4 w-1.5 cursor-ew-resize touch-none rounded-full transition-colors ${
-              resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
+              resizing ? "bg-blue-400/70" : "bg-slate-200/60 hover:bg-blue-300/70"
             }`}
           />
           <div
@@ -711,7 +711,7 @@ export function AiChatPanel() {
             title={t("pages.aiChatPanel.dragHeight")}
             aria-label={t("pages.aiChatPanel.resizeHeight")}
             className={`absolute bottom-0 left-3 right-4 h-1.5 cursor-ns-resize touch-none rounded-full transition-colors ${
-              resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
+              resizing ? "bg-blue-400/70" : "bg-slate-200/60 hover:bg-blue-300/70"
             }`}
           />
           <div
@@ -756,7 +756,7 @@ function TabPill({
             : "bg-blue-600 text-white"
           : tone === "autopilot"
             ? "bg-amber-100 text-amber-800 hover:bg-amber-200"
-            : "bg-white text-gray-700 hover:bg-gray-100"
+            : "bg-white text-slate-700 hover:bg-slate-100"
       }`}
     >
       <button type="button" onClick={onClick} className="max-w-[140px] truncate">
@@ -771,7 +771,7 @@ function TabPill({
             onClose();
           }}
           className={`ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[11px] leading-none ${
-            active ? "text-white/80 hover:bg-white/20" : "text-gray-400 hover:bg-gray-200"
+            active ? "text-white/80 hover:bg-white/20" : "text-slate-400 hover:bg-slate-200"
           }`}
           aria-label={t("pages.aiChatPanel.closeTab")}
           title={t("pages.aiChatPanel.closeTab")}
@@ -807,7 +807,7 @@ function GuideTabBody({
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4 min-h-0">
         {messages.length === 0 && !loading && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">{t("pages.aiChatPanel.tryAsking")}</p>
+            <p className="text-sm text-slate-500">{t("pages.aiChatPanel.tryAsking")}</p>
             {quickPrompts.map((q) => (
               <button
                 key={q}
@@ -825,7 +825,7 @@ function GuideTabBody({
             className={`text-sm leading-relaxed ${
               m.role === "user"
                 ? "ml-8 rounded-xl rounded-br-sm bg-blue-50 px-3 py-2 text-blue-900"
-                : "mr-8 rounded-xl rounded-bl-sm bg-gray-50 px-3 py-2 text-gray-800"
+                : "mr-8 rounded-xl rounded-bl-sm bg-slate-50 px-3 py-2 text-slate-800"
             }`}
           >
             {m.role === "assistant" ? (
@@ -836,16 +836,16 @@ function GuideTabBody({
           </div>
         ))}
         {loading && (
-          <div className="mr-8 rounded-xl rounded-bl-sm bg-gray-50 px-3 py-2">
+          <div className="mr-8 rounded-xl rounded-bl-sm bg-slate-50 px-3 py-2">
             <div className="flex gap-1">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "0ms" }} />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "150ms" }} />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "300ms" }} />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: "0ms" }} />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: "150ms" }} />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: "300ms" }} />
             </div>
           </div>
         )}
       </div>
-      <div className="flex gap-2 border-t border-gray-100 px-3 py-3">
+      <div className="flex gap-2 border-t border-slate-100 px-3 py-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -856,7 +856,7 @@ function GuideTabBody({
             }
           }}
           placeholder={t("pages.aiChatPanel.askPlaceholder")}
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
           disabled={loading}
         />
         <button
@@ -894,14 +894,14 @@ function ContactTabBody({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Top: contact picker + auto-pilot toggle */}
-      <div className="space-y-2 border-b border-gray-100 px-3 py-3">
+      <div className="space-y-2 border-b border-slate-100 px-3 py-3">
         {tab.contact ? (
-          <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2">
+          <div className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-gray-900">
+              <p className="truncate text-sm font-semibold text-slate-900">
                 {contactLabel(tab.contact)}
               </p>
-              <p className="truncate text-[11px] text-gray-500">
+              <p className="truncate text-[11px] text-slate-500">
                 {tab.contact.phone || "(no phone)"}
                 {tab.contact.email ? ` · ${tab.contact.email}` : ""}
               </p>
@@ -914,7 +914,7 @@ function ContactTabBody({
               <button
                 type="button"
                 onClick={() => updateTab(tab.tabId, { contact: null, draft: "", thread: [] })}
-                className="text-xs text-gray-400 hover:text-gray-700"
+                className="text-xs text-slate-400 hover:text-slate-700"
                 title={t("pages.aiChatPanel.pickDifferent")}
               >
                 change
@@ -931,13 +931,13 @@ function ContactTabBody({
         {tab.contact ? (
           <>
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.aiChatPanel.whatToSay")}</label>
+              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">{t("pages.aiChatPanel.whatToSay")}</label>
               <textarea
                 value={tab.prompt}
                 onChange={(e) => updateTab(tab.tabId, { prompt: e.target.value })}
                 rows={2}
                 placeholder='e.g. "Confirm tomorrow at 3pm" or "Ask about their financing"'
-                className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+                className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
               />
               <button
                 type="button"
@@ -951,7 +951,7 @@ function ContactTabBody({
 
             {tab.draft ? (
               <div>
-                <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.aiChatPanel.draftEditable")}</label>
+                <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">{t("pages.aiChatPanel.draftEditable")}</label>
                 <textarea
                   value={tab.draft}
                   onChange={(e) => updateTab(tab.tabId, { draft: e.target.value })}
@@ -1001,11 +1001,11 @@ function ContactTabBody({
             ) : null}
 
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.dashFragments.smsThread")} {tab.threadLoading ? "(loading…)" : ""}
+              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">{t("pages.dashFragments.smsThread")} {tab.threadLoading ? "(loading…)" : ""}
               </label>
-              <div ref={threadRef} className="space-y-1.5 rounded-lg border border-gray-100 bg-gray-50/60 p-2 max-h-44 overflow-y-auto">
+              <div ref={threadRef} className="space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/60 p-2 max-h-44 overflow-y-auto">
                 {tab.thread.length === 0 && !tab.threadLoading && (
-                  <p className="px-1 py-2 text-center text-[11px] text-gray-400">{t("pages.aiChatPanel.noMessages")}</p>
+                  <p className="px-1 py-2 text-center text-[11px] text-slate-400">{t("pages.aiChatPanel.noMessages")}</p>
                 )}
                 {tab.thread.map((m) => {
                   const badge = m.direction === "outbound" ? statusBadge(m.twilio_status) : null;
@@ -1020,7 +1020,7 @@ function ContactTabBody({
                             ? badge?.tone === "error"
                               ? "bg-rose-600 text-white"
                               : "bg-blue-600 text-white"
-                            : "bg-white text-gray-800 ring-1 ring-gray-200"
+                            : "bg-white text-slate-800 ring-1 ring-slate-200"
                         }`}
                       >
                         <div className="whitespace-pre-wrap">{m.message}</div>
@@ -1032,7 +1032,7 @@ function ContactTabBody({
                               ? "text-emerald-700"
                               : badge.tone === "error"
                                 ? "text-rose-700"
-                                : "text-gray-500"
+                                : "text-slate-500"
                           }`}
                           title={`Twilio status: ${m.twilio_status ?? "unknown"}`}
                         >
@@ -1046,7 +1046,7 @@ function ContactTabBody({
             </div>
           </>
         ) : (
-          <p className="px-2 py-6 text-center text-xs text-gray-400">{t("pages.aiChatPanel.pickContact")}</p>
+          <p className="px-2 py-6 text-center text-xs text-slate-400">{t("pages.aiChatPanel.pickContact")}</p>
         )}
       </div>
     </div>
@@ -1091,13 +1091,13 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
         }}
         onFocus={() => setOpen(true)}
         placeholder={t("pages.aiChatPanel.searchContact")}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
       />
       {open && q.trim() ? (
-        <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
-          {loading && <div className="px-3 py-2 text-xs text-gray-500">{t("pages.contactPicker.searching")}</div>}
+        <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+          {loading && <div className="px-3 py-2 text-xs text-slate-500">{t("pages.contactPicker.searching")}</div>}
           {!loading && results.length === 0 && (
-            <div className="px-3 py-2 text-xs text-gray-500">{t("pages.aiChatPanel.noMatches")}</div>
+            <div className="px-3 py-2 text-xs text-slate-500">{t("pages.aiChatPanel.noMatches")}</div>
           )}
           {results.map((c) => (
             <button
@@ -1108,10 +1108,10 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
                 setOpen(false);
                 setQ("");
               }}
-              className="block w-full border-b border-gray-50 px-3 py-2 text-left text-sm hover:bg-blue-50 last:border-b-0"
+              className="block w-full border-b border-slate-50 px-3 py-2 text-left text-sm hover:bg-blue-50 last:border-b-0"
             >
-              <div className="truncate font-medium text-gray-900">{contactLabel(c)}</div>
-              <div className="truncate text-[11px] text-gray-500">
+              <div className="truncate font-medium text-slate-900">{contactLabel(c)}</div>
+              <div className="truncate text-[11px] text-slate-500">
                 {c.phone || c.email || c.id}
               </div>
             </button>
@@ -1134,7 +1134,7 @@ function AutoPilotSwitch({
   return (
     <label
       className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
-        checked ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700"
+        checked ? "bg-amber-500 text-white" : "bg-slate-200 text-slate-700"
       }`}
       title={t("pages.aiChatPanel.autoPilotHint")}
     >

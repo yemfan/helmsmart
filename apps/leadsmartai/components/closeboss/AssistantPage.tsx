@@ -96,10 +96,10 @@ export function AssistantHeader({
       <div className="flex items-start gap-3">
         <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" />
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">{t("assistants.yourAiTeam")}</p>
-          <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{name}</h1>
-          <p className="text-sm font-medium text-gray-600">{t(`roster.${assistant.type}.name`, { defaultValue: assistant.name })}</p>
-          <p className="text-xs text-gray-400">{t(`assistants.personality.${assistant.type}`, { defaultValue: assistant.personality })}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("assistants.yourAiTeam")}</p>
+          <h1 className="mt-0.5 text-xl font-semibold text-slate-900">{name}</h1>
+          <p className="text-sm font-medium text-slate-600">{t(`roster.${assistant.type}.name`, { defaultValue: assistant.name })}</p>
+          <p className="text-xs text-slate-400">{t(`assistants.personality.${assistant.type}`, { defaultValue: assistant.personality })}</p>
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-stretch gap-2 sm:w-72">
@@ -108,11 +108,11 @@ export function AssistantHeader({
           <div className="flex flex-wrap justify-end gap-2">
             {actions.map((a) =>
               a.href ? (
-                <Link key={a.label} href={a.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                <Link key={a.label} href={a.href} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50">
                   {a.label}
                 </Link>
               ) : (
-                <button key={a.label} type="button" onClick={a.onClick} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                <button key={a.label} type="button" onClick={a.onClick} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50">
                   {a.label}
                 </button>
               ),
@@ -198,19 +198,19 @@ function AssistantSkillsCard({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           {t("assistants.skillsHeading", { defaultValue: "Skills" })}
         </p>
-        <span className="text-[10px] font-medium text-gray-400">{skills.length}</span>
+        <span className="text-[10px] font-medium text-slate-400">{skills.length}</span>
       </div>
       <ul className="mt-2 space-y-1">
         {skills.map((key) => {
           const description = catalog[key]?.description;
           return (
-            <li key={key} className="flex items-start gap-1.5 text-xs text-gray-700">
-              <span aria-hidden className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+            <li key={key} className="flex items-start gap-1.5 text-xs text-slate-700">
+              <span aria-hidden className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-slate-300" />
               {/* The description is the useful half; kept in the title so the
                   card stays a card rather than a wall of prose. */}
               <span className="capitalize" title={description || undefined}>
@@ -236,12 +236,12 @@ export function AssistantKpiCard({
   hint?: string;
   tone?: "hot" | "warn";
 }) {
-  const valueClass = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-gray-900";
+  const valueClass = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-slate-900";
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-xs text-gray-500">{label}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs text-slate-500">{label}</p>
       <p className={`mt-1 text-2xl font-bold ${valueClass}`}>{value ?? "—"}</p>
-      {hint && <p className="text-[10px] text-gray-400">{hint}</p>}
+      {hint && <p className="text-[10px] text-slate-400">{hint}</p>}
     </div>
   );
 }

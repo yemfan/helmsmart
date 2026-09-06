@@ -162,7 +162,7 @@ export default function PostsListClient({
     <div className="space-y-8">
       {published.length > 0 && (
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">
+          <h2 className="mb-3 text-sm font-semibold text-slate-700">
             {t("list.section_published", { count: published.length })}
           </h2>
           <div className="space-y-3">
@@ -252,7 +252,7 @@ function PostCard({
   };
 
   return (
-    <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex gap-4">
         {post.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -262,7 +262,7 @@ function PostCard({
             className="h-20 w-20 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-2xl">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-2xl">
             📝
           </div>
         )}
@@ -274,22 +274,22 @@ function PostCard({
             >
               {platformLabel}
             </span>
-            <span className="text-gray-600">{accountName}</span>
-            <span className="text-gray-400">·</span>
-            <time className="text-gray-500">
+            <span className="text-slate-600">{accountName}</span>
+            <span className="text-slate-400">·</span>
+            <time className="text-slate-500">
               {publishedAt.toLocaleString(locale, longDateOpts)}
             </time>
             {post.triggerKind && (
               <>
-                <span className="text-gray-400">·</span>
-                <span className="text-gray-500">
+                <span className="text-slate-400">·</span>
+                <span className="text-slate-500">
                   {triggerLabel(post.triggerKind, t)}
                 </span>
               </>
             )}
           </div>
 
-          <p className="line-clamp-3 whitespace-pre-wrap text-sm text-gray-800">
+          <p className="line-clamp-3 whitespace-pre-wrap text-sm text-slate-800">
             {post.caption}
           </p>
 
@@ -298,7 +298,7 @@ function PostCard({
               {post.hashtags.slice(0, 6).map((h) => (
                 <span
                   key={h}
-                  className="text-xs text-gray-500"
+                  className="text-xs text-slate-500"
                 >
                   #{h.replace(/^#/, "")}
                 </span>
@@ -338,7 +338,7 @@ function PostCard({
                 type="button"
                 onClick={onRefresh}
                 disabled={state.refreshing}
-                className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
                 {state.refreshing ? t("card.refreshing") : t("card.refresh_metrics")}
               </button>
@@ -349,13 +349,13 @@ function PostCard({
               return (
                 <Link
                   href={followUpHref}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
                 >
                   {t("card.post_follow_up")}
                 </Link>
               );
             })()}
-            <span className="text-gray-400">
+            <span className="text-slate-400">
               {state.metricsRefreshedAt
                 ? t("card.last_refresh", {
                     when: new Date(state.metricsRefreshedAt).toLocaleString(locale, shortDateOpts),
@@ -410,7 +410,7 @@ function MetricsRow({
 
   if (cells.length === 0) {
     return (
-      <p className="mt-3 text-xs italic text-gray-400">{t("metrics.linkedin_note")}</p>
+      <p className="mt-3 text-xs italic text-slate-400">{t("metrics.linkedin_note")}</p>
     );
   }
 
@@ -418,10 +418,10 @@ function MetricsRow({
     <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
       {cells.map((c) => (
         <span key={c.label}>
-          <strong className="text-gray-900">
+          <strong className="text-slate-900">
             {c.value == null ? t("metrics.empty_value") : c.value.toLocaleString(locale)}
           </strong>{" "}
-          <span className="text-gray-500">{c.label}</span>
+          <span className="text-slate-500">{c.label}</span>
         </span>
       ))}
     </div>
@@ -439,10 +439,10 @@ function triggerLabel(kind: string, t: WebPostsT): string {
 
 function EmptyState({ t }: { t: WebPostsT }) {
   return (
-    <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
+    <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center">
       <div className="mb-2 text-3xl">📭</div>
-      <p className="text-sm font-semibold text-gray-900">{t("empty.title")}</p>
-      <p className="mt-1 text-sm text-gray-500">{t("empty.body")}</p>
+      <p className="text-sm font-semibold text-slate-900">{t("empty.title")}</p>
+      <p className="mt-1 text-sm text-slate-500">{t("empty.body")}</p>
     </div>
   );
 }

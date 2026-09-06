@@ -65,16 +65,16 @@ export default function SavedSearchesPanel({ contactId }: Props) {
   }
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
+    <section className="rounded-xl border border-slate-200 bg-white p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">{t("pages.savedSearches.heading")}</h2>
-          <p className="mt-0.5 text-xs text-gray-500">{t("pages.savedSearches.intro")}</p>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.savedSearches.heading")}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.savedSearches.intro")}</p>
         </div>
         <button
           type="button"
           onClick={() => setEditingId("new")}
-          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
           <Plus className="h-3 w-3" aria-hidden />{t("pages.savedSearches.add")}</button>
       </div>
@@ -86,16 +86,16 @@ export default function SavedSearchesPanel({ contactId }: Props) {
       )}
 
       {loading ? (
-        <div className="mt-3 text-xs text-gray-400">{t("pages.savedSearches.loading")}</div>
+        <div className="mt-3 text-xs text-slate-400">{t("pages.savedSearches.loading")}</div>
       ) : searches.length === 0 && editingId !== "new" ? (
-        <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
+        <div className="mt-3 rounded border border-dashed border-slate-200 p-4 text-center text-xs text-slate-500">
           {t("pages.savedSearches.emptyBefore")} <span className="font-medium">{t("pages.savedSearches.add")}</span>{t("pages.savedSearches.emptyAfter")}
         </div>
       ) : (
-        <ul className="mt-3 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
+        <ul className="mt-3 divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
           {searches.map((s) =>
             editingId === s.id ? (
-              <li key={s.id} className="bg-gray-50 p-3">
+              <li key={s.id} className="bg-slate-50 p-3">
                 <SearchForm
                   initial={s}
                   onCancel={() => setEditingId(null)}
@@ -112,16 +112,16 @@ export default function SavedSearchesPanel({ contactId }: Props) {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-medium text-gray-900">
+                    <span className="truncate text-sm font-medium text-slate-900">
                       {s.name}
                     </span>
                     <FrequencyBadge frequency={s.alertFrequency} />
                   </div>
-                  <div className="mt-0.5 text-[11px] text-gray-500">
+                  <div className="mt-0.5 text-[11px] text-slate-500">
                     {summarizeCriteria(s.criteria) || t("pages.savedSearches.anyListing")}
                   </div>
                   {s.lastAlertedAt && (
-                    <div className="mt-0.5 text-[10px] text-gray-400">
+                    <div className="mt-0.5 text-[10px] text-slate-400">
                       {t("pages.savedSearches.lastAlerted", {
                     date: new Date(s.lastAlertedAt).toLocaleDateString(locale),
                   })}
@@ -133,7 +133,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                     type="button"
                     onClick={() => setEditingId(s.id)}
                     aria-label={t("pages.savedSearches.edit")}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   >
                     <Edit2 className="h-3 w-3" />
                   </button>
@@ -141,7 +141,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                     type="button"
                     onClick={() => archive(s.id)}
                     aria-label={t("pages.savedSearches.archive")}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded border border-gray-200 bg-white text-red-600 hover:bg-red-50"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-200 bg-white text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="h-3 w-3" />
                   </button>
@@ -150,7 +150,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
             ),
           )}
           {editingId === "new" && (
-            <li className="bg-gray-50 p-3">
+            <li className="bg-slate-50 p-3">
               <SearchForm
                 contactId={contactId}
                 onCancel={() => setEditingId(null)}
@@ -179,7 +179,7 @@ function FrequencyBadge({ frequency }: { frequency: AlertFrequency }) {
   const Icon = frequency === "never" ? BellOff : Bell;
   const classes =
     frequency === "never"
-      ? "bg-gray-100 text-gray-500"
+      ? "bg-slate-100 text-slate-500"
       : "bg-emerald-50 text-emerald-700";
   return (
     <span
@@ -271,66 +271,66 @@ function SearchForm(props: SearchFormProps) {
   return (
     <form onSubmit={submit} className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           {isEdit ? t("pages.savedSearches.editHeading") : t("pages.savedSearches.newHeading")}
         </span>
         <button
           type="button"
           onClick={props.onCancel}
           aria-label={t("pages.savedSearches.cancel")}
-          className="inline-flex h-6 w-6 items-center justify-center rounded text-gray-400 hover:bg-gray-200"
+          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
         >
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
 
       <label className="block">
-        <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.name")}</span>
+        <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.name")}</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           placeholder={t("pages.savedSearches.namePlaceholder")}
-          className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+          className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
         />
       </label>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.city")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.city")}</span>
           <input
             value={criteria.city ?? ""}
             onChange={(e) => set("city", e.target.value)}
             placeholder={t("pages.savedSearches.cityPlaceholder")}
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.state")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.state")}</span>
           <input
             value={criteria.state ?? ""}
             onChange={(e) => set("state", e.target.value.toUpperCase().slice(0, 2))}
             placeholder="CA"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.zip")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.zip")}</span>
           <input
             value={criteria.zip ?? ""}
             onChange={(e) => set("zip", e.target.value.slice(0, 5))}
             placeholder="91754"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.propertyType")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.propertyType")}</span>
           <select
             value={criteria.propertyType ?? "any"}
             onChange={(e) =>
               set("propertyType", e.target.value as SavedSearchCriteria["propertyType"])
             }
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           >
             <option value="any">{t("pages.savedSearches.any")}</option>
             <option value="single_family">{t("pages.savedSearches.singleFamily")}</option>
@@ -340,54 +340,54 @@ function SearchForm(props: SearchFormProps) {
           </select>
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.priceMin")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.priceMin")}</span>
           <input
             type="number"
             value={criteria.priceMin ?? ""}
             onChange={(e) => set("priceMin", e.target.value ? Number(e.target.value) : undefined)}
             placeholder="800000"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.priceMax")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.priceMax")}</span>
           <input
             type="number"
             value={criteria.priceMax ?? ""}
             onChange={(e) => set("priceMax", e.target.value ? Number(e.target.value) : undefined)}
             placeholder="1200000"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.bedsMin")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.bedsMin")}</span>
           <input
             type="number"
             value={criteria.bedsMin ?? ""}
             onChange={(e) => set("bedsMin", e.target.value ? Number(e.target.value) : undefined)}
             placeholder="3"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.bathsMin")}</span>
+          <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.bathsMin")}</span>
           <input
             type="number"
             step="0.5"
             value={criteria.bathsMin ?? ""}
             onChange={(e) => set("bathsMin", e.target.value ? Number(e.target.value) : undefined)}
             placeholder="2"
-            className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+            className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
           />
         </label>
       </div>
 
       <label className="block">
-        <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.alertFrequency")}</span>
+        <span className="text-[11px] font-medium text-slate-600">{t("pages.savedSearches.alertFrequency")}</span>
         <select
           value={frequency}
           onChange={(e) => setFrequency(e.target.value as AlertFrequency)}
-          className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+          className="mt-0.5 w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm"
         >
           <option value="instant">{t("pages.savedSearches.instant")}</option>
           <option value="daily">{t("pages.savedSearches.dailyDigest")}</option>
@@ -406,14 +406,14 @@ function SearchForm(props: SearchFormProps) {
         <button
           type="submit"
           disabled={saving || !name.trim()}
-          className="rounded bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
         >
           {saving ? t("common:status.saving") : isEdit ? t("common:actions.save_changes") : t("pages.savedSearches.createSearch")}
         </button>
         <button
           type="button"
           onClick={props.onCancel}
-          className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600"
+          className="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600"
         >{t("pages.savedSearches.cancel")}</button>
       </div>
     </form>

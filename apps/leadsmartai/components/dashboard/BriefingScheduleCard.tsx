@@ -94,7 +94,7 @@ export default function BriefingScheduleCard() {
 
   if (loading) {
     return (
-      <div className="space-y-2 text-xs text-gray-500"><LoadingText /></div>
+      <div className="space-y-2 text-xs text-slate-500"><LoadingText /></div>
     );
   }
 
@@ -108,9 +108,9 @@ export default function BriefingScheduleCard() {
             onChange={(e) =>
               setSettings((s) => ({ ...s, briefing_morning_time: e.target.value }))
             }
-            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <p className="mt-1 text-[11px] text-gray-500">
+          <p className="mt-1 text-[11px] text-slate-500">
             {t("pages.briefingSchedule.morningBlurb")}
           </p>
         </Field>
@@ -121,9 +121,9 @@ export default function BriefingScheduleCard() {
             onChange={(e) =>
               setSettings((s) => ({ ...s, briefing_evening_time: e.target.value }))
             }
-            className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <p className="mt-1 text-[11px] text-gray-500">
+          <p className="mt-1 text-[11px] text-slate-500">
             {t("pages.briefingSchedule.eveningBlurb")}
           </p>
         </Field>
@@ -136,7 +136,7 @@ export default function BriefingScheduleCard() {
         it only governed briefings, which is how two other places grew their
         own copy of the same setting.
       */}
-      <p className="text-[11px] text-gray-500">
+      <p className="text-[11px] text-slate-500">
         {t("pages.briefingSchedule.timezoneMoved")}
       </p>
 
@@ -173,7 +173,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-gray-700">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-slate-700">{label}</label>
       {children}
     </div>
   );

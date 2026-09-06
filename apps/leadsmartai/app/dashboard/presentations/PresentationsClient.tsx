@@ -129,14 +129,14 @@ export default function PresentationsClient({
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
         <label className="block space-y-2">
           <span className="ui-card-subtitle block text-slate-700">{t("pages.presentations.propertyAddress")}</span>
           <AddressAutocomplete
             value={address}
             onChange={setAddress}
             placeholder={t("pages.presentations.addressPlaceholder")}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </label>
 
@@ -165,7 +165,7 @@ export default function PresentationsClient({
         </div>
       ) : null}
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-3">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-3">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
           <div>
             <div className="ui-card-title text-brand-text">{t("pages.presentations.recent")}</div>

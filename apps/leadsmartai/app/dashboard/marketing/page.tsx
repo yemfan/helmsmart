@@ -83,7 +83,7 @@ export default async function MarketingPage() {
         <p className="ui-page-subtitle text-brand-text/80">{t("pages.marketing.shareLinks", { ns: "dashboard" })}</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-5">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-5">
         <div className="space-y-2">
           <div className="ui-card-title text-brand-text">{t("pages.marketing.shareableLinks", { ns: "dashboard" })}</div>
           <div className="text-xs text-brand-text/80">{t("pages.marketing.shareableIntro", { ns: "dashboard" })}</div>

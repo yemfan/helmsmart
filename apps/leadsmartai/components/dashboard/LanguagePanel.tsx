@@ -26,11 +26,11 @@ export default function LanguagePanel() {
   const current = (i18n.language as SupportedLocale) ?? "en";
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900">
         {t("language.title")}
       </h2>
-      <p className="mt-0.5 text-xs text-gray-500 mb-3">
+      <p className="mt-0.5 text-xs text-slate-500 mb-3">
         {t("language.description")}
       </p>
       <div role="radiogroup" aria-label={t("language.title")}>
@@ -46,7 +46,7 @@ export default function LanguagePanel() {
               className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition mb-2 last:mb-0 ${
                 active
                   ? "border-blue-500 bg-blue-50 text-blue-900 font-semibold"
-                  : "border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-50"
+                  : "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
               <span>{t(LANGUAGE_LABEL_KEY[loc], { ns: "common" })}</span>

@@ -78,9 +78,9 @@ export default function AccountTimezonePanel() {
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">{t("pages.accountTimezone.title")}</h2>
-      <p className="mt-1 text-xs text-gray-500">{t("pages.accountTimezone.blurb")}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.accountTimezone.title")}</h2>
+      <p className="mt-1 text-xs text-slate-500">{t("pages.accountTimezone.blurb")}</p>
 
       <div className="mt-3 max-w-sm">
         <select
@@ -98,7 +98,7 @@ export default function AccountTimezonePanel() {
             setTimezone(v);
             void save(v);
           }}
-          className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50"
+          className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-slate-50"
         >
           {COMMON_TIMEZONES.map((tz) => (
             <option key={tz.value} value={tz.value}>
@@ -127,7 +127,7 @@ export default function AccountTimezonePanel() {
                 setError(t("pages.accountTimezone.invalid"));
               }
             }}
-            className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="mt-2 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         ) : null}
 

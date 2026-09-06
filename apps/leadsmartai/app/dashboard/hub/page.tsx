@@ -25,7 +25,7 @@ export default async function HubSettingsPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-4 text-sm text-gray-600">
+        <div className="p-4 text-sm text-slate-600">
           {t("pages.hubSettings.title", { ns: "dashboard" })}
         </div>
       }

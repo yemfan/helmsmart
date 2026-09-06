@@ -21,7 +21,7 @@ const STATUS_LABEL: Record<OfferStatus, string> = {
 };
 
 const STATUS_BADGE: Record<OfferStatus, string> = {
-  draft: "bg-gray-100 text-gray-700",
+  draft: "bg-slate-100 text-slate-700",
   submitted: "bg-blue-100 text-blue-800",
   countered: "bg-amber-100 text-amber-800",
   accepted: "bg-green-100 text-green-800",

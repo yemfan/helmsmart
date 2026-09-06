@@ -110,7 +110,7 @@ export function LeadQueueClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">{t("pages.leadQueue.loading")}</div>
+      <div className="flex items-center justify-center py-20 text-slate-400">{t("pages.leadQueue.loading")}</div>
     );
   }
 
@@ -118,14 +118,14 @@ export function LeadQueueClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{t("pages.leadQueue.heading")}</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.leadQueue.heading")}</h1>
+          <p className="text-sm text-slate-500">
             {t("pages.leadQueue.availableCount", { count: total })}
           </p>
         </div>
         <button
           onClick={() => { setLoading(true); fetchQueue(); }}
-          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >{t("pages.leadQueue.refresh")}</button>
       </div>
 
@@ -136,9 +136,9 @@ export function LeadQueueClient() {
       {feedback && <FeedbackBanner feedback={feedback} />}
 
       {leads.length === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-gray-500">{t("pages.leadQueue.empty")}</p>
-          <p className="mt-1 text-sm text-gray-400">{t("pages.leadQueue.emptyHint")}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+          <p className="text-slate-500">{t("pages.leadQueue.empty")}</p>
+          <p className="mt-1 text-sm text-slate-400">{t("pages.leadQueue.emptyHint")}</p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,35 +147,35 @@ export function LeadQueueClient() {
             return (
               <div
                 key={id}
-                className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
               >
                 <div className="mb-3 space-y-1">
-                  <h3 className="font-medium text-gray-900 truncate">
+                  <h3 className="font-medium text-slate-900 truncate">
                     {lead.name || t("pages.bossAssistant.unnamedLead")}
                   </h3>
                   {lead.email && (
-                    <p className="text-sm text-gray-500 truncate">{lead.email}</p>
+                    <p className="text-sm text-slate-500 truncate">{lead.email}</p>
                   )}
                   {lead.phone && (
-                    <p className="text-sm text-gray-500">{lead.phone}</p>
+                    <p className="text-sm text-slate-500">{lead.phone}</p>
                   )}
                   {lead.property_address && (
-                    <p className="text-sm text-gray-500 truncate">{lead.property_address}</p>
+                    <p className="text-sm text-slate-500 truncate">{lead.property_address}</p>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                       {lead.source ?? "unknown"}
                     </span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-slate-400">
                       {timeAgo(lead.created_at)}
                     </span>
                   </div>
                   <button
                     disabled={claiming === id}
                     onClick={() => claimLead(id)}
-                    className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
                   >
                     {claiming === id ? t("pages.leadQueue.claiming") : t("pages.leadQueue.claim")}
                   </button>

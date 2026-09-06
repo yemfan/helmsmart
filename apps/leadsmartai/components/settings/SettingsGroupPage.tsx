@@ -22,13 +22,13 @@ export function SettingsGroupPage({
     <div className="mx-auto max-w-3xl">
       <Link
         href="/dashboard/settings"
-        className="inline-flex items-center rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0072ce]/40"
+        className="inline-flex items-center rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0072ce]/40"
       >
         {back}
       </Link>
       <div className="mb-5 mt-3">
-        <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-        <p className="mt-0.5 text-sm text-gray-500">{description}</p>
+        <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
+        <p className="mt-0.5 text-sm text-slate-500">{description}</p>
       </div>
       <div className="space-y-4">{children}</div>
     </div>
@@ -46,9 +46,9 @@ export function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
-      {description ? <p className="mt-0.5 mb-3 text-xs text-gray-500">{description}</p> : <div className="mb-3" />}
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+      {description ? <p className="mt-0.5 mb-3 text-xs text-slate-500">{description}</p> : <div className="mb-3" />}
       {children}
     </div>
   );

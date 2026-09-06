@@ -153,7 +153,7 @@ export default function SalesAssistantClient() {
         <button
           type="button"
           onClick={() => setOutboundOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
           aria-expanded={outboundOpen}
         >
           <PhoneOutgoing className="h-3.5 w-3.5" strokeWidth={2} />
@@ -193,20 +193,20 @@ function SalesVoiceSettingsModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
-          <h2 className="text-base font-semibold text-gray-900">{t("assistants.sales.voicePanel")}</h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("assistants.sales.voicePanel")}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
             aria-label={t("assistants.common.close")}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-1 text-sm font-semibold text-gray-900">{t("pages.salesAssistant.voiceTitle")}</h3>
-          <p className="mb-4 text-xs text-gray-500">{t("pages.salesAssistant.voiceSub")}</p>
+        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="mb-1 text-sm font-semibold text-slate-900">{t("pages.salesAssistant.voiceTitle")}</h3>
+          <p className="mb-4 text-xs text-slate-500">{t("pages.salesAssistant.voiceSub")}</p>
           <AssistantCallSettings
             type="sales_assistant"
             knowledgePlaceholder="Current listings to mention, neighborhoods you specialize in, financing partners, what makes you different…"
@@ -238,19 +238,19 @@ function LeadList({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
         <Link href={viewAllHref} className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.common.viewAll")}</Link>
       </div>
       {leads.length === 0 ? (
-        <p className="py-4 text-center text-sm text-gray-400">{loading ? t("common:actions.loading") : empty}</p>
+        <p className="py-4 text-center text-sm text-slate-400">{loading ? t("common:actions.loading") : empty}</p>
       ) : (
         <div className="space-y-2">
           {leads.map((l) => (
             <div
               key={l.id}
-              className="flex items-center gap-2 rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-slate-50"
             >
               <button
                 type="button"
@@ -258,13 +258,13 @@ function LeadList({
                 className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-gray-900">{l.name ?? t("assistants.sales.unnamedLead")}</p>
-                  <p className="truncate text-xs text-gray-500">
+                  <p className="truncate text-sm font-medium text-slate-900">{l.name ?? t("assistants.sales.unnamedLead")}</p>
+                  <p className="truncate text-xs text-slate-500">
                     {[l.ai_intent, l.source].filter(Boolean).join(" · ") || "—"}
                   </p>
                 </div>
                 {typeof l.engagement_score === "number" && (
-                  <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600">{l.engagement_score}</span>
+                  <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">{l.engagement_score}</span>
                 )}
               </button>
               {onQuickAction && (
@@ -274,7 +274,7 @@ function LeadList({
                     onClick={() => onQuickAction(l.id, "call")}
                     aria-label={`Call ${l.name ?? "lead"}`}
                     title={t("pages.labels.call")}
-                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                    className="rounded-md border border-slate-200 p-1.5 text-slate-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Phone className="h-3.5 w-3.5" strokeWidth={2} />
                   </button>
@@ -283,7 +283,7 @@ function LeadList({
                     onClick={() => onQuickAction(l.id, "sms")}
                     aria-label={`Text ${l.name ?? "lead"}`}
                     title={t("pages.labels.sms")}
-                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                    className="rounded-md border border-slate-200 p-1.5 text-slate-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
                   </button>
@@ -292,7 +292,7 @@ function LeadList({
                     onClick={() => onQuickAction(l.id, "email")}
                     aria-label={`Email ${l.name ?? "lead"}`}
                     title={t("pages.labels.emailChannel")}
-                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                    className="rounded-md border border-slate-200 p-1.5 text-slate-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Mail className="h-3.5 w-3.5" strokeWidth={2} />
                   </button>

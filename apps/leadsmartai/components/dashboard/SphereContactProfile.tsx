@@ -43,7 +43,7 @@ export default async function SphereContactProfile({
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard/sphere"
-          className="inline-flex text-sm font-medium text-gray-500 hover:text-gray-800"
+          className="inline-flex text-sm font-medium text-slate-500 hover:text-slate-800"
         >
           {t("pages.sphereProfile.backToSphere", { ns: "dashboard" })}
         </Link>
@@ -61,7 +61,7 @@ export default async function SphereContactProfile({
         </div>
       </div>
 
-      <header className="rounded-xl border border-gray-200 bg-white p-5">
+      <header className="rounded-xl border border-slate-200 bg-white p-5">
         <div className="flex items-start gap-4">
           <span
             className="flex h-14 w-14 items-center justify-center rounded-full text-lg font-semibold text-white"
@@ -70,8 +70,8 @@ export default async function SphereContactProfile({
             {contact.initials}
           </span>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-semibold text-gray-900">{contact.fullName}</h1>
-            <div className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+            <h1 className="text-2xl font-semibold text-slate-900">{contact.fullName}</h1>
+            <div className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-slate-500">
               <span>{relationshipLabel(contact.relationshipType)}</span>
               {contact.relationshipTag && (
                 <>
@@ -80,11 +80,11 @@ export default async function SphereContactProfile({
                 </>
               )}
             </div>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-gray-500">
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-slate-500">
               {contact.phone && <span>📞 {contact.phone}</span>}
               {contact.email && <span>✉️ {contact.email}</span>}
               {contact.preferredLanguage === "zh" && (
-                <span className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px]">
+                <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px]">
                   Prefers 中文
                 </span>
               )}
@@ -128,19 +128,19 @@ export default async function SphereContactProfile({
         className={`rounded-xl border p-5 ${
           contact.signals.length > 0
             ? "border-amber-200 bg-amber-50"
-            : "border-gray-200 bg-white"
+            : "border-slate-200 bg-white"
         }`}
       >
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2
               className={`text-sm font-semibold ${
-                contact.signals.length > 0 ? "text-amber-900" : "text-gray-900"
+                contact.signals.length > 0 ? "text-amber-900" : "text-slate-900"
               }`}
             >{t("pages.sphereProfile.openSignals")}</h2>
             <p
               className={`mt-0.5 text-xs ${
-                contact.signals.length > 0 ? "text-amber-800" : "text-gray-500"
+                contact.signals.length > 0 ? "text-amber-800" : "text-slate-500"
               }`}
             >
               Per spec §2.6.3 — never auto-send. Treat as a calling list.
@@ -153,37 +153,37 @@ export default async function SphereContactProfile({
             {contact.signals.map((s) => (
               <li key={s.id} className="rounded-lg border border-amber-200 bg-white p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-gray-900">{s.label}</span>
+                  <span className="text-sm font-medium text-slate-900">{s.label}</span>
                   <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
                     {s.confidence}
                   </span>
                 </div>
                 {s.suggestedAction && (
-                  <div className="mt-1 text-xs text-gray-600">{s.suggestedAction}</div>
+                  <div className="mt-1 text-xs text-slate-600">{s.suggestedAction}</div>
                 )}
-                <div className="mt-1 text-[10px] uppercase tracking-wide text-gray-400">
+                <div className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">
                   {t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}
                 </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-gray-500">{t("pages.sphereProfile.noSignals")}</p>
+          <p className="mt-3 text-sm text-slate-500">{t("pages.sphereProfile.noSignals")}</p>
         )}
       </section>
 
-      <section className="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-gray-900">{t("pages.sphereProfile.upcomingTriggers")}</h2>
-        <p className="mt-0.5 text-xs text-gray-500">{t("pages.sphereProfile.triggersHint")}</p>
-        <ul className="mt-4 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
+      <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.sphereProfile.upcomingTriggers")}</h2>
+        <p className="mt-0.5 text-xs text-slate-500">{t("pages.sphereProfile.triggersHint")}</p>
+        <ul className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
           {applicableTemplates.length === 0 ? (
-            <li className="p-6 text-center text-sm text-gray-400">{t("pages.sphereProfile.noTemplates")}</li>
+            <li className="p-6 text-center text-sm text-slate-400">{t("pages.sphereProfile.noTemplates")}</li>
           ) : (
             applicableTemplates.map((tpl) => (
               <li key={tpl.id} className="flex items-center justify-between gap-3 p-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] text-gray-400">{tpl.id}</span>
+                    <span className="font-mono text-[10px] text-slate-400">{tpl.id}</span>
                     <span
                       className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                         tpl.channel === "sms"
@@ -194,19 +194,19 @@ export default async function SphereContactProfile({
                       {tpl.channel}
                     </span>
                   </div>
-                  <div className="mt-0.5 text-sm font-medium text-gray-900">{tpl.name}</div>
+                  <div className="mt-0.5 text-sm font-medium text-slate-900">{tpl.name}</div>
                   {tpl.notes && (
-                    <div className="mt-0.5 text-[11px] text-gray-500 italic">{tpl.notes}</div>
+                    <div className="mt-0.5 text-[11px] text-slate-500 italic">{tpl.notes}</div>
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-wide text-gray-500">
+                  <span className="text-[10px] uppercase tracking-wide text-slate-500">
                     {t("pages.sphereProfile.inherits", { status: tpl.effectiveStatus })}
                   </span>
                   <GenerateDraftButton contactId={contact.id} templateId={tpl.id} />
                   <Link
                     href={`/dashboard/templates#${tpl.id}`}
-                    className="rounded border border-gray-200 bg-white px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-50"
+                    className="rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50"
                   >{t("pages.sphereProfile.editTemplate")}</Link>
                 </div>
               </li>
@@ -226,9 +226,9 @@ export default async function SphereContactProfile({
 
       <VoiceCallTimelinePanel contactId={contact.id} />
 
-      <section className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-5">
-        <h2 className="text-sm font-semibold text-gray-700">{t("pages.sphereProfile.messageTimeline")}</h2>
-        <p className="mt-0.5 text-xs text-gray-500">
+      <section className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5">
+        <h2 className="text-sm font-semibold text-slate-700">{t("pages.sphereProfile.messageTimeline")}</h2>
+        <p className="mt-0.5 text-xs text-slate-500">
           {t("pages.sphereProfile.timelinePending")}{" "}
           <code className="font-mono">communications</code>{t("pages.sphereProfile.scopedToContact")}
         </p>
@@ -246,30 +246,30 @@ async function EquityCard({ contact }: { contact: ContactView }) {
     contact.equityDelta === null
   ) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.sphereProfile.equity")}</div>
-        <div className="mt-1 text-sm text-gray-500">{t("pages.sphereProfile.equityHint")}</div>
+      <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sphereProfile.equity")}</div>
+        <div className="mt-1 text-sm text-slate-500">{t("pages.sphereProfile.equityHint")}</div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
+    <div className="rounded-lg border border-slate-200 bg-white p-4">
       <div className="flex items-start justify-between">
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.sphereProfile.equity")}</div>
-        <div className="text-[10px] uppercase tracking-wide text-gray-400">
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sphereProfile.equity")}</div>
+        <div className="text-[10px] uppercase tracking-wide text-slate-400">
           {t("pages.sphereProfile.avm", { date: contact.avmUpdatedAt ? new Date(contact.avmUpdatedAt).toLocaleDateString(locale) : "" })}
         </div>
       </div>
       <div className="mt-1 flex items-baseline gap-2">
-        <span className="text-2xl font-semibold text-gray-900 tabular-nums">
+        <span className="text-2xl font-semibold text-slate-900 tabular-nums">
           {currencyFormat(contact.avmCurrent)}
         </span>
         <span className="text-sm text-emerald-700">
           +{percentFormat(contact.equityPct)}
         </span>
       </div>
-      <div className="mt-1 text-xs text-gray-500">
+      <div className="mt-1 text-xs text-slate-500">
         {t("pages.sphereProfile.paidEquity", {
           price: currencyFormat(contact.closingPrice),
           equity: currencyFormat(contact.equityDelta),
@@ -281,10 +281,10 @@ async function EquityCard({ contact }: { contact: ContactView }) {
 
 function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-gray-900">{value}</div>
-      {hint && <div className="mt-0.5 text-xs text-gray-500">{hint}</div>}
+    <div className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="mt-1 text-lg font-semibold text-slate-900">{value}</div>
+      {hint && <div className="mt-0.5 text-xs text-slate-500">{hint}</div>}
     </div>
   );
 }

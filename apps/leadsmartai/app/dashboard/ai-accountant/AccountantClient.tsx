@@ -46,9 +46,9 @@ function fmtDay(iso: string | null, locale: string): string {
 const STATUS_CHIP: Record<string, string> = {
   overdue: "bg-red-100 text-red-700",
   sent: "bg-amber-100 text-amber-700",
-  draft: "bg-gray-100 text-gray-600",
+  draft: "bg-slate-100 text-slate-600",
   paid: "bg-emerald-100 text-emerald-700",
-  void: "bg-gray-100 text-gray-400",
+  void: "bg-slate-100 text-slate-400",
 };
 
 export default function AccountantClient({
@@ -108,27 +108,27 @@ export default function AccountantClient({
       </div>
 
       {/* ── Commission pipeline — the real paycheck ── */}
-      <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">{t("assistants.accountant.commissionPipeline")}</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("assistants.accountant.commissionPipeline")}</h2>
           <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.revenueForecast")}</Link>
         </div>
         {pipelineDeals.length === 0 ? (
-          <p className="py-6 text-center text-sm text-gray-400">{t("pages.accountant.ready")}</p>
+          <p className="py-6 text-center text-sm text-slate-400">{t("pages.accountant.ready")}</p>
         ) : (
           <div className="space-y-2">
             {pipelineDeals.map((d) => (
-              <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50">
+              <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-slate-50">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-gray-900">{d.property_address}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="truncate text-sm font-medium text-slate-900">{d.property_address}</p>
+                  <p className="text-xs text-slate-500">
                     {d.contact_name ?? "—"}{d.closing_date ? ` · closes ${fmtDay(d.closing_date, locale)}` : " · no closing date"}
                   </p>
                 </div>
                 {d.commission_missing ? (
                   <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">{t("pages.accountant.commissionMissing")}</span>
                 ) : (
-                  <span className="shrink-0 text-sm font-semibold text-gray-900">{money(d.expected_net ?? 0, locale)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-slate-900">{money(d.expected_net ?? 0, locale)}</span>
                 )}
               </Link>
             ))}
@@ -138,31 +138,31 @@ export default function AccountantClient({
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* ── Spending this month (1099 life: every category counts) ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">{t("assistants.accountant.spendingThisMonth")}</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("assistants.accountant.spendingThisMonth")}</h2>
             <Link href="/dashboard/expenses" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allExpenses")}</Link>
           </div>
           {topCategories.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
               {topCategories.map((c) => (
-                <span key={c.category} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
+                <span key={c.category} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
                   {c.category}: {money(c.total, locale)}
                 </span>
               ))}
             </div>
           )}
           {recentExpenses.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">{t("pages.accountant.noExpenses")}</p>
+            <p className="py-6 text-center text-sm text-slate-400">{t("pages.accountant.noExpenses")}</p>
           ) : (
             <div className="space-y-2">
               {recentExpenses.map((e) => (
-                <div key={e.id} className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2">
+                <div key={e.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{e.vendor ?? e.category}</p>
-                    <p className="text-xs text-gray-500">{e.category} · {fmtDay(e.expense_date, locale)}</p>
+                    <p className="truncate text-sm font-medium text-slate-900">{e.vendor ?? e.category}</p>
+                    <p className="text-xs text-slate-500">{e.category} · {fmtDay(e.expense_date, locale)}</p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-gray-700">{money(e.amount || 0, locale)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-slate-700">{money(e.amount || 0, locale)}</span>
                 </div>
               ))}
             </div>
@@ -170,9 +170,9 @@ export default function AccountantClient({
         </section>
 
         {/* ── Receivables — the side story (referral fees, rebills) ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
                   {t("pages.accountant.overdueCount", { count: overdueReceivables.length })}
                 </span>
@@ -180,18 +180,18 @@ export default function AccountantClient({
             </h2>
             <Link href="/dashboard/books" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allInvoices")}</Link>
           </div>
-          <p className="mb-2 text-[11px] text-gray-400">{t("tips.accountantOther")}</p>
+          <p className="mb-2 text-[11px] text-slate-400">{t("tips.accountantOther")}</p>
           {invoices.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">{t("pages.accountant.nothingOutstanding")}</p>
+            <p className="py-4 text-center text-sm text-slate-400">{t("pages.accountant.nothingOutstanding")}</p>
           ) : (
             <div className="space-y-2">
               {[...overdueReceivables, ...invoices.filter((i) => i.status !== "overdue")].slice(0, 5).map((i) => (
-                <Link key={i.id} href="/dashboard/books" className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50">
+                <Link key={i.id} href="/dashboard/books" className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-slate-50">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{i.invoice_number} · {i.client_name ?? "—"}</p>
-                    <p className="text-xs text-gray-500">{money(i.total || 0, locale)}{i.due_date ? ` · due ${fmtDay(i.due_date, locale)}` : ""}</p>
+                    <p className="truncate text-sm font-medium text-slate-900">{i.invoice_number} · {i.client_name ?? "—"}</p>
+                    <p className="text-xs text-slate-500">{money(i.total || 0, locale)}{i.due_date ? ` · due ${fmtDay(i.due_date, locale)}` : ""}</p>
                   </div>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CHIP[i.status] ?? "bg-gray-100 text-gray-600"}`}>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CHIP[i.status] ?? "bg-slate-100 text-slate-600"}`}>
                     {i.status}
                   </span>
                 </Link>

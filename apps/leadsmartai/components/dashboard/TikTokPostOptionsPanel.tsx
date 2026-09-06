@@ -129,11 +129,11 @@ export default function TikTokPostOptionsPanel() {
     }
   }
 
-  if (loading) return <div className="py-4 text-sm text-gray-500">Loading TikTok options…</div>;
+  if (loading) return <div className="py-4 text-sm text-slate-500">Loading TikTok options…</div>;
 
   if (!connected) {
     return (
-      <p className="text-xs text-gray-600">
+      <p className="text-xs text-slate-600">
         Connect a TikTok account first, then choose how it should post.
       </p>
     );
@@ -144,7 +144,7 @@ export default function TikTokPostOptionsPanel() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-600">
+      <p className="text-xs text-slate-600">
         TikTok requires the account holder to choose the audience and declare commercial content.
         These choices apply to every post CloseBoss publishes for you.
       </p>
@@ -163,7 +163,7 @@ export default function TikTokPostOptionsPanel() {
       ) : null}
 
       {info ? (
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-slate-500">
           Posting as {info.nickname || info.username || "your TikTok account"}
           {info.maxVideoPostDurationSec
             ? ` · videos up to ${Math.floor(info.maxVideoPostDurationSec / 60)}m${info.maxVideoPostDurationSec % 60}s`
@@ -172,15 +172,15 @@ export default function TikTokPostOptionsPanel() {
       ) : null}
 
       <fieldset>
-        <legend className="text-[11px] font-medium text-gray-500">Who can see these posts</legend>
+        <legend className="text-[11px] font-medium text-slate-500">Who can see these posts</legend>
         <div className="mt-1 space-y-1.5">
           {options.length === 0 ? (
-            <p className="text-[12px] text-gray-500">
+            <p className="text-[12px] text-slate-500">
               TikTok did not return any audience options for this account.
             </p>
           ) : null}
           {options.map((opt) => (
-            <label key={opt} className="flex items-center gap-2 text-sm text-gray-800">
+            <label key={opt} className="flex items-center gap-2 text-sm text-slate-800">
               <input
                 type="radio"
                 name="tiktok-privacy"
@@ -195,7 +195,7 @@ export default function TikTokPostOptionsPanel() {
       </fieldset>
 
       <fieldset>
-        <legend className="text-[11px] font-medium text-gray-500">Interactions</legend>
+        <legend className="text-[11px] font-medium text-slate-500">Interactions</legend>
         <div className="mt-1 space-y-1.5">
           {(
             [
@@ -206,7 +206,7 @@ export default function TikTokPostOptionsPanel() {
           ).map(([key, label, lockedOff]) => (
             <label
               key={key}
-              className={`flex items-center gap-2 text-sm ${lockedOff ? "text-gray-400" : "text-gray-800"}`}
+              className={`flex items-center gap-2 text-sm ${lockedOff ? "text-slate-400" : "text-slate-800"}`}
             >
               <input
                 type="checkbox"
@@ -217,7 +217,7 @@ export default function TikTokPostOptionsPanel() {
               />
               {label}
               {lockedOff ? (
-                <span className="text-[10px] text-gray-400">already off in your TikTok settings</span>
+                <span className="text-[10px] text-slate-400">already off in your TikTok settings</span>
               ) : null}
             </label>
           ))}
@@ -225,9 +225,9 @@ export default function TikTokPostOptionsPanel() {
       </fieldset>
 
       <fieldset>
-        <legend className="text-[11px] font-medium text-gray-500">Commercial content</legend>
+        <legend className="text-[11px] font-medium text-slate-500">Commercial content</legend>
         <div className="mt-1 space-y-1.5">
-          <label className="flex items-center gap-2 text-sm text-gray-800">
+          <label className="flex items-center gap-2 text-sm text-slate-800">
             <input
               type="checkbox"
               checked={Boolean(prefs?.brandOrganic)}
@@ -236,7 +236,7 @@ export default function TikTokPostOptionsPanel() {
             />
             Promoting my own business
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-800">
+          <label className="flex items-center gap-2 text-sm text-slate-800">
             <input
               type="checkbox"
               checked={Boolean(prefs?.brandContent)}
@@ -254,7 +254,7 @@ export default function TikTokPostOptionsPanel() {
         </div>
       </fieldset>
 
-      <p className="text-[11px] leading-relaxed text-gray-500">
+      <p className="text-[11px] leading-relaxed text-slate-500">
         By posting, you agree to TikTok&apos;s{" "}
         <a
           href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en"

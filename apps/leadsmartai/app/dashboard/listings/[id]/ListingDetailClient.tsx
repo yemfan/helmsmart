@@ -36,7 +36,7 @@ const OFFER_STATUS_BADGE: Record<ListingOfferStatus, string> = {
 };
 
 const STATUS_BADGE: Record<ListingStatus, string> = {
-  draft: "bg-gray-100 text-gray-700",
+  draft: "bg-slate-100 text-slate-700",
   active: "bg-green-100 text-green-800",
   pending: "bg-amber-100 text-amber-800",
   contracted: "bg-blue-100 text-blue-800",

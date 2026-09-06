@@ -252,8 +252,8 @@ export default function ComparisonReportBuilderClient({
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{t("pages.comparisonReport.heading")}</h1>
-        <p className="mt-2 text-gray-600">{t("pages.comparisonBuilder.intro")}</p>
+        <h1 className="text-3xl font-bold text-slate-900">{t("pages.comparisonReport.heading")}</h1>
+        <p className="mt-2 text-slate-600">{t("pages.comparisonBuilder.intro")}</p>
         {isFree ? (
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             {t("pages.comparisonBuilder.requiresBefore")} <strong>Pro</strong> or <strong>Premium</strong>{t("pages.comparisonBuilder.requiresAfter")}{" "}
@@ -264,18 +264,18 @@ export default function ComparisonReportBuilderClient({
 
       <form onSubmit={onSubmit} className="space-y-8">
         <div>
-          <label className="block text-sm font-medium text-gray-700">{t("pages.comparisonReport.clientName")}</label>
+          <label className="block text-sm font-medium text-slate-700">{t("pages.comparisonReport.clientName")}</label>
           <input
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
-            className="mt-1 w-full max-w-md rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm"
             placeholder={t("pages.comparisonReport.clientPlaceholder")}
           />
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">{t("pages.comparisonReport.properties")}</h2>
+            <h2 className="text-lg font-semibold text-slate-900">{t("pages.comparisonReport.properties")}</h2>
             <button
               type="button"
               onClick={addRow}
@@ -286,9 +286,9 @@ export default function ComparisonReportBuilderClient({
           </div>
 
           {rows.map((row, idx) => (
-            <div key={row.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div key={row.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800">{t("pages.dashFragments.property")} {idx + 1}</span>
+                <span className="text-sm font-semibold text-slate-800">{t("pages.dashFragments.property")} {idx + 1}</span>
                 {rows.length > 2 ? (
                   <button
                     type="button"
@@ -299,7 +299,7 @@ export default function ComparisonReportBuilderClient({
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="sm:col-span-2 lg:col-span-3">
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.address")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.address")}</span>
                   <input
                     required
                     value={row.address}
@@ -326,13 +326,13 @@ export default function ComparisonReportBuilderClient({
                         );
                       }
                     }}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                     placeholder={t("pages.comparisonReport.addressPlaceholder")}
                   />
                   {detect[row.id] && (
                     <span className="mt-1 block text-[11px]">
                       {detect[row.id]!.status === "looking-up" && (
-                        <span className="text-gray-500">
+                        <span className="text-slate-500">
                           🔍 {t("pages.listingLookup.detected", { label: detect[row.id]!.label })}
                         </span>
                       )}
@@ -343,7 +343,7 @@ export default function ComparisonReportBuilderClient({
                         </span>
                       )}
                       {detect[row.id]!.status === "address-only" && (
-                        <span className="text-gray-500">
+                        <span className="text-slate-500">
                           {t("pages.comparisonBuilder.detectedPlain", { label: detect[row.id]!.label })}{" "}
                           {detect[row.id]!.note}
                         </span>
@@ -358,56 +358,56 @@ export default function ComparisonReportBuilderClient({
                   )}
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.price")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.price")}</span>
                   <input
                     required
                     type="number"
                     min={1}
                     value={row.price}
                     onChange={(e) => updateRow(row.id, { price: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.sqft")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.sqft")}</span>
                   <input
                     required
                     type="number"
                     min={1}
                     value={row.sqft}
                     onChange={(e) => updateRow(row.id, { sqft: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.beds")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.beds")}</span>
                   <input
                     type="number"
                     min={0}
                     value={row.beds}
                     onChange={(e) => updateRow(row.id, { beds: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.baths")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.baths")}</span>
                   <input
                     type="number"
                     min={0}
                     step={0.5}
                     value={row.baths}
                     onChange={(e) => updateRow(row.id, { baths: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.rent")}</span>
+                  <span className="text-xs text-slate-500">{t("pages.comparisonReport.rent")}</span>
                   <input
                     type="number"
                     min={0}
                     value={row.rent}
                     onChange={(e) => updateRow(row.id, { rent: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                   />
                 </label>
               </div>
