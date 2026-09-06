@@ -11,6 +11,7 @@ import {
 } from "@/lib/consent/disclosureVersions";
 import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { recordInboundContactRequest } from "@/lib/consent/service";
+import { resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
 
 /** Returns { userId, agentId } for an authenticated agent, or a 401/403 NextResponse. */
 async function getAuthenticatedAgentId(): Promise<
@@ -77,10 +78,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // The referring agent arrives as a PUBLIC HANDLE (`?agent=michaelye`) and
+    // is resolved here. This used to copy whatever the body said straight
+    // into agent_id, which let any caller plant a contact in any agent's CRM
+    // by guessing a number. An unknown or numeric value now means "no
+    // referrer": the lead goes to the unowned queue as before.
+    const referredAgentId =
+      typeof agent === "string" && agent.trim() && !/^\d+$/.test(agent.trim())
+        ? await resolveAgentIdByUsername(agent)
+        : null;
+
     const { data, error } = await supabaseServer
       .from("contacts")
       .insert({
-        agent_id: agent ?? null,
+        agent_id: referredAgentId,
         name: name || address,
         email,
         phone: formattedPhone ?? null,

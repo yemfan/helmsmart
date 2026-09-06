@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Home } from "lucide-react";
 import { trackHubEvent } from "../hubEvents";
+import { useTurnstile } from "../HubTurnstile";
 import { BTN, type HubTheme } from "../theme";
 
 /**
@@ -65,6 +66,7 @@ export default function HubHomeValueClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
+  const { getToken } = useTurnstile();
 
   async function runEstimate(e: React.FormEvent) {
     e.preventDefault();
@@ -110,6 +112,7 @@ export default function HubHomeValueClient({
     setError(null);
     setBusy(true);
     try {
+      const turnstileToken = await getToken();
       const res = await fetch(`/api/public/hub/${encodeURIComponent(username)}/lead`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -127,10 +130,12 @@ export default function HubHomeValueClient({
           estimateHigh: estimate?.high ?? null,
           smsConsent: form.get("consent") === "on",
           locale,
+          turnstileToken,
         }),
       });
       if (!res.ok) throw new Error(String(res.status));
       trackHubEvent(username, "home_value_completed", { label: "funnel" });
+      trackHubEvent(username, "lead_created", { channel: "home_value" }, { forwardOnly: true });
       setStep("done");
     } catch {
       setError(labels.errorGeneric);

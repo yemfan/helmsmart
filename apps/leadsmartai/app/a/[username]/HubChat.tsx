@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { MarkdownLite } from "@/components/ui/MarkdownLite";
 import { trackHubEvent } from "./hubEvents";
+import { useTurnstile } from "./HubTurnstile";
 import type { HubTheme } from "./theme";
 
 /**
@@ -67,6 +68,7 @@ export default function HubChat({
   const opened = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
   const lastSent = useRef<string>("");
+  const { getToken } = useTurnstile();
 
   // Resume a thread from this tab's session. Wrapped: sessionStorage throws
   // in some private modes, and the chat must work without it.
@@ -114,6 +116,9 @@ export default function HubChat({
     setMessages(next);
     setBusy(true);
     try {
+      // The challenge runs once, on the first message; the conversation id
+      // vouches for the rest of the thread.
+      const turnstileToken = conversationId.current ? null : await getToken();
       const res = await fetch(`/api/public/hub/${encodeURIComponent(username)}/chat`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -124,6 +129,7 @@ export default function HubChat({
           locale,
           utmSource,
           utmCampaign,
+          turnstileToken,
         }),
       });
       // Known refusals arrive as JSON with a status; an answer arrives as a
@@ -184,7 +190,10 @@ export default function HubChat({
       const withReply: Msg[] = [...next, { role: "assistant", content: reply }];
       setMessages(withReply);
       const lead = Boolean(done.leadCaptured);
-      if (lead && !leadCaptured) setLeadCaptured(true);
+      if (lead && !leadCaptured) {
+        setLeadCaptured(true);
+        trackHubEvent(username, "lead_created", { channel: "ai_chat" }, { forwardOnly: true });
+      }
       if (done.limitReached) setLimitReached(true);
       persist(withReply, lead || leadCaptured);
     } catch {

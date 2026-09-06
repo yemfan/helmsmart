@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CalendarCheck, Check, ExternalLink } from "lucide-react";
 import { trackHubEvent } from "../hubEvents";
+import { useTurnstile } from "../HubTurnstile";
 import { BTN, type HubTheme } from "../theme";
 
 /**
@@ -83,6 +84,7 @@ export default function HubBookingClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ label: string | null } | null>(null);
+  const { getToken } = useTurnstile();
 
   useEffect(() => {
     trackHubEvent(username, "appointment_started", { label: mode });
@@ -134,6 +136,7 @@ export default function HubBookingClient({
         message: String(form.get("notes") ?? "").trim(),
         smsConsent: form.get("consent") === "on",
         locale,
+        turnstileToken: await getToken(),
       };
       if (mode === "receptionist" && slot) {
         const res = await fetch(`/api/public/hub/${encodeURIComponent(username)}/booking`, {
@@ -148,6 +151,8 @@ export default function HubBookingClient({
           if (json.error === "slot_taken") setDate((d) => d); // caller re-picks; slots refetch on change
           return;
         }
+        trackHubEvent(username, "lead_created", { channel: "booking" }, { forwardOnly: true });
+        trackHubEvent(username, "appointment_booked", { label: mode }, { forwardOnly: true });
         setDone({ label: json.label ?? slot.label });
       } else {
         const res = await fetch(`/api/public/hub/${encodeURIComponent(username)}/lead`, {
@@ -157,6 +162,7 @@ export default function HubBookingClient({
           body: JSON.stringify({ ...common, channel: "booking" }),
         });
         if (!res.ok) throw new Error(String(res.status));
+        trackHubEvent(username, "lead_created", { channel: "booking" }, { forwardOnly: true });
         setDone({ label: null });
       }
     } catch {

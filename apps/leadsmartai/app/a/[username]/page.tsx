@@ -14,6 +14,8 @@ import HubFeed from "./HubFeed";
 import HubLeadForm from "./HubLeadForm";
 import { HubTags } from "./HubTags";
 import HubTracker from "./HubTracker";
+import { HubTurnstileProvider } from "./HubTurnstile";
+import { turnstileSiteKey } from "./hubPage";
 import { hubLabels } from "./labels";
 import {
   Areas,
@@ -276,6 +278,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
 
       <HubHeader {...props} current="home" />
 
+      <HubTurnstileProvider siteKey={turnstileSiteKey()}>
       <main id="main-content">
         {pagesLayout ? (
           <>
@@ -323,6 +326,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
           </>
         )}
       </main>
+      </HubTurnstileProvider>
 
       <HubFooter {...props} />
       <MobileStickyBar {...props} />
