@@ -13,6 +13,7 @@ import {
 } from "@/lib/cma/listingStrategy";
 import { isCredibleCmaValuation } from "@/lib/cma/types";
 import type { CmaSnapshot } from "@/lib/cma/types";
+import { cmaBasis, confidenceBand } from "@/lib/cma/confidence";
 
 type CmaFullRow = {
   id: string;
@@ -166,9 +167,6 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
               date: formatDate(cma.createdAt, locale),
               count: cma.compCount,
             })}
-            {cma.confidenceScore != null
-              ? t("pages.cmaDetail.confidenceSuffix", { score: cma.confidenceScore })
-              : ""}
           </p>
         </div>
         {valuationOk ? (
@@ -221,6 +219,35 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           <ValueCell label={t("pages.cmaDetail.estimated")} value={cma.estimatedValue} tone="text-emerald-700" />
           <ValueCell label={t("pages.cmaDetail.high")} value={cma.highEstimate} tone="text-slate-700" />
         </div>
+        {/* Why to trust the number: band, comps, distance, recency, ± range. */}
+        {(() => {
+            const band = confidenceBand(cma.confidenceScore);
+            const basis = cmaBasis(cma.snapshot.valuation, cma.snapshot.comps);
+            const tone =
+              band === "high" ? "text-emerald-700" : band === "medium" ? "text-amber-700" : band === "low" ? "text-rose-700" : "text-slate-500";
+            const recency =
+              basis.newestSoldMonthsAgo == null
+                ? null
+                : basis.newestSoldMonthsAgo === 0
+                  ? t("pages.cmaConfidence.recencyThisMonth")
+                  : t("pages.cmaConfidence.recencyMonths", { count: basis.newestSoldMonthsAgo });
+            return (
+              <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                <span className={`font-semibold ${tone}`}>
+                  {band ? t(`pages.cmaConfidence.${band}`, { score: cma.confidenceScore }) : t("pages.cmaConfidence.unknown")}
+                </span>
+                {" · "}
+                {basis.compCount === 0
+                  ? t("pages.cmaConfidence.basisNoComps")
+                  : t("pages.cmaConfidence.basis", {
+                      count: basis.compCount,
+                      miles: basis.maxDistanceMiles ?? "—",
+                      recency: recency ?? t("pages.cmaConfidence.recencyUnknown"),
+                      spread: basis.spreadPct ?? "—",
+                    })}
+              </p>
+            );
+          })()}
         <p className="mt-3 text-[11px] text-slate-500">
           {t("pages.cmaDetail.subjectLine", {
             beds: subject.beds,

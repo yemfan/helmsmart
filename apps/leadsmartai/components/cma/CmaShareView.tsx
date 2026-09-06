@@ -1,5 +1,6 @@
 import type { CmaSnapshot } from "@/lib/cma/types";
 import { getServerT } from "@/lib/i18n/server";
+import { cmaBasis, confidenceBand } from "@/lib/cma/confidence";
 
 /**
  * Read-only, presentation-grade render of a saved CMA snapshot — used by the
@@ -101,6 +102,34 @@ export default async function CmaShareView({
         {v.avgPricePerSqft ? (
           <p className="mt-2 text-xs text-slate-500">~${Math.round(v.avgPricePerSqft)}/sqft</p>
         ) : null}
+        {(() => {
+            const band = confidenceBand(v.confidenceScore ?? null);
+            const basis = cmaBasis(v, snapshot.comps);
+            const tone =
+              band === "high" ? "text-emerald-700" : band === "medium" ? "text-amber-700" : band === "low" ? "text-rose-700" : "text-slate-500";
+            const recency =
+              basis.newestSoldMonthsAgo == null
+                ? null
+                : basis.newestSoldMonthsAgo === 0
+                  ? t("pages.cmaConfidence.recencyThisMonth")
+                  : t("pages.cmaConfidence.recencyMonths", { count: basis.newestSoldMonthsAgo });
+            return (
+              <p className="mt-2 text-xs text-slate-600">
+                <span className={`font-semibold ${tone}`}>
+                  {band ? t(`pages.cmaConfidence.${band}`, { score: v.confidenceScore ?? null }) : t("pages.cmaConfidence.unknown")}
+                </span>
+                {" · "}
+                {basis.compCount === 0
+                  ? t("pages.cmaConfidence.basisNoComps")
+                  : t("pages.cmaConfidence.basis", {
+                      count: basis.compCount,
+                      miles: basis.maxDistanceMiles ?? "—",
+                      recency: recency ?? t("pages.cmaConfidence.recencyUnknown"),
+                      spread: basis.spreadPct ?? "—",
+                    })}
+              </p>
+            );
+          })()}
         {snapshot.summary ? <p className="mt-3 text-sm text-slate-600">{snapshot.summary}</p> : null}
       </section>
 

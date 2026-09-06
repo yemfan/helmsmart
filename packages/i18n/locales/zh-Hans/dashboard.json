@@ -2213,6 +2213,18 @@
       "choosePdf": "📄 选择 PDF",
       "charCount": "{{used}} / {{max}} 字符"
     },
+    "cmaConfidence": {
+      "high": "可信度高（{{score}}%）",
+      "medium": "可信度中等（{{score}}%）",
+      "low": "可信度低（{{score}}%）",
+      "unknown": "未评定可信度",
+      "basis": "依据 {{miles}} 英里内 {{count}} 套已售可比房源，最近一套售于{{recency}}；区间为估算值的 ±{{spread}}%。",
+      "basisNoComps": "未找到已售可比房源，此为市场层面的估算——请把区间看得宽一些。",
+      "recencyThisMonth": "本月",
+      "recencyMonths_one": "{{count}} 个月前",
+      "recencyMonths_other": "{{count}} 个月前",
+      "recencyUnknown": "日期不详"
+    },
     "cmaDetail": {
       "metaTitle": "市场比较分析报告",
       "unavailable": "暂无估值。",
