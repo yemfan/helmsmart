@@ -21,6 +21,7 @@ import {
   UserPlus,
   Mail,
   AlertCircle,
+  MoreHorizontal,
   X,
 } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -437,6 +438,28 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
     else { setSortBy(key); setSortAsc(true); }
   }
 
+  // Charts used to be the first 400px of the page. Agents open this page to
+  // find a person, so the list leads and the charts sit behind a toggle that
+  // remembers its state per browser.
+  const [showInsights, setShowInsights] = useState(false);
+  useEffect(() => {
+    try {
+      setShowInsights(localStorage.getItem("cb_contacts_insights") === "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const toggleInsights = () => {
+    setShowInsights((v) => {
+      try {
+        localStorage.setItem("cb_contacts_insights", v ? "0" : "1");
+      } catch {
+        /* ignore */
+      }
+      return !v;
+    });
+  };
+
   const filtered = leads
     .filter((l) => {
       if (ratingFilter !== "all" && (l.rating ?? "").toLowerCase() !== ratingFilter) return false;
@@ -466,23 +489,90 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       return av < bv ? -dir : av > bv ? dir : 0;
     });
 
+  /** Inline edit form — shared by the table row and the phone card. */
+  function renderEditForm() {
+    const field = "w-full rounded border border-gray-300 px-2 py-1.5 text-sm";
+    return (
+      <div className="space-y-2">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <input aria-label={t("columns.name")} value={editFields.name ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, name: e.target.value }))} placeholder={t("columns.name")} className={field} />
+          <input aria-label={t("columns.email")} value={editFields.email ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, email: e.target.value }))} placeholder={t("columns.email")} className={field} />
+          <input aria-label={t("columns.phone")} value={editFields.phone ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, phone: e.target.value }))} placeholder={t("columns.phone")} className={field} />
+          <select aria-label={t("columns.rating")} value={editFields.rating ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, rating: e.target.value || null }))} className={field}>
+            <option value="">{t("rating.empty")}</option>
+            <option value="hot">{t("rating.hot")}</option>
+            <option value="warm">{t("rating.warm")}</option>
+            <option value="cold">{t("rating.cold")}</option>
+          </select>
+          {/* Per-contact preferred language override (BCP-47 base id). Empty =
+              the agent's default_outbound_language; see lib/locales/resolveLocale.ts. */}
+          <select
+            aria-label={t("row.language_default")}
+            value={editFields.preferred_language ?? ""}
+            onChange={(e) => setEditFields((f) => ({ ...f, preferred_language: (e.target.value || null) as LocaleId | null }))}
+            className={field}
+          >
+            <option value="">{t("row.language_default")}</option>
+            {listOutboundEnabled().map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.nativeLabel}
+              </option>
+            ))}
+          </select>
+          <input aria-label={t("columns.address")} value={editFields.property_address ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, property_address: e.target.value }))} placeholder={t("columns.address")} className={field} />
+          <input aria-label={t("columns.memo")} value={editFields.notes ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, notes: e.target.value }))} placeholder={t("columns.memo")} className={`${field} sm:col-span-2 lg:col-span-3`} />
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => void saveEdit(editingId as string)} disabled={actionLoading} className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">{t("row.save")}</button>
+          <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("row.cancel")}</button>
+        </div>
+      </div>
+    );
+  }
+
+  /** Everything that used to be an icon-only button per row, now a labelled menu. */
+  function rowMenuItems(c: LeadRow): RowMenuItem[] {
+    return [
+      { label: t("row.edit_label"), icon: <Pencil className="h-4 w-4" strokeWidth={2} />, onClick: () => startEdit(c) },
+      { label: t("row.mark_contacted_label"), icon: <Check className="h-4 w-4 text-emerald-600" strokeWidth={2.5} />, onClick: () => void markContacted(c.id), disabled: actionLoading },
+      { label: t("row.schedule_showing_label"), icon: <HomeIcon className="h-4 w-4" strokeWidth={2} />, href: `/dashboard/showings/new?contactId=${encodeURIComponent(c.id)}` },
+      { label: t("row.draft_offer_label"), icon: <FileText className="h-4 w-4" strokeWidth={2} />, href: `/dashboard/offers/new?contactId=${encodeURIComponent(c.id)}` },
+      { label: t("row.start_deal_label"), icon: <Key className="h-4 w-4" strokeWidth={2} />, href: `/dashboard/transactions/new?contactId=${encodeURIComponent(c.id)}` },
+      {
+        label: t("row.send_postcard_label"),
+        icon: <Mail className="h-4 w-4" strokeWidth={2} />,
+        onClick: () => setPostcardTarget({ contactId: c.id, name: c.name ?? "", email: c.email, phone: c.phone }),
+      },
+    ];
+  }
+
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{t("header.title")}</h1>
           <p className="text-sm text-gray-500">
             {t("header.subtitle_total", { count: leads.length })}
           </p>
         </div>
+        {stats ? (
+          <button
+            type="button"
+            onClick={toggleInsights}
+            aria-expanded={showInsights}
+            className="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          >
+            {showInsights ? t("insights.hide") : t("insights.show")}
+          </button>
+        ) : null}
       </div>
 
       {/* Shows only when the agent is at/near their CRM contact cap. */}
       <LimitWarningBanner action="add_contact" />
 
-      {/* Charts */}
-      {stats && (
+      {/* Charts — behind the Insights toggle */}
+      {stats && showInsights && (
         <div className="grid gap-3 md:grid-cols-3">
           <MiniPie
             data={stats.rating}
@@ -708,8 +798,50 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
         </div>
       ) : null}
 
-      {/* Table */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      {/* Phones: cards. The table below is md+ only. */}
+      <div className="md:hidden rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
+        {filtered.length === 0 ? (
+          <p className="px-4 py-8 text-center text-sm text-gray-400">
+            {search ? t("empty.no_match") : t("empty.no_contacts")}
+          </p>
+        ) : (
+          filtered.map((c) =>
+            editingId === c.id ? (
+              <div key={c.id} className="bg-blue-50/30 p-4">{renderEditForm()}</div>
+            ) : (
+              <div key={c.id} className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => setProfileLeadId(c.id)}
+                      className="block max-w-full truncate text-left text-[15px] font-semibold text-gray-900 hover:text-blue-700"
+                    >
+                      {c.name ?? t("row.empty_value")}
+                    </button>
+                    <p className="mt-0.5 truncate text-xs text-gray-500">
+                      {[c.phone, c.email].filter(Boolean).join(" · ") || t("row.empty_value")}
+                    </p>
+                  </div>
+                  <RowMenu label={t("row.more_actions")} items={rowMenuItems(c)} />
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <RatingBadges c={c} t={t} />
+                  <span className="text-xs text-gray-500">{timeAgo(c.last_contacted_at, t)}</span>
+                </div>
+                {c.notes ? <p className="mt-2 line-clamp-2 text-xs text-gray-500">{c.notes}</p> : null}
+                <div className="mt-3 flex items-center gap-2">
+                  <PrimaryAction c={c} t={t} block />
+                  <CallButton contactId={c.id} hasPhone={Boolean(c.phone)} />
+                </div>
+              </div>
+            ),
+          )
+        )}
+      </div>
+
+      {/* Table (md+) */}
+      <div className="hidden md:block rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
@@ -735,15 +867,17 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     aria-label={t("row.select_all_a11y")}
                   />
                 </th>
+                {/* Email and Address left the table (2026-09 UX audit): they
+                    are searchable, editable inline, and shown in the profile
+                    drawer — nine columns did not survive a laptop, let alone
+                    a phone. */}
                 {([
                   { key: "name" as SortKey, label: t("columns.name") },
-                  { key: "email" as SortKey, label: t("columns.email") },
                   { key: null, label: t("columns.phone") },
                   { key: "rating" as SortKey, label: t("columns.rating") },
                   { key: "last_contacted_at" as SortKey, label: t("columns.last_contacted") },
-                  { key: null, label: t("columns.actions"), srOnly: true },
                   { key: null, label: t("columns.memo") },
-                  { key: null, label: t("columns.address") },
+                  { key: null, label: t("columns.actions"), srOnly: true },
                 ] as const).map((col, i) => (
                   <th
                     key={i}
@@ -764,43 +898,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                 if (isEditing) {
                   return (
                     <tr key={c.id} className="bg-blue-50/30">
-                      {/* Checkbox cell — hidden for the editing row */}
                       <td className="w-8 px-3 py-2" />
-                      <td className="px-4 py-2"><input value={editFields.name ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, name: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" /></td>
-                      <td className="px-4 py-2"><input value={editFields.email ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, email: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" /></td>
-                      <td className="px-4 py-2"><input value={editFields.phone ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, phone: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" /></td>
-                      <td className="px-4 py-2">
-                        <div className="flex items-center gap-2">
-                          <select value={editFields.rating ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, rating: e.target.value || null }))} className="rounded border border-gray-300 px-2 py-1 text-sm">
-                            <option value="">{t("rating.empty")}</option>
-                            <option value="hot">{t("rating.hot")}</option>
-                            <option value="warm">{t("rating.warm")}</option>
-                            <option value="cold">{t("rating.cold")}</option>
-                          </select>
-                          {/* Per-contact preferred language override (BCP-47 base id).
-                              Empty = "use agent's default_outbound_language". See
-                              lib/locales/resolveLocale.ts for the fallback chain. */}
-                          <select
-                            value={editFields.preferred_language ?? ""}
-                            onChange={(e) => setEditFields((f) => ({ ...f, preferred_language: (e.target.value || null) as LocaleId | null }))}
-                            className="rounded border border-gray-300 px-2 py-1 text-sm"
-                          >
-                            <option value="">{t("row.language_default")}</option>
-                            {listOutboundEnabled().map((l) => (
-                              <option key={l.id} value={l.id}>
-                                {l.nativeLabel}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 text-xs text-gray-500">{timeAgo(c.last_contacted_at, t)}</td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => void saveEdit(c.id)} disabled={actionLoading} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 mr-2">{t("row.save")}</button>
-                        <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("row.cancel")}</button>
-                      </td>
-                      <td className="px-4 py-2"><input value={editFields.notes ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, notes: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" placeholder={t("columns.memo")} /></td>
-                      <td className="px-4 py-2"><input value={editFields.property_address ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, property_address: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" /></td>
+                      <td colSpan={6} className="px-4 py-3">{renderEditForm()}</td>
                     </tr>
                   );
                 }
@@ -826,187 +925,49 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         }
                       />
                     </td>
-                    <td className="px-4 py-2.5 font-medium text-gray-900">
+                    <td className="px-4 py-2.5 max-w-[240px]">
                       <button
                         type="button"
                         onClick={() => setProfileLeadId(c.id)}
-                        className="rounded text-left font-medium text-gray-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                        className="block max-w-full truncate rounded text-left font-medium text-gray-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
                         title={t("row.open_profile_tooltip")}
                       >
                         {c.name ?? t("row.empty_value")}
                       </button>
+                      {c.email ? (
+                        <a href={`mailto:${c.email}`} className="block truncate text-xs text-gray-500 hover:text-blue-600" title={t("row.email_tooltip", { email: c.email })}>
+                          {c.email}
+                        </a>
+                      ) : null}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600 max-w-[180px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate">{c.email ?? t("row.empty_value")}</span>
-                        {c.email ? (
-                          <a
-                            href={`mailto:${c.email}`}
-                            className="shrink-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-blue-600"
-                            title={t("row.email_tooltip", { email: c.email })}
-                            aria-label={t("row.email_a11y")}
-                          >
-                            <Mail className="h-3.5 w-3.5" strokeWidth={2} />
-                          </a>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5 text-gray-600">
+                    <td className="px-4 py-2.5 text-gray-600 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span>{c.phone ?? t("row.empty_value")}</span>
                         <CallButton contactId={c.id} hasPhone={Boolean(c.phone)} />
                       </div>
                     </td>
                     <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-1.5">
-                        {c.rating ? (
-                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-gray-100 text-gray-600"}`}>
-                            {t(`rating.${c.rating.toLowerCase()}`, { defaultValue: c.rating })}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">{t("row.empty_value")}</span>
-                        )}
-                        {/* Language override badge — only rendered when the
-                            contact has a non-null preferred_language. Shown as
-                            nativeLabel (e.g. 中文) so the signal is readable at
-                            a glance in a dense table row. */}
-                        {c.preferred_language ? (
-                          <span
-                            className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700"
-                            title={t("row.language_tooltip", { lang: c.preferred_language })}
-                          >
-                            {listOutboundEnabled().find((l) => l.id === c.preferred_language)?.nativeLabel ?? c.preferred_language}
-                          </span>
-                        ) : null}
-                        {/* Showing count badge — only when they've seen 1+
-                            properties. Separate pill from rating so the signal
-                            reads distinct at a glance ("loved" = ♥ stars). */}
-                        {c.showing_total && c.showing_total > 0 ? (
-                          <Link
-                            href={`/dashboard/showings?contactId=${encodeURIComponent(c.id)}`}
-                            className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-200"
-                            title={
-                              c.showing_loved && c.showing_loved > 0
-                                ? t("row.showings_tooltip_with_loved", {
-                                    count: c.showing_total,
-                                    loved: c.showing_loved,
-                                  })
-                                : t("row.showings_tooltip", { count: c.showing_total })
-                            }
-                          >
-                            {c.showing_total}
-                            {c.showing_loved && c.showing_loved > 0 ? (
-                              <span className="ml-1 text-red-500">♥{c.showing_loved}</span>
-                            ) : null}
-                          </Link>
-                        ) : null}
-                        {/* Offer badge — active count with a ✓N for wins. Only
-                            rendered when there's at least one offer logged. */}
-                        {(c.offer_active ?? 0) > 0 || (c.offer_won ?? 0) > 0 ? (
-                          <Link
-                            href={`/dashboard/offers?contactId=${encodeURIComponent(c.id)}`}
-                            className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 hover:bg-amber-100"
-                            title={t("row.offers_tooltip", {
-                              active: c.offer_active ?? 0,
-                              won: c.offer_won ?? 0,
-                            })}
-                          >
-                            {(c.offer_active ?? 0) > 0 ? `${c.offer_active}` : ""}
-                            {(c.offer_won ?? 0) > 0 ? (
-                              <span className={(c.offer_active ?? 0) > 0 ? "ml-1" : ""}>
-                                ✓{c.offer_won}
-                              </span>
-                            ) : null}
-                          </Link>
-                        ) : null}
-                      </div>
+                      <RatingBadges c={c} t={t} />
                     </td>
                     <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">{timeAgo(c.last_contacted_at, t)}</td>
-                    {/* Row actions \u2014 compact icon buttons with hover
-                        tooltips. SMS is new and only renders when the
-                        contact has a phone on file. */}
-                    <td className="px-4 py-2.5 whitespace-nowrap">
-                      <div className="inline-flex items-center gap-0.5">
-                        <RowIconButton
-                          onClick={() => startEdit(c)}
-                          title={t("row.edit_label")}
-                          ariaLabel={t("row.edit_label")}
-                        >
-                          <Pencil className="h-4 w-4" strokeWidth={2} />
-                        </RowIconButton>
-                        <RowIconButton
-                          onClick={() => void markContacted(c.id)}
-                          disabled={actionLoading}
-                          title={t("row.mark_contacted_label")}
-                          ariaLabel={t("row.mark_contacted_label")}
-                          tone="success"
-                        >
-                          <Check className="h-4 w-4" strokeWidth={2.5} />
-                        </RowIconButton>
-                        {c.phone ? (
-                          <RowIconButton
-                            href={`sms:${c.phone}`}
-                            title={t("row.text_phone_tooltip", { phone: c.phone })}
-                            ariaLabel={t("row.send_sms_a11y")}
-                          >
-                            <MessageCircle className="h-4 w-4" strokeWidth={2} />
-                          </RowIconButton>
-                        ) : null}
-                        <RowIconButton
-                          href={`/dashboard/showings/new?contactId=${encodeURIComponent(c.id)}`}
-                          title={t("row.schedule_showing_label")}
-                          ariaLabel={t("row.schedule_showing_label")}
-                        >
-                          <HomeIcon className="h-4 w-4" strokeWidth={2} />
-                        </RowIconButton>
-                        <RowIconButton
-                          href={`/dashboard/offers/new?contactId=${encodeURIComponent(c.id)}`}
-                          title={t("row.draft_offer_label")}
-                          ariaLabel={t("row.draft_offer_label")}
-                        >
-                          <FileText className="h-4 w-4" strokeWidth={2} />
-                        </RowIconButton>
-                        <RowIconButton
-                          href={`/dashboard/transactions/new?contactId=${encodeURIComponent(c.id)}`}
-                          title={t("row.start_deal_label")}
-                          ariaLabel={t("row.start_deal_label")}
-                        >
-                          <Key className="h-4 w-4" strokeWidth={2} />
-                        </RowIconButton>
-                        {/* Animated postcard — birthday / anniversary /
-                            seasonal / thinking-of-you. Opens in a modal so
-                            agents can use it on any contact, not just
-                            sphere-tagged ones. */}
-                        <RowIconButton
-                          onClick={() =>
-                            setPostcardTarget({
-                              contactId: c.id,
-                              name: c.name ?? "",
-                              email: c.email,
-                              phone: c.phone,
-                            })
-                          }
-                          title={t("row.send_postcard_label")}
-                          ariaLabel={t("row.send_postcard_label")}
-                        >
-                          <span className="text-base leading-none" aria-hidden>💌</span>
-                        </RowIconButton>
-                      </div>
-                    </td>
                     <td className="px-4 py-2.5 text-xs text-gray-500 max-w-[200px] truncate" title={c.notes ?? ""}>
                       {c.notes ?? t("row.empty_value")}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600 min-w-[200px] max-w-[320px]">
-                      <span className="block truncate" title={c.property_address ?? ""}>
-                        {c.property_address ?? t("row.empty_value")}
-                      </span>
+                    <td className="px-3 py-2.5 whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
+                        <PrimaryAction c={c} t={t} />
+                        <RowMenu
+                          label={t("row.more_actions")}
+                          items={rowMenuItems(c)}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
               })}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                     {search ? t("empty.no_match") : t("empty.no_contacts")}
                   </td>
                 </tr>
@@ -1093,61 +1054,150 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
   );
 }
 
-/**
- * Compact icon-only button used for the row-level actions on the
- * contacts table. Renders as `<button>` when `onClick` is provided
- * or `<a>` when `href` is provided. Same hover affordance for both
- * shapes so the row reads consistently regardless of whether the
- * action navigates or stays on the page.
- *
- * `tone="success"` paints the icon green for the "mark contacted"
- * affirmative action; default tone is neutral gray.
- */
-function RowIconButton({
-  children,
-  onClick,
-  href,
-  title,
-  ariaLabel,
-  disabled,
-  tone,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  href?: string;
-  title: string;
-  ariaLabel: string;
-  disabled?: boolean;
-  tone?: "success";
-}) {
-  const base =
-    "inline-flex h-7 w-7 items-center justify-center rounded-md transition disabled:opacity-40";
-  const toneClasses =
-    tone === "success"
-      ? "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-      : "text-gray-500 hover:bg-gray-100 hover:text-gray-900";
-  if (href) {
-    return (
-      <Link
-        href={href}
-        title={title}
-        aria-label={ariaLabel}
-        className={`${base} ${toneClasses}`}
-      >
-        {children}
-      </Link>
-    );
-  }
+/** Rating pill + the language / showings / offers badges that ride beside it. */
+function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      aria-label={ariaLabel}
-      className={`${base} ${toneClasses}`}
-    >
-      {children}
-    </button>
+    <div className="flex flex-wrap items-center gap-1.5">
+      {c.rating ? (
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RATING_COLORS[c.rating.toLowerCase()] ?? "bg-gray-100 text-gray-600"}`}>
+          {t(`rating.${c.rating.toLowerCase()}`, { defaultValue: c.rating })}
+        </span>
+      ) : (
+        <span className="text-gray-400">{t("row.empty_value")}</span>
+      )}
+      {c.preferred_language ? (
+        <span
+          className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700"
+          title={t("row.language_tooltip", { lang: c.preferred_language })}
+        >
+          {listOutboundEnabled().find((l) => l.id === c.preferred_language)?.nativeLabel ?? c.preferred_language}
+        </span>
+      ) : null}
+      {c.showing_total && c.showing_total > 0 ? (
+        <Link
+          href={`/dashboard/showings?contactId=${encodeURIComponent(c.id)}`}
+          className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 hover:bg-slate-200"
+          title={
+            c.showing_loved && c.showing_loved > 0
+              ? t("row.showings_tooltip_with_loved", { count: c.showing_total, loved: c.showing_loved })
+              : t("row.showings_tooltip", { count: c.showing_total })
+          }
+        >
+          {c.showing_total}
+          {c.showing_loved && c.showing_loved > 0 ? <span className="ml-1 text-red-500">♥{c.showing_loved}</span> : null}
+        </Link>
+      ) : null}
+      {(c.offer_active ?? 0) > 0 || (c.offer_won ?? 0) > 0 ? (
+        <Link
+          href={`/dashboard/offers?contactId=${encodeURIComponent(c.id)}`}
+          className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-800 hover:bg-amber-100"
+          title={t("row.offers_tooltip", { active: c.offer_active ?? 0, won: c.offer_won ?? 0 })}
+        >
+          {(c.offer_active ?? 0) > 0 ? `${c.offer_active}` : ""}
+          {(c.offer_won ?? 0) > 0 ? <span className={(c.offer_active ?? 0) > 0 ? "ml-1" : ""}>✓{c.offer_won}</span> : null}
+        </Link>
+      ) : null}
+    </div>
   );
 }
+
+/**
+ * The one visible action per row: Text when there is a phone, Email when
+ * there is only an address. Everything else lives in the row menu.
+ */
+function PrimaryAction({ c, t, block }: { c: LeadRow; t: ContactsT; block?: boolean }) {
+  const cls = `inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 ${block ? "flex-1" : ""}`;
+  if (c.phone) {
+    return (
+      <a href={`sms:${c.phone}`} className={cls} title={t("row.text_phone_tooltip", { phone: c.phone })}>
+        <MessageCircle className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+        {t("row.text_label")}
+      </a>
+    );
+  }
+  if (c.email) {
+    return (
+      <a href={`mailto:${c.email}`} className={cls} title={t("row.email_tooltip", { email: c.email })}>
+        <Mail className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+        {t("row.email_label")}
+      </a>
+    );
+  }
+  return null;
+}
+
+type RowMenuItem = {
+  label: string;
+  icon?: React.ReactNode;
+  href?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+};
+
+/**
+ * Labelled overflow menu for the row actions. Replaces eight 16px icon-only
+ * buttons whose names only existed as hover tooltips — which touch screens
+ * never show. Closes on outside click and Escape.
+ */
+function RowMenu({ label, items }: { label: string; items: RowMenuItem[] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  const itemCls = "flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40";
+  return (
+    <div ref={ref} className="relative inline-block">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+      >
+        <MoreHorizontal className="h-4 w-4" strokeWidth={2} aria-hidden />
+      </button>
+      {open ? (
+        <div role="menu" className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg ring-1 ring-black/5">
+          {items.map((it) =>
+            it.href ? (
+              <Link key={it.label} href={it.href} role="menuitem" onClick={() => setOpen(false)} className={itemCls}>
+                <span className="text-gray-500">{it.icon}</span>
+                {it.label}
+              </Link>
+            ) : (
+              <button
+                key={it.label}
+                type="button"
+                role="menuitem"
+                disabled={it.disabled}
+                onClick={() => {
+                  setOpen(false);
+                  it.onClick?.();
+                }}
+                className={itemCls}
+              >
+                <span className="text-gray-500">{it.icon}</span>
+                {it.label}
+              </button>
+            ),
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+

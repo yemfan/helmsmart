@@ -113,7 +113,10 @@
     "send_postcard_label": "发送明信片",
     "select_contact_a11y": "选择 {{name}}",
     "select_contact_a11y_fallback": "选择联系人",
-    "select_all_a11y": "选择所有筛选后的联系人"
+    "select_all_a11y": "选择所有筛选后的联系人",
+    "more_actions": "更多操作",
+    "text_label": "发短信",
+    "email_label": "发邮件"
   },
   "empty": {
     "no_match": "未找到匹配的联系人。",
@@ -128,5 +131,9 @@
     "within1y": "1 年内",
     "over1y": "超过 1 年",
     "never": "从未联系"
+  },
+  "insights": {
+    "show": "显示洞察",
+    "hide": "隐藏洞察"
   }
 }

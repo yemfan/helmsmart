@@ -113,7 +113,10 @@
     "send_postcard_label": "Send postcard",
     "select_contact_a11y": "Select {{name}}",
     "select_contact_a11y_fallback": "Select contact",
-    "select_all_a11y": "Select all filtered contacts"
+    "select_all_a11y": "Select all filtered contacts",
+    "more_actions": "More actions",
+    "text_label": "Text",
+    "email_label": "Email"
   },
   "empty": {
     "no_match": "No contacts match your search.",
@@ -128,5 +131,9 @@
     "within1y": "1 year",
     "over1y": "Over 1 year",
     "never": "Never"
+  },
+  "insights": {
+    "show": "Show insights",
+    "hide": "Hide insights"
   }
 }
