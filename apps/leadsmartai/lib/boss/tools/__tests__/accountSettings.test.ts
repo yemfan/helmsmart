@@ -3,6 +3,9 @@ import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
+// Importing the tool module pulls in the admin client, which builds itself
+// from env vars this test has no reason to need.
+vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
 
 /**
  * The bug this tool exists to prevent is a CONFIDENT WRONG LOCATION.
@@ -66,7 +69,28 @@ describe("it names the place, not the path", () => {
     // the system prompt forbids two rules above the one this tool was built to
     // enforce. Seen in production before this line existed.
     const src = readFileSync(SRC, "utf8");
-    expect(src).toMatch(/ACCOUNT_SETTINGS_LABEL\s*=\s*"[^"]+"/);
+    expect(src).toMatch(/ACCOUNT_SETTINGS_LABELS/);
     expect(src).toContain("whereToChangeLink");
+  });
+});
+
+describe("it says it in the realtor's language", () => {
+  it("uses the words on the realtor's own screen", async () => {
+    // Asked in Chinese, Max answered in Chinese and then quoted the English
+    // "Settings → Account" while the sidebar beside it read 设置 / 账户 — the
+    // label was one hard-coded string. Seen in production.
+    const { accountSettingsLabel } = await import("../impl/accountSettings");
+    expect(accountSettingsLabel("zh-Hans")).toBe("设置 → 账户");
+    expect(accountSettingsLabel("zh-hans")).toBe("设置 → 账户");
+    expect(accountSettingsLabel("en")).toBe("Settings → Account");
+  });
+
+  it("falls back to English rather than to nothing", () => {
+    // A run started by the overnight cron can have a null locale.
+    return import("../impl/accountSettings").then(({ accountSettingsLabel }) => {
+      expect(accountSettingsLabel(null)).toBe("Settings → Account");
+      expect(accountSettingsLabel(undefined)).toBe("Settings → Account");
+      expect(accountSettingsLabel("de")).toBe("Settings → Account");
+    });
   });
 });

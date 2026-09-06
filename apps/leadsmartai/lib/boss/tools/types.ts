@@ -36,6 +36,16 @@ export type ToolContext = {
   /** Assistant acting on the agent's behalf — resolves the autopilot matrix. */
   assignee: BossAssignee;
   runState: ToolRunState;
+  /**
+   * The language this run is being conducted in (boss_runs.locale).
+   *
+   * A tool that hands back words the realtor will READ needs it. Asked in
+   * Chinese where the timezone setting lives, Max answered in Chinese and then
+   * quoted "Settings → Account" — because the tool returned that string
+   * hard-coded, while the sidebar next to it said 设置 / 账户. Absent means
+   * English.
+   */
+  locale?: string | null;
   /** Injectable clock (tests). Defaults to `new Date()` at execution time. */
   now?: Date;
   /**
