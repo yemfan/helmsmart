@@ -10356,6 +10356,32 @@
         "dangerDesc": "Name, photo, brokerage and license are managed in account settings.",
         "accountSettings": "Open account settings"
       }
+    },
+    "hubLeadNotify": {
+      "titleNew": "New lead from your Marketing Hub",
+      "titleReturning": "Returning lead on your Marketing Hub",
+      "channel": {
+        "form": "{{name}} sent you a message on your Marketing Hub.",
+        "ai_chat": "{{name}} talked to your AI assistant on your Marketing Hub.",
+        "home_value": "{{name}} asked what their home is worth on your Marketing Hub.",
+        "booking": "{{name}} asked for a consultation on your Marketing Hub.",
+        "tool": "{{name}} used a tool on your Marketing Hub."
+      },
+      "intentLabel": "Intent",
+      "intent": {
+        "buy": "Buying",
+        "sell": "Selling",
+        "invest": "Investing",
+        "rent": "Renting",
+        "relocate": "Relocating",
+        "consult": "Consultation",
+        "other": "Other"
+      },
+      "email": "Email",
+      "phone": "Phone",
+      "property": "Property",
+      "estimate": "Estimate shown",
+      "open": "Open in CloseBoss"
     }
   },
   "disclaimers": {

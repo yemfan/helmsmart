@@ -10356,6 +10356,32 @@
         "dangerDesc": "姓名、头像、经纪公司和执照在账户设置中管理。",
         "accountSettings": "打开账户设置"
       }
+    },
+    "hubLeadNotify": {
+      "titleNew": "营销主页有新客户",
+      "titleReturning": "营销主页有回访客户",
+      "channel": {
+        "form": "{{name}} 在你的营销主页上给你留言。",
+        "ai_chat": "{{name}} 在你的营销主页上与 AI 助理进行了对话。",
+        "home_value": "{{name}} 在你的营销主页上查询了房屋估值。",
+        "booking": "{{name}} 在你的营销主页上申请了咨询。",
+        "tool": "{{name}} 在你的营销主页上使用了工具。"
+      },
+      "intentLabel": "意向",
+      "intent": {
+        "buy": "买房",
+        "sell": "卖房",
+        "invest": "投资",
+        "rent": "租房",
+        "relocate": "搬迁",
+        "consult": "咨询",
+        "other": "其他"
+      },
+      "email": "邮箱",
+      "phone": "电话",
+      "property": "房产",
+      "estimate": "显示的估值",
+      "open": "在 CloseBoss 中打开"
     }
   },
   "disclaimers": {

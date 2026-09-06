@@ -7,6 +7,8 @@ import {
 import { recordInboundContactRequest } from "@/lib/consent/service";
 import { scheduleEmailSequenceForLead } from "@/lib/emailSequences";
 import { sendEmail } from "@/lib/email";
+import { agentUiLocale } from "@/lib/i18n/agentLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 import { dispatchMobileHotLeadPush } from "@/lib/mobile/pushDispatch";
 import { insertAgentInboxNotification } from "@/lib/notifications/agentNotifications";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
@@ -383,15 +385,17 @@ async function notifyAgent(args: {
   created: boolean;
 }): Promise<void> {
   const { agentId, contactId, name, email, phone, input, settings } = args;
-  const channel: Record<HubLeadChannel, string> = {
-    form: "sent you a message",
-    ai_chat: "talked to your AI assistant",
-    home_value: "asked what their home is worth",
-    booking: "asked for a consultation",
-    tool: "used a tool",
-  };
-  const title = args.created ? "New lead from your Marketing Hub" : "Returning lead on your Marketing Hub";
-  const body = `${name} ${channel[input.channel]}${input.intent ? ` · ${input.intent}` : ""}${phone ? ` · ${phone}` : ""}`;
+
+  // In the AGENT's language, not the visitor's: this note is read in the
+  // dashboard, on the phone and in the inbox by the person who set the UI
+  // to Chinese. The lead's own words stay as typed.
+  const locale = (await agentUiLocale(String(agentId)).catch(() => null)) ?? "en";
+  const t = translatorFor(locale, "dashboard");
+  const n = (key: string, vars?: Record<string, unknown>) => t(`pages.hubLeadNotify.${key}`, vars);
+
+  const channelLine = n(`channel.${input.channel}`, { name });
+  const title = args.created ? n("titleNew") : n("titleReturning");
+  const body = `${channelLine}${input.intent ? ` · ${n(`intent.${input.intent}`)}` : ""}${phone ? ` · ${phone}` : ""}`;
   const hot = ratingOf(input) === "hot";
 
   const { data: agentRow } = await supabaseAdmin
@@ -427,16 +431,16 @@ async function notifyAgent(args: {
       const base = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.closebossai.com").replace(/\/+$/, "");
       const link = `${base}/dashboard/leads/${contactId}`;
       const lines = [
-        `${name} ${channel[input.channel]} on your Marketing Hub.`,
+        channelLine,
         "",
-        email ? `Email: ${email}` : null,
-        phone ? `Phone: ${phone}` : null,
-        input.intent ? `Intent: ${input.intent}` : null,
-        input.propertyAddress ? `Property: ${input.propertyAddress}` : null,
-        input.estimatedValue ? `Estimate shown: $${input.estimatedValue.toLocaleString()}` : null,
+        email ? `${n("email")}: ${email}` : null,
+        phone ? `${n("phone")}: ${phone}` : null,
+        input.intent ? `${n("intentLabel")}: ${n(`intent.${input.intent}`)}` : null,
+        input.propertyAddress ? `${n("property")}: ${input.propertyAddress}` : null,
+        input.estimatedValue ? `${n("estimate")}: $${input.estimatedValue.toLocaleString()}` : null,
         input.message ? `\n"${input.message}"` : null,
         "",
-        `Open in CloseBoss: ${link}`,
+        `${n("open")}: ${link}`,
       ].filter((l): l is string => l !== null);
       await sendEmail({
         to: agent.email,

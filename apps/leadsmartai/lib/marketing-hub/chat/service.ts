@@ -227,6 +227,8 @@ export async function runHubChatTurn(args: {
   siteBase: string;
   utmSource?: string | null;
   utmCampaign?: string | null;
+  /** Called with each text fragment as the model produces it. */
+  onDelta?: (text: string) => void;
 }): Promise<ChatTurnResult> {
   const { hub } = args;
   if (!hub.assistantAvailable || hub.agentId === null) return { ok: false, error: "unavailable" };
@@ -258,13 +260,25 @@ export async function runHubChatTurn(args: {
   try {
     const client = getAnthropicClient();
     for (let round = 0; round < 2; round++) {
-      const res = await client.messages.create({
+      // Streamed so the visitor sees words as they arrive. Text before a
+      // tool call and text after it are one answer to the reader, so the
+      // two rounds are joined rather than replaced.
+      const stream = client.messages.stream({
         model: BOSS_AGENT_MODEL,
         max_tokens: MAX_TOKENS,
         system: cachedSystem(system) as never,
         messages: modelMessages as never,
         tools: [CAPTURE_LEAD_TOOL] as never,
       });
+      if (args.onDelta) {
+        let first = true;
+        stream.on("text", (delta) => {
+          if (first && reply) args.onDelta?.("\n\n");
+          first = false;
+          args.onDelta?.(delta);
+        });
+      }
+      const res = await stream.finalMessage();
 
       const text = res.content
         .filter((b) => b.type === "text")
@@ -275,7 +289,7 @@ export async function runHubChatTurn(args: {
         .filter((b) => b.type === "tool_use")
         .map((b) => b as unknown as { id: string; name: string; input: Record<string, unknown> });
 
-      if (text) reply = text;
+      if (text) reply = reply ? `${reply}\n\n${text}` : text;
       if (!toolUses.length || round === 1) break;
 
       // Record what the model learned, save the lead when there is enough,
@@ -333,7 +347,10 @@ export async function runHubChatTurn(args: {
     return { ok: false, error: "failed" };
   }
 
-  if (!reply) reply = "I'm here — could you say a bit more about what you're looking for?";
+  if (!reply) {
+    reply = "I'm here — could you say a bit more about what you're looking for?";
+    args.onDelta?.(reply);
+  }
 
   const now = new Date().toISOString();
   const messages: ChatMessage[] = [

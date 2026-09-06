@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isBeaconEventType, sanitizeBeaconMeta } from "@/lib/marketing-hub/events";
 import { resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
+import { consumeHubQuota } from "@/lib/marketing-hub/usage";
 import { SESSION_COOKIE, VISITOR_COOKIE, readCookieFromHeader } from "@/lib/marketing-hub/visitor";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -28,6 +29,11 @@ export async function POST(
 
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
     if (!isBeaconEventType(body.type)) return new NextResponse(null, { status: 204 });
+
+    // Still a 204 when over quota: the visitor's browser learns nothing, the
+    // row simply is not written.
+    const quota = await consumeHubQuota(req, "event");
+    if (!quota.allowed) return new NextResponse(null, { status: 204 });
 
     const jar = req.headers.get("cookie");
     const path = typeof body.path === "string" && body.path.startsWith("/@") ? body.path.slice(0, 200) : `/@${username}`;

@@ -17,8 +17,16 @@ export const maxDuration = 60;
  * when the row belongs to that agent. Metered per browser per day and capped
  * per conversation, so the cost of a bad actor is bounded and small.
  *
- * Errors come back as short codes the client maps to friendly copy. Nothing
- * about the model, the prompt or the failure reaches the visitor.
+ * The reply is STREAMED as server-sent events so the visitor reads words as
+ * they are produced rather than staring at a spinner for ten seconds:
+ *
+ *   data: {"type":"delta","text":"…"}      zero or more
+ *   data: {"type":"done", conversationId, leadCaptured, limitReached}
+ *   data: {"type":"error","error":"failed"}
+ *
+ * Refusals that are known before the model runs (unknown agent, assistant
+ * off, over quota) are plain JSON with a status the client maps to copy.
+ * Nothing about the model, the prompt or a failure reaches the visitor.
  */
 export async function POST(
   req: Request,
@@ -44,48 +52,83 @@ export async function POST(
     }
 
     const locale = body.locale === "zh-Hans" ? "zh-Hans" : "en";
-    const siteBase = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.closebossai.com").replace(/\/+$/, "");
+    // Relative paths, not absolute URLs: the chat renders links through
+    // MarkdownLite, which only makes in-app paths clickable (an absolute host
+    // in model prose may be hallucinated). The visitor is already on-site.
+    const siteBase = "";
     const cookieHeader = req.headers.get("cookie");
+    const agentId = hub.agentId;
+    const encoder = new TextEncoder();
 
-    const result = await runHubChatTurn({
-      hub,
-      message,
-      conversationId: typeof body.conversationId === "string" ? body.conversationId.slice(0, 60) : null,
-      cookieHeader,
-      requestMeta: extractRequestMeta(req),
-      locale,
-      siteBase,
-      utmSource: typeof body.utmSource === "string" ? body.utmSource.slice(0, 80) : null,
-      utmCampaign: typeof body.utmCampaign === "string" ? body.utmCampaign.slice(0, 120) : null,
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const send = (event: Record<string, unknown>) => {
+          try {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          } catch {
+            /* the visitor left; nothing to deliver to */
+          }
+        };
+        try {
+          const result = await runHubChatTurn({
+            hub,
+            message,
+            conversationId: typeof body.conversationId === "string" ? body.conversationId.slice(0, 60) : null,
+            cookieHeader,
+            requestMeta: extractRequestMeta(req),
+            locale,
+            siteBase,
+            utmSource: typeof body.utmSource === "string" ? body.utmSource.slice(0, 80) : null,
+            utmCampaign: typeof body.utmCampaign === "string" ? body.utmCampaign.slice(0, 120) : null,
+            onDelta: (text) => send({ type: "delta", text }),
+          });
+
+          if (!result.ok) {
+            send({ type: "error", error: result.error });
+          } else {
+            // Every answered message is an `ai_message` for the overview; the
+            // client beacons `ai_open` once when the panel opens.
+            void supabaseAdmin
+              .from("traffic_events")
+              .insert({
+                event_type: "ai_message",
+                page_path: `/@${username}`,
+                agent_id: agentId,
+                visitor_id: readCookieFromHeader(cookieHeader, VISITOR_COOKIE),
+                session_id: readCookieFromHeader(cookieHeader, SESSION_COOKIE),
+                metadata: { kind: "hub_event", conversationId: result.conversationId, leadCaptured: result.leadCaptured },
+              } as never)
+              .then(({ error }) => {
+                if (error) console.warn("[hub.chat] event:", error.message);
+              });
+            send({
+              type: "done",
+              conversationId: result.conversationId,
+              reply: result.reply,
+              leadCaptured: result.leadCaptured,
+              limitReached: result.limitReached,
+            });
+          }
+        } catch (e) {
+          console.error("[hub.chat] stream threw:", e instanceof Error ? e.message : e);
+          send({ type: "error", error: "failed" });
+        } finally {
+          try {
+            controller.close();
+          } catch {
+            /* already closed */
+          }
+        }
+      },
     });
 
-    if (!result.ok) {
-      const status = result.error === "limit" ? 429 : result.error === "unavailable" ? 503 : 500;
-      return NextResponse.json({ ok: false, error: result.error }, { status });
-    }
-
-    // Every answered message is an `ai_message` for the overview; the client
-    // beacons `ai_open` once when the panel opens.
-    void supabaseAdmin
-      .from("traffic_events")
-      .insert({
-        event_type: "ai_message",
-        page_path: `/@${username}`,
-        agent_id: hub.agentId,
-        visitor_id: readCookieFromHeader(cookieHeader, VISITOR_COOKIE),
-        session_id: readCookieFromHeader(cookieHeader, SESSION_COOKIE),
-        metadata: { kind: "hub_event", conversationId: result.conversationId, leadCaptured: result.leadCaptured },
-      } as never)
-      .then(({ error }) => {
-        if (error) console.warn("[hub.chat] event:", error.message);
-      });
-
-    return NextResponse.json({
-      ok: true,
-      conversationId: result.conversationId,
-      reply: result.reply,
-      leadCaptured: result.leadCaptured,
-      limitReached: result.limitReached,
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        "content-type": "text/event-stream; charset=utf-8",
+        "cache-control": "no-cache, no-transform",
+        "x-accel-buffering": "no",
+      },
     });
   } catch (e) {
     console.error("[hub.chat] threw:", e instanceof Error ? e.message : e);

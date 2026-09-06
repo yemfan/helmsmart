@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { captureHubLead, hubLeadInputFromBody, type HubLeadChannel } from "@/lib/marketing-hub/leads";
 import { loadHubSettings, resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
+import { consumeHubQuota } from "@/lib/marketing-hub/usage";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,13 @@ export async function POST(
     const agentId = await resolveAgentIdByUsername(username);
     if (agentId === null) {
       return NextResponse.json({ ok: false, error: "unknown_agent" }, { status: 404 });
+    }
+
+    // A browser gets a dozen submissions a day across every hub. A person
+    // never notices; a script filling one agent's CRM with junk does.
+    const quota = await consumeHubQuota(req, "lead");
+    if (!quota.allowed) {
+      return NextResponse.json({ ok: false, error: "limit" }, { status: 429 });
     }
 
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;

@@ -58,6 +58,8 @@ export default function HubChat({
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  /** The reply as it streams in, before it becomes a message. */
+  const [pending, setPending] = useState("");
   const [error, setError] = useState<"failed" | "limit" | null>(null);
   const [leadCaptured, setLeadCaptured] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
@@ -86,7 +88,7 @@ export default function HubChat({
   useEffect(() => {
     const el = listRef.current;
     if (el && messages.length) el.scrollTop = el.scrollHeight;
-  }, [messages, busy]);
+  }, [messages, busy, pending]);
 
   function persist(next: Msg[], lead: boolean) {
     try {
@@ -124,32 +126,69 @@ export default function HubChat({
           utmCampaign,
         }),
       });
-      const json = (await res.json().catch(() => ({}))) as {
-        ok?: boolean;
-        conversationId?: string;
-        reply?: string;
-        leadCaptured?: boolean;
-        limitReached?: boolean;
-        error?: string;
-      };
-      if (!res.ok || !json.ok || !json.reply) {
+      // Known refusals arrive as JSON with a status; an answer arrives as a
+      // stream of server-sent events. Keep the visitor's words on screen
+      // either way, so a retry is one tap.
+      const isStream = (res.headers.get("content-type") ?? "").includes("text/event-stream");
+      if (!res.ok || !isStream || !res.body) {
+        const json = (await res.json().catch(() => ({}))) as { error?: string };
         if (res.status === 429 || json.error === "limit") {
           setLimitReached(true);
           setError("limit");
         } else {
           setError("failed");
         }
-        // Keep the visitor's words on screen so a retry is one tap.
         return;
       }
-      conversationId.current = json.conversationId ?? conversationId.current;
-      const withReply: Msg[] = [...next, { role: "assistant", content: json.reply }];
+
+      type DoneEvent = { conversationId?: string; reply?: string; leadCaptured?: boolean; limitReached?: boolean };
+      let done: DoneEvent | null = null;
+      let failed = false;
+      let text = "";
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      for (;;) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+        let nl: number;
+        while ((nl = buffer.indexOf("\n\n")) >= 0) {
+          const frame = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 2);
+          const line = frame.split("\n").find((l) => l.startsWith("data:"));
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line.slice(5).trim()) as Record<string, unknown>;
+            if (ev.type === "delta" && typeof ev.text === "string") {
+              text += ev.text;
+              setPending(text);
+            } else if (ev.type === "done") {
+              done = ev as unknown as DoneEvent;
+            } else if (ev.type === "error") {
+              failed = true;
+            }
+          } catch {
+            /* a torn frame; the next one will parse */
+          }
+        }
+      }
+
+      setPending("");
+      if (failed || !done) {
+        setError("failed");
+        return;
+      }
+      conversationId.current = done.conversationId ?? conversationId.current;
+      const reply = (done.reply ?? text).trim();
+      const withReply: Msg[] = [...next, { role: "assistant", content: reply }];
       setMessages(withReply);
-      const lead = Boolean(json.leadCaptured);
+      const lead = Boolean(done.leadCaptured);
       if (lead && !leadCaptured) setLeadCaptured(true);
-      if (json.limitReached) setLimitReached(true);
+      if (done.limitReached) setLimitReached(true);
       persist(withReply, lead || leadCaptured);
     } catch {
+      setPending("");
       setError("failed");
     } finally {
       setBusy(false);
@@ -194,7 +233,11 @@ export default function HubChat({
             {m.role === "assistant" ? <MarkdownLite text={m.content} /> : m.content}
           </Bubble>
         ))}
-        {busy ? (
+        {busy && pending ? (
+          <Bubble role="assistant" name={labels.assistantName} you={labels.you}>
+            <MarkdownLite text={pending} />
+          </Bubble>
+        ) : busy ? (
           <Bubble role="assistant" name={labels.assistantName} you={labels.you}>
             <span className="inline-flex items-center gap-2 text-slate-500">
               <span className="inline-flex gap-1" aria-hidden>
