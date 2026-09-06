@@ -5258,11 +5258,8 @@
     "briefingSchedule": {
       "morning": "早间简报",
       "evening": "晚间总结",
-      "timezone": "时区",
-      "tzPlaceholder": "例如：Asia/Shanghai",
-      "tzHint": "IANA 时区名称——简报会按这个时区在上面设定的时间发出。",
-      "saved": "已保存。",
-      "otherTimezone": "其他时区…",
+      "timezoneMoved": "以上时间按账户时区计算，可在“设置 → 通用”中修改。",
+      "saved": "已保存！",
       "saveSchedule": "保存排期",
       "morningBlurb": "☀️ 一天的计划、热门客源与待跟进事项。",
       "eveningBlurb": "🌙 当天回顾、遗漏事项与明日预览。"
@@ -10181,6 +10178,14 @@
     },
     "aiEmailModal": {
       "eyebrow": "AI 邮件 · {{model}}"
+    },
+    "accountTimezone": {
+      "title": "时区",
+      "blurb": "整个账户使用同一个时区——决定简报何时送达、夜间任务何时开始，以及 AI 前台和它所安排的每个预约如何理解“明天下午3点”。",
+      "other": "其他…",
+      "saved": "已保存",
+      "saveFailed": "无法保存该时区。",
+      "invalid": "请使用 Region/City 格式的时区，例如 America/Los_Angeles。"
     }
   },
   "disclaimers": {

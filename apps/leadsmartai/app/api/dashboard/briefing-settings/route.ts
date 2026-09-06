@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { isValidTimezone, safeAccountTimezone } from "@/lib/agent/timezone";
+
 
 export const runtime = "nodejs";
 
@@ -10,10 +10,15 @@ export const runtime = "nodejs";
  * PATCH /api/dashboard/briefing-settings
  *
  * Per-agent schedule for the morning + evening briefings shipped in
- * #238. Each agent picks their own clock time (HH:MM) and IANA
- * timezone; the cron is a single tick that branches off these
- * preferences. Defaults match the migration: 07:00 / 18:00 /
- * America/Los_Angeles.
+ * #238. Each agent picks their own clock times (HH:MM); the cron is a single
+ * tick that branches off these preferences. Defaults match the migration:
+ * 07:00 / 18:00.
+ *
+ * The timezone is NOT here. It lives on agents.timezone, edited in Settings →
+ * General via /api/dashboard/account-timezone. It governs briefings, the
+ * overnight run, the receptionist and every booked appointment — being editable
+ * from a card named "Briefing schedule" is how it came to be called
+ * briefing_timezone and how two other places grew their own copy of it.
  */
 
 const HHMM_RE = /^[0-2][0-9]:[0-5][0-9]$/;
@@ -21,7 +26,6 @@ const HHMM_RE = /^[0-2][0-9]:[0-5][0-9]$/;
 type SettingsRow = {
   briefing_morning_time: string;
   briefing_evening_time: string;
-  briefing_timezone: string;
 };
 
 export async function GET() {
@@ -37,7 +41,7 @@ export async function GET() {
 
   const { data, error } = await supabaseAdmin
     .from("agents")
-    .select("briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
+    .select("briefing_morning_time, briefing_evening_time")
     .eq("id", ctx.agentId)
     .maybeSingle();
   if (error) {
@@ -47,20 +51,10 @@ export async function GET() {
       { status: 500 },
     );
   }
-  const raw = data as (SettingsRow & { timezone?: string | null }) | null;
-  /*
-   * The response keeps calling it briefing_timezone.
-   *
-   * That is the field the settings card posts and renders, and renaming the
-   * wire format at the same time as the column would mean an old bundle and a
-   * new server disagreeing about the payload during a rollout. The COLUMN is
-   * consolidated now; the field name follows when the control moves to General
-   * settings.
-   */
+  const raw = data as SettingsRow | null;
   const row: SettingsRow = {
     briefing_morning_time: raw?.briefing_morning_time ?? "07:00",
     briefing_evening_time: raw?.briefing_evening_time ?? "18:00",
-    briefing_timezone: safeAccountTimezone(raw?.timezone ?? raw?.briefing_timezone),
   };
   return NextResponse.json({ ok: true, settings: row });
 }
@@ -86,9 +80,7 @@ export async function PATCH(req: Request) {
     );
   }
 
-  // Includes `timezone`, which is not part of the WIRE shape (SettingsRow) —
-  // it is the column being written alongside the legacy one.
-  const update: Partial<SettingsRow> & { timezone?: string } = {};
+  const update: Partial<SettingsRow> = {};
   if (body.briefing_morning_time !== undefined) {
     const v = String(body.briefing_morning_time).trim();
     if (!HHMM_RE.test(v)) {
@@ -109,20 +101,6 @@ export async function PATCH(req: Request) {
     }
     update.briefing_evening_time = v;
   }
-  if (body.briefing_timezone !== undefined) {
-    const v = String(body.briefing_timezone).trim();
-    if (!isValidTimezone(v)) {
-      return NextResponse.json(
-        { ok: false, error: "Unknown IANA timezone." },
-        { status: 400 },
-      );
-    }
-    // Both columns while the old one still exists. agents.timezone is the
-    // source of truth; briefing_timezone is written so any deployed bundle
-    // still reading it sees the same answer until it is dropped.
-    update.timezone = v;
-    update.briefing_timezone = v;
-  }
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json(
@@ -135,7 +113,7 @@ export async function PATCH(req: Request) {
     .from("agents")
     .update(update)
     .eq("id", ctx.agentId)
-    .select("briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
+    .select("briefing_morning_time, briefing_evening_time")
     .single();
   if (error) {
     console.error("[briefing-settings] patch", error);

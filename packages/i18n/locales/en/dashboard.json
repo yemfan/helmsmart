@@ -5258,11 +5258,8 @@
     "briefingSchedule": {
       "morning": "Morning briefing",
       "evening": "Evening summary",
-      "timezone": "Timezone",
-      "tzPlaceholder": "e.g. Europe/Berlin",
-      "tzHint": "IANA timezone — your briefing fires at the times above in this zone.",
-      "saved": "Saved.",
-      "otherTimezone": "Other timezone…",
+      "timezoneMoved": "Times are in your account timezone, set in Settings → General.",
+      "saved": "Saved!",
       "saveSchedule": "Save schedule",
       "morningBlurb": "☀️ Start-of-day plan, hot leads, follow-ups.",
       "eveningBlurb": "🌙 Recap, missed work, tomorrow preview."
@@ -10181,6 +10178,14 @@
     },
     "aiEmailModal": {
       "eyebrow": "AI Email · {{model}}"
+    },
+    "accountTimezone": {
+      "title": "Timezone",
+      "blurb": "One timezone for the whole account — when briefings arrive, when the overnight run starts, and what “tomorrow at 3” means to your AI receptionist and every appointment it books.",
+      "other": "Other…",
+      "saved": "Saved",
+      "saveFailed": "Couldn’t save that timezone.",
+      "invalid": "Use a Region/City timezone such as America/Los_Angeles."
     }
   },
   "disclaimers": {

@@ -24,6 +24,7 @@ import SphereDripSettingsPanel from "@/components/dashboard/SphereDripSettingsPa
 import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
 import TimingPanel from "@/components/dashboard/TimingPanel";
 import MlsCsvImportClient from "./MlsCsvImportClient";
+import AccountTimezonePanel from "@/components/dashboard/AccountTimezonePanel";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("dashboard");
@@ -50,6 +51,7 @@ export default async function SettingsPage() {
         voice={
           <div className="space-y-4">
             <LanguagePanel />
+            <AccountTimezonePanel />
             <div className="rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
             <div className="p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">{tr("settings.aiStyle")}</h2>
