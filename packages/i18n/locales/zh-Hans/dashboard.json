@@ -264,6 +264,12 @@
       "ask": "告诉团队要做什么…"
     },
     "suggestions": {
+      "findLeads": "帮我找这周的新客户",
+      "sphereReach": "我该联系人脉圈里的哪些人？",
+      "coldLeads": "哪些客户正在变冷？",
+      "clearTasks": "帮我清掉逾期的任务",
+      "likelySellers": "我的人脉圈里谁可能很快要卖房？",
+      "weekPosts": "安排这周的社交媒体帖子",
       "checkIn": "给我的重点客户发条问候短信",
       "justListed": "写一条新房源上市的社交帖子",
       "planDay": "安排我今天的日程"

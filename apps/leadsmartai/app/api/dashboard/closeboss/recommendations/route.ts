@@ -4,6 +4,8 @@ import {
   listBossRecommendations,
   syncBossRecommendations,
 } from "@/lib/closeboss/recommendations";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { goalKey } from "@/lib/closeboss/goal";
 
 export const runtime = "nodejs";
 
@@ -15,8 +17,12 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   try {
     const { agentId } = await getAgentContextFromRequest(req);
-    await syncBossRecommendations(agentId);
-    const recommendations = await listBossRecommendations(agentId, 5);
+    const [, { data: agentRow }] = await Promise.all([
+      syncBossRecommendations(agentId),
+      supabaseAdmin.from("agents").select("onboarding").eq("id", agentId).maybeSingle(),
+    ]);
+    const goal = goalKey((agentRow as { onboarding?: { goal?: unknown } | null } | null)?.onboarding?.goal);
+    const recommendations = await listBossRecommendations(agentId, 5, goal);
     return NextResponse.json({ ok: true, recommendations });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";

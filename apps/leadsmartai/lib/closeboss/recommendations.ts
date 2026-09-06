@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { orderForGoal, type GoalKey } from "@/lib/closeboss/goal";
 import { listTransactionsForAgent } from "@/lib/transactions/service";
 import { listTasksForAgent } from "@/lib/crm/pipeline/tasks";
 import { pausedAssistantTypes } from "@/lib/closeboss/assistants";
@@ -304,7 +305,10 @@ export async function syncBossRecommendations(agentId: string): Promise<void> {
 export async function listBossRecommendations(
   agentId: string,
   limit = 5,
+  /** The realtor's stated goal — its kinds of priority sort ahead of the rest. */
+  goal: GoalKey | null = null,
 ): Promise<BossRecommendationRow[]> {
+  const take = Math.min(Math.max(limit, 1), 20);
   const { data, error } = await supabaseAdmin
     .from("boss_recommendations")
     .select("*")
@@ -312,9 +316,11 @@ export async function listBossRecommendations(
     .in("status", ["new", "accepted"])
     .order("priority", { ascending: true })
     .order("created_at", { ascending: false })
-    .limit(Math.min(Math.max(limit, 1), 20));
+    // Read past the page so a goal-aligned item ranked 8th can still make
+    // the top five; the order within each group is untouched.
+    .limit(goal ? 20 : take);
   if (error) throw new Error(error.message);
-  return (data ?? []) as BossRecommendationRow[];
+  return orderForGoal((data ?? []) as BossRecommendationRow[], goal).slice(0, take);
 }
 
 export async function setBossRecommendationStatus(

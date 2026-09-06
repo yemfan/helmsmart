@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { data, error } = await supabaseServer
       .from("agents")
       .select(
-        "onboarding_completed, service_areas, service_areas_v2, brand_name, logo_url",
+        "onboarding_completed, service_areas, service_areas_v2, brand_name, logo_url, onboarding",
       )
       .eq("id", agentId as any)
       .single();
@@ -52,6 +52,7 @@ export async function GET(req: Request) {
       suggestedServiceAreas,
       brandName: row?.brand_name ?? null,
       logoUrl: row?.logo_url ?? null,
+      onboarding: (row as { onboarding?: Record<string, unknown> | null } | null)?.onboarding ?? {},
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message }, { status: 500 });
@@ -84,6 +85,29 @@ export async function POST(req: Request) {
     }
     if (typeof body.brand_name === "string") {
       patch.brand_name = body.brand_name;
+    }
+    // Max's welcome interview (name · market · focus · goal · brokerage).
+    // Merged into agents.onboarding so a partial re-interview never wipes an
+    // earlier answer. This used to be a browser-side update to `agents`; in
+    // production every agent ended up with `onboarding = {}` — the goal Max
+    // personalises around was never on file.
+    if (body.onboarding && typeof body.onboarding === "object" && !Array.isArray(body.onboarding)) {
+      const allowed = ["name", "market", "focus", "goal", "brokerage"] as const;
+      const incoming: Record<string, string> = {};
+      for (const k of allowed) {
+        const v = (body.onboarding as Record<string, unknown>)[k];
+        if (typeof v === "string" && v.trim()) incoming[k] = v.trim().slice(0, 160);
+      }
+      if (Object.keys(incoming).length > 0) {
+        const { data: cur } = await supabaseServer
+          .from("agents")
+          .select("onboarding")
+          .eq("id", agentId as any)
+          .maybeSingle();
+        const existing = ((cur as { onboarding?: Record<string, unknown> | null } | null)?.onboarding ?? {}) as Record<string, unknown>;
+        patch.onboarding = { ...existing, ...incoming, completed_at: new Date().toISOString() };
+        if (incoming.brokerage) patch.brokerage = incoming.brokerage;
+      }
     }
 
     if (Object.keys(patch).length > 0) {
