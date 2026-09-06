@@ -1018,7 +1018,14 @@ function Metric({ label, value, tone, active, onClick }: { label: string; value:
   return (
     <button type="button" onClick={onClick} className={`rounded-xl border bg-white p-3 text-left transition ${active ? "border-blue-300 ring-1 ring-blue-200" : "border-gray-200 hover:border-gray-300"}`}>
       <p className="text-xs text-gray-500">{label}</p>
-      <p className={`mt-0.5 text-2xl font-bold ${color}`}>{value ?? "—"}</p>
+      {/* A dash for "still loading" and a dash for "zero" looked identical and
+          made the first paint read as broken. Zero is a number; loading is a
+          pulse. */}
+      {value == null ? (
+        <span className="mt-1 block h-7 w-10 animate-pulse rounded-md bg-gray-100" aria-hidden />
+      ) : (
+        <p className={`mt-0.5 text-2xl font-bold tabular-nums ${color}`}>{value}</p>
+      )}
     </button>
   );
 }

@@ -125,7 +125,7 @@ function MiniPie({
   const total = data.reduce((s, d) => s + d.value, 0);
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="text-xs font-semibold text-gray-500 mb-2">{title}</h3>
+      <h2 className="text-xs font-semibold text-gray-500 mb-2">{title}</h2>
       <div className="flex items-center gap-3">
         <div className="h-[120px] w-[120px] shrink-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -496,7 +496,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           />
 
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("charts.growth")}</h3>
+            <h2 className="text-xs font-semibold text-gray-500 mb-2">{t("charts.growth")}</h2>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={growthWithLabels} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -525,7 +525,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               if (showAddForm) setShowAddForm(false);
               setAddMenuOpen((v) => !v);
             }}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
             aria-haspopup="menu"
             aria-expanded={addMenuOpen}
           >
@@ -647,7 +647,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             <ActionBanner msg={actionMsg} onDismiss={() => setActionMsg(null)} dismissLabel={t("messages.dismiss")} />
           ) : null}
           <button type="button" onClick={() => void addContact()} disabled={actionLoading || !addFields.name}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {actionLoading ? t("add_form.saving") : t("add_form.submit")}
           </button>
         </div>
@@ -664,6 +664,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
         <select
           value={ratingFilter}
           onChange={(e) => setRatingFilter(e.target.value)}
+          aria-label={t("columns.rating")}
           className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
         >
           <option value="all">{t("search.filter_all")}</option>
@@ -740,7 +741,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                   { key: null, label: t("columns.phone") },
                   { key: "rating" as SortKey, label: t("columns.rating") },
                   { key: "last_contacted_at" as SortKey, label: t("columns.last_contacted") },
-                  { key: null, label: "" },
+                  { key: null, label: t("columns.actions"), srOnly: true },
                   { key: null, label: t("columns.memo") },
                   { key: null, label: t("columns.address") },
                 ] as const).map((col, i) => (
@@ -749,7 +750,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                     className={`text-left px-4 py-2.5 font-medium ${col.key ? "cursor-pointer select-none hover:text-gray-900" : ""}`}
                     onClick={() => col.key && toggleSort(col.key)}
                   >
-                    {col.label}
+                    {"srOnly" in col && col.srOnly ? <span className="sr-only">{col.label}</span> : col.label}
                     {col.key && sortBy === col.key && (
                       <span className="ml-1 text-[10px]">{sortAsc ? "\u25B2" : "\u25BC"}</span>
                     )}

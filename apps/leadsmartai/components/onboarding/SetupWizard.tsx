@@ -8,7 +8,8 @@ import {
   type AgentServiceArea,
 } from "@/lib/geo/serviceArea";
 
-const STEPS = ["Service Areas", "Branding", "AI Assistant", "Notifications"] as const;
+/** Step ids — titles resolve from `dashboard:pages.setupWizard.steps.*` at render. */
+const STEPS = ["serviceAreas", "branding", "aiAssistant", "notifications"] as const;
 
 type StepIndex = 0 | 1 | 2 | 3;
 
@@ -102,6 +103,22 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
     }
   }
 
+  /**
+   * "Do this later" — the wizard used to have no exit except stepping through
+   * every screen. Everything here is reachable again from Settings, and Max
+   * proposes the unfinished pieces over the first week, so leaving is safe.
+   */
+  async function finishLater() {
+    setSaving(true);
+    await fetch("/api/dashboard/onboarding", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ onboarding_completed: true }),
+    }).catch(() => {});
+    setSaving(false);
+    onComplete();
+  }
+
   async function skip() {
     if (step < 3) {
       setStep((step + 1) as StepIndex);
@@ -118,8 +135,16 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div role="dialog" aria-modal="true" aria-labelledby="setup-wizard-title" className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => void finishLater()}
+          disabled={saving}
+          className="absolute right-3 top-3 rounded-lg px-2 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 disabled:opacity-50"
+        >
+          {t("pages.setupWizard.doLater")}
+        </button>
         {/* Progress bar */}
         <div className="flex gap-1 p-4 pb-0">
           {STEPS.map((s, i) => (
@@ -135,8 +160,8 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
         <div className="p-6">
           <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">{t("pages.setupWizard.stepOfFour", { step: step + 1 })}
           </p>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">
-            {STEPS[step]}
+          <h2 id="setup-wizard-title" className="text-xl font-bold text-gray-900 mb-1">
+            {t(`pages.setupWizard.steps.${STEPS[step]}`)}
           </h2>
           <p className="text-sm text-gray-500 mb-6">
             {step === 0 && t("pages.setupWizard.pickYourArea")}
@@ -208,9 +233,9 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
           {step === 3 && (
             <div className="space-y-3">
               {[
-                { label: "Hot lead alerts", desc: "When a high-intent lead comes in", value: pushHotLead, set: setPushHotLead },
-                { label: "Follow-up reminders", desc: "When it's time to contact a lead", value: pushReminder, set: setPushReminder },
-                { label: "Missed call alerts", desc: "When a lead calls and you miss it", value: pushMissedCall, set: setPushMissedCall },
+                { label: t("pages.setupWizard.notifHotLead"), desc: t("pages.setupWizard.notifHotLeadDesc"), value: pushHotLead, set: setPushHotLead },
+                { label: t("pages.setupWizard.notifReminder"), desc: t("pages.setupWizard.notifReminderDesc"), value: pushReminder, set: setPushReminder },
+                { label: t("pages.setupWizard.notifMissedCall"), desc: t("pages.setupWizard.notifMissedCallDesc"), value: pushMissedCall, set: setPushMissedCall },
               ].map((item) => (
                 <label key={item.label} className="flex items-center justify-between rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50">
                   <div>

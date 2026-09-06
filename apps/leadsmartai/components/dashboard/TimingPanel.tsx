@@ -136,6 +136,7 @@ export default function TimingPanel() {
           <Hint>{t("pages.timingPanel.quietStartHint")}</Hint>
           <input
             type="time"
+            aria-label={t("pages.timingPanel.quietStart")}
             value={state.quietHoursStart}
             onChange={(e) => setState((s) => ({ ...s, quietHoursStart: e.target.value }))}
             className="mt-1 block w-full max-w-[8rem] rounded-lg border border-gray-300 px-3 py-2 text-sm"
@@ -146,6 +147,7 @@ export default function TimingPanel() {
           <Hint>{t("pages.timingPanel.quietEndHint")}</Hint>
           <input
             type="time"
+            aria-label={t("pages.timingPanel.quietEnd")}
             value={state.quietHoursEnd}
             onChange={(e) => setState((s) => ({ ...s, quietHoursEnd: e.target.value }))}
             className="mt-1 block w-full max-w-[8rem] rounded-lg border border-gray-300 px-3 py-2 text-sm"

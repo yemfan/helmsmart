@@ -38,10 +38,11 @@ export function NotificationsBell({ className }: { className?: string }) {
       <BellRing className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
       {unread > 0 && (
         <span
-          className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white ring-2 ring-white"
+          // red-600 on white clears AA for the tiny digits; red-500 did not.
+          className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white tabular-nums"
           aria-hidden
         >
-          {unread > 9 ? "9+" : unread}
+          {unread > 99 ? "99+" : unread}
         </span>
       )}
     </Link>

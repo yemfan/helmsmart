@@ -3,28 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
-
-const COMMANDS = [
-  { label: "Leads", path: "/dashboard/leads", keywords: "leads pipeline crm" },
-  { label: "Contacts", path: "/dashboard/contacts", keywords: "contacts people" },
-  { label: "Tasks", path: "/dashboard/tasks", keywords: "tasks todo" },
-  { label: "Calendar", path: "/dashboard/calendar", keywords: "calendar appointments schedule" },
-  { label: "Inbox", path: "/dashboard/inbox", keywords: "inbox messages sms email" },
-  { label: "Performance", path: "/dashboard/performance", keywords: "performance stats metrics" },
-  { label: "Marketing Plans", path: "/dashboard/marketing/plans", keywords: "marketing campaigns plans" },
-  { label: "Marketing Hub", path: "/dashboard/hub", keywords: "hub website public page username handle pixel analytics" },
-  { label: "Open Houses", path: "/dashboard/open-houses", keywords: "open house flyer" },
-  { label: "Reports", path: "/dashboard/reports", keywords: "reports cma" },
-  { label: "Properties", path: "/dashboard/properties", keywords: "properties listings" },
-  { label: "Calls", path: "/dashboard/calls", keywords: "calls phone" },
-  { label: "Growth", path: "/dashboard/growth", keywords: "growth referral" },
-  { label: "Settings", path: "/dashboard/settings", keywords: "settings profile account" },
-  { label: "Lead Queue", path: "/dashboard/lead-queue", keywords: "queue claim leads" },
-  { label: "Seller Presentation", path: "/dashboard/seller-presentation", keywords: "seller presentation listing" },
-];
+import { useNavCommands } from "@/components/ui/useNavCommands";
 
 export function CommandPalette() {
   const { t } = useTranslation("dashboard");
+  // Derived from the sidebar config — see useNavCommands for why.
+  const COMMANDS = useNavCommands();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -67,7 +51,7 @@ export function CommandPalette() {
   const filtered = search.trim()
     ? COMMANDS.filter((c) => {
         const s = search.toLowerCase();
-        return c.label.toLowerCase().includes(s) || c.keywords.includes(s);
+        return c.label.toLowerCase().includes(s) || c.keywords.toLowerCase().includes(s);
       })
     : COMMANDS;
 
