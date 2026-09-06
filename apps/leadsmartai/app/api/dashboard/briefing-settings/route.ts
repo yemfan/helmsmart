@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { isValidTimezone, safeAccountTimezone } from "@/lib/agent/timezone";
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,7 @@ export async function GET() {
 
   const { data, error } = await supabaseAdmin
     .from("agents")
-    .select("briefing_morning_time, briefing_evening_time, briefing_timezone")
+    .select("briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
     .eq("id", ctx.agentId)
     .maybeSingle();
   if (error) {
@@ -46,10 +47,20 @@ export async function GET() {
       { status: 500 },
     );
   }
-  const row = (data as SettingsRow | null) ?? {
-    briefing_morning_time: "07:00",
-    briefing_evening_time: "18:00",
-    briefing_timezone: "America/Los_Angeles",
+  const raw = data as (SettingsRow & { timezone?: string | null }) | null;
+  /*
+   * The response keeps calling it briefing_timezone.
+   *
+   * That is the field the settings card posts and renders, and renaming the
+   * wire format at the same time as the column would mean an old bundle and a
+   * new server disagreeing about the payload during a rollout. The COLUMN is
+   * consolidated now; the field name follows when the control moves to General
+   * settings.
+   */
+  const row: SettingsRow = {
+    briefing_morning_time: raw?.briefing_morning_time ?? "07:00",
+    briefing_evening_time: raw?.briefing_evening_time ?? "18:00",
+    briefing_timezone: safeAccountTimezone(raw?.timezone ?? raw?.briefing_timezone),
   };
   return NextResponse.json({ ok: true, settings: row });
 }
@@ -75,7 +86,9 @@ export async function PATCH(req: Request) {
     );
   }
 
-  const update: Partial<SettingsRow> = {};
+  // Includes `timezone`, which is not part of the WIRE shape (SettingsRow) —
+  // it is the column being written alongside the legacy one.
+  const update: Partial<SettingsRow> & { timezone?: string } = {};
   if (body.briefing_morning_time !== undefined) {
     const v = String(body.briefing_morning_time).trim();
     if (!HHMM_RE.test(v)) {
@@ -104,6 +117,10 @@ export async function PATCH(req: Request) {
         { status: 400 },
       );
     }
+    // Both columns while the old one still exists. agents.timezone is the
+    // source of truth; briefing_timezone is written so any deployed bundle
+    // still reading it sees the same answer until it is dropped.
+    update.timezone = v;
     update.briefing_timezone = v;
   }
 
@@ -118,7 +135,7 @@ export async function PATCH(req: Request) {
     .from("agents")
     .update(update)
     .eq("id", ctx.agentId)
-    .select("briefing_morning_time, briefing_evening_time, briefing_timezone")
+    .select("briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
     .single();
   if (error) {
     console.error("[briefing-settings] patch", error);
@@ -130,16 +147,3 @@ export async function PATCH(req: Request) {
   return NextResponse.json({ ok: true, settings: data });
 }
 
-/**
- * Validate an IANA timezone string by asking Intl whether it can
- * format a date in that zone. Avoids us hardcoding a list.
- */
-function isValidTimezone(tz: string): boolean {
-  if (!tz) return false;
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: tz }).format(new Date());
-    return true;
-  } catch {
-    return false;
-  }
-}

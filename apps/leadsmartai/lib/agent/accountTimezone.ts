@@ -1,7 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { DEFAULT_ACCOUNT_TIMEZONE, safeAccountTimezone } from "./timezone";
+import { DEFAULT_ACCOUNT_TIMEZONE, isValidTimezone, safeAccountTimezone } from "./timezone";
 
 /**
  * Reading the one timezone an account has.
@@ -11,9 +11,14 @@ import { DEFAULT_ACCOUNT_TIMEZONE, safeAccountTimezone } from "./timezone";
  * needs them too, and this module cannot cross that line because it talks to
  * the database.
  *
- * `agents.briefing_timezone` is the single source. It already backed briefings,
- * the overnight run and the dashboard, so it holds real values for agents who
- * set one; the receptionist's own column is no longer read.
+ * `agents.timezone` is the single source. It was `briefing_timezone` — the real
+ * value, but named after the one feature that happened to add the column, which
+ * is why two other places grew their own answer. The receptionist's column is
+ * gone and every caller now comes through here.
+ *
+ * briefing_timezone is still read as a fallback and still written by the
+ * settings API, because a deployment is not atomic: until the last bundle that
+ * reads the old column is retired, both have to be true.
  */
 
 export { DEFAULT_ACCOUNT_TIMEZONE, isValidTimezone, safeAccountTimezone } from "./timezone";
@@ -28,10 +33,17 @@ export async function getAccountTimezone(agentId: string | number | null | undef
   try {
     const { data } = await supabaseAdmin
       .from("agents")
-      .select("briefing_timezone")
+      .select("timezone, briefing_timezone")
       .eq("id", agentId as never)
       .maybeSingle();
-    return safeAccountTimezone((data as { briefing_timezone?: string | null } | null)?.briefing_timezone);
+    const row = data as { timezone?: string | null; briefing_timezone?: string | null } | null;
+    // New column first, old one while it still exists. isValidTimezone gates
+    // the choice so a blank or junk `timezone` falls through to
+    // briefing_timezone, rather than resolving to the default and quietly
+    // ignoring a value the account really has.
+    return isValidTimezone(row?.timezone)
+      ? safeAccountTimezone(row?.timezone)
+      : safeAccountTimezone(row?.briefing_timezone);
   } catch {
     return DEFAULT_ACCOUNT_TIMEZONE;
   }

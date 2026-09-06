@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { createDailyBriefingForAgent } from "@/lib/dailyBriefing";
 import type { BriefingKind } from "@/lib/dailyBriefingAI";
 import { sendEmail } from "@/lib/email";
+import { safeAccountTimezone } from "@/lib/agent/timezone";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,7 @@ type AgentRow = {
   id: string | number;
   briefing_morning_time: string | null;
   briefing_evening_time: string | null;
+  timezone: string | null;
   briefing_timezone: string | null;
 };
 
@@ -41,7 +43,7 @@ export async function GET(req: Request) {
   try {
     const { data: agents, error } = await supabaseServer
       .from("agents")
-      .select("id, briefing_morning_time, briefing_evening_time, briefing_timezone")
+      .select("id, briefing_morning_time, briefing_evening_time, timezone, briefing_timezone")
       .limit(500);
     if (error) throw error;
 
@@ -54,7 +56,10 @@ export async function GET(req: Request) {
     for (const a of (agents as AgentRow[] | null) ?? []) {
       processed++;
       const agentId = String(a.id);
-      const tz = a.briefing_timezone || "America/Los_Angeles";
+      // One default, one validity rule — see lib/agent/timezone.ts. The old
+      // per-caller `|| "America/Los_Angeles"` is how the account ended up with
+      // several answers to the same question.
+      const tz = safeAccountTimezone(a.timezone ?? a.briefing_timezone);
       const morningTarget = a.briefing_morning_time || "07:00";
       const eveningTarget = a.briefing_evening_time || "18:00";
 
