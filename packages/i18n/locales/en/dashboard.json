@@ -218,6 +218,33 @@
     "noEvents": "No events on this day."
   },
   "boss": {
+    "approvalChoice": {
+      "ask": "You approve",
+      "assisted": "Max checks",
+      "auto": "On its own"
+    },
+    "approvalSentence": {
+      "call": {
+        "ask": "{{name}} lines up calls and waits for your go-ahead before dialing.",
+        "assisted": "{{name}} places calls once Max has checked the plan; you're asked only when Max is unsure.",
+        "auto": "{{name}} places calls without asking, within calling hours."
+      },
+      "sms": {
+        "ask": "{{name}} drafts texts and waits for your approval before sending.",
+        "assisted": "{{name}} sends texts once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} sends texts without asking, within quiet hours and contact limits."
+      },
+      "email": {
+        "ask": "{{name}} drafts emails and waits for your approval before sending.",
+        "assisted": "{{name}} sends emails once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} sends emails without asking, within contact limits."
+      },
+      "social": {
+        "ask": "{{name}} drafts posts and waits for your approval before publishing.",
+        "assisted": "{{name}} publishes posts once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} publishes posts without asking."
+      }
+    },
     "memoryLine": {
       "count_one": "Max remembers your recent missions and {{count}} saved note.",
       "count_other": "Max remembers your recent missions and {{count}} saved notes.",
@@ -314,6 +341,7 @@
       "offTitle": "Autopilot off — the Boss asks before sending"
     },
     "approvals": {
+      "overnightHelp": "Max works your pipeline at about 4am: research and tasks done, outbound drafted for your morning approval. Never calls, never sends overnight.",
       "title": "Approval settings",
       "subtitle": "Choose where the Boss acts on its own and where it asks first — per assistant, per channel.",
       "allChannels": "Autopilot (all channels)",

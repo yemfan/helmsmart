@@ -218,6 +218,33 @@
     "noEvents": "当天没有安排。"
   },
   "boss": {
+    "approvalChoice": {
+      "ask": "您审批",
+      "assisted": "Max 把关",
+      "auto": "自行执行"
+    },
+    "approvalSentence": {
+      "call": {
+        "ask": "{{name}} 会安排通话，但拨打前等您同意。",
+        "assisted": "{{name}} 会在 Max 核对方案后拨打；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在允许的通话时段内自行拨打，无需询问。"
+      },
+      "sms": {
+        "ask": "{{name}} 会起草短信，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送短信；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在免打扰时段和联系频率限制内自行发送短信，无需询问。"
+      },
+      "email": {
+        "ask": "{{name}} 会起草邮件，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送邮件；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在联系频率限制内自行发送邮件，无需询问。"
+      },
+      "social": {
+        "ask": "{{name}} 会起草帖子，发布前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发布帖子；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会自行发布帖子，无需询问。"
+      }
+    },
     "memoryLine": {
       "count_one": "Max 记得您最近的任务和 {{count}} 条笔记。",
       "count_other": "Max 记得您最近的任务和 {{count}} 条笔记。",
@@ -314,6 +341,7 @@
       "offTitle": "自动执行关闭 —— 发送前会先征求您的同意"
     },
     "approvals": {
+      "overnightHelp": "Max 会在凌晨 4 点左右处理您的客户管道：完成调研和任务，把要发出的内容拟好草稿，等您早上审批。夜间绝不拨打电话、绝不发送。",
       "title": "审批设置",
       "subtitle": "按助理、按渠道决定团队可以自行执行，还是需要先征求您的同意。",
       "allChannels": "自动执行（所有渠道）",
