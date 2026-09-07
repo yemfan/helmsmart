@@ -260,8 +260,8 @@ export default function CustomerSupportChat({
               className="flex-1 resize-none rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
               placeholder={
                 conversationPublicId
-                  ? "Write your message..."
-                  : "Describe your issue to start the chat..."
+                  ? t("pages.supportChat.writeMessage")
+                  : t("pages.supportChat.describeIssuePlaceholder")
               }
               value={messageInput}
               onChange={(e) => {

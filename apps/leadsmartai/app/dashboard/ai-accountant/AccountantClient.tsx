@@ -97,7 +97,7 @@ export default function AccountantClient({
         <AssistantKpiCard
           label={t("assistants.accountant.stats.nextPayout")}
           value={nextPayout?.expected_net != null ? money(nextPayout.expected_net, locale) : "—"}
-          hint={nextPayout?.closing_date ? `${nextPayout.property_address} · closes ${fmtDay(nextPayout.closing_date, locale)}` : "no closing scheduled"}
+          hint={nextPayout?.closing_date ? `${nextPayout.property_address} · closes ${fmtDay(nextPayout.closing_date, locale)}` : t("pages.accountant.noClosingScheduled")}
         />
         <AssistantKpiCard
           label={t("assistants.accountant.stats.closedThisYear")}

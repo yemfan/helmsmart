@@ -177,8 +177,8 @@ export default function BulkCallPanel() {
             onChange={(e) => setDetail(e.target.value)}
             placeholder={
               purpose === "survey"
-                ? 'e.g. "How was your home tour? Would you leave us a Google review?"'
-                : 'e.g. "A new listing just hit your target neighborhood — want a private showing?"'
+                ? t("pages.bulkCall.surveyPlaceholder")
+                : t("pages.bulkCall.promoPlaceholder")
             }
           />
         </div>
@@ -192,7 +192,7 @@ export default function BulkCallPanel() {
             className="w-full rounded-lg border border-slate-300 dark:border-slate-700 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={loading ? "Loading contacts…" : "Search by name or number…"}
+            placeholder={loading ? t("pages.bulkCall.loadingContacts") : t("pages.bulkCall.searchPlaceholder")}
             disabled={loading}
           />
         </div>

@@ -119,8 +119,134 @@ const ALLOWED = new Set([
  * prop as `sublabel` with a shorter name — the KpiTile row on the demo
  * dashboard uses it — so the two live or die together.
  */
-const COPY_ATTRS =
-  /\b(?:placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|sub|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge)="([^"]+)"/g;
+const ATTR_NAMES =
+  "placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|sub|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge";
+
+const COPY_ATTRS = new RegExp(`\\b(?:${ATTR_NAMES})="([^"]+)"`, "g");
+
+/**
+ * The same attributes, written as an EXPRESSION.
+ *
+ * `title="…"` and `title={…}` are the same tooltip to the reader and two
+ * different shapes to a regex, and only the first one was ever checked. So a
+ * ternary was a place English could sit inside a fully translated file and
+ * come back clean — the AI SMS modal shipped five of them, in a component
+ * whose every surrounding banner goes through `t(...)`:
+ *
+ *     title={optedOut ? "Contact opted out — AI drafting disabled." : undefined}
+ *
+ * 35 strings across 16 internationalised files were hiding in this shape, and
+ * they are the worst 35 to lose: an attribute is a tooltip, a placeholder or
+ * the label a screen reader announces, so a `title=` the scan cannot see is
+ * copy nobody proof-reads in either language.
+ *
+ * A brace-delimited expression cannot be matched by a regex — it nests — so
+ * this half of the scan finds the opening `attr={` and walks to its partner,
+ * then reads the string literals inside. What comes out is passed through the
+ * same `isCopy` gate as everything else.
+ */
+const COPY_ATTR_EXPR = new RegExp(`\\b(?:${ATTR_NAMES})=\\{`, "g");
+
+/**
+ * String literals inside a braced attribute, minus the ones that are not copy.
+ *
+ * The price of reading an expression instead of a value: an expression holds
+ * code as well as copy, and three shapes of code look exactly like a short
+ * sentence.
+ *
+ *   - A COMPARISON OPERAND. `title={status === "needs review" ? …}` compares
+ *     against a database enum, and "needs review" is two lowercase words over
+ *     six characters — indistinguishable from a label by any rule in `isCopy`.
+ *   - A TRANSLATION KEY, which is what most of these expressions now contain.
+ *     `t("pages.aiSms.generateReply")` survives `isCopy` today only because it
+ *     has no spaces; a key with a `defaultValue` beside it would not, and
+ *     shipping a key ahead of its translation is documented practice.
+ *   - A CLASS STRING. `label={cn("text-xs font-semibold", x && "opacity-60")}`
+ *     is Tailwind, not English, and it is two words over six characters.
+ *
+ * Each is excluded by where it SITS rather than by what it says, because what
+ * it says is not distinguishable from copy.
+ */
+const COMPARISON_BEFORE = /(?:===|!==|==|!=)\s*$/;
+const CALL_BEFORE = /\b(?:t|tr|cn|clsx|classNames|tw)\(\s*$/;
+/*
+ * `defaultValue` is the documented way to ship a key ahead of its translation
+ * — `missingKeys` exempts the same shape by name — so the English beside one
+ * is a fallback for a miss, not the string on the screen. Every instance in
+ * this app is a key that resolves in both locales, which is what makes them
+ * fallbacks rather than copy.
+ */
+const DEFAULT_VALUE_BEFORE = /\bdefaultValue:\s*$/;
+
+/**
+ * String literals in `expr`, found by walking it rather than matching it.
+ *
+ * A regex cannot do this. `'e.g. "How was your home tour?"'` is ONE
+ * single-quoted string containing two double quotes, and a `"([^"]+)"` rule
+ * reports its middle while a `'([^']+)'` rule bolted alongside would pair the
+ * apostrophes in `"You've hit this period's cap."` and report the code
+ * between them. Quote state has to be tracked, so it is.
+ *
+ * Backticks are skipped whole: a template literal is real copy too, but it
+ * arrives spliced around its `${…}` holes, and fixing one means a `t()` with
+ * interpolation rather than a straight swap. That is a different shape and a
+ * different change — see the note in the PR that added this half.
+ */
+function stringLiterals(expr: string): Array<{ at: number; value: string }> {
+  const out: Array<{ at: number; value: string }> = [];
+  for (let i = 0; i < expr.length; i += 1) {
+    const q = expr[i];
+    if (q === "`") {
+      // Skip to the partner backtick so its contents are never read.
+      const close = expr.indexOf("`", i + 1);
+      if (close === -1) break;
+      i = close;
+      continue;
+    }
+    if (q !== '"' && q !== "'") continue;
+    let j = i + 1;
+    while (j < expr.length && expr[j] !== q) {
+      if (expr[j] === "\\") j += 1; // an escaped quote does not close it
+      j += 1;
+    }
+    if (j >= expr.length) break; // unterminated — stop rather than guess
+    out.push({ at: i, value: expr.slice(i + 1, j) });
+    i = j;
+  }
+  return out;
+}
+
+function attrExprCopy(body: string): Array<{ offset: number; text: string }> {
+  const out: Array<{ offset: number; text: string }> = [];
+  for (const m of body.matchAll(COPY_ATTR_EXPR)) {
+    const open = m.index + m[0].length - 1;
+    let depth = 0;
+    let end = open;
+    for (let i = open; i < body.length; i += 1) {
+      if (body[i] === "{") depth += 1;
+      else if (body[i] === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          end = i;
+          break;
+        }
+      }
+    }
+    if (end === open) continue; // unbalanced — not our business
+    const expr = body.slice(open + 1, end);
+    for (const { at, value } of stringLiterals(expr)) {
+      const before = expr.slice(0, at);
+      if (COMPARISON_BEFORE.test(before)) continue;
+      if (CALL_BEFORE.test(before)) continue;
+      if (DEFAULT_VALUE_BEFORE.test(before)) continue;
+      // A key, not a sentence: dotted, no spaces. `t(` already caught most.
+      if (/^[\w-]+(?:\.[\w-]+)+$/.test(value)) continue;
+      out.push({ offset: open + 1 + at, text: value });
+    }
+  }
+  return out;
+}
+
 /**
  * A JSX text node is bounded by a tag *or* an interpolation on either side —
  * four combinations, of which `>text<` is one. Matching only that one hid
@@ -189,6 +315,29 @@ const ANCHOR = /^(?:[A-Za-z0-9↓↑←→↻“]|\p{Extended_Pictographic})/u;
  */
 const BODY =
   /^(?:[A-Za-z0-9 ,.'’“”!?:;%()/&+…←→↻—–·-]|\p{Extended_Pictographic}|[\uFE0F\u200D]|[\u{1F3FB}-\u{1F3FF}])*$/u;
+
+/**
+ * BODY, plus the straight double quote — for ATTRIBUTE literals only.
+ *
+ * Copy quotes things. A placeholder showing an agent what to say is one
+ * single-quoted string with a quoted example inside it:
+ *
+ *     placeholder={x ? 'e.g. "How was your home tour?"' : …}
+ *
+ * Rejecting that on its quote characters loses two of the longest sentences
+ * on the calling panels. But the same tolerance in BODY itself is a
+ * disaster: a JSX text node is bounded by `}` and `{` as well as by tags, so
+ * `} from "next"; import Link from "next/link"; import {` becomes copy, and
+ * the scan goes from 45 findings to 1956 — every import line in the app.
+ * That is the scan that cries wolf and then protects nothing.
+ *
+ * The difference is that an attribute literal is ALREADY KNOWN to be a
+ * string: the tokenizer found its delimiters, so a quote inside one is
+ * punctuation. A quote inside a text node is usually source. The tolerance
+ * lives here, where that is known, and nowhere else.
+ */
+const ATTR_BODY =
+  /^(?:[A-Za-z0-9 ,.'’“”"!?:;%()/&+…←→↻—–·-]|\p{Extended_Pictographic}|[\uFE0F\u200D]|[\u{1F3FB}-\u{1F3FF}])*$/u;
 
 /**
  * Files that stay English on purpose, with the reason.
@@ -260,7 +409,7 @@ const blankCode = (s: string) =>
     // CSS in a <style> block is selectors, not sentences: `html, body {`.
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, (m) => m.replace(/[^\n]/g, " "));
 
-function isCopy(raw: string, nextToInterpolation: boolean): boolean {
+function isCopy(raw: string, nextToInterpolation: boolean, quoted = false): boolean {
   // A wrapped paragraph carries its indentation with it; compare on one line.
   const t = raw.replace(/\s+/g, " ").trim();
   if (ALLOWED.has(t)) return false;
@@ -327,7 +476,7 @@ function isCopy(raw: string, nextToInterpolation: boolean): boolean {
    * surrogate pair, and slicing one in half leaves a lone surrogate that fails
    * BODY for a reason that has nothing to do with the copy.
    */
-  if (!BODY.test(t.slice([...t][0].length))) return false;
+  if (!(quoted ? ATTR_BODY : BODY).test(t.slice([...t][0].length))) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,
@@ -377,6 +526,9 @@ function scan(body: string): Array<{ offset: number; text: string }> {
   }
   for (const m of body.matchAll(COPY_ATTRS)) {
     if (isCopy(m[1], false)) out.push({ offset: m.index ?? 0, text: m[1] });
+  }
+  for (const { offset, text } of attrExprCopy(body)) {
+    if (isCopy(text, false, true)) out.push({ offset, text });
   }
   return out;
 }
@@ -481,6 +633,58 @@ describe("the scan itself", () => {
       "Capitalised",
       "↻ Attribute copy",
     ]);
+  });
+
+  /**
+   * The braced half, pinned for the same reason as the fixture above: it is
+   * the half that reads an EXPRESSION, so it is the half that can start
+   * reporting code as copy without anyone noticing the difference.
+   */
+  it("reads copy out of a braced attribute, on both arms of a ternary", () => {
+    const found = scan(
+      '<button title={optedOut ? "Contact opted out." : "Send the message now."} />',
+    ).map((f) => f.text);
+    expect(found).toEqual(["Contact opted out.", "Send the message now."]);
+  });
+
+  it("ignores the code that shares those braces", () => {
+    // A translation key and its call, an enum being compared, and a class
+    // string — each is two words or dotted, and none is English on a screen.
+    expect(scan('<p title={t("pages.aiSms.generateReply")} />')).toEqual([]);
+    expect(scan('<p title={status === "needs review" ? a : b} />')).toEqual([]);
+    expect(scan('<p label={cn("text-xs font-semibold", on && "opacity-60")} />')).toEqual([]);
+    // A fallback for a key that misses, not the string on the screen.
+    expect(scan('<p title={t("a.key", { defaultValue: "Some English" })} />')).toEqual([]);
+  });
+
+  /**
+   * Quote state, not a quote pattern.
+   *
+   * Both of these break a regex that pairs one quote character: the first is
+   * ONE single-quoted string whose middle a `"…"` rule would report on its
+   * own, and the second would have its apostrophes paired by a `'…'` rule
+   * bolted alongside, reporting the code between them as English.
+   */
+  it("reads a literal that contains the other quote character", () => {
+    expect(scan(`<p placeholder={x ? 'e.g. "How was the tour?"' : y} />`)).toEqual([
+      { offset: 20, text: 'e.g. "How was the tour?"' },
+    ]);
+    expect(scan(`<p title={a ? "You've hit this period's cap." : b} />`).map((f) => f.text)).toEqual(
+      ["You've hit this period's cap."],
+    );
+  });
+
+  it("does not read inside a template literal", () => {
+    // Real copy, but it arrives spliced around its holes and needs a `t()`
+    // with interpolation rather than a swap. Skipped whole, deliberately.
+    expect(scan("<p title={`Other showings with ${name}`} />")).toEqual([]);
+  });
+
+  it("still sees copy in a nested brace, and stops at the closing one", () => {
+    const found = scan('<p title={{ a: "Nested copy here" }} />More text<span>').map(
+      (f) => f.text.trim(),
+    );
+    expect(found).toContain("Nested copy here");
   });
 
   it("counts a lone lowercase word only beside an interpolation", () => {

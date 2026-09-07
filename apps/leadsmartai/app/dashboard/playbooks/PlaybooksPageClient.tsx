@@ -411,7 +411,7 @@ function TaskRow({
         />
         <IconButton
           onClick={onCancel}
-          title={cancelled ? tr("more.playbooks.restore") : "Cancel"}
+          title={cancelled ? tr("more.playbooks.restore") : tr("more.playbooks.cancel")}
           ariaLabel={cancelled ? `Restore "${task.title}"` : `Cancel "${task.title}"`}
           tone="danger"
           active={cancelled}

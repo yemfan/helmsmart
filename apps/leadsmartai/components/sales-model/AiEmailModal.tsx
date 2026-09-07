@@ -373,7 +373,7 @@ export function AiEmailModal({
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder={
-                    drafting ? t("common:status.drafting") : "Subject line (4-9 words is the sweet spot)"
+                    drafting ? t("common:status.drafting") : t("pages.aiEmailModal.subjectPlaceholder")
                   }
                   className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
@@ -388,7 +388,7 @@ export function AiEmailModal({
                   placeholder={
                     drafting
                       ? t("common:status.drafting")
-                      : "Email body. Generate with AI above or write your own."
+                      : t("pages.aiEmailModal.bodyPlaceholder")
                   }
                   className="mt-1 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />

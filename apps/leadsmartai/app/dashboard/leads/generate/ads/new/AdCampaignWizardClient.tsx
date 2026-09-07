@@ -861,7 +861,7 @@ export default function AdCampaignWizardClient() {
                           ? "border-blue-500 ring-2 ring-blue-100"
                           : "border-slate-200 dark:border-slate-700 hover:border-blue-300"
                       }`}
-                      title={m.fileName ?? "Library image"}
+                      title={m.fileName ?? t("pages.adWizard.libraryImage")}
                     >
                       {m.signedUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element

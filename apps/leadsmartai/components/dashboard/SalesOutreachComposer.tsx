@@ -470,11 +470,11 @@ export default function SalesOutreachComposer({
               onFocus={() => setOpen(true)}
               placeholder={
                 loadingContacts
-                  ? "Loading your contacts…"
+                  ? t("outreach.loadingContacts")
                   : reachable.length
                     ? channel === "email"
-                      ? "Search contacts by name or email…"
-                      : "Search contacts by name or number…"
+                      ? t("outreach.searchByEmail")
+                      : t("outreach.searchByPhone")
                     : channel === "email"
                       ? t("outreach.noEmailContacts")
                       : t("outreach.noPhoneContacts")

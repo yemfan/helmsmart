@@ -175,10 +175,10 @@ export default function OutboundCallPanel() {
               onFocus={() => setOpen(true)}
               placeholder={
                 loadingContacts
-                  ? "Loading your contacts…"
+                  ? t("pages.outboundCall.loadingContacts")
                   : contacts.length
-                    ? "Search contacts by name or number…"
-                    : "No saved contacts yet — enter a number below"
+                    ? t("pages.outboundCall.searchPlaceholder")
+                    : t("pages.outboundCall.noSavedContacts")
               }
               disabled={loadingContacts}
             />
@@ -243,8 +243,8 @@ export default function OutboundCallPanel() {
               onChange={(e) => setDetail(e.target.value)}
               placeholder={
                 purpose === "survey"
-                  ? 'e.g. "How was your home tour? Would you leave us a Google review?"'
-                  : 'e.g. "A new listing just hit your target neighborhood — want a private showing?"'
+                  ? t("pages.bulkCall.surveyPlaceholder")
+                  : t("pages.bulkCall.promoPlaceholder")
               }
             />
           </div>
