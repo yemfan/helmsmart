@@ -87,7 +87,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
   if (!data) {
     return (
       <Card title={k("title")} description={k("desc")}>
-        <div className="h-40 animate-pulse rounded-xl bg-slate-100" aria-busy />
+        <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" aria-busy />
       </Card>
     );
   }
@@ -99,7 +99,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
       {/* ── Social ── */}
       <div>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">{k("social")}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{k("social")}</h3>
           <Link href="/dashboard/leads/generate/posts" className="text-xs font-medium text-[#0072ce] hover:underline">
             {k("openPosts")}
           </Link>
@@ -108,9 +108,9 @@ export default function MarketingPerformance({ days }: { days: number }) {
         {data.social.platforms.length === 0 ? (
           <Empty>{k("noPosts")}</Empty>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
             <table className="w-full min-w-[40rem]">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 dark:bg-slate-800/60">
                 <tr>
                   <th className={th}>{k("platform")}</th>
                   <th className={th}>{k("posts")}</th>
@@ -120,12 +120,12 @@ export default function MarketingPerformance({ days }: { days: number }) {
                   <th className={th}>{k("engagement")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {data.social.platforms.map((p) => (
                   <tr key={p.platform}>
                     <td className={td}>
                       <span className="font-medium">{PLATFORM_LABEL[p.platform] ?? p.platform}</span>
-                      <span className="block text-xs text-slate-500">
+                      <span className="block text-xs text-slate-500 dark:text-slate-400">
                         {p.metrics
                           ? `${k("measured", { measured: p.measured, posts: p.posts })}${p.lastRefreshedAt ? ` · ${k("refreshedAt", { when: when(p.lastRefreshedAt) })}` : ""}`
                           : p.reason === "unsupported"
@@ -140,7 +140,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
                     <td className={td}>
                       {n(p.metrics?.engagement, locale)}
                       {p.metrics && p.metrics.engagement != null ? (
-                        <span className="block text-xs text-slate-500">
+                        <span className="block text-xs text-slate-500 dark:text-slate-400">
                           {[
                             p.metrics.likes != null ? `${n(p.metrics.likes, locale)} ${k("likes").toLowerCase()}` : null,
                             p.metrics.comments != null ? `${n(p.metrics.comments, locale)} ${k("comments").toLowerCase()}` : null,
@@ -160,21 +160,21 @@ export default function MarketingPerformance({ days }: { days: number }) {
         )}
         {data.social.topPosts.length ? (
           <div className="mt-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{k("topPosts")}</p>
-            <ul className="mt-1 divide-y divide-slate-100">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{k("topPosts")}</p>
+            <ul className="mt-1 divide-y divide-slate-100 dark:divide-slate-800">
               {data.social.topPosts.map((p, i) => (
                 <li key={i} className="flex items-start justify-between gap-3 py-1.5 text-sm">
                   <span className="min-w-0">
-                    <span className="mr-2 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-600">{PLATFORM_LABEL[p.platform] ?? p.platform}</span>
+                    <span className="mr-2 rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-600 dark:text-slate-400">{PLATFORM_LABEL[p.platform] ?? p.platform}</span>
                     {p.url ? (
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-slate-800 hover:underline">
+                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-slate-800 dark:text-slate-200 hover:underline">
                         {p.caption || "…"}
                       </a>
                     ) : (
-                      <span className="text-slate-800">{p.caption || "…"}</span>
+                      <span className="text-slate-800 dark:text-slate-200">{p.caption || "…"}</span>
                     )}
                   </span>
-                  <span className="shrink-0 tabular-nums text-slate-600">{n(p.engagement, locale)}</span>
+                  <span className="shrink-0 tabular-nums text-slate-600 dark:text-slate-400">{n(p.engagement, locale)}</span>
                 </li>
               ))}
             </ul>
@@ -185,7 +185,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
       {/* ── Ads ── */}
       <div>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">{k("ads")}</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{k("ads")}</h3>
           <Link href="/dashboard/leads/generate/ads" className="text-xs font-medium text-[#0072ce] hover:underline">
             {k("openAds")}
           </Link>
@@ -195,11 +195,11 @@ export default function MarketingPerformance({ days }: { days: number }) {
         ) : (
           <>
             {data.ads.staleCount > 0 ? (
-              <p className="mb-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-inset ring-slate-200">{k("adsStale", { count: data.ads.staleCount })}</p>
+              <p className="mb-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-xs text-slate-600 dark:text-slate-400 ring-1 ring-inset ring-slate-200 dark:ring-slate-700">{k("adsStale", { count: data.ads.staleCount })}</p>
             ) : null}
-            <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
               <table className="w-full min-w-[40rem]">
-                <thead className="bg-slate-50">
+                <thead className="bg-slate-50 dark:bg-slate-800/60">
                   <tr>
                     <th className={th}>{k("campaign")}</th>
                     <th className={th}>{k("status")}</th>
@@ -210,12 +210,12 @@ export default function MarketingPerformance({ days }: { days: number }) {
                     <th className={th}>{k("cpl")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {data.ads.campaigns.map((c) => (
                     <tr key={c.id}>
                       <td className={td}>
                         <span className="font-medium">{c.name}</span>
-                        {c.lastRefreshedAt ? <span className="block text-xs text-slate-500">{k("refreshedAt", { when: when(c.lastRefreshedAt) })}</span> : null}
+                        {c.lastRefreshedAt ? <span className="block text-xs text-slate-500 dark:text-slate-400">{k("refreshedAt", { when: when(c.lastRefreshedAt) })}</span> : null}
                       </td>
                       <td className={td}>{c.status}</td>
                       <td className={td}>{money(c.spendCents, locale)}</td>
@@ -226,7 +226,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-slate-50 font-medium">
+                <tfoot className="bg-slate-50 dark:bg-slate-800/60 font-medium">
                   <tr>
                     <td className={td} colSpan={2} />
                     <td className={td}>{money(data.ads.totals.spendCents, locale)}</td>
@@ -244,13 +244,13 @@ export default function MarketingPerformance({ days }: { days: number }) {
 
       {/* ── Sources ── */}
       <div>
-        <h3 className="mb-2 text-sm font-semibold text-slate-900">{k("sources")}</h3>
+        <h3 className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{k("sources")}</h3>
         {data.sources.length === 0 ? (
           <Empty>{k("noSources")}</Empty>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
             <table className="w-full min-w-[24rem]">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 dark:bg-slate-800/60">
                 <tr>
                   <th className={th}>{k("source")}</th>
                   <th className={th}>{k("views")}</th>
@@ -258,7 +258,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
                   <th className={th}>{k("rate")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {data.sources.map((s) => (
                   <tr key={s.source}>
                     <td className={`${td} font-medium`}>{s.source}</td>
@@ -275,9 +275,9 @@ export default function MarketingPerformance({ days }: { days: number }) {
 
       {/* ── Google ── */}
       <div>
-        <h3 className="mb-2 text-sm font-semibold text-slate-900">{k("google")}</h3>
-        <p className="text-sm text-slate-700">{data.google.ga4TagConfigured ? k("ga4On") : k("ga4Off")}</p>
-        <p className="mt-1 text-sm text-slate-600">{k("googleAds")}</p>
+        <h3 className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{k("google")}</h3>
+        <p className="text-sm text-slate-700 dark:text-slate-300">{data.google.ga4TagConfigured ? k("ga4On") : k("ga4Off")}</p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{k("googleAds")}</p>
         {!data.google.ga4TagConfigured ? (
           <Link href="/dashboard/hub?section=settings" className="mt-2 inline-flex text-sm font-medium text-[#0072ce] hover:underline">
             {k("openSettings")}

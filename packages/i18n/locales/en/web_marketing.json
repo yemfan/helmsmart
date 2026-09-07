@@ -647,6 +647,13 @@
         "followup": "AI follow-up",
         "appointment": "Appointment booked",
         "crm": "Handed to me"
+      },
+      "activity": {
+        "title": "In the last {{count}} days",
+        "calls": "calls answered by the AI receptionist",
+        "texts": "texts sent by the AI team",
+        "appointments": "appointments booked by the AI",
+        "note": "Real activity from this practice, counted from its records."
       }
     },
     "services": {

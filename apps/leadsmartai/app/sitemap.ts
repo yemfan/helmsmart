@@ -7,6 +7,7 @@ import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
 import { listRecentDigests } from "@/lib/newsletter/db";
 import { FEATURE_PAGES } from "@/lib/marketing/features";
+import { listHubSitemapEntries } from "@/lib/marketing-hub/sitemap";
 import { getSiteUrl } from "@/lib/siteUrl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -199,11 +200,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  // Agent marketing hubs — one entry per hub that clears the indexing bar,
+  // plus its subpages and market-area pages. Guarded like the rest; the
+  // helper never throws and yields nothing when it cannot read.
+  let hubEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    const entries = await listHubSitemapEntries();
+    hubEntries = entries.map((e) => ({
+      url: `${base}${e.path}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: e.priority,
+    }));
+  }
+
   return [
     ...staticEntries,
     ...reportEntries,
     ...marketEntries,
     ...newsletterEntries,
+    ...hubEntries,
   ];
 }
 

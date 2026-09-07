@@ -114,6 +114,13 @@ export function hubLabels(t: T) {
       howTitle: h("workforce.howTitle"),
       howBlurb: h("workforce.howBlurb"),
       howNote: h("workforce.howNote"),
+      activity: {
+        title: (count: number) => h("workforce.activity.title", { count }),
+        calls: h("workforce.activity.calls"),
+        texts: h("workforce.activity.texts"),
+        appointments: h("workforce.activity.appointments"),
+        note: h("workforce.activity.note"),
+      },
       steps: {
         missed_call: h("workforce.steps.missed_call"),
         receptionist: h("workforce.steps.receptionist"),

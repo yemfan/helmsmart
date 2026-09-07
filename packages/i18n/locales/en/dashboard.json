@@ -10374,7 +10374,9 @@
           "paused": "Paused on your account, so it can't be shown.",
           "receptionist_off": "Your AI receptionist is off. Turn it on to show it here.",
           "missing": "Not set up on your account yet."
-        }
+        },
+        "showActivity": "Show real 30-day activity (calls handled, texts sent, appointments booked)",
+        "showActivityHint": "Counts from your own records, no names. Shown only when there is something to count."
       },
       "tools": {
         "title": "Tools",
