@@ -13,3 +13,15 @@
 *.otf binary
 *.mp4 binary
 *.mov binary
+
+# Scripts that open with a shebang must stay LF in the WORKING TREE, not just
+# in the index. Git stores them LF and hands Windows CRLF, and vitest's module
+# loader does not treat a CRLF-terminated shebang line as a shebang: it leaves
+# the # in code position, and the import dies with
+# `SyntaxError: Invalid or unexpected token`.
+#
+# Isolated 2026-09-06 by bisection: shebang+LF imports fine, shebang+CRLF does
+# not, and the em dashes in the same file were a red herring. CI never saw it
+# because a Linux runner checks out LF, so this only ever broke Windows.
+scripts/*.mjs text eol=lf
+scripts/*.sh text eol=lf
