@@ -96,10 +96,10 @@ export function AssistantHeader({
       <div className="flex items-start gap-3">
         <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" eager />
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("assistants.yourAiTeam")}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">{t("assistants.yourAiTeam")}</p>
           <h1 className="mt-0.5 text-xl font-semibold text-slate-900 dark:text-slate-100">{name}</h1>
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{t(`roster.${assistant.type}.name`, { defaultValue: assistant.name })}</p>
-          <p className="text-xs text-slate-400">{t(`assistants.personality.${assistant.type}`, { defaultValue: assistant.personality })}</p>
+          <p className="text-xs text-slate-500">{t(`assistants.personality.${assistant.type}`, { defaultValue: assistant.personality })}</p>
         </div>
       </div>
       <div className="flex shrink-0 flex-col items-stretch gap-2 sm:w-72">
@@ -203,7 +203,7 @@ function AssistantSkillsCard({
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           {t("assistants.skillsHeading", { defaultValue: "Skills" })}
         </p>
-        <span className="text-[10px] font-medium text-slate-400">{skills.length}</span>
+        <span className="text-[10px] font-medium text-slate-500">{skills.length}</span>
       </div>
       <ul className="mt-2 space-y-1">
         {skills.map((key) => {
@@ -241,7 +241,7 @@ export function AssistantKpiCard({
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <p className="text-xs text-slate-500">{label}</p>
       <p className={`mt-1 text-2xl font-bold ${valueClass}`}>{value ?? "—"}</p>
-      {hint && <p className="text-[10px] text-slate-400">{hint}</p>}
+      {hint && <p className="text-[10px] text-slate-500">{hint}</p>}
     </div>
   );
 }

@@ -95,7 +95,7 @@ export function RevenuePanel() {
   const csvHref = useMemo(() => `/api/performance/revenue/export?period=${period}`, [period]);
 
   if (loading && !data) {
-    return <div className="py-8 text-center text-sm text-slate-400">{t("pages.revenuePanel.loading")}</div>;
+    return <div className="py-8 text-center text-sm text-slate-500">{t("pages.revenuePanel.loading")}</div>;
   }
   if (error) {
     return <div className="py-4 text-sm text-red-600">{error}</div>;
@@ -297,7 +297,7 @@ function Stat({
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`mt-0.5 text-lg font-semibold ${color}`}>{value}</div>
-      {hint ? <div className="text-[10px] text-slate-400">{hint}</div> : null}
+      {hint ? <div className="text-[10px] text-slate-500">{hint}</div> : null}
     </div>
   );
 }

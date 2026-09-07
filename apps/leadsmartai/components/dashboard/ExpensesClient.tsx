@@ -257,7 +257,7 @@ export default function ExpensesClient({
                 type="button"
                 onClick={() => void removeExpense(ex.id)}
                 disabled={busyId === ex.id}
-                className="shrink-0 rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600 disabled:opacity-50"
+                className="shrink-0 rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600 disabled:opacity-50"
                 aria-label={t("pages.expenses.deleteExpense")}
               >
                 <Trash2 className="h-4 w-4" />

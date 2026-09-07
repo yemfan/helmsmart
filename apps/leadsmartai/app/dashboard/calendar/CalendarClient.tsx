@@ -484,17 +484,17 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Filters + view toggle */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
-        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-slate-900 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>{tr("pages.calendarPage.all")}</button>
-        <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>
+        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-slate-900 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>{tr("pages.calendarPage.all")}</button>
+        <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>
           <span className="h-2 w-2 rounded-full bg-blue-500" /> {tr("calendar.filters.appointments")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(true); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && showTasks && !showFollowups && !showDrafts ? "bg-green-100 text-green-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(true); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && showTasks && !showFollowups && !showDrafts ? "bg-green-100 text-green-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>
           <span className="h-2 w-2 rounded-full bg-green-500" /> {tr("calendar.filters.tasks")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(true); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && showFollowups && !showDrafts ? "bg-amber-100 text-amber-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(true); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && showFollowups && !showDrafts ? "bg-amber-100 text-amber-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>
           <span className="h-2 w-2 rounded-full bg-amber-500" /> {tr("calendar.filters.followups")}
         </button>
-        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(false); setShowDrafts(true); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && !showFollowups && showDrafts ? "bg-purple-100 text-purple-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500"}`}>
+        <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(false); setShowDrafts(true); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && !showFollowups && showDrafts ? "bg-purple-100 text-purple-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>
           <span className="h-2 w-2 rounded-full bg-purple-500" /> {tr("calendar.filters.drafts")}
         </button>
         </div>
@@ -572,6 +572,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                   setView("list");
                 }}
                 title={isValid ? tr("calendar.dayHint") : undefined}
+                aria-hidden={!isValid || undefined}
+                aria-label={isValid && date ? date.toLocaleDateString(timeLocale, { weekday: "long", month: "long", day: "numeric" }) : undefined}
                 className={`min-h-[60px] border-b border-r border-slate-50 px-1 py-1 text-left transition ${
                   !isValid ? "bg-slate-50/50 dark:bg-slate-900/60" :
                   isSelected ? "bg-blue-50" :
@@ -597,7 +599,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                             {e.title}
                           </div>
                         ))}
-                        {entries.length > 2 && <div className="text-[9px] text-slate-400">{tr("pages.calendarPage.plusMore", { count: entries.length - 2 })}</div>}
+                        {entries.length > 2 && <div className="text-[9px] text-slate-500">{tr("pages.calendarPage.plusMore", { count: entries.length - 2 })}</div>}
                       </div>
                     )}
                   </>
@@ -633,7 +635,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             {selectedDate.toLocaleDateString(timeLocale, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
           </h3>
           {selectedEntries.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-400">{tr("calendar.noEvents")}</p>
+            <p className="mt-2 text-sm text-slate-500">{tr("calendar.noEvents")}</p>
           ) : (
             <div className="mt-3 space-y-2">
               {selectedEntries.map((entry, i) => (
@@ -739,7 +741,7 @@ function ListView({
       </div>
 
       {sortedKeys.length === 0 ? (
-        <div className="px-6 py-12 text-center text-sm text-slate-400">{tr("pages.calendarPage.nothingScheduled")}</div>
+        <div className="px-6 py-12 text-center text-sm text-slate-500">{tr("pages.calendarPage.nothingScheduled")}</div>
       ) : (
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {sortedKeys.map((key) => {

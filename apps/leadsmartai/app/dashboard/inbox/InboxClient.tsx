@@ -265,7 +265,7 @@ export default function InboxClient() {
 
   const unreadCount = threads.filter((t) => t.lastDirection === "inbound").length;
 
-  if (loading) return <div className="py-20 text-center text-slate-400">{t("inbox.loading")}</div>;
+  if (loading) return <div className="py-20 text-center text-slate-500">{t("inbox.loading")}</div>;
 
   return (
     <div className="space-y-2">
@@ -334,7 +334,7 @@ export default function InboxClient() {
                 {listError}
               </div>
             ) : (
-              <div className="p-6 text-center text-sm text-slate-400">
+              <div className="p-6 text-center text-sm text-slate-500">
                 {search ? t("inbox.emptySearch") : t("inbox.empty")}
               </div>
             )
@@ -350,16 +350,16 @@ export default function InboxClient() {
                   className={`w-full text-left px-3 py-3 border-b border-slate-50 transition ${isSelected ? "bg-blue-50" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="shrink-0 mt-1 text-slate-400"><ChannelIcon channel={t.channel} className="h-4 w-4" /></span>
+                    <span className="shrink-0 mt-1 text-slate-500"><ChannelIcon channel={t.channel} className="h-4 w-4" /></span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <span className={`text-sm truncate ${isUnread ? "font-semibold text-slate-900 dark:text-slate-100" : "font-medium text-slate-700"}`}>
                           {t.leadName ?? tr("inbox.leadFallback", { id: t.leadId })}
                         </span>
-                        <span className="shrink-0 text-[10px] text-slate-400">{timeAgo(t.lastMessageAt, tr, locale)}</span>
+                        <span className="shrink-0 text-[10px] text-slate-500">{timeAgo(t.lastMessageAt, tr, locale)}</span>
                       </div>
                       <p className={`text-xs truncate mt-0.5 ${isUnread ? "text-slate-700 dark:text-slate-300" : "text-slate-500"}`}>
-                        {t.lastDirection === "outbound" && <span className="text-slate-400">{tr("inbox.youPrefix")}</span>}
+                        {t.lastDirection === "outbound" && <span className="text-slate-500">{tr("inbox.youPrefix")}</span>}
                         {t.preview}
                       </p>
                     </div>
@@ -376,11 +376,11 @@ export default function InboxClient() {
       {/* Right panel — thread detail */}
       <div className={`${selectedLead ? "flex" : "hidden lg:flex"} min-w-0 flex-1 flex-col`}>
         {!selectedLead ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-slate-400">
+          <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
             {t("inbox.selectPrompt")}
           </div>
         ) : threadLoading ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-slate-400">{t("inbox.threadLoading")}</div>
+          <div className="flex flex-1 items-center justify-center text-sm text-slate-500">{t("inbox.threadLoading")}</div>
         ) : (
           <>
             {/* Thread header */}
@@ -422,7 +422,7 @@ export default function InboxClient() {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {messages.length === 0 ? (
-                <p className="text-center text-sm text-slate-400 py-8">{t("inbox.noMessages")}</p>
+                <p className="text-center text-sm text-slate-500 py-8">{t("inbox.noMessages")}</p>
               ) : (
                 <>
                   {messages.map((m, i) => {
@@ -433,7 +433,7 @@ export default function InboxClient() {
                     return (
                       <div key={m.id}>
                         {showDate && (
-                          <div className="text-center text-[10px] text-slate-400 py-2">{formatDate(m.created_at, locale)}</div>
+                          <div className="text-center text-[10px] text-slate-500 py-2">{formatDate(m.created_at, locale)}</div>
                         )}
                         <div className={`flex ${isOutbound ? "justify-end" : "justify-start"}`}>
                           <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 ${isOutbound ? "bg-[#0072ce] text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100"}`}>

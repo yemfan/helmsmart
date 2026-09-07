@@ -361,7 +361,7 @@ function DropZone({
       }`}
     >
       <svg
-        className="h-12 w-12 text-slate-400"
+        className="h-12 w-12 text-slate-500"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -564,7 +564,7 @@ function ReviewTable(props: {
                   <button
                     type="button"
                     onClick={() => removeRow(r.rowKey)}
-                    className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                    className="rounded p-1 text-slate-500 hover:bg-red-50 hover:text-red-600"
                     title={t("pages.importFile.removeRow")}
                     aria-label={t("pages.importFile.removeRow")}
                   >

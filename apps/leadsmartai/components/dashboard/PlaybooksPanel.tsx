@@ -351,7 +351,7 @@ export function PlaybooksPanel({
                               <div
                                 className={`text-sm ${
                                   complete
-                                    ? "text-slate-400 line-through"
+                                    ? "text-slate-500 line-through"
                                     : "text-slate-900 dark:text-slate-100"
                                 }`}
                               >
@@ -365,7 +365,7 @@ export function PlaybooksPanel({
                                   className={`mt-0.5 text-[11px] ${
                                     !complete && isOverdue(task.due_date)
                                       ? "font-medium text-red-600"
-                                      : "text-slate-400"
+                                      : "text-slate-500"
                                   }`}
                                 >{t("pages.dashFragments.dueOn", { date: formatYmd(task.due_date, locale) })}
                                 </div>
@@ -583,7 +583,7 @@ export function PlaybookPickerModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700"
+            className="text-slate-500 hover:text-slate-700"
             aria-label={t("pages.playbooksPanel.close")}
           >
             ✕
@@ -786,16 +786,16 @@ function ReviewStep({
                         className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 dark:border-slate-700"
                       />
                       <div className="min-w-0 flex-1">
-                        <div className={`text-sm leading-tight ${checked ? "text-slate-900 dark:text-slate-100" : "text-slate-400 line-through"}`}>
+                        <div className={`text-sm leading-tight ${checked ? "text-slate-900 dark:text-slate-100" : "text-slate-500 line-through"}`}>
                           {item.title}
                         </div>
                         {item.notes ? (
-                          <p className={`mt-0.5 text-[11px] leading-snug ${checked ? "text-slate-500" : "text-slate-400"}`}>
+                          <p className={`mt-0.5 text-[11px] leading-snug ${checked ? "text-slate-500" : "text-slate-500"}`}>
                             {item.notes}
                           </p>
                         ) : null}
                       </div>
-                      <span className="shrink-0 text-[10px] text-slate-400 tabular-nums">
+                      <span className="shrink-0 text-[10px] text-slate-500 tabular-nums">
                         {formatOffset(item.offsetDays)}
                       </span>
                     </label>
@@ -835,10 +835,10 @@ export function PlaybookActionButton({
     tone === "complete"
       ? active
         ? "border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700"
-        : "border-slate-300 bg-white text-slate-400 hover:border-emerald-500 hover:text-emerald-600"
+        : "border-slate-300 bg-white text-slate-500 hover:border-emerald-500 hover:text-emerald-600"
       : active
         ? "border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100"
-        : "border-slate-300 bg-white text-slate-400 hover:border-slate-400 hover:text-slate-700";
+        : "border-slate-300 bg-white text-slate-500 hover:border-slate-400 hover:text-slate-700";
   return (
     <button
       type="button"

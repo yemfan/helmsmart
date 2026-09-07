@@ -238,7 +238,7 @@ export default function WeeklyScheduleController() {
                           className="rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-sm"
                         />
                       )}
-                      <span className="text-[10px] text-slate-400">{d.timezone}</span>
+                      <span className="text-[10px] text-slate-500">{d.timezone}</span>
                     </div>
 
                     <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400">
@@ -315,7 +315,7 @@ export default function WeeklyScheduleController() {
                           {LABELS[p]}
                         </button>
                       ))}
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-slate-500">
                         {allSelected ? t("pages.weeklySchedule.allConnected") : ""}
                       </span>
                     </div>

@@ -130,7 +130,7 @@ export function SwitchRow({
     <div className="flex items-start gap-3 py-1">
       <Toggle checked={checked} onChange={onChange} label={label} disabled={disabled} />
       <div className="min-w-0">
-        <p className={`text-sm font-medium ${disabled ? "text-slate-400" : "text-slate-900"}`}>{label}</p>
+        <p className={`text-sm font-medium ${disabled ? "text-slate-500" : "text-slate-900"}`}>{label}</p>
         {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
       </div>
     </div>

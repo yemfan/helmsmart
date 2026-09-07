@@ -178,7 +178,7 @@ export default function CreditsClient({
             <p className="mt-1 text-sm text-brand-text/60">{tr("pages.credits.everythingIncluded")}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{tr("more.credits.balance")}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{tr("more.credits.balance")}</p>
             <p className="text-3xl font-extrabold text-brand-text">
               {balance === null ? "…" : balance.toLocaleString()}
             </p>
@@ -189,7 +189,7 @@ export default function CreditsClient({
         {plan && (
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-700 px-6 py-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{tr("more.credits.currentPlan")}</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{tr("more.credits.currentPlan")}</p>
               <p className="mt-0.5 text-lg font-bold text-brand-text">
                 {plan.name}
                 {plan.priceUsd !== null && (

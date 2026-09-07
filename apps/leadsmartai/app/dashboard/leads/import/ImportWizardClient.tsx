@@ -219,7 +219,7 @@ export function ImportWizardClient() {
               if (f && !loading) void onUpload(f);
             }}
           >
-            <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-10 w-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
             </svg>
             <span className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
@@ -387,7 +387,7 @@ export function ImportWizardClient() {
             <li key={String(j.id)} className="py-2 flex flex-wrap justify-between gap-2">
               <span className="text-slate-800 dark:text-slate-200">{String(j.file_name ?? j.intake_channel ?? "job")}</span>
               <span className="text-slate-500">{String(j.status ?? "")}</span>
-              <span className="text-slate-400 text-xs w-full">
+              <span className="text-slate-500 text-xs w-full">
                 {j.created_at ? new Date(String(j.created_at)).toLocaleString() : ""}
               </span>
             </li>

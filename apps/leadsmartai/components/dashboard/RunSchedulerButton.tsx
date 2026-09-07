@@ -132,7 +132,7 @@ export default function RunSchedulerButton() {
                         <Td>{f.contactName}</Td>
                         <Td>
                           <span className="font-mono">{f.templateId}</span>{" "}
-                          <span className="text-slate-400">· {f.channel}</span>
+                          <span className="text-slate-500">· {f.channel}</span>
                         </Td>
                         <Td className="font-mono text-slate-500">{f.periodKey}</Td>
                         <Td>

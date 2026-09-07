@@ -89,7 +89,7 @@ function Card({
             className="h-16 w-16 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-lg font-bold text-slate-400">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-lg font-bold text-slate-500">
             #{rank}
           </div>
         )}
@@ -129,7 +129,7 @@ function Card({
       )}
 
       {publishedAt && (
-        <p className="mt-2 text-[11px] text-slate-400">
+        <p className="mt-2 text-[11px] text-slate-500">
           {publishedAt.toLocaleString(locale, {
             month: "short",
             day: "numeric",

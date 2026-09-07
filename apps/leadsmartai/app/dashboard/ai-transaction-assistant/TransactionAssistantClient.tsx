@@ -130,7 +130,7 @@ export default function TransactionAssistantClient() {
       <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{tr("assistants.transaction.deadlinesHeading")}</h2>
         {alerts.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-400">
+          <p className="py-6 text-center text-sm text-slate-500">
             {loading ? tr("pages.transactionAssistant.checkingYourTransactions") : tr("pages.transactionAssistant.noOpenDeadlinesIn")}
           </p>
         ) : (
@@ -161,7 +161,7 @@ export default function TransactionAssistantClient() {
           <Link href="/dashboard/transactions" className="text-xs font-medium text-blue-600 hover:text-blue-800">{tr("assistants.common.viewAll")}</Link>
         </div>
         {active.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-400">
+          <p className="py-6 text-center text-sm text-slate-500">
             {loading ? tr("common:actions.loading") : tr("pages.transactionAssistant.yourAiTransactionAssistant")}
           </p>
         ) : (

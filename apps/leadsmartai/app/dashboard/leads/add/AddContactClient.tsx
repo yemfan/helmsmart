@@ -180,7 +180,7 @@ export function AddContactClient() {
           </div>
 
           <div className="border-b border-slate-200 dark:border-slate-700" />
-          <p className="text-center text-xs text-slate-400">{t("pages.addContact.orManual")}</p>
+          <p className="text-center text-xs text-slate-500">{t("pages.addContact.orManual")}</p>
         </div>
       )}
 

@@ -181,7 +181,7 @@ export default function TemplatePickerClient() {
                           <div className="mt-0.5 truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                             {t.name}
                           </div>
-                          <div className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-slate-400">
+                          <div className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-slate-500">
                             <span>{t.channel}</span>
                             {t.override?.edited && (
                               <span className="text-brand-accent-text">· edited</span>
@@ -196,7 +196,7 @@ export default function TemplatePickerClient() {
             );
           })}
           {!visible.length && (
-            <div className="p-6 text-center text-sm text-slate-400">{t("pages.templatePicker.noMatches")}</div>
+            <div className="p-6 text-center text-sm text-slate-500">{t("pages.templatePicker.noMatches")}</div>
           )}
         </div>
       </aside>
@@ -414,7 +414,7 @@ function TemplateDetail({
             <span className="flex items-center justify-between text-[11px] font-medium text-slate-500">
               <span>{t("pages.templatePicker.body")}</span>
               {template.channel === "sms" && (
-                <span className={overLimit ? "text-red-600" : "text-slate-400"}>
+                <span className={overLimit ? "text-red-600" : "text-slate-500"}>
                   {length} / {maxChars ?? "—"}
                 </span>
               )}
@@ -499,7 +499,7 @@ function TemplateDetail({
               />
             )}
           </div>
-          <div className="mt-2 text-[11px] text-slate-400">{t("pages.templatePicker.previewNote")}</div>
+          <div className="mt-2 text-[11px] text-slate-500">{t("pages.templatePicker.previewNote")}</div>
         </section>
       </div>
     </div>
@@ -522,8 +522,8 @@ function PreviewPane({
     <div className={`space-y-2 ${mono ? "font-mono text-xs" : "text-sm"}`}>
       {channel === "email" && subject !== null && (
         <div className="border-b border-slate-200 dark:border-slate-700 pb-2">
-          <div className="text-[10px] uppercase tracking-wide text-slate-400">{t("pages.templatePicker.subject")}</div>
-          <div className="text-slate-900 dark:text-slate-100">{subject || <span className="text-slate-400 italic">(empty)</span>}</div>
+          <div className="text-[10px] uppercase tracking-wide text-slate-500">{t("pages.templatePicker.subject")}</div>
+          <div className="text-slate-900 dark:text-slate-100">{subject || <span className="text-slate-500 italic">(empty)</span>}</div>
         </div>
       )}
       <pre

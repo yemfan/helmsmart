@@ -219,7 +219,7 @@ function Label({ children }: { children: React.ReactNode }) {
   return <div className="text-[11px] font-medium text-slate-500">{children}</div>;
 }
 function Hint({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] text-slate-400 mb-1.5">{children}</div>;
+  return <div className="text-[11px] text-slate-500 mb-1.5">{children}</div>;
 }
 
 function CheckboxRow({

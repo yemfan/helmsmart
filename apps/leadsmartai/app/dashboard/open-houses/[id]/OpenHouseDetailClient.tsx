@@ -349,7 +349,7 @@ export function OpenHouseDetailClient({
                               {TIMELINE_LABEL[v.timeline]}
                             </span>
                           ) : (
-                            <span className="text-slate-400">—</span>
+                            <span className="text-slate-500">—</span>
                           )}
                         </td>
                         <td className="px-2 py-2 text-[12px] text-slate-600 dark:text-slate-400">

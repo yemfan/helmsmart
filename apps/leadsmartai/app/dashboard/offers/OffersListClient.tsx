@@ -264,11 +264,11 @@ export function OffersListClient({
                     {o.current_price != null && o.current_price !== o.offer_price ? (
                       <span className="font-semibold text-slate-900 dark:text-slate-100">{formatMoney(o.current_price)}</span>
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-slate-500">—</span>
                     )}
                   </td>
                   <td className="px-3 py-2 text-center tabular-nums text-slate-600 dark:text-slate-400">
-                    {o.counter_count > 0 ? o.counter_count : <span className="text-slate-400">—</span>}
+                    {o.counter_count > 0 ? o.counter_count : <span className="text-slate-500">—</span>}
                   </td>
                   <td className="px-3 py-2">
                     <span
@@ -286,7 +286,7 @@ export function OffersListClient({
                     ) : null}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-[11px] text-slate-500">
-                    {o.submitted_at ? formatDate(o.submitted_at) : <span className="text-slate-400">—</span>}
+                    {o.submitted_at ? formatDate(o.submitted_at) : <span className="text-slate-500">—</span>}
                   </td>
                   <td className="px-3 py-2">
                     <RowActions

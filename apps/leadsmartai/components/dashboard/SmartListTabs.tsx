@@ -196,7 +196,7 @@ function SmartListManager({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 hover:bg-slate-200 hover:text-slate-700"
           aria-label={t("smart_lists.manager.close_a11y")}
         >
           <X className="h-3.5 w-3.5" />

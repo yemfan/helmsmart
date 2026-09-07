@@ -161,7 +161,7 @@ function QuickActionsDropdown() {
         <Sparkles className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
         {t("topbar.askMax")}
       </Link>
-      <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+      <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
         {t("topbar.quickActions")}
       </p>
       {QUICK_ACTION_LINKS.map(({ href, key, Icon }) => (
@@ -196,7 +196,7 @@ function QuickActionsDropdown() {
         <Plus className="h-[18px] w-[18px] shrink-0" strokeWidth={2} aria-hidden />
         <span className="hidden text-sm font-semibold sm:inline">{t("topbar.quickActions")}</span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
           strokeWidth={2}
           aria-hidden
         />
@@ -295,7 +295,7 @@ function ProfileMenu({
       }
     >
       <div className="border-b border-slate-100 dark:border-slate-700 px-3 py-2.5">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{t("topbar.signedIn")}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">{t("topbar.signedIn")}</p>
         <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{name || email || t("topbar.account")}</p>
         {name && email ? (
           <p className="truncate text-xs text-slate-500">{email}</p>
@@ -405,7 +405,7 @@ function ProfileMenu({
         <span className="hidden min-w-0 flex-1 sm:block">
           <span className="block truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{name || email || t("topbar.account")}</span>
         </span>
-        <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
+        <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
       </button>
 
       {open && placement && typeof document !== "undefined"
@@ -533,7 +533,7 @@ export default function TopBar({
         {t("topbar.searchLeads")}
       </label>
       <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/60 px-3.5 shadow-sm ring-1 ring-slate-900/[0.02] dark:ring-slate-100/10 transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04] md:px-4">
-        <Search className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
+        <Search className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
         <input
           id={inputId}
           name="q"

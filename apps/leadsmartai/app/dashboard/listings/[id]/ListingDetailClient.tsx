@@ -496,7 +496,7 @@ export function ListingDetailClient({
                   </span>
                 </>
               ) : (
-                <span className="text-slate-400">{t("pages.listingDetail.sellerNotSet")}</span>
+                <span className="text-slate-500">{t("pages.listingDetail.sellerNotSet")}</span>
               )}
               <span className="mx-1.5 text-slate-300">·</span>{t("pages.dashFragments.created")} {formatRelative(listing.created_at, t, locale)}
             </p>
@@ -806,7 +806,7 @@ export function ListingDetailClient({
                                 </button>
                               </div>
                             ) : (
-                              <span className="block text-right text-[11px] text-slate-400">
+                              <span className="block text-right text-[11px] text-slate-500">
                                 —
                               </span>
                             )}

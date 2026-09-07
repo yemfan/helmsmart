@@ -161,7 +161,7 @@ export function OfferDetailClient({
               {contactName ?? "(unknown buyer)"}
             </Link>
           </span>
-          <span className="text-slate-400">·</span>
+          <span className="text-slate-500">·</span>
           <span
             className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[offer.status]}`}
           >
@@ -349,7 +349,7 @@ function Detail({
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-400">—</span>}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-500">—</span>}</dd>
     </div>
   );
 }

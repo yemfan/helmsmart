@@ -119,7 +119,7 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                             </div>
                           )}
                           {!c.summary && !c.transcript && !c.recording_url && (
-                            <p className="text-sm text-slate-400">{t("pages.calls.noDetails")}</p>
+                            <p className="text-sm text-slate-500">{t("pages.calls.noDetails")}</p>
                           )}
                         </div>
                       </td>
@@ -128,7 +128,7 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                 </>
               ))}
               {!filtered.length && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">{t("pages.calls.empty")}</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-500">{t("pages.calls.empty")}</td></tr>
               )}
             </tbody>
           </table>

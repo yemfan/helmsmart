@@ -149,7 +149,7 @@ export default function MarketingAssistantClient({
             <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.advanced")}</h3>
             <p className="mt-0.5 text-sm text-slate-500">{t("pages.marketingAssistant.studioSub")}</p>
           </div>
-          <span className="shrink-0 text-slate-400 transition group-open:rotate-180" aria-hidden>
+          <span className="shrink-0 text-slate-500 transition group-open:rotate-180" aria-hidden>
             ▾
           </span>
         </summary>
@@ -205,7 +205,7 @@ export default function MarketingAssistantClient({
             >{t("pages.marketingAssistant.openScheduler")}</Link>
           </div>
           {data.upcomingPosts.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-400">{t("pages.dashFragments.nothingScheduled")}{" "}
+            <p className="py-6 text-center text-sm text-slate-500">{t("pages.dashFragments.nothingScheduled")}{" "}
               <Link href="/dashboard/leads/generate" className="text-blue-600 hover:underline">{t("pages.marketingAssistant.schedulePost")}</Link>
               .
             </p>
@@ -222,7 +222,7 @@ export default function MarketingAssistantClient({
                     </p>
                     <p className="text-xs capitalize text-slate-500">{p.platform}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-slate-400">{fmtWhen(p.scheduled_for, locale)}</span>
+                  <span className="shrink-0 text-xs text-slate-500">{fmtWhen(p.scheduled_for, locale)}</span>
                 </li>
               ))}
             </ul>
@@ -233,14 +233,14 @@ export default function MarketingAssistantClient({
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">{t("assistants.marketing.latestActivity")}</h2>
           {data.activities.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-400">{t("pages.marketingAssistant.noActivity")}</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t("pages.marketingAssistant.noActivity")}</p>
           ) : (
             <ul className="space-y-2">
               {data.activities.map((a) => (
                 <li key={a.id} className="rounded-lg border border-slate-100 dark:border-slate-700 px-3 py-2">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm text-slate-900 dark:text-slate-100">{a.summary}</p>
-                    <span className="shrink-0 text-xs text-slate-400">{fmtWhen(a.created_at, locale)}</span>
+                    <span className="shrink-0 text-xs text-slate-500">{fmtWhen(a.created_at, locale)}</span>
                   </div>
                   {a.outcome && <p className="text-xs text-slate-500">{a.outcome}</p>}
                 </li>
@@ -251,7 +251,7 @@ export default function MarketingAssistantClient({
       </div>
 
       {/* Hand-off note — constitution: a team, with clear lanes */}
-      <p className="text-xs text-slate-400">{t("pages.dashFragments.marketingCreates")}{" "}
+      <p className="text-xs text-slate-500">{t("pages.dashFragments.marketingCreates")}{" "}
         <Link href="/dashboard/ai-sales-assistant" className="text-slate-500 underline-offset-2 hover:underline">{t("pages.marketingAssistant.salesAssistant")}</Link>{" "}{t("pages.dashFragments.toConvert")}</p>
     </div>
   );

@@ -114,7 +114,7 @@ export default function AiTeamClient() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("aiTeam.eyebrow")}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">{t("aiTeam.eyebrow")}</p>
         <h1 className="mt-0.5 text-xl font-semibold text-slate-900 dark:text-slate-100">{t("aiTeam.heading")}</h1>
         <p className="text-sm text-slate-500">{t("aiTeam.intro")}</p>
       </div>
@@ -128,7 +128,7 @@ export default function AiTeamClient() {
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             {t("aiTeam.perfHeading")}{" "}
-            <span className="font-normal text-slate-400">
+            <span className="font-normal text-slate-500">
               {t("aiTeam.perfWindow", { days: perf.windowDays })}
             </span>
           </h2>
@@ -180,7 +180,7 @@ export default function AiTeamClient() {
                         />
                       ))}
                     </div>
-                    <p className="mt-1 text-[10px] text-slate-400">{t("aiTeam.activityWindow")}</p>
+                    <p className="mt-1 text-[10px] text-slate-500">{t("aiTeam.activityWindow")}</p>
                   </div>
                 );
               })}
@@ -189,7 +189,7 @@ export default function AiTeamClient() {
       )}
 
       {loading ? (
-        <p className="py-8 text-center text-sm text-slate-400">{t("aiTeam.loading")}</p>
+        <p className="py-8 text-center text-sm text-slate-500">{t("aiTeam.loading")}</p>
       ) : (
         <div className="space-y-4">
           {assistants.map((a) => {
@@ -215,7 +215,7 @@ export default function AiTeamClient() {
                       <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
                         {t(`aiTeam.role.${a.type}`, { defaultValue: def?.name ?? "" })}
                       </p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-slate-500">
                         {t(`aiTeam.personality.${a.type}`, {
                           defaultValue: def?.personality ?? def?.mission ?? "",
                         })}
@@ -252,7 +252,7 @@ export default function AiTeamClient() {
 
                 {editing === a.type && (
                   <div className="mt-3 rounded-lg border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                       {t("aiTeam.avatar")}
                     </p>
                     <div className="mb-3 flex items-center gap-2">
@@ -280,7 +280,7 @@ export default function AiTeamClient() {
                           {t("aiTeam.removePhoto")}
                         </button>
                       )}
-                      <span className="text-[10px] text-slate-400">{t("aiTeam.photoHint")}</span>
+                      <span className="text-[10px] text-slate-500">{t("aiTeam.photoHint")}</span>
                     </div>
                     <AssistantAvatarPicker
                       value={a.avatar_url ? undefined : a.avatar_id}
@@ -292,7 +292,7 @@ export default function AiTeamClient() {
 
                 {configurable && (
                   <div className="mt-3 border-t border-slate-100 dark:border-slate-700 pt-3">
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("aiTeam.skills")}</p>
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("aiTeam.skills")}</p>
                     <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
                       {skills
                         .filter((s) => rosterSkills.has(s.key))
@@ -340,7 +340,7 @@ function PerfStat({ label, value, hint }: { label: string; value: number | strin
     <div className="rounded-lg border border-slate-100 dark:border-slate-700 p-3">
       <p className="text-xs text-slate-500">{label}</p>
       <p className="mt-0.5 text-xl font-bold text-slate-900 dark:text-slate-100">{value}</p>
-      {hint && <p className="text-[10px] text-slate-400">{hint}</p>}
+      {hint && <p className="text-[10px] text-slate-500">{hint}</p>}
     </div>
   );
 }

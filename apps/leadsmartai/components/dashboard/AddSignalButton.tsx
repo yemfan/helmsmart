@@ -189,7 +189,7 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.suggestedAction")}<span className="text-slate-400">(optional)</span>
+            <span className="text-[11px] font-medium text-slate-500">{t("pages.addSignal.suggestedAction")}<span className="text-slate-500">(optional)</span>
             </span>
             <textarea
               value={suggestedAction}

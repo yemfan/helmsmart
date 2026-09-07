@@ -120,7 +120,7 @@ export function ContractUploader(props: Props) {
     <div className="space-y-2">
       <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
         {kind === "listing" ? t("pages.newTransaction.rlaPdf") : t("pages.newTransaction.rpaPdf")}{" "}
-        <span className="font-normal text-slate-400">{t("pages.newTransaction.optional")}</span>
+        <span className="font-normal text-slate-500">{t("pages.newTransaction.optional")}</span>
       </label>
       <div
         onDragOver={(e) => {
@@ -170,7 +170,7 @@ export function ContractUploader(props: Props) {
               </div>
               <div className="text-[11px] text-slate-500">
                 {t("pages.contractUploader.nothingStored")}{" "}
-                <span className="text-slate-400">
+                <span className="text-slate-500">
                   {t("pages.contractUploader.tunedFor", { form: kind === "listing" ? "CAR RLA" : "CAR RPA" })}
                 </span>
               </div>

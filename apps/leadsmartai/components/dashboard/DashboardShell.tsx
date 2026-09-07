@@ -182,7 +182,7 @@ export function DashboardShell({
     <div className={cn("min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6", className)}>
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="border-b border-slate-200/80 dark:border-slate-700 pb-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{t("pages.oneWord.admin")}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">{t("pages.oneWord.admin")}</p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
         </div>

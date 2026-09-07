@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Toggle } from "@/components/ui/Toggle";
 import { useTranslation } from "react-i18next";
 
 type Preferences = {
@@ -83,6 +84,7 @@ export function TransactionNotificationsPanel() {
           </p>
         </div>
         <Toggle
+          label={t("pages.transactionNotifications.dailyDigest")}
           checked={prefs.transactionDigestEnabled}
           onChange={(v) => void save({ transactionDigestEnabled: v })}
           disabled={saving}
@@ -95,6 +97,7 @@ export function TransactionNotificationsPanel() {
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.frequencyHint")}</p>
         </div>
         <select
+          aria-label={t("pages.transactionNotifications.frequency")}
           value={prefs.transactionDigestFrequency}
           onChange={(e) =>
             void save({
@@ -116,6 +119,7 @@ export function TransactionNotificationsPanel() {
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.wireFraudHint")}</p>
         </div>
         <Toggle
+          label={t("pages.transactionNotifications.wireFraudHint")}
           checked={prefs.wireFraudSmsEnabled}
           onChange={(v) => void save({ wireFraudSmsEnabled: v })}
           disabled={saving}
@@ -128,6 +132,7 @@ export function TransactionNotificationsPanel() {
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.growthDigestHint")}</p>
         </div>
         <Toggle
+          label={t("pages.transactionNotifications.growthDigestHint")}
           checked={prefs.growthDigestEnabled}
           onChange={(v) => void save({ growthDigestEnabled: v })}
           disabled={saving}
@@ -146,31 +151,3 @@ export function TransactionNotificationsPanel() {
   );
 }
 
-function Toggle({
-  checked,
-  onChange,
-  disabled,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      disabled={disabled}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
-        checked ? "bg-slate-900" : "bg-slate-300"
-      }`}
-    >
-      <span
-        className={`inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform ${
-          checked ? "translate-x-5" : "translate-x-0.5"
-        }`}
-      />
-    </button>
-  );
-}

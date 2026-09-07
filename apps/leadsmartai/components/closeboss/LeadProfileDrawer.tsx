@@ -57,7 +57,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
     <Sheet open={Boolean(leadId)} onOpenChange={(open) => { if (!open) onClose(); }}>
       <SheetContent aria-label={t("pages.leadDrawer.leadProfile")} hideCloseButton className="max-w-md">
         {error && <p className="m-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
-        {!data && !error && <p className="m-6 text-center text-sm text-slate-400">{t("pages.leadProfile.gettingFullPicture")}</p>}
+        {!data && !error && <p className="m-6 text-center text-sm text-slate-500">{t("pages.leadProfile.gettingFullPicture")}</p>}
         {p && (
           <>
             {/* ── Who they are ── */}
@@ -77,7 +77,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                       {p.rating}{typeof p.engagement_score === "number" ? ` · ${p.engagement_score}` : ""}
                     </span>
                   )}
-                  <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700" aria-label={t("pages.leadDrawer.closePanel")}>
+                  <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700" aria-label={t("pages.leadDrawer.closePanel")}>
                     ✕
                   </button>
                 </div>
@@ -110,7 +110,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
               {/* ── Notes (the relationship, in the Realtor's words) ── */}
               {p.notes && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.leadDrawer.whatYouKnow")}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.leadDrawer.whatYouKnow")}</p>
                   <p className="mt-1 text-sm leading-snug text-slate-700 dark:text-slate-300">{p.notes}</p>
                 </div>
               )}
@@ -118,13 +118,13 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
               {/* ── Open tasks for this person ── */}
               {data && data.tasks.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.leadDrawer.openFollowUps")}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.leadDrawer.openFollowUps")}</p>
                   <ul className="mt-1 space-y-1">
                     {data.tasks.map((t) => (
                       <li key={t.id} className="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-slate-300">
                         <span className="min-w-0 truncate">☐ {t.title}</span>
                         {t.due_at && (
-                          <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-slate-400"}`}>
+                          <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-slate-500"}`}>
                             {new Date(t.due_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                           </span>
                         )}
@@ -136,9 +136,9 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
 
               {/* ── Relationship timeline ── */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("pages.leadDrawer.storySoFar")}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.leadDrawer.storySoFar")}</p>
                 {timeline.length === 0 ? (
-                  <p className="mt-1 text-sm text-slate-400">{t("pages.leadDrawer.noInteractions")}</p>
+                  <p className="mt-1 text-sm text-slate-500">{t("pages.leadDrawer.noInteractions")}</p>
                 ) : (
                   <ol className="mt-1.5 space-y-2">
                     {timeline.map((item) => (
@@ -147,7 +147,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                         <div className="min-w-0">
                           <p className="text-sm text-slate-800 dark:text-slate-200">{item.title}</p>
                           {item.detail && <p className="line-clamp-2 text-xs text-slate-500">{item.detail}</p>}
-                          <p className="text-[10px] text-slate-400">{fmtAgo(item.at)}</p>
+                          <p className="text-[10px] text-slate-500">{fmtAgo(item.at)}</p>
                         </div>
                       </li>
                     ))}

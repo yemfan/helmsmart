@@ -207,7 +207,7 @@ export default function VoiceReceptionistSettingsPanel() {
           onChange={(e) => update("phoneNumber", e.target.value)}
           placeholder={t("pages.voiceSettings.phonePlaceholder")}
         />
-        <p className="mt-1 text-[11px] text-slate-400">{t("pages.voiceReceptionist.routingNote")}</p>
+        <p className="mt-1 text-[11px] text-slate-500">{t("pages.voiceReceptionist.routingNote")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -325,7 +325,7 @@ export default function VoiceReceptionistSettingsPanel() {
                       value={dh.open}
                       onChange={(e) => setDay(d, { open: e.target.value, close: dh.close })}
                     />
-                    <span className="text-slate-400">–</span>
+                    <span className="text-slate-500">–</span>
                     <input
                       type="time"
                       aria-label={`${DAY_LABELS[d]} closing time`}
@@ -335,13 +335,13 @@ export default function VoiceReceptionistSettingsPanel() {
                     />
                   </div>
                 ) : (
-                  <span className="text-[11px] text-slate-400">—</span>
+                  <span className="text-[11px] text-slate-500">—</span>
                 )}
               </div>
             );
           })}
         </div>
-        <p className="mt-1 text-[11px] text-slate-400">{t("pages.voiceReceptionist.hoursHint")}</p>
+        <p className="mt-1 text-[11px] text-slate-500">{t("pages.voiceReceptionist.hoursHint")}</p>
       </div>
 
       <div>
@@ -356,7 +356,7 @@ export default function VoiceReceptionistSettingsPanel() {
               className="mt-0.5 h-4 w-4 border-slate-300 dark:border-slate-700"
             />
             <span>{t("pages.dashFragments.textCallersBack")}{" "}
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-500">
                 — the AI stops answering live and sends an SMS instead (no extra charge)
               </span>
             </span>
@@ -370,13 +370,13 @@ export default function VoiceReceptionistSettingsPanel() {
               className="mt-0.5 h-4 w-4 border-slate-300 dark:border-slate-700"
             />
             <span>{t("pages.dashFragments.keepAiAnswering")}{" "}
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-500">
                 — additional minutes billed at $0.25/min
               </span>
             </span>
           </label>
         </div>
-        <p className="mt-1 text-[11px] text-slate-400">{t("pages.dashFragments.needMoreMinutes")}{" "}
+        <p className="mt-1 text-[11px] text-slate-500">{t("pages.dashFragments.needMoreMinutes")}{" "}
           <a href="/agent/pricing" className="text-brand-accent-text underline underline-offset-2">
             {t("pages.voiceReceptionistSettings.upgradePlan")}
           </a>

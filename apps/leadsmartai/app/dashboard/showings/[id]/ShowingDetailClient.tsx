@@ -156,7 +156,7 @@ export function ShowingDetailClient({
         </h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
           <span>{formatDateTime(showing.scheduled_at, locale)}</span>
-          <span className="text-slate-400">·</span>
+          <span className="text-slate-500">·</span>
           <span>{t("pages.dashFragments.withWord")}{" "}
             <Link
               href={`/dashboard/showings?contactId=${encodeURIComponent(showing.contact_id)}`}
@@ -304,12 +304,12 @@ export function ShowingDetailClient({
                 className={`block rounded-lg border px-3 py-2 text-sm ${
                   showing.listing_agent_email
                     ? "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                    : "border-slate-200 bg-slate-50 text-slate-400 pointer-events-none"
+                    : "border-slate-200 bg-slate-50 text-slate-500 pointer-events-none"
                 }`}
               >
                 {t("pages.showingDetail.thankListingAgent")}
                 {!showing.listing_agent_email ? (
-                  <div className="text-[11px] text-slate-400">{t("pages.showingDetail.needAgentEmail")}</div>
+                  <div className="text-[11px] text-slate-500">{t("pages.showingDetail.needAgentEmail")}</div>
                 ) : null}
               </a>
               <a
@@ -557,7 +557,7 @@ function Detail({
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-[11px] uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-400">—</span>}</dd>
+      <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{value ?? <span className="text-slate-500">—</span>}</dd>
     </div>
   );
 }

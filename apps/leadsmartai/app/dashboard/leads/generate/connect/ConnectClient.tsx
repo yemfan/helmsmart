@@ -450,7 +450,7 @@ export default function ConnectClient({
           </p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-500">
           {t("connect.meta.revoke_hint_prefix")}
           <em>{t("connect.meta.revoke_hint_link")}</em>
           {t("connect.meta.revoke_hint_suffix")}
@@ -567,7 +567,7 @@ export default function ConnectClient({
           </p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-500">
           {t("connect.linkedin.revoke_hint_prefix")}
           <em>{t("connect.linkedin.revoke_hint_link")}</em>
           {t("connect.linkedin.revoke_hint_suffix")}
@@ -688,7 +688,7 @@ export default function ConnectClient({
           </p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-500">
           {t("connect.threads.revoke_hint")}
         </p>
       </section>
@@ -784,7 +784,7 @@ export default function ConnectClient({
           <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.pinterest.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">{t("connect.pinterest.revoke_hint")}</p>
+        <p className="mt-4 text-xs text-slate-500">{t("connect.pinterest.revoke_hint")}</p>
       </section>
 
       {/* TikTok card */}
@@ -877,7 +877,7 @@ export default function ConnectClient({
           <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.tiktok.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">{t("connect.tiktok.revoke_hint")}</p>
+        <p className="mt-4 text-xs text-slate-500">{t("connect.tiktok.revoke_hint")}</p>
       </section>
 
       {/* YouTube card */}
@@ -968,7 +968,7 @@ export default function ConnectClient({
           <p className="mt-4 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-3 py-3 text-sm text-slate-500">{t("connect.youtube.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-slate-400">{t("connect.youtube.revoke_hint")}</p>
+        <p className="mt-4 text-xs text-slate-500">{t("connect.youtube.revoke_hint")}</p>
       </section>
 
       {/* Phase 3 placeholders */}

@@ -135,9 +135,9 @@ function PctInput({
   }, [value]);
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
+      <label htmlFor="commissiondefaultspanel-1" className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</label>
       <div className="mt-1 flex items-center gap-1">
-        <input
+        <input id="commissiondefaultspanel-1"
           type="number"
           step="0.1"
           min={0}
@@ -158,7 +158,7 @@ function PctInput({
         />
         <span className="text-sm text-slate-500">%</span>
       </div>
-      {hint ? <p className="mt-0.5 text-[11px] text-slate-400">{hint}</p> : null}
+      {hint ? <p className="mt-0.5 text-[11px] text-slate-500">{hint}</p> : null}
     </div>
   );
 }

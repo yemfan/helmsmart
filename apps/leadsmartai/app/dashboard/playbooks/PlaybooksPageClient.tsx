@@ -343,7 +343,7 @@ function TaskRow({
       <div className="min-w-0">
         <div
           className={`text-sm leading-tight ${
-            closed ? "text-slate-400 line-through" : "text-slate-900 dark:text-slate-100"
+            closed ? "text-slate-500 line-through" : "text-slate-900 dark:text-slate-100"
           }`}
         >
           {task.title}
@@ -354,7 +354,7 @@ function TaskRow({
         {task.section || cancelled ? (
           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px]">
             {task.section ? (
-              <span className="font-medium uppercase tracking-wide text-slate-400">
+              <span className="font-medium uppercase tracking-wide text-slate-500">
                 {task.section}
               </span>
             ) : null}
@@ -380,7 +380,7 @@ function TaskRow({
             </span>
           )
         ) : (
-          <AnchorChip task={task} fallback={<span className="text-slate-400">—</span>} />
+          <AnchorChip task={task} fallback={<span className="text-slate-500">—</span>} />
         )}
       </div>
       <div
@@ -388,7 +388,7 @@ function TaskRow({
           overdue
             ? "font-medium text-red-600"
             : cancelled
-              ? "text-slate-400 line-through"
+              ? "text-slate-500 line-through"
               : "text-slate-500"
         }`}
       >
@@ -444,11 +444,11 @@ function IconButton({
     tone === "success"
       ? active
         ? "border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700"
-        : "border-slate-200 bg-white text-slate-400 hover:border-emerald-500 hover:text-emerald-600"
+        : "border-slate-200 bg-white text-slate-500 hover:border-emerald-500 hover:text-emerald-600"
       : tone === "danger"
         ? active
           ? "border-rose-500 bg-rose-50 text-rose-700 hover:bg-rose-100"
-          : "border-slate-200 bg-white text-slate-400 hover:border-rose-400 hover:text-rose-600"
+          : "border-slate-200 bg-white text-slate-500 hover:border-rose-400 hover:text-rose-600"
         : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900";
   return (
     <button
@@ -515,7 +515,7 @@ function DelayButton({
         aria-label={tr("more.playbooks.delay")}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 transition hover:border-amber-400 hover:text-amber-600 disabled:opacity-40"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-500 transition hover:border-amber-400 hover:text-amber-600 disabled:opacity-40"
       >
         <CalendarClock className="h-4 w-4" strokeWidth={2} />
       </button>

@@ -204,8 +204,8 @@ export default function BrandingSettingsPanel() {
     <div className="space-y-5">
       {/* Brand Name */}
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-slate-500">{t("branding.brandName")}</label>
-        <input
+        <label htmlFor="brandingsettingspanel-1" className="block text-[11px] font-medium text-slate-500">{t("branding.brandName")}</label>
+        <input id="brandingsettingspanel-1"
           value={branding.brandName}
           onChange={(e) => setBranding((b) => ({ ...b, brandName: e.target.value }))}
           placeholder={t("branding.brandNamePlaceholder")}
@@ -228,7 +228,7 @@ export default function BrandingSettingsPanel() {
         {/* Brokerage logo */}
         <div className="space-y-2">
           <label className="block text-[11px] font-medium text-slate-500">
-            {t("branding.logoLabel")} <span className="text-slate-400 font-normal">{t("branding.optional")}</span>
+            {t("branding.logoLabel")} <span className="text-slate-500 font-normal">{t("branding.optional")}</span>
           </label>
           {branding.logoUrl ? (
             <div className="flex items-center gap-3">
@@ -267,7 +267,7 @@ export default function BrandingSettingsPanel() {
               disabled={uploading}
               className="flex items-center gap-2 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 px-4 py-3 text-sm text-slate-500 hover:border-blue-400 hover:bg-blue-50/30 disabled:opacity-50"
             >
-              <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
               {uploading ? t("branding.uploading") : t("branding.uploadLogo")}
@@ -276,6 +276,7 @@ export default function BrandingSettingsPanel() {
           <input
             ref={logoInputRef}
             type="file"
+            aria-label={t("branding.uploadLogo")}
             accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
             className="sr-only"
             onChange={(e) => {
@@ -366,7 +367,7 @@ export default function BrandingSettingsPanel() {
                 <button
                   type="button"
                   onClick={() => setPreview({ kind: "idle" })}
-                  className="text-[11px] text-slate-400 hover:text-slate-600"
+                  className="text-[11px] text-slate-500 hover:text-slate-600"
                 >
                   {t("branding.hide")}
                 </button>
@@ -374,7 +375,7 @@ export default function BrandingSettingsPanel() {
             </div>
             <div className="rounded border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
               <div className="text-sm text-slate-700 dark:text-slate-300">
-                <em className="text-slate-400">
+                <em className="text-slate-500">
                   {t("branding.bodyEndsHere")}
                 </em>
               </div>
@@ -415,10 +416,10 @@ export default function BrandingSettingsPanel() {
           it because it looks paid runs lead ads against our bundled URL, which
           is worse for their compliance than for our revenue.
         */}
-        <label className="block text-[11px] font-medium text-slate-500">
+        <label htmlFor="brandingsettingspanel-2" className="block text-[11px] font-medium text-slate-500">
           {t("branding.leadAdUrl")}
         </label>
-        <input
+        <input id="brandingsettingspanel-2"
           type="url"
           value={branding.leadAdPrivacyPolicyUrl}
           onChange={(e) =>

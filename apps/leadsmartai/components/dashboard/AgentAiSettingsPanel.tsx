@@ -139,8 +139,8 @@ export default function AgentAiSettingsPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
-        <select
+        <label htmlFor="agentaisettingspanel-1" className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
+        <select id="agentaisettingspanel-1"
           className="w-full max-w-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.defaultLanguage}
           onChange={(e) =>
@@ -180,9 +180,9 @@ export default function AgentAiSettingsPanel({
           changes how every message reads. */}
       <AdvancedSection count={3}>
         <div className="space-y-1">
-          <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-slate-400 font-normal">(optional, max 500 chars)</span>
+          <label htmlFor="agentaisettingspanel-2" className="block text-[11px] font-medium text-slate-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-slate-500 font-normal">(optional, max 500 chars)</span>
           </label>
-          <textarea
+          <textarea id="agentaisettingspanel-2"
             className="w-full min-h-[88px] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm"
             placeholder={t("pages.agentAiSettings.stylePlaceholder")}
             maxLength={500}
@@ -194,7 +194,7 @@ export default function AgentAiSettingsPanel({
         <div className="space-y-1 border-t border-slate-100 dark:border-slate-700 pt-4">
           <div className="flex items-center justify-between">
             <label className="block text-[11px] font-medium text-slate-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
-              <span className="font-normal text-slate-400">(social cards)</span>
+              <span className="font-normal text-slate-500">(social cards)</span>
             </label>
             {!canCustomizeBrand && (
               <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">{t("pages.agentAiSettings.signature")}</span>

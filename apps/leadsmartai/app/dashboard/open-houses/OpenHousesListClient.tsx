@@ -185,7 +185,7 @@ export function OpenHousesListClient({
                     {oh.visitor_hot > 0 ? (
                       <span className="font-semibold text-red-600">{oh.visitor_hot}</span>
                     ) : (
-                      <span className="text-slate-400">0</span>
+                      <span className="text-slate-500">0</span>
                     )}
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">

@@ -206,7 +206,7 @@ export default function TikTokPostOptionsPanel() {
           ).map(([key, label, lockedOff]) => (
             <label
               key={key}
-              className={`flex items-center gap-2 text-sm ${lockedOff ? "text-slate-400" : "text-slate-800 dark:text-slate-200"}`}
+              className={`flex items-center gap-2 text-sm ${lockedOff ? "text-slate-500" : "text-slate-800 dark:text-slate-200"}`}
             >
               <input
                 type="checkbox"
@@ -217,7 +217,7 @@ export default function TikTokPostOptionsPanel() {
               />
               {label}
               {lockedOff ? (
-                <span className="text-[10px] text-slate-400">already off in your TikTok settings</span>
+                <span className="text-[10px] text-slate-500">already off in your TikTok settings</span>
               ) : null}
             </label>
           ))}

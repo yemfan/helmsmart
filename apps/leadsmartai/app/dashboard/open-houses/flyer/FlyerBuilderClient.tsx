@@ -611,7 +611,7 @@ export default function FlyerBuilderClient({
                 className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/60 py-8 transition hover:border-blue-400 hover:bg-blue-50/30"
               >
                 <span className="text-sm text-slate-500">Click to upload property photos</span>
-                <span className="text-xs text-slate-400 mt-1">JPG, PNG — up to 4 photos</span>
+                <span className="text-xs text-slate-500 mt-1">JPG, PNG — up to 4 photos</span>
               </div>
             )}
           </div>
@@ -621,7 +621,7 @@ export default function FlyerBuilderClient({
             <div className="flex items-center gap-2 mb-1">
               <label className="text-xs font-medium text-slate-500">{tr("pages.flyer.description")}</label>
               <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700">{tr("pages.flyer.aiGenerated")}</span>
-              <span className="text-[10px] text-slate-400">{tr("pages.flyer.editFreely")}</span>
+              <span className="text-[10px] text-slate-500">{tr("pages.flyer.editFreely")}</span>
             </div>
             <textarea
               value={description}
@@ -637,7 +637,7 @@ export default function FlyerBuilderClient({
           {/* Agent Info + QR Code */}
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{tr("pages.flyer.yourAgent")}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{tr("pages.flyer.yourAgent")}</span>
               <div className="flex items-center gap-3">
                 {agent.avatarUrl ? (
                   <img src={agent.avatarUrl} alt={tr("pages.flyer.agentAlt")} className="h-12 w-12 rounded-full object-cover border border-slate-200 dark:border-slate-700" />
@@ -652,7 +652,7 @@ export default function FlyerBuilderClient({
                   <input value={agent.email} onChange={(e) => setAgent((a) => ({ ...a, email: e.target.value }))} className="block text-xs text-slate-600 dark:text-slate-400 border-0 border-b border-dashed border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:outline-none mt-0.5" placeholder={tr("pages.flyer.email")} />
                 </div>
               </div>
-              {agent.brandName && <p className="text-xs text-slate-400">{agent.brandName}</p>}
+              {agent.brandName && <p className="text-xs text-slate-500">{agent.brandName}</p>}
             </div>
 
             <div className="text-center shrink-0">

@@ -190,7 +190,7 @@ export default function SphereMonetizationPanel(
                       {bestReason(r)}
                     </p>
                     {r.closingAddress ? (
-                      <p className="mt-0.5 truncate text-[11px] text-slate-400">
+                      <p className="mt-0.5 truncate text-[11px] text-slate-500">
                         {r.closingAddress}
                       </p>
                     ) : null}

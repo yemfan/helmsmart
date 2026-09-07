@@ -85,7 +85,7 @@ export function SkillsManager({
             </div>
             <ul className="mt-3 space-y-2">
               {rows.length === 0 ? (
-                <li className="text-sm text-slate-400">{t("more.skills.none")}</li>
+                <li className="text-sm text-slate-500">{t("more.skills.none")}</li>
               ) : (
                 rows.map((s) => (
                   <li

@@ -148,7 +148,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           type="button"
           onClick={hide}
           aria-label={t("pages.misc.hideBossGuide")}
-          className="absolute right-1.5 top-1.5 flex h-11 w-11 items-center justify-center rounded-md text-slate-400 hover:bg-white/10 hover:text-white"
+          className="absolute right-1.5 top-1.5 flex h-11 w-11 items-center justify-center rounded-md text-slate-500 hover:bg-white/10 hover:text-white"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
@@ -178,7 +178,7 @@ export function BossOnboardingCard({ checklist }: Props) {
                   ? "bg-emerald-500/15 text-emerald-300"
                   : s.key === checklist.nextStepKey
                     ? "bg-white dark:bg-slate-900/15 text-white ring-1 ring-white/30"
-                    : "bg-white/5 text-slate-400"
+                    : "bg-white/5 text-slate-500"
               }`}
             >
               {s.done && <Check className="h-3 w-3" aria-hidden />}
@@ -212,7 +212,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           </div>
         ))}
         {loading && (
-          <div className="flex items-center gap-2 text-xs text-slate-400">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
               <Sparkles className="h-3 w-3" aria-hidden />
             </span>

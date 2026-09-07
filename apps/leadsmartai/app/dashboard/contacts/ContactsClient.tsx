@@ -146,7 +146,7 @@ function MiniPie({
               <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
               <span className="text-slate-600 dark:text-slate-400">{labelFor(d.key)}</span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">{d.value}</span>
-              {total > 0 && <span className="text-slate-400">({Math.round((d.value / total) * 100)}%)</span>}
+              {total > 0 && <span className="text-slate-500">({Math.round((d.value / total) * 100)}%)</span>}
             </div>
           ))}
         </div>
@@ -805,7 +805,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       {/* Phones: cards. The table below is md+ only. */}
       <div className="md:hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
         {filtered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-slate-400">
+          <p className="px-4 py-8 text-center text-sm text-slate-500">
             {search ? t("empty.no_match") : t("empty.no_contacts")}
           </p>
         ) : (
@@ -971,7 +971,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               })}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
                     {search ? t("empty.no_match") : t("empty.no_contacts")}
                   </td>
                 </tr>
@@ -1067,7 +1067,7 @@ function RatingBadges({ c, t }: { c: LeadRow; t: ContactsT }) {
           {t(`rating.${c.rating.toLowerCase()}`, { defaultValue: c.rating })}
         </span>
       ) : (
-        <span className="text-slate-400">{t("row.empty_value")}</span>
+        <span className="text-slate-500">{t("row.empty_value")}</span>
       )}
       {c.preferred_language ? (
         <span

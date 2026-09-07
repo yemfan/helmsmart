@@ -247,7 +247,7 @@ function CmaListInner() {
                     {t("pages.cma.quotaReached")}
                   </span>
                 ) : (
-                  <span className="text-slate-400">
+                  <span className="text-slate-500">
                     {t("pages.cma.liveWeb")}
                   </span>
                 )}
@@ -312,7 +312,7 @@ function CmaListInner() {
                       {r.subjectAddress}
                     </p>
                   ) : null}
-                  <p className="mt-1 text-[11px] text-slate-400">
+                  <p className="mt-1 text-[11px] text-slate-500">
                     {formatDate(r.createdAt, locale)} · {t("pages.cma.comps", { count: r.compCount })}
                     {r.confidenceScore != null
                       ? ` · ${t("pages.cma.confidence", { score: r.confidenceScore })}`

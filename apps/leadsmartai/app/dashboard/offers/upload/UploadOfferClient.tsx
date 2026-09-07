@@ -394,7 +394,7 @@ export function UploadOfferClient() {
 
         <div className="relative">
           <div className="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden />
-          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             Or
           </span>
         </div>

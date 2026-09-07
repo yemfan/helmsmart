@@ -173,7 +173,7 @@ export default function AISuggestedPropertiesPanel({
       </div>
 
       {state.kind === "loading" && (
-        <div className="mt-3 text-xs text-slate-400">
+        <div className="mt-3 text-xs text-slate-500">
           {t("pages.suggestedProperties.searching")}
         </div>
       )}
@@ -236,7 +236,7 @@ export default function AISuggestedPropertiesPanel({
                           <div className="truncate text-xs text-slate-600 dark:text-slate-400">
                             {c.listing.address}
                           </div>
-                          <div className="mt-0.5 text-[10px] text-slate-400">
+                          <div className="mt-0.5 text-[10px] text-slate-500">
                             {[
                               c.listing.beds ? `${c.listing.beds}bd` : null,
                               c.listing.baths ? `${c.listing.baths}ba` : null,

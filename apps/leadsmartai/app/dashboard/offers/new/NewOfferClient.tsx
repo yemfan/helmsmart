@@ -547,7 +547,7 @@ function NewOfferForm() {
             offer so the detail page can deep-link back. Optional — a
             blank URL just leaves the rest of the form to manual entry. */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.listingUrl")}<span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOffer.listingUrl")}<span className="font-normal text-slate-500">{t("pages.newOffer.optional")}</span>
           </label>
           <input
             type="url"

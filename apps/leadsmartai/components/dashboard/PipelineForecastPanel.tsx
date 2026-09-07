@@ -247,11 +247,11 @@ function TypeBreakdownTable({
               <td className="px-4 py-2 text-right tabular-nums text-slate-900 dark:text-slate-100">{r.data.count}</td>
               <td className="px-4 py-2 text-right tabular-nums text-slate-700 dark:text-slate-300">
                 {formatMoney(r.data.gross)}
-                <span className="ml-1 text-[10px] text-slate-400">{t("pages.pipelineForecast.slashNet", { net: formatMoney(r.data.net) })}</span>
+                <span className="ml-1 text-[10px] text-slate-500">{t("pages.pipelineForecast.slashNet", { net: formatMoney(r.data.net) })}</span>
               </td>
               <td className="px-4 py-2 text-right tabular-nums font-semibold text-emerald-700">
                 {formatMoney(r.data.weightedGross)}
-                <span className="ml-1 text-[10px] font-normal text-slate-400">
+                <span className="ml-1 text-[10px] font-normal text-slate-500">
                   {t("pages.pipelineForecast.slashNet", { net: formatMoney(r.data.weightedNet) })}
                 </span>
               </td>

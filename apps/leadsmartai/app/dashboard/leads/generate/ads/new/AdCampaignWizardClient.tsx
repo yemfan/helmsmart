@@ -723,7 +723,7 @@ export default function AdCampaignWizardClient() {
         >
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.campaignName")}<span className="text-slate-400">{t("pages.adWizard.internalLabel")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.campaignName")}<span className="text-slate-500">{t("pages.adWizard.internalLabel")}</span>
               </label>
               <input
                 value={campaignName}
@@ -794,7 +794,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.headline")}<span className="text-slate-400">{t("pages.adWizard.headlineLimit")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.headline")}<span className="text-slate-500">{t("pages.adWizard.headlineLimit")}</span>
               </label>
               <input
                 value={adHeadline}
@@ -806,7 +806,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.landingUrl")}<span className="text-slate-400">{t("pages.adWizard.thankYouHint")}</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.landingUrl")}<span className="text-slate-500">{t("pages.adWizard.thankYouHint")}</span>
               </label>
               <input
                 value={landingUrl}
@@ -818,7 +818,7 @@ export default function AdCampaignWizardClient() {
 
             <div>
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.adWizard.privacyUrl")}{" "}
-                <span className="text-slate-400">{t("pages.adWizard.privacyNote")}</span>
+                <span className="text-slate-500">{t("pages.adWizard.privacyNote")}</span>
               </label>
               <input
                 type="url"
@@ -927,7 +927,7 @@ export default function AdCampaignWizardClient() {
                 onChange={(e) => setDailyBudget(Number(e.target.value))}
                 className="mt-1 w-full"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
+              <div className="flex justify-between text-[10px] text-slate-500 mt-0.5">
                 <span>$5</span>
                 <span>$100</span>
               </div>
@@ -949,7 +949,7 @@ export default function AdCampaignWizardClient() {
                 onChange={(e) => setDurationDays(Number(e.target.value))}
                 className="mt-1 w-full"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
+              <div className="flex justify-between text-[10px] text-slate-500 mt-0.5">
                 <span>1d</span>
                 <span>30d</span>
               </div>

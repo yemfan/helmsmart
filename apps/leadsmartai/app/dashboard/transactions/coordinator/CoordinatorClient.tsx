@@ -296,7 +296,7 @@ function StageColumn({ column }: { column: CoordinatorStageColumn }) {
       ) : null}
 
       {column.cards.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center px-4 py-6 text-center text-[11px] text-slate-400">
+        <div className="flex flex-1 items-center justify-center px-4 py-6 text-center text-[11px] text-slate-500">
           {t("pages.coordinator.noWork")}
         </div>
       ) : (
@@ -378,7 +378,7 @@ function CardForStage({
       </div>
 
       {txn.closing_date ? (
-        <p className="mt-1 text-[10px] text-slate-400">
+        <p className="mt-1 text-[10px] text-slate-500">
           {t("pages.coordinator.closingOn", { date: formatDateShort(txn.closing_date, locale) })}
         </p>
       ) : null}

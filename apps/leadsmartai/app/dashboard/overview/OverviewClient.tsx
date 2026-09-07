@@ -150,7 +150,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
           <Link href="/dashboard/leads?filter=inactive" className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition">
             <p className="text-xs text-slate-500">{t("pages.overview.quietLeads")}</p>
             <p className="mt-1 text-2xl font-bold text-amber-600">{stats.inactiveLeads}</p>
-            <p className="text-[10px] text-slate-400">{t("pages.overview.quietLeadsHint")}</p>
+            <p className="text-[10px] text-slate-500">{t("pages.overview.quietLeadsHint")}</p>
           </Link>
         </div>
       )}
@@ -164,7 +164,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
             <Link href="/dashboard/calendar" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("pages.overview.viewCalendar")}</Link>
           </div>
           {events.length === 0 ? (
-            <p className="text-sm text-slate-400 py-4 text-center">{t("pages.overview.noAppointments")}</p>
+            <p className="text-sm text-slate-500 py-4 text-center">{t("pages.overview.noAppointments")}</p>
           ) : (
             <div className="space-y-2">
               {events.map((e) => (
@@ -187,7 +187,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
             <Link href="/dashboard/tasks" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("pages.overview.viewAll")}</Link>
           </div>
           {tasks.length === 0 ? (
-            <p className="text-sm text-slate-400 py-4 text-center">{t("pages.overview.noTasks")}</p>
+            <p className="text-sm text-slate-500 py-4 text-center">{t("pages.overview.noTasks")}</p>
           ) : (
             <div className="space-y-2">
               {tasks.slice(0, 5).map((t) => (

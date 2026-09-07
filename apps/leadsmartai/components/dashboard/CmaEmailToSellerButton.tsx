@@ -117,7 +117,7 @@ export default function CmaEmailToSellerButton({
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.cmaEmail.coverNote")}<span className="font-normal text-slate-400">(optional)</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("pages.cmaEmail.coverNote")}<span className="font-normal text-slate-500">(optional)</span>
                   </span>
                   <textarea
                     value={message}

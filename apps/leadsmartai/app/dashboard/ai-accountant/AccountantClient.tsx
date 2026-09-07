@@ -48,7 +48,7 @@ const STATUS_CHIP: Record<string, string> = {
   sent: "bg-amber-100 text-amber-700",
   draft: "bg-slate-100 text-slate-600",
   paid: "bg-emerald-100 text-emerald-700",
-  void: "bg-slate-100 text-slate-400",
+  void: "bg-slate-100 text-slate-500",
 };
 
 export default function AccountantClient({
@@ -114,7 +114,7 @@ export default function AccountantClient({
           <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.revenueForecast")}</Link>
         </div>
         {pipelineDeals.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-400">{t("pages.accountant.ready")}</p>
+          <p className="py-6 text-center text-sm text-slate-500">{t("pages.accountant.ready")}</p>
         ) : (
           <div className="space-y-2">
             {pipelineDeals.map((d) => (
@@ -153,7 +153,7 @@ export default function AccountantClient({
             </div>
           )}
           {recentExpenses.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-400">{t("pages.accountant.noExpenses")}</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t("pages.accountant.noExpenses")}</p>
           ) : (
             <div className="space-y-2">
               {recentExpenses.map((e) => (
@@ -180,9 +180,9 @@ export default function AccountantClient({
             </h2>
             <Link href="/dashboard/books" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allInvoices")}</Link>
           </div>
-          <p className="mb-2 text-[11px] text-slate-400">{t("tips.accountantOther")}</p>
+          <p className="mb-2 text-[11px] text-slate-500">{t("tips.accountantOther")}</p>
           {invoices.length === 0 ? (
-            <p className="py-4 text-center text-sm text-slate-400">{t("pages.accountant.nothingOutstanding")}</p>
+            <p className="py-4 text-center text-sm text-slate-500">{t("pages.accountant.nothingOutstanding")}</p>
           ) : (
             <div className="space-y-2">
               {[...overdueReceivables, ...invoices.filter((i) => i.status !== "overdue")].slice(0, 5).map((i) => (

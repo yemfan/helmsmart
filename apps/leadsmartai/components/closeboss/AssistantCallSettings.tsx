@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 const inputCls =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none";
 const labelCls = "mb-1 block text-xs font-medium text-slate-700";
-const hintCls = "mt-1 text-[11px] text-slate-400";
+const hintCls = "mt-1 text-[11px] text-slate-500";
 
 function SaveButton({ saving, saved }: { saving: boolean; saved: boolean }) {
   const { t } = useTranslation("dashboard");
@@ -97,7 +97,7 @@ export function AssistantCallSettings({
     }
   }
 
-  if (loading) return <p className="py-4 text-sm text-slate-400">{t("pages.assistantCallSettings.loadingCallSettings")}</p>;
+  if (loading) return <p className="py-4 text-sm text-slate-500">{t("pages.assistantCallSettings.loadingCallSettings")}</p>;
 
   return (
     <form onSubmit={save} className="space-y-4">
@@ -181,7 +181,7 @@ export function ReceptionistVoiceForm() {
     }
   }
 
-  if (loading) return <p className="py-4 text-sm text-slate-400">{t("pages.assistantCallSettings.loadingVoiceSettings")}</p>;
+  if (loading) return <p className="py-4 text-sm text-slate-500">{t("pages.assistantCallSettings.loadingVoiceSettings")}</p>;
 
   return (
     <form onSubmit={save} className="space-y-4">

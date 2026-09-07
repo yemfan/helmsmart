@@ -25,7 +25,7 @@ export default async function ComplianceCard() {
             </div>
             <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{t(item.description, { ns: "dashboard" })}</div>
             {item.source && (
-              <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">{t(item.source, { ns: "dashboard" })}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-500">{t(item.source, { ns: "dashboard" })}</div>
             )}
           </div>
         ))}

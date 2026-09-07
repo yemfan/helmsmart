@@ -500,7 +500,7 @@ export default function DigitalTwinPanel() {
 
       {/* Not a control — just says which language the generated copy comes
           out in, since the only place to change it is the header toggle. */}
-      <p className="mt-2 text-[11px] text-slate-400">{t("twin.languageNote")}</p>
+      <p className="mt-2 text-[11px] text-slate-500">{t("twin.languageNote")}</p>
       {note ? <p className="mt-2 text-[12px] text-slate-600">{note}</p> : null}
       {error ? <p className="mt-2 text-[12px] text-rose-700">{error}</p> : null}
 
@@ -592,7 +592,7 @@ export default function DigitalTwinPanel() {
           </button>
           <GateReason reason={!vc?.consent ? t("twin.cloneVoiceTitle") : null} />
 
-          <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+          <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-500"}`}>
             <input
               type="checkbox"
               checked={avPremium && vcClean}
@@ -604,7 +604,7 @@ export default function DigitalTwinPanel() {
               🎙️ {t("twin.cleanVoice")}
               <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
               {avPremium ? (
-                <span className="text-slate-400">{t("twin.cleanVoiceHelp")}</span>
+                <span className="text-slate-500">{t("twin.cleanVoiceHelp")}</span>
               ) : (
                 <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
               )}
@@ -818,7 +818,7 @@ export default function DigitalTwinPanel() {
             ) : null}
 
             {/* Premium enhancement — gated to Premium+ plans; opt-in per render. */}
-            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-500"}`}>
               <input
                 type="checkbox"
                 checked={avPremium && avSharpen}
@@ -830,14 +830,14 @@ export default function DigitalTwinPanel() {
                 {t("pages.digitalTwin.sharperVideo")}
                 <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
-                  <span className="text-slate-400">— upscales &amp; restores the render</span>
+                  <span className="text-slate-500">— upscales &amp; restores the render</span>
                 ) : (
                   <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
                 )}
               </span>
             </label>
 
-            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-500"}`}>
               <input
                 type="checkbox"
                 checked={avPremium && avPhotoAvatar}
@@ -849,7 +849,7 @@ export default function DigitalTwinPanel() {
                 {t("pages.digitalTwin.lifelikeAvatar")}
                 <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
-                  <span className="text-slate-400">— photo-to-avatar with head motion (vs lip-sync)</span>
+                  <span className="text-slate-500">— photo-to-avatar with head motion (vs lip-sync)</span>
                 ) : (
                   <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
                 )}

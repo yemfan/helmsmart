@@ -311,7 +311,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           <div ref={contactBoxRef} className="relative mb-3">
             <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.billTo")}</span>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" strokeWidth={2} />
               <input
                 className={`${input} pl-9 ${contactId ? "pr-9" : ""}`}
                 value={contactQuery}
@@ -328,7 +328,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                   type="button"
                   onClick={clearContact}
                   aria-label={t("pages.books.clearContact")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600"
                 >
                   <X className="h-4 w-4" strokeWidth={2} />
                 </button>
@@ -337,7 +337,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
             {contactOpen && contacts.length > 0 && (
               <div className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-1 shadow-lg">
                 {filteredContacts.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-slate-400">{t("pages.books.noMatches")}</div>
+                  <div className="px-3 py-2 text-xs text-slate-500">{t("pages.books.noMatches")}</div>
                 ) : (
                   filteredContacts.map((c) => (
                     <button
@@ -349,7 +349,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                       }}
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
                     >
-                      <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
+                      <User2 className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} />
                       <span className="min-w-0 flex-1 truncate text-slate-800 dark:text-slate-200">{c.name}</span>
                       {c.email && <span className="shrink-0 truncate text-xs text-slate-500">{c.email}</span>}
                     </button>
@@ -420,7 +420,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                   <button
                     type="button"
                     onClick={() => removeLine(i)}
-                    className="rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600"
+                    className="rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600"
                     aria-label={t("pages.books.removeLine")}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -483,7 +483,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           {/* Paid ledger — an invoice moves here once payment is received */}
           {paidInvoices.length > 0 && (
             <section>
-              <h2 className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <h2 className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-500">
                 <span>{t("pages.books.paid")}</span>
                 <span className="tabular-nums text-emerald-600">{formatMoney(paidTotal)}</span>
               </h2>

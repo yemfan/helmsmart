@@ -304,7 +304,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
             <Field label={tr("pages.adComposer.brandName")} value={f.agentName} onChange={(v) => set("agentName", v)} />
             <Field label={tr("pages.adComposer.brokerage")} value={f.brokerage} onChange={(v) => set("brokerage", v)} />
           </div>
-          <p className="mt-1.5 text-xs text-slate-400">{tr("pages.adComposer.logoNote")}</p>
+          <p className="mt-1.5 text-xs text-slate-500">{tr("pages.adComposer.logoNote")}</p>
         </Section>
 
         <Section title={tr("pages.adComposer.captionSeo")}>
@@ -332,7 +332,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
 
       {/* ---- live preview ---- */}
       <div className="lg:sticky lg:top-4 lg:self-start">
-        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">{tr("pages.adComposer.livePreview")}</div>
+        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">{tr("pages.adComposer.livePreview")}</div>
         <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={previewUrl} alt={tr("pages.adComposer.adPreview")} className="mx-auto w-full max-w-[380px] rounded-lg" />
