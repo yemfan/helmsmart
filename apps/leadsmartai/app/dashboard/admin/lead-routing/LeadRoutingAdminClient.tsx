@@ -203,7 +203,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
               >
                 <td className="px-4 py-2 text-slate-900 dark:text-slate-100">
                   <p className="font-semibold">{r.displayName ?? "—"}</p>
-                  <p className="font-mono text-[10px] text-slate-400">{r.agentId}</p>
+                  <p className="font-mono text-[10px] text-slate-500">{r.agentId}</p>
                 </td>
                 <td className="px-4 py-2 text-center">
                   <span
@@ -221,7 +221,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
                 </td>
                 <td className="px-4 py-2 text-right text-xs text-slate-700 dark:text-slate-300">
                   {r.zipCoverage.length === 0
-                    ? <span className="text-slate-400">{t("pages.leadRouting.anyZip")}</span>
+                    ? <span className="text-slate-500">{t("pages.leadRouting.anyZip")}</span>
                     : r.zipCoverage.length <= 4
                       ? r.zipCoverage.join(", ")
                       : `${r.zipCoverage.slice(0, 3).join(", ")} +${r.zipCoverage.length - 3}`}
@@ -282,7 +282,7 @@ function ZipCoverageGrid({
                 </span>
               ))}
             </span>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-slate-500">
               {t("pages.leadRoutingAdmin.agentCount", { count: agentIds.length })}
             </span>
           </li>

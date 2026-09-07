@@ -125,19 +125,19 @@ export default function ProfileSettingsForm() {
       <form onSubmit={saveProfile} className="p-5 space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.fullName")}</label>
-            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name"
+            <label htmlFor="profilesettingsform-3" className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.fullName")}</label>
+            <input id="profilesettingsform-3" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.phone")}</label>
-            <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(formatUsPhoneInput(e.target.value))} autoComplete="tel" placeholder="(555) 555-5555"
+            <label htmlFor="profilesettingsform-1" className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.phone")}</label>
+            <input id="profilesettingsform-1" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(formatUsPhoneInput(e.target.value))} autoComplete="tel" placeholder="(555) 555-5555"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.email")}</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
+          <label htmlFor="profilesettingsform-2" className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.email")}</label>
+          <input id="profilesettingsform-2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 

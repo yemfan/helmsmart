@@ -110,7 +110,7 @@ export function ReviewContractClient() {
 
         <div className="relative">
           <div className="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden />
-          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+          <span className="relative inline-block bg-white dark:bg-slate-900 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             Or
           </span>
         </div>
@@ -141,7 +141,7 @@ export function ReviewContractClient() {
       </div>
 
       {reviewing ? (
-        <p className="py-6 text-center text-sm text-slate-400">{t("pages.contractReview.reading")}</p>
+        <p className="py-6 text-center text-sm text-slate-500">{t("pages.contractReview.reading")}</p>
       ) : null}
 
       {review ? (
@@ -185,7 +185,7 @@ export function ReviewContractClient() {
                     <span className="text-slate-700 dark:text-slate-300">{d.label}</span>
                     <span className="shrink-0 text-right text-slate-900 dark:text-slate-100">
                       {d.date ?? "—"}
-                      {d.note ? <span className="block text-[11px] text-slate-400">{d.note}</span> : null}
+                      {d.note ? <span className="block text-[11px] text-slate-500">{d.note}</span> : null}
                     </span>
                   </li>
                 ))}

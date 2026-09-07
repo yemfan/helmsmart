@@ -54,7 +54,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
     );
   }
   if (!data) {
-    return <p className="py-16 text-center text-sm text-slate-400">{t("pages.leadProfile.gettingFullPicture")}</p>;
+    return <p className="py-16 text-center text-sm text-slate-500">{t("pages.leadProfile.gettingFullPicture")}</p>;
   }
 
   const p = data.person;
@@ -131,22 +131,22 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
           {p.notes && (
             <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("detail.leadProfile.whatYouKnow")}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("detail.leadProfile.whatYouKnow")}</p>
               <p className="mt-1.5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{p.notes}</p>
             </section>
           )}
 
           <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("detail.leadProfile.openFollowUps")}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("detail.leadProfile.openFollowUps")}</p>
             {data.tasks.length === 0 ? (
-              <p className="mt-1.5 text-sm text-slate-400">{t("pages.leadProfile.nothingOpen")}</p>
+              <p className="mt-1.5 text-sm text-slate-500">{t("pages.leadProfile.nothingOpen")}</p>
             ) : (
               <ul className="mt-1.5 space-y-1.5">
                 {data.tasks.map((t) => (
                   <li key={t.id} className="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-slate-300">
                     <span className="min-w-0 truncate">☐ {t.title}</span>
                     {t.due_at && (
-                      <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-slate-400"}`}>
+                      <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-slate-500"}`}>
                         {new Date(t.due_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                       </span>
                     )}
@@ -158,12 +158,12 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
           {data.appointments.length > 0 && (
             <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("detail.leadProfile.upcoming")}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("detail.leadProfile.upcoming")}</p>
               <ul className="mt-1.5 space-y-1.5">
                 {data.appointments.map((e) => (
                   <li key={e.id} className="text-sm text-slate-700 dark:text-slate-300">
                     📅 {e.title}
-                    <span className="block text-xs text-slate-400">
+                    <span className="block text-xs text-slate-500">
                       {new Date(e.starts_at).toLocaleString(locale, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </li>
@@ -175,9 +175,9 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
         {/* ── Right: the relationship so far ── */}
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm lg:col-span-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{t("detail.leadProfile.storySoFar")}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("detail.leadProfile.storySoFar")}</p>
           {timeline.length === 0 ? (
-            <p className="mt-2 text-sm text-slate-400">{t("pages.leadProfile.noInteractions")}</p>
+            <p className="mt-2 text-sm text-slate-500">{t("pages.leadProfile.noInteractions")}</p>
           ) : (
             <ol className="mt-3 space-y-3">
               {timeline.map((item) => (
@@ -186,7 +186,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
                   <div className="min-w-0 border-b border-slate-50 pb-3">
                     <p className="text-sm text-slate-800 dark:text-slate-200">{item.title}</p>
                     {item.detail && <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{item.detail}</p>}
-                    <p className="mt-0.5 text-[10px] text-slate-400">{fmtAgo(item.at)}</p>
+                    <p className="mt-0.5 text-[10px] text-slate-500">{fmtAgo(item.at)}</p>
                   </div>
                 </li>
               ))}

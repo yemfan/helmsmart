@@ -78,10 +78,10 @@ export function KpiCard({ label, value, subtext, trend, deltaPct, spark, classNa
         >
           <span aria-hidden>{up ? "▲" : "▼"}</span>
           <span>{Math.abs(deltaPct as number).toFixed(0)}%</span>
-          <span className="font-normal text-slate-400">{t("pages.misc.vsPrevPeriod")}</span>
+          <span className="font-normal text-slate-500">{t("pages.misc.vsPrevPeriod")}</span>
         </div>
       ) : subtext ? (
-        <div className="mt-1 text-xs text-slate-400">{subtext}</div>
+        <div className="mt-1 text-xs text-slate-500">{subtext}</div>
       ) : null}
     </div>
   );

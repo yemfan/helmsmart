@@ -94,7 +94,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                 {s.suggestedAction && (
                   <div className="mt-1 text-xs text-slate-500">{s.suggestedAction}</div>
                 )}
-                <div className="mt-1 flex items-center gap-3 text-[10px] uppercase tracking-wide text-slate-400">
+                <div className="mt-1 flex items-center gap-3 text-[10px] uppercase tracking-wide text-slate-500">
                   <span>{t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}</span>
                   {s.contact.phone && <span>· {s.contact.phone}</span>}
                 </div>

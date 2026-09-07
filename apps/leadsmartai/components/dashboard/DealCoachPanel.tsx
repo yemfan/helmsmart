@@ -236,7 +236,7 @@ export default function DealCoachPanel() {
         </label>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.buyerNotes")}<span className="font-medium text-slate-400">{t("pages.dealCoachPanel.optional")}</span>
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.buyerNotes")}<span className="font-medium text-slate-500">{t("pages.dealCoachPanel.optional")}</span>
           </label>
           <textarea
             value={buyerNotes}
@@ -290,7 +290,7 @@ export default function DealCoachPanel() {
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{a.title}</div>
                       <p className="mt-0.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{a.rationale}</p>
-                      <div className="mt-1 text-[11px] text-slate-400">
+                      <div className="mt-1 text-[11px] text-slate-500">
                         {t("pages.dealCoach.approxMinutes", { count: a.estimatedMinutes })}
                       </div>
                     </div>
@@ -435,7 +435,7 @@ function RiskCard({ label, pillar }: { label: string; pillar: RiskPillar }) {
         </span>
       </div>
       <p className="mt-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300">{pillar.notes}</p>
-      <div className="mt-1 text-[10px] text-slate-400">{t("pages.dashFragments.scoreOutOf", { score: pillar.score })}</div>
+      <div className="mt-1 text-[10px] text-slate-500">{t("pages.dashFragments.scoreOutOf", { score: pillar.score })}</div>
     </div>
   );
 }

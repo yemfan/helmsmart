@@ -90,7 +90,7 @@ export default function DraftsClient() {
               </button>
             ))}
           </div>
-          <span className="text-[11px] text-slate-400">{t("pages.draftsClient.shownCount", { count: drafts.length })}</span>
+          <span className="text-[11px] text-slate-500">{t("pages.draftsClient.shownCount", { count: drafts.length })}</span>
         </div>
         <div className="max-h-[75vh] overflow-y-auto">
           {loading ? (
@@ -535,7 +535,7 @@ function DraftDetail({
             </>
           )}
 
-          <p className="mt-4 text-[11px] text-slate-400">
+          <p className="mt-4 text-[11px] text-slate-500">
             Spec §2.4: no draft sends automatically. Approval dispatches to the sender worker (Twilio /
             SendGrid integration is a follow-up).
           </p>

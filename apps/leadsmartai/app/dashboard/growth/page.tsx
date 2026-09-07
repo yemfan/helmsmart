@@ -242,7 +242,7 @@ export default function GrowthPage() {
             />
           </div>
         ) : (
-          <div className="text-xs text-slate-400">{t("pages.growth.metricsUnavailable")}</div>
+          <div className="text-xs text-slate-500">{t("pages.growth.metricsUnavailable")}</div>
         )}
 
         {metrics?.viral ? (
@@ -317,7 +317,7 @@ export default function GrowthPage() {
               </table>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-slate-400">{t("pages.growth.noCodes")}</p>
+            <p className="mt-3 text-sm text-slate-500">{t("pages.growth.noCodes")}</p>
           )}
         </div>
       </section>
@@ -420,7 +420,7 @@ function OpportunitiesSection({
           <OpportunityCard key={o.id} opp={o} regenerating={regenerating} />
         ))}
       </div>
-      <div className="text-[11px] text-slate-400">
+      <div className="text-[11px] text-slate-500">
         {t("pages.growth.generatedAt", { when: generatedLabel })}
         {data.fromCache ? t("pages.growth.cached") : ""}
       </div>
@@ -504,7 +504,7 @@ function Stat({
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm">
       <div className="text-[11px] font-medium text-slate-500">{label}</div>
       <div className={`mt-0.5 text-xl font-semibold ${color}`}>{value}</div>
-      {hint ? <div className="text-[10px] text-slate-400">{hint}</div> : null}
+      {hint ? <div className="text-[10px] text-slate-500">{hint}</div> : null}
     </div>
   );
 }

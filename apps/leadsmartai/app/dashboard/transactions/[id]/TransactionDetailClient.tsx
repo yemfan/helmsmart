@@ -404,7 +404,7 @@ function DateRow({
     <div>
       <div className="flex items-center justify-between">
         <label className="text-xs text-slate-600 dark:text-slate-400">{label}</label>
-        {saving ? <span className="text-[10px] text-slate-400">saving…</span> : null}
+        {saving ? <span className="text-[10px] text-slate-500">saving…</span> : null}
       </div>
       <input
         type="date"
@@ -557,7 +557,7 @@ function StageBlock({
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div
-                        className={`text-sm ${t.completed_at ? "text-slate-400 line-through" : "text-slate-800 dark:text-slate-200"}`}
+                        className={`text-sm ${t.completed_at ? "text-slate-500 line-through" : "text-slate-800 dark:text-slate-200"}`}
                       >
                         {t.title}
                         {t.seed_key === "verify_wire_instructions" ? (
@@ -586,7 +586,7 @@ function StageBlock({
                         );
                         if (res.ok) onDelete(t.id);
                       }}
-                      className="text-[10px] text-slate-400 hover:text-red-600"
+                      className="text-[10px] text-slate-500 hover:text-red-600"
                     >
                       ✕
                     </button>
@@ -708,7 +708,7 @@ function TaskDueBadge({ dueDate, completed }: { dueDate: string | null; complete
   if (d == null) return null;
 
   if (completed) {
-    return <span className="text-[10px] text-slate-400">{dueDate}</span>;
+    return <span className="text-[10px] text-slate-500">{dueDate}</span>;
   }
   if (d < 0) {
     return (
@@ -723,7 +723,7 @@ function TaskDueBadge({ dueDate, completed }: { dueDate: string | null; complete
       </span>
     );
   }
-  return <span className="text-[10px] text-slate-400">{dueDate}</span>;
+  return <span className="text-[10px] text-slate-500">{dueDate}</span>;
 }
 
 /**
@@ -858,7 +858,7 @@ function CounterpartiesBlockBody({
                     );
                     if (res.ok) onDelete(cp.id);
                   }}
-                  className="invisible text-[10px] text-slate-400 hover:text-red-600 group-hover:visible"
+                  className="invisible text-[10px] text-slate-500 hover:text-red-600 group-hover:visible"
                 >
                   ✕
                 </button>
@@ -1019,7 +1019,7 @@ function RightRailTabs({
             >
               {t.label}
               {typeof t.count === "number" ? (
-                <span className="ml-1 text-[10px] tabular-nums text-slate-400">{t.count}</span>
+                <span className="ml-1 text-[10px] tabular-nums text-slate-500">{t.count}</span>
               ) : null}
             </button>
           );
@@ -1138,7 +1138,7 @@ function PostCloseReviewExpander({ children }: { children: React.ReactNode }) {
         </div>
         <span
           aria-hidden
-          className={`text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-slate-500 transition-transform ${open ? "rotate-180" : ""}`}
         >
           ▾
         </span>

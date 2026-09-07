@@ -84,6 +84,7 @@ export default function AccountTimezonePanel() {
 
       <div className="mt-3 max-w-sm">
         <select
+          aria-label={t("pages.accountTimezone.title")}
           value={mode === "other" ? OTHER_TIMEZONE : timezone}
           disabled={!loaded || saving}
           onChange={(e) => {

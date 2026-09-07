@@ -184,7 +184,7 @@ export default function MissedCallActivityLog() {
                   <blockquote className="mt-2 rounded-lg border-l-2 border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
                     {ev.textback_message}
                     {ev.textback_sent_at && (
-                      <span className="mt-1 block text-[10px] uppercase tracking-wider text-slate-400">
+                      <span className="mt-1 block text-[10px] uppercase tracking-wider text-slate-500">
                         {t("pages.missedCallLog.sentAt", { at: formatDate(ev.textback_sent_at) })}
                       </span>
                     )}

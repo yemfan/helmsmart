@@ -190,7 +190,7 @@ export function NotificationsFeed({ initial }: { initial: Item[] }) {
                         {!n.read ? <span className="h-2 w-2 shrink-0 rounded-full bg-[#0072ce]" aria-label={t("notifications.feed.unread")} /> : null}
                       </span>
                       {n.body ? <span className="mt-0.5 line-clamp-2 block text-xs text-slate-600 dark:text-slate-400">{n.body}</span> : null}
-                      <span className="mt-1 block text-[11px] text-slate-400">
+                      <span className="mt-1 block text-[11px] text-slate-500">
                         {new Date(n.created_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
                         {" · "}
                         {t(`notifications.feed.types.${n.type}`, { defaultValue: n.type })}

@@ -138,7 +138,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
         <h3 className="text-xs font-semibold text-slate-500">
           {isDrilled ? (
             <span>
-              {title} <span className="text-slate-400">·</span>{" "}
+              {title} <span className="text-slate-500">·</span>{" "}
               <span className="text-slate-700 dark:text-slate-300">{drillSlice ? sliceLabel(drillSlice) : drillName}</span>
             </span>
           ) : (
@@ -198,7 +198,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
                 <span className="text-slate-600 dark:text-slate-400">{sliceLabel(d)}</span>
                 <span className="font-semibold text-slate-900 dark:text-slate-100">{d.value}</span>
                 {total > 0 && (
-                  <span className="text-slate-400">
+                  <span className="text-slate-500">
                     ({Math.round((d.value / total) * 100)}%)
                   </span>
                 )}
@@ -222,7 +222,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
             );
           })}
           {!isDrilled && hasAnyDrill && (
-            <p className="pt-1 text-[10px] text-slate-400">{tr("pages.tasksPage.clickSlice")}</p>
+            <p className="pt-1 text-[10px] text-slate-500">{tr("pages.tasksPage.clickSlice")}</p>
           )}
         </div>
       </div>
@@ -776,7 +776,7 @@ export default function TasksClient({
               })}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
                     {search ? tr("tasks.noMatch") : statusFilter === "open" ? tr("tasks.noOpen") : tr("tasks.none")}
                   </td>
                 </tr>
@@ -817,7 +817,7 @@ function SourceChip({ task }: { task: TaskRow }) {
     <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${tone}`}>
       <span aria-hidden>{emoji}</span>
       {title}
-      {section ? <span className="text-slate-400">· {section}</span> : null}
+      {section ? <span className="text-slate-500">· {section}</span> : null}
     </span>
   );
 }

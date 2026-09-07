@@ -275,13 +275,13 @@ function PostCard({
               {platformLabel}
             </span>
             <span className="text-slate-600 dark:text-slate-400">{accountName}</span>
-            <span className="text-slate-400">·</span>
+            <span className="text-slate-500">·</span>
             <time className="text-slate-500">
               {publishedAt.toLocaleString(locale, longDateOpts)}
             </time>
             {post.triggerKind && (
               <>
-                <span className="text-slate-400">·</span>
+                <span className="text-slate-500">·</span>
                 <span className="text-slate-500">
                   {triggerLabel(post.triggerKind, t)}
                 </span>
@@ -355,7 +355,7 @@ function PostCard({
                 </Link>
               );
             })()}
-            <span className="text-slate-400">
+            <span className="text-slate-500">
               {state.metricsRefreshedAt
                 ? t("card.last_refresh", {
                     when: new Date(state.metricsRefreshedAt).toLocaleString(locale, shortDateOpts),
@@ -410,7 +410,7 @@ function MetricsRow({
 
   if (cells.length === 0) {
     return (
-      <p className="mt-3 text-xs italic text-slate-400">{t("metrics.linkedin_note")}</p>
+      <p className="mt-3 text-xs italic text-slate-500">{t("metrics.linkedin_note")}</p>
     );
   }
 

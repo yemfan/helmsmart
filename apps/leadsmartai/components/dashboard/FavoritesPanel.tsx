@@ -77,7 +77,7 @@ export default function FavoritesPanel({ contactId }: Props) {
       </div>
 
       {loading ? (
-        <div className="mt-3 text-xs text-slate-400"><LoadingText /></div>
+        <div className="mt-3 text-xs text-slate-500"><LoadingText /></div>
       ) : favorites.length === 0 ? (
         <div className="mt-3 rounded border border-dashed border-slate-200 dark:border-slate-700 p-4 text-center text-xs text-slate-500">
           <Heart className="mx-auto h-5 w-5 text-slate-300" aria-hidden />
@@ -105,7 +105,7 @@ export default function FavoritesPanel({ contactId }: Props) {
                   {f.address ?? t("pages.favorites.addressUnavailable")}
                 </div>
                 {(f.beds || f.baths || f.sqft) && (
-                  <div className="mt-0.5 text-[10px] text-slate-400">
+                  <div className="mt-0.5 text-[10px] text-slate-500">
                     {[
                       f.beds ? `${f.beds}bd` : null,
                       f.baths ? `${f.baths}ba` : null,
@@ -115,7 +115,7 @@ export default function FavoritesPanel({ contactId }: Props) {
                       .join(" · ")}
                   </div>
                 )}
-                <div className="mt-0.5 text-[10px] text-slate-400">
+                <div className="mt-0.5 text-[10px] text-slate-500">
                   {t("pages.favorites.saved", { date: new Date(f.createdAt).toLocaleDateString(locale) })}
                 </div>
               </div>

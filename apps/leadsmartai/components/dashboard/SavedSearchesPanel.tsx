@@ -86,7 +86,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
       )}
 
       {loading ? (
-        <div className="mt-3 text-xs text-slate-400">{t("pages.savedSearches.loading")}</div>
+        <div className="mt-3 text-xs text-slate-500">{t("pages.savedSearches.loading")}</div>
       ) : searches.length === 0 && editingId !== "new" ? (
         <div className="mt-3 rounded border border-dashed border-slate-200 dark:border-slate-700 p-4 text-center text-xs text-slate-500">
           {t("pages.savedSearches.emptyBefore")} <span className="font-medium">{t("pages.savedSearches.add")}</span>{t("pages.savedSearches.emptyAfter")}
@@ -121,7 +121,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                     {summarizeCriteria(s.criteria) || t("pages.savedSearches.anyListing")}
                   </div>
                   {s.lastAlertedAt && (
-                    <div className="mt-0.5 text-[10px] text-slate-400">
+                    <div className="mt-0.5 text-[10px] text-slate-500">
                       {t("pages.savedSearches.lastAlerted", {
                     date: new Date(s.lastAlertedAt).toLocaleDateString(locale),
                   })}
@@ -278,7 +278,7 @@ function SearchForm(props: SearchFormProps) {
           type="button"
           onClick={props.onCancel}
           aria-label={t("pages.savedSearches.cancel")}
-          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
+          className="inline-flex h-6 w-6 items-center justify-center rounded text-slate-500 hover:bg-slate-200"
         >
           <X className="h-3.5 w-3.5" />
         </button>

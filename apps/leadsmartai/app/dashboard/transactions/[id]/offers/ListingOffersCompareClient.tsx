@@ -393,7 +393,7 @@ export function ListingOffersCompareClient({
                           {formatMoney(o.price)}
                         </div>
                         {o.current_price != null && o.current_price !== o.offer_price ? (
-                          <div className="text-[11px] text-slate-400 line-through">
+                          <div className="text-[11px] text-slate-500 line-through">
                             {formatMoney(o.offer_price)}
                           </div>
                         ) : null}
@@ -414,7 +414,7 @@ export function ListingOffersCompareClient({
                         {o.financing_type ? (
                           <span className="capitalize">{o.financing_type}</span>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-slate-500">—</span>
                         )}
                         {o.is_cash ? (
                           <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">{t("pages.offersCompare.cash")}</div>
@@ -439,7 +439,7 @@ export function ListingOffersCompareClient({
                             {formatMoney(o.seller_concessions)}
                           </span>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-slate-500">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-[11px] text-slate-500">
@@ -532,7 +532,7 @@ export function ListingOffersCompareClient({
                   <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{summary.sellerNote}</p>
                 </div>
               ) : null}
-              <p className="text-[10px] italic text-slate-400">{t("disclaimers.offerCompare")}</p>
+              <p className="text-[10px] italic text-slate-500">{t("disclaimers.offerCompare")}</p>
             </div>
           ) : (
             <p className="mt-2 text-xs text-slate-500">{t("pages.offersCompare.aiReadNote")}</p>

@@ -143,8 +143,8 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.presetVoice")}</label>
-        <select
+        <label htmlFor="agentvoicesettingspanel-1" className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.presetVoice")}</label>
+        <select id="agentvoicesettingspanel-1"
           className="w-full max-w-md border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.presetVoiceId}
           onChange={(e) => setSettings((s) => ({ ...s, presetVoiceId: e.target.value }))}
@@ -183,8 +183,8 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.defaultLanguage")}</label>
-        <select
+        <label htmlFor="agentvoicesettingspanel-2" className="block text-[11px] font-medium text-slate-500">{t("pages.agentVoice.defaultLanguage")}</label>
+        <select id="agentvoicesettingspanel-2"
           className="w-full max-w-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900"
           value={settings.defaultLanguage}
           onChange={(e) =>

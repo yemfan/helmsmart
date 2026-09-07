@@ -128,7 +128,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
             <span className="font-semibold">{t("pages.dealReview.executionScore")}</span>
             <span className="tabular-nums">
               {Math.round(review.executionScore * 100)}
-              <span className="text-slate-400"> / 100</span>
+              <span className="text-slate-500"> / 100</span>
             </span>
           </div>
         ) : null}
@@ -160,7 +160,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
       </div>
 
       {/* Footer: provenance + fallback notice */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-700 pt-3 text-[11px] text-slate-400">
+      <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 dark:border-slate-700 pt-3 text-[11px] text-slate-500">
         <span>
           {t("pages.dealReview.generatedAt", { date: new Date(review.generatedAtIso).toLocaleString(locale) })}
           {resp.fromCache ? " (cached)" : ""}

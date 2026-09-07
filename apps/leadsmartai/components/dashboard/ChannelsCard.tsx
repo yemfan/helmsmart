@@ -130,7 +130,7 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
         />
       </div>
 
-      <p className="mt-4 text-[11px] text-slate-400">{t("pages.channelsCard.readOnly")}</p>
+      <p className="mt-4 text-[11px] text-slate-500">{t("pages.channelsCard.readOnly")}</p>
     </div>
   );
 }
@@ -184,7 +184,7 @@ function ChannelBlock({
             />
             <span className="text-slate-700 dark:text-slate-300">
               {r.label}
-              {r.hint && <span className="text-slate-400"> — {r.hint}</span>}
+              {r.hint && <span className="text-slate-500"> — {r.hint}</span>}
             </span>
           </div>
         ))}

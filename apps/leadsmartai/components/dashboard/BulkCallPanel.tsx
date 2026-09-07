@@ -187,7 +187,7 @@ export default function BulkCallPanel() {
       {/* Search + bulk actions */}
       <div className="mb-2 flex items-center gap-2">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" strokeWidth={2} />
           <input
             className="w-full rounded-lg border border-slate-300 dark:border-slate-700 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none"
             value={query}
@@ -213,13 +213,13 @@ export default function BulkCallPanel() {
 
       {/* Contact list */}
       {loading ? (
-        <p className="py-6 text-center text-sm text-slate-400"><LoadingText /></p>
+        <p className="py-6 text-center text-sm text-slate-500"><LoadingText /></p>
       ) : contacts.length === 0 ? (
         <p className="rounded-lg bg-slate-50 dark:bg-slate-900/60 px-3 py-6 text-center text-sm text-slate-500">{t("pages.bulkCall.noContacts")}</p>
       ) : (
         <ul className="max-h-64 divide-y divide-slate-100 dark:divide-slate-800 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
           {filtered.length === 0 ? (
-            <li className="px-3 py-4 text-center text-xs text-slate-400">{t("pages.bulkCall.noMatches")}</li>
+            <li className="px-3 py-4 text-center text-xs text-slate-500">{t("pages.bulkCall.noMatches")}</li>
           ) : (
             filtered.map((c) => {
               const checked = selected.has(c.id);
@@ -306,7 +306,7 @@ export default function BulkCallPanel() {
                 {r.ok ? "✓" : "✕"}
               </span>
               <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-300">{r.name || r.phone}</span>
-              <span className="shrink-0 text-slate-400">{r.ok ? "calling" : (r.error ?? "failed")}</span>
+              <span className="shrink-0 text-slate-500">{r.ok ? "calling" : (r.error ?? "failed")}</span>
             </li>
           ))}
         </ul>

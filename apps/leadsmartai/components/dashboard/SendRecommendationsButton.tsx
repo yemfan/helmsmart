@@ -180,7 +180,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("pages.sendRecommendations.close")}
-                className="inline-flex h-7 w-7 items-center justify-center rounded text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="inline-flex h-7 w-7 items-center justify-center rounded text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -248,7 +248,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                               <div className="truncate text-xs text-slate-500">
                                 {f.address ?? f.propertyId}
                               </div>
-                              <div className="mt-0.5 text-[10px] text-slate-400">
+                              <div className="mt-0.5 text-[10px] text-slate-500">
                                 {[
                                   f.beds ? `${f.beds}bd` : null,
                                   f.baths ? `${f.baths}ba` : null,

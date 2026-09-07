@@ -167,7 +167,7 @@ export default function CampaignListClient({
         </table>
       </div>
 
-      <p className="text-xs text-slate-400">{t("campaigns.leads_footer")}</p>
+      <p className="text-xs text-slate-500">{t("campaigns.leads_footer")}</p>
     </div>
   );
 }

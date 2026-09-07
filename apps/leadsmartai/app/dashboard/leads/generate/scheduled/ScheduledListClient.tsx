@@ -170,7 +170,7 @@ function Section({
           accent === "red" ? "text-red-700" : "text-slate-900 dark:text-slate-100"
         }`}
       >
-        {title} <span className="text-slate-400">({count})</span>
+        {title} <span className="text-slate-500">({count})</span>
       </h2>
       {children}
     </section>

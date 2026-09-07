@@ -179,7 +179,7 @@ export default function MarketingPlansClient() {
     loadPlanDetail(planId);
   }
 
-  if (loading) return <div className="py-20 text-center text-slate-400">{t("pages.marketingPlans.loading")}</div>;
+  if (loading) return <div className="py-20 text-center text-slate-500">{t("pages.marketingPlans.loading")}</div>;
 
   // ── Plan Detail View ──
   if (selectedPlan) {
@@ -368,7 +368,7 @@ export default function MarketingPlansClient() {
                 <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800">
                   <td className="px-4 py-2.5">
                     <span className="font-medium text-slate-900 dark:text-slate-100">{p.title}</span>
-                    <span className="ml-1.5 text-[10px] text-slate-400">{p.template_key}</span>
+                    <span className="ml-1.5 text-[10px] text-slate-500">{p.template_key}</span>
                   </td>
                   <td className="px-4 py-2.5 text-slate-600 dark:text-slate-400">{p.lead_name ?? "\u2014"}</td>
                   <td className="px-4 py-2.5">
@@ -383,7 +383,7 @@ export default function MarketingPlansClient() {
               ))}
               {!filtered.length && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                     {search || statusFilter !== "all" ? t("pages.marketingPlans.emptyFiltered") : t("pages.marketingPlans.empty")}
                   </td>
                 </tr>

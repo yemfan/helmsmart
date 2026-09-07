@@ -1686,7 +1686,7 @@ export default function QuickPostClient() {
 
       {/* Footer hint — explains the next phase so the agent knows what's coming */}
       {subjectId && (
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           {t("footer")}
         </p>
       )}

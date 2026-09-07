@@ -200,7 +200,7 @@ export default function ListingsClient({
                   </td>
                   <td className="px-3 py-2.5 text-xs">
                     {l.showings_total === 0 ? (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-slate-500">—</span>
                     ) : (
                       <div>
                         <div className="font-medium text-slate-700 dark:text-slate-300 tabular-nums">

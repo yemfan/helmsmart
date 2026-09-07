@@ -76,7 +76,7 @@ function TopList({ title, rows, empty }: { title: string; rows: { label: string;
           ))}
         </ul>
       ) : (
-        <p className="mt-2 text-sm text-slate-400">{empty}</p>
+        <p className="mt-2 text-sm text-slate-500">{empty}</p>
       )}
     </div>
   );

@@ -116,7 +116,7 @@ function CallRow({ entry }: { entry: VoiceCallEntry }) {
         <div className="mt-1 text-xs text-slate-700 dark:text-slate-300">
           {formatStartedAt(entry.startedAt)}
           {entry.durationSeconds != null ? (
-            <span className="text-slate-400"> · {formatDuration(entry.durationSeconds)}</span>
+            <span className="text-slate-500"> · {formatDuration(entry.durationSeconds)}</span>
           ) : null}
         </div>
         {entry.errorCode ? (
@@ -125,7 +125,7 @@ function CallRow({ entry }: { entry: VoiceCallEntry }) {
         ) : null}
       </div>
       <div
-        className="shrink-0 text-[10px] tabular-nums text-slate-400"
+        className="shrink-0 text-[10px] tabular-nums text-slate-500"
         title={`${entry.transitionCount} status transitions for this call`}
       >
         {t("pages.voiceCallTimeline.stepCount", { count: entry.transitionCount })}

@@ -155,7 +155,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
       ) : null}
 
       {loading ? (
-        <div className="mt-4 text-xs text-slate-400">{t("pages.listingFeedback.loading")}</div>
+        <div className="mt-4 text-xs text-slate-500">{t("pages.listingFeedback.loading")}</div>
       ) : error ? (
         <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
           {error}
@@ -307,7 +307,7 @@ function PendingCard({
             {row.showing_date ? ` · ${row.showing_date}` : ""}
           </div>
           {row.request_email_sent_at ? (
-            <div className="mt-1 text-[11px] text-slate-400">
+            <div className="mt-1 text-[11px] text-slate-500">
               {t("pages.listingFeedback.requestedAt", { date: new Date(row.request_email_sent_at).toLocaleString(locale) })}
             </div>
           ) : null}

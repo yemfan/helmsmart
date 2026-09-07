@@ -212,7 +212,7 @@ export default function SocialAutopilotController() {
                     ? "border-[#0072ce] bg-[#0072ce] text-white"
                     : on
                       ? "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
-                      : "border-slate-200 bg-slate-50 text-slate-400"
+                      : "border-slate-200 bg-slate-50 text-slate-500"
                 }`}
               >
                 {PLATFORM_LABELS[p] ?? p}
@@ -248,7 +248,7 @@ export default function SocialAutopilotController() {
                     ? "border-[#0072ce] bg-[#0072ce] text-white"
                     : on
                       ? "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
-                      : "border-slate-200 bg-slate-50 text-slate-400"
+                      : "border-slate-200 bg-slate-50 text-slate-500"
                 }`}
               >
                 {CATEGORY_LABELS[c] ?? c}

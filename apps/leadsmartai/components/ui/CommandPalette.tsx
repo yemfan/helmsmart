@@ -165,7 +165,7 @@ export function CommandPalette() {
         className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-          <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+          <svg className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
@@ -181,21 +181,21 @@ export function CommandPalette() {
             aria-activedescendant={rows[selectedIdx] ? `cp-${rows[selectedIdx].key}` : undefined}
             className="flex-1 text-sm bg-transparent outline-none placeholder-slate-400 text-slate-900 dark:text-slate-100"
           />
-          {searching && <span className="text-[10px] text-slate-400">{t("pages.commandPalette.searching")}</span>}
-          <kbd className="hidden sm:inline-block text-[10px] text-slate-400 border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">
+          {searching && <span className="text-[10px] text-slate-500">{t("pages.commandPalette.searching")}</span>}
+          <kbd className="hidden sm:inline-block text-[10px] text-slate-500 border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">
             Esc
           </kbd>
         </div>
         <div id="command-palette-list" role="listbox" className="max-h-[360px] overflow-y-auto py-2">
           {rows.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-slate-400 text-center">{t("pages.commandPalette.noMatches")}</p>
+            <p className="px-4 py-6 text-sm text-slate-500 text-center">{t("pages.commandPalette.noMatches")}</p>
           ) : (
             rows.map((row, i) => {
               const first = i === 0 || rows[i - 1].section !== row.section;
               return (
                 <div key={row.key}>
                   {first && (
-                    <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    <p className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                       {sectionTitle[row.section]}
                     </p>
                   )}
@@ -210,14 +210,14 @@ export function CommandPalette() {
                     }`}
                   >
                     <span className="font-medium">{row.label}</span>
-                    {"sub" in row && row.sub ? <span className="truncate text-xs text-slate-400">{row.sub}</span> : null}
+                    {"sub" in row && row.sub ? <span className="truncate text-xs text-slate-500">{row.sub}</span> : null}
                   </button>
                 </div>
               );
             })
           )}
         </div>
-        <div className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 flex flex-wrap gap-4 text-[10px] text-slate-400">
+        <div className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 flex flex-wrap gap-4 text-[10px] text-slate-500">
           <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">↑↓</kbd> {t("pages.commandPalette.navigate")}</span>
           <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">↵</kbd> {t("pages.commandPalette.open")}</span>
           <span><kbd className="border border-slate-200 dark:border-slate-700 rounded px-1">Esc</kbd> {t("pages.commandPalette.close")}</span>

@@ -254,7 +254,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
       {/* crew credit */}
       {crew.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-slate-400">{t("pages.runCard.deliveredBy")}</span>
+          <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500">{t("pages.runCard.deliveredBy")}</span>
           <span className="flex items-center gap-1.5">
             {crew.map((c) => (
               <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-white dark:bg-slate-900/80 px-1.5 py-0.5 ring-1 ring-emerald-100">
@@ -339,7 +339,7 @@ function StepRow({
         ? "text-amber-600"
         : step.status === "failed"
           ? "text-red-500"
-          : "text-slate-400";
+          : "text-slate-500";
 
   return (
     <li className="rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1.5">
@@ -358,7 +358,7 @@ function StepRow({
             ) : (
               <span className="text-xs font-medium text-slate-800 dark:text-slate-200">{label}</span>
             )}
-            {duration && <span className="ml-auto shrink-0 text-[10px] font-medium text-slate-400">{duration}</span>}
+            {duration && <span className="ml-auto shrink-0 text-[10px] font-medium text-slate-500">{duration}</span>}
           </div>
           {persona && <p className="mt-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300">{label}</p>}
           {/*
@@ -375,10 +375,10 @@ function StepRow({
             </p>
           )}
           {out?.reason && step.status === "rejected" && (
-            <p className="text-[11px] text-slate-400">{out.reason}</p>
+            <p className="text-[11px] text-slate-500">{out.reason}</p>
           )}
           {(step.error || out?.error) && (
-            <p className="text-[11px] text-red-500">{step.error ?? out?.error}</p>
+            <p className="text-[11px] text-red-700">{step.error ?? out?.error}</p>
           )}
           {out?.artifactUrl && (
             <Link href={out.artifactUrl} className="text-[11px] font-medium text-blue-600 hover:underline">
@@ -469,12 +469,12 @@ function ApprovalControls({
           type="button"
           disabled={busy !== null}
           onClick={() => void decide("rejected")}
-          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
           {busy === "rejected" ? t("common:status.rejecting") : t("common:actions.reject")}
         </button>
       </div>
-      {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-[11px] text-red-700">{error}</p>}
     </div>
   );
 }

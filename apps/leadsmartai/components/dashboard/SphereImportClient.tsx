@@ -278,13 +278,13 @@ export default function SphereImportClient() {
                           )}
                         </>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-slate-500">—</span>
                       )}
                     </td>
                     <td className="px-3 py-2">
                       {r.email && <div className="truncate text-slate-700 dark:text-slate-300">{r.email}</div>}
                       {r.phone && <div className="text-[11px] text-slate-500">{r.phone}</div>}
-                      {!r.email && !r.phone && <span className="text-slate-400">—</span>}
+                      {!r.email && !r.phone && <span className="text-slate-500">—</span>}
                     </td>
                     <td className="px-3 py-2">
                       <label className="inline-flex items-center gap-1">
@@ -298,7 +298,7 @@ export default function SphereImportClient() {
                         />
                         {r.csvAnniversaryOptIn && (
                           <span
-                            className="text-[9px] uppercase tracking-wide text-slate-400"
+                            className="text-[9px] uppercase tracking-wide text-slate-500"
                             title={t("pages.sphereImport.csvOptIn")}
                           >
                             csv

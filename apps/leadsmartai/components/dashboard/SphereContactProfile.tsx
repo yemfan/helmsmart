@@ -161,7 +161,7 @@ export default async function SphereContactProfile({
                 {s.suggestedAction && (
                   <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{s.suggestedAction}</div>
                 )}
-                <div className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">
+                <div className="mt-1 text-[10px] uppercase tracking-wide text-slate-500">
                   {t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}
                 </div>
               </li>
@@ -177,13 +177,13 @@ export default async function SphereContactProfile({
         <p className="mt-0.5 text-xs text-slate-500">{t("pages.sphereProfile.triggersHint")}</p>
         <ul className="mt-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
           {applicableTemplates.length === 0 ? (
-            <li className="p-6 text-center text-sm text-slate-400">{t("pages.sphereProfile.noTemplates")}</li>
+            <li className="p-6 text-center text-sm text-slate-500">{t("pages.sphereProfile.noTemplates")}</li>
           ) : (
             applicableTemplates.map((tpl) => (
               <li key={tpl.id} className="flex items-center justify-between gap-3 p-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] text-slate-400">{tpl.id}</span>
+                    <span className="font-mono text-[10px] text-slate-500">{tpl.id}</span>
                     <span
                       className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                         tpl.channel === "sms"
@@ -257,7 +257,7 @@ async function EquityCard({ contact }: { contact: ContactView }) {
     <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <div className="flex items-start justify-between">
         <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sphereProfile.equity")}</div>
-        <div className="text-[10px] uppercase tracking-wide text-slate-400">
+        <div className="text-[10px] uppercase tracking-wide text-slate-500">
           {t("pages.sphereProfile.avm", { date: contact.avmUpdatedAt ? new Date(contact.avmUpdatedAt).toLocaleDateString(locale) : "" })}
         </div>
       </div>

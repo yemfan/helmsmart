@@ -164,7 +164,7 @@ export default function SphereDripSettingsPanel() {
             ) : null}
 
             <div>
-              <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.sphereDrip.notes")}<span className="font-normal text-slate-400">(optional)</span>
+              <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.sphereDrip.notes")}<span className="font-normal text-slate-500">(optional)</span>
               </label>
               <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.freeTextReminder")}{" "}
                 <em>&ldquo;paused for vacation, resume Aug 15&rdquo;</em>.
@@ -187,7 +187,7 @@ export default function SphereDripSettingsPanel() {
                 ) : savedAt && Date.now() - savedAt < 4000 ? (
                   <span className="text-emerald-600">{t("pages.sphereDrip.saved")}</span>
                 ) : prefs?.updatedAt ? (
-                  <span className="text-slate-400">
+                  <span className="text-slate-500">
                     {t("pages.sphereDrip.lastUpdated", { date: formatDate(prefs.updatedAt, locale) })}
                   </span>
                 ) : null}

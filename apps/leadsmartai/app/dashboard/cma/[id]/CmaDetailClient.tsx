@@ -162,7 +162,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           {cma.title ? (
             <p className="text-sm text-slate-600 dark:text-slate-400">{cma.subjectAddress}</p>
           ) : null}
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-500">
             {t("pages.cmaDetail.savedLine", {
               date: formatDate(cma.createdAt, locale),
               count: cma.compCount,

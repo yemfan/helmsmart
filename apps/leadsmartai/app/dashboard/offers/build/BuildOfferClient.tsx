@@ -244,7 +244,7 @@ export function BuildOfferClient() {
               <p className="mt-1 whitespace-pre-line text-sm text-slate-700 dark:text-slate-300">{result.coverLetter}</p>
             </div>
           ) : null}
-          <p className="text-[10px] italic text-slate-400">{t("disclaimers.buildOffer")}</p>
+          <p className="text-[10px] italic text-slate-500">{t("disclaimers.buildOffer")}</p>
           <div className="flex items-center justify-end gap-2 pt-1">
             <button
               type="button"

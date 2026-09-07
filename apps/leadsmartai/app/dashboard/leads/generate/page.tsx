@@ -228,7 +228,7 @@ export default async function GenerateLeadsPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-slate-400">{tg("landing.roadmap_footer")}</p>
+      <p className="mt-6 text-xs text-slate-500">{tg("landing.roadmap_footer")}</p>
     </div>
   );
 }

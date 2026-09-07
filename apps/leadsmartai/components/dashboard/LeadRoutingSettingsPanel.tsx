@@ -145,9 +145,9 @@ export default function LeadRoutingSettingsPanel() {
             </label>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRoutingSettings.zipCoverage")}</label>
+              <label htmlFor="leadroutingsettingspanel-1" className="block text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.leadRoutingSettings.zipCoverage")}</label>
               <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{t("pages.leadRoutingSettings.zipHint")}</p>
-              <textarea
+              <textarea id="leadroutingsettingspanel-1"
                 value={zipText}
                 onChange={(e) => setZipText(e.target.value)}
                 rows={3}
@@ -185,7 +185,7 @@ function ZipPreview({ parsed }: { parsed: string[] }) {
   const { t } = useTranslation("dashboard");
   if (parsed.length === 0) {
     return (
-      <p className="mt-2 text-[11px] text-slate-400">{t("pages.leadRoutingSettings.noZips")}</p>
+      <p className="mt-2 text-[11px] text-slate-500">{t("pages.leadRoutingSettings.noZips")}</p>
     );
   }
   return (

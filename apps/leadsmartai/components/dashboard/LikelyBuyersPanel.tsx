@@ -164,7 +164,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
                     </div>
                     <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-400">{r.topReason}</p>
                     {r.closingAddress ? (
-                      <p className="mt-0.5 truncate text-[11px] text-slate-400">{t("pages.dashFragments.currentlyAt")} {r.closingAddress}
+                      <p className="mt-0.5 truncate text-[11px] text-slate-500">{t("pages.dashFragments.currentlyAt")} {r.closingAddress}
                       </p>
                     ) : null}
                   </div>

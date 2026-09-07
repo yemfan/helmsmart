@@ -210,7 +210,7 @@ export function ShowingsListClient({
                     {s.listing_agent_name ? (
                       <div>{s.listing_agent_name}</div>
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-slate-500">—</span>
                     )}
                     {s.listing_agent_email ? (
                       <div className="text-[11px] text-slate-500">{s.listing_agent_email}</div>
@@ -324,7 +324,7 @@ function RowActions({
       ) : null}
 
       {status === "cancelled" || status === "no_show" ? (
-        <span className="text-[11px] text-slate-400">—</span>
+        <span className="text-[11px] text-slate-500">—</span>
       ) : null}
     </div>
   );

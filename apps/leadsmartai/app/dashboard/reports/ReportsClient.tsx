@@ -69,7 +69,7 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                     <td className="px-4 py-2.5 font-medium text-slate-900 dark:text-slate-100 max-w-[250px] truncate">{r.property_address ?? "\u2014"}</td>
                     <td className="px-4 py-2.5 text-slate-600 dark:text-slate-400">
                       {r.lead_name ?? "\u2014"}
-                      {r.lead_email && <span className="block text-xs text-slate-400">{r.lead_email}</span>}
+                      {r.lead_email && <span className="block text-xs text-slate-500">{r.lead_email}</span>}
                     </td>
                     <td className="px-4 py-2.5 text-xs text-slate-500 whitespace-nowrap">
                       {new Date(r.created_at).toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}
@@ -92,7 +92,7 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                 );
               })}
               {!filtered.length && (
-                <tr><td colSpan={4} className="px-4 py-8 text-center text-slate-400">{t("pages.reports.empty")}</td></tr>
+                <tr><td colSpan={4} className="px-4 py-8 text-center text-slate-500">{t("pages.reports.empty")}</td></tr>
               )}
             </tbody>
           </table>

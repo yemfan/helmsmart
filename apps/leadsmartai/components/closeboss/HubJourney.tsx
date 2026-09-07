@@ -57,7 +57,7 @@ export function HubJourney({ contactId }: { contactId: string | null }) {
 
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
         {t("pages.leadDrawer.howTheyFoundYou")}
       </p>
       {views > 0 ? (

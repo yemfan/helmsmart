@@ -171,7 +171,7 @@ export default function SchedulerActivityClient() {
                       >
                         <Td>
                           <div className="text-slate-700 dark:text-slate-300">{relativeTime(r.firedAt, t, locale)}</div>
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[10px] text-slate-500">
                             {new Date(r.firedAt).toLocaleString(locale)}
                           </div>
                         </Td>
@@ -242,7 +242,7 @@ export default function SchedulerActivityClient() {
                                 </Link>
                               )}
                               <div>
-                                <span className="text-slate-400">{t("pages.scheduler.firedAt")}</span>
+                                <span className="text-slate-500">{t("pages.scheduler.firedAt")}</span>
                                 {new Date(r.firedAt).toISOString()}
                               </div>
                             </div>
@@ -343,7 +343,7 @@ function OutcomeBadge({
       </span>
     );
   }
-  return <span className="text-[10px] text-slate-400">—</span>;
+  return <span className="text-[10px] text-slate-500">—</span>;
 }
 
 function Th({ children }: { children?: React.ReactNode }) {

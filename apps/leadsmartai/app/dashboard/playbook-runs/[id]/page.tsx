@@ -140,7 +140,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
             {selling.ads.map((ad, i) => (
               <div key={i} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">{ad.angle}</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">{ad.audience}</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">{ad.audience}</p>
                 <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">{ad.headline}</p>
                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{ad.primaryText}</p>
                 <p className="mt-2 text-xs font-medium text-blue-600 dark:text-blue-400">{ad.cta}</p>
@@ -209,7 +209,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                 </span>
                 <div className="min-w-0 flex-1">
                   <span className="text-slate-800 dark:text-slate-200">{t.title}</span>
-                  {t.due_at ? <span className="ml-2 text-xs text-slate-400">{tr("pages.playbookRunDetail.dueOn", { date: fmtDate(t.due_at, locale), ns: "dashboard" })}</span> : null}
+                  {t.due_at ? <span className="ml-2 text-xs text-slate-500">{tr("pages.playbookRunDetail.dueOn", { date: fmtDate(t.due_at, locale), ns: "dashboard" })}</span> : null}
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     {m.assignee ? (
                       <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
@@ -228,7 +228,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
               </li>
             );
           })}
-          {tasks.length === 0 ? <li className="text-sm text-slate-400">{tr("pages.playbookRunDetail.noTasks", { ns: "dashboard" })}</li> : null}
+          {tasks.length === 0 ? <li className="text-sm text-slate-500">{tr("pages.playbookRunDetail.noTasks", { ns: "dashboard" })}</li> : null}
         </ul>
       </section>
     </div>

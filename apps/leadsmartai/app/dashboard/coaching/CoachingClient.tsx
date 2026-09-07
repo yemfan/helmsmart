@@ -139,7 +139,7 @@ export default function CoachingClient() {
           {t("more.coaching.allClearBody")}
         </p>
         {generatedAt ? (
-          <p className="mt-3 text-[11px] text-slate-400">
+          <p className="mt-3 text-[11px] text-slate-500">
             {t("more.coaching.lastRefreshed", { when: formatGeneratedAt(generatedAt, locale) })}
           </p>
         ) : null}
@@ -204,7 +204,7 @@ export default function CoachingClient() {
         ))}
       </ul>
       {generatedAt ? (
-        <p className="text-[11px] text-slate-400">{t("pages.dashFragments.refreshed")} {formatGeneratedAt(generatedAt, locale)}
+        <p className="text-[11px] text-slate-500">{t("pages.dashFragments.refreshed")} {formatGeneratedAt(generatedAt, locale)}
         </p>
       ) : null}
     </div>

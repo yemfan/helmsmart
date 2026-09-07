@@ -129,9 +129,9 @@ export default function MissedCallSettingsPanel() {
     <div className="space-y-5">
       {/* Forwarding phone */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.mobileNumber")}</label>
+        <label htmlFor="missedcallsettingspanel-1" className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.mobileNumber")}</label>
         <p className="mt-1 text-xs text-slate-500">{t("pages.missedCall.mobileHint")}</p>
-        <input
+        <input id="missedcallsettingspanel-1"
           type="tel"
           value={forwardingPhone}
           onChange={(e) => setForwardingPhone(e.target.value)}
@@ -158,8 +158,8 @@ export default function MissedCallSettingsPanel() {
       {/* Ring timeout + AI toggle */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.ringTimeout")}</label>
-          <input
+          <label htmlFor="missedcallsettingspanel-2" className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.ringTimeout")}</label>
+          <input id="missedcallsettingspanel-2"
             type="number"
             min={5}
             max={60}
@@ -188,8 +188,8 @@ export default function MissedCallSettingsPanel() {
 
       {/* Template */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.templateLabel")}</label>
-        <textarea
+        <label htmlFor="missedcallsettingspanel-3" className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.templateLabel")}</label>
+        <textarea id="missedcallsettingspanel-3"
           value={messageTemplate}
           onChange={(e) => setMessageTemplate(e.target.value)}
           rows={4}

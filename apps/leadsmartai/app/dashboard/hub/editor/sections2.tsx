@@ -632,7 +632,7 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
         ) : null}
         <Field label={k("username")} hint={k("usernameHint")}>
           <div className="mt-1 flex items-center gap-1">
-            <span className="text-slate-400">@</span>
+            <span className="text-slate-500">@</span>
             <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#0072ce] focus:ring-2 focus:ring-[#0072ce]/20" autoComplete="off" spellCheck={false} />
           </div>
         </Field>

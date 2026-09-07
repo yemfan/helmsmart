@@ -102,7 +102,7 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
           ].map(([label, value]) => (
             <div key={label as string}>
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt>
-              <dd className={value ? "text-slate-900" : "text-slate-400"}>{value || notSet}</dd>
+              <dd className={value ? "text-slate-900" : "text-slate-500"}>{value || notSet}</dd>
             </div>
           ))}
           <div>
@@ -112,7 +112,7 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={data.agent.photoUrl} alt="" className="mt-1 h-12 w-12 rounded-full object-cover ring-1 ring-slate-200" />
               ) : (
-                <span className="text-slate-400">{notSet}</span>
+                <span className="text-slate-500">{notSet}</span>
               )}
             </dd>
           </div>

@@ -93,7 +93,7 @@ export default function AppointmentRemindersPanel() {
       )}
 
       {loading ? (
-        <p className="py-3 text-center text-sm text-slate-400"><LoadingText /></p>
+        <p className="py-3 text-center text-sm text-slate-500"><LoadingText /></p>
       ) : appts.length === 0 ? (
         <p className="rounded-lg bg-slate-50 dark:bg-slate-900/60 px-3 py-4 text-center text-sm text-slate-500">{t("pages.appointmentReminders.empty")}</p>
       ) : (

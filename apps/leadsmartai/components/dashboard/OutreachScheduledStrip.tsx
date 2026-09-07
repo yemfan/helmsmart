@@ -95,7 +95,7 @@ export default function OutreachScheduledStrip({ refreshSignal }: { refreshSigna
   return (
     <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
-        <Clock className="h-4 w-4 text-slate-400" strokeWidth={2} />
+        <Clock className="h-4 w-4 text-slate-500" strokeWidth={2} />
         <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.outreachStrip.title")}</h2>
       </div>
 
@@ -148,16 +148,16 @@ function Row({
       : "";
   return (
     <div className="flex items-center gap-2 rounded-lg border border-slate-50 px-3 py-2">
-      <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" strokeWidth={2} />
+      <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500" strokeWidth={2} />
       <span className="min-w-0 flex-1 truncate text-xs text-slate-700 dark:text-slate-300">
         <span className="font-medium text-slate-900 dark:text-slate-100">
           {a.count} {noun}
         </span>{" "}
         · {t(PURPOSE_LABEL[a.purpose])}
-        <span className="text-slate-400">{resultNote}</span>
+        <span className="text-slate-500">{resultNote}</span>
         {failureNote ? <span className="text-red-600"> · {failureNote}</span> : null}
       </span>
-      <span className="shrink-0 text-[11px] text-slate-400">{fmtWhen(when, locale)}</span>
+      <span className="shrink-0 text-[11px] text-slate-500">{fmtWhen(when, locale)}</span>
       <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${badge.cls}`}>
         {t(badge.label)}
       </span>
@@ -168,7 +168,7 @@ function Row({
           disabled={cancelling}
           aria-label={t("pages.outreachStrip.cancelScheduled")}
           title={t("pages.outreachStrip.cancel")}
-          className="shrink-0 rounded-md p-1 text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 disabled:opacity-50"
+          className="shrink-0 rounded-md p-1 text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 disabled:opacity-50"
         >
           <X className="h-3.5 w-3.5" strokeWidth={2} />
         </button>

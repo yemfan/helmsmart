@@ -43,7 +43,7 @@ export default function AdvancedSection({
         />
         {t("pages.advancedSection.label")}
         {typeof count === "number" && count > 0 ? (
-          <span className="text-slate-400">{t("pages.advancedSection.count", { count })}</span>
+          <span className="text-slate-500">{t("pages.advancedSection.count", { count })}</span>
         ) : null}
       </button>
 

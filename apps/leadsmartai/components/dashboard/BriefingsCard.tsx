@@ -156,7 +156,7 @@ function MorningBriefingPane() {
     return (
       <article className="flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 px-4 py-3">
         <span aria-hidden>☀️</span>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           {briefing
             ? t("pages.briefings.morningBriefingReadThe")
             : t("pages.briefings.yourFirstMorningBriefing")}
@@ -350,7 +350,7 @@ function InstructionItem({
     <div className="rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900/70 p-3">
       <p className="text-xs italic text-slate-500">&ldquo;{truncate(instruction.content, 140)}&rdquo;</p>
       {statusLine ? (
-        <p className={`mt-1.5 text-[11px] ${instruction.status === "failed" ? "text-red-600" : "text-slate-400"}`}>
+        <p className={`mt-1.5 text-[11px] ${instruction.status === "failed" ? "text-red-600" : "text-slate-500"}`}>
           {statusLine}
         </p>
       ) : (
@@ -407,10 +407,10 @@ function TaskItem({
             {(t.status === "sent" || t.status === "completed") && (
               <span className="mr-1 text-emerald-600">✓</span>
             )}
-            {t.status === "dismissed" && <span className="mr-1 text-slate-400">✕</span>}
+            {t.status === "dismissed" && <span className="mr-1 text-slate-500">✕</span>}
             {t.title}
           </p>
-          {t.details && <p className="truncate text-[11px] text-slate-400">{t.details}</p>}
+          {t.details && <p className="truncate text-[11px] text-slate-500">{t.details}</p>}
         </div>
         <span
           className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${

@@ -205,12 +205,12 @@ export default function DeepReportClient() {
             </div>
           ) : null}
           {showLoan && report ? (
-            <p className="mt-2 text-xs text-slate-400">{t("pages.deepReport.instantUpdate")}</p>
+            <p className="mt-2 text-xs text-slate-500">{t("pages.deepReport.instantUpdate")}</p>
           ) : null}
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {quota?.reached ? t("pages.deepReport.quotaReached") : t("pages.deepReport.liveWeb")}
           </span>
           <button
