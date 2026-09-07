@@ -47,13 +47,25 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 900 
 const page = await context.newPage();
 
 // Sign in through the form, exactly as a person would.
-await page.goto(`${HOST}/login`, { waitUntil: "domcontentloaded" });
-await page.fill("#login-email", EMAIL);
+// The form is a client component: clicking before React has hydrated does a
+// native GET submit back to /login (the first run failed exactly so). Wait
+// for the network to settle, then prove hydration by typing and reading back
+// — a controlled input that has hydrated keeps the value.
+await page.goto(`${HOST}/login`, { waitUntil: "networkidle" });
+for (let attempt = 0; attempt < 10; attempt++) {
+  await page.fill("#login-email", EMAIL);
+  await page.waitForTimeout(500);
+  if ((await page.inputValue("#login-email")) === EMAIL) break;
+}
 await page.fill("#login-password", PASSWORD);
-await Promise.all([
-  page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 45_000 }),
-  page.click('button[type="submit"]'),
-]);
+await page.click('button[type="submit"]');
+try {
+  await page.waitForURL((u) => !u.pathname.startsWith("/login"), { timeout: 60_000 });
+} catch {
+  const alert = await page.locator('[role="alert"], .text-red-600, .text-rose-600').allInnerTexts().catch(() => []);
+  console.error(`Sign-in did not leave /login. Page said: ${alert.join(" | ") || "(nothing)"}`);
+  process.exit(3);
+}
 console.log(`Signed in; landed on ${new URL(page.url()).pathname}`);
 
 const results = [];
