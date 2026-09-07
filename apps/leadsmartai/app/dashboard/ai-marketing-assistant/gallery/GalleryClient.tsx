@@ -207,7 +207,8 @@ export default function GalleryClient({ canUpload }: { canUpload: boolean }) {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={item.poster} alt="" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-[1.03]" />
                   ) : (
-                    <video src={item.url} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+                    // A media fragment makes the browser paint the first frame; a bare src stays blank until play.
+                    <video src={`${item.url}#t=0.1`} muted playsInline preload="metadata" className="h-full w-full object-cover" />
                   )
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
