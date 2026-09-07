@@ -402,22 +402,37 @@ export async function syncStripeSubscription(subscription: Stripe.Subscription) 
     }
   }
 
-  await syncPublicSubscriptionFromStripe({
-    userId,
-    stripeCustomerId: customerId,
-    stripeSubscriptionId: subscription.id,
-    internalPlan,
-    subscription,
-    currentPeriodEnd: periodEnd,
-  });
-
   const isActive = subscription.status === "active" || subscription.status === "trialing";
 
+  // The entitlement is what the product meters on; it goes first, so nothing
+  // after it can stop a paying customer from getting what they paid for.
   await syncAgentEntitlement({
     userId,
     billingPlan: internalPlan,
     active: isActive,
   });
+
+  // The public `subscriptions` mirror serves the PropertyTools consumer app.
+  // It ran BEFORE the entitlement and threw for every CloseBoss agent — the
+  // table's user_id is a foreign key to the consumer `profiles` table, which
+  // agents do not have — so the webhook returned 500, Stripe kept retrying,
+  // and the first test-mode Signature subscriber (2026-09-07) stayed on the
+  // Starter entitlement. A mirror failure is logged, never fatal.
+  try {
+    await syncPublicSubscriptionFromStripe({
+      userId,
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: subscription.id,
+      internalPlan,
+      subscription,
+      currentPeriodEnd: periodEnd,
+    });
+  } catch (err) {
+    console.warn(
+      "[stripe sync] public subscriptions mirror failed (non-fatal):",
+      err instanceof Error ? err.message : err,
+    );
+  }
 }
 
 export async function markSubscriptionCanceled(subscriptionId: string) {
