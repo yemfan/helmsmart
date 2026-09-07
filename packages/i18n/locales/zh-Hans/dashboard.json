@@ -10579,7 +10579,7 @@
         "noSources": "此期间没有主页访问。",
         "ga4On": "您的 Google Analytics 代码已装在主页上；每次访问和每个主页事件都会发送到您的 GA4 媒体资源。",
         "ga4Off": "在设置中添加 GA4 衡量 ID，即可在 Google Analytics 中查看主页流量。",
-        "googleAds": "Google Ads 和 Search Console 未与 CloseBoss 连接。它们的报告在各自的账户中。",
+        "googleAds": "Google Ads 未连接到 CloseBoss；其报告在该账号中查看。",
         "openSettings": "打开设置",
         "ga": {
           "connect": "连接 Google Analytics",
@@ -10633,7 +10633,18 @@
             "affiliates": "联盟",
             "audio": "音频"
           }
-        }
+        },
+        "search": "Google 搜索",
+        "searchDesc": "您主页各页面在 Google 搜索结果中的表现，来自 Search Console。每日更新，无需连接。",
+        "searchAsOf": "截至 {{date}}",
+        "searchNone": "Google 尚未在搜索结果中展示您的主页。",
+        "ctr": "点击率",
+        "position": "平均排名",
+        "searchPages": "展示的页面",
+        "topPages": "热门页面",
+        "topQueries": "热门搜索词",
+        "page": "页面",
+        "query": "搜索词"
       }
     },
     "hubLeadNotify": {
