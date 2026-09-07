@@ -88,6 +88,19 @@ export async function syncPublicSubscriptionFromStripe(params: {
     return;
   }
 
+  // `subscriptions.user_id` references the consumer `profiles` table. A
+  // CloseBoss agent who never used the consumer app has no such row, and the
+  // upsert below would violate the foreign key. The mirror exists for
+  // consumers; for everyone else there is nothing to mirror.
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("id", params.userId)
+    .maybeSingle();
+  if (!profile) {
+    return;
+  }
+
   if (!slug) {
     const { error } = await supabaseAdmin
       .from("subscriptions")
