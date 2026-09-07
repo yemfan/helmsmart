@@ -1,7 +1,7 @@
 # CloseBoss UX audit — delivery status
 
 Companion to `closeboss-ui-ux-audit-2026-09-05.html`. Every roadmap item from the
-audit, the PR that shipped it, and what is still open. Last updated 2026-09-06.
+audit, the PR that shipped it, and what is still open. Last updated 2026-09-07. Both axe jobs (public routes, signed-in dashboard) are green.
 
 ## Phase 1 — Critical
 
@@ -54,6 +54,8 @@ audit, the PR that shipped it, and what is still open. Last updated 2026-09-06.
 | Landing rewrite (nine sections, hero mock says it is an example) | #1565 |
 | axe in CI — public routes, weekdays and on demand, report as artifact | #1612, #1614 |
 | Every violation the first scan named (labels, contrast) | #1615, #1617 |
+| axe signed in — 11 dashboard routes as the test agent, critical/serious gate | #1622, #1624 |
+| Every violation the first signed-in scan named (labels, switch names, 368× slate-400 contrast) | #1626 |
 | Measure the first ten minutes — time to first proposal / first approval | #1613 |
 
 ## Follow-ups from verifying on production
@@ -66,8 +68,6 @@ audit, the PR that shipped it, and what is still open. Last updated 2026-09-06.
 
 ## Still open
 
-- **Authenticated axe scan** of the dashboard routes — needs a test-account
-  session (storage state) as a CI secret; the public-route job is the template.
 - **Signature on the plans page** — the fee is charged now; whether Signature is
   sold on the page or stays "Talk to us" is a pricing decision.
 - **Mobile approval sheet on a device** — #1618 typechecks; not run on a simulator.
