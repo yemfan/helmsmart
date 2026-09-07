@@ -898,7 +898,11 @@
       "adHocTasks": "Ad-hoc tasks",
       "title": "Playbooks",
       "subtitle": "Curated checklists for common workflows. Apply them to transactions, open houses, or as standalone reminders.",
-      "doneRecent": "Done (last 7d)"
+      "doneRecent": "Done (last 7d)",
+      "reopenAria": "Reopen \"{{title}}\"",
+      "markDoneAria": "Mark \"{{title}}\" complete",
+      "restoreAria": "Restore \"{{title}}\"",
+      "cancelAria": "Cancel \"{{title}}\""
     },
     "tools": {
       "title": "Tools",
@@ -1801,7 +1805,8 @@
     "tiktokPostingHelp": "TikTok requires the account holder to choose the audience and declare commercial content. Applies to every post published for you.",
     "tcNotifications": "Transaction Coordinator notifications",
     "commissionDefaults": "Commission defaults",
-    "offerAiTermsBuyer": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer."
+    "offerAiTermsBuyer": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer.",
+    "snoozeAria": "Dismiss {{title}} for 7 days"
   },
   "shell": {
     "upgradeTitle": "Grow with AI follow-ups",
@@ -1858,19 +1863,28 @@
       "markSent": "Mark sent",
       "markPaid": "Mark paid",
       "books": "Books",
-      "addLine": "Add line"
+      "addLine": "Add line",
+      "taxPct": "Tax ({{pct}}%)"
     },
     "likelySellers": {
       "metaTitle": "Today's likely sellers",
       "heading": "Today's likely sellers",
       "intro": "Past clients and sphere contacts ranked by likelihood to list in the next ~90 days. Scores are rules-based and explainable — every row shows the strongest factor driving its rank.",
-      "noPastClientsOr": "No past clients or sphere contacts to score yet. Import contacts to start surfacing likely sellers."
+      "noPastClientsOr": "No past clients or sphere contacts to score yet. Import contacts to start surfacing likely sellers.",
+      "scoreAria": "{{label}} likelihood, score {{score}}",
+      "labelHigh": "high",
+      "labelMedium": "medium",
+      "labelLow": "low"
     },
     "likelyBuyers": {
       "metaTitle": "Today's likely buyers",
       "heading": "Today's likely buyers",
       "intro": "Past clients and sphere contacts ranked by likelihood to BUY their next home in the next ~90 days. Scores are rules-based and explainable — job-change and life-event signals are the strongest movers.",
-      "noPastClientsOr": "No past clients or sphere contacts to score yet. Import contacts + capture life-event signals to start surfacing likely buyers."
+      "noPastClientsOr": "No past clients or sphere contacts to score yet. Import contacts + capture life-event signals to start surfacing likely buyers.",
+      "scoreAria": "{{label}} buyer likelihood, score {{score}}",
+      "labelHigh": "high",
+      "labelMedium": "medium",
+      "labelLow": "low"
     },
     "sphereSignals": {
       "metaTitle": "Sphere · Signals",
@@ -1901,7 +1915,9 @@
       "insertedContacts_other": "✓ Inserted {{count}} contacts.",
       "warningCount_one": "{{count}} warning",
       "warningCount_other": "{{count}} warnings",
-      "rowsIncluded": "{{included}} of {{total}} rows included ·"
+      "rowsIncluded": "{{included}} of {{total}} rows included ·",
+      "includeRowAria": "Include row {{row}}",
+      "confirmOptInAria": "Confirm anniversary opt-in for {{name}}"
     },
     "sphereContact": {
       "metaTitle": "Sphere contact"
@@ -1909,7 +1925,8 @@
     "salesModel": {
       "metaTitle": "Sales Model",
       "metaDescription": "Your personalized dashboard, scripts, tasks, and pipeline based on the sales model you've chosen.",
-      "selected": "Selected"
+      "selected": "Selected",
+      "selectAria": "Select {{name}}"
     },
     "leadSourceRoi": {
       "metaTitle": "Lead-source ROI",
@@ -2639,7 +2656,9 @@
       "createOffer": "📝 Create offer",
       "thankListingAgent": "✉️ Thank listing agent",
       "sendSummaryToBuyer": "📬 Send summary to buyer",
-      "deleteShowing": "🗑 Delete showing"
+      "deleteShowing": "🗑 Delete showing",
+      "otherShowingsWith": "Other showings with {{name}} ({{count}})",
+      "thisBuyer": "this buyer"
     },
     "flyer": {
       "metaTitle": "Open House Flyer Builder",
@@ -2723,7 +2742,8 @@
       "fromSource": "from {{source}} ·",
       "resultSummary_one": "{{inserted}} added · {{merged}} merged · {{skipped}} skipped · {{errors}} error",
       "resultSummary_other": "{{inserted}} added · {{merged}} merged · {{skipped}} skipped · {{errors}} errors",
-      "acceptedFormats": "PDF · JPEG / PNG / WEBP · TXT / VCF / MD · up to 20 MB"
+      "acceptedFormats": "PDF · JPEG / PNG / WEBP · TXT / VCF / MD · up to 20 MB",
+      "matchScore": "Match score {{score}}"
     },
     "newOffer": {
       "metaTitle": "New Offer",
@@ -3327,7 +3347,8 @@
       "urlHelp": "Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below.",
       "download": "Download ↗",
       "clipCount_one": "{{count}} clip × {{seconds}}s ≈",
-      "clipCount_other": "{{count}} clips × {{seconds}}s ≈"
+      "clipCount_other": "{{count}} clips × {{seconds}}s ≈",
+      "beyondClipLimit": "Beyond the {{max}}-clip limit — won't be used"
     },
     "contactHealth": {
       "heading": "Contact health",
@@ -3440,7 +3461,8 @@
       "textSent": "Text sent",
       "noAutoText": "No auto-text",
       "showBody": "Show auto-text body",
-      "sentAt": "sent {{at}}"
+      "sentAt": "sent {{at}}",
+      "smsStatus": "SMS status: {{status}}"
     },
     "greetingAutomation": {
       "heading": "Greeting automation",
@@ -3646,7 +3668,9 @@
       "incomeNeeded": "Income needed",
       "housingRatio": "at a 28% housing ratio",
       "investmentReturns": "Investment returns",
-      "noComps": "No comparable sales found."
+      "noComps": "No comparable sales found.",
+      "downPaymentPct": "Down payment ({{pct}}%)",
+      "principalInterest": "P&I ({{rate}}% / {{years}}yr)"
     },
     "oneWord": {
       "admin": "Admin",
@@ -3840,7 +3864,8 @@
       "emailListingsToBuyer_one": "Email {{count}} listing to buyer",
       "emailListingsToBuyer_other": "Email {{count}} listings to buyer",
       "listingsSuffix_one": "{{count}} listing",
-      "listingsSuffix_other": "{{count}} listings"
+      "listingsSuffix_other": "{{count}} listings",
+      "quotaResets": "Daily House Search quota — resets {{date}}"
     },
     "marketingAssistant": {
       "kbTitle": "Your Marketing Assistant's knowledge base",
@@ -4226,7 +4251,11 @@
       "nothingOutstanding": "Nothing outstanding — commissions are tracked in the pipeline above.",
       "overdueCount_one": "{{count}} overdue",
       "overdueCount_other": "{{count}} overdue",
-      "noClosingScheduled": "no closing scheduled"
+      "noClosingScheduled": "no closing scheduled",
+      "pipelineHint_one": "{{count}} deal · expected net",
+      "pipelineHint_other": "{{count}} deals · expected net",
+      "closedHint_one": "{{count}} closing · net",
+      "closedHint_other": "{{count}} closings · net"
     },
     "calendarPage": {
       "connect": "Connect",
@@ -4278,7 +4307,16 @@
       "intro": "How your AI phone receptionist introduces itself and what it knows about your business. Applied to every inbound call on your receptionist number.",
       "routingNote": "Calls to this number route to this receptionist. Point the number's inbound webhook at /api/retell/inbound; saved in E.164 (e.g. +16265551234).",
       "kbHint": "Business hours, services, pricing, address, and FAQs. Also say what to do with callers — e.g. take a message, collect their name + number, or offer a call-back. The receptionist uses this to answer questions.",
-      "hoursHint": "The AI books 30-minute appointments within these hours. Defaults to Mon–Fri 9–5 until you set them."
+      "hoursHint": "The AI books 30-minute appointments within these hours. Defaults to Mon–Fri 9–5 until you set them.",
+      "openingTimeAria": "{{day}} opening time",
+      "closingTimeAria": "{{day}} closing time",
+      "dayMon": "Monday",
+      "dayTue": "Tuesday",
+      "dayWed": "Wednesday",
+      "dayThu": "Thursday",
+      "dayFri": "Friday",
+      "daySat": "Saturday",
+      "daySun": "Sunday"
     },
     "scanCard": {
       "retake": "Retake",
@@ -4296,7 +4334,14 @@
       "save": "Save contact",
       "saved": "Contact saved.",
       "metaTitle": "Scan a business card",
-      "metaDescription": "Photograph a card and we read the details into a new contact."
+      "metaDescription": "Photograph a card and we read the details into a new contact.",
+      "fieldName": "Name",
+      "fieldEmail": "Email",
+      "fieldPhone": "Phone",
+      "fieldCompany": "Company",
+      "fieldTitle": "Title",
+      "fieldAddress": "Address",
+      "enterField": "Enter {{field}}"
     },
     "generateLeads": {
       "isNew": "New",
@@ -4487,7 +4532,8 @@
       "unlimitedReports": "Unlimited reports",
       "metaTitle": "Deep report",
       "heading": "Deep report",
-      "openSaved": "Open your saved copy of this report →"
+      "openSaved": "Open your saved copy of this report →",
+      "quotaResets": "Daily Deep Report quota — resets {{date}}"
     },
     "listingOfferDetail": {
       "cancel": "Cancel",
@@ -4505,7 +4551,9 @@
     },
     "skillsManager": {
       "validators": "validators + oversight",
-      "runArrow": "Run →"
+      "runArrow": "Run →",
+      "toggleAria": "Toggle {{title}}",
+      "reassignAria": "Reassign {{title}}"
     },
     "revenue": {
       "noClosed": "No closed deals in this period."
@@ -4521,7 +4569,9 @@
       "openCount_one": "{{count}} open",
       "openCount_other": "{{count}} open",
       "urgentCount_one": "{{count}} urgent",
-      "urgentCount_other": "{{count}} urgent"
+      "urgentCount_other": "{{count}} urgent",
+      "openedCount": "Opened {{count}}",
+      "resolvedCount": "Resolved {{count}}"
     },
     "adminBilling": {
       "title": "Subscription & Billing",
@@ -5167,7 +5217,11 @@
           "label": "Buyer-leaning",
           "hint": "Higher buyer score"
         }
-      }
+      },
+      "combinedScoreAria": "Combined score {{score}}",
+      "combinedScoreBothAria": "Combined score {{score}}, both sides medium-or-high",
+      "dripStep": "In sphere drip — step {{step}} of {{total}}",
+      "dripStepNextDue": "In sphere drip — step {{step}} of {{total}} (next due {{due}})"
     },
     "idxCapture": {
       "close": "Close",
@@ -5304,7 +5358,8 @@
       "close": "Close",
       "coverNote": "Cover note",
       "cancel": "Cancel",
-      "emailToSeller": "✉ Email to seller"
+      "emailToSeller": "✉ Email to seller",
+      "messagePlaceholder": "Hi — I put together a quick CMA for your property. Happy to walk through the comps + the strategy whenever you're ready."
     },
     "playbooksPanel": {
       "needSelection": "tick a box on an open playbook item",
@@ -5330,7 +5385,12 @@
       "deselectTask": "Remove from Tasks list selection",
       "selectTask": "Select to add to Tasks list",
       "markIncomplete": "Mark incomplete",
-      "markComplete": "Mark complete"
+      "markComplete": "Mark complete",
+      "addSelectedHint_one": "Add {{count}} selected task to your Tasks list",
+      "addSelectedHint_other": "Add {{count}} selected tasks to your Tasks list",
+      "selectTaskAria": "Select \"{{title}}\" to add to Tasks list",
+      "markCompleteAria": "Mark \"{{title}}\" complete",
+      "markIncompleteAria": "Mark \"{{title}}\" incomplete"
     },
     "growthCapture": {
       "thanks": "Thanks — we'll follow up with next steps.",
@@ -5732,7 +5792,9 @@
       "empty": "No voice calls logged for this contact yet.",
       "recording": "Recording available",
       "stepCount_one": "{{count}} step",
-      "stepCount_other": "{{count}} steps"
+      "stepCount_other": "{{count}} steps",
+      "transitionsAria_one": "{{count}} status transition for this call",
+      "transitionsAria_other": "{{count}} status transitions for this call"
     },
     "proGate": {
       "automationPro": "Automation is a Pro feature.",
@@ -8330,7 +8392,10 @@
       "maximizeProceedsA": "Use a pricing strategy tied to demand trend and buyer activity by week.",
       "sellIn": "Sell in",
       "sellCta": "CTA: Get your free selling strategy and estimated listing range.",
-      "oneYearChange": "1-Year Change"
+      "oneYearChange": "1-Year Change",
+      "hvFormTitle": "Get Your {{city}} Home Value Report",
+      "mrFormTitle": "Get {{city}} Market Report",
+      "shFormTitle": "Get a {{city}} Selling Plan"
     },
     "openHouseSignup": {
       "leaveInfo": "Leave your info and we will follow up with open house updates.",
@@ -9170,13 +9235,16 @@
       "scoreOutOf": "Score {{score}}/100",
       "warmWishesTo": "Warm wishes, {{name}}",
       "friend": "friend",
-      "onePerDaySpread": "1 (spread out)"
+      "onePerDaySpread": "1 (spread out)",
+      "comparableSales": "Comparable sales ({{count}})"
     },
     "founderDashboard": {
       "timeToFirstProposal": "Time to first proposal",
       "timeToFirstApproval": "Time to first approval",
       "loadingMetrics": "Loading metrics…",
-      "checkoutToPaid": "Checkout → paid"
+      "checkoutToPaid": "Checkout → paid",
+      "mauUsage": "MAU (usage, {{days}}d)",
+      "churnWindow": "Churn ({{days}}d)"
     },
     "propertyLookup": {
       "beds": "{{count}} bd",
@@ -9400,7 +9468,8 @@
       "thanksForConfirmingYour": "Thanks for confirming your subscription to the CloseBoss weekly housing briefing. Your first issue is on its way."
     },
     "property": {
-      "saveToDatabase": "Save to Database"
+      "saveToDatabase": "Save to Database",
+      "photoAlt": "{{address}} property photo"
     },
     "rentalPropertyAnalyzer": {
       "analyzeProperty": "Analyze Property"
@@ -9425,7 +9494,8 @@
       "sendSms": "Send SMS"
     },
     "recentAddressList": {
-      "showing": "Showing"
+      "showing": "Showing",
+      "useAddress": "Use {{address}}"
     },
     "addSignalButton": {
       "addSignal": "Add signal"
@@ -9491,7 +9561,8 @@
       "pickAStateFirst": "Pick a state first",
       "selectCounty": "Select county…",
       "pickACountyFirst": "Pick a county first",
-      "cityPlaceholder": "e.g. Alhambra"
+      "cityPlaceholder": "e.g. Alhambra",
+      "removeAria": "Remove {{area}}"
     },
     "bulkSendPostcard": {
       "pickADesign": "Pick a design"

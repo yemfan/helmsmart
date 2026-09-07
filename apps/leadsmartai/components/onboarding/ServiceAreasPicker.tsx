@@ -173,7 +173,7 @@ export function ServiceAreasPicker({
                   onClick={() => remove(key)}
                   disabled={disabled}
                   className="ml-1 text-blue-400 hover:text-blue-600 disabled:opacity-50"
-                  aria-label={`Remove ${serviceAreaLabel(a)}`}
+                  aria-label={t("pages.serviceAreasPicker.removeAria", { area: serviceAreaLabel(a) })}
                 >
                   &times;
                 </button>

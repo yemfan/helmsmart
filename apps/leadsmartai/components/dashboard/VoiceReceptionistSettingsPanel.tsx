@@ -20,8 +20,26 @@ const FIELD =
   "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent/40";
 const LABEL = "block text-[11px] font-medium text-slate-500 mb-1";
 
+/**
+ * `DAY_LABELS` lives in @repo/voice, where it is also spliced into the
+ * receptionist's SYSTEM PROMPT — model input, in the language the caller
+ * hears, which is not the language of this settings page. Localising it at
+ * the source would rewrite the prompt too, so the day name is translated
+ * here, where it is a label a person reads.
+ */
+const DAY_LABEL_KEYS: Record<DayKey, string> = {
+  mon: "pages.voiceReceptionist.dayMon",
+  tue: "pages.voiceReceptionist.dayTue",
+  wed: "pages.voiceReceptionist.dayWed",
+  thu: "pages.voiceReceptionist.dayThu",
+  fri: "pages.voiceReceptionist.dayFri",
+  sat: "pages.voiceReceptionist.daySat",
+  sun: "pages.voiceReceptionist.daySun",
+};
+
 export default function VoiceReceptionistSettingsPanel() {
   const { t } = useTranslation("dashboard");
+  const dayLabel = (d: DayKey) => t(DAY_LABEL_KEYS[d], { defaultValue: DAY_LABELS[d] });
   const [settings, setSettings] = useState<ReceptionistConfig>(defaults);
   const [saved, setSaved] = useState<ReceptionistConfig>(defaults);
   const [hours, setHours] = useState<BusinessHours | null>(null);
@@ -306,7 +324,7 @@ export default function VoiceReceptionistSettingsPanel() {
             const open = Boolean(dh);
             return (
               <div key={d} className="flex items-center gap-2 text-sm">
-                <span className="w-24 shrink-0 text-slate-700 dark:text-slate-300">{DAY_LABELS[d]}</span>
+                <span className="w-24 shrink-0 text-slate-700 dark:text-slate-300">{dayLabel(d)}</span>
                 <label className="flex w-20 shrink-0 items-center gap-1.5 text-[11px] text-slate-500">
                   <input
                     type="checkbox"
@@ -320,7 +338,7 @@ export default function VoiceReceptionistSettingsPanel() {
                   <div className="flex items-center gap-1.5">
                     <input
                       type="time"
-                      aria-label={`${DAY_LABELS[d]} opening time`}
+                      aria-label={t("pages.voiceReceptionist.openingTimeAria", { day: dayLabel(d) })}
                       className="rounded border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs"
                       value={dh.open}
                       onChange={(e) => setDay(d, { open: e.target.value, close: dh.close })}
@@ -328,7 +346,7 @@ export default function VoiceReceptionistSettingsPanel() {
                     <span className="text-slate-500">–</span>
                     <input
                       type="time"
-                      aria-label={`${DAY_LABELS[d]} closing time`}
+                      aria-label={t("pages.voiceReceptionist.closingTimeAria", { day: dayLabel(d) })}
                       className="rounded border border-slate-300 dark:border-slate-700 px-2 py-1 text-xs"
                       value={dh.close}
                       onChange={(e) => setDay(d, { open: dh.open, close: e.target.value })}

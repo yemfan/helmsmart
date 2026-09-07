@@ -191,10 +191,11 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
 }
 
 function ScoreBadge({ score, label }: { score: number; label: BuyerPredictionLabel }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div
       className={`flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl ring-1 ${LABEL_TONE[label]}`}
-      aria-label={`${label} buyer likelihood, score ${score}`}
+      aria-label={t("pages.likelyBuyers.scoreAria", { label: t(`pages.likelyBuyers.label${label.charAt(0).toUpperCase()}${label.slice(1)}`), score })}
     >
       <span className="text-base font-bold leading-none tabular-nums">{score}</span>
       <span className="mt-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide">

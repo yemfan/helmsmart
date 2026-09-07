@@ -162,12 +162,12 @@ export default function ScanCardClient() {
           <div className="p-5 space-y-3">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.scanCard.review")}</h3>
             {([
-              { key: "name" as const, label: "Name" },
-              { key: "email" as const, label: "Email" },
-              { key: "phone" as const, label: "Phone" },
-              { key: "company" as const, label: "Company" },
-              { key: "title" as const, label: "Title" },
-              { key: "address" as const, label: "Address" },
+              { key: "name" as const, label: t("pages.scanCard.fieldName") },
+              { key: "email" as const, label: t("pages.scanCard.fieldEmail") },
+              { key: "phone" as const, label: t("pages.scanCard.fieldPhone") },
+              { key: "company" as const, label: t("pages.scanCard.fieldCompany") },
+              { key: "title" as const, label: t("pages.scanCard.fieldTitle") },
+              { key: "address" as const, label: t("pages.scanCard.fieldAddress") },
             ]).map(({ key, label }) => (
               <div key={key}>
                 <label className="block text-[11px] font-medium text-slate-500 mb-0.5">{label}</label>
@@ -175,7 +175,7 @@ export default function ScanCardClient() {
                   value={fields[key] ?? ""}
                   onChange={(e) => setFields((f) => ({ ...f, [key]: e.target.value || null }))}
                   className="w-full rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`Enter ${label.toLowerCase()}`}
+                  placeholder={t("pages.scanCard.enterField", { field: label.toLowerCase() })}
                 />
               </div>
             ))}

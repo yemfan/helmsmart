@@ -355,7 +355,7 @@ export default function PropertyReportPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={property.photoUrl}
-              alt={`${property.address} property photo`}
+              alt={t("pages.property.photoAlt", { address: property.address })}
               className="h-full w-full object-cover"
             />
           </div>

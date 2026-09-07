@@ -898,7 +898,11 @@
       "adHocTasks": "临时任务",
       "title": "剧本",
       "subtitle": "针对常见流程的精选清单。可套用到交易、开放日，也可以单独作为提醒使用。",
-      "doneRecent": "近 7 天完成"
+      "doneRecent": "近 7 天完成",
+      "reopenAria": "重新打开“{{title}}”",
+      "markDoneAria": "将“{{title}}”标为已完成",
+      "restoreAria": "恢复“{{title}}”",
+      "cancelAria": "取消“{{title}}”"
     },
     "tools": {
       "title": "工具",
@@ -1801,7 +1805,8 @@
     "tiktokPostingHelp": "TikTok 要求由账号持有人选择可见范围并声明商业内容。适用于为你发布的每一条帖子。",
     "tcNotifications": "交易协调通知",
     "commissionDefaults": "佣金默认设置",
-    "offerAiTermsBuyer": "为新的买方报价获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信。"
+    "offerAiTermsBuyer": "为新的买方报价获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信。",
+    "snoozeAria": "将“{{title}}”搁置 7 天"
   },
   "shell": {
     "upgradeTitle": "用 AI 跟进推动增长",
@@ -1858,19 +1863,28 @@
       "markSent": "标记为已发送",
       "markPaid": "标记为已付款",
       "books": "账目",
-      "addLine": "添加一行"
+      "addLine": "添加一行",
+      "taxPct": "税（{{pct}}%）"
     },
     "likelySellers": {
       "metaTitle": "今日潜在卖家",
       "heading": "今日潜在卖家",
       "intro": "按未来约 90 天内挂牌可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——每一行都会显示影响其排名的最主要因素。",
-      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人后才能开始筛出潜在卖家。"
+      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人后才能开始筛出潜在卖家。",
+      "scoreAria": "卖房意向{{label}}，评分 {{score}}",
+      "labelHigh": "高",
+      "labelMedium": "中",
+      "labelLow": "低"
     },
     "likelyBuyers": {
       "metaTitle": "今日潜在买家",
       "heading": "今日潜在买家",
       "intro": "按未来约 90 天内购买下一套住房可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——工作变动与人生大事是最主要的驱动信号。",
-      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人并记录人生大事信号，才能开始筛出潜在买家。"
+      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人并记录人生大事信号，才能开始筛出潜在买家。",
+      "scoreAria": "买房意向{{label}}，评分 {{score}}",
+      "labelHigh": "高",
+      "labelMedium": "中",
+      "labelLow": "低"
     },
     "sphereSignals": {
       "metaTitle": "人脉圈 · 信号",
@@ -1901,7 +1915,9 @@
       "insertedContacts_other": "✓ 已导入 {{count}} 位联系人。",
       "warningCount_one": "{{count}} 条警告",
       "warningCount_other": "{{count}} 条警告",
-      "rowsIncluded": "已纳入 {{included}}／{{total}} 行 ·"
+      "rowsIncluded": "已纳入 {{included}}／{{total}} 行 ·",
+      "includeRowAria": "包含第 {{row}} 行",
+      "confirmOptInAria": "确认{{name}}的纪念日提醒授权"
     },
     "sphereContact": {
       "metaTitle": "人脉圈联系人"
@@ -1909,7 +1925,8 @@
     "salesModel": {
       "metaTitle": "销售模式",
       "metaDescription": "根据您选择的销售模式量身定制的面板、话术、任务与业务管道。",
-      "selected": "已选择"
+      "selected": "已选择",
+      "selectAria": "选择 {{name}}"
     },
     "leadSourceRoi": {
       "metaTitle": "客源渠道回报",
@@ -2639,7 +2656,9 @@
       "createOffer": "📝 创建报价",
       "thankListingAgent": "✉️ 感谢挂牌经纪",
       "sendSummaryToBuyer": "📬 把总结发给买家",
-      "deleteShowing": "🗑 删除带看记录"
+      "deleteShowing": "🗑 删除带看记录",
+      "otherShowingsWith": "与{{name}}的其他带看（{{count}}）",
+      "thisBuyer": "这位买家"
     },
     "flyer": {
       "metaTitle": "开放日宣传单生成器",
@@ -2723,7 +2742,8 @@
       "fromSource": "来自 {{source}} ·",
       "resultSummary_one": "新增 {{inserted}} 条 · 合并 {{merged}} 条 · 跳过 {{skipped}} 条 · {{errors}} 条出错",
       "resultSummary_other": "新增 {{inserted}} 条 · 合并 {{merged}} 条 · 跳过 {{skipped}} 条 · {{errors}} 条出错",
-      "acceptedFormats": "PDF · JPEG / PNG / WEBP · TXT / VCF / MD · 不超过 20 MB"
+      "acceptedFormats": "PDF · JPEG / PNG / WEBP · TXT / VCF / MD · 不超过 20 MB",
+      "matchScore": "匹配分 {{score}}"
     },
     "newOffer": {
       "metaTitle": "新建报价",
@@ -3327,7 +3347,8 @@
       "urlHelp": "建议使用您自己的房源页面。图片从该页面获取；若门户网站阻止抓取，请使用下方的「+ 上传图片」。",
       "download": "下载 ↗",
       "clipCount_one": "{{count}} 段片段 × {{seconds}} 秒 ≈",
-      "clipCount_other": "{{count}} 段片段 × {{seconds}} 秒 ≈"
+      "clipCount_other": "{{count}} 段片段 × {{seconds}} 秒 ≈",
+      "beyondClipLimit": "超出 {{max}} 个片段的上限——不会被使用"
     },
     "contactHealth": {
       "heading": "联系人资料完整度",
@@ -3440,7 +3461,8 @@
       "textSent": "已发短信",
       "noAutoText": "未自动发短信",
       "showBody": "显示自动短信内容",
-      "sentAt": "发送于 {{at}}"
+      "sentAt": "发送于 {{at}}",
+      "smsStatus": "短信状态：{{status}}"
     },
     "greetingAutomation": {
       "heading": "问候自动化",
@@ -3646,7 +3668,9 @@
       "incomeNeeded": "所需收入",
       "housingRatio": "按 28% 房贷收入比计算",
       "investmentReturns": "投资回报",
-      "noComps": "未找到可比成交房源。"
+      "noComps": "未找到可比成交房源。",
+      "downPaymentPct": "首付（{{pct}}%）",
+      "principalInterest": "本息（{{rate}}% / {{years}} 年）"
     },
     "oneWord": {
       "admin": "管理员",
@@ -3840,7 +3864,8 @@
       "emailListingsToBuyer_one": "把 {{count}} 套房源发邮件给买家",
       "emailListingsToBuyer_other": "把 {{count}} 套房源发邮件给买家",
       "listingsSuffix_one": "{{count}} 套房源",
-      "listingsSuffix_other": "{{count}} 套房源"
+      "listingsSuffix_other": "{{count}} 套房源",
+      "quotaResets": "每日房源搜索额度——{{date}} 重置"
     },
     "marketingAssistant": {
       "kbTitle": "营销助理的知识库",
@@ -4226,7 +4251,11 @@
       "nothingOutstanding": "没有待收款项——佣金都在上方的流程里跟踪。",
       "overdueCount_one": "{{count}} 笔逾期",
       "overdueCount_other": "{{count}} 笔逾期",
-      "noClosingScheduled": "暂无预定的成交"
+      "noClosingScheduled": "暂无预定的成交",
+      "pipelineHint_one": "{{count}} 笔交易 · 预计净收入",
+      "pipelineHint_other": "{{count}} 笔交易 · 预计净收入",
+      "closedHint_one": "{{count}} 笔成交 · 净收入",
+      "closedHint_other": "{{count}} 笔成交 · 净收入"
     },
     "calendarPage": {
       "connect": "连接",
@@ -4278,7 +4307,16 @@
       "intro": "设置您的 AI 电话接待员如何自我介绍，以及它了解您业务的哪些信息。适用于打进接待号码的每一通电话。",
       "routingNote": "拨打这个号码的来电会转到这位接待员。请把该号码的来电 webhook 指向 /api/retell/inbound；保存格式为 E.164（例如 +16265551234）。",
       "kbHint": "营业时间、服务项目、价格、地址和常见问题。也请说明该如何处理来电——比如留言、记下姓名和电话，或者安排回拨。接待员会依据这些内容回答问题。",
-      "hoursHint": "AI 只在这个时间段内安排 30 分钟的预约。未设置前默认为周一至周五 9:00–17:00。"
+      "hoursHint": "AI 只在这个时间段内安排 30 分钟的预约。未设置前默认为周一至周五 9:00–17:00。",
+      "openingTimeAria": "{{day}}营业开始时间",
+      "closingTimeAria": "{{day}}营业结束时间",
+      "dayMon": "星期一",
+      "dayTue": "星期二",
+      "dayWed": "星期三",
+      "dayThu": "星期四",
+      "dayFri": "星期五",
+      "daySat": "星期六",
+      "daySun": "星期日"
     },
     "scanCard": {
       "retake": "重拍",
@@ -4296,7 +4334,14 @@
       "save": "保存联系人",
       "saved": "联系人已保存。",
       "metaTitle": "扫描名片",
-      "metaDescription": "拍下名片，系统会自动读取信息并创建联系人。"
+      "metaDescription": "拍下名片，系统会自动读取信息并创建联系人。",
+      "fieldName": "姓名",
+      "fieldEmail": "邮箱",
+      "fieldPhone": "电话",
+      "fieldCompany": "公司",
+      "fieldTitle": "职位",
+      "fieldAddress": "地址",
+      "enterField": "请输入{{field}}"
     },
     "generateLeads": {
       "isNew": "新功能",
@@ -4487,7 +4532,8 @@
       "unlimitedReports": "报告不限次数",
       "metaTitle": "深度报告",
       "heading": "深度报告",
-      "openSaved": "打开你保存的报告副本 →"
+      "openSaved": "打开你保存的报告副本 →",
+      "quotaResets": "每日深度报告额度——{{date}} 重置"
     },
     "listingOfferDetail": {
       "cancel": "取消",
@@ -4505,7 +4551,9 @@
     },
     "skillsManager": {
       "validators": "校验规则 + 人工把关",
-      "runArrow": "运行 →"
+      "runArrow": "运行 →",
+      "toggleAria": "开关“{{title}}”",
+      "reassignAria": "重新指派“{{title}}”"
     },
     "revenue": {
       "noClosed": "这段时间没有成交的交易。"
@@ -4521,7 +4569,9 @@
       "openCount_one": "{{count}} 项待处理",
       "openCount_other": "{{count}} 项待处理",
       "urgentCount_one": "{{count}} 项紧急",
-      "urgentCount_other": "{{count}} 项紧急"
+      "urgentCount_other": "{{count}} 项紧急",
+      "openedCount": "新开 {{count}}",
+      "resolvedCount": "已解决 {{count}}"
     },
     "adminBilling": {
       "title": "订阅与账单",
@@ -5167,7 +5217,11 @@
           "label": "偏买方",
           "hint": "买方评分更高"
         }
-      }
+      },
+      "combinedScoreAria": "综合评分 {{score}}",
+      "combinedScoreBothAria": "综合评分 {{score}}，买卖两端均为中或高",
+      "dripStep": "人脉圈培育中——第 {{step}} 步，共 {{total}} 步",
+      "dripStepNextDue": "人脉圈培育中——第 {{step}} 步，共 {{total}} 步（下次 {{due}}）"
     },
     "idxCapture": {
       "close": "关闭",
@@ -5304,7 +5358,8 @@
       "close": "关闭",
       "coverNote": "附言",
       "cancel": "取消",
-      "emailToSeller": "✉ 发邮件给卖家"
+      "emailToSeller": "✉ 发邮件给卖家",
+      "messagePlaceholder": "您好——我为您的房产做了一份简要的 CMA。您方便的时候，我很乐意和您一起过一遍可比成交和策略。"
     },
     "playbooksPanel": {
       "needSelection": "请先勾选一项未完成的行动手册任务",
@@ -5330,7 +5385,12 @@
       "deselectTask": "从任务清单选择中移除",
       "selectTask": "勾选以加入任务清单",
       "markIncomplete": "标为未完成",
-      "markComplete": "标为已完成"
+      "markComplete": "标为已完成",
+      "addSelectedHint_one": "将选中的 {{count}} 项任务加入任务清单",
+      "addSelectedHint_other": "将选中的 {{count}} 项任务加入任务清单",
+      "selectTaskAria": "勾选“{{title}}”以加入任务清单",
+      "markCompleteAria": "将“{{title}}”标为已完成",
+      "markIncompleteAria": "将“{{title}}”标为未完成"
     },
     "growthCapture": {
       "thanks": "谢谢——我们会联系您安排下一步。",
@@ -5732,7 +5792,9 @@
       "empty": "这位联系人还没有语音通话记录。",
       "recording": "有录音",
       "stepCount_one": "{{count}} 个步骤",
-      "stepCount_other": "{{count}} 个步骤"
+      "stepCount_other": "{{count}} 个步骤",
+      "transitionsAria_one": "本次通话有 {{count}} 次状态变化",
+      "transitionsAria_other": "本次通话有 {{count}} 次状态变化"
     },
     "proGate": {
       "automationPro": "自动化属于 Pro 版功能。",
@@ -8330,7 +8392,10 @@
       "maximizeProceedsA": "用一套与需求趋势和每周买家活跃度挂钩的定价策略。",
       "sellIn": "在这里卖房：",
       "sellCta": "行动号召：领取您的免费卖房策略和预估挂牌价区间。",
-      "oneYearChange": "一年涨跌"
+      "oneYearChange": "一年涨跌",
+      "hvFormTitle": "获取您的{{city}}房屋估值报告",
+      "mrFormTitle": "获取{{city}}市场报告",
+      "shFormTitle": "获取{{city}}售房方案"
     },
     "openHouseSignup": {
       "leaveInfo": "留下您的联系方式，我们会把开放日的最新情况发给您。",
@@ -9170,13 +9235,16 @@
       "scoreOutOf": "评分 {{score}}/100",
       "warmWishesTo": "顺祝安好，{{name}}",
       "friend": "朋友",
-      "onePerDaySpread": "1（全天分散发布）"
+      "onePerDaySpread": "1（全天分散发布）",
+      "comparableSales": "可比成交（{{count}}）"
     },
     "founderDashboard": {
       "timeToFirstProposal": "首个提案用时",
       "timeToFirstApproval": "首次审批用时",
       "loadingMetrics": "正在加载指标…",
-      "checkoutToPaid": "结账 → 已付款"
+      "checkoutToPaid": "结账 → 已付款",
+      "mauUsage": "月活（使用，{{days}} 天）",
+      "churnWindow": "流失率（{{days}} 天）"
     },
     "propertyLookup": {
       "beds": "{{count}} 卧",
@@ -9400,7 +9468,8 @@
       "thanksForConfirmingYour": "感谢您确认订阅 CloseBoss 每周房产简报。第一期已在路上。"
     },
     "property": {
-      "saveToDatabase": "保存到数据库"
+      "saveToDatabase": "保存到数据库",
+      "photoAlt": "{{address}} 房源照片"
     },
     "rentalPropertyAnalyzer": {
       "analyzeProperty": "分析房产"
@@ -9425,7 +9494,8 @@
       "sendSms": "发送短信"
     },
     "recentAddressList": {
-      "showing": "带看"
+      "showing": "带看",
+      "useAddress": "使用 {{address}}"
     },
     "addSignalButton": {
       "addSignal": "添加信号"
@@ -9491,7 +9561,8 @@
       "pickAStateFirst": "请先选择州",
       "selectCounty": "选择县…",
       "pickACountyFirst": "请先选择一个县",
-      "cityPlaceholder": "例如：Alhambra"
+      "cityPlaceholder": "例如：Alhambra",
+      "removeAria": "移除 {{area}}"
     },
     "bulkSendPostcard": {
       "pickADesign": "挑选一个版式"

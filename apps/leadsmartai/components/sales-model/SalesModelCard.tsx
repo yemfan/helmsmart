@@ -85,7 +85,7 @@ export function SalesModelCard({
         type="button"
         onClick={handleClick}
         disabled={busy}
-        aria-label={`Select ${model.name}`}
+        aria-label={t("pages.salesModel.selectAria", { name: model.name })}
         className={[
           "mt-2 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition",
           "min-h-[44px]",

@@ -332,7 +332,7 @@ export function ShowingDetailClient({
             </div>
           </Card>
 
-          <Card title={`Other showings with ${contactName ?? "this buyer"} (${siblings.length})`}>
+          <Card title={t("pages.showingDetail.otherShowingsWith", { name: contactName ?? t("pages.showingDetail.thisBuyer"), count: siblings.length })}>
             {siblings.length === 0 ? (
               <p className="text-sm text-slate-500">{t("pages.showingDetail.noOtherShowings")}</p>
             ) : (

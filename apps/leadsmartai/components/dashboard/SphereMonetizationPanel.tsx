@@ -249,6 +249,7 @@ function KpiStrip({ kpis, loading }: { kpis: Kpis; loading: boolean }) {
 }
 
 function CombinedBadge({ score, bothHigh }: { score: number; bothHigh: boolean }) {
+  const { t } = useTranslation("dashboard");
   const tone = bothHigh
     ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
     : score >= 100
@@ -257,7 +258,7 @@ function CombinedBadge({ score, bothHigh }: { score: number; bothHigh: boolean }
   return (
     <div
       className={`flex h-12 w-14 shrink-0 flex-col items-center justify-center rounded-xl ring-1 ${tone}`}
-      aria-label={`Combined score ${score}${bothHigh ? ", both sides medium-or-high" : ""}`}
+      aria-label={bothHigh ? t("pages.sphereMonetization.combinedScoreBothAria", { score }) : t("pages.sphereMonetization.combinedScoreAria", { score })}
     >
       <span className="text-base font-bold leading-none tabular-nums">{score}</span>
       <span className="mt-0.5 text-[9px] font-semibold uppercase leading-none tracking-wide">
@@ -334,8 +335,15 @@ function DripBadge({ enrollment }: { enrollment: EnrollmentInfo }) {
       className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 ring-1 ring-indigo-200"
       title={
         enrollment.nextDueAt
-          ? `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps} (next due ${enrollment.nextDueAt})`
-          : `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps}`
+          ? t("pages.sphereMonetization.dripStepNextDue", {
+              step: enrollment.currentStep,
+              total: enrollment.totalSteps,
+              due: enrollment.nextDueAt,
+            })
+          : t("pages.sphereMonetization.dripStep", {
+              step: enrollment.currentStep,
+              total: enrollment.totalSteps,
+            })
       }
     >{t("pages.dashFragments.drip")} {stepLabel}
       {dueLabel ? <span className="font-normal normal-case text-indigo-500"> · {dueLabel}</span> : null}

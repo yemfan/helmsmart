@@ -92,7 +92,7 @@ export default function AccountantClient({
         <AssistantKpiCard
           label={t("assistants.accountant.stats.pipeline")}
           value={money(pipelineTotal, locale)}
-          hint={`${pipelineDeals.length} deal${pipelineDeals.length === 1 ? "" : "s"} · expected net`}
+          hint={t("pages.accountant.pipelineHint", { count: pipelineDeals.length })}
         />
         <AssistantKpiCard
           label={t("assistants.accountant.stats.nextPayout")}
@@ -102,7 +102,7 @@ export default function AccountantClient({
         <AssistantKpiCard
           label={t("assistants.accountant.stats.closedThisYear")}
           value={money(closedYtdNet, locale)}
-          hint={`${closedYtdCount} closing${closedYtdCount === 1 ? "" : "s"} · net`}
+          hint={t("pages.accountant.closedHint", { count: closedYtdCount })}
         />
         <AssistantKpiCard label={t("assistants.accountant.stats.expensesThisMonth")} value={money(expensesMonthTotal, locale)} />
       </div>

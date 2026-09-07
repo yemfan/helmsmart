@@ -143,7 +143,7 @@ export default async function SellHouseCityPage({
             {t("pages.seoCityPages.sellCta", { ns: "dashboard" })}
           </p>
         </article>
-        <LocalSeoLeadForm title={`Get a ${city.city} Selling Plan`} source="seo_sell_house_city" city={city.city} />
+        <LocalSeoLeadForm title={t("pages.seoCityPages.shFormTitle", { ns: "dashboard", city: city.city })} source="seo_sell_house_city" city={city.city} />
       </section>
     </main>
   );

@@ -176,7 +176,7 @@ export default async function HomeValueCityPage({
           </p>
         </article>
         <LocalSeoLeadForm
-          title={`Get Your ${city.city} Home Value Report`}
+          title={t("pages.seoCityPages.hvFormTitle", { ns: "dashboard", city: city.city })}
           source="seo_home_value_city"
           city={city.city}
         />

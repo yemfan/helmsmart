@@ -268,7 +268,7 @@ function QuotaPill({ quota }: { quota: Quota }) {
   return (
     <span
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
-      title={`Daily Deep Report quota — resets ${quota.resetDate}`}
+      title={t("pages.deepReport.quotaResets", { date: quota.resetDate })}
     >
       {quota.unlimited ? t("pages.deepReport.unlimitedReports") : `${quota.remaining} of ${quota.limit} left today`}
     </span>

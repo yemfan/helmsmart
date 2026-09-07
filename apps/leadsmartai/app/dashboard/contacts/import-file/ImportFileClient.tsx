@@ -511,7 +511,7 @@ function ReviewTable(props: {
                     {r.duplicateContactId && (
                       <span
                         className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-medium text-yellow-800"
-                        title={`Match score ${r.duplicateScore?.toFixed(2) ?? "—"}`}
+                        title={t("pages.importFile.matchScore", { score: r.duplicateScore?.toFixed(2) ?? "—" })}
                       >{t("pages.importFile.likelyDuplicate")}</span>
                     )}
                   </div>

@@ -246,7 +246,7 @@ export default function SphereImportClient() {
                         checked={r.include}
                         onChange={(e) => update(i, { include: e.target.checked })}
                         className="h-4 w-4 accent-brand-accent"
-                        aria-label={`Include row ${r.rowNumber}`}
+                        aria-label={t("pages.sphereImport.includeRowAria", { row: r.rowNumber })}
                       />
                     </td>
                     <td className="px-3 py-2">
@@ -294,7 +294,7 @@ export default function SphereImportClient() {
                           disabled={!r.include || !r.closingDate}
                           onChange={(e) => update(i, { confirmedOptIn: e.target.checked })}
                           className="h-4 w-4 accent-brand-accent disabled:opacity-40"
-                          aria-label={`Confirm anniversary opt-in for ${r.firstName}`}
+                          aria-label={t("pages.sphereImport.confirmOptInAria", { name: r.firstName })}
                         />
                         {r.csvAnniversaryOptIn && (
                           <span

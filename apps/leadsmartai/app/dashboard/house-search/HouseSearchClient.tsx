@@ -470,7 +470,7 @@ function QuotaPill({ quota }: { quota: HouseSearchQuota }) {
   return (
     <span
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
-      title={`Daily House Search quota — resets ${quota.resetDate}`}
+      title={t("pages.houseSearch.quotaResets", { date: quota.resetDate })}
     >
       {quota.unlimited ? t("pages.houseSearch.unlimitedSearches") : `${quota.remaining} of ${quota.limit} left today`}
     </span>

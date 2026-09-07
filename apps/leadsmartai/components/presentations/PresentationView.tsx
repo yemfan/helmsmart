@@ -373,7 +373,7 @@ export default function PresentationView({
       ) : null}
 
       {/* Comps */}
-      <Card title={`Comparable Sales (${vm.comps.length})`}>
+      <Card title={t("pages.dashFragments.comparableSales", { count: vm.comps.length })}>
         {vm.comps.length === 0 ? (
           <p className="text-sm text-slate-500">{t("pages.presentationView.noComps")}</p>
         ) : (

@@ -189,7 +189,7 @@ export function RecentAddressList({
               type="button"
               onClick={() => onPick(item)}
               className="flex w-full items-start justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-slate-50"
-              title={`Use ${item.property_address}`}
+              title={t("pages.recentAddressList.useAddress", { address: item.property_address })}
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium text-slate-900">
