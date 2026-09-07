@@ -1,0 +1,75 @@
+# axe-core accessibility scan — CloseBoss dashboard, signed in.
+#
+# The public-route job (axe.yml) cannot see anything behind login. This one
+# signs in as the sandboxed test agent and audits the core dashboard routes
+# with the same WCAG 2.x A/AA rule set (.github/scripts/axe-dashboard.mjs).
+#
+# Needs two repository secrets:
+#   AXE_TEST_EMAIL      the test agent's login
+#   AXE_TEST_PASSWORD   its password
+# With either missing the job skips with a notice instead of failing, so a
+# fork or a fresh clone is not red for a reason unrelated to the product.
+#
+# Gate: any critical or serious violation fails the run; the full report
+# (selectors, snippets, fix hints) is uploaded either way.
+
+name: axe accessibility (dashboard)
+
+on:
+  schedule:
+    - cron: "45 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      target_host:
+        description: "Override target host (defaults to production)"
+        required: false
+        default: "https://www.closebossai.com"
+
+jobs:
+  axe-dashboard:
+    name: Scan signed-in routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check secrets
+        id: secrets
+        env:
+          EMAIL: ${{ secrets.AXE_TEST_EMAIL }}
+          PASSWORD: ${{ secrets.AXE_TEST_PASSWORD }}
+        run: |
+          if [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then
+            echo "::notice::AXE_TEST_EMAIL / AXE_TEST_PASSWORD not set — skipping the signed-in scan."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install a scratch runner (playwright + axe-core)
+        if: steps.secrets.outputs.present == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/axe && cd /tmp/axe
+          npm init -y >/dev/null
+          npm i --no-audit --no-fund playwright@1 axe-core@4 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+          cp "$GITHUB_WORKSPACE/.github/scripts/axe-dashboard.mjs" .
+
+      - name: Scan
+        if: steps.secrets.outputs.present == 'true'
+        working-directory: /tmp/axe
+        env:
+          HOST: ${{ github.event.inputs.target_host || 'https://www.closebossai.com' }}
+          AXE_TEST_EMAIL: ${{ secrets.AXE_TEST_EMAIL }}
+          AXE_TEST_PASSWORD: ${{ secrets.AXE_TEST_PASSWORD }}
+        run: node axe-dashboard.mjs
+
+      - name: Keep the full report
+        if: always() && steps.secrets.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-dashboard-results
+          path: /tmp/axe/axe-results/
+          retention-days: 30
