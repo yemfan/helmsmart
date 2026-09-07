@@ -305,6 +305,95 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
+    // Marketing & content: what the Marketing Assistant and the Marketing
+    // Hub do for the agent. Competitors' website builders count as
+    // "partial" where they publish pages but do not answer visitors or
+    // read the results back into one dashboard.
+    key: "marketing",
+    rows: [
+      r("Marketing Hub — your own AI-powered lead page (closebossai.com/@you): home value, home search, booking, contact", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "partial",
+        sierra: "partial",
+      }),
+      r("AI assistant on your page that answers visitors 24/7 and captures the lead into your CRM", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "yes",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("Multi-page hub (About, Services, Tools, Areas, Posts, Contact) with SEO controls and market-area pages", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "yes",
+        lofty: "yes",
+        boomtown: "yes",
+        sierra: "yes",
+      }),
+      r("Social posting to 7 networks (Facebook, Instagram, LinkedIn, Threads, Pinterest, TikTok, YouTube) with per-post reach & engagement", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("Weekly AI content schedule — researches, writes and posts on autopilot", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("Meta lead-ad campaigns launched and measured from inside the CRM (spend, clicks, cost per lead)", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "yes",
+        boomtown: "partial",
+        sierra: "no",
+      }),
+      r("One marketing dashboard: social, ads, hub traffic, Google Analytics and Google Search in one place", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "partial",
+        sierra: "partial",
+      }),
+      r("Listing video ads — photos become clips, a merged reel and an AI voiceover", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "partial",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("Digital twin — your cloned voice and avatar videos, in English and Chinese", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "no",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("Gallery of every photo and video across uploads, listings, reels, carousels and posts", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        sierra: "partial",
+      }),
+    ],
+  },
+  {
     key: "listing",
     rows: [
       r("CMA / comparable sales", {

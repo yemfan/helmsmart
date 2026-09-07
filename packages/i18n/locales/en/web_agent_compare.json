@@ -110,6 +110,21 @@
         "Inbound transaction-email auto-import + AI extraction"
       ]
     },
+    "marketing": {
+      "title": "Marketing & content",
+      "rows": [
+        "Marketing Hub — your own AI-powered lead page (closebossai.com/@you): home value, home search, booking, contact",
+        "AI assistant on your page that answers visitors 24/7 and captures the lead into your CRM",
+        "Multi-page hub (About, Services, Tools, Areas, Posts, Contact) with SEO controls and market-area pages",
+        "Social posting to 7 networks (Facebook, Instagram, LinkedIn, Threads, Pinterest, TikTok, YouTube) with per-post reach & engagement",
+        "Weekly AI content schedule — researches, writes and posts on autopilot",
+        "Meta lead-ad campaigns launched and measured from inside the CRM (spend, clicks, cost per lead)",
+        "One marketing dashboard: social, ads, hub traffic, Google Analytics and Google Search in one place",
+        "Listing video ads — photos become clips, a merged reel and an AI voiceover",
+        "Digital twin — your cloned voice and avatar videos, in English and Chinese",
+        "Gallery of every photo and video across uploads, listings, reels, carousels and posts"
+      ]
+    },
     "listing": {
       "title": "Listing & deal tools",
       "rows": [
