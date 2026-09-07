@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Compass,
   Handshake,
+  Images,
   LayoutGrid,
   LineChart,
   PenLine,
@@ -81,6 +82,7 @@ export const TEAM_ACTIONS: Record<string, TeamMemberActions> = {
       { label: "Templates", href: "/dashboard/templates", desc: "Reusable message and campaign templates.", icon: <ClipboardList size={IC} strokeWidth={S} /> },
       { label: "Generate Leads", href: "/dashboard/leads/generate", desc: "AI lead-generation ideas for this week.", icon: <Sparkles size={IC} strokeWidth={S} /> },
       { label: "Lead Source ROI", href: "/dashboard/lead-source-roi", desc: "Which lead sources actually produce revenue.", icon: <LineChart size={IC} strokeWidth={S} /> },
+      { label: "Gallery", href: "/dashboard/ai-marketing-assistant/gallery", desc: "Every photo and video you have, from uploads, listings, reels, carousels and posts.", icon: <Images size={IC} strokeWidth={S} /> },
     ],
   }),
   transaction: build({

@@ -1473,7 +1473,8 @@
       "/dashboard/transactions/coordinator": "Track every deal's tasks to the closing table.",
       "/dashboard/deal-coach": "Per-deal AI coach: pricing, risk, negotiation scripts.",
       "/dashboard/books": "Create and track invoices.",
-      "/dashboard/expenses": "Log and categorize expenses."
+      "/dashboard/expenses": "Log and categorize expenses.",
+      "/dashboard/ai-marketing-assistant/gallery": "Every photo and video you have, from uploads, listings, reels, carousels and posts."
     }
   },
   "aiTeam": {
@@ -10672,6 +10673,51 @@
       "property": "Property",
       "estimate": "Estimate shown",
       "open": "Open in CloseBoss"
+    },
+    "gallery": {
+      "metaTitle": "Gallery",
+      "metaDescription": "Every photo and video in your CloseBoss account.",
+      "heading": "Gallery",
+      "intro": "Every picture and video CloseBoss holds for you, in one place: uploads, listing photos and reels, carousels, post images, avatar videos and video messages.",
+      "all": "All",
+      "photos": "Photos",
+      "videos": "Videos",
+      "everySource": "Every source",
+      "source": {
+        "upload": "Uploads",
+        "listing": "Listings",
+        "reel": "Reels",
+        "carousel": "Carousels",
+        "post": "Posts",
+        "avatar": "Avatar videos",
+        "video_message": "Video messages",
+        "profile": "Profile"
+      },
+      "count": "{{count}} items",
+      "countPhotos": "{{count}} photos",
+      "countVideos": "{{count}} videos",
+      "upload": "Upload photos",
+      "uploading": "Uploading…",
+      "uploadHint": "JPG, PNG, WebP or GIF up to 20 MB. Uploads go to your media library and can be used in posts.",
+      "uploadNeedsPro": "Uploading to the library is on Pro and above. Everything else here stays visible.",
+      "uploadFailed": "That upload did not go through. Try a smaller file, or a different format.",
+      "empty": "Nothing here yet. Photos and videos appear as you upload them, add listings, or publish posts and reels.",
+      "emptyFiltered": "Nothing matches this filter.",
+      "loadFailed": "We could not load your gallery right now. Refresh to try again.",
+      "open": "Open original",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "where": "Where it came from",
+      "delete": "Delete from library",
+      "deleting": "Deleting…",
+      "deleteFailed": "Could not delete that file. Try again.",
+      "confirmDelete": "Delete this file from your media library? Posts that already used it keep their copy.",
+      "untitled": "Untitled",
+      "added": "Added {{date}}",
+      "close": "Close",
+      "video": "Video",
+      "photo": "Photo",
+      "upgrade": "Upgrade"
     }
   },
   "disclaimers": {

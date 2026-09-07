@@ -1473,7 +1473,8 @@
       "/dashboard/transactions/coordinator": "跟踪每笔交易的待办事项，直到成交交割。",
       "/dashboard/deal-coach": "针对单笔交易的 AI 教练：定价、风险、谈判话术。",
       "/dashboard/books": "创建并跟踪发票。",
-      "/dashboard/expenses": "记录并归类支出。"
+      "/dashboard/expenses": "记录并归类支出。",
+      "/dashboard/ai-marketing-assistant/gallery": "您拥有的所有照片和视频，来自上传、房源、短视频、轮播图和帖子。"
     }
   },
   "aiTeam": {
@@ -10672,6 +10673,51 @@
       "property": "房产",
       "estimate": "显示的估值",
       "open": "在 CloseBoss 中打开"
+    },
+    "gallery": {
+      "metaTitle": "素材库",
+      "metaDescription": "您 CloseBoss 账户中的所有照片和视频。",
+      "heading": "素材库",
+      "intro": "CloseBoss 为您保存的所有图片和视频，集中在一处：上传文件、房源照片与短视频、轮播图、帖子图片、数字分身视频和视频留言。",
+      "all": "全部",
+      "photos": "照片",
+      "videos": "视频",
+      "everySource": "所有来源",
+      "source": {
+        "upload": "上传",
+        "listing": "房源",
+        "reel": "短视频",
+        "carousel": "轮播图",
+        "post": "帖子",
+        "avatar": "数字分身视频",
+        "video_message": "视频留言",
+        "profile": "个人资料"
+      },
+      "count": "{{count}} 项",
+      "countPhotos": "{{count}} 张照片",
+      "countVideos": "{{count}} 个视频",
+      "upload": "上传照片",
+      "uploading": "上传中…",
+      "uploadHint": "支持 JPG、PNG、WebP 或 GIF，最大 20 MB。上传的文件会进入您的媒体库，可用于帖子。",
+      "uploadNeedsPro": "上传到媒体库需要 Pro 及以上套餐。这里的其他内容仍然可见。",
+      "uploadFailed": "上传未成功。请尝试较小的文件或其他格式。",
+      "empty": "这里还没有内容。上传文件、添加房源或发布帖子和短视频后，照片和视频会出现在这里。",
+      "emptyFiltered": "没有符合此筛选条件的内容。",
+      "loadFailed": "暂时无法加载您的素材库。请刷新重试。",
+      "open": "打开原文件",
+      "copy": "复制链接",
+      "copied": "已复制",
+      "where": "来源",
+      "delete": "从媒体库删除",
+      "deleting": "删除中…",
+      "deleteFailed": "无法删除该文件。请重试。",
+      "confirmDelete": "从媒体库删除此文件？已使用它的帖子会保留各自的副本。",
+      "untitled": "未命名",
+      "added": "添加于 {{date}}",
+      "close": "关闭",
+      "video": "视频",
+      "photo": "照片",
+      "upgrade": "升级"
     }
   },
   "disclaimers": {
