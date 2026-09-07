@@ -536,7 +536,7 @@ function StageBlock({
                   type="button"
                   onClick={() => void submitAdd()}
                   disabled={!newTitle.trim()}
-                  className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                  className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                 >{tr("pages.transactionDetail.add")}</button>
               </div>
             </div>
@@ -826,7 +826,7 @@ function CounterpartiesBlockBody({
             type="button"
             onClick={() => void submit()}
             disabled={!form.name.trim()}
-            className="w-full rounded-lg bg-slate-900 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+            className="w-full rounded-lg bg-[#0072ce] py-1.5 text-xs font-medium text-white disabled:opacity-50"
           >{t("pages.transactionDetail.addCounterparty")}</button>
         </div>
       ) : null}

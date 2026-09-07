@@ -75,7 +75,7 @@ export default function GoogleCalendarConnectPanel() {
       ) : (
         <a
           href="/api/auth/google-calendar"
-          className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-black"
+          className="rounded-lg bg-[#0072ce] px-4 py-2 text-xs font-semibold text-white hover:bg-[#005ca8]"
         >
           {tr("pages.calendarPage.connect")}
         </a>

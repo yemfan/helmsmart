@@ -239,7 +239,7 @@ export default function AiTeamClient() {
                       type="button"
                       disabled={saving === a.type}
                       onClick={() => void patch(a.type, { status: a.status === "active" ? "paused" : "active" })}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm disabled:opacity-50 ${a.status === "active" ? "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm disabled:opacity-50 ${a.status === "active" ? "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" : "bg-[#0072ce] text-white hover:bg-[#005ca8]"}`}
                     >
                       {saving === a.type
                         ? t("aiTeam.saving")

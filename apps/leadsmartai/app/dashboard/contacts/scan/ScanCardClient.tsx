@@ -185,7 +185,7 @@ export default function ScanCardClient() {
               type="button"
               onClick={() => void saveContact()}
               disabled={saving}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
             >
               {saving ? t("pages.scanCard.saving") : t("pages.scanCard.save")}
             </button>
@@ -211,7 +211,7 @@ export default function ScanCardClient() {
             <button
               type="button"
               onClick={reset}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
             >{t("pages.scanCard.scanAnother")}</button>
             <button
               type="button"

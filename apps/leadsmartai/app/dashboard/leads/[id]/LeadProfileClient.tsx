@@ -91,7 +91,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
         {p.intent && story && <p className="mt-0.5 text-sm text-slate-500">{story}</p>}
         <div className="mt-4 flex flex-wrap gap-2">
           {p.phone && (
-            <a href={`tel:${p.phone}`} className="rounded-lg bg-slate-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-slate-700">{t("pages.dashFragments.call")} {p.first_name ?? ""}
+            <a href={`tel:${p.phone}`} className="rounded-lg bg-[#0072ce] px-3.5 py-2 text-sm font-medium text-white hover:bg-[#005ca8]">{t("pages.dashFragments.call")} {p.first_name ?? ""}
             </a>
           )}
           {p.phone && (

@@ -506,7 +506,7 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
                   role="radio"
                   aria-checked={on}
                   onClick={() => setD({ ...d, accent: a })}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${on ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${on ? "border-slate-900 bg-[#0072ce] text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
                 >
                   <span className={`h-4 w-4 rounded-full ${SWATCH[a]}`} aria-hidden />
                   {t(`pages.hubEditor.appearance.accents.${a}`)}
@@ -527,7 +527,7 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
                   role="radio"
                   aria-checked={on}
                   onClick={() => setD({ ...d, layout: l })}
-                  className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm ${on ? "border-slate-900 bg-slate-900 text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
+                  className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm ${on ? "border-slate-900 bg-[#0072ce] text-white" : "border-slate-300 bg-white text-slate-800 hover:bg-slate-50"}`}
                 >
                   <span className={`h-3.5 w-3.5 shrink-0 rounded-full border-2 ${on ? "border-white bg-white" : "border-slate-400"}`} aria-hidden />
                   {t(`pages.hubEditor.appearance.layouts.${l}`)}

@@ -406,7 +406,7 @@ export default function VoiceReceptionistSettingsPanel() {
           type="button"
           onClick={() => void save()}
           disabled={!isDirty || saving}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-50"
+          className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-50"
         >
           {saving ? t("pages.voiceSettings.saving") : t("pages.voiceSettings.save")}
         </button>

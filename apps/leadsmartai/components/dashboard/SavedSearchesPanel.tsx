@@ -406,7 +406,7 @@ function SearchForm(props: SearchFormProps) {
         <button
           type="submit"
           disabled={saving || !name.trim()}
-          className="rounded bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+          className="rounded bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
         >
           {saving ? t("common:status.saving") : isEdit ? t("common:actions.save_changes") : t("pages.savedSearches.createSearch")}
         </button>

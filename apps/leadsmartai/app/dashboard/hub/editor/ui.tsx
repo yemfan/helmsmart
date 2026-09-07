@@ -165,9 +165,7 @@ export function SaveButton({
         type="button"
         onClick={onClick}
         disabled={disabled || state === "saving"}
-        className={`inline-flex min-h-10 items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60 ${
-          state === "error" ? "bg-red-600 hover:bg-red-700" : "bg-slate-900 hover:bg-slate-700"
-        }`}
+        className={`inline-flex min-h-10 items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60 ${ state === "error" ? "bg-red-600 hover:bg-red-700" : "bg-[#0072ce] hover:bg-[#005ca8]" }`}
       >
         {label}
       </button>

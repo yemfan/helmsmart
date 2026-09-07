@@ -60,7 +60,7 @@ export function OutboundSmsComposer({
           type="button"
           onClick={() => void send()}
           disabled={disabled}
-          className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:bg-slate-300"
+          className="rounded-xl bg-[#0072ce] px-4 py-2 text-sm font-medium text-white disabled:bg-slate-300"
         >
           {loading ? t("common:status.sending") : t("pages.outboundSmsComposer.sendSms")}
         </button>

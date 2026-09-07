@@ -471,7 +471,7 @@ export default function FlyerBuilderClient({
             type="button"
             onClick={() => void fetchProperty()}
             disabled={loading || !selectedPropertyId}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
           >
             {loading ? tr("pages.flyer.loadingProperty") : tr("pages.flyer.generate")}
           </button>
@@ -511,7 +511,7 @@ export default function FlyerBuilderClient({
             {saving ? tr("pages.flyer.saving") : tr("pages.flyer.save")}
           </button>
           <button onClick={() => void saveFlyer(true)} disabled={saving} className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">{tr("pages.flyerBuilder.saveDefault")}</button>
-          <button onClick={() => void downloadPdf()} disabled={generating} className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
+          <button onClick={() => void downloadPdf()} disabled={generating} className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
             {generating ? tr("pages.flyer.generatingPdf") : tr("pages.flyer.download")}
           </button>
         </div>

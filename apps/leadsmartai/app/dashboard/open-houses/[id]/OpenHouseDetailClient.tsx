@@ -209,7 +209,7 @@ export function OpenHouseDetailClient({
 
             <Link
               href={`/dashboard/open-houses/flyer?openHouseId=${oh.id}`}
-              className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+              className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-[#0072ce] px-3 py-2.5 text-sm font-semibold text-white hover:bg-[#005ca8]"
             >
               {t("pages.openHouseDetail.printFlyer")}
             </Link>
@@ -253,11 +253,7 @@ export function OpenHouseDetailClient({
                   type="button"
                   onClick={() => void saveStatus(s)}
                   disabled={savingStatus || oh.status === s}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium ${
-                    oh.status === s
-                      ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                  } disabled:opacity-60`}
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium ${ oh.status === s ? "border-slate-900 bg-[#0072ce] text-white" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" } disabled:opacity-60`}
                 >
                   {STATUS_LABEL[s]}
                 </button>

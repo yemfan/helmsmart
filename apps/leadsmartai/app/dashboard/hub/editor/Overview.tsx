@@ -203,7 +203,7 @@ export function AnalyticsSection({ data }: SectionProps) {
               type="button"
               onClick={() => setDays(d)}
               aria-pressed={days === d}
-              className={`min-h-9 rounded-lg px-3 py-1.5 text-sm font-medium ${days === d ? "bg-slate-900 text-white" : "bg-white text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"}`}
+              className={`min-h-9 rounded-lg px-3 py-1.5 text-sm font-medium ${days === d ? "bg-[#0072ce] text-white" : "bg-white text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50"}`}
             >
               {t(`pages.hubEditor.analytics.days${d}`)}
             </button>

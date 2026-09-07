@@ -170,7 +170,7 @@ export function AddContactClient() {
                   <button
                     disabled={claiming === id}
                     onClick={() => claimLead(id)}
-                    className="ml-3 shrink-0 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                    className="ml-3 shrink-0 rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
                   >
                     {claiming === id ? "..." : t("pages.addContact.claim")}
                   </button>
@@ -230,7 +230,7 @@ export function AddContactClient() {
         <button
           type="button"
           disabled={saving}
-          className="w-full min-h-[48px] rounded-xl bg-slate-900 text-white text-base font-medium disabled:opacity-50"
+          className="w-full min-h-[48px] rounded-xl bg-[#0072ce] text-white text-base font-medium disabled:opacity-50"
           onClick={() => void submit()}
         >
           {saving ? t("pages.addContact.saving") : t("pages.addContact.save")}

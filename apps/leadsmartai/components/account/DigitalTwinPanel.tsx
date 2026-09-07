@@ -535,7 +535,7 @@ export default function DigitalTwinPanel() {
             <input value={profile.tagline} onChange={(e) => setProfile({ ...profile, tagline: e.target.value })} className={field} />
           </label>
           <div className="flex justify-end">
-            <button type="button" onClick={() => void save()} disabled={saving} className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
+            <button type="button" onClick={() => void save()} disabled={saving} className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50">
               {saving ? t("common:status.saving") : t("twin.saveProfile")}
             </button>
           </div>
@@ -886,7 +886,7 @@ export default function DigitalTwinPanel() {
                       type="button"
                       onClick={() => void publishAvatar()}
                       disabled={avBusy !== null}
-                      className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                      className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:opacity-50"
                     >
                       {avBusy === "publish" ? t("common:status.posting") : t("twin.postToSocial")}
                     </button>

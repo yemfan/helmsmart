@@ -137,7 +137,7 @@ export default async function MarketingPage() {
           <p className="text-xs text-slate-600 dark:text-slate-400">{t("pages.marketing.plansBlurb", { ns: "dashboard" })}</p>
           <Link
             href="/dashboard/marketing/plans"
-            className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+            className="inline-flex items-center justify-center rounded-xl bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >{t("pages.marketing.openPlans", { ns: "dashboard" })}</Link>
         </div>
 

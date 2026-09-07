@@ -133,9 +133,7 @@ export default function HubEditorClient() {
                     type="button"
                     onClick={() => goTo(item.key)}
                     aria-current={active ? "page" : undefined}
-                    className={`min-h-9 w-full whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-sm font-medium transition ${
-                      active ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100"
-                    }`}
+                    className={`min-h-9 w-full whitespace-nowrap rounded-lg px-3 py-1.5 text-left text-sm font-medium transition ${ active ? "bg-[#0072ce] text-white" : "text-slate-700 hover:bg-slate-100" }`}
                   >
                     {item.label}
                   </button>

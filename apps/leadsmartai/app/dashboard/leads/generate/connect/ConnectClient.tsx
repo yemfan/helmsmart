@@ -350,7 +350,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/meta/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {metaConnections.length > 0
               ? t("connect.meta.cta_connect_another")
@@ -475,7 +475,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/linkedin/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {linkedinConnections.length > 0
               ? t("connect.linkedin.cta_reconnect")
@@ -592,7 +592,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/threads/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {threadsConnections.length > 0
               ? t("connect.threads.cta_reconnect")
@@ -707,7 +707,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/pinterest/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {pinterestConnections.length > 0 ? t("connect.pinterest.cta_reconnect") : t("connect.pinterest.cta_connect")}
           </a>
@@ -801,7 +801,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/tiktok/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {tiktokConnections.length > 0 ? t("connect.tiktok.cta_reconnect") : t("connect.tiktok.cta_connect")}
           </a>
@@ -894,7 +894,7 @@ export default function ConnectClient({
           </div>
           <a
             href="/api/leads-gen/connect/youtube/start"
-            className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {youtubeConnections.length > 0 ? t("connect.youtube.cta_reconnect") : t("connect.youtube.cta_connect")}
           </a>

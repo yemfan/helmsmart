@@ -244,7 +244,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           ) : nextStep.href ? (
             <Link
               href={nextStep.href}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-[#0072ce] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#005ca8]"
             >
               {nextStep.cta}
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -272,7 +272,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           onClick={() => void send()}
           disabled={loading || !input.trim()}
           aria-label={t("pages.misc.send")}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#0072ce] text-white hover:bg-[#005ca8] disabled:opacity-40"
         >
           <Send className="h-4 w-4" aria-hidden />
         </button>
