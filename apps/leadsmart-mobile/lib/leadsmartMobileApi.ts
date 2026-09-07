@@ -1409,7 +1409,7 @@ export async function fetchMobileShowings(opts?: {
   const path = opts?.contactId
     ? `${MOBILE_API_PATHS.showings}?contactId=${encodeURIComponent(opts.contactId)}`
     : MOBILE_API_PATHS.showings;
-  const res = await mobileGet<{ showings?: MobileShowingListItem[] }>(path);
+  const res = await mobileGet<MobileJsonError & { showings?: MobileShowingListItem[] }>(path);
   if (res.ok === false) return res;
   return { ok: true, showings: res.data.showings ?? [] };
 }
@@ -1417,7 +1417,7 @@ export async function fetchMobileShowings(opts?: {
 export async function fetchMobileShowingDetail(
   id: string,
 ): Promise<({ ok: true } & MobileShowingDetail) | MobileApiFailure> {
-  const res = await mobileGet<{
+  const res = await mobileGet<MobileJsonError & {
     showing?: MobileShowingListItem;
     feedback?: MobileShowingFeedback | null;
     contactName?: string | null;
@@ -1438,7 +1438,7 @@ export async function updateMobileShowingStatus(
   id: string,
   status: MobileShowingStatus,
 ): Promise<({ ok: true } & { showing: MobileShowingListItem }) | MobileApiFailure> {
-  const res = await mobilePatch<{ showing?: MobileShowingListItem }>(
+  const res = await mobilePatch<MobileJsonError & { showing?: MobileShowingListItem }>(
     MOBILE_API_PATHS.showing(id),
     { status },
   );
@@ -1465,7 +1465,7 @@ export async function upsertMobileShowingFeedback(
   showingId: string,
   input: MobileShowingFeedbackInput,
 ): Promise<({ ok: true } & { feedback: MobileShowingFeedback }) | MobileApiFailure> {
-  const res = await mobilePut<{ feedback?: MobileShowingFeedback }>(
+  const res = await mobilePut<MobileJsonError & { feedback?: MobileShowingFeedback }>(
     MOBILE_API_PATHS.showingFeedback(showingId),
     input as Record<string, unknown>,
   );

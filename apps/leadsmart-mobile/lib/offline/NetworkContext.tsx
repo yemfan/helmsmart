@@ -21,7 +21,7 @@ const NetworkCtx = createContext<NetworkState>({ isConnected: true });
  * When transitioning from offline → online, fires all reconnect
  * subscribers registered via `onReconnect.ts`.
  */
-export function NetworkProvider({ children }: { children: ReactNode }): JSX.Element {
+export function NetworkProvider({ children }: { children: ReactNode }): React.JSX.Element {
   const [isConnected, setIsConnected] = useState(true);
   const prevConnected = useRef(true);
 
