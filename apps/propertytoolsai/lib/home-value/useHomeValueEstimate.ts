@@ -56,7 +56,23 @@ async function apiRequest<T>(url: string, init?: RequestInit): Promise<T> {
     cache: "no-store",
   });
 
-  const json = await res.json();
+  // Read as text first: a gateway timeout or a crashed function answers in
+  // plain text, and `res.json()` on that surfaces the parser's complaint
+  // ("Unexpected token 'A'…") as if it were the estimate's error.
+  const text = await res.text();
+  let json: any = null;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = null;
+  }
+  if (json === null) {
+    throw new Error(
+      res.status === 504 || res.status === 408
+        ? "The estimate took longer than expected. Please try again in a moment."
+        : "We couldn't reach the estimate service. Please try again.",
+    );
+  }
   if (!res.ok || json?.success === false) {
     // The estimate API returns ineligible responses as
     // `{ success: false, status: "ineligible", reason, message }` —

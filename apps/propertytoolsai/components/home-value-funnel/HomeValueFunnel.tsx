@@ -126,7 +126,22 @@ export default function HomeValueFunnel() {
         new Promise((r) => setTimeout(r, 1400)),
       ]);
 
-      const raw = (await res.json()) as Record<string, unknown>;
+      // Text first, then parse: a 504 from the platform is not JSON, and the
+      // parser's own error is not something a homeowner should read.
+      const text = await res.text();
+      let raw: Record<string, unknown> | null = null;
+      try {
+        raw = text ? (JSON.parse(text) as Record<string, unknown>) : null;
+      } catch {
+        raw = null;
+      }
+      if (raw === null) {
+        throw new Error(
+          res.status === 504 || res.status === 408
+            ? "The estimate took longer than expected. Please try again in a moment."
+            : "We couldn't reach the estimate service. Please try again.",
+        );
+      }
 
       if (!res.ok) {
         throw new Error(typeof raw.error === "string" ? raw.error : "Could not compute estimate.");
