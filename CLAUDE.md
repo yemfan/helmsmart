@@ -119,3 +119,47 @@ which bypasses RLS — there, zero rows means the id does not exist.
 If a write is refused, put the switch back and say why. An optimistic toggle
 that stays flipped after a rejected save is the same lie as a banner that says
 "Saved." over an unchanged row.
+
+---
+
+## Verifying in a worktree
+
+### Install before you believe a red test
+
+A worktree under `.claude/worktrees/` has no `apps/<app>/node_modules` of its
+own, so Node walks **up** and takes whatever the repo root has hoisted — which
+is some *other* app's version. First thing, from the worktree root:
+
+```bash
+pnpm install --frozen-lockfile --filter leadsmartai...
+```
+
+About 40 seconds, reuses the global store, downloads nothing. Re-run it
+whenever a merge moves `pnpm-lock.yaml` or a `package.json`.
+
+**Why this is a house rule and not a tip.** `apps/leadsmartai` pins
+`zod ^3.24.2`; `apps/propertytoolsai` pins `^4.3.6`. Without the install, a
+worktree typechecks and runs leadsmartai's zod-3 code against propertytoolsai's
+**zod 4**, and you get failures that belong to neither branch:
+
+| symptom | actually |
+| --- | --- |
+| 16 `TS2769` in `lib/marketing-hub/config.ts` | `.default({})` takes the input type in zod 3, the output type in zod 4 |
+| 4 `marketing-hub` test failures | same |
+| 2 standing `lib/boss` `tsc` errors | same |
+| `@types/dompurify` "is not a module" | same install gap |
+| `toolOwnership.test.ts` roster is empty | zod internals moved between majors |
+
+All of it cleared with the one command: 19 type errors to **0**, and vitest
+from five failures to **217 files / 2266 tests green**. None of it was ever a
+defect on `main`.
+
+### CI is a tie-breaker, not a substitute
+
+The failures above were waved past for days as "a known worktree artifact, CI
+is authoritative". That is the wrong lesson and it costs real signal: every one
+of them was a legible error being ignored because the environment was wrong.
+
+Install, then trust what `tsc` and `vitest` tell you. Reach for CI when local
+and CI **disagree** — not as a reason to skip local verification, and never as
+grounds to report a suite as passing when it did not.
