@@ -85,6 +85,19 @@ export default async function DashboardLayout({
     if (!staff) {
       try {
         await reconcileEntitlement(ctx.userId);
+        // Reconcile can have just synced the user row back to "active" (a
+        // past_due left by a webhook race, a comp plan with no entitlement
+        // row). The redirect below must judge the row as it is NOW: judged
+        // on the read from before reconcile ran, an active subscriber was
+        // bounced to the OAuth profile gate for one request and let in on
+        // the next — seen live on 2026-09-07.
+        const { data: fresh } = await supabaseServer
+          .from("leadsmart_users")
+          .select("subscription_status")
+          .eq("user_id", ctx.userId)
+          .maybeSingle();
+        const now = String((fresh as { subscription_status?: string | null } | null)?.subscription_status ?? "").toLowerCase();
+        if (now) status = now;
       } catch (err) {
         console.warn(
           "[dashboard layout] reconcileEntitlement failed:",
