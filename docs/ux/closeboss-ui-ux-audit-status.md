@@ -68,6 +68,8 @@ audit, the PR that shipped it, and what is still open. Last updated 2026-09-07. 
 
 ## Still open
 
-- **Signature on the plans page** — the fee is charged now; whether Signature is
-  sold on the page or stays "Talk to us" is a pricing decision.
+- ~~Signature on the plans page~~ — resolved: with the setup-fee price configured
+  (#1577), /plans sells Signature self-serve ($399/mo + one-time $499 setup);
+  Upgrade lands on /dashboard/credits, which knows the current plan. "Talk to
+  us" remains only for Brokerage (multi-seat), by design.
 - **Mobile approval sheet on a device** — #1618 typechecks; not run on a simulator.
