@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
+import { mapCallStatus as mapStatus } from "@/lib/voice-agent/mapCallStatus";
 import {
   finalizeCallByProviderId,
   findContactByPhone,
@@ -51,16 +52,6 @@ type RetellCall = {
   call_analysis?: { call_summary?: string | null } | null;
 };
 
-/** Map Retell's disconnection reason → the call_logs status the badge renders. */
-function mapStatus(callStatus: string | undefined, reason: string | undefined): string {
-  const r = (reason || "").toLowerCase();
-  if (r.includes("no_answer")) return "no_answer";
-  if (r.includes("busy")) return "busy";
-  if (r.includes("voicemail") || r.includes("machine")) return "voicemail";
-  if (r.includes("failed") || r.startsWith("error") || callStatus === "error") return "failed";
-  // user_hangup, agent_hangup, call_transfer, inactivity, max_duration, etc.
-  return "completed";
-}
 
 function durationSeconds(call: RetellCall): number | null {
   if (typeof call.start_timestamp === "number" && typeof call.end_timestamp === "number") {
