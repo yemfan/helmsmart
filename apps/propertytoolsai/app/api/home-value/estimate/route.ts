@@ -6,7 +6,11 @@ import { normalizeHomeValueEstimateRequestBody } from "@/lib/homeValue/normalize
 
 export const runtime = "nodejs";
 // Claude + web_search over real comparable sales runs ~15-40s.
-export const maxDuration = 60;
+// The valuation engine is Claude plus live web search over comparable
+// sales; a cold address routinely takes 60-120 seconds. At 60 Vercel killed
+// the function mid-search and the page received its timeout notice as
+// plain text. 300 is the platform default this route had been undercutting.
+export const maxDuration = 300;
 
 function addressLineForGeocode(
   address: string,
