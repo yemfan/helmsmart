@@ -1,10 +1,11 @@
 import type Stripe from "stripe";
+import { mapInternalPlanToCrmSlug } from "@/lib/billing/publicSubscriptionsSync";
 import type { InternalPlan } from "@/lib/billing/stripe-plan-map";
 import {
   mapStripePriceToPlan,
   resolveInternalPlanFromStripeSubscription,
 } from "@/lib/billing/stripe-plan-map";
-import { planRowFromCatalog } from "@/lib/entitlements/planCatalog";
+import { planRowFromCatalog, planSlugToAgentPlan } from "@/lib/entitlements/planCatalog";
 import type { AgentPlan } from "@/lib/entitlements/types";
 import { PRODUCT_LEADSMART_AGENT } from "@/lib/entitlements/product";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -72,6 +73,16 @@ function billingPlanToAgentPlan(billingPlan: InternalPlan): AgentPlan {
 }
 
 /**
+ * CloseBoss credit tiers → the legacy entitlement catalog that still meters
+ * AI runs and CRM caps. Solo has no catalog row of its own; it is the smallest
+ * paid tier, so it takes Pro's caps rather than Starter's.
+ */
+function crmPlanToAgentPlan(billingPlan: InternalPlan): AgentPlan {
+  if (billingPlan === "crm_solo") return "pro";
+  return planSlugToAgentPlan(mapInternalPlanToCrmSlug(billingPlan));
+}
+
+/**
  * Deactivate prior active rows, then insert a new entitlement row (matches DB partial unique index).
  */
 async function syncAgentEntitlement(params: {
@@ -81,11 +92,41 @@ async function syncAgentEntitlement(params: {
 }) {
   if (!params.userId) return;
 
-  if (params.billingPlan !== "agent_starter" && params.billingPlan !== "agent_pro") {
-    return;
-  }
+  const now0 = new Date().toISOString();
 
-  const normalizedPlan = billingPlanToAgentPlan(params.billingPlan);
+  // CloseBoss plans (crm_*). This function returned early for every one of
+  // them, so a CloseBoss subscription never touched product_entitlements:
+  //   - on activation the Starter row from signup stayed active, and
+  //     reconcileEntitlement — which never overrides an active row — kept a
+  //     paying agent on Starter-level AI-run quotas and caps;
+  //   - on a lapse the paid row (where one had been backfilled by hand)
+  //     stayed active, and reconcile kept the user row "active" forever.
+  // Both directions now mirror the legacy SKUs: activation installs the
+  // tier's entitlement, a lapse deactivates it and marks the user row
+  // inactive so reconcile provisions Starter on the next dashboard load.
+  let normalizedPlan: AgentPlan;
+  if (String(params.billingPlan).startsWith("crm_")) {
+    if (!params.active) {
+      const { error: deactErr } = await supabaseAdmin
+        .from("product_entitlements")
+        .update({ is_active: false, updated_at: now0 })
+        .eq("user_id", params.userId)
+        .eq("product", PRODUCT_LEADSMART_AGENT);
+      if (deactErr) throw deactErr;
+      const { error: luErr } = await supabaseAdmin
+        .from("leadsmart_users")
+        .update({ subscription_status: "inactive", updated_at: now0 } as Record<string, unknown>)
+        .eq("user_id", params.userId);
+      if (luErr) throw luErr;
+      return;
+    }
+    normalizedPlan = crmPlanToAgentPlan(params.billingPlan);
+  } else {
+    if (params.billingPlan !== "agent_starter" && params.billingPlan !== "agent_pro") {
+      return;
+    }
+    normalizedPlan = billingPlanToAgentPlan(params.billingPlan);
+  }
   const limits = planRowFromCatalog(normalizedPlan);
   const now = new Date().toISOString();
 
@@ -411,7 +452,9 @@ export async function markSubscriptionCanceled(subscriptionId: string) {
 
   if (
     subscriptionRow?.user_id &&
-    (subscriptionRow.plan === "agent_starter" || subscriptionRow.plan === "agent_pro")
+    (subscriptionRow.plan === "agent_starter" ||
+      subscriptionRow.plan === "agent_pro" ||
+      String(subscriptionRow.plan ?? "").startsWith("crm_"))
   ) {
     await syncAgentEntitlement({
       userId: subscriptionRow.user_id,
@@ -479,7 +522,9 @@ export async function markInvoicePaid(invoice: Stripe.Invoice) {
 
   if (
     subscriptionRow?.user_id &&
-    (subscriptionRow.plan === "agent_starter" || subscriptionRow.plan === "agent_pro")
+    (subscriptionRow.plan === "agent_starter" ||
+      subscriptionRow.plan === "agent_pro" ||
+      String(subscriptionRow.plan ?? "").startsWith("crm_"))
   ) {
     await syncAgentEntitlement({
       userId: subscriptionRow.user_id,
