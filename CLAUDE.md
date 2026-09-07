@@ -131,16 +131,33 @@ own, so Node walks **up** and takes whatever the repo root has hoisted — which
 is some *other* app's version. First thing, from the worktree root:
 
 ```bash
-pnpm install --frozen-lockfile --filter leadsmartai...
+pnpm install --frozen-lockfile --filter <package>...
 ```
 
-About 40 seconds, reuses the global store, downloads nothing. Re-run it
-whenever a merge moves `pnpm-lock.yaml` or a `package.json`.
+The trailing `...` is load-bearing: it pulls in the app's workspace
+dependencies too. About 40 seconds, reuses the global store, downloads nothing.
+Re-run it whenever a merge moves `pnpm-lock.yaml` or a `package.json`.
 
-**Why this is a house rule and not a tip.** `apps/leadsmartai` pins
-`zod ^3.24.2`; `apps/propertytoolsai` pins `^4.3.6`. Without the install, a
-worktree typechecks and runs leadsmartai's zod-3 code against propertytoolsai's
-**zod 4**, and you get failures that belong to neither branch:
+**`<package>` is the name in `package.json`, not the directory.** Two of them
+differ, and `--filter` on the directory answers `No projects matched the
+filters` rather than doing anything useful:
+
+| directory | filter with |
+| --- | --- |
+| `apps/leadsmartai` | `leadsmartai` |
+| `apps/helmsmart-web` | **`helmsmart`** |
+| `apps/marketingboss` | `marketingboss` |
+| `apps/propertytoolsai` | `propertytoolsai` |
+| `apps/aibusinessworks` | `aibusinessworks` |
+| `apps/maxyinvestment` | `maxyinvestment` |
+| `apps/leadsmart-mobile` | `leadsmart-mobile` |
+| `apps/helm-ui` | **`@helm/ui`** |
+
+**Why this is a house rule and not a tip.** `apps/leadsmartai` and
+`apps/helmsmart-web` pin `zod ^3.24.2`; `apps/propertytoolsai` pins `^4.3.6`.
+Whichever the root hoists is what an uninstalled worktree gets, so either of
+the first two can end up typechecked and run against **zod 4**, and you get
+failures that belong to neither branch:
 
 | symptom | actually |
 | --- | --- |
@@ -150,9 +167,11 @@ worktree typechecks and runs leadsmartai's zod-3 code against propertytoolsai's
 | `@types/dompurify` "is not a module" | same install gap |
 | `toolOwnership.test.ts` roster is empty | zod internals moved between majors |
 
-All of it cleared with the one command: 19 type errors to **0**, and vitest
-from five failures to **217 files / 2266 tests green**. None of it was ever a
-defect on `main`.
+That table is `leadsmartai`'s symptom set, measured 2026-09-06. All of it
+cleared with the one command — 19 type errors to **0**, vitest from five
+failures to **217 files / 2266 tests green** — and none of it was ever a defect
+on `main`. Any app in the table above can produce its own version of this;
+the shape to recognise is *errors about a dependency you did not touch*.
 
 ### CI is a tie-breaker, not a substitute
 
