@@ -228,7 +228,7 @@ export default function PropertyLookupField({
           type="button"
           onClick={() => void lookup()}
           disabled={disabled || busy || !value.trim()}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Search className="h-4 w-4" aria-hidden />
           {busy ? t("pages.propertyLookup.working") : t("pages.propertyLookup.lookUp")}

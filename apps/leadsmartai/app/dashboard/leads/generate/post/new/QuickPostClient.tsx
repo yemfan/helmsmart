@@ -952,7 +952,7 @@ export default function QuickPostClient() {
                   type="button"
                   onClick={() => void runLookup()}
                   disabled={lookupBusy || lookupInput.trim().length < 3}
-                  className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                  className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:opacity-50"
                 >
                   {lookupBusy ? t("step2.lookup.looking_up_busy") : t("step2.lookup.look_up")}
                 </button>
@@ -1133,7 +1133,7 @@ export default function QuickPostClient() {
                   type="button"
                   onClick={generate}
                   disabled={drafting}
-                  className="mt-3 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                  className="mt-3 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:opacity-50"
                 >
                   {drafting ? t("step3.drafting") : t("step3.generate")}
                 </button>
@@ -1765,7 +1765,7 @@ function BriefInput({
           type="button"
           onClick={onCommit}
           disabled={(required && !value.trim()) || committed}
-          className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
         >
           {committed ? t("brief_input.saved") : t("brief_input.use_this")}
         </button>

@@ -578,11 +578,7 @@ function NewTransactionForm() {
                   key={t}
                   type="button"
                   onClick={() => setTransactionType(t)}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${
-                    transactionType === t
-                      ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                  }`}
+                  className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${ transactionType === t ? "border-slate-900 bg-[#0072ce] text-white" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" }`}
                 >
                   {t === "buyer_rep" ? tr("pages.newTransaction.buyerSide") : t === "listing_rep" ? tr("pages.newTransaction.listingSide") : tr("pages.newTransaction.dualAgent")}
                 </button>
@@ -762,7 +758,7 @@ function NewTransactionForm() {
             type="button"
             onClick={() => void submit()}
             disabled={submitting || !contact?.id || !propertyAddress.trim()}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
           >
             {submitLabel}
           </button>

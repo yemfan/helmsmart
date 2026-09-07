@@ -249,7 +249,7 @@ export function PlaybooksPanel({
           <button
             type="button"
             onClick={() => setShowPicker(true)}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+            className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8]"
           >
             + Apply playbook
           </button>
@@ -661,7 +661,7 @@ export function PlaybookPickerModal({
               type="button"
               onClick={goToReview}
               disabled={!selected}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
             >
               {t("pages.playbooksPanel.reviewTasks")}
             </button>
@@ -670,7 +670,7 @@ export function PlaybookPickerModal({
               type="button"
               onClick={() => void apply()}
               disabled={includedCount === 0 || applying || (needsContact && !pickedContactId)}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
             >
               {applying
                 ? t("common:status.applying")

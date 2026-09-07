@@ -109,11 +109,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
               key={f.value}
               type="button"
               onClick={() => setFilter(f.value)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${
-                filter === f.value
-                  ? "bg-slate-900 text-white ring-slate-900"
-                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
-              }`}
+              className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 transition ${ filter === f.value ? "bg-[#0072ce] text-white ring-slate-900" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 ring-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800" }`}
             >
               {f.label}
             </button>

@@ -672,7 +672,7 @@ export function ListingDetailClient({
           </div>
           <Link
             href={`/dashboard/listings/${encodeURIComponent(listing.id)}/offers/new`}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#005ca8]"
           >{t("pages.listingDetail.addOffer")}</Link>
         </div>
 
@@ -848,7 +848,7 @@ export function ListingDetailClient({
                                   type="button"
                                   onClick={() => void recordCounter(o.id)}
                                   disabled={isCountering}
-                                  className="rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+                                  className="rounded-lg bg-[#0072ce] px-2.5 py-1 text-xs font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
                                 >
                                   {isCountering ? t("pages.listingDetail.recording") : t("pages.listingDetail.recordCounter")}
                                 </button>

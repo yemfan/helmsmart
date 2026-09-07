@@ -426,7 +426,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
             type="button"
             onClick={() => void runParse()}
             disabled={parsing || !text.trim()}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
           >
             {parsing ? t("common:status.parsing") : parsed ? t("pages.uploadOffer.reparse") : t("pages.uploadOffer.parse")}
           </button>
@@ -456,7 +456,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
               type="button"
               onClick={() => void saveAsDraft()}
               disabled={saving || !contact?.id || !parsed.propertyAddress || parsed.offerPrice == null}
-              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
             >
               {saving ? t("pages.uploadOffer.saving") : t("pages.uploadOffer.save")}
             </button>

@@ -105,7 +105,7 @@ export function OpenHousesListClient({
         </div>
         <Link
           href="/dashboard/open-houses/new"
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
         >{t("pages.openHouses.schedule")}</Link>
       </div>
 

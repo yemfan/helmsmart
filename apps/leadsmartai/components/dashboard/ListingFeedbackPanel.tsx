@@ -126,7 +126,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
         <button
           type="button"
           onClick={() => setShowAdd((v) => !v)}
-          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+          className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8]"
         >
           {showAdd ? t("common:actions.cancel") : "+ Add request"}
         </button>
@@ -317,7 +317,7 @@ function PendingCard({
             type="button"
             onClick={onSend}
             disabled={!row.buyer_agent_email}
-            className="rounded-lg bg-slate-900 px-3 py-1 text-[11px] font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg bg-[#0072ce] px-3 py-1 text-[11px] font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
             title={!row.buyer_agent_email ? t("pages.listingFeedback.needBuyerAgentEmail") : ""}
           >
             {row.request_email_sent_at ? "Resend" : t("pages.listingFeedback.sendRequest")}
@@ -426,7 +426,7 @@ function AddRequestForm({
         type="button"
         onClick={() => void submit()}
         disabled={saving}
-        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+        className="w-full rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
       >
         {saving ? t("common:status.adding") : t("pages.listingFeedback.addRequest")}
       </button>

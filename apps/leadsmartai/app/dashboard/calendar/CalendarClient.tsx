@@ -484,7 +484,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Filters + view toggle */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
-        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-slate-900 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>{tr("pages.calendarPage.all")}</button>
+        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-[#0072ce] text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>{tr("pages.calendarPage.all")}</button>
         <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}>
           <span className="h-2 w-2 rounded-full bg-blue-500" /> {tr("calendar.filters.appointments")}
         </button>
@@ -503,14 +503,14 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">
           <button
             onClick={() => setView("month")}
-            className={`px-3 py-1 transition ${view === "month" ? "bg-slate-900 text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
+            className={`px-3 py-1 transition ${view === "month" ? "bg-[#0072ce] text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
             aria-pressed={view === "month"}
           >
             {tr("calendar.view.month")}
           </button>
           <button
             onClick={() => setView("list")}
-            className={`px-3 py-1 transition ${view === "list" ? "bg-slate-900 text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
+            className={`px-3 py-1 transition ${view === "list" ? "bg-[#0072ce] text-white" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
             aria-pressed={view === "list"}
           >
             {tr("calendar.view.list")}

@@ -146,7 +146,7 @@ export default function RecurringListClient() {
           </p>
           <a
             href="/dashboard/leads/generate/post/new"
-            className="mt-4 inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+            className="mt-4 inline-block rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
           >
             {t("recurring.empty.cta")}
           </a>

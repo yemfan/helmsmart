@@ -80,11 +80,7 @@ export default function DraftsClient() {
                 key={s}
                 type="button"
                 onClick={() => setFilter(s)}
-                className={`rounded-full px-2.5 py-1 text-xs ${
-                  filter === s
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300"
-                }`}
+                className={`rounded-full px-2.5 py-1 text-xs ${ filter === s ? "bg-[#0072ce] text-white" : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300" }`}
               >
                 {STATUS_LABELS[s]}
               </button>
@@ -501,7 +497,7 @@ function DraftDetail({
                   type="button"
                   onClick={() => void reject()}
                   disabled={saving !== null}
-                  className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+                  className="rounded-lg bg-[#0072ce] px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
                 >
                   {saving === "reject" ? t("common:status.rejecting") : t("pages.drafts.confirmReject")}
                 </button>

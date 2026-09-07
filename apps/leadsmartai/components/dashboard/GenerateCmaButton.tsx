@@ -159,7 +159,7 @@ export default function GenerateCmaButton({
                     address.trim().length === 0 ||
                     quota?.reached === true
                   }
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting ? t("common:status.generating") : t("common:actions.generate")}
                 </button>

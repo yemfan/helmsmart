@@ -206,7 +206,7 @@ function CmaListInner() {
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+          className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
         >
           {showForm ? t("pages.cma.cancel") : t("pages.cma.newCma")}
         </button>
@@ -260,7 +260,7 @@ function CmaListInner() {
                   address.trim().length === 0 ||
                   quota?.reached === true
                 }
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? t("pages.cma.generating") : t("pages.cma.generate")}
               </button>

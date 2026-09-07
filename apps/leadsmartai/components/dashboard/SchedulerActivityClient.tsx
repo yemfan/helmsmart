@@ -105,11 +105,7 @@ export default function SchedulerActivityClient() {
                 key={o.value}
                 type="button"
                 onClick={() => setOutcome(o.value)}
-                className={`rounded-full px-2.5 py-1 text-xs ${
-                  outcome === o.value
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300"
-                }`}
+                className={`rounded-full px-2.5 py-1 text-xs ${ outcome === o.value ? "bg-[#0072ce] text-white" : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300" }`}
               >
                 {o.label}
               </button>
@@ -124,11 +120,7 @@ export default function SchedulerActivityClient() {
                 key={r.value}
                 type="button"
                 onClick={() => setRange(r.value)}
-                className={`rounded-full px-2.5 py-1 text-xs ${
-                  range === r.value
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300"
-                }`}
+                className={`rounded-full px-2.5 py-1 text-xs ${ range === r.value ? "bg-[#0072ce] text-white" : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300" }`}
               >
                 {r.label}
               </button>

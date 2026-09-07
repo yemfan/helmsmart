@@ -160,7 +160,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
             <div className="mt-auto flex items-center gap-2 border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 px-4 py-3">
               <Link
                 href={`/dashboard/leads/${encodeURIComponent(p.id)}`}
-                className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+                className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8]"
               >{t("pages.leadDrawer.openFullProfile")}</Link>
               <Link href={`/dashboard/inbox?lead=${encodeURIComponent(p.id)}`} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">{t("pages.leadDrawer.conversations")}</Link>
               {p.phone && (

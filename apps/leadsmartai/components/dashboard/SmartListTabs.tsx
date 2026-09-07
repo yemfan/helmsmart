@@ -36,11 +36,7 @@ export default function SmartListTabs({ lists, activeListId }: Props) {
                 key={list.id}
                 href={`?list=${encodeURIComponent(list.id)}`}
                 scroll={false}
-                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                  isActive
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300 hover:text-slate-900"
-                }`}
+                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${ isActive ? "bg-[#0072ce] text-white" : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300 hover:text-slate-900" }`}
                 title={list.description ?? undefined}
               >
                 {list.name}
@@ -269,7 +265,7 @@ function SmartListManager({
               type="button"
               onClick={create}
               disabled={pendingId === "__new__"}
-              className="rounded bg-slate-900 px-3 py-1 text-xs text-white disabled:opacity-50"
+              className="rounded bg-[#0072ce] px-3 py-1 text-xs text-white disabled:opacity-50"
             >
               {t("smart_lists.manager.add_inline")}
             </button>

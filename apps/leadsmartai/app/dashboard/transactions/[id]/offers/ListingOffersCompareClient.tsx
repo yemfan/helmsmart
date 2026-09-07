@@ -316,7 +316,7 @@ export function ListingOffersCompareClient({
         <button
           type="button"
           onClick={() => setShowAdd((v) => !v)}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ca8]"
         >
           {showAdd ? t("pages.offersCompare.cancel") : t("pages.offersCompare.recordOffer")}
         </button>
@@ -766,7 +766,7 @@ function NewListingOfferForm({
           type="button"
           onClick={() => void submit()}
           disabled={submitting || !offerPrice.trim()}
-          className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#005ca8] disabled:opacity-50"
         >
           {submitting ? t("common:status.saving") : t("pages.listingOffersCompare.recordOffer")}
         </button>

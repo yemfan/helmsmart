@@ -170,11 +170,7 @@ export function TransactionsListClient({
               key={f.key}
               type="button"
               onClick={() => setStatusFilter(f.key)}
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${
-                active
-                  ? "border-slate-900 bg-slate-900 text-white"
-                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300"
-              }`}
+              className={`rounded-full border px-3 py-1 text-xs font-medium ${ active ? "border-slate-900 bg-[#0072ce] text-white" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-300" }`}
             >
               {f.label} ({count})
             </button>

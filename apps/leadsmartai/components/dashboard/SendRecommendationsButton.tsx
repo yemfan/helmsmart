@@ -161,7 +161,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+        className="inline-flex items-center gap-2 rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#005ca8]"
       >
         <Send className="h-3.5 w-3.5" aria-hidden />{t("pages.sendRecommendations.title")}</button>
 
@@ -352,7 +352,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 type="button"
                 onClick={send}
                 disabled={picked.length === 0 || sending}
-                className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
                 {sending ? t("common:status.sending") : `Send ${picked.length || ""}`}

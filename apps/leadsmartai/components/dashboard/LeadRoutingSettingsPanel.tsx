@@ -169,7 +169,7 @@ export default function LeadRoutingSettingsPanel() {
                 type="button"
                 onClick={onSave}
                 disabled={saving}
-                className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005ca8] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving ? t("common:status.saving") : t("common:actions.save_settings")}
               </button>

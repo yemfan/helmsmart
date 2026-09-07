@@ -76,7 +76,7 @@ export default function CmaEmailToSellerButton({
           reset();
           setOpen(true);
         }}
-        className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
+        className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#005ca8]"
       >
         {t("pages.cmaEmail.emailToSeller")}
       </button>
@@ -144,7 +144,7 @@ export default function CmaEmailToSellerButton({
                       type="button"
                       onClick={onSubmit}
                       disabled={submitting || to.trim().length === 0}
-                      className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {submitting ? t("common:status.sending") : t("common:actions.send")}
                     </button>
