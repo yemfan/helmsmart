@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import type { GaBlock } from "@/lib/leads-gen/google-analytics";
 import type { AdsSummary, SocialSummary, SourceFunnelRow } from "@/lib/marketing-hub/marketingMetrics";
+import type { HubSearchSummary } from "@/lib/marketing-hub/searchConsole";
 import GoogleAnalyticsPanel from "./GoogleAnalyticsPanel";
 import { Card, Empty } from "./ui";
 
@@ -25,6 +26,7 @@ type Payload = {
   social: SocialSummary;
   ads: AdsSummary;
   sources: SourceFunnelRow[];
+  search: HubSearchSummary | null;
   connections: { platforms: string[]; metaInsights: { pageInsights: boolean; instagramInsights: boolean; ads: boolean } };
   google: { ga4TagConfigured: boolean; metaPixelConfigured: boolean; analytics: GaBlock };
 };
@@ -273,6 +275,66 @@ export default function MarketingPerformance({ days }: { days: number }) {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      {/* ── Google Search ── */}
+      <div>
+        <h3 className="mb-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{k("search")}</h3>
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
+          {k("searchDesc")}
+          {data.search?.lastDate ? ` · ${k("searchAsOf", { date: new Date(`${data.search.lastDate}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: "medium" }) })}` : ""}
+        </p>
+        {!data.search ? (
+          <Empty>{k("searchNone")}</Empty>
+        ) : (
+          <div className="space-y-3">
+            <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              {[
+                [k("impressions"), n(data.search.impressions, locale)],
+                [k("clicks"), n(data.search.clicks, locale)],
+                [k("ctr"), pct(data.search.ctr)],
+                [k("position"), data.search.position == null ? "—" : data.search.position.toLocaleString(locale, { maximumFractionDigits: 1 })],
+                [k("searchPages"), n(data.search.pages, locale)],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+                  <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
+                  <dd className="text-lg font-semibold tabular-nums text-slate-900 dark:text-slate-100">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                { title: k("topPages"), head: k("page"), rows: data.search.topPages.map((r) => ({ key: r.path, ...r })) },
+                { title: k("topQueries"), head: k("query"), rows: data.search.topQueries.map((r) => ({ key: r.query, ...r })) },
+              ].map((block) =>
+                block.rows.length ? (
+                  <div key={block.title} className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                    <table className="w-full">
+                      <thead className="bg-slate-50 dark:bg-slate-800/60">
+                        <tr>
+                          <th className={th}>{block.head}</th>
+                          <th className={th}>{k("impressions")}</th>
+                          <th className={th}>{k("clicks")}</th>
+                          <th className={th}>{k("position")}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {block.rows.map((r) => (
+                          <tr key={r.key}>
+                            <td className={`${td} max-w-[16rem] truncate font-medium`}>{r.key}</td>
+                            <td className={td}>{n(r.impressions, locale)}</td>
+                            <td className={td}>{n(r.clicks, locale)}</td>
+                            <td className={td}>{r.position == null ? "—" : r.position.toLocaleString(locale, { maximumFractionDigits: 1 })}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null,
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -10579,7 +10579,7 @@
         "noSources": "No hub traffic in this period.",
         "ga4On": "Your Google Analytics tag is on your hub; every visit and hub event goes to your GA4 property.",
         "ga4Off": "Add your GA4 measurement ID in Settings to see hub traffic in Google Analytics.",
-        "googleAds": "Google Ads and Search Console are not connected to CloseBoss. Their reports live in those accounts.",
+        "googleAds": "Google Ads is not connected to CloseBoss; its reports live in that account.",
         "openSettings": "Open Settings",
         "ga": {
           "connect": "Connect Google Analytics",
@@ -10633,7 +10633,18 @@
             "affiliates": "Affiliates",
             "audio": "Audio"
           }
-        }
+        },
+        "search": "Google Search",
+        "searchDesc": "Your hub's pages in Google search results, from Search Console. Updated daily; nothing to connect.",
+        "searchAsOf": "through {{date}}",
+        "searchNone": "Google has not shown your hub in search results yet.",
+        "ctr": "CTR",
+        "position": "Avg. position",
+        "searchPages": "Pages shown",
+        "topPages": "Top pages",
+        "topQueries": "Top searches",
+        "page": "Page",
+        "query": "Search"
       }
     },
     "hubLeadNotify": {
