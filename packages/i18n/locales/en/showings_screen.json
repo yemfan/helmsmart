@@ -17,7 +17,8 @@
     "row": {
       "offer_chip": "Offer",
       "a11y_label": "Showing at {{address}} on {{when}}, {{status}}"
-    }
+    },
+    "load_failed": "Couldn't load showings"
   },
   "status": {
     "scheduled": "Scheduled",

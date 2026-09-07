@@ -11,7 +11,7 @@ import type { ThemeTokens } from "../lib/theme";
  * LayoutAnimation. Shows the number of pending queued writes so
  * the user knows their changes will sync.
  */
-export function OfflineBanner(): JSX.Element | null {
+export function OfflineBanner(): React.JSX.Element | null {
   const { isConnected } = useNetwork();
   const { pendingCount } = useWriteQueue();
   const tokens = useThemeTokens();

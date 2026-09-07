@@ -63,10 +63,7 @@ export default function ShowingsListScreen() {
     () => fetchMobileShowings(),
   );
 
-  const showings = useMemo<MobileShowingListItem[]>(() => {
-    if (!data || data.ok === false) return [];
-    return data.showings;
-  }, [data]);
+  const showings = useMemo<MobileShowingListItem[]>(() => data?.showings ?? [], [data]);
 
   const filtered = useMemo(() => {
     const now = Date.now();
@@ -120,12 +117,12 @@ export default function ShowingsListScreen() {
 
       {error && data == null ? (
         <View style={styles.banner}>
-          <ErrorBanner message={error} onRetry={refresh} />
+          <ErrorBanner title={t("list.load_failed")} message={error.message} onRetry={refresh} />
         </View>
       ) : null}
 
       {loading && filtered.length === 0 ? (
-        <SkeletonList count={6} renderItem={() => <LeadRowSkeleton />} />
+        <SkeletonList count={6} renderRow={() => <LeadRowSkeleton />} />
       ) : filtered.length === 0 ? (
         <EmptyState
           title={filter === "upcoming" ? t("list.empty.upcoming_title") : t("list.empty.other_title")}

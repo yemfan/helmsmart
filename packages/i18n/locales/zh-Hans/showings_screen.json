@@ -17,7 +17,8 @@
     "row": {
       "offer_chip": "出价",
       "a11y_label": "{{address}} 的看房，时间 {{when}}，{{status}}"
-    }
+    },
+    "load_failed": "无法加载看房记录"
   },
   "status": {
     "scheduled": "已安排",
