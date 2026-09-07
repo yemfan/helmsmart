@@ -460,6 +460,26 @@ export function Workforce({ hub, L, theme }: SectionProps) {
         })}
       </ul>
       <p className={`mt-6 text-sm font-semibold ${theme.text}`}>{L.workforce.tagline}</p>
+      {hub.activity ? (
+        <div className="mt-6 rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{L.workforce.activity.title(hub.activity.days)}</p>
+          <dl className="mt-3 grid gap-4 sm:grid-cols-3">
+            {[
+              { n: hub.activity.callsHandled, label: L.workforce.activity.calls },
+              { n: hub.activity.textsSent, label: L.workforce.activity.texts },
+              { n: hub.activity.appointmentsBooked, label: L.workforce.activity.appointments },
+            ]
+              .filter((s) => s.n > 0)
+              .map((s) => (
+                <div key={s.label}>
+                  <dd className="text-3xl font-semibold tabular-nums text-slate-900">{s.n.toLocaleString()}</dd>
+                  <dt className="mt-0.5 text-sm text-slate-600">{s.label}</dt>
+                </div>
+              ))}
+          </dl>
+          <p className="mt-3 text-xs text-slate-500">{L.workforce.activity.note}</p>
+        </div>
+      ) : null}
       {hub.config.workforce.showHowItWorks ? <HowItWorks hub={hub} L={L} theme={theme} /> : null}
     </Section>
   );

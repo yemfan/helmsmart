@@ -209,6 +209,12 @@ export const HubConfigSchema = z.object({
       enabled: z.boolean().default(true),
       members: z.array(WorkforceMemberSchema).max(PUBLIC_WORKFORCE_TYPES.length).default([]),
       showHowItWorks: z.boolean().default(true),
+      /**
+       * Show real, anonymised counts from the last 30 days (calls the AI
+       * receptionist handled, texts the AI sent, appointments it booked).
+       * Opt-in: the numbers are the agent's own business to disclose.
+       */
+      showActivity: z.boolean().default(false),
     })
     .default({}),
 

@@ -647,6 +647,13 @@
         "followup": "AI 跟进",
         "appointment": "预约面谈",
         "crm": "交由我接手"
+      },
+      "activity": {
+        "title": "最近 {{count}} 天",
+        "calls": "通来电由 AI 前台接听",
+        "texts": "条短信由 AI 团队发送",
+        "appointments": "个预约由 AI 安排",
+        "note": "来自本团队记录的真实活动统计。"
       }
     },
     "services": {

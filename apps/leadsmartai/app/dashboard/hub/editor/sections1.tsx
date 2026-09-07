@@ -101,18 +101,18 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
             [k("license"), data.agent.licenseNumber],
           ].map(([label, value]) => (
             <div key={label as string}>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt>
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
               <dd className={value ? "text-slate-900" : "text-slate-500"}>{value || notSet}</dd>
             </div>
           ))}
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{k("photo")}</dt>
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{k("photo")}</dt>
             <dd>
               {data.agent.photoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={data.agent.photoUrl} alt="" className="mt-1 h-12 w-12 rounded-full object-cover ring-1 ring-slate-200" />
+                <img src={data.agent.photoUrl} alt="" className="mt-1 h-12 w-12 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700" />
               ) : (
-                <span className="text-slate-500">{notSet}</span>
+                <span className="text-slate-500 dark:text-slate-400">{notSet}</span>
               )}
             </dd>
           </div>
@@ -183,7 +183,7 @@ export function CtaListEditor({
     <div className="space-y-3">
       {ctas.length === 0 ? <Empty>{k("ctasHint")}</Empty> : null}
       {ctas.map((c, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 sm:flex-row sm:items-end">
+        <div key={i} className="flex flex-col gap-3 rounded-lg border border-slate-200 dark:border-slate-700 p-3 sm:flex-row sm:items-end">
           <Field label={k("ctaLabel")} hint={k("ctaLabelHint")} className="flex-1">
             <TextInput value={c.label ?? ""} onChange={(v) => onChange(ctas.map((x, j) => (j === i ? { ...x, label: v || null } : x)))} maxLength={60} />
           </Field>
@@ -226,7 +226,7 @@ export function HeroSection({ data, onSaved }: SectionProps) {
         <TextArea value={d.subheadline ?? ""} onChange={(v) => setD({ ...d, subheadline: v || null })} rows={2} maxLength={300} />
       </Field>
       <div>
-        <p className="mb-2 text-sm font-medium text-slate-700">{k("ctas")}</p>
+        <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">{k("ctas")}</p>
         <CtaListEditor ctas={d.ctas} onChange={(ctas) => setD({ ...d, ctas })} />
       </div>
       <SaveButton state={state} error={error} onClick={() => void save(d)} />
@@ -256,7 +256,7 @@ export function ServicesSection({ data, onSaved }: SectionProps) {
       {items.length === 0 ? <Empty>{k("empty")}</Empty> : null}
       <div className="space-y-3">
         {items.map((s, i) => (
-          <div key={s.id} className="space-y-3 rounded-lg border border-slate-200 p-3">
+          <div key={s.id} className="space-y-3 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
             <div className="flex items-start justify-between gap-3">
               <SwitchRow checked={s.enabled} onChange={(v) => set(i, { enabled: v })} label={k("enabledItem")} />
               <RowControls index={i} count={items.length} onMove={(a, b) => setD({ ...d, items: move(items, a, b) })} onRemove={() => setD({ ...d, items: items.filter((_, j) => j !== i) })} />
@@ -358,6 +358,7 @@ export function WorkforceSection({ data, onSaved }: SectionProps) {
     <Card title={k("title")} description={k("desc")}>
       <SwitchRow checked={d.enabled} onChange={(v) => setD({ ...d, enabled: v })} label={k("enabled")} />
       <SwitchRow checked={d.showHowItWorks} onChange={(v) => setD({ ...d, showHowItWorks: v })} label={k("showHow")} hint={k("showHowHint")} />
+      <SwitchRow checked={d.showActivity} onChange={(v) => setD({ ...d, showActivity: v })} label={k("showActivity")} hint={k("showActivityHint")} />
       <div className="space-y-3">
         {rows.map((r) => {
           const m = memberOf(r.type);

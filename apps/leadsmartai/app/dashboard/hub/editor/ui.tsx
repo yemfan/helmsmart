@@ -29,10 +29,10 @@ export function Field({
   className?: string;
 }) {
   return (
-    <label className={`block text-sm font-medium text-slate-700 ${className ?? ""}`}>
+    <label className={`block text-sm font-medium text-slate-700 dark:text-slate-300 ${className ?? ""}`}>
       {label}
       {children}
-      {hint ? <span className="mt-1 block text-xs font-normal text-slate-500">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-xs font-normal text-slate-500 dark:text-slate-400">{hint}</span> : null}
     </label>
   );
 }
@@ -131,7 +131,7 @@ export function SwitchRow({
       <Toggle checked={checked} onChange={onChange} label={label} disabled={disabled} />
       <div className="min-w-0">
         <p className={`text-sm font-medium ${disabled ? "text-slate-500" : "text-slate-900"}`}>{label}</p>
-        {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
+        {hint ? <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p> : null}
       </div>
     </div>
   );
@@ -220,16 +220,16 @@ export function move<T>(list: T[], from: number, to: number): T[] {
 
 export function Card({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
-      {description ? <p className="mt-0.5 mb-4 text-xs text-slate-500">{description}</p> : <div className="mb-4" />}
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+      {description ? <p className="mt-0.5 mb-4 text-xs text-slate-500 dark:text-slate-400">{description}</p> : <div className="mb-4" />}
       <div className="space-y-4">{children}</div>
     </div>
   );
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return <p className="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">{children}</p>;
+  return <p className="rounded-lg border border-dashed border-slate-300 dark:border-slate-600 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">{children}</p>;
 }
 
 export function AddButton({ onClick, children, disabled }: { onClick: () => void; children: ReactNode; disabled?: boolean }) {
@@ -238,7 +238,7 @@ export function AddButton({ onClick, children, disabled }: { onClick: () => void
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-50"
+      className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-medium text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
     >
       {children}
     </button>

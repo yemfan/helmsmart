@@ -72,6 +72,19 @@ export type Hub = {
   /** True when the AI assistant can actually answer (enabled + model configured). */
   assistantAvailable: boolean;
   booking: ResolvedBooking;
+  /** Real 30-day counts for "watch my AI work", when the agent opted in and there is anything to show. */
+  activity: HubActivity | null;
+};
+
+/** What the AI team actually did for this agent recently. Real rows, counted. */
+export type HubActivity = {
+  days: number;
+  /** Inbound calls the AI receptionist handled. */
+  callsHandled: number;
+  /** Texts an AI assistant sent. */
+  textsSent: number;
+  /** Appointments booked by the AI (receptionist or hub). */
+  appointmentsBooked: number;
 };
 
 const NOT_FOUND: Hub = {
@@ -95,7 +108,50 @@ const NOT_FOUND: Hub = {
   assistantKnowledge: [],
   assistantAvailable: false,
   booking: { mode: "request", externalUrl: null },
+  activity: null,
 };
+
+/**
+ * Count what the AI team did in the last 30 days. Only called when the
+ * agent opted in; returns null when every count is zero, so the section
+ * never shows a row of zeros to a visitor.
+ */
+export async function loadHubActivity(agentId: number | string, days = 30): Promise<HubActivity | null> {
+  const since = new Date(Date.now() - days * 86_400_000).toISOString();
+  try {
+    const [calls, texts, appts] = await Promise.all([
+      supabaseAdmin
+        .from("lead_calls")
+        .select("id", { count: "exact", head: true })
+        .eq("agent_id", agentId as never)
+        .eq("direction", "inbound")
+        .gte("created_at", since),
+      supabaseAdmin
+        .from("sms_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("agent_id", agentId as never)
+        .eq("direction", "outbound")
+        .not("assistant_type", "is", null)
+        .gte("created_at", since),
+      supabaseAdmin
+        .from("voice_appointments")
+        .select("id", { count: "exact", head: true })
+        .eq("agent_id", agentId as never)
+        .in("source", ["ai_receptionist", "marketing_hub"])
+        .gte("created_at", since),
+    ]);
+    const activity: HubActivity = {
+      days,
+      callsHandled: calls.count ?? 0,
+      textsSent: texts.count ?? 0,
+      appointmentsBooked: appts.count ?? 0,
+    };
+    return activity.callsHandled + activity.textsSent + activity.appointmentsBooked > 0 ? activity : null;
+  } catch (e) {
+    console.warn("[marketing-hub] loadHubActivity failed:", e instanceof Error ? e.message : e);
+    return null;
+  }
+}
 
 function stringList(value: unknown): string[] {
   if (Array.isArray(value)) {
@@ -139,7 +195,7 @@ export function serviceAreasOf(row: Record<string, unknown>): string[] {
 }
 
 /** The written bio, preferring what the agent typed over what the twin inferred. */
-function bioOf(row: Record<string, unknown>): string | null {
+export function bioOf(row: Record<string, unknown>): string | null {
   const own = String(row.bio ?? "").trim();
   if (own) return own;
   const twin = row.dt_brand_profile as { bio?: unknown } | null;
@@ -343,6 +399,10 @@ export async function loadHubByUsername(
     const bio = bioOf(row);
     const { config, hasSavedConfig } = settings;
 
+    // One extra round trip, only for agents who chose to show it.
+    const activity =
+      config.workforce.enabled && config.workforce.showActivity ? await loadHubActivity(agentId) : null;
+
     const knowledge: string[] = [];
     const recNotes = String((receptionist.data as { extra_notes?: unknown } | null)?.extra_notes ?? "").trim();
     if (recNotes) knowledge.push(recNotes);
@@ -385,6 +445,7 @@ export async function loadHubByUsername(
       assistantKnowledge: knowledge,
       assistantAvailable: config.assistant.enabled && isAnthropicConfigured(),
       booking: resolveBooking(config.leadCapture, availability.bookingEnabled),
+      activity,
     };
   } catch (e) {
     console.warn("[marketing-hub] loadHubByUsername failed:", e);
