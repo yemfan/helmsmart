@@ -39,6 +39,8 @@ export async function GET() {
       )
       .eq("agent_id", auth.agentId)
       .eq("status", "connected")
+      // Google Analytics is a read-only connection; nothing publishes to it.
+      .neq("platform", "google")
       .order("connected_at", { ascending: false });
 
     if (error) throw error;

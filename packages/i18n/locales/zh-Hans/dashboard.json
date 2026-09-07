@@ -10577,10 +10577,63 @@
         "hubLeads": "客户",
         "rate": "转化率",
         "noSources": "此期间没有主页访问。",
-        "ga4On": "你的 Google Analytics 标签已加载在主页上。流量报告在你的 GA4 媒体资源中；CloseBoss 不读取这些数据。",
+        "ga4On": "您的 Google Analytics 代码已装在主页上；每次访问和每个主页事件都会发送到您的 GA4 媒体资源。",
         "ga4Off": "在设置中添加 GA4 衡量 ID，即可在 Google Analytics 中查看主页流量。",
         "googleAds": "Google Ads 和 Search Console 未与 CloseBoss 连接。它们的报告在各自的账户中。",
-        "openSettings": "打开设置"
+        "openSettings": "打开设置",
+        "ga": {
+          "connect": "连接 Google Analytics",
+          "reconnect": "重新连接 Google Analytics",
+          "connectHint": "用拥有您 GA4 媒体资源的 Google 账号登录，CloseBoss 会在这里读取它的报告。只读：不会改动您媒体资源中的任何内容。",
+          "disconnect": "断开连接",
+          "property": "媒体资源",
+          "choose": "哪个 GA4 媒体资源是您主页的？以下是您所连接账号能看到的媒体资源。",
+          "none": "您连接的 Google 账号没有任何 GA4 媒体资源。请连接拥有该媒体资源的账号。",
+          "expired": "Google 已终止此连接。请重新连接以继续读取报告。",
+          "readFailed": "Google 未响应上次读取。请一小时后再试；若持续失败，请重新连接。",
+          "readFailedStale": "Google 未响应上次读取。以下是它上次给出的数字。",
+          "scope": "范围",
+          "all": "整个媒体资源",
+          "hubPages": "主页页面",
+          "hubNone": "此媒体资源在该时段内没有主页页面浏览。",
+          "sessions": "会话",
+          "users": "用户",
+          "pageViews": "页面浏览",
+          "keyEvents": "关键事件",
+          "channels": "按渠道的会话",
+          "channel": "渠道",
+          "events": "Google Analytics 中的主页事件",
+          "empty": "Google 在该时段内还没有数据。",
+          "status": {
+            "connected": "Google Analytics 已连接。",
+            "choose": "Google Analytics 已连接。请在下方选择您的媒体资源。",
+            "cancelled": "Google 登录已取消。",
+            "error": "无法连接 Google Analytics：{{reason}}"
+          },
+          "reason": {
+            "not_configured": "此服务器尚未设置 Google 登录。",
+            "start_failed": "登录无法开始。"
+          },
+          "channelNames": {
+            "organicSearch": "自然搜索",
+            "paidSearch": "付费搜索",
+            "organicSocial": "自然社交",
+            "paidSocial": "付费社交",
+            "direct": "直接访问",
+            "referral": "引荐",
+            "email": "电子邮件",
+            "display": "展示广告",
+            "unassigned": "未分配",
+            "crossNetwork": "跨网络",
+            "organicVideo": "自然视频",
+            "paidVideo": "付费视频",
+            "organicShopping": "自然购物",
+            "paidShopping": "付费购物",
+            "sms": "短信",
+            "affiliates": "联盟",
+            "audio": "音频"
+          }
+        }
       }
     },
     "hubLeadNotify": {

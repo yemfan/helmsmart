@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
+import type { GaBlock } from "@/lib/leads-gen/google-analytics";
 import type { AdsSummary, SocialSummary, SourceFunnelRow } from "@/lib/marketing-hub/marketingMetrics";
+import GoogleAnalyticsPanel from "./GoogleAnalyticsPanel";
 import { Card, Empty } from "./ui";
 
 /**
  * The agent's marketing numbers across platforms, on the hub's Analytics
  * section: social posts by platform, Meta ad campaigns, hub visitors by
- * source, and an honest line about Google.
+ * source, and Google Analytics read from the agent's own property.
  *
  * A dash is a dash. Where a platform cannot report a figure, the cell says
  * so in words rather than showing a zero that would read as "nobody saw
@@ -24,7 +26,7 @@ type Payload = {
   ads: AdsSummary;
   sources: SourceFunnelRow[];
   connections: { platforms: string[]; metaInsights: { pageInsights: boolean; instagramInsights: boolean; ads: boolean } };
-  google: { ga4TagConfigured: boolean; metaPixelConfigured: boolean };
+  google: { ga4TagConfigured: boolean; metaPixelConfigured: boolean; analytics: GaBlock };
 };
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -56,6 +58,8 @@ export default function MarketingPerformance({ days }: { days: number }) {
   const k = (s: string, vars?: Record<string, unknown>) => t(`pages.hubEditor.marketing.${s}`, vars);
   const [data, setData] = useState<Payload | null>(null);
   const [failed, setFailed] = useState(false);
+  // Bumped when the Google connection changes, so the page re-reads without a reload.
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,7 +75,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
     return () => {
       cancelled = true;
     };
-  }, [days]);
+  }, [days, tick]);
 
   const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" }) : null);
   const th = "px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500";
@@ -274,16 +278,7 @@ export default function MarketingPerformance({ days }: { days: number }) {
       </div>
 
       {/* ── Google ── */}
-      <div>
-        <h3 className="mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{k("google")}</h3>
-        <p className="text-sm text-slate-700 dark:text-slate-300">{data.google.ga4TagConfigured ? k("ga4On") : k("ga4Off")}</p>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{k("googleAds")}</p>
-        {!data.google.ga4TagConfigured ? (
-          <Link href="/dashboard/hub?section=settings" className="mt-2 inline-flex text-sm font-medium text-[#0072ce] hover:underline">
-            {k("openSettings")}
-          </Link>
-        ) : null}
-      </div>
+      <GoogleAnalyticsPanel ga={data.google.analytics} ga4TagConfigured={data.google.ga4TagConfigured} onChanged={() => setTick((v) => v + 1)} />
     </Card>
   );
 }

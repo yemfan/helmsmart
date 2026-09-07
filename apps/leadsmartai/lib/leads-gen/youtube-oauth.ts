@@ -47,13 +47,18 @@ export function redirectUri(): string {
   return "https://www.closebossai.com/api/leads-gen/connect/youtube/callback";
 }
 
-/** `offline` + `prompt=consent` guarantees a refresh token. */
-export function generateAuthorizeUrl(state: string): string {
+/**
+ * `offline` + `prompt=consent` guarantees a refresh token. The same client
+ * and redirect serve Google Analytics (lib/leads-gen/google-analytics.ts)
+ * with its own, narrower scopes; the state's `purpose` tells the callback
+ * which flow is finishing.
+ */
+export function generateAuthorizeUrl(state: string, scopes: readonly string[] = YOUTUBE_OAUTH_SCOPES): string {
   const params = new URLSearchParams({
     client_id: clientId(),
     redirect_uri: redirectUri(),
     response_type: "code",
-    scope: YOUTUBE_OAUTH_SCOPES.join(" "),
+    scope: scopes.join(" "),
     access_type: "offline",
     include_granted_scopes: "true",
     prompt: "consent",
@@ -69,6 +74,8 @@ export type StatePayload = {
   agentId: string;
   issuedAt: number;
   returnTo?: string;
+  /** Which connection this authorisation is for. Absent = YouTube (the original flow). */
+  purpose?: "youtube" | "analytics";
 };
 
 export function signState(payload: StatePayload): string {

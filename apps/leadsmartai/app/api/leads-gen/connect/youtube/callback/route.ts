@@ -6,6 +6,7 @@ import {
   fetchChannel,
   verifyState,
 } from "@/lib/leads-gen/youtube-oauth";
+import { completeGaConnection } from "@/lib/leads-gen/google-analytics";
 import { encryptToken } from "@/lib/leads-gen/token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -19,6 +20,10 @@ const STATE_MAX_AGE_MS = 10 * 60 * 1000;
  * Verify state → exchange code → read the channel → upsert one social_accounts
  * row (platform='youtube') keyed by (agent_id, platform, youtube_channel_id).
  * Mirrors the TikTok callback.
+ *
+ * The same registered redirect also finishes the Google Analytics flow
+ * (state.purpose = "analytics"); that branch lands on the hub's marketing
+ * page instead of the social connect page.
  */
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -40,6 +45,10 @@ export async function GET(req: Request) {
   }
 
   if (userError) {
+    // The state is unverified here, but a cancelled analytics flow should still land on the hub.
+    if (state?.includes("analytics")) {
+      return NextResponse.redirect(new URL(`/dashboard/hub?section=analytics&google=cancelled`, req.url), { status: 302 });
+    }
     return back({ status: "cancelled", reason: errorDescription || userError });
   }
   if (!code || !state) {
@@ -47,9 +56,11 @@ export async function GET(req: Request) {
   }
 
   let agentId: string;
+  let purpose: "youtube" | "analytics" = "youtube";
   try {
     const payload = verifyState(state, STATE_MAX_AGE_MS);
     agentId = payload.agentId;
+    purpose = payload.purpose === "analytics" ? "analytics" : "youtube";
     if (payload.returnTo) {
       if (!/^leadsmart:\/\//i.test(payload.returnTo)) {
         throw new Error("Invalid returnTo scheme");
@@ -65,6 +76,22 @@ export async function GET(req: Request) {
     const msg = e instanceof Error ? e.message : "State verification failed";
     console.warn("[youtube/callback] state verification failed:", msg);
     return back({ status: "error", reason: "Session expired. Please try again." });
+  }
+
+  if (purpose === "analytics") {
+    const hub = (params: Record<string, string>) => {
+      const res = NextResponse.redirect(new URL(`/dashboard/hub?section=analytics&${new URLSearchParams(params)}`, req.url), { status: 302 });
+      res.cookies.set("youtube_oauth_state", "", { httpOnly: true, secure: true, sameSite: "lax", maxAge: 0, path: "/" });
+      return res;
+    };
+    try {
+      const r = await completeGaConnection(agentId, code);
+      return hub({ google: r.propertyName ? "connected" : r.propertyCount ? "choose" : "none" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Google Analytics connection failed";
+      console.error("[google-analytics/callback]", e);
+      return hub({ google: "error", reason: msg.slice(0, 200) });
+    }
   }
 
   try {
