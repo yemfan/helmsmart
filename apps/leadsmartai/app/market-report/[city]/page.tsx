@@ -144,7 +144,7 @@ export default async function MarketReportCityPage({
           </div>
           <p className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">{t("pages.marketReportCity.cta", { ns: "dashboard" })}</p>
         </article>
-        <LocalSeoLeadForm title={`Get ${city.city} Market Report`} source="seo_market_report_city" city={city.city} />
+        <LocalSeoLeadForm title={t("pages.seoCityPages.mrFormTitle", { ns: "dashboard", city: city.city })} source="seo_market_report_city" city={city.city} />
       </section>
     </main>
   );

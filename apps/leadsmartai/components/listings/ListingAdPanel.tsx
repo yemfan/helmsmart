@@ -589,7 +589,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                               ? "bg-amber-500 text-white"
                               : "bg-white/80 text-slate-400"
                         }`}
-                        title={overCap ? `Beyond the ${LISTING_AD_MAX_CLIPS}-clip limit — won't be used` : undefined}
+                        title={overCap ? t("pages.listingAd.beyondClipLimit", { max: LISTING_AD_MAX_CLIPS }) : undefined}
                       >
                         {on ? (overCap ? "!" : "✓") : ""}
                       </button>

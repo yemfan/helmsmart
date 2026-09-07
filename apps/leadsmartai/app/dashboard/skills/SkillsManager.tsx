@@ -121,7 +121,7 @@ export function SkillsManager({
                         type="button"
                         role="switch"
                         aria-checked={s.enabled}
-                        aria-label={`Toggle ${s.title}`}
+                        aria-label={t("pages.skillsManager.toggleAria", { title: s.title })}
                         onClick={() => patch(s.id, { enabled: !s.enabled })}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
                           s.enabled ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
@@ -132,7 +132,7 @@ export function SkillsManager({
                       <select
                         value={s.assignee}
                         onChange={(e) => patch(s.id, { assignee: e.target.value as SkillAssignee })}
-                        aria-label={`Reassign ${s.title}`}
+                        aria-label={t("pages.skillsManager.reassignAria", { title: s.title })}
                         className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
                       >
                         {assigneeOptions.map((o) => (

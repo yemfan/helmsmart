@@ -100,7 +100,7 @@ export default async function MarketReportKeywordPage({
             <a href={`/sell-house/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">{t("pages.keywordPages.sellHouseKeyword", { ns: "dashboard" })}</a>
           </div>
         </article>
-        <LocalSeoLeadForm title={`Get ${city.city} Market Report`} source="seo_market_report_keyword" city={city.city} />
+        <LocalSeoLeadForm title={t("pages.seoCityPages.mrFormTitle", { ns: "dashboard", city: city.city })} source="seo_market_report_keyword" city={city.city} />
       </section>
     </main>
   );

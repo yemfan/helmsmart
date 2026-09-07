@@ -178,9 +178,9 @@ export default function DeepReportView({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1 text-sm">
               <Row label={t("pages.labels.price")} value={money(a.price)} />
-              <Row label={`Down payment (${a.assumptions.downPct}%)`} value={money(a.downPayment)} />
+              <Row label={t("pages.deepReportView.downPaymentPct", { pct: a.assumptions.downPct })} value={money(a.downPayment)} />
               <Row label={t("pages.deepReportView.loanAmount")} value={money(a.loanAmount)} />
-              <Row label={`P&I (${a.assumptions.ratePct}% / ${a.assumptions.termYears}yr)`} value={`${money(a.principalInterest)}/mo`} />
+              <Row label={t("pages.deepReportView.principalInterest", { rate: a.assumptions.ratePct, years: a.assumptions.termYears })} value={`${money(a.principalInterest)}/mo`} />
               <Row label={t("pages.deepReportView.propertyTax")} value={`${money(a.taxesMonthly)}/mo`} />
               <Row label={t("pages.labels.insurance")} value={`${money(a.insuranceMonthly)}/mo`} />
               <Row label={t("pages.labels.hoa")} value={`${money(a.hoaMonthly)}/mo`} />
@@ -241,7 +241,7 @@ export default function DeepReportView({
         ) : null}
 
         {/* Comps */}
-        <Card title={`Comparable sales (${r.comps.length})`}>
+        <Card title={t("pages.dashFragments.comparableSales", { count: r.comps.length })}>
           {r.comps.length === 0 ? (
             <p className="text-sm text-slate-500">{t("pages.deepReportView.noComps")}</p>
           ) : (

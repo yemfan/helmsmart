@@ -167,7 +167,7 @@ export default function MissedCallActivityLog() {
                   <span
                     className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-200"
                     title={
-                      ev.textback_status ? `SMS status: ${ev.textback_status}` : undefined
+                      ev.textback_status ? t("pages.missedCallLog.smsStatus", { status: ev.textback_status }) : undefined
                     }
                   >{t("pages.missedCallLog.textSent")}</span>
                 ) : ev.status === "missed" ? (

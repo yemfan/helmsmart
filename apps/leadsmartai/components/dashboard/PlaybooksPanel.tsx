@@ -227,7 +227,7 @@ export function PlaybooksPanel({
             title={
               selectedIds.size === 0
                 ? t("pages.playbooksPanel.needSelection")
-                : `Add ${selectedIds.size} selected task${selectedIds.size === 1 ? "" : "s"} to your Tasks list`
+                : t("pages.playbooksPanel.addSelectedHint", { count: selectedIds.size })
             }
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-white"
           >
@@ -331,7 +331,7 @@ export function PlaybooksPanel({
                                       ? t("pages.playbooksPanel.deselectTask")
                                       : t("pages.playbooksPanel.selectTask")
                                   }
-                                  ariaLabel={`Select "${task.title}" to add to Tasks list`}
+                                  ariaLabel={t("pages.playbooksPanel.selectTaskAria", { title: task.title })}
                                   tone="select"
                                 >
                                   <Plus className="h-4 w-4" strokeWidth={2.25} />
@@ -341,7 +341,7 @@ export function PlaybooksPanel({
                                 active={complete}
                                 onClick={() => void toggleTask(task, !complete)}
                                 title={complete ? t("pages.playbooksPanel.markIncomplete") : t("pages.playbooksPanel.markComplete")}
-                                ariaLabel={`Mark "${task.title}" ${complete ? "incomplete" : "complete"}`}
+                                ariaLabel={complete ? t("pages.playbooksPanel.markIncompleteAria", { title: task.title }) : t("pages.playbooksPanel.markCompleteAria", { title: task.title })}
                                 tone="complete"
                               >
                                 <Check className="h-4 w-4" strokeWidth={2.5} />

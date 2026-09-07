@@ -153,7 +153,7 @@ export default async function CmaShareView({
       ) : null}
 
       {/* Comps */}
-      <Card title={`Comparable sales (${snapshot.comps.length})`}>
+      <Card title={t("pages.dashFragments.comparableSales", { count: snapshot.comps.length })}>
         {snapshot.comps.length === 0 ? (
           <p className="text-sm text-slate-500">{t("pages.cmaShare.noComps")}</p>
         ) : (

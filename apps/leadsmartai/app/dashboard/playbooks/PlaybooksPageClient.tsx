@@ -398,7 +398,7 @@ function TaskRow({
         <IconButton
           onClick={onComplete}
           title={complete ? tr("more.playbooks.reopen") : tr("more.playbooks.markDone")}
-          ariaLabel={complete ? `Reopen "${task.title}"` : `Mark "${task.title}" complete`}
+          ariaLabel={complete ? tr("more.playbooks.reopenAria", { title: task.title }) : tr("more.playbooks.markDoneAria", { title: task.title })}
           tone="success"
           active={complete}
         >
@@ -412,7 +412,7 @@ function TaskRow({
         <IconButton
           onClick={onCancel}
           title={cancelled ? tr("more.playbooks.restore") : tr("more.playbooks.cancel")}
-          ariaLabel={cancelled ? `Restore "${task.title}"` : `Cancel "${task.title}"`}
+          ariaLabel={cancelled ? tr("more.playbooks.restoreAria", { title: task.title }) : tr("more.playbooks.cancelAria", { title: task.title })}
           tone="danger"
           active={cancelled}
         >

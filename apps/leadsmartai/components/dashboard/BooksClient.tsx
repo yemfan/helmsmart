@@ -435,7 +435,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           {/* Totals */}
           <div className="mt-4 ml-auto w-full max-w-[16rem] space-y-1 text-sm">
             <Row label={t("pages.books.subtotal")} value={formatMoney(totals.subtotal)} />
-            <Row label={`Tax (${Number(taxPct) || 0}%)`} value={formatMoney(totals.taxAmount)} />
+            <Row label={t("pages.books.taxPct", { pct: Number(taxPct) || 0 })} value={formatMoney(totals.taxAmount)} />
             <Row label={t("pages.books.total")} value={formatMoney(totals.total)} bold />
           </div>
 

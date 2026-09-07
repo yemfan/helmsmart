@@ -123,7 +123,7 @@ export default function CmaEmailToSellerButton({
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={4}
-                    placeholder={`Hi — I put together a quick CMA for your property. Happy to walk through the comps + the strategy whenever you're ready.`}
+                    placeholder={t("pages.cmaEmail.messagePlaceholder")}
                     className="mt-1 block w-full resize-y rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                     disabled={submitting}
                   />

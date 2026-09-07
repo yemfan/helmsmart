@@ -174,7 +174,7 @@ export function FounderDashboardClient() {
               subtext="Unique profile ids on paying rows"
             />
             <KpiCard
-              label={`MAU (usage, ${overview.scope.usageAndConversionWindowDays}d)`}
+              label={t("pages.founderDashboard.mauUsage", { days: overview.scope.usageAndConversionWindowDays })}
               value={String(overview.mauUsage)}
               subtext="Distinct users in usage_events"
             />
@@ -207,7 +207,7 @@ export function FounderDashboardClient() {
               subtext={`${overview.conversion.convertedUsers} / ${overview.conversion.checkoutStartedUsers} starters (${overview.scope.usageAndConversionWindowDays}d)`}
             />
             <KpiCard
-              label={`Churn (${overview.scope.churnWindowDays}d)`}
+              label={t("pages.founderDashboard.churnWindow", { days: overview.scope.churnWindowDays })}
               value={fmtPct(overview.churn.rate)}
               subtext={`${overview.churn.churnedUsers} churned users · ${overview.churn.payingUsersNow} paying now`}
             />

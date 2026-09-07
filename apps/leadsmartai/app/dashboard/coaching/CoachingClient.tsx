@@ -183,7 +183,7 @@ export default function CoachingClient() {
                   onClick={() => void onDismiss(i.id)}
                   disabled={dismissingId === i.id}
                   title={t("tips.snooze7d")}
-                  aria-label={`Dismiss ${i.title} for 7 days`}
+                  aria-label={t("tips.snoozeAria", { title: i.title })}
                   className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   ×

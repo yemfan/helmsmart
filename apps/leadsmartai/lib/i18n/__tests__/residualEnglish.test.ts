@@ -118,9 +118,16 @@ const ALLOWED = new Set([
  * `icon` and `href` are read by the browser and stay off it. `sub` is the same
  * prop as `sublabel` with a shorter name — the KpiTile row on the demo
  * dashboard uses it — so the two live or die together.
+ *
+ * `ariaLabel` is the same trap one more time. It is `aria-label` spelled as
+ * a prop, and the `\b` in front of `label` refuses to match the tail of it,
+ * so every button that names its screen-reader text that way was invisible
+ * — the playbook task buttons among them. What a screen reader announces is
+ * the one piece of copy a sighted reviewer never sees, so it is the last
+ * place a blind spot should be.
  */
 const ATTR_NAMES =
-  "placeholder|title|label|aria-label|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|sub|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge";
+  "placeholder|title|label|aria-label|ariaLabel|alt|sublabel|description|subtitle|hint|helpText|tooltip|note|caption|sub|summary|heading|emptyText|confirmLabel|cancelLabel|ctaLabel|badge";
 
 const COPY_ATTRS = new RegExp(`\\b(?:${ATTR_NAMES})="([^"]+)"`, "g");
 
@@ -187,20 +194,72 @@ const DEFAULT_VALUE_BEFORE = /\bdefaultValue:\s*$/;
  * apostrophes in `"You've hit this period's cap."` and report the code
  * between them. Quote state has to be tracked, so it is.
  *
- * Backticks are skipped whole: a template literal is real copy too, but it
- * arrives spliced around its `${…}` holes, and fixing one means a `t()` with
- * interpolation rather than a straight swap. That is a different shape and a
- * different change — see the note in the PR that added this half.
+ * A TEMPLATE literal is read too, with each `${…}` hole collapsed to a single
+ * `…`. Reading the static chunks separately does not work: split on its holes,
+ *
+ *     `Select "${task.title}" to add to Tasks list`
+ *
+ * becomes `Select "` and `" to add to Tasks list`, and neither half is copy by
+ * any rule here — the first ends mid-quote, the second OPENS on one. Collapsed
+ * it is `Select "…" to add to Tasks list`, which is the sentence the reader
+ * actually gets, and which fails the scan exactly as it should.
+ *
+ * The collapse is also what makes a key BUILT by template distinguishable from
+ * a sentence: `pages.hubEditor.workforce.unavailable.${x}` collapses to a
+ * dotted path with no spaces in it, and is dropped below.
  */
-function stringLiterals(expr: string): Array<{ at: number; value: string }> {
-  const out: Array<{ at: number; value: string }> = [];
+type Literal = { at: number; value: string; template: boolean };
+
+function stringLiterals(expr: string): Literal[] {
+  const out: Literal[] = [];
   for (let i = 0; i < expr.length; i += 1) {
     const q = expr[i];
     if (q === "`") {
-      // Skip to the partner backtick so its contents are never read.
-      const close = expr.indexOf("`", i + 1);
-      if (close === -1) break;
-      i = close;
+      let j = i + 1;
+      let text = "";
+      let closed = false;
+      while (j < expr.length) {
+        if (expr[j] === "\\") {
+          text += expr[j + 1] ?? "";
+          j += 2;
+          continue;
+        }
+        if (expr[j] === "`") {
+          closed = true;
+          break;
+        }
+        if (expr[j] === "$" && expr[j + 1] === "{") {
+          /*
+           * Walk the hole to its partner brace. A hole can hold anything,
+           * including another template — `${a ? `x` : `y`}` — so backticks
+           * inside it are skipped along with the braces they sit between.
+           */
+          let depth = 0;
+          let k = j + 1;
+          for (; k < expr.length; k += 1) {
+            if (expr[k] === "`") {
+              const inner = expr.indexOf("`", k + 1);
+              if (inner === -1) break;
+              k = inner;
+              continue;
+            }
+            if (expr[k] === "{") depth += 1;
+            else if (expr[k] === "}") {
+              depth -= 1;
+              if (depth === 0) break;
+            }
+          }
+          if (k >= expr.length) break; // unterminated — stop rather than guess
+          text += "…";
+          j = k + 1;
+          continue;
+        }
+        text += expr[j];
+        j += 1;
+      }
+      if (!closed) break;
+      out.push({ at: i, value: text, template: true });
+      i = j;
       continue;
     }
     if (q !== '"' && q !== "'") continue;
@@ -210,14 +269,14 @@ function stringLiterals(expr: string): Array<{ at: number; value: string }> {
       j += 1;
     }
     if (j >= expr.length) break; // unterminated — stop rather than guess
-    out.push({ at: i, value: expr.slice(i + 1, j) });
+    out.push({ at: i, value: expr.slice(i + 1, j), template: false });
     i = j;
   }
   return out;
 }
 
-function attrExprCopy(body: string): Array<{ offset: number; text: string }> {
-  const out: Array<{ offset: number; text: string }> = [];
+function attrExprCopy(body: string): Array<{ offset: number; text: string; template: boolean }> {
+  const out: Array<{ offset: number; text: string; template: boolean }> = [];
   for (const m of body.matchAll(COPY_ATTR_EXPR)) {
     const open = m.index + m[0].length - 1;
     let depth = 0;
@@ -234,14 +293,19 @@ function attrExprCopy(body: string): Array<{ offset: number; text: string }> {
     }
     if (end === open) continue; // unbalanced — not our business
     const expr = body.slice(open + 1, end);
-    for (const { at, value } of stringLiterals(expr)) {
+    for (const { at, value, template } of stringLiterals(expr)) {
       const before = expr.slice(0, at);
       if (COMPARISON_BEFORE.test(before)) continue;
       if (CALL_BEFORE.test(before)) continue;
       if (DEFAULT_VALUE_BEFORE.test(before)) continue;
-      // A key, not a sentence: dotted, no spaces. `t(` already caught most.
-      if (/^[\w-]+(?:\.[\w-]+)+$/.test(value)) continue;
-      out.push({ offset: open + 1 + at, text: value });
+      /*
+       * A key, not a sentence: dotted, no spaces. `t(` already caught most of
+       * them. Dropping the collapsed holes first is what lets the same rule
+       * recognise a key BUILT by template — `pages.x.y.${id}` arrives here as
+       * `pages.x.y.…`, and a key is still a key for having a hole in it.
+       */
+      if (/^[\w-]*(?:\.[\w-]*)+$/.test(value.replace(/…/g, ""))) continue;
+      out.push({ offset: open + 1 + at, text: value, template });
     }
   }
   return out;
@@ -527,8 +591,18 @@ function scan(body: string): Array<{ offset: number; text: string }> {
   for (const m of body.matchAll(COPY_ATTRS)) {
     if (isCopy(m[1], false)) out.push({ offset: m.index ?? 0, text: m[1] });
   }
-  for (const { offset, text } of attrExprCopy(body)) {
-    if (isCopy(text, false, true)) out.push({ offset, text });
+  for (const { offset, text, template } of attrExprCopy(body)) {
+    /*
+     * A template that OPENS on its value — `${count} contacts selected` —
+     * collapses to `… contacts selected`, and ANCHOR rejects a leading `…`
+     * for the same reason it rejects a leading `·`: a separator is not copy.
+     * Here it is not a separator, it is the hole where the sentence starts,
+     * so the anchor is taken from the first word instead. The finding still
+     * REPORTS the collapsed sentence, because that is what the reader sees.
+     */
+    if (isCopy(template ? text.replace(/^[…\s]+/, "") : text, false, true)) {
+      out.push({ offset, text });
+    }
   }
   return out;
 }
@@ -674,10 +748,40 @@ describe("the scan itself", () => {
     );
   });
 
-  it("does not read inside a template literal", () => {
-    // Real copy, but it arrives spliced around its holes and needs a `t()`
-    // with interpolation rather than a swap. Skipped whole, deliberately.
-    expect(scan("<p title={`Other showings with ${name}`} />")).toEqual([]);
+  /**
+   * A template literal, collapsed to the sentence the reader gets.
+   *
+   * Splitting on the holes instead would report nothing here: `Select "` ends
+   * mid-quote and `" to add to Tasks list` opens on one, and neither half is
+   * copy by any rule in this file. The whole point is that a person reads
+   * across the hole.
+   */
+  it("reads a template literal with its holes collapsed", () => {
+    expect(scan("<p title={`Other showings with ${name} (${n})`} />").map((f) => f.text)).toEqual([
+      "Other showings with … (…)",
+    ]);
+    expect(scan('<p ariaLabel={`Select "${task.title}" to add to list`} />').map((f) => f.text)).toEqual(
+      ['Select "…" to add to list'],
+    );
+  });
+
+  it("anchors a template on its first word, not on a leading hole", () => {
+    // `${count} contacts selected` collapses to `… contacts selected`, and a
+    // leading `…` is rejected by ANCHOR the way a leading `·` is.
+    expect(scan("<p title={`${count} contacts selected`} />").map((f) => f.text)).toEqual([
+      "… contacts selected",
+    ]);
+  });
+
+  it("still drops a key that is BUILT by template", () => {
+    expect(scan("<p title={x[`pages.hub.editor.${id}`]} />")).toEqual([]);
+    expect(scan("<p title={t(`actionsHub.desc.${a.href}`)} />")).toEqual([]);
+  });
+
+  it("walks a hole that contains another template", () => {
+    // `${a ? `x` : `y`}` — the backticks inside the hole are not the closer.
+    const found = scan("<p title={`Due ${late ? `now` : `later`} for this deal`} />");
+    expect(found.map((f) => f.text)).toEqual(["Due … for this deal"]);
   });
 
   it("still sees copy in a nested brace, and stops at the closing one", () => {

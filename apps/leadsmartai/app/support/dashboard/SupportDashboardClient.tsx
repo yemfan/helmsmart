@@ -103,8 +103,8 @@ export default function SupportDashboardClient() {
                 {supportTrends.map((w) => (
                   <div key={w.week} className="flex flex-1 flex-col items-center gap-2">
                     <div className="flex h-36 w-full items-end justify-center gap-1">
-                      <div className="w-1/2 rounded-t-lg bg-slate-200" style={{ height: `${Math.min(100, (w.opened / 60) * 100)}%` }} title={`Opened ${w.opened}`} />
-                      <div className="w-1/2 rounded-t-lg bg-emerald-500" style={{ height: `${Math.min(100, (w.resolved / 60) * 100)}%` }} title={`Resolved ${w.resolved}`} />
+                      <div className="w-1/2 rounded-t-lg bg-slate-200" style={{ height: `${Math.min(100, (w.opened / 60) * 100)}%` }} title={t("pages.supportDashboard.openedCount", { count: w.opened })} />
+                      <div className="w-1/2 rounded-t-lg bg-emerald-500" style={{ height: `${Math.min(100, (w.resolved / 60) * 100)}%` }} title={t("pages.supportDashboard.resolvedCount", { count: w.resolved })} />
                     </div>
                     <span className="text-[10px] font-semibold text-slate-500">{w.week}</span>
                   </div>
