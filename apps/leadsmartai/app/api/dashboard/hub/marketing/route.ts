@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDashboardAgentContext } from "@/lib/contact-intake/dashboardAgentContext";
+import { loadGaBlock } from "@/lib/leads-gen/google-analytics";
 import { sourceFunnel, summariseAds, summariseSocial } from "@/lib/marketing-hub/marketingMetrics";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -10,8 +11,8 @@ export const runtime = "nodejs";
  *
  * Everything the agent's marketing produced, in one answer: social posts by
  * platform (from the metrics the hourly cron pulls), ad campaigns (from Meta
- * insights), hub traffic by source, and what is connected on the Google
- * side. Each block says when its numbers were last refreshed and, when a
+ * insights), hub traffic by source, and Google Analytics when the agent
+ * has connected it (their property, read for them). Each block says when its numbers were last refreshed and, when a
  * platform cannot be measured, why — so an empty column is never mistaken
  * for a quiet one.
  *
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
     const days = Math.max(1, Math.min(365, Number(url.searchParams.get("days")) || 30));
     const since = new Date(Date.now() - days * 86_400_000).toISOString();
 
-    const [posts, ads, traffic, tracking, accounts] = await Promise.all([
+    const [posts, ads, traffic, tracking, accounts, agent] = await Promise.all([
       supabaseAdmin
         .from("lead_posts")
         .select("platform, status, metrics, metrics_refreshed_at, published_at, external_post_url, caption")
@@ -54,10 +55,15 @@ export async function GET(req: Request) {
         .from("social_accounts")
         .select("platform, status, scopes")
         .eq("agent_id", agentId as never),
+      supabaseAdmin.from("agents").select("username").eq("id", agentId as never).maybeSingle(),
     ]);
 
+    // Google Analytics is read after the rest: it may go to Google, and the hub path it filters on needs the handle.
+    const username = String((agent.data as { username?: string | null } | null)?.username ?? "").trim();
+    const analytics = await loadGaBlock(agentId, days, username ? `/@${username}` : null);
+
     const connected = ((accounts.data as { platform: string; status: string; scopes: string[] | null }[] | null) ?? [])
-      .filter((a) => a.status === "connected")
+      .filter((a) => a.status === "connected" && a.platform !== "google")
       .map((a) => ({ platform: String(a.platform).toLowerCase(), scopes: a.scopes ?? [] }));
     const metaScopes = new Set(connected.filter((a) => a.platform === "facebook" || a.platform === "meta").flatMap((a) => a.scopes));
 
@@ -82,7 +88,7 @@ export async function GET(req: Request) {
         /** The agent's GA4 tag on the hub: their property receives the data; we do not read it. */
         ga4TagConfigured: Boolean(cfg.ga_measurement_id),
         metaPixelConfigured: Boolean(cfg.meta_pixel_id),
-        analyticsConnected: false,
+        analytics,
         adsConnected: false,
         searchConsoleConnected: false,
       },

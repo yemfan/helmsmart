@@ -10577,10 +10577,63 @@
         "hubLeads": "Leads",
         "rate": "Rate",
         "noSources": "No hub traffic in this period.",
-        "ga4On": "Your Google Analytics tag is on your hub. Traffic reports are in your GA4 property; CloseBoss does not read them.",
+        "ga4On": "Your Google Analytics tag is on your hub; every visit and hub event goes to your GA4 property.",
         "ga4Off": "Add your GA4 measurement ID in Settings to see hub traffic in Google Analytics.",
         "googleAds": "Google Ads and Search Console are not connected to CloseBoss. Their reports live in those accounts.",
-        "openSettings": "Open Settings"
+        "openSettings": "Open Settings",
+        "ga": {
+          "connect": "Connect Google Analytics",
+          "reconnect": "Reconnect Google Analytics",
+          "connectHint": "Sign in with the Google account that owns your GA4 property and CloseBoss will read its reports here. Read-only: nothing in your property changes.",
+          "disconnect": "Disconnect",
+          "property": "Property",
+          "choose": "Which GA4 property is your hub's? These are the ones the account you connected can see.",
+          "none": "The Google account you connected has no GA4 properties. Connect the account that owns your property.",
+          "expired": "Google ended this connection. Reconnect to keep reading your reports.",
+          "readFailed": "Google did not answer the last read. Try again in an hour; if it keeps failing, reconnect.",
+          "readFailedStale": "Google did not answer the last read. These are the last numbers it gave.",
+          "scope": "Scope",
+          "all": "Whole property",
+          "hubPages": "Hub pages",
+          "hubNone": "No hub page views in this property for this period.",
+          "sessions": "Sessions",
+          "users": "Users",
+          "pageViews": "Page views",
+          "keyEvents": "Key events",
+          "channels": "Sessions by channel",
+          "channel": "Channel",
+          "events": "Hub events in Google Analytics",
+          "empty": "Google has nothing for this period yet.",
+          "status": {
+            "connected": "Google Analytics is connected.",
+            "choose": "Google Analytics is connected. Choose your property below.",
+            "cancelled": "Google sign-in was cancelled.",
+            "error": "Google Analytics could not be connected: {{reason}}"
+          },
+          "reason": {
+            "not_configured": "Google sign-in is not set up on this server.",
+            "start_failed": "the sign-in could not start."
+          },
+          "channelNames": {
+            "organicSearch": "Organic search",
+            "paidSearch": "Paid search",
+            "organicSocial": "Organic social",
+            "paidSocial": "Paid social",
+            "direct": "Direct",
+            "referral": "Referral",
+            "email": "Email",
+            "display": "Display",
+            "unassigned": "Unassigned",
+            "crossNetwork": "Cross-network",
+            "organicVideo": "Organic video",
+            "paidVideo": "Paid video",
+            "organicShopping": "Organic shopping",
+            "paidShopping": "Paid shopping",
+            "sms": "SMS",
+            "affiliates": "Affiliates",
+            "audio": "Audio"
+          }
+        }
       }
     },
     "hubLeadNotify": {
