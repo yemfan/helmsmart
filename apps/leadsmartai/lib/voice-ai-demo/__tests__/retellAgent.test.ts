@@ -154,3 +154,44 @@ describe("the destination the demo route actually produces", () => {
     }
   });
 });
+
+describe("the demo opens like an outbound call, not an inbound one", () => {
+  /*
+   * Retell's Welcome Message is "{{greeting}}". The demo passed the inbound
+   * bundle, whose greeting is OPENING_HELLO — "Hello, 您好, Hola". That is
+   * correct for a stranger dialling the business (the AI does not know their
+   * language yet) and wrong for a call WE placed to someone who asked for it:
+   * they answer an unknown number and hear three words in three languages with
+   * no business name and no reason for the call.
+   */
+  it("greets an outbound demo by name, as an AI, on behalf of the business", async () => {
+    const { buildOutboundGreeting } = await import("@repo/voice");
+    const ctx = {
+      agentName: "Lucy",
+      orgName: "Michael Ye Real Estate",
+      orgNameZh: "Michael Ye Real Estate",
+    } as Parameters<typeof buildOutboundGreeting>[0];
+
+    const greeting = buildOutboundGreeting(ctx, "Michael");
+
+    expect(greeting).toContain("Michael");
+    expect(greeting).toContain("Michael Ye Real Estate");
+    // The AI disclosure is not optional.
+    expect(greeting).toContain("AI");
+    // And it is nothing like the inbound opener.
+    expect(greeting).not.toBe("Hello, 您好, Hola");
+  });
+
+  it("still forms a sentence when the prospect left their name blank", () => {
+    // The form's name field is required today, but the greeting must not read
+    // "Hi , this is…" if that ever changes.
+    return import("@repo/voice").then(({ buildOutboundGreeting }) => {
+      const ctx = {
+        agentName: "Lucy",
+        orgName: "Michael Ye Real Estate",
+        orgNameZh: "Michael Ye Real Estate",
+      } as Parameters<typeof buildOutboundGreeting>[0];
+      expect(buildOutboundGreeting(ctx, "")).toContain("Hi there");
+    });
+  });
+});
