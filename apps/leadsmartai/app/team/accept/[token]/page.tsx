@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
+import { provisionHubUsername } from "@/lib/teams/provisionHub.server";
 import { getServerT } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,6 +43,8 @@ export default async function AcceptInvitePage({
   const result = await acceptInvite({ rawToken: token, acceptingAgentId: agentId });
 
   if (result.ok) {
+    // A hub address from their name, so "hub live" on the broker's board is one click away.
+    await provisionHubUsername(agentId);
     redirect("/dashboard/team");
   }
 
