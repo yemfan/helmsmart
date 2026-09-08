@@ -36,8 +36,16 @@ const ROUTES = [
 const THRESHOLDS = { performance: 0.85, lcp: 2500, cls: 0.1, tbt: 200 };
 const PORT = 9222;
 
-const browser = await chromium.launch({ args: [`--remote-debugging-port=${PORT}`] });
-const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "en-US" });
+// A persistent context IS the browser's default context, so the tab
+// Lighthouse opens over the debugging port shares its cookies. With an
+// isolated `browser.newContext()` Lighthouse's tab had no session, every
+// route redirected to /login, and six identical scores measured the login
+// page (the first run, 2026-09-08).
+const context = await chromium.launchPersistentContext("/tmp/lh-profile", {
+  args: [`--remote-debugging-port=${PORT}`],
+  viewport: { width: 1440, height: 900 },
+  locale: "en-US",
+});
 const page = await context.newPage();
 
 await page.goto(`${HOST}/login`, { waitUntil: "networkidle" });
@@ -69,8 +77,10 @@ for (const route of ROUTES) {
     throttling: { rttMs: 40, throughputKbps: 10240, cpuSlowdownMultiplier: 1 },
   });
   const lhr = run.lhr;
+  const landed = new URL(lhr.finalDisplayedUrl || url).pathname;
   const m = {
     url,
+    landed,
     performance: lhr.categories.performance?.score ?? null,
     lcp: lhr.audits["largest-contentful-paint"]?.numericValue ?? null,
     cls: lhr.audits["cumulative-layout-shift"]?.numericValue ?? null,
@@ -91,6 +101,10 @@ for (const route of ROUTES) {
   if (m.cls !== null && m.cls > THRESHOLDS.cls) bad.push(`CLS ${m.cls.toFixed(3)}`);
   if (m.tbt !== null && m.tbt > THRESHOLDS.tbt) bad.push(`TBT ${Math.round(m.tbt)}ms`);
   if (bad.length) failing++;
+  if (landed !== route) {
+    console.log(`✗ measured ${landed}, not ${route} — the session did not carry over; scores below are not the dashboard's`);
+    failing++;
+  }
   console.log(
     `${bad.length ? "✗" : "✓"} perf ${m.performance === null ? "?" : Math.round(m.performance * 100)} · LCP ${Math.round(m.lcp ?? 0)}ms · CLS ${(m.cls ?? 0).toFixed(3)} · TBT ${Math.round(m.tbt ?? 0)}ms${bad.length ? `  ← ${bad.join(", ")}` : ""}`,
   );
@@ -98,7 +112,7 @@ for (const route of ROUTES) {
   writeFileSync(`lighthouse-results/${route.replace(/[^a-z0-9]+/gi, "_").replace(/^_/, "") || "root"}.html`, run.report[0]);
 }
 writeFileSync("lighthouse-results/dashboard.json", JSON.stringify({ thresholds: THRESHOLDS, results }, null, 2));
-await browser.close();
+await context.close();
 
 console.log(`\n${results.length} routes — ${failing} below threshold${GATE ? "" : " (GATE=off, reporting only)"}.`);
 process.exit(GATE && failing > 0 ? 1 : 0);
