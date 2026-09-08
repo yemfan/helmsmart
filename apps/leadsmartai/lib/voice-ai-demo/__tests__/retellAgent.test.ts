@@ -125,3 +125,32 @@ describe("e164FromNumber", () => {
     if (resolved.ok) expect(resolved.config.fromNumber).toBe("+18778017240");
   });
 });
+
+describe("the destination the demo route actually produces", () => {
+  /*
+   * The route builds the phone with formatUsPhone(), which returns a DISPLAY
+   * string for the CRM row — "(626) 625-5055" — and passed it into a parameter
+   * named toPhoneE164. Retell cannot read a country off that, so it answered
+   * every demo with "Country is not in the allowed outbound country list for
+   * this phone number": an account-permission message for a malformed
+   * argument. Hours went into the Retell dashboard because of it.
+   */
+  const formatUsPhone = (input: string): string | null => {
+    const digits = input.replace(/\D/g, "").slice(-10);
+    if (digits.length !== 10) return null;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  };
+
+  it("turns the CRM display format into something Retell can dial", () => {
+    const display = formatUsPhone("(626) 625-5055");
+    expect(display).toBe("(626) 625-5055");
+    expect(e164FromNumber(display!)).toBe("+16266255055");
+  });
+
+  it("handles the other shapes a person types into the form", () => {
+    for (const typed of ["626-625-5055", "626.625.5055", "6266255055", "1 626 625 5055"]) {
+      const display = formatUsPhone(typed);
+      expect(e164FromNumber(display!), typed).toBe("+16266255055");
+    }
+  });
+});

@@ -17,6 +17,7 @@ import { loadReceptionistContext } from "@/lib/voice-agent/context";
 import { buildReceptionistDynamicVariables } from "@repo/voice";
 import {
   demoDynamicVariables,
+  e164FromNumber,
   envVarFor,
   resolveRetellDemoConfig,
   type DemoLanguage,
@@ -96,6 +97,24 @@ export async function placeRetellDemoCall(args: {
 
   const { apiKey, fromNumber, agentId } = resolved.config;
 
+  /*
+   * Normalise the DESTINATION too, not just the sender.
+   *
+   * The parameter is called toPhoneE164 and the caller was handing it
+   * "(626) 625-5055" — formatUsPhone() builds a display string for the CRM
+   * row, and the demo route passed that straight through. Retell cannot read a
+   * country off a bracketed US number, so it rejected every call with
+   *
+   *   400 Country is not in the allowed outbound country list for this number
+   *
+   * which reads as an account permission problem and is not one. Two people
+   * went looking in the Retell dashboard — allowed-country lists, outbound
+   * agents, toll-free restrictions — for a malformed argument.
+   *
+   * A name is not a guarantee. Normalise here, where the value is used.
+   */
+  const toNumber = e164FromNumber(args.toPhoneE164);
+
   try {
     const res = await fetch(RETELL_CREATE_CALL_URL, {
       method: "POST",
@@ -105,7 +124,7 @@ export async function placeRetellDemoCall(args: {
       },
       body: JSON.stringify({
         from_number: fromNumber,
-        to_number: args.toPhoneE164,
+        to_number: toNumber,
         override_agent_id: agentId,
         // Org context first, demo flags second: is_demo, language and
         // caller_name describe THIS call and must win. They do not collide
