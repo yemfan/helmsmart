@@ -122,7 +122,7 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
   return (
     <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
       <Field label={t("offerDesk.propertyAddress")} s={s}>
-        <TextInput style={s.input} value={address} onChangeText={setAddress} placeholder="123 Oak St, Alhambra" placeholderTextColor={tokens.textSubtle} />
+        <TextInput style={s.input} value={address} onChangeText={setAddress} placeholder={t("offerDesk.addressPlaceholder")} placeholderTextColor={tokens.textSubtle} />
       </Field>
       <View style={s.row2}>
         <Field label={t("offerDesk.listPrice")} s={s} flex>
@@ -179,7 +179,7 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
             <Term label={t("offerDesk.earnest")} value={fmtMoney(offer.earnestMoney)} s={s} />
             <Term label={t("offerDesk.down")} value={fmtMoney(offer.downPayment)} s={s} />
             <Term label={t("offerDesk.escalationCap")} value={fmtMoney(offer.escalationCap)} s={s} />
-            <Term label={t("offerDesk.close")} value={offer.closeDays ? `${offer.closeDays} days` : "—"} s={s} />
+            <Term label={t("offerDesk.close")} value={offer.closeDays ? t("offerDesk.days", { count: offer.closeDays }) : "—"} s={s} />
             <Term label={t("offerDesk.financing")} value={offer.financingType ?? "—"} s={s} />
           </View>
           <View style={s.contingRow}>
@@ -365,7 +365,7 @@ function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
     return (
       <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
         <Pressable onPress={() => setResult(null)}>
-          <Text style={s.backLink}>← All listings</Text>
+          <Text style={s.backLink}>{t("offerDesk.allListings")}</Text>
         </Pressable>
         <Text style={s.compareTitle}>{result.listing.address ?? "Listing"}</Text>
         <Text style={s.fieldLabel}>List price {fmtMoney(result.listing.listPrice)}</Text>

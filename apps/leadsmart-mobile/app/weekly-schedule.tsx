@@ -32,9 +32,15 @@ import type { ThemeTokens } from "../lib/theme";
  * social_weekly_schedules rows as the dashboard (via /api/mobile/social/weekly-schedule).
  */
 
-const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+/** i18n keys under `weeklySchedule.weekdays.*`, indexed 0 = Sunday. */
+const WEEKDAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const MEDIA_TYPES: MobileWeeklyMediaType[] = ["text", "image", "video"];
-const MEDIA_LABELS: Record<MobileWeeklyMediaType, string> = { text: "Text", image: "Image", video: "Video" };
+/** i18n keys under `weeklySchedule.media.*`. */
+const MEDIA_LABELS: Record<MobileWeeklyMediaType, string> = {
+  text: "weeklySchedule.media.text",
+  image: "weeklySchedule.media.image",
+  video: "weeklySchedule.media.video",
+};
 const PLATFORM_LABELS: Record<string, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
@@ -133,14 +139,14 @@ export default function WeeklyScheduleScreen() {
     }
     setData(res.data);
     setDays(res.data.days.map((d) => ({ ...d, timezone: d.timezone || tz })));
-    setNote("Schedule saved.");
+    setNote(t("weeklySchedule.saved"));
     hapticSuccess();
   }
 
   if (!days) {
     return (
       <View style={styles.loadingScreen}>
-        <Stack.Screen options={{ title: "Weekly Schedule", headerBackTitle: "Back" }} />
+        <Stack.Screen options={{ title: t("weeklySchedule.title"), headerBackTitle: t("weeklySchedule.back") }} />
         <ActivityIndicator color={tokens.accent} />
       </View>
     );
@@ -148,7 +154,7 @@ export default function WeeklyScheduleScreen() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-      <Stack.Screen options={{ title: "Weekly Schedule", headerBackTitle: "Back" }} />
+      <Stack.Screen options={{ title: t("weeklySchedule.title"), headerBackTitle: t("weeklySchedule.back") }} />
 
       <Text style={styles.intro}>
         {t("weeklySchedule.pickTheDaysYouWant")}
@@ -180,7 +186,7 @@ export default function WeeklyScheduleScreen() {
               <View style={[styles.checkbox, d.enabled && styles.checkboxOn]}>
                 {d.enabled ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
               </View>
-              <Text style={styles.dayName}>{WEEKDAYS[d.weekday]}</Text>
+              <Text style={styles.dayName}>{t(`weeklySchedule.weekdays.${WEEKDAYS[d.weekday]}`)}</Text>
             </Pressable>
 
             {d.enabled ? (
@@ -189,7 +195,7 @@ export default function WeeklyScheduleScreen() {
                 <View style={styles.row}>
                   <Text style={styles.label}>{t("weeklySchedule.time")}</Text>
                   {d.timeMode === "ai" ? (
-                    <Text style={styles.aiNote}>AI picks the best time each {WEEKDAYS[d.weekday]}</Text>
+                    <Text style={styles.aiNote}>{t("weeklySchedule.aiPicksTime", { day: t(`weeklySchedule.weekdays.${WEEKDAYS[d.weekday]}`) })}</Text>
                   ) : (
                     <>
                       <View style={styles.stepper}>
@@ -238,21 +244,21 @@ export default function WeeklyScheduleScreen() {
                       <Ionicons name="add" size={16} color={d.postsPerDay >= 5 ? tokens.textSubtle : tokens.text} />
                     </Pressable>
                   </View>
-                  {d.postsPerDay > 1 ? <Text style={styles.tz}>spread through the day, done by 9pm</Text> : null}
+                  {d.postsPerDay > 1 ? <Text style={styles.tz}>{t("weeklySchedule.spreadNote")}</Text> : null}
                 </View>
 
                 {/* Content type */}
                 <View style={styles.row}>
                   <Text style={styles.label}>{t("weeklySchedule.type")}</Text>
                   <View style={styles.segment}>
-                    {MEDIA_TYPES.map((t) => (
+                    {MEDIA_TYPES.map((mt) => (
                       <Pressable
-                        key={t}
-                        onPress={() => setMediaType(d, t)}
-                        style={[styles.segBtn, d.mediaType === t && styles.segBtnOn]}
+                        key={mt}
+                        onPress={() => setMediaType(d, mt)}
+                        style={[styles.segBtn, d.mediaType === mt && styles.segBtnOn]}
                       >
-                        <Text style={[styles.segText, d.mediaType === t && styles.segTextOn]}>
-                          {MEDIA_LABELS[t]}
+                        <Text style={[styles.segText, d.mediaType === mt && styles.segTextOn]}>
+                          {t(MEDIA_LABELS[mt])}
                         </Text>
                       </Pressable>
                     ))}
@@ -278,7 +284,7 @@ export default function WeeklyScheduleScreen() {
                       </Text>
                     </Pressable>
                   ))}
-                  {allSelected ? <Text style={styles.allNote}>all connected</Text> : null}
+                  {allSelected ? <Text style={styles.allNote}>{t("weeklySchedule.allConnected")}</Text> : null}
                 </View>
 
                 {/* Topic */}
@@ -313,7 +319,7 @@ export default function WeeklyScheduleScreen() {
                     <TextInput
                       value={d.topic}
                       onChangeText={(topic) => patch(d.weekday, { topic })}
-                      placeholder="…or type your own topic"
+                      placeholder={t("weeklySchedule.topicPlaceholder")}
                       placeholderTextColor={tokens.textSubtle}
                       style={styles.topicInput}
                     />

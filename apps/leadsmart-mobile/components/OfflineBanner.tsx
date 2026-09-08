@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { AccessibilityInfo, LayoutAnimation, StyleSheet, Text, View } from "react-native";
 import { useNetwork } from "../lib/offline/NetworkContext";
 import { useWriteQueue } from "../lib/offline/useWriteQueue";
@@ -16,26 +17,24 @@ export function OfflineBanner(): React.JSX.Element | null {
   const { pendingCount } = useWriteQueue();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const { t } = useTranslation("common");
 
   const prevConnected = useRef(isConnected);
   useEffect(() => {
     if (prevConnected.current !== isConnected) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      if (!isConnected) AccessibilityInfo.announceForAccessibility("You're offline");
+      if (!isConnected) AccessibilityInfo.announceForAccessibility(t("offline.title"));
       prevConnected.current = isConnected;
     }
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   if (isConnected) return null;
 
   return (
     <View style={styles.container} accessibilityLiveRegion="assertive">
-      <Text style={styles.title}>You're offline</Text>
+      <Text style={styles.title}>{t("offline.title")}</Text>
       {pendingCount > 0 && (
-        <Text style={styles.subtitle}>
-          {pendingCount} change{pendingCount === 1 ? "" : "s"} will sync when
-          reconnected
-        </Text>
+        <Text style={styles.subtitle}>{t("offline.pending", { count: pendingCount })}</Text>
       )}
     </View>
   );

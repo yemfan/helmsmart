@@ -1,4 +1,5 @@
 import type { MobileDashboardAlertType, MobileDashboardPriorityAlert } from "@leadsmart/shared";
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useThemeTokens } from "../../lib/useThemeTokens";
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function PriorityAlertCard({ alert, onPress }: Props) {
+  const { t } = useTranslation("home");
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
 
@@ -77,7 +79,7 @@ export function PriorityAlertCard({ alert, onPress }: Props) {
           ) : null}
         </View>
       </View>
-      <Text style={styles.chev} accessibilityLabel="Open">
+      <Text style={styles.chev} accessibilityLabel={t("cards.agenda.open")}>
         ›
       </Text>
     </Pressable>

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -15,20 +16,16 @@ import { BackRow } from "../../components/onboarding/BackRow";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
+/** i18n keys under `onboarding.value.*`. */
 const SLIDES = [
-  {
-    title: "Never miss a hot lead",
-    body: "Inbox prioritizes urgent threads so you can respond when it matters — before the deal goes cold.",
-  },
-  {
-    title: "Full context, fast",
-    body: "Open any lead to see recent SMS and email, AI signals, and quick actions to call or message.",
-  },
+  { title: "value.slide1_title", body: "value.slide1_body" },
+  { title: "value.slide2_title", body: "value.slide2_body" },
 ];
 
 export default function OnboardingValueScreen() {
   const router = useRouter();
   const s = useOnboardingStyles();
+  const { t } = useTranslation("onboarding");
   const scrollRef = useRef<ScrollView>(null);
   const [page, setPage] = useState(0);
 
@@ -62,9 +59,9 @@ export default function OnboardingValueScreen() {
         >
           {SLIDES.map((slide, idx) => (
             <View key={idx} style={{ width: SCREEN_W, paddingHorizontal: 24 }}>
-              <Text style={s.kicker}>Why CloseBoss</Text>
-              <Text style={s.title}>{slide.title}</Text>
-              <Text style={s.body}>{slide.body}</Text>
+              <Text style={s.kicker}>{t("value.kicker")}</Text>
+              <Text style={s.title}>{t(slide.title)}</Text>
+              <Text style={s.body}>{t(slide.body)}</Text>
             </View>
           ))}
         </ScrollView>
@@ -80,17 +77,17 @@ export default function OnboardingValueScreen() {
             style={s.primaryBtn}
             onPress={goNext}
             accessibilityRole="button"
-            accessibilityLabel={page < SLIDES.length - 1 ? "Next slide" : "Continue to sign in"}
+            accessibilityLabel={page < SLIDES.length - 1 ? t("value.next_a11y") : t("value.continue_a11y")}
           >
-            <Text style={s.primaryBtnText}>{page < SLIDES.length - 1 ? "Next" : "Continue"}</Text>
+            <Text style={s.primaryBtnText}>{page < SLIDES.length - 1 ? t("value.next") : t("value.continue")}</Text>
           </Pressable>
           <Pressable
             style={s.secondaryBtn}
             onPress={() => router.push("/(onboarding)/login")}
             accessibilityRole="button"
-            accessibilityLabel="Skip to sign in"
+            accessibilityLabel={t("value.skip_a11y")}
           >
-            <Text style={s.secondaryBtnText}>Skip</Text>
+            <Text style={s.secondaryBtnText}>{t("value.skip")}</Text>
           </Pressable>
         </View>
       </View>

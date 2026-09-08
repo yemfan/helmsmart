@@ -1,4 +1,5 @@
 import { Redirect } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScreenLoading } from "../components/ScreenLoading";
 import { useLeadsmartSession } from "../lib/session/LeadsmartSessionContext";
 import { HOME_ROUTE } from "../lib/homeRoute";
@@ -13,9 +14,10 @@ import { HOME_ROUTE } from "../lib/homeRoute";
  */
 export default function Index() {
   const { ready, accessToken, onboardingComplete } = useLeadsmartSession();
+  const { t } = useTranslation("common");
 
   if (!ready) {
-    return <ScreenLoading message="Starting…" />;
+    return <ScreenLoading message={t("status.starting")} />;
   }
 
   if (!onboardingComplete) {

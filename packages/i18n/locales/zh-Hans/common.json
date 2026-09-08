@@ -89,7 +89,8 @@
     "estimating": "估算中…",
     "thinking": "思考中…",
     "searching": "搜索中…",
-    "signing_out": "退出中…"
+    "signing_out": "退出中…",
+    "starting": "启动中…"
   },
   "errors": {
     "generic": "出错了，请重试。",
@@ -98,5 +99,10 @@
   },
   "conjunctions": {
     "and": "和"
+  },
+  "offline": {
+    "title": "您已离线",
+    "pending_one": "{{count}} 项更改将在重新联网后同步",
+    "pending_other": "{{count}} 项更改将在重新联网后同步"
   }
 }

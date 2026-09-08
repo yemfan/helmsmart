@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -29,10 +30,11 @@ import {
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 
+/** `label` is an i18n key under `postcards.channels.*`. */
 const ALL_CHANNELS: Array<{ value: MobilePostcardChannel; label: string }> = [
-  { value: "email", label: "Email" },
-  { value: "sms", label: "SMS" },
-  { value: "wechat", label: "WeChat" },
+  { value: "email", label: "channels.email" },
+  { value: "sms", label: "channels.sms" },
+  { value: "wechat", label: "channels.wechat" },
 ];
 
 /**
@@ -55,6 +57,7 @@ export default function NewPostcardScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const { t } = useTranslation("postcards");
 
   const [templates, setTemplates] = useState<MobilePostcardTemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(true);
@@ -81,9 +84,10 @@ export default function NewPostcardScreen() {
       if (res.ok) {
         setTemplates(res.templates);
       } else {
-        setError(res.message || "Could not load templates.");
+        setError(res.message || t("new.templates_failed"));
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedTemplate = useMemo(
@@ -139,15 +143,15 @@ export default function NewPostcardScreen() {
   const onSend = useCallback(async () => {
     setError(null);
     if (!templateKey) {
-      setError("Pick a template first.");
+      setError(t("new.pick_template_first"));
       return;
     }
     if (!recipientName.trim()) {
-      setError("Recipient name is required.");
+      setError(t("new.name_required"));
       return;
     }
     if (channels.size === 0) {
-      setError("Pick at least one channel (Email / SMS / WeChat).");
+      setError(t("new.channel_required"));
       return;
     }
     hapticButtonPress();
@@ -163,20 +167,20 @@ export default function NewPostcardScreen() {
     setSending(false);
     if (res.ok === false) {
       hapticError();
-      setError(res.message || "Could not send postcard.");
+      setError(res.message || t("new.send_failed"));
       return;
     }
     hapticSuccess();
     // Show a quick confirmation and bounce to list.
     const sentNames = ALL_CHANNELS.filter((c) => channels.has(c.value))
-      .map((c) => c.label)
+      .map((c) => t(c.label))
       .join(", ");
     Alert.alert(
-      "Postcard sent",
-      `Sent via ${sentNames} to ${recipientName.trim()}.`,
+      t("new.sent_title"),
+      t("new.sent_body", { channels: sentNames, name: recipientName.trim() }),
       [
         {
-          text: "OK",
+          text: t("new.ok"),
           onPress: () => {
             if (router.canGoBack()) router.back();
             else router.replace("/postcards" as never);
@@ -192,6 +196,7 @@ export default function NewPostcardScreen() {
     personalMessage,
     channels,
     router,
+    t,
   ]);
 
   return (
@@ -202,8 +207,8 @@ export default function NewPostcardScreen() {
     >
       <Stack.Screen
         options={{
-          title: "New postcard",
-          headerBackTitle: "Postcards",
+          title: t("new.title"),
+          headerBackTitle: t("new.back"),
         }}
       />
       <ScrollView
@@ -211,13 +216,13 @@ export default function NewPostcardScreen() {
         keyboardShouldPersistTaps="handled"
       >
         {/* Template picker */}
-        <Text style={styles.sectionHeading}>1 · Pick a template</Text>
+        <Text style={styles.sectionHeading}>{t("new.section_template")}</Text>
         {templatesLoading ? (
           <View style={styles.center}>
             <ActivityIndicator color={tokens.accent} />
           </View>
         ) : templates.length === 0 ? (
-          <Text style={styles.muted}>No templates available.</Text>
+          <Text style={styles.muted}>{t("new.no_templates")}</Text>
         ) : (
           <View style={styles.templateGrid}>
             {templates.map((t) => {
@@ -254,37 +259,37 @@ export default function NewPostcardScreen() {
         <View style={styles.divider} />
 
         {/* Recipient */}
-        <Text style={styles.sectionHeading}>2 · Recipient</Text>
-        <Text style={styles.label}>Name *</Text>
+        <Text style={styles.sectionHeading}>{t("new.section_recipient")}</Text>
+        <Text style={styles.label}>{t("new.name_label")}</Text>
         <TextInput
           value={recipientName}
           onChangeText={setRecipientName}
-          placeholder="e.g. Sarah Chen"
+          placeholder={t("new.name_placeholder")}
           placeholderTextColor={tokens.textSubtle}
           style={styles.input}
         />
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>{t("new.email_label")}</Text>
         <TextInput
           value={recipientEmail}
           onChangeText={setRecipientEmail}
-          placeholder="for the email channel"
+          placeholder={t("new.email_placeholder")}
           placeholderTextColor={tokens.textSubtle}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
           style={styles.input}
         />
-        <Text style={styles.label}>Phone</Text>
+        <Text style={styles.label}>{t("new.phone_label")}</Text>
         <TextInput
           value={recipientPhone}
           onChangeText={setRecipientPhone}
-          placeholder="for SMS / WeChat"
+          placeholder={t("new.phone_placeholder")}
           placeholderTextColor={tokens.textSubtle}
           keyboardType="phone-pad"
           style={styles.input}
         />
 
-        <Text style={styles.label}>Channels *</Text>
+        <Text style={styles.label}>{t("new.channels_label")}</Text>
         <View style={styles.channelRow}>
           {ALL_CHANNELS.map((c) => {
             const allowed = canSendChannel(c.value);
@@ -310,27 +315,25 @@ export default function NewPostcardScreen() {
                     !allowed && styles.channelTextDisabled,
                   ]}
                 >
-                  {c.label}
+                  {t(c.label)}
                 </Text>
               </Pressable>
             );
           })}
         </View>
-        <Text style={styles.helper}>
-          Channels enable when you fill in the matching email / phone.
-        </Text>
+        <Text style={styles.helper}>{t("new.channels_helper")}</Text>
 
         <View style={styles.divider} />
 
         {/* Personal message */}
-        <Text style={styles.sectionHeading}>3 · Personal message</Text>
+        <Text style={styles.sectionHeading}>{t("new.section_message")}</Text>
         <TextInput
           multiline
           value={personalMessage}
           onChangeText={setPersonalMessage}
           placeholder={
             selectedTemplate?.defaultMessage ??
-            "Write something warm — agents who add a personal note get 3-4× more replies."
+            t("new.message_placeholder")
           }
           placeholderTextColor={tokens.textSubtle}
           style={styles.textArea}
@@ -342,7 +345,7 @@ export default function NewPostcardScreen() {
           onPress={() => void onSend()}
           disabled={sending}
           accessibilityRole="button"
-          accessibilityLabel="Send postcard"
+          accessibilityLabel={t("new.send")}
           accessibilityState={{ disabled: sending }}
           style={({ pressed }) => [
             styles.sendBtn,
@@ -352,7 +355,7 @@ export default function NewPostcardScreen() {
         >
           <Ionicons name="send" size={16} color={tokens.textOnAccent} />
           <Text style={styles.sendBtnText}>
-            {sending ? "Sending…" : "Send postcard"}
+            {sending ? t("new.sending") : t("new.send")}
           </Text>
         </Pressable>
       </ScrollView>

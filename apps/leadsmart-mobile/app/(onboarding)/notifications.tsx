@@ -1,4 +1,5 @@
 import * as Notifications from "expo-notifications";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,6 +12,7 @@ import { HOME_ROUTE } from "../../lib/homeRoute";
 export default function OnboardingNotificationsScreen() {
   const router = useRouter();
   const s = useOnboardingStyles();
+  const { t } = useTranslation("onboarding");
   const { markOnboardingComplete } = useLeadsmartSession();
   const [busy, setBusy] = useState(false);
 
@@ -50,12 +52,9 @@ export default function OnboardingNotificationsScreen() {
       <BackRow fallbackHref="/(onboarding)/login" />
       <View style={s.safePad}>
         <View style={s.centerBlock}>
-          <Text style={s.kicker}>Stay in the loop</Text>
-          <Text style={s.title}>Notifications</Text>
-          <Text style={s.body}>
-            Get alerted for hot leads and new inbound messages. You can change this anytime in system
-            settings.
-          </Text>
+          <Text style={s.kicker}>{t("notifications.kicker")}</Text>
+          <Text style={s.title}>{t("notifications.title")}</Text>
+          <Text style={s.body}>{t("notifications.body")}</Text>
         </View>
         <View>
           <Pressable
@@ -63,18 +62,18 @@ export default function OnboardingNotificationsScreen() {
             onPress={() => void onEnable()}
             disabled={busy}
             accessibilityRole="button"
-            accessibilityLabel="Enable notifications"
+            accessibilityLabel={t("notifications.enable")}
           >
-            <Text style={s.primaryBtnText}>Enable notifications</Text>
+            <Text style={s.primaryBtnText}>{t("notifications.enable")}</Text>
           </Pressable>
           <Pressable
             style={s.secondaryBtn}
             onPress={() => void finishToInbox()}
             disabled={busy}
             accessibilityRole="button"
-            accessibilityLabel="Skip notifications"
+            accessibilityLabel={t("notifications.skip_a11y")}
           >
-            <Text style={s.secondaryBtnText}>Not now</Text>
+            <Text style={s.secondaryBtnText}>{t("notifications.skip")}</Text>
           </Pressable>
         </View>
       </View>

@@ -152,7 +152,7 @@ export default function DigitalTwinScreen() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-      <Stack.Screen options={{ title: "Digital Twin", headerBackTitle: "Back" }} />
+      <Stack.Screen options={{ title: t("digitalTwin.title"), headerBackTitle: t("digitalTwin.back") }} />
 
       <Text style={styles.intro}>
         {t("digitalTwin.recordAShortIntroVideo")}
@@ -184,8 +184,8 @@ export default function DigitalTwinScreen() {
           {consent ? <Ionicons name="checkmark" size={14} color="#fff" /> : null}
         </View>
         <Text style={styles.consentText}>
-          {t("digitalTwin.iConsentToAiUse")} <Text style={{ fontWeight: "700" }}>my own</Text> likeness and voice from my intro
-          video. I can revoke this anytime.
+          {t("digitalTwin.iConsentToAiUse")} <Text style={{ fontWeight: "700" }}>{t("digitalTwin.myOwn")}</Text>{" "}
+          {t("digitalTwin.consentRest")}
         </Text>
       </Pressable>
 
@@ -213,7 +213,7 @@ export default function DigitalTwinScreen() {
         <View style={styles.busyRow}>
           <ActivityIndicator color={tokens.accent} />
           <Text style={styles.busyText}>
-            {stage === "uploading" ? "Uploading your video…" : "Analyzing your video — this can take a minute…"}
+            {stage === "uploading" ? t("digitalTwin.uploadingVideo") : t("digitalTwin.analyzingVideo")}
           </Text>
         </View>
       ) : null}

@@ -237,5 +237,30 @@
   "deals": {
     "title": "交易",
     "subtitle": "看房、报价、合同与定价。"
+  },
+  "cards": {
+    "engagement": {
+      "title": "互动数据",
+      "all_posts": "全部帖子",
+      "likes": "点赞",
+      "comments": "评论",
+      "shares": "分享",
+      "saves": "收藏"
+    },
+    "next_post": {
+      "title": "下一篇发什么",
+      "ready_one": "{{count}} 个创意待发布",
+      "ready_other": "{{count}} 个创意待发布",
+      "triggers": {
+        "new_listing": "新房源",
+        "open_house": "开放看房",
+        "just_sold": "成交"
+      }
+    },
+    "agenda": {
+      "empty_title": "暂无安排",
+      "empty_sub": "这一天没有任务、约见或跟进。",
+      "open": "打开"
+    }
   }
 }

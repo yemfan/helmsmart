@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -35,6 +36,7 @@ import type { ThemeTokens } from "../../lib/theme";
  * server returns `hasMetrics: false` for this state.
  */
 export function EngagementCard() {
+  const { t } = useTranslation("home");
   const tokens = useThemeTokens();
   const router = useRouter();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -90,9 +92,9 @@ export function EngagementCard() {
           }}
           style={styles.header}
         >
-          <Text style={styles.title}>Engagement</Text>
+          <Text style={styles.title}>{t("cards.engagement.title")}</Text>
           <View style={styles.headerRight}>
-            <Text style={styles.headerLink}>All posts</Text>
+            <Text style={styles.headerLink}>{t("cards.engagement.all_posts")}</Text>
             <Ionicons
               name="chevron-forward"
               size={14}
@@ -137,6 +139,7 @@ function PostRow({
     item.igBusinessUsername ??
     item.linkedinDisplayName ??
     "—";
+  const { t } = useTranslation("home");
   const platformLabel =
     item.platform === "facebook"
       ? "FB"
@@ -158,10 +161,10 @@ function PostRow({
   // most universal, but if a post got more saves than likes (great
   // signal on IG), surface that instead.
   const cells: Array<{ label: string; value: number | null }> = [
-    { label: "Likes", value: item.metrics.likes ?? null },
-    { label: "Comments", value: item.metrics.comments ?? null },
-    { label: "Shares", value: item.metrics.shares ?? null },
-    { label: "Saves", value: item.metrics.saves ?? null },
+    { label: "cards.engagement.likes", value: item.metrics.likes ?? null },
+    { label: "cards.engagement.comments", value: item.metrics.comments ?? null },
+    { label: "cards.engagement.shares", value: item.metrics.shares ?? null },
+    { label: "cards.engagement.saves", value: item.metrics.saves ?? null },
   ];
   const ranked = cells
     .filter((c) => (c.value ?? 0) > 0)
@@ -204,7 +207,7 @@ function PostRow({
             {ranked.map((c) => (
               <Text key={c.label} style={styles.cell}>
                 <Text style={styles.cellValue}>{c.value!.toLocaleString()}</Text>{" "}
-                {c.label.toLowerCase()}
+                {t(c.label).toLowerCase()}
               </Text>
             ))}
           </View>

@@ -1,4 +1,5 @@
 import type { DailyAgendaItem } from "@leadsmart/shared";
+import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { EmptyState } from "../EmptyState";
@@ -14,12 +15,13 @@ type Props = {
 export function DailyAgendaList({ items, onItemPress }: Props) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const { t } = useTranslation("home");
 
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Nothing scheduled"
-        subtitle="No tasks, appointments, or follow-ups for this day."
+        title={t("cards.agenda.empty_title")}
+        subtitle={t("cards.agenda.empty_sub")}
       />
     );
   }
@@ -44,7 +46,7 @@ export function DailyAgendaList({ items, onItemPress }: Props) {
               </Text>
             ) : null}
           </View>
-          <Text style={styles.chev} accessibilityLabel="Open">
+          <Text style={styles.chev} accessibilityLabel={t("cards.agenda.open")}>
             ›
           </Text>
         </Pressable>

@@ -144,22 +144,22 @@ export default function ExpensesScreen() {
   const attachReceipt = useCallback(() => {
     Alert.alert(t("expenses.addAReceipt"), t("expenses.attachAPhotoOfThe"), [
       {
-        text: "Take photo",
+        text: t("expenses.takePhoto"),
         onPress: async () => {
           const perm = await ImagePicker.requestCameraPermissionsAsync();
           if (!perm.granted) {
-            setFormError("Camera permission denied.");
+            setFormError(t("expenses.cameraDenied"));
             return;
           }
           await doUpload(await ImagePicker.launchCameraAsync({ quality: 0.7 }));
         },
       },
       {
-        text: "Choose from library",
+        text: t("expenses.chooseFromLibrary"),
         onPress: async () => {
           const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
           if (!perm.granted) {
-            setFormError("Photo library permission denied.");
+            setFormError(t("expenses.libraryDenied"));
             return;
           }
           await doUpload(
@@ -170,9 +170,9 @@ export default function ExpensesScreen() {
           );
         },
       },
-      { text: "Cancel", style: "cancel" },
+      { text: t("expenses.cancel"), style: "cancel" },
     ]);
-  }, [doUpload]);
+  }, [doUpload, t]);
 
   const submit = useCallback(async () => {
     const amt = Number(amount);
@@ -202,10 +202,10 @@ export default function ExpensesScreen() {
 
   const confirmDelete = useCallback(
     (item: MobileExpenseDto) => {
-      Alert.alert(t("expenses.deleteExpense"), `Remove this ${money(item.amount)} expense?`, [
-        { text: "Cancel", style: "cancel" },
+      Alert.alert(t("expenses.deleteExpense"), t("expenses.removeConfirm", { amount: money(item.amount) }), [
+        { text: t("expenses.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("expenses.delete"),
           style: "destructive",
           onPress: async () => {
             setDeletingId(item.id);
@@ -315,7 +315,7 @@ export default function ExpensesScreen() {
                 style={styles.input}
                 value={vendor}
                 onChangeText={setVendor}
-                placeholder="e.g. Canva, Shell"
+                placeholder={t("expenses.vendorPlaceholder")}
                 placeholderTextColor={tokens.textSubtle}
               />
             </View>
@@ -347,7 +347,7 @@ export default function ExpensesScreen() {
                 />
               )}
               <Text style={styles.receiptBtnText}>
-                {uploadingReceipt ? "Uploading…" : receiptUrl ? "Receipt attached" : "Add receipt photo"}
+                {uploadingReceipt ? t("expenses.uploading") : receiptUrl ? t("expenses.receiptAttached") : t("expenses.addReceiptPhoto")}
               </Text>
             </Pressable>
           </View>
@@ -365,7 +365,7 @@ export default function ExpensesScreen() {
               <Text style={styles.cancelBtnText}>{t("expenses.cancel")}</Text>
             </Pressable>
             <Pressable style={[styles.submitBtn, saving && styles.btnDisabled]} onPress={() => void submit()} disabled={saving}>
-              <Text style={styles.submitBtnText}>{saving ? "Saving…" : "Log expense"}</Text>
+              <Text style={styles.submitBtnText}>{saving ? t("expenses.saving") : t("expenses.logExpense")}</Text>
             </Pressable>
           </View>
         </View>
