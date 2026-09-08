@@ -6,6 +6,7 @@ import { getSeatUsageForTeam } from "@/lib/teams/seatLimits.server";
 import { getRoster, listTeamsForAgent } from "@/lib/teams/service";
 import { getOnboardingBoard, type OnboardingBoard } from "@/lib/teams/onboarding.server";
 import { loadTeamBrand } from "@/lib/teams/brand.server";
+import { canManageTeam } from "@/lib/teams/roles";
 import type { TeamBrand } from "@/lib/teams/brand";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
@@ -38,6 +39,7 @@ export default async function TeamPage() {
 
   let roster: TeamRoster | null = null;
   let isOwner = false;
+  let canManage = false;
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
@@ -45,11 +47,13 @@ export default async function TeamPage() {
   if (teams.length > 0) {
     const team = teams[0];
     isOwner = team.ownerAgentId === ctx.agentId;
-    const [r, seat, b, br] = await Promise.all([
-      getRoster(team.id),
+    const r = await getRoster(team.id);
+    const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
+    canManage = canManageTeam(myRole);
+    const [seat, b, br] = await Promise.all([
       getSeatUsageForTeam(team.id),
-      isOwner ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
-      isOwner ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
+      canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
+      canManage ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
     ]);
     roster = r;
     seatUsage = { used: seat.used, cap: seat.cap, full: seat.full };
@@ -61,6 +65,7 @@ export default async function TeamPage() {
     <TeamDashboard
       currentAgentId={ctx.agentId}
       isOwner={isOwner}
+      canManage={canManage}
       roster={roster}
       access={access}
       seatUsage={seatUsage}

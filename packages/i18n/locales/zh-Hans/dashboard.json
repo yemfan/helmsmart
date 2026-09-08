@@ -2039,11 +2039,16 @@
       "members": "成员",
       "remove": "移除",
       "invite": "邀请成员",
-      "inviteSub": "把生成的链接发给您想邀请的经纪人。他们用同一个邮箱登录并接受邀请即可。",
-      "copyLink": "复制这个链接直接发给对方。链接 14 天后失效。",
+      "inviteSub": "经纪人会收到一封带链接的邮件，点击即可加入团队；若还没有账号，会先创建一个。您也可以复制该链接。",
+      "copyLink": "同一链接，如果您想自己发送。14 天后失效。",
       "pendingInvites": "待接受的邀请",
       "revoke": "撤销",
-      "expires": "有效期至 {{date}}"
+      "expires": "有效期至 {{date}}",
+      "manager": "经理",
+      "you": "（您）",
+      "makeManager": "设为经理",
+      "makeMember": "设为成员",
+      "requiresPlan": "Premium 或 Signature"
     },
     "reports": {
       "metaTitle": "报告",

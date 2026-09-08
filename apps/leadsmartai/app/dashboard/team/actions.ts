@@ -10,10 +10,12 @@ import {
   inviteByEmail,
   removeMember as svcRemoveMember,
   revokeInvite as svcRevokeInvite,
+  setMemberRole as svcSetMemberRole,
 } from "@/lib/teams/service";
 import { inviteMany, requeueInvite } from "@/lib/teams/onboarding.server";
 import { MAX_ROSTER_ROWS, parseRoster } from "@/lib/teams/roster";
 import { parseBrandInput } from "@/lib/teams/brand";
+import { canAdministerTeam, canManageTeam, isAssignableRole } from "@/lib/teams/roles";
 import { saveTeamBrand } from "@/lib/teams/brand.server";
 
 /**
@@ -42,7 +44,7 @@ export async function createTeam(formData: FormData) {
       ok: false as const,
       error:
         access.reason === "team_access_not_enabled"
-          ? "Team access requires the Elite plan. Upgrade to start a team."
+          ? "Team access comes with the Premium and Signature plans. Upgrade to start a team."
           : "We couldn't verify your subscription. Try again or contact support.",
       code: access.reason,
     };
@@ -63,7 +65,7 @@ export async function inviteMember(formData: FormData) {
 
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Owner only" };
+  if (!canManageTeam(role)) return { ok: false as const, error: "Owner or manager only" };
 
   try {
     const result = await inviteByEmail({
@@ -95,7 +97,7 @@ export async function removeMember(formData: FormData) {
     return { ok: false as const, error: "Owner cannot remove themselves" };
   }
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Owner only" };
+  if (!canAdministerTeam(role)) return { ok: false as const, error: "Owner only" };
 
   await svcRemoveMember({ teamId, agentId });
   revalidatePath("/dashboard/team");
@@ -109,7 +111,7 @@ export async function revokeInvite(formData: FormData) {
 
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Owner only" };
+  if (!canManageTeam(role)) return { ok: false as const, error: "Owner or manager only" };
 
   await svcRevokeInvite(inviteId);
   revalidatePath("/dashboard/team");
@@ -131,7 +133,7 @@ export async function importRoster(formData: FormData) {
 
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Only the team owner can import a roster." };
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can import a roster." };
 
   const parsed = parseRoster(text);
   if (parsed.rows.length === 0) {
@@ -154,7 +156,7 @@ export async function resendInvite(formData: FormData) {
   if (!teamId || !inviteId) return { ok: false as const, error: "Missing args" };
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Only the team owner can resend invitations." };
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can resend invitations." };
   const ok = await requeueInvite({ teamId, inviteId });
   revalidatePath("/dashboard/team");
   return ok ? { ok: true as const } : { ok: false as const, error: "That invitation is no longer pending." };
@@ -166,7 +168,7 @@ export async function saveBrand(formData: FormData) {
   if (!teamId) return { ok: false as const, error: "Missing team", field: null };
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (role !== "owner") return { ok: false as const, error: "Only the team owner can set the brokerage brand.", field: null };
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can set the brokerage brand.", field: null };
   const parsed = parseBrandInput({
     name: formData.get("name"),
     logoUrl: formData.get("logoUrl"),
@@ -182,4 +184,19 @@ export async function saveBrand(formData: FormData) {
   } catch (e) {
     return { ok: false as const, error: e instanceof Error ? e.message : "Save failed", field: null };
   }
+}
+
+/** Owner only: make a member a manager, or a manager a member. Ownership never moves here. */
+export async function setRole(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const agentId = String(formData.get("agentId") ?? "");
+  const role = formData.get("role");
+  if (!teamId || !agentId || !isAssignableRole(role)) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  if (agentId === ctx.agentId) return { ok: false as const, error: "You cannot change your own role." };
+  const mine = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canAdministerTeam(mine)) return { ok: false as const, error: "Owner only" };
+  await svcSetMemberRole({ teamId, agentId, role });
+  revalidatePath("/dashboard/team");
+  return { ok: true as const };
 }

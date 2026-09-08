@@ -2039,11 +2039,16 @@
       "members": "Members",
       "remove": "Remove",
       "invite": "Invite a member",
-      "inviteSub": "Send the generated link to the agent you'd like to invite. They sign in with the same email and accept the invitation.",
-      "copyLink": "Copy this link and send it directly. It expires in 14 days.",
+      "inviteSub": "The agent gets an email with a link that joins them to the team; if they have no account yet, it creates one first. You can also copy the link.",
+      "copyLink": "The same link, if you would rather send it yourself. It expires in 14 days.",
       "pendingInvites": "Pending invites",
       "revoke": "Revoke",
-      "expires": "Expires {{date}}"
+      "expires": "Expires {{date}}",
+      "manager": "Manager",
+      "you": "(you)",
+      "makeManager": "Make manager",
+      "makeMember": "Make member",
+      "requiresPlan": "Premium or Signature"
     },
     "reports": {
       "metaTitle": "Reports",
