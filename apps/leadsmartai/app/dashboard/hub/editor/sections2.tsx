@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
@@ -549,7 +550,7 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
 
 // ── Settings (handle, publish, tracking ids) ─────────────────────────────
 
-type Tracking = { metaPixelId: string | null; gaMeasurementId: string | null; pixelActive: boolean };
+type Tracking = { metaPixelId: string | null; gaMeasurementId: string | null; pixelActive: boolean; gaProperty: { name: string; measurementId: string | null } | null };
 type ProfileMeta = { willBeIndexed: boolean; postedItems: number };
 
 export function SettingsSection({ data, onSaved }: SectionProps) {
@@ -563,6 +564,26 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
   const [state, setState] = useState<SaveState>("idle");
   const [err, setErr] = useState<string | null>(null);
   const [tState, setTState] = useState<SaveState>("idle");
+  const params = useSearchParams();
+  const googleFlow = params.get("google");
+  const tagFilled = params.get("tag") === "filled";
+  type Pixel = { id: string; name: string | null; adAccountName: string | null };
+  const [pixels, setPixels] = useState<{ state: "idle" | "loading" | "ready" | "failed"; items: Pixel[]; reason: string | null }>({ state: "idle", items: [], reason: null });
+
+  async function findPixels() {
+    setPixels({ state: "loading", items: [], reason: null });
+    try {
+      const r = await fetch("/api/dashboard/hub/meta-pixels");
+      const j = await r.json();
+      if (!j?.ok) throw new Error();
+      const items = (j.pixels ?? []) as Pixel[];
+      // One pixel is the answer; more than one is a choice.
+      if (items.length === 1) setPixel(items[0]!.id);
+      setPixels({ state: "ready", items, reason: j.reason ?? null });
+    } catch {
+      setPixels({ state: "failed", items: [], reason: null });
+    }
+  }
 
   useEffect(() => {
     Promise.all([fetch("/api/dashboard/hub/profile").then((r) => r.json()), fetch("/api/dashboard/hub/tracking").then((r) => r.json())])
@@ -639,12 +660,83 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
         <SaveButton state={state} error={err} onClick={() => void saveIdentity({ username: username.trim() })} />
       </Card>
       <Card title={k("trackingTitle")}>
+        {googleFlow === "connected" ? (
+          <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-900 ring-1 ring-inset ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900">
+            {tagFilled ? k("gaConnectedFilled") : k("gaConnectedOnly")}
+          </p>
+        ) : googleFlow === "error" || googleFlow === "cancelled" || googleFlow === "none" ? (
+          <p role="status" className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 ring-1 ring-inset ring-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:ring-amber-900">
+            {k("gaConnectFailed")}
+          </p>
+        ) : null}
         <Field label={k("ga")} hint={k("gaHint")}>
           <TextInput value={ga} onChange={setGa} />
         </Field>
+        {tracking?.gaProperty ? (
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            {t("pages.hubEditor.settings.gaConnectedTo", { name: tracking.gaProperty.name })}
+            {tracking.gaProperty.measurementId && ga.trim().toUpperCase() !== tracking.gaProperty.measurementId.toUpperCase() ? (
+              <>
+                {" "}
+                <button type="button" onClick={() => setGa(tracking.gaProperty!.measurementId!)} className="font-medium text-[#0072ce] hover:underline">
+                  {t("pages.hubEditor.settings.gaUseId", { id: tracking.gaProperty.measurementId })}
+                </button>
+              </>
+            ) : null}
+          </p>
+        ) : (
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            {k("gaConnectHint")}{" "}
+            <a href="/api/dashboard/hub/google/start?section=settings" className="font-medium text-[#0072ce] hover:underline">
+              {k("gaConnect")}
+            </a>
+          </p>
+        )}
         <Field label={k("pixel")} hint={`${k("pixelHint")}${pixel && tracking ? ` · ${tracking.pixelActive ? k("pixelActive") : k("pixelNeedsPremium")}` : ""}`}>
           <TextInput value={pixel} onChange={setPixel} />
         </Field>
+        <div className="text-xs text-slate-600 dark:text-slate-400">
+          {pixels.state === "ready" && pixels.items.length > 1 ? (
+            <label className="flex flex-wrap items-center gap-2">
+              <span>{k("pixelPick")}</span>
+              <select value={pixel} onChange={(e) => setPixel(e.target.value)} className="min-h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-800 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
+                <option value="">—</option>
+                {pixels.items.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {(p.name || p.id) + (p.adAccountName ? ` · ${p.adAccountName}` : "")}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : pixels.state === "ready" && pixels.items.length === 1 ? (
+            <span>{t("pages.hubEditor.settings.pixelFound", { name: pixels.items[0]!.name || pixels.items[0]!.id })}</span>
+          ) : pixels.state === "ready" && pixels.reason === "not_connected" ? (
+            <span>
+              {k("pixelNotConnected")}{" "}
+              <Link href="/dashboard/leads/generate/connect" className="font-medium text-[#0072ce] hover:underline">
+                {k("pixelConnectFacebook")}
+              </Link>
+            </span>
+          ) : pixels.state === "ready" && pixels.reason === "needs_ads_permission" ? (
+            <span>
+              {k("pixelNeedsAds")}{" "}
+              <Link href="/dashboard/leads/generate/connect" className="font-medium text-[#0072ce] hover:underline">
+                {k("pixelConnectFacebook")}
+              </Link>
+            </span>
+          ) : pixels.state === "ready" ? (
+            <span>{k("pixelNone")}</span>
+          ) : pixels.state === "failed" ? (
+            <span role="alert" className="text-red-700 dark:text-red-400">{k("pixelLookupFailed")}</span>
+          ) : (
+            <span>
+              {k("pixelFindHint")}{" "}
+              <button type="button" onClick={() => void findPixels()} disabled={pixels.state === "loading"} className="font-medium text-[#0072ce] hover:underline disabled:opacity-60">
+                {pixels.state === "loading" ? k("pixelFinding") : k("pixelFind")}
+              </button>
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">{k("privacyNote")}</p>
         <SaveButton state={tState} onClick={() => void saveTracking()} />
       </Card>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDashboardAgentContext } from "@/lib/contact-intake/dashboardAgentContext";
+import { fillGaMeasurementIdFrom } from "@/lib/leads-gen/google-analytics";
 import { gaPropertyId, type GaProperty } from "@/lib/marketing-hub/gaReport";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
       .eq("id", row.id);
     if (error) throw error;
 
-    return NextResponse.json({ ok: true, property: { id: known.id, name: known.name } });
+    const filledTag = await fillGaMeasurementIdFrom(auth.agentId, known);
+    return NextResponse.json({ ok: true, property: { id: known.id, name: known.name }, filledTag });
   } catch (e) {
     console.error("[hub/google/property]", e);
     return NextResponse.json({ ok: false, error: "save_failed" }, { status: 500 });
