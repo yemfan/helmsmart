@@ -155,7 +155,25 @@ export async function POST(req: Request) {
     const existing = await findActiveSubscription(user.id);
     if (existing) {
       const item = existing.items.data[0];
+
+      // A subscription with a failed payment can neither be switched nor
+      // bought again: Stripe will not move a past-due subscription, and a
+      // second Checkout would bill twice. The fix is the card. Send them to
+      // the billing portal, where the open invoice is the first thing shown.
+      // Until now this answered "You're already on that plan" under a page
+      // that said "Free" — true in Stripe's eyes, useless to the person.
+      if (existing.status === "past_due" || existing.status === "unpaid") {
+        const customerId = typeof existing.customer === "string" ? existing.customer : existing.customer.id;
+        const portal = await stripe.billingPortal.sessions.create({ customer: customerId, return_url: `${origin}/dashboard/credits` });
+        return NextResponse.json({ url: portal.url, pastDue: true });
+      }
+
       if (item?.price?.id === price) {
+        // Same plan, but set to end: "Upgrade" here means "keep it".
+        if (existing.cancel_at_period_end) {
+          const renewed = await stripe.subscriptions.update(existing.id, { cancel_at_period_end: false });
+          return NextResponse.json({ switched: true, plan, status: renewed.status, message: "Your plan is renewed and will continue after this period." });
+        }
         return NextResponse.json({ error: "You're already on that plan." }, { status: 400 });
       }
 
