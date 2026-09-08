@@ -11,16 +11,33 @@ import { NOTIFICATIONS_READ_EVENT } from "@/components/dashboard/NotificationsFe
  * (revenue opportunity, risk, action required, deadline), so it's
  * worth glancing at.
  */
+/**
+ * One request no matter how many bells are mounted. The top bar renders two
+ * (desktop and below-md, one hidden by CSS), and each asked for the count on
+ * its own — two identical calls on every dashboard load, ~2 s each on a cold
+ * function. Concurrent callers share the in-flight promise.
+ */
+let inflight: Promise<number | null> | null = null;
+function fetchUnreadCount(): Promise<number | null> {
+  if (!inflight) {
+    inflight = fetch("/api/dashboard/notifications/unread")
+      .then((r) => r.json())
+      .then((j) => (j?.ok ? Number(j.count) || 0 : null))
+      .catch(() => null)
+      .finally(() => {
+        inflight = null;
+      });
+  }
+  return inflight;
+}
+
 export function NotificationsBell({ className }: { className?: string }) {
   const [unread, setUnread] = useState(0);
 
   const load = useCallback(() => {
-    fetch("/api/dashboard/notifications/unread")
-      .then((r) => r.json())
-      .then((j) => {
-        if (j?.ok) setUnread(Number(j.count) || 0);
-      })
-      .catch(() => {});
+    void fetchUnreadCount().then((n) => {
+      if (n !== null) setUnread(n);
+    });
   }, []);
 
   // The bell lives in the persistent top bar, so it never remounts. Refetch
