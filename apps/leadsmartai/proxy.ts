@@ -134,7 +134,7 @@ export async function proxy(req: NextRequest) {
 
   // Consumers: PropertyTools-first accounts → PropertyTools app; LeadSmart-first → stay (except pro-only areas).
   if (userId && protectedPath) {
-    const ctx = await fetchUserPortalContext(supabase);
+    const ctx = await fetchUserPortalContext(supabase, userId);
     if (ctx && !ctx.isPro) {
       if (consumerShouldUsePropertyToolsApp(ctx.signupOriginApp)) {
         return NextResponse.redirect(getPropertyToolsConsumerPostLoginUrl());
@@ -154,7 +154,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isAuthPage(pathname) && userId) {
-    const ctx = await fetchUserPortalContext(supabase);
+    const ctx = await fetchUserPortalContext(supabase, userId);
     if (ctx && !ctx.isPro && consumerShouldUsePropertyToolsApp(ctx.signupOriginApp)) {
       return NextResponse.redirect(getPropertyToolsConsumerPostLoginUrl());
     }

@@ -28,69 +28,58 @@ export type UserPortalContext = {
   signupOriginApp: string | null;
 };
 
+/**
+ * Who is signed in and which portal they belong to.
+ *
+ * Runs in the proxy on every `/dashboard/*` request, from an edge region that
+ * is not the database's. It used to make four network calls in series —
+ * `getUser()` to Supabase Auth, then user_profiles, leadsmart_users and
+ * agents one after another — which was the difference between a dashboard
+ * page's first byte (~0.9 s warm) and an API route's (0.2 s) on production,
+ * 2026-09-08. Now: the caller's already-verified user id when it has one
+ * (the proxy does), otherwise the local claims check, and the three reads
+ * together.
+ */
 export async function fetchUserPortalContext(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  knownUserId?: string | null,
 ): Promise<UserPortalContext | null> {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) return null;
-
-  const userId = user.id;
-  let role: string | null = null;
-  let hasAgentRow = false;
-  let isPro = false;
-  let signupOriginApp: string | null = null;
-
-  const { data: originRow } = await supabase
-    .from("user_profiles")
-    .select("signup_origin_app")
-    .eq("user_id", userId)
-    .maybeSingle();
-  signupOriginApp =
-    (originRow as { signup_origin_app?: string | null } | null)?.signup_origin_app?.trim() || null;
-
-  try {
-    let userRow: { role?: string } | null = null;
-    let rowErr: unknown = null;
-    ({ data: userRow, error: rowErr } = await supabase
-      .from("leadsmart_users")
-      .select("role")
-      .eq("user_id", userId)
-      .maybeSingle());
-
-    if (rowErr && missingUserIdColumn(rowErr)) {
-      rowErr = null;
-    }
-
-    const r = userRow?.role ?? null;
-    role = r ?? null;
-
-    const { data: agentRow } = await supabase
-      .from("agents")
-      .select("id")
-      .eq("auth_user_id", userId)
-      .maybeSingle();
-    hasAgentRow = !!agentRow;
-
-    if (!rowErr && r === "user" && !hasAgentRow) {
-      isPro = false;
+  let userId = knownUserId ?? null;
+  if (!userId) {
+    const { data: claimsData } = await supabase.auth.getClaims().catch(() => ({ data: null }));
+    const sub = (claimsData?.claims as { sub?: unknown } | undefined)?.sub;
+    if (typeof sub === "string" && sub) {
+      userId = sub;
     } else {
-      isPro = isRealEstateProfessionalRole(r) || hasAgentRow;
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error || !user) return null;
+      userId = user.id;
     }
-  } catch {
-    const { data: agentRow } = await supabase
-      .from("agents")
-      .select("id")
-      .eq("auth_user_id", userId)
-      .maybeSingle();
-    hasAgentRow = !!agentRow;
-    isPro = hasAgentRow;
-    role = null;
   }
 
-  return { userId, role, hasAgentRow, isPro, signupOriginApp };
+  const [{ data: originRow }, userRes, { data: agentRow }] = await Promise.all([
+    supabase.from("user_profiles").select("signup_origin_app").eq("user_id", userId).maybeSingle(),
+    supabase.from("leadsmart_users").select("role").eq("user_id", userId).maybeSingle(),
+    supabase.from("agents").select("id").eq("auth_user_id", userId).maybeSingle(),
+  ]);
+  const signupOriginApp =
+    (originRow as { signup_origin_app?: string | null } | null)?.signup_origin_app?.trim() || null;
+  const hasAgentRow = !!agentRow;
+
+  let rowErr: unknown = userRes.error;
+  if (rowErr && missingUserIdColumn(rowErr)) rowErr = null;
+  if (userRes.error && rowErr) {
+    // The account row could not be read: judge by the agent row alone.
+    return { userId, role: null, hasAgentRow, isPro: hasAgentRow, signupOriginApp };
+  }
+
+  const r = (userRes.data as { role?: string } | null)?.role ?? null;
+  const isPro = r === "user" && !hasAgentRow ? false : isRealEstateProfessionalRole(r) || hasAgentRow;
+
+  return { userId, role: r, hasAgentRow, isPro, signupOriginApp };
 }
 
 /**
