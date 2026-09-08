@@ -57,10 +57,12 @@ export async function GET(req: Request) {
 
   let agentId: string;
   let purpose: "youtube" | "analytics" = "youtube";
+  let hubSection: "analytics" | "settings" = "analytics";
   try {
     const payload = verifyState(state, STATE_MAX_AGE_MS);
     agentId = payload.agentId;
     purpose = payload.purpose === "analytics" ? "analytics" : "youtube";
+    hubSection = payload.section === "settings" ? "settings" : "analytics";
     if (payload.returnTo) {
       if (!/^leadsmart:\/\//i.test(payload.returnTo)) {
         throw new Error("Invalid returnTo scheme");
@@ -80,13 +82,13 @@ export async function GET(req: Request) {
 
   if (purpose === "analytics") {
     const hub = (params: Record<string, string>) => {
-      const res = NextResponse.redirect(new URL(`/dashboard/hub?section=analytics&${new URLSearchParams(params)}`, req.url), { status: 302 });
+      const res = NextResponse.redirect(new URL(`/dashboard/hub?section=${hubSection}&${new URLSearchParams(params)}`, req.url), { status: 302 });
       res.cookies.set("youtube_oauth_state", "", { httpOnly: true, secure: true, sameSite: "lax", maxAge: 0, path: "/" });
       return res;
     };
     try {
       const r = await completeGaConnection(agentId, code);
-      return hub({ google: r.propertyName ? "connected" : r.propertyCount ? "choose" : "none" });
+      return hub({ google: r.propertyName ? "connected" : r.propertyCount ? "choose" : "none", ...(r.filledTag ? { tag: "filled" } : {}) });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Google Analytics connection failed";
       console.error("[google-analytics/callback]", e);

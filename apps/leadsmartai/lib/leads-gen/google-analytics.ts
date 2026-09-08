@@ -2,6 +2,7 @@ import "server-only";
 
 import { HUB_EVENT_TYPES } from "@/lib/marketing-hub/events";
 import { buildGaReport, cachedGaReport, gaPropertyId, matchGaProperty, type GaProperty, type GaReport, type RunReportResponse } from "@/lib/marketing-hub/gaReport";
+import { isValidGaMeasurementId, normalizeGaMeasurementId } from "@/lib/marketing-hub/tracking";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { decryptToken, encryptToken } from "./token-enc";
 import { exchangeCodeForToken, refreshAccessToken } from "./youtube-oauth";
@@ -167,7 +168,29 @@ export function isGoogleAuthFailure(e: unknown): boolean {
  * and keep one social_accounts row (platform = 'google') for the agent.
  * Returns what the callback needs to send the agent back with the truth.
  */
-export async function completeGaConnection(agentId: string, code: string): Promise<{ propertyName: string | null; propertyCount: number }> {
+/**
+ * The hub's GA4 tag (agent_tracking_config.ga_measurement_id) filled from the
+ * connected property's web stream, when the agent has not typed one. The tag
+ * is what makes the hub page send its visits to that property; without it
+ * the connection reads a property the hub is not feeding. Never overwrites a
+ * value the agent set. Returns whether it wrote one.
+ */
+export async function fillGaMeasurementIdFrom(agentId: string, property: GaProperty | null): Promise<boolean> {
+  const candidate = property?.measurementIds.map((m) => normalizeGaMeasurementId(m)).find((m) => m && isValidGaMeasurementId(m));
+  if (!candidate) return false;
+  const { data } = await supabaseAdmin.from("agent_tracking_config").select("ga_measurement_id").eq("agent_id", agentId as never).maybeSingle();
+  if ((data as { ga_measurement_id?: string | null } | null)?.ga_measurement_id) return false;
+  const { error } = await supabaseAdmin
+    .from("agent_tracking_config")
+    .upsert({ agent_id: agentId, ga_measurement_id: candidate, updated_at: new Date().toISOString() } as never, { onConflict: "agent_id" });
+  if (error) {
+    console.warn("[google-analytics] could not fill the GA4 tag:", error.message);
+    return false;
+  }
+  return true;
+}
+
+export async function completeGaConnection(agentId: string, code: string): Promise<{ propertyName: string | null; propertyCount: number; filledTag: boolean }> {
   const token = await exchangeCodeForToken(code);
   const properties = await listGaProperties(token.accessToken);
 
@@ -219,7 +242,8 @@ export async function completeGaConnection(agentId: string, code: string): Promi
     const { error } = await supabaseAdmin.from("social_accounts").insert({ ...row, connected_at: nowIso } as never);
     if (error) throw new Error(error.message);
   }
-  return { propertyName: picked?.name ?? null, propertyCount: properties.length };
+  const filledTag = await fillGaMeasurementIdFrom(agentId, picked);
+  return { propertyName: picked?.name ?? null, propertyCount: properties.length, filledTag };
 }
 
 // ── The marketing page's block ───────────────────────────────────────────────

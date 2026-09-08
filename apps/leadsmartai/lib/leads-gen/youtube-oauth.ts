@@ -76,6 +76,8 @@ export type StatePayload = {
   returnTo?: string;
   /** Which connection this authorisation is for. Absent = YouTube (the original flow). */
   purpose?: "youtube" | "analytics";
+  /** For the analytics flow: the hub editor section to land on afterwards. */
+  section?: "analytics" | "settings";
 };
 
 export function signState(payload: StatePayload): string {

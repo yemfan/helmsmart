@@ -33,14 +33,27 @@ export async function GET() {
     const auth = await getDashboardAgentContext();
     if (auth.ok === false) return auth.response;
 
-    const [plan, row] = await Promise.all([
+    const [plan, row, google] = await Promise.all([
       resolveAgentPlan(auth.agentId),
       supabaseAdmin
         .from("agent_tracking_config")
         .select("meta_pixel_id, ga_measurement_id")
         .eq("agent_id", auth.agentId as never)
         .maybeSingle(),
+      supabaseAdmin
+        .from("social_accounts")
+        .select("status, ga_property_name, ga_properties, ga_property_id")
+        .eq("agent_id", auth.agentId as never)
+        .eq("platform", "google")
+        .maybeSingle(),
     ]);
+
+    // The connected GA4 property, and the measurement id its web stream carries,
+    // so the settings card can offer to fill the field instead of asking for it.
+    const g = google.data as { status?: string; ga_property_name?: string | null; ga_property_id?: string | null; ga_properties?: unknown } | null;
+    const props = Array.isArray(g?.ga_properties) ? (g!.ga_properties as { id?: string; name?: string; measurementIds?: string[] }[]) : [];
+    const connectedProp = g?.status === "connected" && g.ga_property_id ? props.find((p) => p.id === g.ga_property_id) : null;
+    const gaProperty = connectedProp ? { name: String(g?.ga_property_name ?? connectedProp.name ?? ""), measurementId: connectedProp.measurementIds?.[0] ?? null } : null;
 
     const cfg = (row.data ?? {}) as {
       meta_pixel_id?: string | null;
@@ -51,6 +64,7 @@ export async function GET() {
       ok: true,
       metaPixelId: cfg.meta_pixel_id ?? null,
       gaMeasurementId: cfg.ga_measurement_id ?? null,
+      gaProperty,
       // What the agent needs to understand the state of the thing.
       plan: plan.tier,
       pixelMinPlan: PIXEL_MIN_PLAN,
