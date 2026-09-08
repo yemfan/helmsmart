@@ -28,13 +28,15 @@ import { grantReferralBonusIfPending } from "@/lib/referrals/service";
  *
  * Returns true if state changed, false if already good.
  */
-export async function reconcileEntitlement(
-  userId: string,
-): Promise<{ changed: boolean; reason: string }> {
-  const now = new Date().toISOString();
+export type ReconcileInputs = {
+  /** The active LeadSmart Agent entitlement, or null when there is none. */
+  activeRow: { id: string; plan: string } | null;
+  /** The leadsmart_users row's plan + status, or null when there is no row. */
+  row: { plan: string | null; subscription_status: string | null } | null;
+};
 
-  // Read both sides up front (this runs on every dashboard load, so the
-  // happy path must avoid writes).
+/** The two reads the reconcile judges — exported so a caller can batch them. */
+export async function readReconcileInputs(userId: string): Promise<ReconcileInputs> {
   const [{ data: activeRow }, { data: lu }] = await Promise.all([
     supabaseAdmin
       .from("product_entitlements")
@@ -49,7 +51,26 @@ export async function reconcileEntitlement(
       .eq("user_id", userId)
       .maybeSingle(),
   ]);
-  const row = (lu ?? null) as { plan: string | null; subscription_status: string | null } | null;
+  return {
+    activeRow: (activeRow ?? null) as ReconcileInputs["activeRow"],
+    row: (lu ?? null) as ReconcileInputs["row"],
+  };
+}
+
+export async function reconcileEntitlement(
+  userId: string,
+  /**
+   * Rows the caller has already read (the dashboard layout batches them with
+   * its own reads so the page's first byte is not behind another round-trip).
+   * Omit to read them here.
+   */
+  prefetched?: ReconcileInputs,
+): Promise<{ changed: boolean; reason: string }> {
+  const now = new Date().toISOString();
+
+  // Read both sides up front (this runs on every dashboard load, so the
+  // happy path must avoid writes).
+  const { activeRow, row } = prefetched ?? (await readReconcileInputs(userId));
 
   // 1. Active entitlement already exists — never override a paid
   // customer's synced plan. Only fix the user row if it's actually stale
