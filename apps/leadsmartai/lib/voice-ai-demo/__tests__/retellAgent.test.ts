@@ -195,3 +195,64 @@ describe("the demo opens like an outbound call, not an inbound one", () => {
     });
   });
 });
+
+describe("the demo call states its reason", () => {
+  /*
+   * A greeting that names you, discloses the AI and asks "is now a good time?"
+   * is a polite way of saying nothing: the person has answered an unknown
+   * number and still does not know what the call is about. And she did not
+   * know either — the demo sent the INBOUND system prompt, written for someone
+   * who had dialled the business, so after introducing herself she waited to be
+   * told why she had called.
+   */
+  it("says why she is calling, in the opening line", async () => {
+    const { buildOutboundGreeting } = await import("@repo/voice");
+    const ctx = {
+      agentName: "Lucy",
+      orgName: "Michael Ye Real Estate",
+      orgNameZh: "Michael Ye Real Estate",
+    } as Parameters<typeof buildOutboundGreeting>[0];
+
+    const demo = buildOutboundGreeting(ctx, "Michael", "demo");
+    expect(demo).toContain("Michael");
+    expect(demo).toContain("AI");
+    expect(demo.toLowerCase()).toContain("website");
+    expect(demo).toContain("AI前台");
+  });
+
+  it("leaves the other outbound purposes worded as they were", () => {
+    // follow-ups and reminders carry a per-call detail that belongs in the
+    // conversation, not in the first breath.
+    return import("@repo/voice").then(({ buildOutboundGreeting }) => {
+      const ctx = {
+        agentName: "Lucy",
+        orgName: "Michael Ye Real Estate",
+        orgNameZh: "Michael Ye Real Estate",
+      } as Parameters<typeof buildOutboundGreeting>[0];
+      expect(buildOutboundGreeting(ctx, "Michael", "follow_up")).toBe(
+        buildOutboundGreeting(ctx, "Michael"),
+      );
+    });
+  });
+
+  it("tells her the call is an evaluation with nothing to sell", async () => {
+    const { buildOutboundSystemPrompt } = await import("@repo/voice");
+    const ctx = {
+      agentName: "Lucy",
+      orgName: "Michael Ye Real Estate",
+      orgNameZh: "Michael Ye Real Estate",
+      hoursText: "Mon-Fri 9-5",
+      typesText: "Showing",
+      knowledgeText: "",
+      extraNotes: "",
+      todayISO: "2026-09-08",
+      todayLabel: "Monday, September 8",
+      timezone: "America/Los_Angeles",
+    } as Parameters<typeof buildOutboundSystemPrompt>[0];
+
+    const prompt = buildOutboundSystemPrompt(ctx, { leadName: "Michael", purpose: "demo" });
+    expect(prompt).toContain("evaluating");
+    expect(prompt).toContain("nothing to sell");
+    expect(prompt).toContain("YOU placed this call");
+  });
+});

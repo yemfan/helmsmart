@@ -14,7 +14,7 @@ import "server-only";
  */
 
 import { loadReceptionistContext } from "@/lib/voice-agent/context";
-import { buildOutboundGreeting, buildReceptionistDynamicVariables } from "@repo/voice";
+import { buildOutboundDynamicVariables } from "@repo/voice";
 import {
   demoDynamicVariables,
   e164FromNumber,
@@ -77,29 +77,25 @@ async function demoOrgVariables(prospectName?: string | null): Promise<Record<st
       return {};
     }
     /*
-     * The demo is an OUTBOUND call and must not open like an inbound one.
+     * The demo is an OUTBOUND call, and she has to know why she is making it.
      *
-     * Retell's Welcome Message is "{{greeting}}", and the inbound bundle sets
-     * that to OPENING_HELLO — "Hello, 您好, Hola". Three words in three
-     * languages is right when a stranger dials the business: the AI has no idea
-     * what language they speak, so it says almost nothing until they do.
+     * The inbound bundle is written for someone who dialled the business: the
+     * greeting is OPENING_HELLO ("Hello, 您好, Hola") and the system prompt
+     * opens with "a caller has rung". #1651 swapped the greeting, which fixed
+     * the first three seconds and left the rest — she introduced herself
+     * properly and then behaved like someone who had picked up the phone,
+     * waiting to be told what the call was about. It was her call.
      *
-     * It is wrong here. WE placed this call, to someone who asked for it a
-     * minute ago on a marketing page. They pick up an unknown number and hear a
-     * trilingual "hello" with nothing attached — no business, no introduction,
-     * no reason for the call — when the one thing this call exists to prove is
-     * that the receptionist sounds professional.
-     *
-     * buildOutboundGreeting is what every other app-initiated call already
-     * uses: it names them, discloses that it is an AI (which we owe them, TCPA
-     * aside), names the business, and asks whether now is a good time. The
-     * prospect hears exactly what their own leads would hear — the honest thing
-     * for a demo to be.
+     * buildOutboundDynamicVariables swaps BOTH, and takes a purpose. "demo"
+     * says it out loud in the greeting and tells her what the call is for:
+     * they are evaluating her, there is nothing to sell, invite them to try
+     * her. Everything else — hours, appointment types, knowledge base — is the
+     * same org context as before.
      */
-    return {
-      ...buildReceptionistDynamicVariables(ctx),
-      greeting: buildOutboundGreeting(ctx, (prospectName || "").trim()),
-    };
+    return buildOutboundDynamicVariables(ctx, {
+      leadName: (prospectName || "").trim(),
+      purpose: "demo",
+    });
   } catch (e) {
     console.warn("[voice-ai-demo] could not load demo org context:", e);
     return {};

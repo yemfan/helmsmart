@@ -300,16 +300,47 @@ export type OutboundPurpose =
   | "follow_up"
   | "appointment_reminder"
   | "survey"
-  | "promo";
+  | "promo"
+  /**
+   * Someone asked, on a marketing page, to hear what the AI receptionist
+   * sounds like. The call is the product demonstrating itself, so the reason
+   * has to be said out loud — otherwise she opens like a follow-up about an
+   * enquiry the person never made.
+   */
+  | "demo";
 
 /** First line the AI speaks when the lead answers — bilingual (English + Chinese),
  *  disclosing it's an AI in both (compliance). The agent then continues in
  *  whichever language the contact replies in. */
-export function buildOutboundGreeting(ctx: ReceptionistContext, leadName: string): string {
+export function buildOutboundGreeting(
+  ctx: ReceptionistContext,
+  leadName: string,
+  purpose?: OutboundPurpose,
+): string {
   const lead = leadName.trim();
   const who = ctx.agentName || "an assistant";
-  const en = `Hi${lead ? ` ${lead}` : " there"}, this is ${who}, an AI assistant calling on behalf of ${ctx.orgName}. Is now a quick okay time to talk?`;
-  const zh = `您好${lead}，我是${ctx.orgNameZh}的AI助理${ctx.agentName || ""}，请问现在方便讲几句话吗？`;
+  /*
+   * Say WHY, in the opening line.
+   *
+   * "Hi Michael, this is Lucy, an AI assistant calling on behalf of Michael Ye
+   * Real Estate. Is now a quick okay time to talk?" is a polite way of saying
+   * nothing. They have answered an unknown number and still do not know what
+   * this is about, so the honest reply to "is now a good time?" is "a good
+   * time for what?".
+   *
+   * Only the demo names its reason for now, because it is the one purpose
+   * whose reason is always the same and always known. The others carry a
+   * per-call `detail` that belongs in the conversation rather than the first
+   * breath, so their wording is unchanged.
+   */
+  const reasonEn =
+    purpose === "demo"
+      ? " You asked on our website to hear what our AI receptionist sounds like, so — this is me."
+      : "";
+  const reasonZh =
+    purpose === "demo" ? "您在我们网站上想听听AI前台的声音，所以我打来了。" : "";
+  const en = `Hi${lead ? ` ${lead}` : " there"}, this is ${who}, an AI assistant calling on behalf of ${ctx.orgName}.${reasonEn} Is now a quick okay time to talk?`;
+  const zh = `您好${lead}，我是${ctx.orgNameZh}的AI助理${ctx.agentName || ""}。${reasonZh}请问现在方便讲几句话吗？`;
   return `${en} ${zh}`;
 }
 
@@ -331,6 +362,9 @@ export function buildOutboundSystemPrompt(
       break;
     case "promo":
       goal = `Your goal: briefly share an update from ${ctx.orgName} with ${lead}. ${detail ? `The message: ${detail}` : "Share the latest news or offer."} Keep it to a sentence or two and gauge interest. If they are interested, book a meeting with book_appointment or take their details with create_callback. If they are not interested, thank them and end politely.`;
+      break;
+    case "demo":
+      goal = `Your goal: let ${lead} experience what their own callers would get. They asked on the website to hear this, so they are evaluating YOU — they are not buying anything and there is nothing to sell them. Invite them to try you: answer questions about ${ctx.orgName} from what you know, and check real availability and book a real appointment if they would like to see that work. Be warm and brief. If they ask what you can do, say it in one sentence and offer to show them rather than listing features. Never claim to be human if asked directly, and never claim abilities you do not have.`;
       break;
     case "follow_up":
     default:
@@ -387,7 +421,7 @@ export function buildOutboundDynamicVariables(
 ): Record<string, string> {
   return {
     ...buildReceptionistDynamicVariables(ctx),
-    greeting: buildOutboundGreeting(ctx, opts.leadName),
+    greeting: buildOutboundGreeting(ctx, opts.leadName, opts.purpose),
     system_prompt: buildOutboundSystemPrompt(ctx, opts),
     lead_name: opts.leadName || "",
     call_purpose: opts.purpose,
