@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { UnsavedNote } from "@/lib/forms/unsaved";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Toggle } from "@/components/ui/Toggle";
 
@@ -144,11 +145,14 @@ export function SaveButton({
   onClick,
   disabled,
   error,
+  dirty,
 }: {
   state: SaveState;
   onClick: () => void;
   disabled?: boolean;
   error?: string | null;
+  /** Edits not yet saved: the button says so beside itself, and leaving the page asks first. */
+  dirty?: boolean;
 }) {
   const { t } = useTranslation("dashboard");
   const label =
@@ -174,6 +178,7 @@ export function SaveButton({
           {error}
         </p>
       ) : null}
+      {dirty && state !== "saving" ? <UnsavedNote dirty /> : null}
     </div>
   );
 }

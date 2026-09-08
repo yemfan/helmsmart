@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useUnsavedChanges } from "@/lib/forms/unsaved";
 import { Plus } from "lucide-react";
 import { Toggle } from "@/components/ui/Toggle";
 import {
@@ -37,14 +38,20 @@ import {
 
 /** Editor sections, part two: Tools, Areas, Content, Social, Lead Capture, Trust, SEO, Appearance, Settings. */
 
-function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSaved"]) {
+function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSaved"], draft: HubConfig[K]) {
   const [state, setState] = useState<SaveState>("idle");
   const [error, setError] = useState<string | null>(null);
+  // What the server last accepted, as the draft looked when it was sent, so a
+  // normalised echo from the server never reads as an edit.
+  const savedRef = useRef(JSON.stringify(draft));
+  const dirty = JSON.stringify(draft) !== savedRef.current;
+  useUnsavedChanges(dirty);
   async function save(value: HubConfig[K]) {
     setState("saving");
     setError(null);
     const r = await saveSection(key, value);
     if (r.ok) {
+      savedRef.current = JSON.stringify(value);
       onSaved(r.data);
       setState("saved");
     } else {
@@ -52,7 +59,7 @@ function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSav
       setState("error");
     }
   }
-  return { state, error, save };
+  return { state, error, save, dirty };
 }
 
 // ── Tools ────────────────────────────────────────────────────────────────
@@ -60,7 +67,7 @@ function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSav
 export function ToolsSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.tools);
-  const { state, error, save } = useSave("tools", onSaved);
+  const { state, error, save, dirty } = useSave("tools", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.tools.${s}`);
   const selected = d.keys;
   const unselected = HUB_TOOLS.filter((tool) => !selected.includes(tool.key));
@@ -87,7 +94,7 @@ export function ToolsSection({ data, onSaved }: SectionProps) {
           </li>
         ))}
       </ul>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -97,7 +104,8 @@ export function ToolsSection({ data, onSaved }: SectionProps) {
 export function AreasSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.areas);
-  const { state, error, save } = useSave("areas", onSaved);
+  const draft = { ...d, items: d.items.filter((a) => a.name.trim()) };
+  const { state, error, save, dirty } = useSave("areas", onSaved, draft);
   const k = (s: string) => t(`pages.hubEditor.areas.${s}`);
   const items = d.items;
   return (
@@ -138,7 +146,7 @@ export function AreasSection({ data, onSaved }: SectionProps) {
           </AddButton>
         ) : null}
       </div>
-      <SaveButton state={state} error={error} onClick={() => void save({ ...d, items: items.filter((a) => a.name.trim()) })} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
     </Card>
   );
 }
@@ -148,7 +156,8 @@ export function AreasSection({ data, onSaved }: SectionProps) {
 export function ContentSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.content);
-  const { state, error, save } = useSave("content", onSaved);
+  const draft = { ...d, featured: d.featured.filter((f) => f.ref.trim()) };
+  const { state, error, save, dirty } = useSave("content", onSaved, draft);
   const k = (s: string) => t(`pages.hubEditor.content.${s}`);
   const kinds = (["post", "tool", "link"] as const).map((kind) => ({ value: kind, label: t(`pages.hubEditor.content.kinds.${kind}`) }));
   const posts = data.posts.map((p) => ({ value: p.slug, label: p.title }));
@@ -159,7 +168,7 @@ export function ContentSection({ data, onSaved }: SectionProps) {
     <>
       <Card title={k("title")} description={k("desc")}>
         <SwitchRow checked={d.showFeed} onChange={(v) => setD({ ...d, showFeed: v })} label={k("showFeed")} />
-        <SaveButton state={state} error={error} onClick={() => void save(d)} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
       </Card>
       <Card title={k("featuredTitle")} description={k("featuredDesc")}>
         {items.length === 0 ? <Empty>{k("empty")}</Empty> : null}
@@ -207,7 +216,7 @@ export function ContentSection({ data, onSaved }: SectionProps) {
           <Plus className="h-4 w-4" aria-hidden />
           {k("add")}
         </AddButton>
-        <SaveButton state={state} error={error} onClick={() => void save({ ...d, featured: items.filter((f) => f.ref.trim()) })} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
       </Card>
     </>
   );
@@ -228,7 +237,7 @@ const NETWORK_LABEL: Record<string, string> = {
 export function SocialSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.social);
-  const { state, error, save } = useSave("social", onSaved);
+  const { state, error, save, dirty } = useSave("social", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.social.${s}`);
   return (
     <Card title={k("title")} description={k("desc")}>
@@ -240,7 +249,7 @@ export function SocialSection({ data, onSaved }: SectionProps) {
           </Field>
         ))}
       </div>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -250,7 +259,7 @@ export function SocialSection({ data, onSaved }: SectionProps) {
 export function LeadCaptureSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.leadCapture);
-  const { state, error, save } = useSave("leadCapture", onSaved);
+  const { state, error, save, dirty } = useSave("leadCapture", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.leadCapture.${s}`);
   const modes = BOOKING_MODES.map((m) => ({
     value: m,
@@ -278,7 +287,7 @@ export function LeadCaptureSection({ data, onSaved }: SectionProps) {
           <SwitchRow checked={d.createTask} onChange={(v) => setD({ ...d, createTask: v })} label={k("createTask")} />
           <SwitchRow checked={d.enrollFollowUp} onChange={(v) => setD({ ...d, enrollFollowUp: v })} label={k("enrollFollowUp")} />
         </div>
-        <SaveButton state={state} error={error} onClick={() => void save(d)} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
       </Card>
       <FinalCtaCard data={data} onSaved={onSaved} />
     </>
@@ -288,7 +297,7 @@ export function LeadCaptureSection({ data, onSaved }: SectionProps) {
 function FinalCtaCard({ data, onSaved }: Pick<SectionProps, "data" | "onSaved">) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.finalCta);
-  const { state, error, save } = useSave("finalCta", onSaved);
+  const { state, error, save, dirty } = useSave("finalCta", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.finalCta.${s}`);
   return (
     <Card title={k("title")} description={k("desc")}>
@@ -300,7 +309,7 @@ function FinalCtaCard({ data, onSaved }: Pick<SectionProps, "data" | "onSaved">)
         <TextArea value={d.body ?? ""} onChange={(v) => setD({ ...d, body: v || null })} rows={2} maxLength={300} />
       </Field>
       <CtaListEditor ctas={d.ctas} onChange={(ctas) => setD({ ...d, ctas })} />
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -311,7 +320,8 @@ export function TrustSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.trust);
   const [points, setPoints] = useState(d.points.join("\n"));
-  const { state, error, save } = useSave("trust", onSaved);
+  const draft = { ...d, points: lines(points, 8).map((s) => s.slice(0, 160)) };
+  const { state, error, save, dirty } = useSave("trust", onSaved, draft);
   const k = (s: string) => t(`pages.hubEditor.trust.${s}`);
   return (
     <>
@@ -324,7 +334,7 @@ export function TrustSection({ data, onSaved }: SectionProps) {
           <TextArea value={points} onChange={setPoints} rows={4} />
         </Field>
         <SwitchRow checked={d.showTestimonials} onChange={(v) => setD({ ...d, showTestimonials: v })} label={k("showTestimonials")} />
-        <SaveButton state={state} error={error} onClick={() => void save({ ...d, points: lines(points, 8).map((s) => s.slice(0, 160)) })} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
       </Card>
       <TestimonialsCard />
     </>
@@ -444,7 +454,7 @@ function TestimonialsCard() {
 export function SeoSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.seo);
-  const { state, error, save } = useSave("seo", onSaved);
+  const { state, error, save, dirty } = useSave("seo", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.seo.${s}`);
   const name = data.agent.name || data.identity.brandName || (data.identity.username ? `@${data.identity.username}` : "");
   const previewTitle = d.title?.trim() || [name, data.config.profile.location].filter(Boolean).join(" · ");
@@ -470,7 +480,7 @@ export function SeoSection({ data, onSaved }: SectionProps) {
         <p className="text-xs text-emerald-700">closebossai.com/@{data.identity.username ?? "…"}</p>
         <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{previewDesc}</p>
       </div>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -489,8 +499,8 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.appearance);
   const [footer, setFooter] = useState(data.config.footer);
-  const { state, error, save } = useSave("appearance", onSaved);
-  const footerSave = useSave("footer", onSaved);
+  const { state, error, save, dirty } = useSave("appearance", onSaved, d);
+  const footerSave = useSave("footer", onSaved, footer);
   const k = (s: string) => t(`pages.hubEditor.appearance.${s}`);
   return (
     <>
@@ -538,11 +548,11 @@ export function AppearanceSection({ data, onSaved }: SectionProps) {
           </div>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{k("layoutHint")}</p>
         </fieldset>
-        <SaveButton state={state} error={error} onClick={() => void save(d)} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
       </Card>
       <Card title={k("disclosure")} description={k("disclosureHint")}>
         <TextArea value={footer.disclosure ?? ""} onChange={(v) => setFooter({ disclosure: v || null })} rows={4} maxLength={600} />
-        <SaveButton state={footerSave.state} error={footerSave.error} onClick={() => void footerSave.save(footer)} />
+        <SaveButton state={footerSave.state} error={footerSave.error} dirty={footerSave.dirty} onClick={() => void footerSave.save(footer)} />
       </Card>
     </>
   );
@@ -564,6 +574,9 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
   const [state, setState] = useState<SaveState>("idle");
   const [err, setErr] = useState<string | null>(null);
   const [tState, setTState] = useState<SaveState>("idle");
+  const identityDirty = username.trim() !== (data.identity.username ?? "");
+  const trackingDirty = tracking != null && (ga.trim() !== (tracking.gaMeasurementId ?? "") || pixel.trim() !== (tracking.metaPixelId ?? ""));
+  useUnsavedChanges(identityDirty || trackingDirty);
   const params = useSearchParams();
   const googleFlow = params.get("google");
   const tagFilled = params.get("tag") === "filled";
@@ -657,7 +670,7 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
             <input value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-[#0072ce] focus:ring-2 focus:ring-[#0072ce]/20" autoComplete="off" spellCheck={false} />
           </div>
         </Field>
-        <SaveButton state={state} error={err} onClick={() => void saveIdentity({ username: username.trim() })} />
+        <SaveButton state={state} error={err} dirty={identityDirty} onClick={() => void saveIdentity({ username: username.trim() })} />
       </Card>
       <Card title={k("trackingTitle")}>
         {googleFlow === "connected" ? (
@@ -738,7 +751,7 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
           )}
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">{k("privacyNote")}</p>
-        <SaveButton state={tState} onClick={() => void saveTracking()} />
+        <SaveButton state={tState} dirty={trackingDirty} onClick={() => void saveTracking()} />
       </Card>
       <Card title={k("dangerTitle")} description={k("dangerDesc")}>
         <Link href="/dashboard/settings" className="inline-flex text-sm font-medium text-[#0072ce] hover:underline">

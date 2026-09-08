@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
+import { useLeaveGuard } from "@/lib/forms/unsaved";
 import type { HubConfig } from "@/lib/marketing-hub/config";
 import { SECTION_KEYS, type EditorData, type SectionKey } from "./editor/types";
 import { OverviewSection, AnalyticsSection } from "./editor/Overview";
@@ -48,6 +49,7 @@ export default function HubEditorClient() {
 
   const [data, setData] = useState<EditorData | null>(null);
   const [loadError, setLoadError] = useState(false);
+  const confirmLeave = useLeaveGuard();
 
   const load = useCallback(async () => {
     try {
@@ -66,9 +68,11 @@ export default function HubEditorClient() {
 
   const goTo = useCallback(
     (s: SectionKey) => {
+      // A section with unsaved edits asks before the switch drops them.
+      if (!confirmLeave()) return;
       router.replace(s === "overview" ? "/dashboard/hub" : `/dashboard/hub?section=${s}`, { scroll: false });
     },
-    [router],
+    [router, confirmLeave],
   );
 
   const nav = useMemo(
