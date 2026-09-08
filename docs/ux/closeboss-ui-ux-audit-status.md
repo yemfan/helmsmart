@@ -61,18 +61,23 @@ audit, the PR that shipped it, and what is still open. Last updated 2026-09-07. 
 ## Performance pass (2026-09-08)
 
 Measured signed in as the test agent by `lighthouse-dashboard.yml`
-(desktop preset, run 34240554600 before, 34243625586 after the first three
-changes). Ask Max was the worst page on the product and the one every agent
-lands on.
+(desktop preset). "Before" is run 34240554600, one sample per route;
+"after" is run 34248052867 with everything below live — median of three
+runs per route, measured as real Chrome (see the last two rows). Ask Max was
+the worst page on the product and the one every agent lands on.
 
 | Route | Perf before → after | LCP before → after | CLS before → after |
 |---|---|---|---|
-| Ask Max (`/dashboard`) | 38 → **79** | 7.9 s → **1.9 s** | 0.70 → **0.02** |
-| Contacts | 64 → 73 | 3.3 s → 2.4 s | 0.00 → 0.00 |
-| Conversations | 77 → 80 | 1.9 s → 1.7 s | 0.00 → 0.02 |
-| Tasks | 61 → 75 | 3.6 s → 2.0 s | 0.00 → 0.09 |
-| Calendar | 76 → 83 | 2.2 s → 1.7 s | 0.00 → 0.03 |
-| Settings | 82 → 79 | 1.9 s → 2.0 s | 0.00 → 0.00 |
+| Ask Max (`/dashboard`) | 38 → **82** | 7.9 s → **1.75 s** | 0.70 → **0.02** |
+| Contacts | 64 → 71 | 3.3 s → 2.6 s | 0.00 → 0.00 |
+| Conversations | 77 → 81 | 1.9 s → 1.7 s | 0.00 → 0.02 |
+| Tasks | 61 → 81 | 3.6 s → 1.7 s | 0.00 → 0.06 |
+| Calendar | 76 → 77 | 2.2 s → 2.1 s | 0.00 → 0.03 |
+| Settings | 82 → 85 | 1.9 s → 1.7 s | 0.00 → 0.00 |
+
+Server side, from a signed-in session on production: a warm dashboard
+page's first byte went from ~0.9–1.0 s to 0.4–0.65 s, `/api/me` from 1.3 s
+to 0.2 s, and the document from 830 KB to ~100 KB.
 
 What was wrong, and the fix for each:
 
@@ -88,13 +93,16 @@ What was wrong, and the fix for each:
 | `getUserFromRequest` gated ~55 route handlers with a network call to Supabase Auth; `/api/me` then ran three reads in series (1.3 s) | #1661 |
 | The dashboard layout did five serial reads, including a Stripe `subscriptions.list`, before the first byte (warm TTFB 0.9 s vs 0.2 s for an API route) | #1662 |
 | Persona portraits and the logo mark served at full size; now `next/image` | #1654 |
+| The proxy ran on every `/dashboard/*` request from an edge region across the country from the database and made four network calls in series (`getUser`, then three queries) — the whole gap between a page's first byte and an API route's | #1666 |
+| Lighthouse job: warm-up visit per route, then the median of three runs, measured as real Chrome (Lighthouse's own UA is on Next's `htmlLimitedBots` list and was served the non-streaming path) | #1668, #1669 |
 
 Still structural, not fixed: the client JS arrives in six to eight dependency
-rounds (~25 chunks, ~5 s to interactive on the throttled profile), which is
-the bundler's chunk graph rather than app code. Also worth knowing when reading
-the numbers: Lighthouse's user agent is on Next's default `htmlLimitedBots`
-list, so it is served the non-streaming path — real Chrome receives the shell
-at first byte. The dispatch gate is still off; the scheduled run gates at
+rounds (~25 chunks), which is the bundler's chunk graph rather than app code;
+and the server's response time still varies run to run (0.6–2.6 s for the
+same page on the same commit — another instance, a slow query), which is why
+the job takes a median. Contacts is the one route still over 2.5 s LCP: its
+page reads 500 contacts plus per-contact showing and offer stats before the
+first byte. The dispatch gate is still off; the scheduled run gates at
 perf ≥ 0.85 / LCP ≤ 2.5 s / CLS ≤ 0.1 / TBT ≤ 200 ms and will fail until the
 remaining routes clear 0.85.
 
