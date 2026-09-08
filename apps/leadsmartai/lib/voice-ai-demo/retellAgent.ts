@@ -119,9 +119,14 @@ export function envVarFor(problem: ConfigProblem): string {
 /**
  * Variables handed to the agent for this call.
  *
- * `is_demo` lets the prompt acknowledge why it is calling. Without it the
- * receptionist would open as though the prospect had rung a listing, which is
- * the kind of small wrongness that makes a demo feel fake.
+ * `is_demo` is NOT what tells her this is a demo, despite its name. The Retell
+ * agent's prompt is just "{{system_prompt}}", so a variable nothing interpolates
+ * is a variable the model never sees — this one has been sent and ignored since
+ * it was added. What actually carries the reason is the outbound bundle's
+ * `purpose: "demo"`, which goes into the system prompt and the greeting.
+ *
+ * It is kept only because it costs nothing and a Retell-side prompt could
+ * reference it later. Do not add a second one on the assumption it works.
  */
 export function demoDynamicVariables(args: {
   language: DemoLanguage;
