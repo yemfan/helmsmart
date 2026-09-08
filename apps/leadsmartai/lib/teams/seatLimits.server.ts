@@ -53,7 +53,7 @@ export async function getSeatUsageForTeam(teamId: string): Promise<TeamSeatStatu
   // Owner of the team (via teams.owner_agent_id).
   const { data: team, error: teamErr } = await supabaseAdmin
     .from("teams")
-    .select("owner_agent_id")
+    .select("owner_agent_id, seat_cap_override")
     .eq("id", teamId)
     .maybeSingle();
   if (teamErr || !team) {
@@ -61,6 +61,9 @@ export async function getSeatUsageForTeam(teamId: string): Promise<TeamSeatStatu
   }
 
   const ownerAgentId = (team as { owner_agent_id: string }).owner_agent_id;
+  // A brokerage contract may allow more seats than the plan lists; an admin
+  // sets teams.seat_cap_override and it replaces the plan's cap.
+  const capOverride = (team as { seat_cap_override?: number | null }).seat_cap_override ?? null;
 
   // Owner's auth_user_id, then the active entitlement keyed by user_id.
   const { data: agent } = await supabaseAdmin
@@ -82,7 +85,7 @@ export async function getSeatUsageForTeam(teamId: string): Promise<TeamSeatStatu
 
   const plan = ent?.plan ?? null;
   const teamAccess = Boolean(ent?.team_access) && plan != null && PLAN_CATALOG[plan].teamAccess;
-  const planCap = plan != null ? PLAN_CATALOG[plan].teamSeatCap : 0;
+  const planCap = capOverride != null && capOverride > 0 ? capOverride : plan != null ? PLAN_CATALOG[plan].teamSeatCap : 0;
 
   // Count members + active invites in parallel.
   const nowIso = new Date().toISOString();

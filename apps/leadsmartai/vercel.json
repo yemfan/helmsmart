@@ -18,6 +18,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/team-invite-mailer",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/materialize-recurring-posts",
       "schedule": "*/15 * * * *"
     },

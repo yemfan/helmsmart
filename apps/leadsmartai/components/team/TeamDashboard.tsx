@@ -13,6 +13,9 @@ import {
 import type { TeamAccessStatus } from "@/lib/teams/access.server";
 import { TeamBreakdownPanel } from "./TeamBreakdownPanel";
 import type { TeamInvite, TeamMembership, TeamRoster } from "@/lib/teams/types";
+import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
+import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
+import { TeamPerformancePanel } from "./TeamPerformancePanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -33,12 +36,15 @@ export function TeamDashboard({
   roster,
   access,
   seatUsage,
+  board,
 }: {
   currentAgentId: string;
   isOwner: boolean;
   roster: TeamRoster | null;
   access: TeamAccessStatus;
   seatUsage: SeatUsageProps | null;
+  /** Owner only: where every agent is in onboarding. */
+  board?: OnboardingBoard | null;
 }) {
   const { t } = useTranslation("dashboard");
   if (!roster) {
@@ -74,7 +80,13 @@ export function TeamDashboard({
         members={roster.members}
       />
 
+      <TeamPerformancePanel teamId={roster.team.id} />
+
+      {isOwner && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
+
       <TeamBreakdownPanel teamId={roster.team.id} />
+
+      {isOwner ? <RosterImportCard teamId={roster.team.id} /> : null}
 
       {isOwner ? (
         <InviteCard teamId={roster.team.id} pendingInvites={roster.pendingInvites} />

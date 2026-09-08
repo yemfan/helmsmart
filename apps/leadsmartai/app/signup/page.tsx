@@ -528,7 +528,7 @@ function SignupForm() {
             </>
           ) : (
             <>{t("pages.signupPage.alreadyHaveAccount")}{" "}
-              <a className="text-blue-700 font-semibold" href="/login">{t("pages.signupPage.logIn")}</a>
+              <a className="text-blue-700 font-semibold" href={searchParams?.get("redirect") ? `/login?next=${encodeURIComponent(searchParams.get("redirect") ?? "")}` : "/login"}>{t("pages.signupPage.logIn")}</a>
             </>
           )}
         </p>
