@@ -429,7 +429,7 @@ export default function LeadDetailScreen() {
 
   useLayoutEffect(() => {
     if (!lead) return;
-    const title = leadField(lead, "name") || t("unnamed");
+    const title = leadField(lead, "name") || (leadField(lead, "source") === "ai_receptionist" ? t("unknown_caller") : t("unnamed"));
     navigation.setOptions({ title });
   }, [lead, navigation, t]);
 
@@ -526,7 +526,7 @@ export default function LeadDetailScreen() {
     );
   }
 
-  const name = leadField(lead, "name") || t("unnamed");
+  const name = leadField(lead, "name") || (leadField(lead, "source") === "ai_receptionist" ? t("unknown_caller") : t("unnamed"));
   const subtitle = buildLeadSubtitle(lead, pipeline, t);
   const lastActivity = leadField(lead, "last_activity_at");
   const mergedThread = mergeConversation(sms, email, calls);

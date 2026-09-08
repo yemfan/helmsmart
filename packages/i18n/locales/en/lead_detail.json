@@ -57,5 +57,6 @@
     "inbound": "Inbound",
     "outbound": "Outbound",
     "empty_body": "—"
-  }
+  },
+  "unknown_caller": "Unknown caller"
 }

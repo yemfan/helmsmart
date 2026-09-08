@@ -1,4 +1,5 @@
 import "server-only";
+import { callWorthAContact } from "./callWorthAContact";
 import { callerSpokenScript } from "@/lib/voice-agent/callerScript";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -225,6 +226,8 @@ export async function captureLeadFromInboundCall(args: {
   summary: string;
   transcript?: string;
   providerCallId: string; // Retell call_id
+  /** Call length, for the hang-up filter. Unknown counts as long enough. */
+  durationSeconds?: number | null;
 }): Promise<{ contactId: string | null; taskId: string | null; created: boolean }> {
   const summary = (args.summary || "").trim();
   if (!summary) return { contactId: null, taskId: null, created: false };
@@ -263,6 +266,21 @@ export async function captureLeadFromInboundCall(args: {
     }
   } catch {
     // fall through to insert
+  }
+
+  if (
+    !contactId &&
+    !callWorthAContact({
+      name: ex.name,
+      partyType: ex.partyType,
+      timeline: ex.timeline,
+      durationSeconds: args.durationSeconds ?? null,
+      summary,
+    })
+  ) {
+    // A hang-up or a robocall stays in the call log and nowhere else. Creating
+    // a contact here is what filled the Leads tab with unnamed "new" rows.
+    return { contactId: null, taskId: null, created: false };
   }
 
   if (!contactId) {

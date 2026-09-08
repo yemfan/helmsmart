@@ -116,7 +116,8 @@
     "select_all_a11y": "选择所有筛选后的联系人",
     "more_actions": "更多操作",
     "text_label": "发短信",
-    "email_label": "发邮件"
+    "email_label": "发邮件",
+    "unknown_caller": "未知来电"
   },
   "empty": {
     "no_match": "未找到匹配的联系人。",

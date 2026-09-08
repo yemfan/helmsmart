@@ -61,7 +61,7 @@ function LeadRowInner({
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = useTranslation("leads");
-  const name = leadField(lead, "name") || t("unnamed");
+  const name = leadField(lead, "name") || (leadField(lead, "source") === "ai_receptionist" ? t("unknown_caller") : t("unnamed"));
   const phone = lead.display_phone || leadField(lead, "phone") || leadField(lead, "phone_number");
   const address = leadField(lead, "property_address");
   const rating = leadField(lead, "rating");
