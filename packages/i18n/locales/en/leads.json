@@ -53,5 +53,6 @@
     "duplicate_warning": "A similar contact already exists. Save anyway?",
     "force_create": "Save anyway",
     "validation_failed": "Please fix the errors below."
-  }
+  },
+  "unknown_caller": "Unknown caller"
 }

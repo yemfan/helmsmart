@@ -274,7 +274,14 @@ export async function POST(req: NextRequest) {
                 kind: "answered",
               });
             } else {
-              await captureLeadFromInboundCall({ agentId, fromPhone, summary, transcript, providerCallId });
+              await captureLeadFromInboundCall({
+                agentId,
+                fromPhone,
+                summary,
+                transcript,
+                providerCallId,
+                durationSeconds: durationSeconds(call),
+              });
             }
             // CloseBoss activity feed — the Receptionist answered and
             // summarized this inbound call. Logged here (call_analyzed)

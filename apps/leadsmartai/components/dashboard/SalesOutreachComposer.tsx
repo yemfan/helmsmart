@@ -286,6 +286,39 @@ export default function SalesOutreachComposer({
       scheduledIso = when.toISOString();
     }
 
+  /**
+   * "Send now" actions go out through the voice / SMS / email routes and,
+   * until now, left nothing on this page: the "Scheduled & recent actions"
+   * strip only ever saw scheduled ones. Record the outcome so a placed call
+   * shows up beside the scheduled ones. Best-effort: the send already
+   * happened, a logging miss must not turn it into an error.
+   */
+  const recordSendNow = (payload: {
+    contactIds: string[];
+    ok: boolean;
+    error?: string;
+    sent?: number;
+    failed?: number;
+    total?: number;
+  }) => {
+    if (payload.contactIds.length === 0) return;
+    void fetch("/api/dashboard/outreach/record", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        channel,
+        purpose,
+        subject: subject.trim() || undefined,
+        body: message.trim() || undefined,
+        ...payload,
+      }),
+    })
+      .catch(() => undefined)
+      .finally(() => onComplete?.());
+  };
+
+    // Which contacts a "Send now" targeted, so the catch can record a failure.
+    let sendNowIds: string[] = [];
     setStatus("working");
     setFeedback(null);
     try {
@@ -337,8 +370,10 @@ export default function SalesOutreachComposer({
             }),
           });
           const data = (await res.json()) as { ok?: boolean; error?: string; to?: string };
+          sendNowIds = [picked.id];
           if (!res.ok || !data.ok) throw new Error(data.error || t("outreach.errors.callFailed"));
           setFeedback(`Calling ${data.to}… your assistant will dial now and follow up.`);
+          recordSendNow({ contactIds: sendNowIds, ok: true });
         } else {
           const contactIds = await gatherSegmentIds();
           if (contactIds.length === 0) throw new Error(t("outreach.errors.noneInSegment"));
@@ -348,8 +383,10 @@ export default function SalesOutreachComposer({
             body: JSON.stringify({ contactIds, purpose, detail: message.trim() || undefined }),
           });
           const data = (await res.json()) as { ok?: boolean; error?: string; placed?: number; failed?: number; total?: number };
+          sendNowIds = contactIds;
           if (!res.ok || !data.ok) throw new Error(data.error || t("outreach.errors.bulkCallFailed"));
           setFeedback(describeResult("call", data));
+          recordSendNow({ contactIds, ok: true, sent: data.placed, failed: data.failed, total: data.total });
         }
       } else if (channel === "sms") {
         if (targetMode === "contact" && picked) {
@@ -359,8 +396,10 @@ export default function SalesOutreachComposer({
             body: JSON.stringify({ leadId: picked.id, to: picked.phone, body: message.trim() }),
           });
           const data = (await res.json()) as { success?: boolean; error?: string };
+          sendNowIds = [picked.id];
           if (!res.ok || !data.success) throw new Error(data.error || t("outreach.errors.textFailed"));
           setFeedback(`Text sent to ${picked.phone}.`);
+          recordSendNow({ contactIds: sendNowIds, ok: true });
         } else {
           const contactIds = await gatherSegmentIds();
           if (contactIds.length === 0) throw new Error(t("outreach.errors.noneInSegment"));
@@ -370,8 +409,10 @@ export default function SalesOutreachComposer({
             body: JSON.stringify({ contactIds, body: message.trim() }),
           });
           const data = (await res.json()) as { ok?: boolean; error?: string; sent?: number; failed?: number; total?: number };
+          sendNowIds = contactIds;
           if (!res.ok || !data.ok) throw new Error(data.error || t("outreach.errors.bulkSmsFailed"));
           setFeedback(describeResult("sms", data));
+          recordSendNow({ contactIds, ok: true, sent: data.sent, failed: data.failed, total: data.total });
         }
       } else {
         // Email
@@ -382,8 +423,10 @@ export default function SalesOutreachComposer({
             body: JSON.stringify({ leadId: picked.id, to: picked.email, subject: subject.trim(), body: message.trim() }),
           });
           const data = (await res.json()) as { success?: boolean; error?: string };
+          sendNowIds = [picked.id];
           if (!res.ok || !data.success) throw new Error(data.error || t("outreach.errors.emailFailed"));
           setFeedback(`Email sent to ${picked.email}.`);
+          recordSendNow({ contactIds: sendNowIds, ok: true });
         } else {
           const contactIds = await gatherSegmentIds();
           if (contactIds.length === 0) throw new Error(t("outreach.errors.noneInSegment"));
@@ -393,8 +436,10 @@ export default function SalesOutreachComposer({
             body: JSON.stringify({ contactIds, subject: subject.trim(), body: message.trim() }),
           });
           const data = (await res.json()) as { ok?: boolean; error?: string; sent?: number; failed?: number; total?: number };
+          sendNowIds = contactIds;
           if (!res.ok || !data.ok) throw new Error(data.error || t("outreach.errors.bulkEmailFailed"));
           setFeedback(describeResult("email", data));
+          recordSendNow({ contactIds, ok: true, sent: data.sent, failed: data.failed, total: data.total });
         }
       }
       setStatus("done");
@@ -404,7 +449,10 @@ export default function SalesOutreachComposer({
       onComplete?.();
     } catch (e) {
       setStatus("error");
-      setFeedback(e instanceof Error ? e.message : t("outreach.errors.generic"));
+      const msg = e instanceof Error ? e.message : t("outreach.errors.generic");
+      setFeedback(msg);
+      // A send-now that failed is exactly the thing the strip should show.
+      if (sendNowIds.length > 0) recordSendNow({ contactIds: sendNowIds, ok: false, error: msg });
     }
   }
 

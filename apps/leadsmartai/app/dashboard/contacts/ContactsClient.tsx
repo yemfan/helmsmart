@@ -821,7 +821,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                       onClick={() => setProfileLeadId(c.id)}
                       className="block min-h-6 max-w-full truncate py-0.5 text-left text-[15px] font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-700"
                     >
-                      {c.name ?? t("row.empty_value")}
+                      {c.name ?? (c.source === "ai_receptionist" ? t("row.unknown_caller") : t("row.empty_value"))}
                     </button>
                     <p className="mt-0.5 truncate text-xs text-slate-500">
                       {[c.phone, c.email].filter(Boolean).join(" · ") || t("row.empty_value")}
@@ -936,7 +936,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         className="block min-h-6 max-w-full truncate rounded py-0.5 text-left font-medium text-slate-900 dark:text-slate-100 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
                         title={t("row.open_profile_tooltip")}
                       >
-                        {c.name ?? t("row.empty_value")}
+                        {c.name ?? (c.source === "ai_receptionist" ? t("row.unknown_caller") : t("row.empty_value"))}
                       </button>
                       {c.email ? (
                         <a href={`mailto:${c.email}`} className="block truncate text-xs text-slate-500 hover:text-blue-600" title={t("row.email_tooltip", { email: c.email })}>

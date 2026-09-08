@@ -53,5 +53,6 @@
     "duplicate_warning": "已存在相似的联系人。仍要保存吗?",
     "force_create": "仍要保存",
     "validation_failed": "请修正下方的错误。"
-  }
+  },
+  "unknown_caller": "未知来电"
 }
