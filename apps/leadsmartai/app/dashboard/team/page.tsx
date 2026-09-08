@@ -5,6 +5,8 @@ import { getTeamAccessStatus } from "@/lib/teams/access.server";
 import { getSeatUsageForTeam } from "@/lib/teams/seatLimits.server";
 import { getRoster, listTeamsForAgent } from "@/lib/teams/service";
 import { getOnboardingBoard, type OnboardingBoard } from "@/lib/teams/onboarding.server";
+import { loadTeamBrand } from "@/lib/teams/brand.server";
+import type { TeamBrand } from "@/lib/teams/brand";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -38,18 +40,21 @@ export default async function TeamPage() {
   let isOwner = false;
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
+  let brand: TeamBrand | null = null;
 
   if (teams.length > 0) {
     const team = teams[0];
     isOwner = team.ownerAgentId === ctx.agentId;
-    const [r, seat, b] = await Promise.all([
+    const [r, seat, b, br] = await Promise.all([
       getRoster(team.id),
       getSeatUsageForTeam(team.id),
       isOwner ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
+      isOwner ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
     ]);
     roster = r;
     seatUsage = { used: seat.used, cap: seat.cap, full: seat.full };
     board = b;
+    brand = br;
   }
 
   return (
@@ -60,6 +65,7 @@ export default async function TeamPage() {
       access={access}
       seatUsage={seatUsage}
       board={board}
+      brand={brand}
     />
   );
 }

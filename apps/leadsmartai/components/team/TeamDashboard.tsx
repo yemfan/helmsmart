@@ -16,6 +16,8 @@ import type { TeamInvite, TeamMembership, TeamRoster } from "@/lib/teams/types";
 import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
 import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
 import { TeamPerformancePanel } from "./TeamPerformancePanel";
+import { BrokerageBrandCard } from "./BrokerageBrandCard";
+import type { TeamBrand } from "@/lib/teams/brand";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -37,6 +39,7 @@ export function TeamDashboard({
   access,
   seatUsage,
   board,
+  brand,
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -45,6 +48,8 @@ export function TeamDashboard({
   seatUsage: SeatUsageProps | null;
   /** Owner only: where every agent is in onboarding. */
   board?: OnboardingBoard | null;
+  /** Owner only: the brokerage brand shown on member hubs. */
+  brand?: TeamBrand | null;
 }) {
   const { t } = useTranslation("dashboard");
   if (!roster) {
@@ -85,6 +90,8 @@ export function TeamDashboard({
       {isOwner && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
 
       <TeamBreakdownPanel teamId={roster.team.id} />
+
+      {isOwner ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
 
       {isOwner ? <RosterImportCard teamId={roster.team.id} /> : null}
 

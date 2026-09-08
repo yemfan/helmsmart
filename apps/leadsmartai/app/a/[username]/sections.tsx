@@ -252,6 +252,12 @@ export function HubHeader({ hub, L, theme, fromHome, current }: SectionProps & {
             <Image src={hub.portraitUrl} alt="" width={36} height={36} className="h-9 w-9 rounded-full object-cover ring-1 ring-slate-200" unoptimized />
           ) : null}
           <span className="truncate text-base font-semibold text-slate-900">{name}</span>
+          {hub.brokerage?.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={hub.brokerage.logoUrl} alt={hub.brokerage.name ?? ""} className="hidden h-7 w-auto max-w-[8rem] object-contain sm:block" />
+          ) : hub.brokerage?.name ? (
+            <span className="hidden truncate text-sm text-slate-500 sm:block">{hub.brokerage.name}</span>
+          ) : null}
         </Link>
         <nav className="hidden items-center gap-6 lg:flex" aria-label={L.nav.menu}>
           {items
@@ -953,11 +959,25 @@ export function HubFooter({ hub, L, theme }: SectionProps) {
         <div className="grid gap-8 sm:grid-cols-2">
           <div>
             <p className="text-base font-semibold text-slate-900">{name}</p>
-            {hub.agent?.brokerage ? <p className="text-sm text-slate-600">{hub.agent.brokerage}</p> : null}
+            {hub.brokerage?.name ?? hub.agent?.brokerage ? <p className="text-sm text-slate-600">{hub.brokerage?.name ?? hub.agent?.brokerage}</p> : null}
             {hub.agent?.licenseNumber ? (
               <p className="text-sm text-slate-600">
                 {L.footer.license} {hub.agent.licenseNumber}
               </p>
+            ) : null}
+            {hub.brokerage?.license ? (
+              <p className="text-sm text-slate-600">
+                {L.footer.brokerageLicense} {hub.brokerage.license}
+              </p>
+            ) : null}
+            {hub.brokerage?.website ? (
+              <a href={hub.brokerage.website} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-600 hover:text-slate-900">
+                {hub.brokerage.website.replace(/^https?:\/\//, "")}
+              </a>
+            ) : null}
+            {hub.brokerage?.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={hub.brokerage.logoUrl} alt={hub.brokerage.name ?? ""} className="mt-3 h-9 w-auto max-w-[10rem] object-contain" />
             ) : null}
             <div className="mt-3 flex flex-col gap-1 text-sm">
               {phone ? (
@@ -981,6 +1001,9 @@ export function HubFooter({ hub, L, theme }: SectionProps) {
             <SocialLinks hub={hub} L={L} theme={theme} />
           </div>
         </div>
+        {hub.brokerage?.disclosure ? (
+          <p className="mt-6 max-w-3xl whitespace-pre-line text-xs leading-relaxed text-slate-500">{hub.brokerage.disclosure}</p>
+        ) : null}
         {hub.config.footer.disclosure ? (
           <p className="mt-6 max-w-3xl whitespace-pre-line text-xs leading-relaxed text-slate-500">{hub.config.footer.disclosure}</p>
         ) : null}
