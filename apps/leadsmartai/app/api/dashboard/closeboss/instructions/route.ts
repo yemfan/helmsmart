@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { processInstructionById } from "@/lib/closeboss/instructions";
 import { isBossV2Enabled, startBossRun, continueBossRun } from "@/lib/boss/runs/service";
 import { getServerLocale } from "@/lib/i18n/server";
+import { listRecentInstructions } from "@/lib/closeboss/conversation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,40 +29,11 @@ export async function GET(req: NextRequest) {
   try {
     const { agentId } = await getAgentContextFromRequest(req);
     const limitRaw = Number(req.nextUrl.searchParams.get("limit") ?? 5);
-    const limit = Math.min(Math.max(Number.isFinite(limitRaw) ? limitRaw : 5, 1), 20);
-    // Keyset pagination cursor: fetch the page of instructions created strictly
-    // before this ISO timestamp (the oldest one the client is already showing).
-    const before = req.nextUrl.searchParams.get("before");
-
-    let query = supabaseAdmin
-      .from("boss_instructions")
-      .select("id, content, status, error, clarification, processed_at, created_at")
-      .eq("agent_id", agentId)
-      .order("created_at", { ascending: false })
-      .limit(limit);
-    if (before && !Number.isNaN(Date.parse(before))) {
-      query = query.lt("created_at", before);
-    }
-    const { data: instructions, error } = await query;
-    if (error) throw new Error(error.message);
-
-    const ids = (instructions ?? []).map((i) => (i as { id: string }).id);
-    let tasks: unknown[] = [];
-    if (ids.length > 0) {
-      const { data: taskRows, error: taskErr } = await supabaseAdmin
-        .from("boss_instruction_tasks")
-        .select(
-          "id, instruction_id, title, details, assigned_to, status, draft_channel, draft_subject, draft_body, execution_note, action_type, follow_up_question, artifact_type, artifact_url, created_at",
-        )
-        .in("instruction_id", ids)
-        .order("created_at", { ascending: true });
-      if (taskErr) throw new Error(taskErr.message);
-      tasks = taskRows ?? [];
-    }
-
-    // A full page implies there may be another older page behind it.
-    const hasMore = (instructions?.length ?? 0) >= limit;
-    return NextResponse.json({ ok: true, instructions: instructions ?? [], tasks, hasMore });
+    const { instructions, tasks, hasMore } = await listRecentInstructions(agentId, {
+      limit: Number.isFinite(limitRaw) ? limitRaw : 5,
+      before: req.nextUrl.searchParams.get("before"),
+    });
+    return NextResponse.json({ ok: true, instructions, tasks, hasMore });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json(

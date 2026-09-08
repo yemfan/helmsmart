@@ -216,25 +216,51 @@ function deadlineAlerts(transactions: TransactionItem[], tr: (k: string, o?: Rec
 
 // ── main ─────────────────────────────────────────────────────────────
 
-export default function BossAssistantClient({ greetingName, goal = null }: { greetingName: string; goal?: GoalKey | null }) {
+/**
+ * The conversation as the page read it on the server (app/dashboard/boss/
+ * page.tsx) — the same rows the API routes return, so the thread is in the
+ * first HTML and the client only reconciles.
+ */
+export type BossInitialData = {
+  /** Newest first, as the API returns them. */
+  instructions: InstructionRow[];
+  tasks: TaskRow[];
+  hasMore: boolean;
+  runs: RunRow[];
+  briefing: BriefingRow | null;
+  recommendations: Recommendation[];
+};
+
+export default function BossAssistantClient({
+  greetingName,
+  goal = null,
+  initial = null,
+}: {
+  greetingName: string;
+  goal?: GoalKey | null;
+  initial?: BossInitialData | null;
+}) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [hotLeads, setHotLeads] = useState<HotLead[]>([]);
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>(() => initial?.recommendations ?? []);
   const [activities, setActivities] = useState<ActivityRow[]>([]);
-  const [briefing, setBriefing] = useState<BriefingRow | null>(null);
+  const [briefing, setBriefing] = useState<BriefingRow | null>(() => initial?.briefing ?? null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
-  const [instructions, setInstructions] = useState<InstructionRow[]>([]);
-  const [tasks, setTasks] = useState<TaskRow[]>([]);
-  const [runs, setRuns] = useState<RunRow[]>([]);
+  const [instructions, setInstructions] = useState<InstructionRow[]>(() => (initial?.instructions ?? []).slice().reverse());
+  const [tasks, setTasks] = useState<TaskRow[]>(() => initial?.tasks ?? []);
+  const [runs, setRuns] = useState<RunRow[]>(() => initial?.runs ?? []);
   // Older pages walked back via "Load earlier" (kept separate from the polled
   // recent window so a poll never clobbers history the user paged in).
   const [earlier, setEarlier] = useState<InstructionRow[]>([]);
   const [earlierTasks, setEarlierTasks] = useState<TaskRow[]>([]);
-  const [hasMoreEarlier, setHasMoreEarlier] = useState(false);
+  const [hasMoreEarlier, setHasMoreEarlier] = useState(() => {
+    if (!initial) return false;
+    return initial.hasMore || initial.instructions.length >= RECENT_LIMIT;
+  });
   const [loadingEarlier, setLoadingEarlier] = useState(false);
   const earlierCountRef = useRef(0);
   useEffect(() => { earlierCountRef.current = earlier.length; }, [earlier]);
@@ -250,7 +276,10 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
 
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [pendingDrafts, setPendingDrafts] = useState(0);
+  // `loading` covers the dashboard reads (team strip, counts, performance);
+  // the thread has its own flag because it usually arrives with the page.
   const [loading, setLoading] = useState(true);
+  const [threadReady, setThreadReady] = useState(initial !== null);
 
   // Stay pinned to the newest message, the way a chat does.
   //
@@ -314,7 +343,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
   // stops changing, then stop. Self-limiting on both a stable height and a hard
   // timeout, so it can never keep fighting the reader.
   useEffect(() => {
-    if (loading || landedRef.current) return;
+    if (!threadReady || landedRef.current) return;
     landedRef.current = true;
     const pane = document.getElementById("agent-portal-main");
     if (!pane) return;
@@ -341,7 +370,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
       clearInterval(tick);
       clearTimeout(stop);
     };
-  }, [loading]);
+  }, [threadReady]);
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
@@ -391,6 +420,9 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
   }, [earlier, instructions]);
 
   const loadData = useCallback(async () => {
+    // Alongside the dashboard batch, not after it: serialised, the thread was
+    // the last thing on the page to arrive.
+    const conversation = loadConversation().then(() => setThreadReady(true));
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
     const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
@@ -441,7 +473,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
       setOvernightMode(Boolean(apRes.overnightMode));
     }
 
-    await loadConversation();
+    await conversation;
     setLoading(false);
   }, [loadConversation]);
 
@@ -695,7 +727,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
             the same height as the section's minimum. The pieces used to land
             one fetch at a time — briefing, priorities, runs, thread — and each
             pushed everything below it (CLS 0.5–0.9 on this page alone). */}
-        {loading ? (
+        {!threadReady ? (
           <div className="h-[328px] animate-skeleton rounded-xl bg-slate-200/60 dark:bg-slate-800/60" aria-hidden />
         ) : (
         <>
@@ -809,7 +841,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
               {showSeparator && (
                 <div className="flex items-center gap-2 py-1" aria-hidden>
                   <span className="h-px flex-1 bg-slate-200" />
-                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300" suppressHydrationWarning>
                     {dayLabel(ins.created_at, tr, locale)}
                   </span>
                   <span className="h-px flex-1 bg-slate-200" />
