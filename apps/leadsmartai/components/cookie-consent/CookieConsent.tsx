@@ -35,22 +35,17 @@ import { useTranslation } from "react-i18next";
  * `consent.categories.analytics === true` before initializing.
  */
 
-const STORAGE_KEY = "ls_cookie_consent";
-const COOKIE_KEY = "ls_cookie_consent";
-const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365; // 1 year
-const CURRENT_VERSION = "1";
+import {
+  CONSENT_COOKIE_KEY as COOKIE_KEY,
+  CONSENT_COOKIE_MAX_AGE_SECONDS as COOKIE_MAX_AGE_SECONDS,
+  CONSENT_STORAGE_KEY as STORAGE_KEY,
+  CONSENT_VERSION as CURRENT_VERSION,
+  parseConsentValue,
+  type ConsentCategories,
+  type ConsentState,
+} from "./consentCookie";
 
-export type ConsentCategories = {
-  necessary: true;
-  analytics: boolean;
-  marketing: boolean;
-};
-
-export type ConsentState = {
-  version: string;
-  acceptedAt: string;
-  categories: ConsentCategories;
-};
+export type { ConsentCategories, ConsentState };
 
 const DEFAULT_DENIED: ConsentState = {
   version: CURRENT_VERSION,
@@ -74,28 +69,10 @@ const CookieConsentContext = createContext<ConsentContextValue | null>(null);
 function loadFromStorage(): ConsentState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as unknown;
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      "version" in parsed &&
-      "categories" in parsed
-    ) {
-      // Discard stored state if the version has rolled forward — forces
-      // re-consent when we materially change disclosure language.
-      const state = parsed as ConsentState;
-      if (state.version !== CURRENT_VERSION) return null;
-      return {
-        ...state,
-        categories: { ...state.categories, necessary: true },
-      };
-    }
+    return parseConsentValue(window.localStorage.getItem(STORAGE_KEY));
   } catch {
-    // ignore storage errors
+    return null; // storage unavailable
   }
-  return null;
 }
 
 /**
@@ -128,16 +105,34 @@ function persist(state: ConsentState) {
   }
 }
 
-export function CookieConsentProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<ConsentState | null>(null);
-  const [ready, setReady] = useState(false);
-  const [showBanner, setShowBanner] = useState(false);
+export function CookieConsentProvider({
+  children,
+  initialState = null,
+}: {
+  children: React.ReactNode;
+  /**
+   * Consent as the server read it from the cookie (parseConsentCookie in the
+   * root layout). With it the first render is already decided and the banner
+   * is in the first HTML; painted only after hydration it was the largest
+   * text on every dashboard page and set LCP at the 5–8 s mark.
+   */
+  initialState?: ConsentState | null;
+}) {
+  const [state, setState] = useState<ConsentState | null>(initialState);
+  const [ready, setReady] = useState(true);
+  const [showBanner, setShowBanner] = useState(initialState === null);
 
+  // Reconcile with localStorage: a decision saved before the cookie existed,
+  // or a cookie that expired first. Re-write the cookie so the server agrees.
   useEffect(() => {
     const loaded = loadFromStorage();
-    setState(loaded);
+    if (loaded && !initialState) {
+      setState(loaded);
+      setShowBanner(false);
+      persist(loaded);
+    }
     setReady(true);
-    if (!loaded) setShowBanner(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const commit = useCallback((next: ConsentState) => {
