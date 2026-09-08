@@ -1,4 +1,5 @@
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { cache } from "react";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getUserFromRequest } from "@/lib/authFromRequest";
 import { getAgentScopeForAgent } from "@/lib/teams/scope.server";
@@ -39,7 +40,13 @@ type AgentRow = {
   plan_type: "free" | "pro" | "elite" | string;
 };
 
-export async function getCurrentAgentContext(authUser?: {
+/**
+ * Wrapped in React `cache` so the dashboard layout and the page it renders
+ * share ONE session check and ONE agent lookup per request — every dashboard
+ * route called this twice (58 pages), each time round-tripping to Supabase
+ * Auth. Outside a server render (route handlers) `cache` is a plain call.
+ */
+export const getCurrentAgentContext = cache(async function getCurrentAgentContext(authUser?: {
   id: string;
   email?: string | null;
 }): Promise<{
@@ -58,12 +65,21 @@ export async function getCurrentAgentContext(authUser?: {
   // another's data. See lib/authFromRequest.ts.
   let user: { id: string; email?: string | null } | null = authUser ?? null;
   if (!user) {
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
-    if (userErr) {
-      const m = typeof userErr.message === "string" ? userErr.message.trim() : "";
-      throw new Error(m || "Unable to verify your session");
+    // getClaims verifies the token signature locally when the project runs
+    // asymmetric JWTs, and falls back to the network check when it cannot —
+    // the same choice proxy.ts made for the same reason (#1071).
+    const { data: claimsData } = await supabase.auth.getClaims().catch(() => ({ data: null }));
+    const claims = claimsData?.claims as { sub?: string; email?: string } | undefined;
+    if (claims?.sub) {
+      user = { id: String(claims.sub), email: typeof claims.email === "string" ? claims.email : null };
+    } else {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr) {
+        const m = typeof userErr.message === "string" ? userErr.message.trim() : "";
+        throw new Error(m || "Unable to verify your session");
+      }
+      user = userData.user;
     }
-    user = userData.user;
   }
   if (!user) throw new Error("Not authenticated");
 
@@ -105,7 +121,7 @@ export async function getCurrentAgentContext(authUser?: {
     planType: ((agent as any)?.plan_type ?? "free") as AgentRow["plan_type"],
     email: user.email ?? null,
   };
-}
+});
 
 /**
  * Dual-auth agent context: resolve the user from the request (Bearer-aware via
