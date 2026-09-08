@@ -64,6 +64,11 @@ const results = [];
 let failing = 0;
 for (const route of ROUTES) {
   const url = `${HOST}${route}`;
+  // Warm the route first. The job often runs minutes after a deploy, when
+  // every function is cold, and a single cold hit then stands in for the
+  // route's score: the same commit measured 79 and 68 on Ask Max in two runs
+  // twenty minutes apart (2026-09-08). Steady state is what agents see.
+  await page.goto(url, { waitUntil: "networkidle" }).catch(() => {});
   process.stdout.write(`Lighthouse ${url} ... `);
   const run = await lighthouse(url, {
     port: PORT,
