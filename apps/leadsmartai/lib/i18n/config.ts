@@ -63,40 +63,13 @@ import zhWebAgentCoaching from "@leadsmart/i18n/locale/zh-Hans/web_agent_coachin
 import zhWebHomeValueEstimator from "@leadsmart/i18n/locale/zh-Hans/web_home_value_estimator";
 import zhWebFreeTools from "@leadsmart/i18n/locale/zh-Hans/web_free_tools";
 
-export const I18N_COOKIE_NAME = "leadsmart_locale";
-
-/** How long the locale cookie sticks around — one year, refreshed on each change. */
-export const I18N_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
-
-export const namespaces = [
-  "common",
-  "settings",
-  "dashboard_nav",
-  "dashboard",
-  "web_posts",
-  "web_generate_leads",
-  "web_contacts",
-  "web_marketing",
-  "web_contacts_client",
-  "web_generate_leads_clients",
-  "web_landing",
-  "web_about",
-  "web_contact",
-  "web_features",
-  "web_for_brokerages",
-  "web_help",
-  "web_integrations",
-  "web_pricing",
-  "web_plans",
-  "web_quick_post",
-  "web_agent",
-  "web_agent_pricing",
-  "web_agent_compare",
-  "web_agent_coaching",
-  "web_home_value_estimator",
-  "web_free_tools",
-] as const;
-export type WebNamespace = (typeof namespaces)[number];
+export {
+  I18N_COOKIE_NAME,
+  I18N_COOKIE_MAX_AGE_SECONDS,
+  namespaces,
+  type WebNamespace,
+} from "./constants";
+import { namespaces, type WebNamespace } from "./constants";
 
 export const resources: Record<
   SupportedLocale,
@@ -162,3 +135,8 @@ export const resources: Record<
 
 export { DEFAULT_LOCALE, SUPPORTED_LOCALES };
 export type { SupportedLocale };
+
+/** One locale's bundles — what the server hands the client for first paint. */
+export function resourcesForLocale(locale: SupportedLocale): Record<WebNamespace, Record<string, unknown>> {
+  return resources[locale] ?? resources[DEFAULT_LOCALE];
+}

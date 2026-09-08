@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
 // CloseBoss brand palette — navy team + gold "Boss" core (see the brand mark:
@@ -21,12 +22,14 @@ type Tone = "light" | "dark";
  */
 export function CloseBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    // 512 px source drawn at 32 px on every page — let next/image serve a
+    // 40 px WebP instead of the 115 KB PNG.
+    <Image
       src="/brand/closeboss/closeboss-mark-512.png"
       alt="CloseBoss"
       width={40}
       height={40}
+      priority
       className={cn("h-8 w-8", className)}
     />
   );

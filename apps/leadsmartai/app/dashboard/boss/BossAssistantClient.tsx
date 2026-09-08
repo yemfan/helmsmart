@@ -671,7 +671,10 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
       </div>
 
       {/* ── AI team status ribbon — who's working right now ── */}
-      {!loading && <TeamStatusStrip team={teamLive} names={teamNames} avatars={teamAvatars} />}
+      {/* Reserve the ribbon's height while it loads: it used to pop in and
+          push the whole page down — the biggest single layout shift on the
+          dashboard (0.45 of a 0.74 CLS). */}
+      {loading ? <div className="h-9" aria-hidden /> : <TeamStatusStrip team={teamLive} names={teamNames} avatars={teamAvatars} />}
 
       {/* ── Context strip (clickable → inline detail) ── */}
       <ContextStrip
@@ -687,7 +690,7 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
       />
 
       {/* ── Conversation thread ── */}
-      <section className="space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3 sm:p-4">
+      <section className="min-h-[360px] space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3 sm:p-4">
         {/* Briefing opener */}
         <BossBubble bossName={bossName} avatar={bossAvatar}>
           <p className="text-sm text-slate-800 dark:text-slate-200">
