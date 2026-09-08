@@ -691,6 +691,14 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
 
       {/* ── Conversation thread ── */}
       <section className="min-h-[360px] space-y-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/60 p-3 sm:p-4">
+        {/* Until the conversation has loaded, hold its place with one block
+            the same height as the section's minimum. The pieces used to land
+            one fetch at a time — briefing, priorities, runs, thread — and each
+            pushed everything below it (CLS 0.5–0.9 on this page alone). */}
+        {loading ? (
+          <div className="h-[328px] animate-skeleton rounded-xl bg-slate-200/60 dark:bg-slate-800/60" aria-hidden />
+        ) : (
+        <>
         {/* Briefing opener */}
         <BossBubble bossName={bossName} avatar={bossAvatar}>
           <p className="text-sm text-slate-800 dark:text-slate-200">
@@ -820,12 +828,13 @@ export default function BossAssistantClient({ greetingName, goal = null }: { gre
           );
         })}
 
-        {recommendations.length === 0 && allInstructions.length === 0 && !loading && (
+        {recommendations.length === 0 && allInstructions.length === 0 && (
           <BossBubble bossName={bossName} avatar={bossAvatar}>
             <p className="text-sm text-slate-600 dark:text-slate-400">{tr("pages.boss.nothingUrgent")}</p>
           </BossBubble>
         )}
-
+        </>
+        )}
       </section>
 
       <PerformanceSection />
