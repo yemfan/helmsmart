@@ -17,7 +17,7 @@ import { MarkdownLite } from "@/components/ui/MarkdownLite";
  * activities) can refresh too.
  */
 
-type RunStep = {
+export type RunStep = {
   step_index: number;
   tool_name: string;
   risk_class: string;
@@ -55,7 +55,7 @@ function fmtDuration(start?: string | null, end?: string | null): string | null 
   return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
-type RunDetail = {
+export type RunDetail = {
   id: string;
   status: string;
   objective: string;
@@ -109,13 +109,20 @@ function didRealWork(steps: RunStep[]): boolean {
 export default function RunCard({
   runId,
   onChanged,
+  initial,
 }: {
   runId: string;
   onChanged?: () => void | Promise<void>;
+  /**
+   * The run and its steps as the page read them on the server. With these
+   * the card renders complete in the first HTML; without them it shows one
+   * line until its own fetch lands, and the bubble grows when it does.
+   */
+  initial?: { run: RunDetail; steps: RunStep[] } | null;
 }) {
   const { t } = useTranslation("dashboard");
-  const [run, setRun] = useState<RunDetail | null>(null);
-  const [steps, setSteps] = useState<RunStep[]>([]);
+  const [run, setRun] = useState<RunDetail | null>(() => initial?.run ?? null);
+  const [steps, setSteps] = useState<RunStep[]>(() => initial?.steps ?? []);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/dashboard/closeboss/runs/${runId}`)
@@ -127,8 +134,12 @@ export default function RunCard({
     }
   }, [runId]);
 
+  // A finished run does not change; only fetch on mount when the page did
+  // not already supply it, or when it is still live and needs following.
   useEffect(() => {
+    if (initial && !LIVE.has(initial.run.status)) return;
     void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load]);
 
   const live = run ? LIVE.has(run.status) : true;

@@ -16,7 +16,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type Chang
 import { AI_TEAM } from "@/lib/closeboss/team";
 import { LeadProfileDrawer } from "@/components/closeboss/LeadProfileDrawer";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
-import RunCard from "@/components/closeboss/RunCard";
+import RunCard, { type RunDetail, type RunStep } from "@/components/closeboss/RunCard";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 import { LoadingText } from "@/components/ui/LoadingText";
 
@@ -227,9 +227,23 @@ export type BossInitialData = {
   tasks: TaskRow[];
   hasMore: boolean;
   runs: RunRow[];
+  /** Step timelines keyed by run id, for the runs above. */
+  runSteps: Record<string, RunStep[]>;
   briefing: BriefingRow | null;
   recommendations: Recommendation[];
 };
+
+/** What a RunCard can start from, when the page read the run and its steps. */
+function initialRunDetail(
+  run: RunRow,
+  runSteps: Record<string, RunStep[]> | null,
+): { run: RunDetail; steps: RunStep[] } | null {
+  if (!runSteps) return null;
+  const steps = runSteps[run.id];
+  if (!steps) return null;
+  // The page selects every column RunDetail reads (lib/closeboss/conversation.ts).
+  return { run: run as unknown as RunDetail, steps };
+}
 
 export default function BossAssistantClient({
   greetingName,
@@ -253,6 +267,9 @@ export default function BossAssistantClient({
   const [instructions, setInstructions] = useState<InstructionRow[]>(() => (initial?.instructions ?? []).slice().reverse());
   const [tasks, setTasks] = useState<TaskRow[]>(() => initial?.tasks ?? []);
   const [runs, setRuns] = useState<RunRow[]>(() => initial?.runs ?? []);
+  // Only the first render's runs carry steps; cards for runs that arrive
+  // later fetch their own, as before.
+  const initialRunSteps = initial?.runSteps ?? null;
   // Older pages walked back via "Load earlier" (kept separate from the polled
   // recent window so a poll never clobbers history the user paged in).
   const [earlier, setEarlier] = useState<InstructionRow[]>([]);
@@ -813,7 +830,7 @@ export default function BossAssistantClient({
               <p className="mb-1.5 text-xs text-slate-500">
                 {r.trigger === "overnight" ? tr("boss.runs.overnight") : tr("boss.runs.earlier")}: {r.objective.slice(0, 120)}
               </p>
-              <RunCard runId={r.id} onChanged={loadConversation} />
+              <RunCard runId={r.id} onChanged={loadConversation} initial={initialRunDetail(r, initialRunSteps)} />
             </BossBubble>
           ))}
 
@@ -851,6 +868,7 @@ export default function BossAssistantClient({
                 instruction={ins}
                 tasks={allTasks.filter((t) => t.instruction_id === ins.id)}
                 run={runs.find((r) => r.instruction_id === ins.id) ?? null}
+                runSteps={initialRunSteps}
                 bossName={bossName}
                 avatar={bossAvatar}
                 teamNames={teamNames}
@@ -1139,11 +1157,12 @@ function ProposalCard({
 }
 
 function InstructionExchange({
-  instruction, tasks, run, bossName, avatar, teamNames, onChanged,
+  instruction, tasks, run, runSteps = null, bossName, avatar, teamNames, onChanged,
 }: {
   instruction: InstructionRow;
   tasks: TaskRow[];
   run: RunRow | null;
+  runSteps?: Record<string, RunStep[]> | null;
   bossName: string;
   avatar: { id: string; url: string | null } | null;
   teamNames: Record<string, string>;
@@ -1162,7 +1181,7 @@ function InstructionExchange({
         /* Boss v2: the live run replaces parse-and-route — plan, step
            timeline, approvals, and the final report all in one card. */
         <BossBubble bossName={bossName} avatar={avatar}>
-          <RunCard runId={run.id} onChanged={onChanged} />
+          <RunCard runId={run.id} onChanged={onChanged} initial={initialRunDetail(run, runSteps)} />
         </BossBubble>
       ) : processing ? (
         <BossBubble bossName={bossName} avatar={avatar}>

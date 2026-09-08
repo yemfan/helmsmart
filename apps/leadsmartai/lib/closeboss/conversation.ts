@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getBossTool } from "@/lib/boss/tools/registry";
 
 /**
  * The Ask Max conversation as the page and the API both read it.
@@ -49,8 +50,28 @@ export type ConversationRun = {
   error: string | null;
   tool_calls: number;
   max_tool_calls: number;
+  input_tokens: number;
+  output_tokens: number;
+  token_budget: number;
   started_at: string;
   finished_at: string | null;
+};
+
+/** One step of a run's timeline, as `/api/dashboard/closeboss/runs/[id]` returns it. */
+export type ConversationRunStep = {
+  run_id: string;
+  step_index: number;
+  tool_name: string;
+  risk_class: string;
+  input_json: Record<string, unknown> | null;
+  output_json: Record<string, unknown> | null;
+  status: string;
+  approval_state: string;
+  error: string | null;
+  created_at: string | null;
+  finished_at: string | null;
+  /** The teammate who ran it — the tool's assignee, or the runtime owner it reported. */
+  assignee: string | null;
 };
 
 export type MorningBriefing = {
@@ -67,7 +88,9 @@ const INSTRUCTION_COLUMNS = "id, content, status, error, clarification, processe
 const TASK_COLUMNS =
   "id, instruction_id, title, details, assigned_to, status, draft_channel, draft_subject, draft_body, execution_note, action_type, follow_up_question, artifact_type, artifact_url, created_at";
 const RUN_COLUMNS =
-  "id, trigger, instruction_id, status, objective, plan_json, report, error, tool_calls, max_tool_calls, started_at, finished_at";
+  "id, trigger, instruction_id, status, objective, plan_json, report, error, tool_calls, max_tool_calls, input_tokens, output_tokens, token_budget, started_at, finished_at";
+const STEP_COLUMNS =
+  "run_id, step_index, tool_name, risk_class, input_json, output_json, status, approval_state, error, created_at, finished_at";
 
 /**
  * Newest instructions (newest first) with their routed tasks. `before` is a
@@ -135,4 +158,33 @@ export async function unreadMorningBriefing(agentId: string): Promise<MorningBri
   }
   const row = data as unknown as MorningBriefing | null;
   return row && !row.read_at ? row : null;
+}
+
+/**
+ * The step timelines of many runs in one query, keyed by run id.
+ *
+ * Each RunCard on the page fetched its own `/runs/[id]` after mount — five
+ * or six requests of 0.6–1.5 s each on production — and rendered one line
+ * ("Starting run…") until then, so every bubble grew when its steps landed.
+ * With the steps in the first HTML the cards render complete.
+ */
+export async function listRunSteps(runIds: string[]): Promise<Record<string, ConversationRunStep[]>> {
+  const byRun: Record<string, ConversationRunStep[]> = {};
+  if (runIds.length === 0) return byRun;
+  const { data, error } = await supabaseAdmin
+    .from("boss_run_steps")
+    .select(STEP_COLUMNS)
+    .in("run_id", runIds)
+    .order("step_index", { ascending: true });
+  if (error) throw new Error(error.message);
+  for (const raw of (data ?? []) as unknown as Omit<ConversationRunStep, "assignee">[]) {
+    const runtimeOwner = (raw.output_json as { data?: { owner?: unknown } } | null)?.data?.owner;
+    const step: ConversationRunStep = {
+      ...raw,
+      assignee:
+        (typeof runtimeOwner === "string" && runtimeOwner) || getBossTool(raw.tool_name)?.assignee || null,
+    };
+    (byRun[raw.run_id] ??= []).push(step);
+  }
+  return byRun;
 }
