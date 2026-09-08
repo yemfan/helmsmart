@@ -10,6 +10,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/useConfirm";
+import { UnsavedChangesProvider } from "@/lib/forms/unsaved";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { KeyboardShortcuts } from "@/components/ui/KeyboardShortcuts";
@@ -147,6 +148,7 @@ export default async function DashboardLayout({
     <AgentWorkspaceProviders>
       <ToastProvider>
        <ConfirmProvider>
+       <UnsavedChangesProvider>
         <DashboardShell
           email={ctx?.email}
           appRole={appRole}
@@ -160,6 +162,7 @@ export default async function DashboardLayout({
           <CommandPalette />
           <KeyboardShortcuts />
         </DashboardShell>
+       </UnsavedChangesProvider>
        </ConfirmProvider>
       </ToastProvider>
     </AgentWorkspaceProviders>

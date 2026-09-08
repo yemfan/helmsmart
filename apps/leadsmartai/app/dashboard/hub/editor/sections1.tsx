@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useUnsavedChanges } from "@/lib/forms/unsaved";
 import { Plus } from "lucide-react";
 import {
   HUB_ACTION_KINDS,
@@ -39,14 +40,20 @@ import {
  * reports the outcome on the button.
  */
 
-function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSaved"]) {
+function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSaved"], draft: HubConfig[K]) {
   const [state, setState] = useState<SaveState>("idle");
   const [error, setError] = useState<string | null>(null);
+  // What the server last accepted, as the draft looked when it was sent, so a
+  // normalised echo from the server never reads as an edit.
+  const savedRef = useRef(JSON.stringify(draft));
+  const dirty = JSON.stringify(draft) !== savedRef.current;
+  useUnsavedChanges(dirty);
   async function save(value: HubConfig[K]) {
     setState("saving");
     setError(null);
     const r = await saveSection(key, value);
     if (r.ok) {
+      savedRef.current = JSON.stringify(value);
       onSaved(r.data);
       setState("saved");
     } else {
@@ -54,7 +61,7 @@ function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSav
       setState("error");
     }
   }
-  return { state, error, save };
+  return { state, error, save, dirty };
 }
 
 // ── Profile ──────────────────────────────────────────────────────────────
@@ -64,8 +71,10 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
   const [d, setD] = useState(data.config.profile);
   const [bio, setBio] = useState(data.identity.bio ?? "");
   const [specialties, setSpecialties] = useState(data.identity.specialties.join(", "));
-  const { state, error, save } = useSave("profile", onSaved);
+  const { state, error, save, dirty } = useSave("profile", onSaved, d);
   const [bioState, setBioState] = useState<SaveState>("idle");
+  const bioDirty = bio !== (data.identity.bio ?? "") || specialties !== data.identity.specialties.join(", ");
+  useUnsavedChanges(bioDirty);
   const notSet = t("pages.hubEditor.profile.notSet");
   const k = (s: string) => t(`pages.hubEditor.profile.${s}`);
 
@@ -129,7 +138,7 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
         <Field label={k("specialties")} hint={k("specialtiesHint")}>
           <TextInput value={specialties} onChange={setSpecialties} />
         </Field>
-        <SaveButton state={bioState} onClick={() => void saveBio()} />
+        <SaveButton state={bioState} dirty={bioDirty} onClick={() => void saveBio()} />
       </Card>
 
       <Card title={k("title")} description={k("desc")}>
@@ -159,7 +168,7 @@ export function ProfileSection({ data, onSaved }: SectionProps) {
         </Field>
         <SwitchRow checked={d.showPhone} onChange={(v) => setD({ ...d, showPhone: v })} label={k("showPhone")} />
         <SwitchRow checked={d.showEmail} onChange={(v) => setD({ ...d, showEmail: v })} label={k("showEmail")} />
-        <SaveButton state={state} error={error} onClick={() => void save(d)} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
       </Card>
     </>
   );
@@ -215,7 +224,7 @@ export function CtaListEditor({
 export function HeroSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.hero);
-  const { state, error, save } = useSave("hero", onSaved);
+  const { state, error, save, dirty } = useSave("hero", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.hero.${s}`);
   return (
     <Card title={k("title")} description={k("desc")}>
@@ -229,7 +238,7 @@ export function HeroSection({ data, onSaved }: SectionProps) {
         <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">{k("ctas")}</p>
         <CtaListEditor ctas={d.ctas} onChange={(ctas) => setD({ ...d, ctas })} />
       </div>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -239,7 +248,7 @@ export function HeroSection({ data, onSaved }: SectionProps) {
 export function ServicesSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.services);
-  const { state, error, save } = useSave("services", onSaved);
+  const { state, error, save, dirty } = useSave("services", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.services.${s}`);
   const presets = SERVICE_PRESETS.map((p) => ({ value: p, label: t(`pages.hubEditor.services.presets.${p}`) }));
   const icons = SERVICE_ICONS.map((i) => ({ value: i, label: t(`pages.hubEditor.services.icons.${i}`) }));
@@ -303,7 +312,7 @@ export function ServicesSection({ data, onSaved }: SectionProps) {
         <Plus className="h-4 w-4" aria-hidden />
         {k("add")}
       </AddButton>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }
@@ -314,7 +323,8 @@ export function AssistantSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.assistant);
   const [prompts, setPrompts] = useState(d.suggestedPrompts.join("\n"));
-  const { state, error, save } = useSave("assistant", onSaved);
+  const draft = { ...d, suggestedPrompts: lines(prompts, 8).map((s) => s.slice(0, 80)) };
+  const { state, error, save, dirty } = useSave("assistant", onSaved, draft);
   const k = (s: string) => t(`pages.hubEditor.assistant.${s}`);
   const tones = ASSISTANT_TONES.map((tone) => ({ value: tone, label: t(`pages.hubEditor.assistant.tones.${tone}`) }));
   return (
@@ -335,7 +345,7 @@ export function AssistantSection({ data, onSaved }: SectionProps) {
       <SwitchRow checked={d.captureLeads} onChange={(v) => setD({ ...d, captureLeads: v })} label={k("captureLeads")} hint={k("captureLeadsHint")} />
       <SwitchRow checked={d.offerPhone} onChange={(v) => setD({ ...d, offerPhone: v })} label={k("offerPhone")} />
       <SwitchRow checked={d.offerBooking} onChange={(v) => setD({ ...d, offerBooking: v })} label={k("offerBooking")} />
-      <SaveButton state={state} error={error} onClick={() => void save({ ...d, suggestedPrompts: lines(prompts, 8).map((s) => s.slice(0, 80)) })} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
     </Card>
   );
 }
@@ -345,7 +355,7 @@ export function AssistantSection({ data, onSaved }: SectionProps) {
 export function WorkforceSection({ data, onSaved }: SectionProps) {
   const { t } = useTranslation("dashboard");
   const [d, setD] = useState(data.config.workforce);
-  const { state, error, save } = useSave("workforce", onSaved);
+  const { state, error, save, dirty } = useSave("workforce", onSaved, d);
   const k = (s: string) => t(`pages.hubEditor.workforce.${s}`);
   const rows = data.workforce;
   const memberOf = (type: (typeof PUBLIC_WORKFORCE_TYPES)[number]) => d.members.find((m) => m.type === type);
@@ -387,7 +397,7 @@ export function WorkforceSection({ data, onSaved }: SectionProps) {
       <Link href="/dashboard/ai-team" className="inline-flex text-sm font-medium text-[#0072ce] hover:underline">
         {k("manageTeam")}
       </Link>
-      <SaveButton state={state} error={error} onClick={() => void save(d)} />
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }

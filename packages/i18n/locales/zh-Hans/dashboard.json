@@ -10880,5 +10880,9 @@
       "callQueued": "已为 {{name}} 排定 AI 通话，时间 {{when}} — {{objective}}",
       "callProposed": "建议致电 {{name}}：{{objective}}"
     }
+  },
+  "unsaved": {
+    "leave": "您有未保存的更改。不保存就离开吗？",
+    "note": "有未保存的更改"
   }
 }

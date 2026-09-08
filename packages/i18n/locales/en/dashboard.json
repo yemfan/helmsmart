@@ -10880,5 +10880,9 @@
       "callQueued": "AI call queued to {{name}} for {{when}} — {{objective}}",
       "callProposed": "Proposed AI call to {{name}}: {{objective}}"
     }
+  },
+  "unsaved": {
+    "leave": "You have unsaved changes. Leave without saving?",
+    "note": "Unsaved changes"
   }
 }
