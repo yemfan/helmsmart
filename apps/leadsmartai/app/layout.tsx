@@ -9,7 +9,6 @@ import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ReferralCodeCapture } from "@/components/referrals/ReferralCodeCapture";
 import { AttributionCapture } from "@/components/attribution/AttributionCapture";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
-import { resourcesForLocale } from "@/lib/i18n/config";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { cookies } from "next/headers";
 import { THEME_COOKIE, THEME_INIT_SCRIPT, htmlClassForTheme, isThemePreference } from "@/lib/theme/theme";
@@ -264,7 +263,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         >
           {t("skip_to_content", { ns: "common" })}
         </a>
-        <I18nProvider locale={locale} resources={resourcesForLocale(locale)}>
+        <I18nProvider locale={locale}>
           <AuthProvider>
             <CookieConsentProvider initialState={consentInitial}>
               <GoogleAnalytics />
