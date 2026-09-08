@@ -104,7 +104,7 @@ What was wrong, and the fix for each:
 | The proxy ran on every `/dashboard/*` request from an edge region across the country from the database and made four network calls in series (`getUser`, then three queries) — the whole gap between a page's first byte and an API route's | #1666 |
 | Lighthouse job: warm-up visit per route, then the median of three runs, measured as real Chrome (Lighthouse's own UA is on Next's `htmlLimitedBots` list and was served the non-streaming path) | #1668, #1669 |
 | Contacts made six database reads in series before its first byte — smart lists, contacts, their signals, showings, that showing's feedback, offers. The badges depend only on the agent and the signals reach it through a foreign key, so it is three | #1675 |
-| Nightly gate set from the measured baseline (0.75) instead of an 0.85 nothing met — a gate that fails every weekday teaches everyone to ignore it. 0.85 stays the target | #1676 |
+| Nightly gate set from the measured baseline (0.75) instead of an 0.85 nothing met — a gate that fails every weekday teaches everyone to ignore it. 0.85 stays the target | #1678 |
 
 ### What is left, and one trade-off worth knowing
 
