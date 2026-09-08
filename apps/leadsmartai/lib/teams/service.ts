@@ -237,6 +237,17 @@ export async function removeMember(args: {
   if (error) throw new Error(error.message);
 }
 
+/** Owner-only, enforced by the caller: a member becomes a manager, or a manager a member. */
+export async function setMemberRole(args: { teamId: string; agentId: string; role: "manager" | "member" }): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("team_memberships")
+    .update({ role: args.role })
+    .eq("team_id", args.teamId)
+    .eq("agent_id", args.agentId)
+    .neq("role", "owner");
+  if (error) throw new Error(error.message);
+}
+
 export async function revokeInvite(inviteId: string): Promise<void> {
   const { error } = await supabaseAdmin
     .from("team_invites")

@@ -9,6 +9,7 @@ import {
   inviteMember,
   removeMember,
   revokeInvite,
+  setRole,
 } from "@/app/dashboard/team/actions";
 import type { TeamAccessStatus } from "@/lib/teams/access.server";
 import { TeamBreakdownPanel } from "./TeamBreakdownPanel";
@@ -35,6 +36,7 @@ type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 export function TeamDashboard({
   currentAgentId,
   isOwner,
+  canManage = isOwner,
   roster,
   access,
   seatUsage,
@@ -43,6 +45,8 @@ export function TeamDashboard({
 }: {
   currentAgentId: string;
   isOwner: boolean;
+  /** Owner or manager: may run onboarding (invite, import, board, brand). */
+  canManage?: boolean;
   roster: TeamRoster | null;
   access: TeamAccessStatus;
   seatUsage: SeatUsageProps | null;
@@ -71,12 +75,14 @@ export function TeamDashboard({
         </div>
         {isOwner ? (
           <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("pages.team.owner")}</span>
+        ) : canManage ? (
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("pages.team.manager")}</span>
         ) : (
           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">{t("pages.team.member")}</span>
         )}
       </header>
 
-      {isOwner && seatUsage ? <SeatUsageBanner usage={seatUsage} /> : null}
+      {canManage && seatUsage ? <SeatUsageBanner usage={seatUsage} /> : null}
 
       <RosterCard
         teamId={roster.team.id}
@@ -87,15 +93,15 @@ export function TeamDashboard({
 
       <TeamPerformancePanel teamId={roster.team.id} />
 
-      {isOwner && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
+      {canManage && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
 
       <TeamBreakdownPanel teamId={roster.team.id} />
 
-      {isOwner ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
+      {canManage ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
 
-      {isOwner ? <RosterImportCard teamId={roster.team.id} /> : null}
+      {canManage ? <RosterImportCard teamId={roster.team.id} /> : null}
 
-      {isOwner ? (
+      {canManage ? (
         <InviteCard teamId={roster.team.id} pendingInvites={roster.pendingInvites} />
       ) : null}
     </div>
@@ -166,7 +172,7 @@ function UpgradeRequiredCard({
         <p className="mt-2 max-w-xl text-sm text-slate-600">
           {isPlanIssue ? (
             <>
-              {t("pages.team.requiresBefore")} <strong>Elite</strong>{t("pages.team.requiresAfter")}
+              {t("pages.team.requiresBefore")} <strong>{t("pages.team.requiresPlan")}</strong> {t("pages.team.requiresAfter")}
             </>
           ) : (
             t("pages.teamDashboard.weCouldnTFind")
@@ -256,11 +262,12 @@ function RosterCard({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-900">{t("pages.dashFragments.agentWord")} {shortenId(m.agentId)}
                 {m.agentId === currentAgentId ? (
-                  <span className="ml-2 text-xs text-slate-500">(you)</span>
+                  <span className="ml-2 text-xs text-slate-500">{t("pages.team.you")}</span>
                 ) : null}
               </p>
-              <p className="text-xs text-slate-500 capitalize">{m.role}</p>
+              <p className="text-xs text-slate-500">{t(`pages.team.${m.role === "owner" ? "owner" : m.role === "manager" ? "manager" : "member"}`)}</p>
             </div>
+            {isOwner && m.role !== "owner" ? <RoleButton teamId={teamId} agentId={m.agentId} role={m.role} /> : null}
             {isOwner && m.role !== "owner" ? (
               <RemoveMemberButton teamId={teamId} agentId={m.agentId} />
             ) : null}
@@ -268,6 +275,28 @@ function RosterCard({
         ))}
       </ul>
     </section>
+  );
+}
+
+function RoleButton({ teamId, agentId, role }: { teamId: string; agentId: string; role: string }) {
+  const { t } = useTranslation("dashboard");
+  const [pending, startTransition] = useTransition();
+  const next = role === "manager" ? "member" : "manager";
+  return (
+    <form
+      action={(fd) => {
+        startTransition(async () => {
+          await setRole(fd);
+        });
+      }}
+    >
+      <input type="hidden" name="teamId" value={teamId} />
+      <input type="hidden" name="agentId" value={agentId} />
+      <input type="hidden" name="role" value={next} />
+      <button type="submit" disabled={pending} className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-60">
+        {next === "manager" ? t("pages.team.makeManager") : t("pages.team.makeMember")}
+      </button>
+    </form>
   );
 }
 

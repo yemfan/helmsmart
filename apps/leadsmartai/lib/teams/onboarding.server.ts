@@ -3,6 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeInviteExpiresAt, DEFAULT_INVITE_TTL_DAYS, generateInviteToken } from "./inviteToken";
 import type { RosterRow } from "./roster";
+import type { TeamRole } from "./types";
 import { getSeatUsageForTeam } from "./seatLimits.server";
 
 /**
@@ -112,7 +113,7 @@ export type BoardMember = {
   agentId: string;
   name: string | null;
   email: string | null;
-  role: "owner" | "member";
+  role: TeamRole;
   joinedAt: string;
   onboardingCompleted: boolean;
   hubPublished: boolean;
@@ -183,7 +184,7 @@ export async function getOnboardingBoard(teamId: string): Promise<OnboardingBoar
       agentId: id,
       name: p?.full_name ?? null,
       email: p?.email ?? null,
-      role: m.role === "owner" ? "owner" : "member",
+      role: m.role === "manager" ? "manager" : m.role === "owner" ? "owner" : "member",
       joinedAt: m.created_at,
       onboardingCompleted: Boolean(a?.onboarding_completed),
       hubPublished: Boolean(a?.hub_published),

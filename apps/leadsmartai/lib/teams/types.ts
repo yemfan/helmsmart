@@ -2,7 +2,7 @@
  * Shared types for the team-accounts layer.
  */
 
-export type TeamRole = "owner" | "member";
+export type TeamRole = "owner" | "manager" | "member";
 
 export type Team = {
   id: string;
