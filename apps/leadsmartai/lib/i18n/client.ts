@@ -5,14 +5,17 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { initReactI18next } from "react-i18next";
 
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type SupportedLocale } from "@leadsmart/i18n";
-
 import {
+  DEFAULT_LOCALE,
   I18N_COOKIE_MAX_AGE_SECONDS,
   I18N_COOKIE_NAME,
+  SUPPORTED_LOCALES,
   namespaces,
-  resources,
-} from "./config";
+  type SupportedLocale,
+} from "./constants";
+
+/** Bundles for ONE locale, keyed by namespace — see `resourcesForLocale`. */
+export type LocaleResources = Record<string, Record<string, unknown>>;
 
 let initialized = false;
 
@@ -24,10 +27,10 @@ let initialized = false;
  * Safe to call multiple times — subsequent calls just sync the
  * language if it changed.
  */
-export function initClientI18n(initialLocale: SupportedLocale): typeof i18n {
+export function initClientI18n(initialLocale: SupportedLocale, localeResources: LocaleResources): typeof i18n {
   if (!initialized) {
     void i18n.use(initReactI18next).init({
-      resources: resources as unknown as Resource,
+      resources: { [initialLocale]: localeResources } as unknown as Resource,
       lng: initialLocale,
       fallbackLng: DEFAULT_LOCALE,
       supportedLngs: [...SUPPORTED_LOCALES],
@@ -37,8 +40,14 @@ export function initClientI18n(initialLocale: SupportedLocale): typeof i18n {
       react: { useSuspense: false },
     });
     initialized = true;
-  } else if (i18n.language !== initialLocale) {
-    void i18n.changeLanguage(initialLocale);
+  } else {
+    // A refresh after a language switch brings the new locale's bundles
+    // with it; add what is missing, then switch. Order matters — switching
+    // first would render raw keys until the bundles land.
+    for (const [ns, bundle] of Object.entries(localeResources)) {
+      if (!i18n.hasResourceBundle(initialLocale, ns)) i18n.addResourceBundle(initialLocale, ns, bundle, true, true);
+    }
+    if (i18n.language !== initialLocale) void i18n.changeLanguage(initialLocale);
   }
   return i18n;
 }
@@ -81,7 +90,9 @@ export function setLocaleCookie(locale: SupportedLocale): void {
   ]
     .filter(Boolean)
     .join("; ");
-  void i18n.changeLanguage(locale);
+  // Not `changeLanguage` here: the other locale's bundles are no longer in
+  // the browser. `useSetLocale` refreshes, the server renders in the new
+  // locale and hands its bundles to I18nProvider, which switches then.
   persistLocale(locale);
 }
 

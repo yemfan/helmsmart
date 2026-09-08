@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { PICKABLE_AVATARS, avatarUrl, isValidAvatarId, defaultAvatarForSeed } from "@/lib/closeboss/avatars";
 import { useTranslation } from "react-i18next";
 
@@ -33,6 +34,30 @@ export function AssistantAvatar({
   const fallbackId = isValidAvatarId(id) ? id : defaultAvatarForSeed(id);
   const src = !broken && url ? url : avatarUrl(fallbackId);
   return (
+    // Persona art ships as ~400 KB PNGs and is drawn at 26–44 px; next/image
+    // resizes and re-encodes it (WebP) on the way out. Remote avatars
+    // (signed storage links) are not on the optimizer's allow-list and keep
+    // the plain tag.
+    src.startsWith("/") ? (
+      <Image
+        src={src}
+        onError={() => {
+          if (!broken) setBroken(true);
+        }}
+        alt={alt}
+        width={size}
+        height={size}
+        loading={eager ? "eager" : "lazy"}
+        className={className}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "50%",
+          display: "block",
+          objectFit: "cover",
+        }}
+      />
+    ) : (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
@@ -54,6 +79,7 @@ export function AssistantAvatar({
         flexShrink: 0,
       }}
     />
+    )
   );
 }
 
