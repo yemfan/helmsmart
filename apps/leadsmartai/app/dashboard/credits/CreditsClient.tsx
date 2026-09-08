@@ -128,8 +128,14 @@ export default function CreditsClient({
   // page, so scroll it into view (the buy/subscribe buttons are far below it).
   function showError(message: string) {
     setError(message);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
+  // The dashboard scrolls inside <main>, not the window, so window.scrollTo
+  // moved nothing and a failed checkout looked like "nothing happened". Bring
+  // the banner itself into view once it exists.
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [error]);
 
   async function go(url: string, body: unknown, key: string) {
     setBusy(key);
@@ -230,7 +236,11 @@ export default function CreditsClient({
         <Banner tone="ok">{tr("pages.credits.subUpdated")}</Banner>
       )}
       {notice && <Banner tone="ok">{notice}</Banner>}
-      {error && <Banner tone="err">{error}</Banner>}
+      {error && (
+        <div ref={errorRef}>
+          <Banner tone="err">{error}</Banner>
+        </div>
+      )}
 
       <IncludedFeatures compact />
 

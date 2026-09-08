@@ -237,6 +237,18 @@ export async function POST(req: Request) {
     // 'cus_...'") tells a customer nothing they can act on while leaking
     // internal ids. Log the detail, show a person a next step.
     console.error("stripe checkout error", e);
+    // A price id Stripe does not know under this key is a configuration
+    // fault — a live id under a test key, or a plan whose env var is unset —
+    // and "try again" is the wrong advice for it. Name it, so the person who
+    // hits it (usually us, on a preview or a dev box) knows where to look.
+    const code = (e as { code?: string } | null)?.code;
+    const param = (e as { param?: string } | null)?.param;
+    if (code === "resource_missing" && typeof param === "string" && param.includes("price")) {
+      return NextResponse.json(
+        { error: "This plan isn't set up for checkout in this environment yet — its Stripe price id doesn't match the Stripe key. Contact support and we'll sort it out." },
+        { status: 500 },
+      );
+    }
     return NextResponse.json(
       { error: "We couldn't start checkout just now. Please try again, or contact support if it keeps happening." },
       { status: 500 }
