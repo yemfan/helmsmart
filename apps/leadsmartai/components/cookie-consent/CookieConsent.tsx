@@ -113,27 +113,6 @@ export function hasConsent(category: "analytics" | "marketing"): boolean {
   return state.categories[category] === true;
 }
 
-/**
- * The server's view of consent, from the cookie `persist` also writes. Lets
- * the layout render the banner (or not) in the first HTML instead of after
- * hydration: painted only post-hydration, the banner was the largest text on
- * every dashboard page and set LCP at the 5–8 s mark (Lighthouse, 2026-09-08).
- */
-export function parseConsentCookie(raw: string | undefined | null): ConsentState | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(decodeURIComponent(raw)) as unknown;
-    if (parsed && typeof parsed === "object" && "version" in parsed && "categories" in parsed) {
-      const state = parsed as ConsentState;
-      if (state.version !== CURRENT_VERSION) return null;
-      return { ...state, categories: { ...state.categories, necessary: true } };
-    }
-  } catch {
-    /* malformed cookie — treat as no decision */
-  }
-  return null;
-}
-
 function persist(state: ConsentState) {
   if (typeof window === "undefined") return;
   try {
@@ -149,30 +128,16 @@ function persist(state: ConsentState) {
   }
 }
 
-export function CookieConsentProvider({
-  children,
-  initialState = null,
-}: {
-  children: React.ReactNode;
-  /** Consent as the server read it from the cookie — the first paint's truth. */
-  initialState?: ConsentState | null;
-}) {
-  const [state, setState] = useState<ConsentState | null>(initialState);
-  // With the server's answer in hand the first render is already decided;
-  // the effect below only reconciles with localStorage (a decision saved
-  // before the cookie existed, or a cookie that expired first).
-  const [ready, setReady] = useState(true);
-  const [showBanner, setShowBanner] = useState(initialState === null);
+export function CookieConsentProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<ConsentState | null>(null);
+  const [ready, setReady] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     const loaded = loadFromStorage();
-    if (loaded && !initialState) {
-      setState(loaded);
-      setShowBanner(false);
-      persist(loaded); // re-write the cookie so the server agrees next time
-    }
+    setState(loaded);
     setReady(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!loaded) setShowBanner(true);
   }, []);
 
   const commit = useCallback((next: ConsentState) => {
