@@ -1,0 +1,75 @@
+# Lighthouse — CloseBoss dashboard, signed in.
+#
+# lighthouse.yml gates the public site. This measures the app behind login,
+# signed in as the sandboxed test agent (same secrets as axe-dashboard.yml),
+# desktop preset, against the same thresholds. Reports are uploaded as an
+# artifact (one HTML per route + dashboard.json).
+#
+# GATE=off (the dispatch input) reports without failing — use it while the
+# baseline is being established or a known regression is being fixed.
+
+name: lighthouse (dashboard)
+
+on:
+  schedule:
+    - cron: "0 14 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      target_host:
+        description: "Override target host (defaults to production)"
+        required: false
+        default: "https://www.closebossai.com"
+      gate:
+        description: "on = fail below threshold, off = report only"
+        required: false
+        default: "on"
+
+jobs:
+  lighthouse-dashboard:
+    name: Measure signed-in routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check secrets
+        id: secrets
+        env:
+          EMAIL: ${{ secrets.AXE_TEST_EMAIL }}
+          PASSWORD: ${{ secrets.AXE_TEST_PASSWORD }}
+        run: |
+          if [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then
+            echo "::notice::AXE_TEST_EMAIL / AXE_TEST_PASSWORD not set — skipping."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install a scratch runner (playwright + lighthouse)
+        if: steps.secrets.outputs.present == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lh && cd /tmp/lh
+          npm init -y >/dev/null
+          npm i --no-audit --no-fund playwright@1 lighthouse@12 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+          cp "$GITHUB_WORKSPACE/.github/scripts/lighthouse-dashboard.mjs" .
+
+      - name: Measure
+        if: steps.secrets.outputs.present == 'true'
+        working-directory: /tmp/lh
+        env:
+          HOST: ${{ github.event.inputs.target_host || 'https://www.closebossai.com' }}
+          GATE: ${{ github.event.inputs.gate || 'on' }}
+          AXE_TEST_EMAIL: ${{ secrets.AXE_TEST_EMAIL }}
+          AXE_TEST_PASSWORD: ${{ secrets.AXE_TEST_PASSWORD }}
+        run: node lighthouse-dashboard.mjs
+
+      - name: Keep the reports
+        if: always() && steps.secrets.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-dashboard-results
+          path: /tmp/lh/lighthouse-results/
+          retention-days: 30
