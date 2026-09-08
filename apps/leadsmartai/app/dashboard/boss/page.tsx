@@ -1,7 +1,7 @@
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseServer } from "@/lib/supabaseServer";
 import BossAssistantClient, { type BossInitialData } from "./BossAssistantClient";
-import { listRecentInstructions, listRecentRuns, unreadMorningBriefing } from "@/lib/closeboss/conversation";
+import { listRecentInstructions, listRecentRuns, listRunSteps, unreadMorningBriefing } from "@/lib/closeboss/conversation";
 import { listBossRecommendations } from "@/lib/closeboss/recommendations";
 import { goalKey } from "@/lib/closeboss/goal";
 import type { Metadata } from "next";
@@ -53,7 +53,12 @@ export default async function BossAssistantPage() {
   const goal = goalKey((agentRow as { onboarding?: { goal?: unknown } | null } | null)?.onboarding?.goal);
   // Priorities without the CRM-signal sync the API route does first: that
   // sync is the slow half, and the client's own fetch runs it moments later.
-  const recommendations = await listBossRecommendations(agentId, 5, goal).catch(() => []);
+  // The runs' step timelines need the run ids, so they come in this second
+  // round alongside.
+  const [recommendations, runSteps] = await Promise.all([
+    listBossRecommendations(agentId, 5, goal).catch(() => []),
+    listRunSteps(runs.map((r) => r.id)).catch(() => ({})),
+  ]);
 
   // The client types its rows by the API's JSON shape; these are the same
   // rows from the same queries, one hop shorter.
@@ -63,6 +68,7 @@ export default async function BossAssistantPage() {
         tasks: conversation.tasks as unknown as BossInitialData["tasks"],
         hasMore: conversation.hasMore,
         runs: runs as BossInitialData["runs"],
+        runSteps: runSteps as BossInitialData["runSteps"],
         briefing: briefing as BossInitialData["briefing"],
         recommendations: recommendations as BossInitialData["recommendations"],
       }
