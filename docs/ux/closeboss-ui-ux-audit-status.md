@@ -62,22 +62,30 @@ audit, the PR that shipped it, and what is still open. Last updated 2026-09-07. 
 
 Measured signed in as the test agent by `lighthouse-dashboard.yml`
 (desktop preset). "Before" is run 34240554600, one sample per route;
-"after" is run 34248052867 with everything below live — median of three
+"after" is run 34290097393 with everything below live — median of three
 runs per route, measured as real Chrome (see the last two rows). Ask Max was
 the worst page on the product and the one every agent lands on.
 
 | Route | Perf before → after | LCP before → after | CLS before → after |
 |---|---|---|---|
-| Ask Max (`/dashboard`) | 38 → **82** | 7.9 s → **1.75 s** | 0.70 → **0.02** |
-| Contacts | 64 → 71 | 3.3 s → 2.6 s | 0.00 → 0.00 |
-| Conversations | 77 → 81 | 1.9 s → 1.7 s | 0.00 → 0.02 |
-| Tasks | 61 → 81 | 3.6 s → 1.7 s | 0.00 → 0.06 |
-| Calendar | 76 → 77 | 2.2 s → 2.1 s | 0.00 → 0.03 |
-| Settings | 82 → 85 | 1.9 s → 1.7 s | 0.00 → 0.00 |
+| Ask Max (`/dashboard`) | 38 → **81** | 7.9 s → **1.78 s** | 0.70 → **0.02** |
+| Contacts | 64 → **84** | 3.3 s → **1.73 s** | 0.00 → 0.00 |
+| Conversations | 77 → 80 | 1.9 s → 1.73 s | 0.00 → 0.02 |
+| Tasks | 61 → 81 | 3.6 s → 1.73 s | 0.00 → 0.06 |
+| Calendar | 76 → 83 | 2.2 s → 1.74 s | 0.00 → 0.03 |
+| Settings | 82 → 80 | 1.9 s → 1.97 s | 0.00 → 0.00 |
 
-Server side, from a signed-in session on production: a warm dashboard
-page's first byte went from ~0.9–1.0 s to 0.4–0.65 s, `/api/me` from 1.3 s
-to 0.2 s, and the document from 830 KB to ~100 KB.
+Six routes that ranged from 38 to 82 now sit between 80 and 84, and every
+one paints between 1.73 s and 1.97 s.
+
+Server side, from a signed-in session on production: a warm dashboard page's
+first byte went from ~0.9–1.0 s to 0.4–0.65 s (Contacts from as much as
+2.2 s to 0.42–0.64 s) and `/api/me` from 1.3 s to 0.2 s. The document
+**transferred** per page went from 244–251 KB to 12–23 KB. Quote that number,
+not the uncompressed length: the HTML is still 98–196 KB as a string, and
+repeated Tailwind class strings compress almost perfectly, so raw length
+badly overstates what anyone pays. Contacts was chased for a while on a
+"729 KB document" that is 19 KB on the wire.
 
 What was wrong, and the fix for each:
 
@@ -95,16 +103,41 @@ What was wrong, and the fix for each:
 | Persona portraits and the logo mark served at full size; now `next/image` | #1654 |
 | The proxy ran on every `/dashboard/*` request from an edge region across the country from the database and made four network calls in series (`getUser`, then three queries) — the whole gap between a page's first byte and an API route's | #1666 |
 | Lighthouse job: warm-up visit per route, then the median of three runs, measured as real Chrome (Lighthouse's own UA is on Next's `htmlLimitedBots` list and was served the non-streaming path) | #1668, #1669 |
+| Contacts made six database reads in series before its first byte — smart lists, contacts, their signals, showings, that showing's feedback, offers. The badges depend only on the agent and the signals reach it through a foreign key, so it is three | #1675 |
+| Nightly gate set from the measured baseline (0.75) instead of an 0.85 nothing met — a gate that fails every weekday teaches everyone to ignore it. 0.85 stays the target | #1678 |
 
-Still structural, not fixed: the client JS arrives in six to eight dependency
-rounds (~25 chunks), which is the bundler's chunk graph rather than app code;
-and the server's response time still varies run to run (0.6–2.6 s for the
-same page on the same commit — another instance, a slow query), which is why
-the job takes a median. Contacts is the one route still over 2.5 s LCP: its
-page reads 500 contacts plus per-contact showing and offer stats before the
-first byte. The dispatch gate is still off; the scheduled run gates at
-perf ≥ 0.85 / LCP ≤ 2.5 s / CLS ≤ 0.1 / TBT ≤ 200 ms and will fail until the
-remaining routes clear 0.85.
+### What is left, and one trade-off worth knowing
+
+**The locale chunk is the next lever, and it is a big one.** Moving the
+locale out of the React payload is what took documents from 244 KB to 12-23 KB,
+but it now loads as a **225 KB code-split chunk that nothing in the HTML
+references** — 24 chunks are named there, that one is not. So the browser
+cannot discover it until hydration reaches `I18nProvider`, and it arrives
+last (4.7-7.7 s on the throttled profile). It does not touch first paint, and
+a warm cache pays nothing, but the first load after each deploy has delayed
+interactivity. The public site pays too: `/plans` downloads it as 227 KB of
+522 KB total JS.
+
+Almost none of it belongs to the page loading it. The chunk is dominated by
+the `dashboard` namespace (616 KB of raw JSON), and that namespace is a
+catch-all — of its `pages` subtree, **44% (202 KB) is referenced only from
+non-dashboard routes** and 11% only from dashboard ones. The largest entries
+are the admin back office, the client portal, public SEO articles (the whole
+cap-rate cluster) and a blog post. Every signed-in agent downloads all of it,
+and so does every visitor to the pricing page.
+
+The fix is two halves that only pay off together: load just the namespaces a
+route needs, and move the public-route strings out of the `dashboard`
+namespace. That is a refactor of the translation layer with real regression
+risk — raw keys reaching users, which has already happened twice here (the
+`getServerT` plural keys, the palette keys dropped in a rewrite) — so it
+wants an explicit decision rather than a drive-by.
+
+Smaller and still open: the client JS arrives in eight dependency rounds
+(~26 chunks), which is the bundler's chunk graph rather than app code; and
+the server's response time varies run to run (0.6-2.6 s for the same page on
+the same commit — another instance, a slow query), which is why the job takes
+a median of three.
 
 ## Follow-ups from verifying on production
 
