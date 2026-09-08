@@ -279,6 +279,7 @@ export function hubLabels(t: T) {
     },
     footer: {
       license: h("licenseLabel"),
+      brokerageLicense: h("footer.brokerageLicense"),
       poweredBy: h("poweredBy"),
       privacy: h("footer.privacy"),
       terms: h("footer.terms"),

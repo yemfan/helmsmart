@@ -3,6 +3,8 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeUsername } from "@/lib/identity/username";
 import { loadPresentationAgent, type PresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { loadBrandForAgent } from "@/lib/teams/brand.server";
+import type { TeamBrand } from "@/lib/teams/brand";
 import { buildFeed, isIndexable, type FeedItem } from "./feedItems";
 import { resolveAgentPlan } from "@/lib/billing/resolveAgentPlan";
 import { decideTracking, type TrackingDecision } from "./tracking";
@@ -50,6 +52,8 @@ export type Hub = {
   username: string;
   agentId: number | null;
   agent: PresentationAgent | null;
+  /** The brokerage the agent's team set: header name/logo, footer license and disclosure. */
+  brokerage: TeamBrand | null;
   brandName: string | null;
   bio: string | null;
   specialties: string[];
@@ -92,6 +96,7 @@ const NOT_FOUND: Hub = {
   username: "",
   agentId: null,
   agent: null,
+  brokerage: null,
   brandName: null,
   bio: null,
   specialties: [],
@@ -390,6 +395,7 @@ export async function loadHubByUsername(
           .eq("agent_id", agentId as never)
           .maybeSingle(),
       ]);
+    const brokerage = await loadBrandForAgent(agentId);
 
     const cfg = (trackingRow.data ?? {}) as {
       meta_pixel_id?: string | null;
@@ -415,6 +421,7 @@ export async function loadHubByUsername(
       username,
       agentId,
       agent,
+      brokerage,
       brandName: String(row.brand_name ?? "").trim() || null,
       bio,
       specialties: stringList(row.specialties),

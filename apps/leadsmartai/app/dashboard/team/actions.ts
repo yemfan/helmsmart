@@ -13,6 +13,8 @@ import {
 } from "@/lib/teams/service";
 import { inviteMany, requeueInvite } from "@/lib/teams/onboarding.server";
 import { MAX_ROSTER_ROWS, parseRoster } from "@/lib/teams/roster";
+import { parseBrandInput } from "@/lib/teams/brand";
+import { saveTeamBrand } from "@/lib/teams/brand.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -156,4 +158,28 @@ export async function resendInvite(formData: FormData) {
   const ok = await requeueInvite({ teamId, inviteId });
   revalidatePath("/dashboard/team");
   return ok ? { ok: true as const } : { ok: false as const, error: "That invitation is no longer pending." };
+}
+
+/** The brokerage brand shown on every member hub. Owner only. An emptied form clears it. */
+export async function saveBrand(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (role !== "owner") return { ok: false as const, error: "Only the team owner can set the brokerage brand.", field: null };
+  const parsed = parseBrandInput({
+    name: formData.get("name"),
+    logoUrl: formData.get("logoUrl"),
+    website: formData.get("website"),
+    license: formData.get("license"),
+    disclosure: formData.get("disclosure"),
+  });
+  if (!parsed.ok) return { ok: false as const, error: "invalid", field: parsed.field };
+  try {
+    await saveTeamBrand(teamId, parsed.brand);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const };
+  } catch (e) {
+    return { ok: false as const, error: e instanceof Error ? e.message : "Save failed", field: null };
+  }
 }
