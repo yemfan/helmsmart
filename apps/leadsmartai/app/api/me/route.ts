@@ -10,13 +10,25 @@ export async function GET(req: Request) {
       return NextResponse.json({ authenticated: false, plan: "guest", tokens_remaining: null });
     }
 
-    const { data, error } = await supabaseServer
-      .from("user_profiles")
-      .select(
-        "full_name,phone,avatar_url,email,signup_origin_app,leadsmart_users(plan,tokens_remaining,tokens_reset_date,role,subscription_status,trial_ends_at,trial_used,oauth_onboarding_completed)"
-      )
-      .eq("user_id", user.id)
-      .maybeSingle();
+    // Three independent reads, together: in series this route answered in
+    // ~1.3 s on production, and the top bar, account menu and flyer builder
+    // all wait on it.
+    const [{ data, error }, { data: agentRow }, entitlement] = await Promise.all([
+      supabaseServer
+        .from("user_profiles")
+        .select(
+          "full_name,phone,avatar_url,email,signup_origin_app,leadsmart_users(plan,tokens_remaining,tokens_reset_date,role,subscription_status,trial_ends_at,trial_used,oauth_onboarding_completed)"
+        )
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabaseServer.from("agents").select("id").eq("auth_user_id", user.id).maybeSingle(),
+      // Source of truth for the plan is the entitlement system (same as Billing /
+      // /api/entitlements/me), not the legacy leadsmart_users.plan column — which
+      // drifts (a Pro account was reporting `free` here). Fall back to the legacy
+      // column only when there is no active entitlement so legacy-only paid
+      // accounts are never downgraded.
+      getActiveAgentEntitlement(supabaseServer, user.id).catch(() => null),
+    ]);
 
     if (error && (error as any).code !== "PGRST116") throw error;
 
@@ -24,18 +36,6 @@ export async function GET(req: Request) {
       ?.leadsmart_users;
     const ls = rawLs == null ? null : Array.isArray(rawLs) ? rawLs[0] : rawLs;
 
-    const { data: agentRow } = await supabaseServer
-      .from("agents")
-      .select("id")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    // Source of truth for the plan is the entitlement system (same as Billing /
-    // /api/entitlements/me), not the legacy leadsmart_users.plan column — which
-    // drifts (a Pro account was reporting `free` here). Fall back to the legacy
-    // column only when there is no active entitlement so legacy-only paid
-    // accounts are never downgraded.
-    const entitlement = await getActiveAgentEntitlement(supabaseServer, user.id).catch(() => null);
     const plan = entitlement?.plan ?? (ls?.plan as string | undefined) ?? "free";
 
     const profileEmail = (data as { email?: string | null } | null)?.email?.trim() || null;
