@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import AppShell from "@/components/AppShell";
-import { CookieConsentProvider } from "@/components/cookie-consent/CookieConsent";
+import { CookieConsentProvider, parseConsentCookie } from "@/components/cookie-consent/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ReferralCodeCapture } from "@/components/referrals/ReferralCodeCapture";
 import { AttributionCapture } from "@/components/attribution/AttributionCapture";
@@ -218,7 +218,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const htmlLang = locale === "zh-Hans" ? "zh-Hans" : "en";
   // Theme for the first paint. "system" is resolved by THEME_INIT_SCRIPT
   // below, before hydration, so there is no light flash either way.
-  const themeCookie = (await cookies()).get(THEME_COOKIE)?.value;
+  const cookieJar = await cookies();
+  const themeCookie = cookieJar.get(THEME_COOKIE)?.value;
+  const consentInitial = parseConsentCookie(cookieJar.get("ls_cookie_consent")?.value);
   const themeClass = htmlClassForTheme(isThemePreference(themeCookie) ? themeCookie : null);
 
   // `suppressHydrationWarning` on <html>/<body> only: browser extensions
@@ -263,7 +265,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         </a>
         <I18nProvider locale={locale} resources={resourcesForLocale(locale)}>
           <AuthProvider>
-            <CookieConsentProvider>
+            <CookieConsentProvider initialState={consentInitial}>
               <GoogleAnalytics />
               <ReferralCodeCapture />
               <AttributionCapture />
