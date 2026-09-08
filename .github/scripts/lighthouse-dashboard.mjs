@@ -20,6 +20,7 @@ const HOST = (process.env.HOST || "https://www.closebossai.com").replace(/\/$/, 
 const EMAIL = process.env.AXE_TEST_EMAIL;
 const PASSWORD = process.env.AXE_TEST_PASSWORD;
 const GATE = (process.env.GATE || "on").toLowerCase() !== "off";
+const RUNS = Math.max(1, Number(process.env.RUNS ?? 3) || 3);
 if (!EMAIL || !PASSWORD) {
   console.error("AXE_TEST_EMAIL / AXE_TEST_PASSWORD are not set.");
   process.exit(2);
@@ -69,18 +70,34 @@ for (const route of ROUTES) {
   // route's score: the same commit measured 79 and 68 on Ask Max in two runs
   // twenty minutes apart (2026-09-08). Steady state is what agents see.
   await page.goto(url, { waitUntil: "networkidle" }).catch(() => {});
-  process.stdout.write(`Lighthouse ${url} ... `);
-  const run = await lighthouse(url, {
-    port: PORT,
-    output: ["html"],
-    logLevel: "error",
-    onlyCategories: ["performance"],
-    // Desktop preset, same as the public-site job, so numbers compare.
-    formFactor: "desktop",
-    screenEmulation: { mobile: false, width: 1440, height: 900, deviceScaleFactor: 1, disabled: false },
-    throttlingMethod: "devtools",
-    throttling: { rttMs: 40, throughputKbps: 10240, cpuSlowdownMultiplier: 1 },
-  });
+  process.stdout.write(`Lighthouse ${url} ×${RUNS} ... `);
+  // Median of several runs. Even warmed, the same commit's document time
+  // swung from 0.6 s to 2.6 s between runs (another instance, a slow query)
+  // and the score tracked it exactly — 84 against 61. One sample cannot
+  // gate on that; the middle of three can.
+  const runs = [];
+  for (let i = 0; i < RUNS; i++) {
+    runs.push(
+      await lighthouse(url, {
+        port: PORT,
+        output: ["html"],
+        logLevel: "error",
+        onlyCategories: ["performance"],
+        // Desktop preset, same as the public-site job, so numbers compare.
+        formFactor: "desktop",
+        screenEmulation: { mobile: false, width: 1440, height: 900, deviceScaleFactor: 1, disabled: false },
+        throttlingMethod: "devtools",
+        throttling: { rttMs: 40, throughputKbps: 10240, cpuSlowdownMultiplier: 1 },
+        // Lighthouse's own user agent is on Next's default `htmlLimitedBots`
+        // list, which turns streaming off: the <head> (and so the CSS and
+        // fonts) arrived only once the whole page had rendered. Real Chrome
+        // gets the shell at first byte; measure that.
+        emulatedUserAgent: false,
+      }),
+    );
+  }
+  runs.sort((a, b) => (a.lhr.audits["largest-contentful-paint"]?.numericValue ?? 0) - (b.lhr.audits["largest-contentful-paint"]?.numericValue ?? 0));
+  const run = runs[Math.floor(runs.length / 2)];
   const lhr = run.lhr;
   const landed = new URL(lhr.finalDisplayedUrl || url).pathname;
   const m = {
@@ -119,5 +136,5 @@ for (const route of ROUTES) {
 writeFileSync("lighthouse-results/dashboard.json", JSON.stringify({ thresholds: THRESHOLDS, results }, null, 2));
 await context.close();
 
-console.log(`\n${results.length} routes — ${failing} below threshold${GATE ? "" : " (GATE=off, reporting only)"}.`);
+console.log(`\n${results.length} routes, median of ${RUNS} runs each — ${failing} below threshold${GATE ? "" : " (GATE=off, reporting only)"}.`);
 process.exit(GATE && failing > 0 ? 1 : 0);
