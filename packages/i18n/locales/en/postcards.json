@@ -1,0 +1,53 @@
+{
+  "templates": {
+    "birthday": "Birthday",
+    "anniversary": "Home Anniversary",
+    "holiday_seasonal": "Seasonal",
+    "thinking_of_you": "Thinking of You"
+  },
+  "channels": {
+    "email": "Email",
+    "sms": "SMS",
+    "wechat": "WeChat"
+  },
+  "list": {
+    "title": "Postcards",
+    "back": "Back",
+    "subtitle": "Sphere outreach — birthday, anniversary, seasonal, or just thinking-of-you.",
+    "new": "Send new postcard",
+    "new_a11y": "Send a new postcard",
+    "load_failed": "Could not load postcards",
+    "empty_title": "No postcards sent yet",
+    "empty_sub": "Tap 'Send new postcard' to celebrate a birthday, an anniversary, or just say hi.",
+    "row_a11y": "{{template}} postcard for {{name}}",
+    "opened": "Opened",
+    "pending": "Pending…"
+  },
+  "new": {
+    "title": "New postcard",
+    "back": "Postcards",
+    "templates_failed": "Could not load templates.",
+    "pick_template_first": "Pick a template first.",
+    "name_required": "Recipient name is required.",
+    "channel_required": "Pick at least one channel (Email / SMS / WeChat).",
+    "send_failed": "Could not send postcard.",
+    "sent_title": "Postcard sent",
+    "sent_body": "Sent via {{channels}} to {{name}}.",
+    "ok": "OK",
+    "section_template": "1 · Pick a template",
+    "no_templates": "No templates available.",
+    "section_recipient": "2 · Recipient",
+    "name_label": "Name *",
+    "name_placeholder": "e.g. Sarah Chen",
+    "email_label": "Email",
+    "email_placeholder": "for the email channel",
+    "phone_label": "Phone",
+    "phone_placeholder": "for SMS / WeChat",
+    "channels_label": "Channels *",
+    "channels_helper": "Channels enable when you fill in the matching email / phone.",
+    "section_message": "3 · Personal message",
+    "message_placeholder": "Write something warm — agents who add a personal note get 3-4× more replies.",
+    "send": "Send postcard",
+    "sending": "Sending…"
+  }
+}

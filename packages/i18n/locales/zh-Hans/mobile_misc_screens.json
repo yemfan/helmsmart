@@ -181,7 +181,11 @@
   },
   "briefings": {
     "noBriefingsYet": "还没有简报",
-    "onceYourMorningAndEvening": "早间和晚间简报推送几次之后，就会显示在这里。"
+    "onceYourMorningAndEvening": "早间和晚间简报推送几次之后，就会显示在这里。",
+    "title": "历史简报",
+    "backHome": "首页",
+    "morning": "晨间简报",
+    "evening": "晚间总结"
   },
   "cma": {
     "lookUpAProperty": "查找房源",
@@ -194,7 +198,11 @@
     "summary": "摘要",
     "aggressive": "激进",
     "market": "市场价",
-    "premium": "溢价"
+    "premium": "溢价",
+    "title": "CMA",
+    "back": "返回",
+    "addressLabel": "地址 *",
+    "addressPlaceholder": "例如：123 Main St, Austin TX 78701"
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI 教练",
@@ -211,7 +219,11 @@
     "seePricing": "查看价格",
     "annualDeals": "年度成交",
     "leadClose": "线索 → 成交",
-    "loadFailed": "无法加载教练内容"
+    "loadFailed": "无法加载教练内容",
+    "title": "教练计划",
+    "footerEnrolled": "您的仪表盘任务和每周训练正朝这个目标推进。",
+    "footerOptedOut": "您之前已退出。可随时在设置中重新加入。",
+    "footerEligible": "下次登录时会自动加入。也可以现在在设置中加入。"
   },
   "connectPlatforms": {
     "facebookInstagram": "Facebook 与 Instagram",
@@ -237,7 +249,30 @@
     "yt": {
       "subtitle": "把 Shorts 和视频上传到您的 YouTube 频道。",
       "details": "上传到已连接的 YouTube 频道。若要从 Google 侧撤销，请到 Google 账号 → 安全 → 第三方访问。"
-    }
+    },
+    "title": "连接平台",
+    "back": "返回",
+    "connectedNetwork": "{{network}} 已连接。",
+    "linkedPages_one": "已关联 {{count}} 个 Facebook 主页。",
+    "linkedPages_other": "已关联 {{count}} 个 Facebook 主页。",
+    "connectionFailed": "连接失败。",
+    "oauthStartFailed": "无法启动登录。",
+    "thisPage": "此主页",
+    "yourNetwork": "您的 {{network}}",
+    "disconnectTitle": "断开 {{network}}",
+    "disconnectBody": "断开 {{label}}？已发布的帖子仍会保留在 {{network}} 上。",
+    "cancel": "取消",
+    "disconnect": "断开",
+    "reconnect": "重新连接",
+    "connectAnother": "连接另一个",
+    "connectFacebook": "连接 Facebook",
+    "connectLinkedin": "连接 LinkedIn",
+    "connectTiktok": "连接 TikTok",
+    "connectYoutube": "连接 YouTube",
+    "facebookPage": "Facebook 主页",
+    "linkedinMember": "LinkedIn 用户",
+    "tiktokAccount": "TikTok 账号",
+    "youtubeChannel": "YouTube 频道"
   },
   "digitalTwin": {
     "recordAShortIntroVideo": "录一段简短的自我介绍视频（对着镜头说说您是谁、您的市场、您的专长）。AI 会把它变成您的品牌档案，用于您的帖子和助理。视频不会公开。",
@@ -252,7 +287,13 @@
     "market": "市场",
     "tone": "语气",
     "saveProfile": "保存档案",
-    "voiceCloningAndTalkingAvatar": "语音克隆和数字人视频在网页控制台。随时可在上方重新录制以刷新档案。"
+    "voiceCloningAndTalkingAvatar": "语音克隆和数字人视频在网页控制台。随时可在上方重新录制以刷新档案。",
+    "title": "数字分身",
+    "back": "返回",
+    "myOwn": "我本人的",
+    "consentRest": "介绍视频中的肖像与声音。我可以随时撤回。",
+    "uploadingVideo": "正在上传您的视频…",
+    "analyzingVideo": "正在分析您的视频——可能需要一分钟…"
   },
   "expenses": {
     "thisMonth": "本月",
@@ -276,7 +317,18 @@
     "addAReceipt": "添加收据",
     "attachAPhotoOfThe": "附上收据照片以备记录。",
     "deleteExpense": "删除支出",
-    "couldnTDelete": "无法删除"
+    "couldnTDelete": "无法删除",
+    "takePhoto": "拍照",
+    "chooseFromLibrary": "从相册选择",
+    "delete": "删除",
+    "removeConfirm": "删除这笔 {{amount}} 的支出？",
+    "cameraDenied": "未获得相机权限。",
+    "libraryDenied": "未获得相册权限。",
+    "vendorPlaceholder": "例如：Canva、Shell",
+    "uploading": "上传中…",
+    "receiptAttached": "已附收据",
+    "addReceiptPhoto": "添加收据照片",
+    "saving": "保存中…"
   },
   "weeklySchedule": {
     "pickTheDaysYouWant": "选择您想发帖的日子。为每一天选择内容类型、时间、渠道和主题 —— 或让 AI 选时间和主题 —— 以及当天发几条。AI 会研究主题并自动发布。文字 → Facebook、LinkedIn、Threads。图片会加上品牌卡片 + Instagram 和 Pinterest。视频由您的数字分身出镜 → TikTok、YouTube 等。",
@@ -292,7 +344,28 @@
     "topic": "主题",
     "saveSchedule": "保存计划",
     "fewerPostsPerDay": "每天少发几条",
-    "morePostsPerDay": "每天多发几条"
+    "morePostsPerDay": "每天多发几条",
+    "title": "每周排期",
+    "back": "返回",
+    "saved": "排期已保存。",
+    "aiPicksTime": "AI 会为每个{{day}}挑选最佳发布时间",
+    "spreadNote": "全天分散发布，晚上 9 点前完成",
+    "allConnected": "全部已连接渠道",
+    "topicPlaceholder": "…或输入您自己的主题",
+    "weekdays": {
+      "sun": "周日",
+      "mon": "周一",
+      "tue": "周二",
+      "wed": "周三",
+      "thu": "周四",
+      "fri": "周五",
+      "sat": "周六"
+    },
+    "media": {
+      "text": "文字",
+      "image": "图片",
+      "video": "视频"
+    }
   },
   "offerDesk": {
     "buildOfferWithAi": "用 AI 生成报价",
@@ -328,6 +401,9 @@
     "pasteTheContractText": "粘贴合同文本",
     "pasteThePurchaseContractText": "在此粘贴购房合同文本…",
     "price": "价格",
-    "netToSeller": "卖方净得"
+    "netToSeller": "卖方净得",
+    "addressPlaceholder": "例如：123 Oak St, Alhambra",
+    "days": "{{count}} 天",
+    "allListings": "← 全部房源"
   }
 }

@@ -181,7 +181,11 @@
   },
   "briefings": {
     "noBriefingsYet": "No briefings yet",
-    "onceYourMorningAndEvening": "Once your morning and evening briefings have fired a few times, this is where you'll find them."
+    "onceYourMorningAndEvening": "Once your morning and evening briefings have fired a few times, this is where you'll find them.",
+    "title": "Past briefings",
+    "backHome": "Home",
+    "morning": "Morning Briefing",
+    "evening": "Evening Summary"
   },
   "cma": {
     "lookUpAProperty": "Look up a property",
@@ -194,7 +198,11 @@
     "summary": "Summary",
     "aggressive": "Aggressive",
     "market": "Market",
-    "premium": "Premium"
+    "premium": "Premium",
+    "title": "CMA",
+    "back": "Back",
+    "addressLabel": "Address *",
+    "addressPlaceholder": "123 Main St, Austin TX 78701"
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI COACHING",
@@ -211,7 +219,11 @@
     "seePricing": "See pricing",
     "annualDeals": "Annual deals",
     "leadClose": "Lead → close",
-    "loadFailed": "Unable to load coaching"
+    "loadFailed": "Unable to load coaching",
+    "title": "Coaching",
+    "footerEnrolled": "Your dashboard tasks + weekly playbooks are tracking toward this goal.",
+    "footerOptedOut": "You opted out earlier. Re-enroll any time from settings.",
+    "footerEligible": "Auto-enrollment runs on your next sign-in. Or enroll now from settings."
   },
   "connectPlatforms": {
     "facebookInstagram": "Facebook & Instagram",
@@ -237,7 +249,30 @@
     "yt": {
       "subtitle": "Upload Shorts and videos to your YouTube channel.",
       "details": "Uploads go to your connected YouTube channel. To revoke on Google's side, open your Google Account → Security → Third-party access."
-    }
+    },
+    "title": "Connect Platforms",
+    "back": "Back",
+    "connectedNetwork": "{{network}} connected.",
+    "linkedPages_one": "Linked {{count}} Facebook Page.",
+    "linkedPages_other": "Linked {{count}} Facebook Pages.",
+    "connectionFailed": "Connection failed.",
+    "oauthStartFailed": "Failed to start sign-in.",
+    "thisPage": "this Page",
+    "yourNetwork": "your {{network}}",
+    "disconnectTitle": "Disconnect {{network}}",
+    "disconnectBody": "Disconnect {{label}}? Posts already published will stay live on {{network}}.",
+    "cancel": "Cancel",
+    "disconnect": "Disconnect",
+    "reconnect": "Reconnect",
+    "connectAnother": "Connect another",
+    "connectFacebook": "Connect Facebook",
+    "connectLinkedin": "Connect LinkedIn",
+    "connectTiktok": "Connect TikTok",
+    "connectYoutube": "Connect YouTube",
+    "facebookPage": "Facebook Page",
+    "linkedinMember": "LinkedIn member",
+    "tiktokAccount": "TikTok account",
+    "youtubeChannel": "YouTube channel"
   },
   "digitalTwin": {
     "recordAShortIntroVideo": "Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into your brand profile, used across your posts and assistants. Your video stays private.",
@@ -252,7 +287,13 @@
     "market": "Market",
     "tone": "Tone",
     "saveProfile": "Save profile",
-    "voiceCloningAndTalkingAvatar": "Voice cloning and talking-avatar videos are on the dashboard. Re-record above anytime to refresh your profile."
+    "voiceCloningAndTalkingAvatar": "Voice cloning and talking-avatar videos are on the dashboard. Re-record above anytime to refresh your profile.",
+    "title": "Digital Twin",
+    "back": "Back",
+    "myOwn": "my own",
+    "consentRest": "likeness and voice from my intro video. I can revoke this anytime.",
+    "uploadingVideo": "Uploading your video…",
+    "analyzingVideo": "Analyzing your video — this can take a minute…"
   },
   "expenses": {
     "thisMonth": "This month",
@@ -276,7 +317,18 @@
     "addAReceipt": "Add a receipt",
     "attachAPhotoOfThe": "Attach a photo of the receipt for your records.",
     "deleteExpense": "Delete expense",
-    "couldnTDelete": "Couldn't delete"
+    "couldnTDelete": "Couldn't delete",
+    "takePhoto": "Take photo",
+    "chooseFromLibrary": "Choose from library",
+    "delete": "Delete",
+    "removeConfirm": "Remove this {{amount}} expense?",
+    "cameraDenied": "Camera permission denied.",
+    "libraryDenied": "Photo library permission denied.",
+    "vendorPlaceholder": "e.g. Canva, Shell",
+    "uploading": "Uploading…",
+    "receiptAttached": "Receipt attached",
+    "addReceiptPhoto": "Add receipt photo",
+    "saving": "Saving…"
   },
   "weeklySchedule": {
     "pickTheDaysYouWant": "Pick the days you want a post. For each, choose a content type, time, channels, and a topic — or let AI pick the time and topic — and how many posts that day. AI researches the topic and posts automatically. Text → Facebook, LinkedIn, Threads. Image adds a branded card + Instagram & Pinterest. Video films your digital twin → TikTok, YouTube & more.",
@@ -292,7 +344,28 @@
     "topic": "Topic",
     "saveSchedule": "Save schedule",
     "fewerPostsPerDay": "Fewer posts per day",
-    "morePostsPerDay": "More posts per day"
+    "morePostsPerDay": "More posts per day",
+    "title": "Weekly Schedule",
+    "back": "Back",
+    "saved": "Schedule saved.",
+    "aiPicksTime": "AI picks the best time each {{day}}",
+    "spreadNote": "spread through the day, done by 9pm",
+    "allConnected": "all connected",
+    "topicPlaceholder": "…or type your own topic",
+    "weekdays": {
+      "sun": "Sunday",
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday"
+    },
+    "media": {
+      "text": "Text",
+      "image": "Image",
+      "video": "Video"
+    }
   },
   "offerDesk": {
     "buildOfferWithAi": "Build offer with AI",
@@ -328,6 +401,9 @@
     "pasteTheContractText": "Paste the contract text",
     "pasteThePurchaseContractText": "Paste the purchase contract text here…",
     "price": "Price",
-    "netToSeller": "Net to seller"
+    "netToSeller": "Net to seller",
+    "addressPlaceholder": "123 Oak St, Alhambra",
+    "days": "{{count}} days",
+    "allListings": "← All listings"
   }
 }

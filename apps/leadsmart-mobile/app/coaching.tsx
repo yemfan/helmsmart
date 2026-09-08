@@ -72,7 +72,7 @@ export default function CoachingScreen() {
 
   return (
     <View style={styles.root}>
-      <Stack.Screen options={{ title: "Coaching" }} />
+      <Stack.Screen options={{ title: t("coaching.title") }} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -163,10 +163,10 @@ function ProgramCard({
       </View>
       <Text style={styles.programFooter}>
         {isEnrolled
-          ? "Your dashboard tasks + weekly playbooks are tracking toward this goal."
+          ? t("coaching.footerEnrolled")
           : isOptedOut
-            ? "You opted out earlier. Re-enroll any time from settings."
-            : "Auto-enrollment runs on your next sign-in. Or enroll now from settings."}
+            ? t("coaching.footerOptedOut")
+            : t("coaching.footerEligible")}
       </Text>
     </View>
   );

@@ -237,5 +237,30 @@
   "deals": {
     "title": "Deals",
     "subtitle": "Showings, offers, contracts and pricing."
+  },
+  "cards": {
+    "engagement": {
+      "title": "Engagement",
+      "all_posts": "All posts",
+      "likes": "Likes",
+      "comments": "Comments",
+      "shares": "Shares",
+      "saves": "Saves"
+    },
+    "next_post": {
+      "title": "What to post next",
+      "ready_one": "{{count}} idea ready to go",
+      "ready_other": "{{count}} ideas ready to go",
+      "triggers": {
+        "new_listing": "New listing",
+        "open_house": "Open house",
+        "just_sold": "Just sold"
+      }
+    },
+    "agenda": {
+      "empty_title": "Nothing scheduled",
+      "empty_sub": "No tasks, appointments, or follow-ups for this day.",
+      "open": "Open"
+    }
   }
 }

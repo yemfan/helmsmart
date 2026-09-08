@@ -89,7 +89,8 @@
     "estimating": "Estimating…",
     "thinking": "Thinking…",
     "searching": "Searching…",
-    "signing_out": "Signing out…"
+    "signing_out": "Signing out…",
+    "starting": "Starting…"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -98,5 +99,10 @@
   },
   "conjunctions": {
     "and": "and"
+  },
+  "offline": {
+    "title": "You're offline",
+    "pending_one": "{{count}} change will sync when reconnected",
+    "pending_other": "{{count}} changes will sync when reconnected"
   }
 }

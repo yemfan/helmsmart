@@ -127,7 +127,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="leads" options={{ title: t("tabs.leads"), href: null }} />
         <Tabs.Screen name="team" options={{ title: t("tabs.team"), href: null }} />
         <Tabs.Screen name="settings" options={{ title: t("tabs.settings"), href: null }} />
-        <Tabs.Screen name="offer-desk" options={{ title: "Offer desk", href: null }} />
+        <Tabs.Screen name="offer-desk" options={{ title: t("tabs.offer_desk"), href: null }} />
       </Tabs>
     </>
   );

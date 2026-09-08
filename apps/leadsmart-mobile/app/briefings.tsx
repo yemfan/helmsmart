@@ -74,8 +74,8 @@ export default function BriefingsScreen() {
     >
       <Stack.Screen
         options={{
-          title: "Past briefings",
-          headerBackTitle: "Home",
+          title: t("briefings.title"),
+          headerBackTitle: t("briefings.backHome"),
         }}
       />
 
@@ -108,9 +108,10 @@ function BriefingEntry({
   row: MobileBriefing;
   styles: ReturnType<typeof createStyles>;
 }) {
+  const { t } = useTranslation("mobile_misc_screens");
   const isMorning = row.kind === "morning";
   const emoji = isMorning ? "☀️" : "🌙";
-  const kindLabel = isMorning ? "Morning Briefing" : "Evening Summary";
+  const kindLabel = isMorning ? t("briefings.morning") : t("briefings.evening");
   const cardStyle = isMorning ? styles.cardMorning : styles.cardEvening;
   const titleStyle = isMorning ? styles.titleMorning : styles.titleEvening;
   const headline =

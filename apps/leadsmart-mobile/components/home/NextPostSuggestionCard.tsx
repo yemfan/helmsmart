@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -46,13 +47,15 @@ const TRIGGER_ICONS: Record<
   just_sold: "trophy-outline",
 };
 
+/** i18n keys under `home.cards.next_post.triggers.*`. */
 const TRIGGER_LABELS: Record<MobileNextPostSuggestion["trigger"], string> = {
-  new_listing: "New listing",
-  open_house: "Open house",
-  just_sold: "Just sold",
+  new_listing: "cards.next_post.triggers.new_listing",
+  open_house: "cards.next_post.triggers.open_house",
+  just_sold: "cards.next_post.triggers.just_sold",
 };
 
 export function NextPostSuggestionCard() {
+  const { t } = useTranslation("home");
   const tokens = useThemeTokens();
   const router = useRouter();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -98,11 +101,8 @@ export function NextPostSuggestionCard() {
     <FadeIn>
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.title}>What to post next</Text>
-          <Text style={styles.subtitle}>
-            {items.length === 1 ? "1 idea" : `${items.length} ideas`} ready to
-            go
-          </Text>
+          <Text style={styles.title}>{t("cards.next_post.title")}</Text>
+          <Text style={styles.subtitle}>{t("cards.next_post.ready", { count: items.length })}</Text>
         </View>
 
         <View style={{ marginTop: 10, gap: 8 }}>
@@ -125,7 +125,7 @@ export function NextPostSuggestionCard() {
               <View style={styles.rowBody}>
                 <View style={styles.metaRow}>
                   <Text style={styles.triggerText}>
-                    {TRIGGER_LABELS[s.trigger]}
+                    {t(TRIGGER_LABELS[s.trigger])}
                   </Text>
                   <Text style={styles.reasonText} numberOfLines={1}>
                     · {s.reason}

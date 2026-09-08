@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { useOnboardingStyles } from "../../lib/onboarding/styles";
 
@@ -22,6 +23,7 @@ import { useOnboardingStyles } from "../../lib/onboarding/styles";
 export function BackRow({ fallbackHref }: { fallbackHref?: string }) {
   const router = useRouter();
   const s = useOnboardingStyles();
+  const { t } = useTranslation("onboarding");
   const canGoBack = router.canGoBack();
 
   if (!canGoBack && !fallbackHref) {
@@ -34,8 +36,8 @@ export function BackRow({ fallbackHref }: { fallbackHref?: string }) {
     <View style={s.backRow}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Go back"
-        accessibilityHint="Returns to the previous onboarding step"
+        accessibilityLabel={t("back.a11y")}
+        accessibilityHint={t("back.hint")}
         onPress={() => {
           if (canGoBack) {
             router.back();

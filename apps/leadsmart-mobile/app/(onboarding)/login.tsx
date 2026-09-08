@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Toggle } from "../../components/Toggle";
 import {
   ActivityIndicator,
@@ -33,7 +34,7 @@ import { HOME_ROUTE } from "../../lib/homeRoute";
  * network failure whose payload isn't a string all used to render as the
  * literal "[object Object]" — this guarantees the user sees real text.
  */
-function toSignInError(e: unknown): string {
+function toSignInError(e: unknown, fallback: string): string {
   if (e instanceof Error && typeof e.message === "string" && e.message.trim()) return e.message;
   if (typeof e === "string" && e.trim()) return e;
   if (e && typeof e === "object") {
@@ -41,7 +42,7 @@ function toSignInError(e: unknown): string {
     if (typeof o.message === "string" && o.message.trim()) return o.message;
     if (typeof o.error === "string" && o.error.trim()) return o.error;
   }
-  return "Sign-in failed. Check your connection and try again.";
+  return fallback;
 }
 
 const createOAuthStyles = (theme: ThemeTokens) =>
@@ -67,6 +68,7 @@ const createOAuthStyles = (theme: ThemeTokens) =>
 export default function OnboardingLoginScreen() {
   const router = useRouter();
   const s = useOnboardingStyles();
+  const { t } = useTranslation("onboarding");
   const tokens = useThemeTokens();
   const oauthBtn = useMemo(() => createOAuthStyles(tokens), [tokens]);
   const inputCompact = useMemo(
@@ -106,7 +108,7 @@ export default function OnboardingLoginScreen() {
       await signInWithEmailPassword(email, password, rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(toSignInError(e));
+      setError(toSignInError(e, t("login.error_generic")));
     } finally {
       setBusy(false);
     }
@@ -119,7 +121,7 @@ export default function OnboardingLoginScreen() {
       await signInWithToken(token, rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(toSignInError(e));
+      setError(toSignInError(e, t("login.error_generic")));
     } finally {
       setBusy(false);
     }
@@ -132,7 +134,7 @@ export default function OnboardingLoginScreen() {
       await signInWithGoogleOAuth(rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(toSignInError(e));
+      setError(toSignInError(e, t("login.error_generic")));
     } finally {
       setBusy(false);
     }
@@ -145,7 +147,7 @@ export default function OnboardingLoginScreen() {
       await signInWithAppleOAuth(rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(toSignInError(e));
+      setError(toSignInError(e, t("login.error_generic")));
     } finally {
       setBusy(false);
     }
@@ -198,49 +200,45 @@ export default function OnboardingLoginScreen() {
           showsVerticalScrollIndicator={false}
         >
         <View style={[s.centerBlock, { flex: 0, justifyContent: "flex-start" }]}>
-          <Text style={s.kicker}>Sign in</Text>
-          <Text style={s.title}>Welcome back</Text>
+          <Text style={s.kicker}>{t("login.kicker")}</Text>
+          <Text style={s.title}>{t("login.title")}</Text>
           {!showTokenFallback ? (
-            <Text style={s.body}>
-              Sign in with the same email and password you use on CloseBoss web.
-            </Text>
+            <Text style={s.body}>{t("login.body")}</Text>
           ) : (
-            <Text style={s.body}>
-              Paste a JWT only for troubleshooting or if email sign-in is unavailable.
-            </Text>
+            <Text style={s.body}>{t("login.token_body")}</Text>
           )}
           {/* Endpoint readout and the token fallback are developer tools. In a
               release build they read as an unfinished app to the agent. */}
           {!apiUrl ? (
-            <Text style={s.error}>Missing API URL — set EXPO_PUBLIC_LEADSMART_API_URL in .env or app config.</Text>
+            <Text style={s.error}>{t("login.missing_api_url")}</Text>
           ) : __DEV__ ? (
             <Text style={s.muted} numberOfLines={2}>
-              Endpoint: {apiUrl}
+              {t("login.endpoint", { url: apiUrl })}
             </Text>
           ) : null}
 
           {!showTokenFallback && oauthAvailable ? (
             <>
-              <Text style={[s.muted, { marginTop: 20 }]}>Continue with</Text>
+              <Text style={[s.muted, { marginTop: 20 }]}>{t("login.continue_with")}</Text>
               <Pressable
                 style={[oauthBtn.row, busy && { opacity: 0.6 }]}
                 onPress={() => void onGoogle()}
                 disabled={busy}
                 accessibilityRole="button"
-                accessibilityLabel="Continue with Google"
+                accessibilityLabel={t("login.google")}
               >
-                <Text style={oauthBtn.label}>Continue with Google</Text>
+                <Text style={oauthBtn.label}>{t("login.google")}</Text>
               </Pressable>
               <Pressable
                 style={[oauthBtn.row, oauthBtn.rowApple, busy && { opacity: 0.6 }]}
                 onPress={() => void onApple()}
                 disabled={busy}
                 accessibilityRole="button"
-                accessibilityLabel="Continue with Apple"
+                accessibilityLabel={t("login.apple")}
               >
-                <Text style={[oauthBtn.label, oauthBtn.labelApple]}>Continue with Apple</Text>
+                <Text style={[oauthBtn.label, oauthBtn.labelApple]}>{t("login.apple")}</Text>
               </Pressable>
-              <Text style={[s.muted, { marginTop: 16, textAlign: "center" }]}>or with email</Text>
+              <Text style={[s.muted, { marginTop: 16, textAlign: "center" }]}>{t("login.or_email")}</Text>
             </>
           ) : null}
 
@@ -251,7 +249,7 @@ export default function OnboardingLoginScreen() {
               )}
               <TextInput
                 style={inputCompact}
-                placeholder="Email"
+                placeholder={t("login.email")}
                 placeholderTextColor="#94a3b8"
                 value={email}
                 onChangeText={setEmail}
@@ -261,11 +259,11 @@ export default function OnboardingLoginScreen() {
                 autoComplete="email"
                 textContentType="username"
                 editable={!busy}
-                accessibilityLabel="Email"
+                accessibilityLabel={t("login.email")}
               />
               <TextInput
                 style={inputCompact}
-                placeholder="Password"
+                placeholder={t("login.password")}
                 placeholderTextColor="#94a3b8"
                 value={password}
                 onChangeText={setPassword}
@@ -275,14 +273,14 @@ export default function OnboardingLoginScreen() {
                 autoComplete="current-password"
                 textContentType="password"
                 editable={!busy}
-                accessibilityLabel="Password"
+                accessibilityLabel={t("login.password")}
               />
             </>
           ) : (
             <>
               <TextInput
                 style={s.input}
-                placeholder="Paste JWT access token"
+                placeholder={t("login.token_placeholder")}
                 placeholderTextColor="#94a3b8"
                 value={token}
                 onChangeText={setToken}
@@ -290,7 +288,7 @@ export default function OnboardingLoginScreen() {
                 autoCorrect={false}
                 multiline
                 editable={!busy}
-                accessibilityLabel="Access token"
+                accessibilityLabel={t("login.token_a11y")}
               />
             </>
           )}
@@ -310,17 +308,15 @@ export default function OnboardingLoginScreen() {
               gap: 12,
             }}
           >
-            <Text style={[s.muted, { flexShrink: 1, marginTop: 0 }]}>Remember this device</Text>
+            <Text style={[s.muted, { flexShrink: 1, marginTop: 0 }]}>{t("login.remember")}</Text>
             <Toggle
               value={rememberDevice}
               onValueChange={setRememberDevice}
               disabled={busy}
-              accessibilityLabel="Remember this device"
+              accessibilityLabel={t("login.remember")}
             />
           </View>
-          <Text style={[s.muted, { fontSize: 12, marginTop: 6 }]}>
-            When off, you&apos;ll be signed out after you fully close the app.
-          </Text>
+          <Text style={[s.muted, { fontSize: 12, marginTop: 6 }]}>{t("login.remember_hint")}</Text>
 
           {__DEV__ ? (
             <Pressable
@@ -330,10 +326,10 @@ export default function OnboardingLoginScreen() {
               }}
               disabled={busy}
               accessibilityRole="button"
-              accessibilityLabel={showTokenFallback ? "Use email sign-in" : "Use token instead"}
+              accessibilityLabel={showTokenFallback ? t("login.use_email_a11y") : t("login.use_token_a11y")}
             >
               <Text style={[s.muted, { textDecorationLine: "underline", marginTop: 8 }]}>
-                {showTokenFallback ? "← Sign in with email" : "Advanced: sign in with token"}
+                {showTokenFallback ? t("login.back_to_email") : t("login.advanced_token")}
               </Text>
             </Pressable>
           ) : null}
@@ -345,12 +341,12 @@ export default function OnboardingLoginScreen() {
               onPress={() => void onSubmitEmailPassword()}
               disabled={busy || !email.trim() || !password}
               accessibilityRole="button"
-              accessibilityLabel="Sign in"
+              accessibilityLabel={t("login.sign_in")}
             >
               {busy ? (
                 <ActivityIndicator color={tokens.textOnAccent} />
               ) : (
-                <Text style={s.primaryBtnText}>Sign in</Text>
+                <Text style={s.primaryBtnText}>{t("login.sign_in")}</Text>
               )}
             </Pressable>
           ) : (
@@ -359,12 +355,12 @@ export default function OnboardingLoginScreen() {
               onPress={() => void onSubmitToken()}
               disabled={busy || !token.trim()}
               accessibilityRole="button"
-              accessibilityLabel="Sign in with token"
+              accessibilityLabel={t("login.sign_in_token_a11y")}
             >
               {busy ? (
                 <ActivityIndicator color={tokens.textOnAccent} />
               ) : (
-                <Text style={s.primaryBtnText}>Continue with token</Text>
+                <Text style={s.primaryBtnText}>{t("login.continue_token")}</Text>
               )}
             </Pressable>
           )}

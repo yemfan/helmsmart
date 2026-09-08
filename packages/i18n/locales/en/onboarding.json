@@ -1,0 +1,62 @@
+{
+  "welcome": {
+    "kicker": "CloseBoss",
+    "title": "Your pipeline, in your pocket",
+    "body": "See hot leads, reply faster, and stay on top of SMS and email — built for agents on the go.",
+    "get_started": "Get started",
+    "get_started_a11y": "Continue",
+    "sign_in_link": "Already have an account? Sign in",
+    "sign_in_a11y": "Sign in"
+  },
+  "value": {
+    "kicker": "Why CloseBoss",
+    "slide1_title": "Never miss a hot lead",
+    "slide1_body": "Inbox prioritizes urgent threads so you can respond when it matters — before the deal goes cold.",
+    "slide2_title": "Full context, fast",
+    "slide2_body": "Open any lead to see recent SMS and email, AI signals, and quick actions to call or message.",
+    "next": "Next",
+    "continue": "Continue",
+    "next_a11y": "Next slide",
+    "continue_a11y": "Continue to sign in",
+    "skip": "Skip",
+    "skip_a11y": "Skip to sign in"
+  },
+  "notifications": {
+    "kicker": "Stay in the loop",
+    "title": "Notifications",
+    "body": "Get alerted for hot leads and new inbound messages. You can change this anytime in system settings.",
+    "enable": "Enable notifications",
+    "skip": "Not now",
+    "skip_a11y": "Skip notifications"
+  },
+  "login": {
+    "kicker": "Sign in",
+    "title": "Welcome back",
+    "body": "Sign in with the same email and password you use on CloseBoss web.",
+    "token_body": "Paste a JWT only for troubleshooting or if email sign-in is unavailable.",
+    "missing_api_url": "Missing API URL — set EXPO_PUBLIC_LEADSMART_API_URL in .env or app config.",
+    "endpoint": "Endpoint: {{url}}",
+    "continue_with": "Continue with",
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "or_email": "or with email",
+    "email": "Email",
+    "password": "Password",
+    "token_placeholder": "Paste JWT access token",
+    "token_a11y": "Access token",
+    "remember": "Remember this device",
+    "remember_hint": "When off, you'll be signed out after you fully close the app.",
+    "use_email_a11y": "Use email sign-in",
+    "use_token_a11y": "Use token instead",
+    "back_to_email": "← Sign in with email",
+    "advanced_token": "Advanced: sign in with token",
+    "sign_in": "Sign in",
+    "sign_in_token_a11y": "Sign in with token",
+    "continue_token": "Continue with token",
+    "error_generic": "Sign-in failed. Check your connection and try again."
+  },
+  "back": {
+    "a11y": "Go back",
+    "hint": "Returns to the previous onboarding step"
+  }
+}

@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FlatList,
   Pressable,
@@ -30,11 +31,12 @@ const TEMPLATE_EMOJI: Record<MobilePostcardTemplateKey, string> = {
   thinking_of_you: "💌",
 };
 
+/** i18n keys under `postcards.templates.*`. */
 const TEMPLATE_LABEL: Record<MobilePostcardTemplateKey, string> = {
-  birthday: "Birthday",
-  anniversary: "Home Anniversary",
-  holiday_seasonal: "Seasonal",
-  thinking_of_you: "Thinking of You",
+  birthday: "templates.birthday",
+  anniversary: "templates.anniversary",
+  holiday_seasonal: "templates.holiday_seasonal",
+  thinking_of_you: "templates.thinking_of_you",
 };
 
 /**
@@ -49,6 +51,7 @@ export default function PostcardsListScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const { t } = useTranslation("postcards");
 
   const { data, loading, error, stale, refresh } = useCachedFetch(
     "postcards:list",
@@ -79,30 +82,28 @@ export default function PostcardsListScreen() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: "Postcards",
-          headerBackTitle: "Back",
+          title: t("list.title"),
+          headerBackTitle: t("list.back"),
         }}
       />
 
       <View style={styles.header}>
-        <Text style={styles.headerSub}>
-          Sphere outreach — birthday, anniversary, seasonal, or just thinking-of-you.
-        </Text>
+        <Text style={styles.headerSub}>{t("list.subtitle")}</Text>
         <Pressable
           onPress={onNewPostcard}
           accessibilityRole="button"
-          accessibilityLabel="Send a new postcard"
+          accessibilityLabel={t("list.new_a11y")}
           style={({ pressed }) => [styles.newBtn, pressed && styles.newBtnPressed]}
         >
           <Ionicons name="add" size={16} color={tokens.textOnAccent} />
-          <Text style={styles.newBtnText}>Send new postcard</Text>
+          <Text style={styles.newBtnText}>{t("list.new")}</Text>
         </Pressable>
       </View>
 
       {error && data == null ? (
         <View style={styles.banner}>
           <ErrorBanner
-            title="Could not load postcards"
+            title={t("list.load_failed")}
             message={error.message}
             onRetry={refresh}
           />
@@ -113,8 +114,8 @@ export default function PostcardsListScreen() {
         <SkeletonList count={6} renderRow={() => <LeadRowSkeleton />} />
       ) : postcards.length === 0 ? (
         <EmptyState
-          title="No postcards sent yet"
-          subtitle="Tap 'Send new postcard' to celebrate a birthday, an anniversary, or just say hi."
+          title={t("list.empty_title")}
+          subtitle={t("list.empty_sub")}
         />
       ) : (
         <FadeIn>
@@ -137,18 +138,20 @@ export default function PostcardsListScreen() {
 const PostcardRow = memo(function PostcardRow({ row }: { row: MobilePostcardSend }) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const { t } = useTranslation("postcards");
 
   const emoji = TEMPLATE_EMOJI[row.template_key] ?? "💌";
-  const label = TEMPLATE_LABEL[row.template_key] ?? row.template_key;
+  const labelKey = TEMPLATE_LABEL[row.template_key];
+  const label = labelKey ? t(labelKey) : row.template_key;
   const sentChannels = [
-    row.email_sent_at ? "Email" : null,
-    row.sms_sent_at ? "SMS" : null,
-    row.wechat_sent_at ? "WeChat" : null,
+    row.email_sent_at ? t("channels.email") : null,
+    row.sms_sent_at ? t("channels.sms") : null,
+    row.wechat_sent_at ? t("channels.wechat") : null,
   ].filter(Boolean) as string[];
   const failedChannels = [
-    row.email_error ? "Email" : null,
-    row.sms_error ? "SMS" : null,
-    row.wechat_error ? "WeChat" : null,
+    row.email_error ? t("channels.email") : null,
+    row.sms_error ? t("channels.sms") : null,
+    row.wechat_error ? t("channels.wechat") : null,
   ].filter(Boolean) as string[];
   const opened = row.opened_at != null;
 
@@ -163,7 +166,7 @@ const PostcardRow = memo(function PostcardRow({ row }: { row: MobilePostcardSend
       onPress={onTap}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       accessibilityRole="button"
-      accessibilityLabel={`${label} postcard for ${row.recipient_name}`}
+      accessibilityLabel={t("list.row_a11y", { template: label, name: row.recipient_name })}
     >
       <View style={styles.rowHeader}>
         <View style={styles.emojiBadge}>
@@ -181,7 +184,7 @@ const PostcardRow = memo(function PostcardRow({ row }: { row: MobilePostcardSend
           <View style={styles.openedPill}>
             <Ionicons name="eye-outline" size={11} color={tokens.successText} />
             <Text style={styles.openedPillText}>
-              {row.open_count > 1 ? `${row.open_count}×` : "Opened"}
+              {row.open_count > 1 ? `${row.open_count}×` : t("list.opened")}
             </Text>
           </View>
         ) : null}
@@ -198,7 +201,7 @@ const PostcardRow = memo(function PostcardRow({ row }: { row: MobilePostcardSend
           </View>
         ))}
         {sentChannels.length === 0 && failedChannels.length === 0 ? (
-          <Text style={styles.pendingText}>Pending…</Text>
+          <Text style={styles.pendingText}>{t("list.pending")}</Text>
         ) : null}
       </View>
       {row.personal_message ? (

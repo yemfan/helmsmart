@@ -157,23 +157,23 @@ export default function ConnectPlatformsScreen() {
             hapticSuccess();
             const inferredNetwork = (parsed.network ?? network) as Network;
             if (inferredNetwork === "linkedin") {
-              setFlash("LinkedIn connected.");
+              setFlash(t("connectPlatforms.connectedNetwork", { network: "LinkedIn" }));
             } else if (inferredNetwork === "tiktok") {
-              setFlash("TikTok connected.");
+              setFlash(t("connectPlatforms.connectedNetwork", { network: "TikTok" }));
             } else if (inferredNetwork === "youtube") {
-              setFlash("YouTube connected.");
+              setFlash(t("connectPlatforms.connectedNetwork", { network: "YouTube" }));
             } else {
               const n = Number(parsed.count) || 1;
-              setFlash(`Linked ${n} Facebook ${n === 1 ? "Page" : "Pages"}.`);
+              setFlash(t("connectPlatforms.linkedPages", { count: n }));
             }
           } else {
             hapticError();
-            setFlash(parsed.reason ?? "Connection failed.");
+            setFlash(parsed.reason ?? t("connectPlatforms.connectionFailed"));
           }
           await load();
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to start OAuth");
+        setError(e instanceof Error ? e.message : t("connectPlatforms.oauthStartFailed"));
         hapticError();
       } finally {
         setConnecting(false);
@@ -194,14 +194,16 @@ export default function ConnectPlatformsScreen() {
               ? "YouTube"
               : "Facebook";
       const label =
-        conn.platform === "meta" ? conn.fbPageName ?? "this Page" : conn.displayName ?? `your ${networkLabel}`;
+        conn.platform === "meta"
+          ? conn.fbPageName ?? t("connectPlatforms.thisPage")
+          : conn.displayName ?? t("connectPlatforms.yourNetwork", { network: networkLabel });
       Alert.alert(
-        `Disconnect ${networkLabel}`,
-        `Disconnect ${label}? Posts already published will stay live on ${networkLabel}.`,
+        t("connectPlatforms.disconnectTitle", { network: networkLabel }),
+        t("connectPlatforms.disconnectBody", { label, network: networkLabel }),
         [
-          { text: "Cancel", style: "cancel" },
+          { text: t("connectPlatforms.cancel"), style: "cancel" },
           {
-            text: "Disconnect",
+            text: t("connectPlatforms.disconnect"),
             style: "destructive",
             onPress: async () => {
               hapticButtonPress();
@@ -253,7 +255,7 @@ export default function ConnectPlatformsScreen() {
       contentContainerStyle={styles.scrollContent}
     >
       <Stack.Screen
-        options={{ title: "Connect Platforms", headerBackTitle: "Back" }}
+        options={{ title: t("connectPlatforms.title"), headerBackTitle: t("connectPlatforms.back") }}
       />
 
       {flash && (
@@ -302,8 +304,8 @@ export default function ConnectPlatformsScreen() {
               <Ionicons name="logo-facebook" size={16} color="#fff" />
               <Text style={styles.connectButtonText}>
                 {metaConnections.length > 0
-                  ? "Connect another"
-                  : "Connect Facebook"}
+                  ? t("connectPlatforms.connectAnother")
+                  : t("connectPlatforms.connectFacebook")}
               </Text>
             </>
           )}
@@ -343,7 +345,7 @@ export default function ConnectPlatformsScreen() {
                   )}
                   <View style={styles.connectionInfo}>
                     <Text style={styles.connectionName} numberOfLines={1}>
-                      {c.fbPageName ?? "Facebook Page"}
+                      {c.fbPageName ?? t("connectPlatforms.facebookPage")}
                     </Text>
                     {c.igBusinessUsername && (
                       <View style={styles.igBadge}>
@@ -401,8 +403,8 @@ export default function ConnectPlatformsScreen() {
               <Ionicons name="logo-linkedin" size={16} color="#fff" />
               <Text style={styles.connectButtonText}>
                 {linkedinConnections.length > 0
-                  ? "Reconnect"
-                  : "Connect LinkedIn"}
+                  ? t("connectPlatforms.reconnect")
+                  : t("connectPlatforms.connectLinkedin")}
               </Text>
             </>
           )}
@@ -438,7 +440,7 @@ export default function ConnectPlatformsScreen() {
                   )}
                   <View style={styles.connectionInfo}>
                     <Text style={styles.connectionName} numberOfLines={1}>
-                      {c.displayName ?? "LinkedIn member"}
+                      {c.displayName ?? t("connectPlatforms.linkedinMember")}
                     </Text>
                     {c.linkedinMemberEmail && (
                       <Text style={styles.connectionSubtext} numberOfLines={1}>
@@ -489,7 +491,7 @@ export default function ConnectPlatformsScreen() {
             <>
               <Ionicons name="logo-tiktok" size={16} color="#fff" />
               <Text style={styles.connectButtonText}>
-                {tiktokConnections.length > 0 ? "Reconnect" : "Connect TikTok"}
+                {tiktokConnections.length > 0 ? t("connectPlatforms.reconnect") : t("connectPlatforms.connectTiktok")}
               </Text>
             </>
           )}
@@ -515,7 +517,7 @@ export default function ConnectPlatformsScreen() {
                   )}
                   <View style={styles.connectionInfo}>
                     <Text style={styles.connectionName} numberOfLines={1}>
-                      {c.displayName ?? "TikTok account"}
+                      {c.displayName ?? t("connectPlatforms.tiktokAccount")}
                     </Text>
                   </View>
                 </View>
@@ -559,7 +561,7 @@ export default function ConnectPlatformsScreen() {
             <>
               <Ionicons name="logo-youtube" size={16} color="#fff" />
               <Text style={styles.connectButtonText}>
-                {youtubeConnections.length > 0 ? "Reconnect" : "Connect YouTube"}
+                {youtubeConnections.length > 0 ? t("connectPlatforms.reconnect") : t("connectPlatforms.connectYoutube")}
               </Text>
             </>
           )}
@@ -585,7 +587,7 @@ export default function ConnectPlatformsScreen() {
                   )}
                   <View style={styles.connectionInfo}>
                     <Text style={styles.connectionName} numberOfLines={1}>
-                      {c.displayName ?? "YouTube channel"}
+                      {c.displayName ?? t("connectPlatforms.youtubeChannel")}
                     </Text>
                   </View>
                 </View>

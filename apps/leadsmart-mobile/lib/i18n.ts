@@ -38,6 +38,8 @@ import enLeadDetail from "@leadsmart/i18n/locale/en/lead_detail";
 import enLeads from "@leadsmart/i18n/locale/en/leads";
 import enMobileMiscScreens from "@leadsmart/i18n/locale/en/mobile_misc_screens";
 import enNav from "@leadsmart/i18n/locale/en/nav";
+import enOnboarding from "@leadsmart/i18n/locale/en/onboarding";
+import enPostcards from "@leadsmart/i18n/locale/en/postcards";
 import enQuickPost from "@leadsmart/i18n/locale/en/quick_post";
 import enReplyComposer from "@leadsmart/i18n/locale/en/reply_composer";
 import enSettings from "@leadsmart/i18n/locale/en/settings";
@@ -53,6 +55,8 @@ import zhLeadDetail from "@leadsmart/i18n/locale/zh-Hans/lead_detail";
 import zhLeads from "@leadsmart/i18n/locale/zh-Hans/leads";
 import zhMobileMiscScreens from "@leadsmart/i18n/locale/zh-Hans/mobile_misc_screens";
 import zhNav from "@leadsmart/i18n/locale/zh-Hans/nav";
+import zhOnboarding from "@leadsmart/i18n/locale/zh-Hans/onboarding";
+import zhPostcards from "@leadsmart/i18n/locale/zh-Hans/postcards";
 import zhQuickPost from "@leadsmart/i18n/locale/zh-Hans/quick_post";
 import zhReplyComposer from "@leadsmart/i18n/locale/zh-Hans/reply_composer";
 import zhSettings from "@leadsmart/i18n/locale/zh-Hans/settings";
@@ -79,6 +83,8 @@ const resources = {
     showings_screen: enShowingsScreen,
     sphere_screen: enSphereScreen,
     mobile_misc_screens: enMobileMiscScreens,
+    onboarding: enOnboarding,
+    postcards: enPostcards,
   },
   "zh-Hans": {
     common: zhCommon,
@@ -96,6 +102,8 @@ const resources = {
     showings_screen: zhShowingsScreen,
     sphere_screen: zhSphereScreen,
     mobile_misc_screens: zhMobileMiscScreens,
+    onboarding: zhOnboarding,
+    postcards: zhPostcards,
   },
 } as const;
 

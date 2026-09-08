@@ -101,8 +101,8 @@ export default function CmaScreen() {
     >
       <Stack.Screen
         options={{
-          title: "CMA",
-          headerBackTitle: "Back",
+          title: t("cma.title"),
+          headerBackTitle: t("cma.back"),
         }}
       />
       <ScrollView
@@ -112,11 +112,11 @@ export default function CmaScreen() {
         {/* Input form */}
         <View style={styles.formCard}>
           <Text style={styles.sectionHeading}>{t("cma.lookUpAProperty")}</Text>
-          <Text style={styles.label}>Address *</Text>
+          <Text style={styles.label}>{t("cma.addressLabel")}</Text>
           <TextInput
             value={address}
             onChangeText={setAddress}
-            placeholder="123 Main St, Austin TX 78701"
+            placeholder={t("cma.addressPlaceholder")}
             placeholderTextColor={tokens.textSubtle}
             autoCapitalize="words"
             style={styles.input}

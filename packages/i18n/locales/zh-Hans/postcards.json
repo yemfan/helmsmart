@@ -1,0 +1,53 @@
+{
+  "templates": {
+    "birthday": "生日",
+    "anniversary": "购房纪念日",
+    "holiday_seasonal": "节日问候",
+    "thinking_of_you": "问候"
+  },
+  "channels": {
+    "email": "邮件",
+    "sms": "短信",
+    "wechat": "微信"
+  },
+  "list": {
+    "title": "贺卡",
+    "back": "返回",
+    "subtitle": "人脉维护——生日、纪念日、节日，或只是一句问候。",
+    "new": "发送新贺卡",
+    "new_a11y": "发送一张新贺卡",
+    "load_failed": "无法加载贺卡",
+    "empty_title": "还没有发送过贺卡",
+    "empty_sub": "点击“发送新贺卡”，庆祝生日、纪念日，或只是打个招呼。",
+    "row_a11y": "发给 {{name}} 的{{template}}贺卡",
+    "opened": "已打开",
+    "pending": "发送中…"
+  },
+  "new": {
+    "title": "新贺卡",
+    "back": "贺卡",
+    "templates_failed": "无法加载模板。",
+    "pick_template_first": "请先选择一个模板。",
+    "name_required": "请填写收件人姓名。",
+    "channel_required": "请至少选择一个渠道（邮件 / 短信 / 微信）。",
+    "send_failed": "贺卡发送失败。",
+    "sent_title": "贺卡已发送",
+    "sent_body": "已通过{{channels}}发送给 {{name}}。",
+    "ok": "好的",
+    "section_template": "1 · 选择模板",
+    "no_templates": "暂无可用模板。",
+    "section_recipient": "2 · 收件人",
+    "name_label": "姓名 *",
+    "name_placeholder": "例如：陈莎拉",
+    "email_label": "邮箱",
+    "email_placeholder": "用于邮件渠道",
+    "phone_label": "电话",
+    "phone_placeholder": "用于短信 / 微信",
+    "channels_label": "渠道 *",
+    "channels_helper": "填写对应的邮箱 / 电话后，渠道即可选择。",
+    "section_message": "3 · 个性化留言",
+    "message_placeholder": "写点暖心的话——附上个人留言的经纪人收到的回复多 3-4 倍。",
+    "send": "发送贺卡",
+    "sending": "发送中…"
+  }
+}
