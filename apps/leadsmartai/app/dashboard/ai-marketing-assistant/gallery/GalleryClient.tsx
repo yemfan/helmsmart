@@ -18,6 +18,88 @@ type KindFilter = "all" | "image" | "video";
 
 const GRID_CLASS = "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5";
 
+/**
+ * How many poster-less videos may be decoding a first frame at once. Thirteen
+ * <video> elements mounting together froze the page for the length of the
+ * decode; a tile only asks for its frame once it is on screen and a slot is
+ * free, and gives the slot back as soon as the frame is painted or fails.
+ */
+const FRAME_SLOTS = 3;
+let framesInFlight = 0;
+const frameWaiters: (() => void)[] = [];
+function takeFrameSlot(cb: () => void) {
+  if (framesInFlight < FRAME_SLOTS) {
+    framesInFlight += 1;
+    cb();
+  } else {
+    frameWaiters.push(cb);
+  }
+}
+function releaseFrameSlot() {
+  framesInFlight = Math.max(0, framesInFlight - 1);
+  const next = frameWaiters.shift();
+  if (next) {
+    framesInFlight += 1;
+    next();
+  }
+}
+
+/**
+ * A video tile that costs nothing until it is on screen: a dark placeholder,
+ * then, when visible and a slot is free, a <video> asked for its first frame
+ * through a media fragment. The lightbox does the real playback.
+ */
+function VideoFrame({ url }: { url: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState<"idle" | "loading" | "ready" | "failed">("idle");
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || phase !== "idle" || typeof IntersectionObserver === "undefined") return;
+    let cancelled = false;
+    let queued = false;
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting) || queued) return;
+      queued = true;
+      io.disconnect();
+      takeFrameSlot(() => {
+        if (cancelled) {
+          releaseFrameSlot();
+          return;
+        }
+        setPhase("loading");
+      });
+    }, { rootMargin: "200px" });
+    io.observe(el);
+    return () => {
+      cancelled = true;
+      io.disconnect();
+    };
+  }, [phase]);
+
+  const done = (ok: boolean) => {
+    if (phase !== "loading") return;
+    setPhase(ok ? "ready" : "failed");
+    releaseFrameSlot();
+  };
+
+  return (
+    <div ref={ref} className="h-full w-full bg-slate-800">
+      {phase === "loading" || phase === "ready" ? (
+        <video
+          src={`${url}#t=0.1`}
+          muted
+          playsInline
+          preload="metadata"
+          onLoadedData={() => done(true)}
+          onError={() => done(false)}
+          className={`h-full w-full object-cover transition-opacity ${phase === "ready" ? "opacity-100" : "opacity-0"}`}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export default function GalleryClient({ canUpload }: { canUpload: boolean }) {
   const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
@@ -207,8 +289,7 @@ export default function GalleryClient({ canUpload }: { canUpload: boolean }) {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={item.poster} alt="" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-[1.03]" />
                   ) : (
-                    // A media fragment makes the browser paint the first frame; a bare src stays blank until play.
-                    <video src={`${item.url}#t=0.1`} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+                    <VideoFrame url={item.url} />
                   )
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
