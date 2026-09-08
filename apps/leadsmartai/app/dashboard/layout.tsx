@@ -56,6 +56,17 @@ export default async function DashboardLayout({
 
   let appRole: string | null = null;
 
+  // Start the reads that depend on nothing below now, so they overlap the
+  // status/entitlement work instead of queuing behind it. Each was awaited
+  // in turn before; the document streamed ~3 s after a 30 ms TTFB.
+  const profilePromise = supabaseServer
+    .from("user_profiles")
+    .select("full_name,avatar_url")
+    .eq("user_id", ctx.userId)
+    .maybeSingle()
+    .then((r) => r.data, () => null);
+  const isPaidPromise = isPaidPlanCached(ctx.userId).catch(() => false);
+
   // Feature gating: dashboard requires active/trialing subscription.
   try {
     const { data } = await supabaseServer
@@ -85,20 +96,22 @@ export default async function DashboardLayout({
     // (quotas, lead/contact caps, AI actions, alerts, team).
     if (!staff) {
       try {
-        await reconcileEntitlement(ctx.userId);
+        const rec = await reconcileEntitlement(ctx.userId);
         // Reconcile can have just synced the user row back to "active" (a
         // past_due left by a webhook race, a comp plan with no entitlement
         // row). The redirect below must judge the row as it is NOW: judged
         // on the read from before reconcile ran, an active subscriber was
         // bounced to the OAuth profile gate for one request and let in on
-        // the next — seen live on 2026-09-07.
-        const { data: fresh } = await supabaseServer
-          .from("leadsmart_users")
-          .select("subscription_status")
-          .eq("user_id", ctx.userId)
-          .maybeSingle();
-        const now = String((fresh as { subscription_status?: string | null } | null)?.subscription_status ?? "").toLowerCase();
-        if (now) status = now;
+        // the next — seen live on 2026-09-07. Only worth a read when it wrote.
+        if (rec.changed) {
+          const { data: fresh } = await supabaseServer
+            .from("leadsmart_users")
+            .select("subscription_status")
+            .eq("user_id", ctx.userId)
+            .maybeSingle();
+          const now = String((fresh as { subscription_status?: string | null } | null)?.subscription_status ?? "").toLowerCase();
+          if (now) status = now;
+        }
       } catch (err) {
         console.warn(
           "[dashboard layout] reconcileEntitlement failed:",
@@ -127,11 +140,7 @@ export default async function DashboardLayout({
   let fullName: string | null = null;
   let avatarUrl: string | null = null;
   try {
-    const { data: profileRow } = await supabaseServer
-      .from("user_profiles")
-      .select("full_name,avatar_url")
-      .eq("user_id", ctx.userId)
-      .maybeSingle();
+    const profileRow = await profilePromise;
     const fn = (profileRow as { full_name?: string | null } | null)?.full_name;
     fullName = typeof fn === "string" && fn.trim() ? fn.trim() : null;
     const av = (profileRow as { avatar_url?: string | null } | null)?.avatar_url;
@@ -142,7 +151,7 @@ export default async function DashboardLayout({
 
   // Upsell chrome (Upgrade pill, sidebar promo) is keyed on the plan, not the
   // role: a Signature subscriber was being asked to upgrade on every page.
-  const isPaid = await isPaidPlanCached(ctx.userId);
+  const isPaid = await isPaidPromise;
 
   return (
     <AgentWorkspaceProviders>
