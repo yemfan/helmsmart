@@ -312,10 +312,21 @@ export type OutboundPurpose =
 /** First line the AI speaks when the lead answers — bilingual (English + Chinese),
  *  disclosing it's an AI in both (compliance). The agent then continues in
  *  whichever language the contact replies in. */
+/**
+ * Which language the opening line is spoken in, when we know it.
+ *
+ * Undefined means we do not — a lead we are following up has never told us —
+ * so the greeting says both and the conversation settles it on their first
+ * reply. That stays the default; this only narrows the cases where the person
+ * has already chosen.
+ */
+export type OutboundGreetingLanguage = "en" | "zh";
+
 export function buildOutboundGreeting(
   ctx: ReceptionistContext,
   leadName: string,
   purpose?: OutboundPurpose,
+  language?: OutboundGreetingLanguage,
 ): string {
   const lead = leadName.trim();
   const who = ctx.agentName || "an assistant";
@@ -341,6 +352,20 @@ export function buildOutboundGreeting(
     purpose === "demo" ? "您在我们网站上想听听AI前台的声音，所以我打来了。" : "";
   const en = `Hi${lead ? ` ${lead}` : " there"}, this is ${who}, an AI assistant calling on behalf of ${ctx.orgName}.${reasonEn} Is now a quick okay time to talk?`;
   const zh = `您好${lead}，我是${ctx.orgNameZh}的AI助理${ctx.agentName || ""}。${reasonZh}请问现在方便讲几句话吗？`;
+  /*
+   * Say it once, in the language they asked for.
+   *
+   * Both languages back to back is the right hedge for a lead who has never
+   * told us which they speak: whichever one they understand, they hear it.
+   * When the person has ALREADY chosen — the demo form asks — repeating
+   * yourself in a language they did not pick is just a longer opening, and the
+   * demo's whole job is to sound like a person rather than a recording.
+   *
+   * The system prompt still switches to whatever they actually reply in, so
+   * choosing here narrows the first sentence, not the conversation.
+   */
+  if (language === "en") return en;
+  if (language === "zh") return zh;
   return `${en} ${zh}`;
 }
 
@@ -417,11 +442,17 @@ How to behave:
  *  system prompt swapped for the outbound versions, plus lead context. */
 export function buildOutboundDynamicVariables(
   ctx: ReceptionistContext,
-  opts: { leadName: string; purpose: OutboundPurpose; detail?: string }
+  opts: {
+    leadName: string;
+    purpose: OutboundPurpose;
+    detail?: string;
+    /** Omit when unknown — the greeting then says both languages, as before. */
+    language?: OutboundGreetingLanguage;
+  }
 ): Record<string, string> {
   return {
     ...buildReceptionistDynamicVariables(ctx),
-    greeting: buildOutboundGreeting(ctx, opts.leadName, opts.purpose),
+    greeting: buildOutboundGreeting(ctx, opts.leadName, opts.purpose, opts.language),
     system_prompt: buildOutboundSystemPrompt(ctx, opts),
     lead_name: opts.leadName || "",
     call_purpose: opts.purpose,

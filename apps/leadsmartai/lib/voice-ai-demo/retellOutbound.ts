@@ -65,7 +65,10 @@ export function isRetellDemoConfigured(language: DemoLanguage): boolean {
  * Every failure returns {} and lets the call proceed on the minimal variables:
  * a demo with a thin script beats no demo, and the reason is logged.
  */
-async function demoOrgVariables(prospectName?: string | null): Promise<Record<string, string>> {
+async function demoOrgVariables(
+  prospectName: string | null | undefined,
+  language: DemoLanguage,
+): Promise<Record<string, string>> {
   const agentId = (process.env.VOICE_DEMO_ORG_AGENT_ID || "").trim();
   if (!agentId) return {};
   try {
@@ -95,6 +98,10 @@ async function demoOrgVariables(prospectName?: string | null): Promise<Record<st
     return buildOutboundDynamicVariables(ctx, {
       leadName: (prospectName || "").trim(),
       purpose: "demo",
+      // The form asked which language they want the demo in, so the opening
+      // line is spoken in that one rather than in both. She still follows them
+      // into whichever language they actually reply in.
+      language,
     });
   } catch (e) {
     console.warn("[voice-ai-demo] could not load demo org context:", e);
@@ -150,7 +157,7 @@ export async function placeRetellDemoCall(args: {
         // today (the org set has caller_number, not caller_name), but the
         // order says which is authoritative if that ever changes.
         retell_llm_dynamic_variables: {
-          ...(await demoOrgVariables(args.prospectName)),
+          ...(await demoOrgVariables(args.prospectName, args.language)),
           ...demoDynamicVariables({
             language: args.language,
             prospectName: args.prospectName,

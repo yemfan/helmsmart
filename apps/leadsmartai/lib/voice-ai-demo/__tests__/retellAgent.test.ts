@@ -256,3 +256,38 @@ describe("the demo call states its reason", () => {
     expect(prompt).toContain("YOU placed this call");
   });
 });
+
+describe("the greeting speaks the language they asked for", () => {
+  const ctx = {
+    agentName: "Emma",
+    orgName: "Michael Ye Real Estate",
+    orgNameZh: "Michael Ye Real Estate",
+  } as never;
+
+  it("says it once in English when English was chosen", async () => {
+    const { buildOutboundGreeting } = await import("@repo/voice");
+    const en = buildOutboundGreeting(ctx, "Michael", "demo", "en");
+    expect(en).toContain("this is Emma");
+    expect(en.toLowerCase()).toContain("website");
+    // Not the Chinese half as well — the person already told us.
+    expect(en).not.toContain("AI助理");
+  });
+
+  it("says it once in Chinese when Chinese was chosen", async () => {
+    const { buildOutboundGreeting } = await import("@repo/voice");
+    const zh = buildOutboundGreeting(ctx, "Michael", "demo", "zh");
+    expect(zh).toContain("AI助理");
+    expect(zh).toContain("AI前台");
+    expect(zh).not.toContain("this is Emma");
+  });
+
+  it("still says both when nobody has told us — a lead we are following up", async () => {
+    // This is the existing behaviour for every non-demo outbound call and it
+    // must not change: whichever language they speak, they understand the
+    // opening.
+    const { buildOutboundGreeting } = await import("@repo/voice");
+    const both = buildOutboundGreeting(ctx, "Michael", "follow_up");
+    expect(both).toContain("this is Emma");
+    expect(both).toContain("AI助理");
+  });
+});
