@@ -10783,6 +10783,40 @@
       "resend": "重发",
       "resending": "重发中…",
       "resent": "已排队"
+    },
+    "teamPerformance": {
+      "title": "业绩",
+      "subtitle": "所选时段内每位经纪人的成果，并与上一时段对比。",
+      "window": "时段",
+      "days": {
+        "7": "7 天",
+        "30": "30 天",
+        "90": "90 天",
+        "365": "一年"
+      },
+      "vsPrevious": "较上一时段",
+      "new": "新增",
+      "same": "持平",
+      "agent": "经纪人",
+      "col": {
+        "newLeads": "新线索",
+        "conversations": "消息",
+        "callsAnswered": "已接来电",
+        "callsMissed": "未接来电",
+        "appointments": "预约",
+        "dealsOpened": "新开交易",
+        "dealsClosed": "已成交",
+        "closedVolume": "成交额",
+        "commission": "佣金",
+        "hubViews": "主页浏览",
+        "hubLeads": "主页线索",
+        "postsPublished": "帖子"
+      },
+      "rank": "按成交额排名第 {{rank}}",
+      "teamTotal": "团队合计",
+      "empty": "还没有团队成员。",
+      "loadFailed": "暂时无法加载业绩数据。请刷新重试。",
+      "note": "线索指该时段内新建的联系人。消息统计双向短信和邮件，含 AI 发送的。成交额和佣金来自成交日期落在该时段内的交易。点击列标题可按该列排序。"
     }
   },
   "disclaimers": {

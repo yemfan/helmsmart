@@ -15,6 +15,7 @@ import { TeamBreakdownPanel } from "./TeamBreakdownPanel";
 import type { TeamInvite, TeamMembership, TeamRoster } from "@/lib/teams/types";
 import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
 import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
+import { TeamPerformancePanel } from "./TeamPerformancePanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -78,6 +79,8 @@ export function TeamDashboard({
         isOwner={isOwner}
         members={roster.members}
       />
+
+      <TeamPerformancePanel teamId={roster.team.id} />
 
       {isOwner && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
 
