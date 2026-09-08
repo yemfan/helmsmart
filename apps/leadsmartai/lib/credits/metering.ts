@@ -1,3 +1,4 @@
+import { resolveCreditAccount } from "./pool.server";
 import "server-only";
 
 import {
@@ -43,7 +44,9 @@ export function meteringEnforced(): boolean {
 export async function meterUsage(userId: string, cost: number, reason: CreditReason): Promise<void> {
   if (creditMeteringMode() === "off" || cost <= 0) return;
   // A negative grant = an always-applied spend that journals and may go negative.
-  await grantCredits(userId, -cost, reason).catch(() => {});
+  // On pooled credits it lands on the team owner's balance.
+  const { payerUserId } = await resolveCreditAccount(userId).catch(() => ({ payerUserId: userId }));
+  await grantCredits(payerUserId, -cost, reason).catch(() => {});
 }
 
 /**

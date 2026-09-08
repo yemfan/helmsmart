@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { resolveCreditAccount } from "./pool.server";
 
 /**
  * Credit ledger — the unified usage currency for CloseBoss (migration
@@ -53,8 +54,10 @@ export async function getCreditBalance(userId: string): Promise<number> {
  * InsufficientCreditsError when the balance can't cover it (nothing is spent).
  */
 export async function deductCredits(userId: string, cost: number, reason: CreditReason): Promise<number> {
+  // A team member on pooled credits spends the owner's balance.
+  const { payerUserId } = await resolveCreditAccount(userId);
   const { data, error } = await supabaseAdmin.rpc("deduct_credits", {
-    p_user: userId,
+    p_user: payerUserId,
     p_cost: cost,
     p_reason: reason,
   });
@@ -66,7 +69,19 @@ export async function deductCredits(userId: string, cost: number, reason: Credit
 
 /** Refund `cost` credits (best-effort — used to unwind a failed action). */
 export async function refundCredits(userId: string, cost: number, reason: CreditReason = "refund"): Promise<void> {
-  await supabaseAdmin.rpc("deduct_credits", { p_user: userId, p_cost: -cost, p_reason: reason });
+  const { payerUserId } = await resolveCreditAccount(userId);
+  await supabaseAdmin.rpc("deduct_credits", { p_user: payerUserId, p_cost: -cost, p_reason: reason });
+}
+
+/**
+ * The balance a user actually spends from, with whether it is pooled. The
+ * header pill and the Credits page read this; `getCreditBalance` stays the
+ * user's own row for the places that need exactly that (the trial grant).
+ */
+export async function getSpendableBalance(userId: string): Promise<{ credits: number; pooled: boolean; teamName: string | null }> {
+  const account = await resolveCreditAccount(userId);
+  const credits = await getCreditBalance(account.payerUserId);
+  return { credits, pooled: account.pooled, teamName: account.teamName };
 }
 
 /**

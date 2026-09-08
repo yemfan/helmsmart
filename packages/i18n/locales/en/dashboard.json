@@ -4161,7 +4161,9 @@
       "billedYearly": "${{total}} billed yearly · save ${{saved}}",
       "switchingNote": "Switching plans only bills the difference for the rest of your billing period. Downgrades keep the credits you've already been given.",
       "contactBrokerage": "Contact us about Brokerage",
-      "loadingCredits": "Loading credits…"
+      "loadingCredits": "Loading credits…",
+      "pooledWith": "Pooled with your team {{team}}. Members spend from this balance.",
+      "pooled": "Pooled with your team. Members spend from this balance."
     },
     "buildOffer": {
       "offers": "Offers",
@@ -10837,6 +10839,12 @@
       "disclosure": "Required disclosure",
       "disclosureHint": "Text the brokerage requires on every agent page. Shown in the footer above the fair-housing line.",
       "invalid": "That does not look right. Check the value and save again."
+    },
+    "teamCredits": {
+      "title": "Team credits",
+      "toggle": "Pool credits for the team",
+      "onHint": "Members' AI minutes, video and images spend from your balance, and they see the team balance. Top-ups and monthly credits still land on whoever bought them.",
+      "offHint": "Each member spends their own credits. Turn this on to pay for the whole team from your balance."
     }
   },
   "disclaimers": {
