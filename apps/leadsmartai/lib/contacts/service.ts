@@ -398,10 +398,22 @@ export async function listContacts(
     .select("*")
     .eq("agent_id", agentId as never);
   const filtered = applyFilter(base as unknown as AnyQueryBuilder, filter);
-  const { data: rows, error } = (await filtered) as {
-    data: Record<string, unknown>[] | null;
-    error: unknown;
-  };
+
+  // The signals used to be read afterwards, keyed by the ids the contacts
+  // query returned — one more round trip on the contacts page's critical
+  // path, and a request URL carrying every id. Reaching them through the
+  // FK to `contacts` scopes them to the agent, so both reads go out at
+  // once. A signal whose contact this Smart List filters out is simply
+  // never looked up.
+  const [contactsRes, signalsRes] = await Promise.all([
+    filtered as unknown as Promise<{ data: Record<string, unknown>[] | null; error: unknown }>,
+    supabaseAdmin
+      .from("contact_signals")
+      .select("*, contacts!inner(agent_id)")
+      .eq("contacts.agent_id", agentId as never)
+      .is("dismissed_at", null),
+  ]);
+  const { data: rows, error } = contactsRes;
 
   if (error) {
     if (isMissingRelationError(error)) {
@@ -414,12 +426,7 @@ export async function listContacts(
   }
   if (!rows?.length) return [];
 
-  const contactIds = rows.map((r) => String((r as { id: string }).id));
-  const { data: signalRows, error: signalErr } = await supabaseAdmin
-    .from("contact_signals")
-    .select("*")
-    .in("contact_id", contactIds as never)
-    .is("dismissed_at", null);
+  const { data: signalRows, error: signalErr } = signalsRes;
   if (signalErr && !isMissingRelationError(signalErr)) throw signalErr;
 
   const signalsByContact = new Map<string, ContactSignal[]>();

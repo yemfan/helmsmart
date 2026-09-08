@@ -428,20 +428,28 @@ export async function convertOfferToTransaction(
 
 // ── Roll-ups ──────────────────────────────────────────────────────────
 
+/**
+ * Per-contact offer stats for the Contacts-page badge.
+ *
+ * Scoped by agent so the contacts page can start it before it knows which
+ * contacts the Smart List will return. Pass `contactIds` to narrow the
+ * result; omit it for every contact the agent has.
+ */
 export async function getContactOfferStats(
   agentId: string,
-  contactIds: string[],
+  contactIds?: string[],
 ): Promise<Map<string, ContactOfferStats>> {
-  if (contactIds.length === 0) return new Map();
+  if (contactIds && contactIds.length === 0) return new Map();
   const { data: rows } = await supabaseAdmin
     .from("offers")
     .select("contact_id, status")
-    .eq("agent_id", agentId)
-    .in("contact_id", contactIds);
+    .eq("agent_id", agentId);
   const offers = (rows ?? []) as Array<{ contact_id: string; status: OfferStatus }>;
 
+  const wanted = contactIds ? new Set(contactIds) : null;
   const stats = new Map<string, ContactOfferStats>();
   for (const o of offers) {
+    if (wanted && !wanted.has(o.contact_id)) continue;
     const row = stats.get(o.contact_id) ?? { total: 0, active: 0, won: 0, lost: 0 };
     row.total += 1;
     if (o.status === "draft" || o.status === "submitted" || o.status === "countered") row.active += 1;

@@ -393,43 +393,46 @@ export async function upsertShowingFeedback(
 
 // ── Roll-ups ──────────────────────────────────────────────────────────
 
+type ShowingFeedbackSummary = { overall_reaction: OverallReaction | null; would_offer: boolean };
+
+/** PostgREST returns an embedded to-one as an array on some relationships. */
+function firstFeedback(v: unknown): ShowingFeedbackSummary | null {
+  const row = Array.isArray(v) ? v[0] : v;
+  return row ? (row as ShowingFeedbackSummary) : null;
+}
+
 /**
  * Per-contact showing stats for the Contacts-page badge. Returns a Map
  * keyed by contact_id so callers can render a batch without N+1.
+ *
+ * Scoped by agent, with the feedback embedded, so it is one round trip and
+ * needs no contact ids: the contacts page starts it before it knows which
+ * contacts the Smart List will return, instead of queueing two more reads
+ * behind that. Pass `contactIds` to narrow the result; omit it for every
+ * contact the agent has.
  */
 export async function getContactShowingStats(
   agentId: string,
-  contactIds: string[],
+  contactIds?: string[],
 ): Promise<Map<string, ContactShowingStats>> {
-  if (contactIds.length === 0) return new Map();
+  if (contactIds && contactIds.length === 0) return new Map();
 
   const { data: rows } = await supabaseAdmin
     .from("showings")
-    .select("id, contact_id, status")
-    .eq("agent_id", agentId)
-    .in("contact_id", contactIds);
-  const showings = (rows ?? []) as Array<{ id: string; contact_id: string; status: ShowingStatus }>;
+    .select("id, contact_id, status, showing_feedback(overall_reaction, would_offer)")
+    .eq("agent_id", agentId);
+  const showings = (rows ?? []) as Array<{
+    id: string;
+    contact_id: string;
+    status: ShowingStatus;
+    showing_feedback: unknown;
+  }>;
   if (showings.length === 0) return new Map();
 
-  const showingIds = showings.map((s) => s.id);
-  const { data: fbRows } = await supabaseAdmin
-    .from("showing_feedback")
-    .select("showing_id, overall_reaction, would_offer")
-    .in("showing_id", showingIds);
-  const feedbackByShowing = new Map<
-    string,
-    { overall_reaction: OverallReaction | null; would_offer: boolean }
-  >();
-  for (const f of (fbRows ?? []) as Array<{
-    showing_id: string;
-    overall_reaction: OverallReaction | null;
-    would_offer: boolean;
-  }>) {
-    feedbackByShowing.set(f.showing_id, f);
-  }
-
+  const wanted = contactIds ? new Set(contactIds) : null;
   const stats = new Map<string, ContactShowingStats>();
   for (const s of showings) {
+    if (wanted && !wanted.has(s.contact_id)) continue;
     const row = stats.get(s.contact_id) ?? {
       total: 0,
       attended: 0,
@@ -440,7 +443,7 @@ export async function getContactShowingStats(
     row.total += 1;
     if (s.status === "attended") row.attended += 1;
     if (s.status === "scheduled") row.scheduled += 1;
-    const f = feedbackByShowing.get(s.id);
+    const f = firstFeedback(s.showing_feedback);
     if (f?.overall_reaction === "love") row.loved += 1;
     if (f?.would_offer) row.wouldOfferCount += 1;
     stats.set(s.contact_id, row);

@@ -35,13 +35,15 @@ export default async function ContactsPage({ searchParams }: PageProps) {
   const { agentId } = await getCurrentAgentContext();
   const { list: listParam } = await searchParams;
 
-  const [smartLists, activeListContacts] = await Promise.all([
+  // Which Smart List is active decides which contacts to read, so those two
+  // are genuinely serial. The showing and offer badges depend only on the
+  // agent, so they ride along with the list read instead of queueing behind
+  // the contacts. Six round trips before the first byte, now three — this
+  // was the slowest dashboard route to first paint (2026-09-08).
+  const [smartLists, showingStats, offerStats] = await Promise.all([
     listSmartLists(agentId),
-    // Pre-fetch in parallel with smartLists load, but we'll discard this
-    // and re-fetch if the list param doesn't match — cheaper than two
-    // round-trips in the common case where the first-visible list is
-    // intended.
-    Promise.resolve([] as never),
+    getContactShowingStats(String(agentId)),
+    getContactOfferStats(String(agentId)),
   ]);
 
   const visible = smartLists.filter((l) => !l.isHidden);
@@ -51,14 +53,6 @@ export default async function ContactsPage({ searchParams }: PageProps) {
   const contacts = activeList
     ? await listContacts(agentId, activeList.filterConfig)
     : await listContacts(agentId);
-  void activeListContacts; // placeholder; keeps the parallel fetch pattern explicit
-
-  // Showing + offer stats per contact — single bulk query each, parallel.
-  const contactIds = contacts.map((c) => c.id);
-  const [showingStats, offerStats] = await Promise.all([
-    getContactShowingStats(String(agentId), contactIds),
-    getContactOfferStats(String(agentId), contactIds),
-  ]);
 
   // ContactsClient still expects the legacy LeadRow shape. Adapt the
   // ContactView into that minimal shape; richer fields are available
