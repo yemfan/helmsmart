@@ -14,7 +14,7 @@ import "server-only";
  */
 
 import { loadReceptionistContext } from "@/lib/voice-agent/context";
-import { buildReceptionistDynamicVariables } from "@repo/voice";
+import { buildOutboundGreeting, buildReceptionistDynamicVariables } from "@repo/voice";
 import {
   demoDynamicVariables,
   e164FromNumber,
@@ -65,7 +65,7 @@ export function isRetellDemoConfigured(language: DemoLanguage): boolean {
  * Every failure returns {} and lets the call proceed on the minimal variables:
  * a demo with a thin script beats no demo, and the reason is logged.
  */
-async function demoOrgVariables(): Promise<Record<string, string>> {
+async function demoOrgVariables(prospectName?: string | null): Promise<Record<string, string>> {
   const agentId = (process.env.VOICE_DEMO_ORG_AGENT_ID || "").trim();
   if (!agentId) return {};
   try {
@@ -76,7 +76,30 @@ async function demoOrgVariables(): Promise<Record<string, string>> {
       console.warn("[voice-ai-demo] VOICE_DEMO_ORG_AGENT_ID has no enabled receptionist:", agentId);
       return {};
     }
-    return buildReceptionistDynamicVariables(ctx);
+    /*
+     * The demo is an OUTBOUND call and must not open like an inbound one.
+     *
+     * Retell's Welcome Message is "{{greeting}}", and the inbound bundle sets
+     * that to OPENING_HELLO — "Hello, 您好, Hola". Three words in three
+     * languages is right when a stranger dials the business: the AI has no idea
+     * what language they speak, so it says almost nothing until they do.
+     *
+     * It is wrong here. WE placed this call, to someone who asked for it a
+     * minute ago on a marketing page. They pick up an unknown number and hear a
+     * trilingual "hello" with nothing attached — no business, no introduction,
+     * no reason for the call — when the one thing this call exists to prove is
+     * that the receptionist sounds professional.
+     *
+     * buildOutboundGreeting is what every other app-initiated call already
+     * uses: it names them, discloses that it is an AI (which we owe them, TCPA
+     * aside), names the business, and asks whether now is a good time. The
+     * prospect hears exactly what their own leads would hear — the honest thing
+     * for a demo to be.
+     */
+    return {
+      ...buildReceptionistDynamicVariables(ctx),
+      greeting: buildOutboundGreeting(ctx, (prospectName || "").trim()),
+    };
   } catch (e) {
     console.warn("[voice-ai-demo] could not load demo org context:", e);
     return {};
@@ -131,7 +154,7 @@ export async function placeRetellDemoCall(args: {
         // today (the org set has caller_number, not caller_name), but the
         // order says which is authoritative if that ever changes.
         retell_llm_dynamic_variables: {
-          ...(await demoOrgVariables()),
+          ...(await demoOrgVariables(args.prospectName)),
           ...demoDynamicVariables({
             language: args.language,
             prospectName: args.prospectName,
