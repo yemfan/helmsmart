@@ -229,7 +229,7 @@ function LoginPageInner() {
             Sign-in for returning users sits below the divider. */}
         <div className="space-y-1.5 text-center">
           <a
-            href="/agent-signup"
+            href={redirectParam ? `/signup?redirect=${encodeURIComponent(redirectParam)}` : "/agent-signup"}
             className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
           >{t("pages.loginPage.createAccount")}</a>
           <p className="text-[11px] text-gray-500">{t("pages.loginPage.meetMax")}</p>
@@ -331,7 +331,7 @@ function LoginPageInner() {
         <div className="text-[11px] text-gray-500 text-center space-y-2">
           {!sessionUser ? (
             <p>{t("pages.loginPage.areYouAgent")}{" "}
-              <a className="text-blue-700 font-semibold" href="/agent-signup">{t("pages.loginPage.startFreeAgent")}</a>
+              <a className="text-blue-700 font-semibold" href={redirectParam ? `/signup?redirect=${encodeURIComponent(redirectParam)}` : "/agent-signup"}>{t("pages.loginPage.startFreeAgent")}</a>
             </p>
           ) : null}
         </div>

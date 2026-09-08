@@ -11,6 +11,8 @@ import {
   removeMember as svcRemoveMember,
   revokeInvite as svcRevokeInvite,
 } from "@/lib/teams/service";
+import { inviteMany, requeueInvite } from "@/lib/teams/onboarding.server";
+import { MAX_ROSTER_ROWS, parseRoster } from "@/lib/teams/roster";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -110,4 +112,48 @@ export async function revokeInvite(formData: FormData) {
   await svcRevokeInvite(inviteId);
   revalidatePath("/dashboard/team");
   return { ok: true as const };
+}
+
+/**
+ * Bulk onboarding: a pasted or uploaded roster becomes queued invitations,
+ * emailed by the team-invite-mailer cron. Owner only. Returns counts, never
+ * a wall of text: what was queued, what was refreshed, who was already in,
+ * and how many rows the seat cap had no room for.
+ */
+export async function importRoster(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const text = String(formData.get("roster") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team" };
+  if (!text.trim()) return { ok: false as const, error: "Paste a roster or choose a file first." };
+  if (text.length > 2_000_000) return { ok: false as const, error: "That file is too large. Split it and import in parts." };
+
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (role !== "owner") return { ok: false as const, error: "Only the team owner can import a roster." };
+
+  const parsed = parseRoster(text);
+  if (parsed.rows.length === 0) {
+    return { ok: false as const, error: "No email addresses found in that roster.", problems: parsed.problems.slice(0, 20) };
+  }
+
+  try {
+    const result = await inviteMany({ teamId, invitedByAgentId: ctx.agentId, rows: parsed.rows });
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, ...result, rowsRead: parsed.rows.length, capped: parsed.rows.length >= MAX_ROSTER_ROWS, problems: parsed.problems.slice(0, 20), problemCount: parsed.problems.length };
+  } catch (e) {
+    return { ok: false as const, error: e instanceof Error ? e.message : "Import failed" };
+  }
+}
+
+/** Put one pending invitation back in the mailer's queue (fresh link, fresh expiry). Owner only. */
+export async function resendInvite(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const inviteId = String(formData.get("inviteId") ?? "");
+  if (!teamId || !inviteId) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (role !== "owner") return { ok: false as const, error: "Only the team owner can resend invitations." };
+  const ok = await requeueInvite({ teamId, inviteId });
+  revalidatePath("/dashboard/team");
+  return ok ? { ok: true as const } : { ok: false as const, error: "That invitation is no longer pending." };
 }
