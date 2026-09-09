@@ -5,6 +5,8 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 
 interface SlackBlock {
   type: string;
@@ -71,24 +73,31 @@ export async function notifySlackFormSubmission(
 
   if (!org?.slack_webhook_url || org.slack_notify_form_submission === false) return;
 
-  const who = opts.name || opts.email || opts.phone || "Someone";
+  /*
+   * Slack is the OWNER's channel, so this reads in the business's language —
+   * the same rule as an owner-facing email. There is no request behind a
+   * webhook or a cron, so the locale comes from the org (see
+   * lib/i18n/userLocale.ts) rather than a cookie.
+   */
+  const t = translatorFor(await orgWriteLocale(orgId, db), "settings");
+  const who = opts.name || opts.email || opts.phone || t("slack.notify.formSubmission.someone");
   const contact = [opts.email, opts.phone].filter(Boolean).join(" · ");
 
   await notifySlack(orgId, {
-    text: `📋 New form submission: ${opts.formTitle} from ${who}`,
+    text: t("slack.notify.formSubmission.text", { form: opts.formTitle, who }),
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*📋 New form submission*\n*Form:* ${opts.formTitle}`,
+          text: t("slack.notify.formSubmission.heading", { form: opts.formTitle }),
         },
       },
       {
         type: "section",
         fields: [
-          { type: "mrkdwn", text: `*Name:*\n${opts.name || "—"}` },
-          { type: "mrkdwn", text: `*Contact:*\n${contact || "—"}` },
+          { type: "mrkdwn", text: t("slack.notify.formSubmission.name", { value: opts.name || "—" }) },
+          { type: "mrkdwn", text: t("slack.notify.formSubmission.contact", { value: contact || "—" }) },
         ],
       },
       {
@@ -96,14 +105,14 @@ export async function notifySlackFormSubmission(
         elements: [
           {
             type: "button",
-            text: { type: "plain_text", text: "View submissions" },
+            text: { type: "plain_text", text: t("slack.notify.formSubmission.viewSubmissions") },
             url: opts.submissionsUrl,
             style: "primary",
           },
           ...(opts.clientUrl
             ? [{
                 type: "button",
-                text: { type: "plain_text", text: "View in CRM" },
+                text: { type: "plain_text", text: t("slack.notify.formSubmission.viewInCrm") },
                 url: opts.clientUrl,
               }]
             : []),
@@ -134,24 +143,25 @@ export async function notifySlackNewLead(
     .maybeSingle();
 
   if (!org?.slack_webhook_url || org.slack_notify_new_lead === false) return;
+  const t = translatorFor(await orgWriteLocale(orgId, db), "settings");
 
   const contact = [opts.email, opts.phone].filter(Boolean).join(" · ");
 
   await notifySlack(orgId, {
-    text: `🙋 New lead: ${opts.name}`,
+    text: t("slack.notify.newLead.text", { name: opts.name }),
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*🙋 New lead added*\n*Name:* ${opts.name}`,
+          text: t("slack.notify.newLead.heading", { name: opts.name }),
         },
       },
       {
         type: "section",
         fields: [
-          { type: "mrkdwn", text: `*Contact:*\n${contact || "—"}` },
-          { type: "mrkdwn", text: `*Source:*\n${opts.source || "manual"}` },
+          { type: "mrkdwn", text: t("slack.notify.newLead.contact", { value: contact || "—" }) },
+          { type: "mrkdwn", text: t("slack.notify.newLead.source", { value: opts.source || t("slack.notify.newLead.manual") }) },
         ],
       },
       {
@@ -159,7 +169,7 @@ export async function notifySlackNewLead(
         elements: [
           {
             type: "button",
-            text: { type: "plain_text", text: "View in CRM" },
+            text: { type: "plain_text", text: t("slack.notify.newLead.viewInCrm") },
             url: opts.clientUrl,
             style: "primary",
           },
@@ -188,17 +198,18 @@ export async function notifySlackMissedCall(
     .maybeSingle();
 
   if (!org?.slack_webhook_url || org.slack_notify_missed_call === false) return;
+  const t = translatorFor(await orgWriteLocale(orgId, db), "settings");
 
-  const autoTextNote = opts.autoTexted ? " · auto-texted ✅" : " · no auto-text sent";
+  const autoTextNote = opts.autoTexted ? t("slack.notify.missedCall.autoTexted") : t("slack.notify.missedCall.noAutoText");
 
   await notifySlack(orgId, {
-    text: `📞 Missed call from ${opts.callerNumber}${autoTextNote}`,
+    text: t("slack.notify.missedCall.text", { number: opts.callerNumber, note: autoTextNote }),
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*📞 Missed call*\nFrom *${opts.callerNumber}*${autoTextNote}`,
+          text: t("slack.notify.missedCall.heading", { number: opts.callerNumber, note: autoTextNote }),
         },
       },
       {
@@ -206,7 +217,7 @@ export async function notifySlackMissedCall(
         elements: [
           {
             type: "button",
-            text: { type: "plain_text", text: "View in Reception" },
+            text: { type: "plain_text", text: t("slack.notify.missedCall.viewInReception") },
             url: opts.voiceUrl,
           },
         ],
@@ -234,15 +245,16 @@ export async function notifySlackApprovalPending(
     .maybeSingle();
 
   if (!org?.slack_webhook_url || org.slack_notify_approval === false) return;
+  const t = translatorFor(await orgWriteLocale(orgId, db), "settings");
 
   await notifySlack(orgId, {
-    text: `🤖 ${opts.employeeName} needs approval: ${opts.description}`,
+    text: t("slack.notify.approval.text", { employee: opts.employeeName, description: opts.description }),
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*🤖 AI approval needed*\n*${opts.employeeName}* wants to: ${opts.description}`,
+          text: t("slack.notify.approval.heading", { employee: opts.employeeName, description: opts.description }),
         },
       },
       {
@@ -250,7 +262,7 @@ export async function notifySlackApprovalPending(
         elements: [
           {
             type: "button",
-            text: { type: "plain_text", text: "Review & Approve" },
+            text: { type: "plain_text", text: t("slack.notify.approval.review") },
             url: opts.approvalsUrl,
             style: "primary",
           },

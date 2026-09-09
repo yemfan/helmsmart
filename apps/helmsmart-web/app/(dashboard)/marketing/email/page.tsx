@@ -81,7 +81,8 @@ export default async function EmailCampaignsPage() {
                     ? describeRecurrence(
                         c.recurrence_interval as RecurrenceInterval,
                         c.recurrence_day ?? 1,
-                        c.recurrence_hour ?? 9
+                        c.recurrence_hour ?? 9,
+                        t
                       )
                     : t("email.list.recurringFallback")}
                   {c.next_run_at && (

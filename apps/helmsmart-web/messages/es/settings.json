@@ -157,6 +157,37 @@
       "saveFailed": "No se pudo guardar",
       "testFailed": "La prueba falló",
       "testSendFailed": "No se pudo enviar el mensaje de prueba. Revise la URL de su webhook."
+    },
+    "notify": {
+      "formSubmission": {
+        "text": "📋 Nuevo envío de formulario: {{form}} de {{who}}",
+        "heading": "*📋 Nuevo envío de formulario*\n*Formulario:* {{form}}",
+        "name": "*Nombre:*\n{{value}}",
+        "contact": "*Contacto:*\n{{value}}",
+        "viewSubmissions": "Ver los envíos",
+        "viewInCrm": "Ver en el CRM",
+        "someone": "Alguien"
+      },
+      "newLead": {
+        "text": "🙋 Nuevo cliente potencial: {{name}}",
+        "heading": "*🙋 Nuevo cliente potencial*\n*Nombre:* {{name}}",
+        "contact": "*Contacto:*\n{{value}}",
+        "source": "*Origen:*\n{{value}}",
+        "manual": "manual",
+        "viewInCrm": "Ver en el CRM"
+      },
+      "missedCall": {
+        "text": "📞 Llamada perdida de {{number}}{{note}}",
+        "heading": "*📞 Llamada perdida*\nDe *{{number}}*{{note}}",
+        "autoTexted": " · SMS automático enviado ✅",
+        "noAutoText": " · sin SMS automático",
+        "viewInReception": "Ver en Recepción"
+      },
+      "approval": {
+        "text": "🤖 {{employee}} necesita aprobación: {{description}}",
+        "heading": "*🤖 La IA necesita aprobación*\n*{{employee}}* quiere: {{description}}",
+        "review": "Revisar y aprobar"
+      }
     }
   },
   "team": {

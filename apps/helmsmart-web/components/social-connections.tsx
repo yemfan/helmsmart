@@ -50,8 +50,8 @@ export function SocialConnections({ connected }: { connected: string[] }) {
             <div className="min-w-0">
               <p className="text-sm font-medium text-slate-800">
                 {ch.label}
-                {ch.note && (
-                  <span className="ml-2 text-xs font-normal text-slate-400">{ch.note}</span>
+                {ch.noteKey && (
+                  <span className="ml-2 text-xs font-normal text-slate-400">{t(ch.noteKey)}</span>
                 )}
               </p>
               <p className="text-xs">
