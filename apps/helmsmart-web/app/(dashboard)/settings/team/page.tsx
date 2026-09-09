@@ -6,8 +6,12 @@ import { InviteForm } from "./invite-form";
 import { RoleSelector, RemoveMemberButton, RevokeInviteButton } from "./team-actions";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Team · Settings" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("settings");
+  return { title: t("meta.team") };
+}
 
 const ROLE_COLORS: Record<string, string> = {
   owner:      "bg-indigo-100 text-indigo-700",
@@ -17,6 +21,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 export default async function TeamPage() {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -38,15 +43,15 @@ export default async function TeamPage() {
     <div className="p-8 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Team</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Manage who has access to your workspace</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("team.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("team.subtitle")}</p>
         </div>
         <Link
           href="/settings"
           className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Settings
+          {t("team.backToSettings")}
         </Link>
       </div>
 
@@ -58,13 +63,13 @@ export default async function TeamPage() {
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-800">
-              Team members <span className="text-slate-400 font-normal ml-1">({members.length})</span>
+              {t("team.membersTitle")} <span className="text-slate-400 font-normal ml-1">({members.length})</span>
             </h2>
           </div>
           <div className="divide-y divide-slate-50">
             {members.map((m) => {
               const memberUser = m.user as unknown as { id: string; email: string; raw_user_meta_data: { full_name?: string } } | null;
-              const email = memberUser?.email ?? "Unknown";
+              const email = memberUser?.email ?? t("team.unknownUser");
               const name  = memberUser?.raw_user_meta_data?.full_name;
               const isMe  = memberUser?.id === user?.id;
               const isOwner = m.role === "owner";
@@ -84,7 +89,7 @@ export default async function TeamPage() {
                       </p>
                       {isMe && (
                         <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                          you
+                          {t("team.you")}
                         </span>
                       )}
                     </div>
@@ -101,8 +106,8 @@ export default async function TeamPage() {
                       disabled={false}
                     />
                   ) : (
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${ROLE_COLORS[m.role] ?? ROLE_COLORS.viewer}`}>
-                      {m.role}
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${ROLE_COLORS[m.role] ?? ROLE_COLORS.viewer}`}>
+                      {t(`team.roles.${m.role}`, { defaultValue: m.role })}
                     </span>
                   )}
 
@@ -122,7 +127,7 @@ export default async function TeamPage() {
             <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-semibold text-slate-800">
-                Pending invitations <span className="text-slate-400 font-normal ml-1">({invitations.length})</span>
+                {t("team.pendingTitle")} <span className="text-slate-400 font-normal ml-1">({invitations.length})</span>
               </h2>
             </div>
             <div className="divide-y divide-slate-50">
@@ -138,11 +143,14 @@ export default async function TeamPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-700 truncate">{inv.email}</p>
                       <p className="text-xs text-slate-400">
-                        Invited as <span className="capitalize">{inv.role}</span> · expires in {daysLeft}d
+                        {t("team.invitedAs", {
+                          role: t(`team.roles.${inv.role}`, { defaultValue: inv.role }),
+                          days: daysLeft,
+                        })}
                       </p>
                     </div>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${ROLE_COLORS[inv.role] ?? ROLE_COLORS.viewer}`}>
-                      {inv.role}
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${ROLE_COLORS[inv.role] ?? ROLE_COLORS.viewer}`}>
+                      {t(`team.roles.${inv.role}`, { defaultValue: inv.role })}
                     </span>
                     {isAdminOrOwner && (
                       <RevokeInviteButton invitationId={inv.id} />

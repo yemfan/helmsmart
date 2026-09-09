@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Send, ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { saveSlackWebhook, saveSlackNotifyToggle, testSlackWebhook } from "@/lib/actions/slack-settings";
 
 interface Props {
@@ -12,12 +13,16 @@ interface Props {
   notifyFormSubmission: boolean;
 }
 
+/**
+ * Column names the server writes; the label and the one-line description each
+ * live at `slack.toggles.<key>.…` in the bundle.
+ */
 const NOTIFY_TOGGLES = [
-  { key: "slack_notify_new_lead" as const, label: "New lead added", description: "When a client is created manually or via form" },
-  { key: "slack_notify_form_submission" as const, label: "Form submission", description: "When someone submits a lead capture form" },
-  { key: "slack_notify_missed_call" as const, label: "Missed call", description: "When the AI receptionist logs a missed inbound call" },
-  { key: "slack_notify_approval" as const, label: "AI approval needed", description: "When an AI employee action requires your approval" },
-];
+  "slack_notify_new_lead",
+  "slack_notify_form_submission",
+  "slack_notify_missed_call",
+  "slack_notify_approval",
+] as const;
 
 export function SlackSettings({
   webhookUrl: initialUrl,
@@ -26,6 +31,7 @@ export function SlackSettings({
   notifyMissedCall,
   notifyFormSubmission,
 }: Props) {
+  const { t } = useTranslation("settings");
   const [webhookUrl, setWebhookUrl] = useState(initialUrl ?? "");
   const [toggles, setToggles] = useState({
     slack_notify_new_lead: notifyNewLead,
@@ -47,7 +53,7 @@ export function SlackSettings({
     startTransition(async () => {
       const result = await saveSlackWebhook(webhookUrl);
       if (!result.ok) {
-        setError(result.error ?? "Failed to save");
+        setError(result.error ?? t("slack.errors.saveFailed"));
       } else {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -61,7 +67,7 @@ export function SlackSettings({
     startTransition(async () => {
       const result = await testSlackWebhook();
       if (!result.ok) {
-        setError(result.error ?? "Test failed");
+        setError(result.error ?? t("slack.errors.testFailed"));
       } else {
         setTestSent(true);
         setTimeout(() => setTestSent(false), 3000);
@@ -90,13 +96,11 @@ export function SlackSettings({
             <h3 className="text-sm font-semibold text-slate-800">Slack</h3>
             {isConnected && (
               <span className="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full">
-                Connected
+                {t("slack.connected")}
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Get notified in Slack for leads, calls, and approvals
-          </p>
+          <p className="text-xs text-slate-500 mt-0.5">{t("slack.description")}</p>
         </div>
         <a
           href="https://api.slack.com/apps/new"
@@ -104,7 +108,7 @@ export function SlackSettings({
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 transition-colors"
         >
-          Create app
+          {t("slack.createApp")}
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
@@ -113,7 +117,7 @@ export function SlackSettings({
         {/* Webhook URL */}
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Incoming Webhook URL
+            {t("slack.webhookLabel")}
           </label>
           <div className="flex gap-2">
             <input
@@ -129,12 +133,10 @@ export function SlackSettings({
               disabled={isPending}
               className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
             >
-              {saved ? "Saved ✓" : "Save"}
+              {isPending ? t("actions.saving") : saved ? t("actions.saved") : t("slack.save")}
             </button>
           </div>
-          <p className="text-[11px] text-slate-400 mt-2">
-            In your Slack app: Features → Incoming Webhooks → Add New Webhook to Workspace. Copy the URL here.
-          </p>
+          <p className="text-[11px] text-slate-400 mt-2">{t("slack.webhookHelp")}</p>
         </div>
 
         {/* Test button */}
@@ -145,7 +147,7 @@ export function SlackSettings({
             className="flex items-center gap-2 text-sm text-slate-600 border border-slate-200 rounded-lg px-3 py-2 hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             <Send className="w-3.5 h-3.5" />
-            {testSent ? "Test message sent ✓" : "Send test message"}
+            {testSent ? t("slack.testSent") : t("slack.sendTest")}
           </button>
         )}
 
@@ -160,29 +162,29 @@ export function SlackSettings({
         {isConnected && (
           <div>
             <p className="text-xs font-medium text-slate-600 mb-3 uppercase tracking-wide">
-              Notify me for
+              {t("slack.notifyHeading")}
             </p>
             <div className="space-y-3">
-              {NOTIFY_TOGGLES.map((item) => (
+              {NOTIFY_TOGGLES.map((key) => (
                 <label
-                  key={item.key}
+                  key={key}
                   className="flex items-start gap-3 cursor-pointer"
                 >
                   <div
-                    onClick={() => handleToggle(item.key, !toggles[item.key])}
+                    onClick={() => handleToggle(key, !toggles[key])}
                     className={`relative mt-0.5 w-9 h-5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
-                      toggles[item.key] ? "bg-indigo-600" : "bg-slate-200"
+                      toggles[key] ? "bg-indigo-600" : "bg-slate-200"
                     }`}
                   >
                     <div
                       className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                        toggles[item.key] ? "translate-x-4" : "translate-x-0.5"
+                        toggles[key] ? "translate-x-4" : "translate-x-0.5"
                       }`}
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{item.label}</p>
-                    <p className="text-xs text-slate-500">{item.description}</p>
+                    <p className="text-sm font-medium text-slate-800">{t(`slack.toggles.${key}.label`)}</p>
+                    <p className="text-xs text-slate-500">{t(`slack.toggles.${key}.description`)}</p>
                   </div>
                 </label>
               ))}

@@ -7,11 +7,13 @@ import { ArrowLeft, Printer } from "lucide-react";
 import { InvoiceActions } from "@/components/invoice-actions";
 import { StripeResultBanner } from "@/components/stripe-result-banner";
 import { InvoiceTimesheetImport } from "@/components/invoice-timesheet-import";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Invoice · Books" };
-
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("invoices.detail.metaTitle") };
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -33,6 +35,12 @@ export default async function InvoiceDetailPage({
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
+  const currency = await orgCurrency(orgId);
+  const fmt = moneyFormatter(locale, currency);
+  const longDate = dateFormatter(locale, { month: "long", day: "numeric", year: "numeric" });
 
   const [{ data: inv }, { data: bankAccounts }] = await Promise.all([
     supabase
@@ -113,7 +121,7 @@ export default async function InvoiceDetailPage({
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold text-slate-900 font-mono">{inv.invoice_number}</h1>
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLORS[effectiveStatus] ?? STATUS_COLORS.draft}`}>
-              {effectiveStatus.charAt(0).toUpperCase() + effectiveStatus.slice(1)}
+              {t(`status.invoice.${effectiveStatus}`)}
             </span>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">{clientName}</p>
@@ -121,6 +129,7 @@ export default async function InvoiceDetailPage({
         {/* Import from timesheets */}
         <InvoiceTimesheetImport
           invoiceId={inv.id}
+          currency={currency}
           uninvoicedEntries={uninvoicedEntries as Parameters<typeof InvoiceTimesheetImport>[0]["uninvoicedEntries"]}
         />
 
@@ -132,7 +141,7 @@ export default async function InvoiceDetailPage({
           className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
         >
           <Printer className="w-3.5 h-3.5" />
-          Print
+          {t("invoices.detail.print")}
         </Link>
 
         {/* Action buttons */}
@@ -152,17 +161,17 @@ export default async function InvoiceDetailPage({
         <div className="px-10 py-8 border-b border-slate-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Invoice</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t("invoices.detail.documentLabel")}</p>
               <p className="text-3xl font-bold text-slate-900 font-mono">{inv.invoice_number}</p>
             </div>
             <div className="text-right text-sm text-slate-600 space-y-1">
-              <p><span className="text-slate-400">Issued:</span> {new Date(inv.issue_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
-              <p><span className="text-slate-400">Due:</span> <span className={effectiveStatus === "overdue" ? "text-rose-600 font-medium" : ""}>
-                {new Date(inv.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              <p><span className="text-slate-400">{t("invoices.detail.issued")}</span> {longDate(inv.issue_date)}</p>
+              <p><span className="text-slate-400">{t("invoices.detail.due")}</span> <span className={effectiveStatus === "overdue" ? "text-rose-600 font-medium" : ""}>
+                {longDate(inv.due_date)}
               </span></p>
               {inv.paid_at && (
-                <p><span className="text-slate-400">Paid:</span> <span className="text-emerald-600 font-medium">
-                  {new Date(inv.paid_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                <p><span className="text-slate-400">{t("invoices.detail.paid")}</span> <span className="text-emerald-600 font-medium">
+                  {longDate(new Date(inv.paid_at))}
                 </span></p>
               )}
             </div>
@@ -170,7 +179,7 @@ export default async function InvoiceDetailPage({
 
           {client && (
             <div className="mt-8">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Bill to</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t("invoices.detail.billTo")}</p>
               <p className="text-sm font-semibold text-slate-800">{clientName}</p>
               {client.email && <p className="text-sm text-slate-500">{client.email}</p>}
               {client.phone && <p className="text-sm text-slate-500">{client.phone}</p>}
@@ -181,10 +190,10 @@ export default async function InvoiceDetailPage({
         {/* Line items */}
         <div className="px-10 py-6">
           <div className="grid grid-cols-[1fr_80px_110px_110px] gap-4 mb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            <span>Description</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Unit price</span>
-            <span className="text-right">Amount</span>
+            <span>{t("invoices.detail.columns.description")}</span>
+            <span className="text-right">{t("invoices.detail.columns.qty")}</span>
+            <span className="text-right">{t("invoices.detail.columns.unitPrice")}</span>
+            <span className="text-right">{t("invoices.detail.columns.amount")}</span>
           </div>
 
           <div className="divide-y divide-slate-50">
@@ -209,17 +218,17 @@ export default async function InvoiceDetailPage({
           <div className="flex justify-end mt-6">
             <div className="w-64 space-y-2">
               <div className="flex justify-between text-sm text-slate-600">
-                <span>Subtotal</span>
+                <span>{t("invoices.detail.subtotal")}</span>
                 <span className="tabular-nums">{fmt(Number(inv.subtotal))}</span>
               </div>
               {Number(inv.tax_rate) > 0 && (
                 <div className="flex justify-between text-sm text-slate-600">
-                  <span>Tax ({(Number(inv.tax_rate) * 100).toFixed(2)}%)</span>
+                  <span>{t("invoices.detail.taxAt", { rate: (Number(inv.tax_rate) * 100).toFixed(2) })}</span>
                   <span className="tabular-nums">{fmt(Number(inv.tax_amount))}</span>
                 </div>
               )}
               <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
-                <span>Total</span>
+                <span>{t("invoices.detail.total")}</span>
                 <span className="tabular-nums">{fmt(Number(inv.total))}</span>
               </div>
             </div>
@@ -228,7 +237,7 @@ export default async function InvoiceDetailPage({
           {/* Notes */}
           {inv.notes && (
             <div className="mt-6 pt-6 border-t border-slate-100">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Notes</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{t("invoices.detail.notes")}</p>
               <p className="text-sm text-slate-600 whitespace-pre-wrap">{inv.notes}</p>
             </div>
           )}

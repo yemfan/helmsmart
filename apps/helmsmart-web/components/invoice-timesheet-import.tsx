@@ -2,24 +2,30 @@
 
 import { useState, useTransition } from "react";
 import { Clock, Check, X, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { importTimeEntriesToInvoice, type TimeEntry } from "@/lib/actions/time-entries";
 import { useRouter } from "next/navigation";
-
-function fmtMoney(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-}
-function fmtDuration(mins: number | null) {
-  if (!mins) return "0m";
-  const h = Math.floor(mins / 60), m = mins % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 interface Props {
   invoiceId: string;
   uninvoicedEntries: TimeEntry[];
+  /** `organizations.currency` — the ledger's currency, not the reader's country. */
+  currency: string;
 }
 
-export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) {
+export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmtMoney = moneyFormatter(i18n.language, currency);
+  const entryDate = dateFormatter(i18n.language, { month: "short", day: "numeric" });
+  /** "2h 15m" reads as hours-and-minutes in both languages; the units are the copy. */
+  const fmtDuration = (mins: number | null) => {
+    if (!mins) return t("invoices.timesheetImport.minutes", { count: 0 });
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return h > 0
+      ? `${t("invoices.timesheetImport.hours", { count: h })} ${t("invoices.timesheetImport.minutes", { count: m })}`
+      : t("invoices.timesheetImport.minutes", { count: m });
+  };
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -48,7 +54,7 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
     .reduce((s, e) => s + (e.duration_minutes! / 60) * e.hourly_rate!, 0);
 
   function doImport() {
-    if (!selected.size) { setError("Select at least one entry"); return; }
+    if (!selected.size) { setError(t("invoices.timesheetImport.selectAtLeastOne")); return; }
     setError("");
     startTransition(async () => {
       try {
@@ -57,7 +63,7 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
         setSelected(new Set());
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Import failed");
+        setError(e instanceof Error ? e.message : t("invoices.timesheetImport.importFailed"));
       }
     });
   }
@@ -69,7 +75,7 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
         className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors"
       >
         <Clock className="w-3.5 h-3.5" />
-        Import {uninvoicedEntries.length} time entr{uninvoicedEntries.length === 1 ? "y" : "ies"}
+        {t("invoices.timesheetImport.trigger", { count: uninvoicedEntries.length })}
         <ChevronRight className="w-3 h-3" />
       </button>
 
@@ -79,8 +85,8 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div>
-                <h2 className="text-base font-semibold text-slate-800">Import time entries</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Selected entries become line items on this invoice</p>
+                <h2 className="text-base font-semibold text-slate-800">{t("invoices.timesheetImport.title")}</h2>
+                <p className="text-xs text-slate-500 mt-0.5">{t("invoices.timesheetImport.subtitle")}</p>
               </div>
               <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
                 <X className="w-4 h-4" />
@@ -89,10 +95,12 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
 
             {/* Select all / clear */}
             <div className="px-6 py-2.5 border-b border-slate-50 flex items-center justify-between">
-              <span className="text-xs text-slate-500">{selected.size} of {uninvoicedEntries.length} selected</span>
+              <span className="text-xs text-slate-500">
+                {t("invoices.timesheetImport.selectedOf", { selected: selected.size, total: uninvoicedEntries.length })}
+              </span>
               <div className="flex gap-3">
-                <button onClick={selectAll} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">Select all</button>
-                <button onClick={clearAll}  className="text-xs text-slate-400 hover:text-slate-600">Clear</button>
+                <button onClick={selectAll} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">{t("invoices.timesheetImport.selectAll")}</button>
+                <button onClick={clearAll}  className="text-xs text-slate-400 hover:text-slate-600">{t("invoices.timesheetImport.clear")}</button>
               </div>
             </div>
 
@@ -114,10 +122,10 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
                     <input type="checkbox" checked={checked} onChange={() => toggle(entry.id)} className="sr-only" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-800 truncate">
-                        {entry.description || "No description"}
+                        {entry.description || t("invoices.timesheetImport.noDescription")}
                       </p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        {new Date(entry.started_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {entryDate(new Date(entry.started_at))}
                         {entry.project && ` · ${entry.project}`}
                       </p>
                     </div>
@@ -148,14 +156,18 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries }: Props) 
                     onClick={() => setOpen(false)}
                     className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-white transition-colors"
                   >
-                    Cancel
+                    {t("common:actions.cancel")}
                   </button>
                   <button
                     onClick={doImport}
                     disabled={isPending || !selected.size}
                     className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
                   >
-                    {isPending ? "Importing…" : `Import ${selected.size > 0 ? selected.size : ""}`}
+                    {isPending
+                      ? t("common:status.importing")
+                      : selected.size > 0
+                        ? t("invoices.timesheetImport.importCount", { count: selected.size })
+                        : t("invoices.timesheetImport.import")}
                   </button>
                 </div>
               </div>

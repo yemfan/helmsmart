@@ -9,6 +9,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import { pctChange } from "@/lib/metrics-format";
+import { moneyFormatter } from "@/lib/books-format";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { translatorFor } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -18,6 +21,16 @@ export interface InsightItem {
   sentiment: "positive" | "neutral" | "negative";
   metric?: string;
   recommendation?: string;
+}
+
+/**
+ * Who the digest is written for. The locale is the OWNER's UI language — the
+ * cookie in a request, `userUiLocale(ownerId)` in the cron — and the currency
+ * is the organization's own, which does not follow it.
+ */
+export interface InsightReader {
+  locale: string | null | undefined;
+  currency: string | null | undefined;
 }
 
 export interface BusinessInsight {
@@ -143,21 +156,24 @@ async function gatherMetrics(
 export async function generateBusinessInsight(
   db: SupabaseClient,
   orgId: string,
-  now: Date
+  now: Date,
+  reader: InsightReader
 ): Promise<{ ok: boolean; insight?: BusinessInsight; error?: string }> {
-  if (!process.env.ANTHROPIC_API_KEY) return { ok: false, error: "AI not configured" };
+  const t = translatorFor(reader.locale, "home");
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return { ok: false, error: t("weeklyInsights.errors.notConfigured") };
+  }
 
   const periodEnd = now.toISOString().slice(0, 10);
   const periodStart = new Date(now.getTime() - 7 * DAY).toISOString().slice(0, 10);
 
   const m = await gatherMetrics(db, orgId, now);
 
-  const fmt = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+  const fmt = moneyFormatter(reader.locale, reader.currency, { maximumFractionDigits: 0 });
 
   const metricsText = [
-    `Revenue collected this week: ${fmt(m.revenueThisWeek)} (last week: ${fmt(m.revenueLastWeek)}, change: ${pctChange(m.revenueThisWeek, m.revenueLastWeek)})`,
-    `New clients this week: ${m.newClientsThisWeek} (last week: ${m.newClientsLastWeek}, change: ${pctChange(m.newClientsThisWeek, m.newClientsLastWeek)})`,
+    `Revenue collected this week: ${fmt(m.revenueThisWeek)} (last week: ${fmt(m.revenueLastWeek)}, change: ${pctChange(m.revenueThisWeek, m.revenueLastWeek, reader.locale)})`,
+    `New clients this week: ${m.newClientsThisWeek} (last week: ${m.newClientsLastWeek}, change: ${pctChange(m.newClientsThisWeek, m.newClientsLastWeek, reader.locale)})`,
     `Invoices sent this week: ${m.invoicesSentThisWeek} | paid this week: ${m.invoicesPaidThisWeek}`,
     `Outstanding receivables: ${fmt(m.outstandingAR)} | OVERDUE: ${fmt(m.overdueAR)} across ${m.overdueCount} invoice(s)`,
     `Open estimates: ${m.openEstimatesCount} worth ${fmt(m.openEstimatesValue)} (potential revenue awaiting approval)`,
@@ -166,7 +182,12 @@ export async function generateBusinessInsight(
     `AI receptionist: ${m.aiCallsAnswered} calls answered, ${m.aiMessagesSent} messages sent this week`,
   ].join("\n");
 
-  const system = `You are Tim, the AI Chief Information Officer for a small business. You are analytical and plain-spoken — you explain what the data means and what to do about it, not just what it says. Today is ${periodEnd}.`;
+  // The digest is read by the OWNER, so it goes out in their language; the
+  // JSON variant keeps the keys and the `sentiment` enum in English so the
+  // parser and the sentiment styling still find what they expect.
+  const system = `You are Tim, the AI Chief Information Officer for a small business. You are analytical and plain-spoken — you explain what the data means and what to do about it, not just what it says. Today is ${periodEnd}.${languageDirectiveForJson(
+    reader.locale,
+  )}`;
 
   const user = `Analyze this week's business metrics and produce a JSON digest for the owner.
 
@@ -205,7 +226,7 @@ Rules:
     rawText = (resp.content[0] as { type: string; text: string }).text ?? "";
   } catch (e) {
     console.error("[business-insights] Claude error:", e);
-    return { ok: false, error: "Failed to generate insights" };
+    return { ok: false, error: t("weeklyInsights.errors.generateFailed") };
   }
 
   let parsed: { headline: string; summary: string; insights: InsightItem[] };
@@ -213,7 +234,7 @@ Rules:
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     parsed = JSON.parse(jsonMatch?.[0] ?? rawText);
   } catch {
-    return { ok: false, error: "Failed to parse AI response" };
+    return { ok: false, error: t("weeklyInsights.errors.parseFailed") };
   }
 
   const generatedAt = now.toISOString();
@@ -223,7 +244,7 @@ Rules:
       organization_id:  orgId,
       period_start:     periodStart,
       period_end:       periodEnd,
-      headline:         parsed.headline ?? "Weekly business summary",
+      headline:         parsed.headline ?? t("weeklyInsights.defaultHeadline"),
       summary:          parsed.summary ?? "",
       insights:         parsed.insights ?? [],
       metrics_snapshot: m,

@@ -2,24 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 
+/**
+ * The ARTICLES are written in English and stay that way — a post body is
+ * authored prose, not interface copy. Everything around them travels through
+ * the `site` bundle: the chrome below, and the post's own title, excerpt,
+ * category, date and read time, which live in `site.blog.posts.<slug>` and
+ * are shared with the blog index so a card and the page it opens agree.
+ */
 interface Post {
-  title: string;
-  category: string;
-  date: string;
-  readTime: string;
-  excerpt: string;
-  body: string; // HTML-safe markdown-ish paragraphs
+  body: string; // HTML-safe markdown-ish paragraphs, English
 }
 
 const posts: Record<string, Post> = {
   "smb-pains-and-solutions": {
-    title: "Small Business Pains — And How HelmSmart Solves Them",
-    category: "Strategy",
-    date: "May 22, 2025",
-    readTime: "6 min read",
-    excerpt:
-      "Missed calls, admin overload, late invoices, expensive after-hours services — sound familiar? Here's exactly how HelmSmart addresses the six biggest headaches small business owners face every day.",
     body: `
 Running a small business means wearing every hat at once. You're the salesperson, the scheduler, the bookkeeper, and the technician — often simultaneously. It's no wonder that the same six problems come up again and again when we talk to small business owners.
 
@@ -52,12 +49,6 @@ The common thread: every one of these pains costs you real money. HelmSmart is d
   },
 
   "ai-receptionist-guide": {
-    title: "How AI Receptionists Are Helping Small Businesses Never Miss a Call",
-    category: "Voice AI",
-    date: "May 15, 2025",
-    readTime: "5 min read",
-    excerpt:
-      "Every missed call is a potential lost customer. Here's how AI voice technology is changing the game for service businesses.",
     body: `
 For a plumber, electrician, or cleaning company, the phone is the lifeblood of the business. A customer with a burst pipe isn't going to wait for a callback — they'll call the next number on the list.
 
@@ -90,12 +81,6 @@ HelmSmart's Voice Agent connects to your existing phone number via Twilio or Ret
   },
 
   "cost-of-admin-work": {
-    title: "The True Cost of Admin Work for Small Business Owners",
-    category: "Productivity",
-    date: "May 8, 2025",
-    readTime: "4 min read",
-    excerpt:
-      "The average small business owner spends 10+ hours per week on administrative tasks. Here's how to take that time back.",
     body: `
 Ask any small business owner how much time they spend on admin, and you'll get answers ranging from "too much" to "basically all weekend." The data backs this up: the average service business owner spends 10–15 hours per week on tasks that don't directly generate revenue.
 
@@ -135,12 +120,6 @@ HelmSmart is built around the idea that a 1–3 person shop should be able to op
   },
 
   "get-paid-faster": {
-    title: "5 Ways to Get Paid Faster as a Service Business",
-    category: "Finance",
-    date: "April 30, 2025",
-    readTime: "6 min read",
-    excerpt:
-      "Late payments kill cash flow. These proven strategies — including automated invoicing — can cut your payment cycle in half.",
     body: `
 Cash flow is the number one cause of small business failure — and the irony is that most cash flow problems aren't caused by lack of revenue. They're caused by slow collections. Here are five strategies that consistently shorten the payment cycle.
 
@@ -173,12 +152,6 @@ Cutting your average payment cycle from 35 days to 20 days might not sound drama
   },
 
   "ai-receptionist-setup": {
-    title: "Setting Up Your AI Receptionist: A Step-by-Step Guide",
-    category: "Guide",
-    date: "April 22, 2025",
-    readTime: "8 min read",
-    excerpt:
-      "A complete walkthrough of configuring HelmSmart's voice agent — from business hours to appointment types to knowledge base.",
     body: `
 Getting your AI receptionist live on HelmSmart takes less than 30 minutes if you follow this guide. Here's exactly what to do, in order.
 
@@ -240,17 +213,34 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = posts[slug];
-  if (!post) return { title: "Post Not Found — HelmSmart" };
+  const t = await getServerT("site");
+  if (!posts[slug]) return { title: t("post.notFoundTitle") };
   return {
-    title: `${post.title} — HelmSmart Blog`,
-    description: post.excerpt,
+    title: t("post.metaTitle", { title: t(`blog.posts.${slug}.title`) }),
+    description: t(`blog.posts.${slug}.excerpt`),
   };
 }
 
-export function generateStaticParams() {
-  return Object.keys(posts).map((slug) => ({ slug }));
-}
+/*
+ * Rendered per request, not prebuilt.
+ *
+ * This route used to export `generateStaticParams`, which asks Next to
+ * generate each post at build time. That is now illegal here: the root layout
+ * resolves the reader's language with `getServerLocale()`, which reads
+ * `cookies()`, and a request-time API cannot run during static generation. The
+ * page throws DYNAMIC_SERVER_USAGE and returns HTTP 500.
+ *
+ * The trap is that it only happens in a PRODUCTION build. `next dev` renders
+ * everything dynamically, so the page looks perfect locally and 500s after
+ * deploy. The sibling app learned this the expensive way — roughly 982
+ * programmatic SEO pages served 5xx to Google for days, while the pages
+ * without a static opt-in were fine.
+ *
+ * So the whole tree stays dynamic, matching `app/f/[slug]/page.tsx`. Do not
+ * add `revalidate` or `generateStaticParams` to any page under this layout
+ * without first removing the layout's cookie read for that route.
+ */
+export const dynamic = "force-dynamic";
 
 function renderBody(body: string) {
   const paragraphs = body.split("\n\n");
@@ -298,6 +288,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = posts[slug];
   if (!post) notFound();
+  const t = await getServerT("site");
 
   return (
     <div className="bg-white">
@@ -307,24 +298,24 @@ export default async function BlogPostPage({
           className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium mb-10"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to blog
+          {t("post.back")}
         </Link>
 
         <div className="mb-6 flex items-center gap-3">
           <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
-            {post.category}
+            {t(`blog.posts.${slug}.category`)}
           </span>
-          <span className="text-sm text-gray-400">{post.date}</span>
+          <span className="text-sm text-gray-400">{t(`blog.posts.${slug}.date`)}</span>
           <span className="text-sm text-gray-400">·</span>
-          <span className="text-sm text-gray-400">{post.readTime}</span>
+          <span className="text-sm text-gray-400">{t(`blog.posts.${slug}.readTime`)}</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-6">
-          {post.title}
+          {t(`blog.posts.${slug}.title`)}
         </h1>
 
         <p className="text-lg text-gray-500 leading-relaxed border-l-4 border-indigo-200 pl-4 mb-10">
-          {post.excerpt}
+          {t(`blog.posts.${slug}.excerpt`)}
         </p>
 
         <hr className="border-gray-100 mb-10" />
@@ -333,16 +324,16 @@ export default async function BlogPostPage({
 
         <div className="mt-16 rounded-2xl bg-indigo-600 px-8 py-10 text-center">
           <h2 className="text-2xl font-bold text-white mb-2">
-            Ready to put this into practice?
+            {t("post.cta.title")}
           </h2>
           <p className="text-indigo-100 mb-6">
-            Start your 14-day free trial — no credit card required.
+            {t("post.cta.subtitle")}
           </p>
           <Link
             href="/signup"
             className="inline-flex items-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors"
           >
-            Get started for free
+            {t("post.cta.button")}
           </Link>
         </div>
       </div>

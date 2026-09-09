@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { X, Plus, Receipt } from "lucide-react";
 import { ExpenseForm } from "@/components/expense-form";
 
@@ -31,6 +32,7 @@ interface Props {
 
 export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [] }: Props) {
   const router = useRouter();
+  const { t } = useTranslation("books");
   const [open, setOpen] = useState(false);
 
   function handleClose() {
@@ -50,8 +52,8 @@ export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [] }: P
                    bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors"
       >
         <Plus className="w-4 h-4" />
-        <span>Add Expense</span>
-        <span className="text-xs text-slate-400">Manual entry</span>
+        <span>{t("expenses.modal.trigger")}</span>
+        <span className="text-xs text-slate-400">{t("expenses.modal.triggerHint")}</span>
       </button>
 
       {open && (
@@ -67,12 +69,12 @@ export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [] }: P
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <Receipt className="w-4 h-4 text-slate-500" />
-                <h3 className="text-sm font-semibold text-slate-800">Add expense</h3>
+                <h3 className="text-sm font-semibold text-slate-800">{t("expenses.modal.title")}</h3>
               </div>
               <button
                 onClick={handleClose}
                 className="p-1 text-slate-400 hover:text-slate-600 rounded"
-                aria-label="Close"
+                aria-label={t("expenses.modal.close")}
               >
                 <X className="w-4 h-4" />
               </button>

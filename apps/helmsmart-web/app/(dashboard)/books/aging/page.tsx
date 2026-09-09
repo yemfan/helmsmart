@@ -3,12 +3,15 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
-import { ArrowUpRight, AlertTriangle, Clock } from "lucide-react";
+import { ArrowUpRight, AlertTriangle } from "lucide-react";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { moneyFormatter, dateFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Aging Reports · Books" };
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("aging.metaTitle") };
+}
 
 type AgingBucket = "current" | "1-30" | "31-60" | "61-90" | "90+";
 
@@ -40,23 +43,19 @@ const BUCKET_COLORS: Record<AgingBucket, string> = {
   "90+":     "bg-rose-100  text-rose-800   border-rose-300",
 };
 
-const BUCKET_LABELS: Record<AgingBucket, string> = {
-  "current": "Current",
-  "1-30":    "1–30 days",
-  "31-60":   "31–60 days",
-  "61-90":   "61–90 days",
-  "90+":     "90+ days",
-};
-
-function AgingTable({
-  title,
+async function AgingTable({
   rows,
   type,
 }: {
-  title: string;
   rows: AgingRow[];
   type: "ar" | "ap";
 }) {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
+  const currency = await orgCurrency();
+  const fmt = moneyFormatter(locale, currency);
+  const fmtDate = dateFormatter(locale, { month: "short", day: "numeric", year: "numeric" });
+
   const totals: Record<AgingBucket, number> = {
     "current": 0, "1-30": 0, "31-60": 0, "61-90": 0, "90+": 0,
   };
@@ -68,13 +67,16 @@ function AgingTable({
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <div>
-          <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+          <h2 className="text-sm font-semibold text-slate-800">{t(`aging.tables.${type}`)}</h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            {rows.length} open · {fmt(grandTotal)} total ·{" "}
+            {t("aging.summary.open", { count: rows.length })} ·{" "}
+            {t("aging.summary.total", { amount: fmt(grandTotal) })} ·{" "}
             {pastDue > 0 ? (
-              <span className="text-rose-600 font-medium">{fmt(pastDue)} past due</span>
+              <span className="text-rose-600 font-medium">
+                {t("aging.summary.pastDue", { amount: fmt(pastDue) })}
+              </span>
             ) : (
-              <span className="text-emerald-600 font-medium">nothing past due</span>
+              <span className="text-emerald-600 font-medium">{t("aging.summary.nothingPastDue")}</span>
             )}
           </p>
         </div>
@@ -82,7 +84,7 @@ function AgingTable({
           href={type === "ar" ? "/books/invoices" : "/books/bills"}
           className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 font-medium"
         >
-          View all <ArrowUpRight className="w-3.5 h-3.5" />
+          {t("aging.viewAll")} <ArrowUpRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
@@ -91,7 +93,7 @@ function AgingTable({
         {BUCKET_ORDER.map((bucket) => (
           <div key={bucket} className={`p-4 text-center ${totals[bucket] > 0 ? "" : "opacity-40"}`}>
             <p className={`text-xs font-semibold px-2 py-0.5 rounded-full border inline-block ${BUCKET_COLORS[bucket]}`}>
-              {BUCKET_LABELS[bucket]}
+              {t(`aging.buckets.${bucket}`)}
             </p>
             <p className="text-sm font-bold text-slate-800 mt-2 tabular-nums">
               {fmt(totals[bucket])}
@@ -102,7 +104,9 @@ function AgingTable({
 
       {rows.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-slate-400">No open {type === "ar" ? "invoices" : "bills"}</p>
+          <p className="text-sm text-slate-400">
+            {type === "ar" ? t("aging.empty.invoices") : t("aging.empty.bills")}
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -110,19 +114,19 @@ function AgingTable({
             <thead>
               <tr className="border-b border-slate-50 bg-slate-50">
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  {type === "ar" ? "Client" : "Vendor"}
+                  {type === "ar" ? t("aging.columns.client") : t("aging.columns.vendor")}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Reference
+                  {t("aging.columns.reference")}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Due Date
+                  {t("aging.columns.dueDate")}
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Amount
+                  {t("aging.columns.amount")}
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Status
+                  {t("aging.columns.status")}
                 </th>
               </tr>
             </thead>
@@ -143,11 +147,7 @@ function AgingTable({
                       —
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-600">
-                      {new Date(row.dueDate + "T00:00:00").toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {fmtDate(row.dueDate)}
                     </td>
                     <td className="px-4 py-3 text-right font-semibold tabular-nums text-slate-800">
                       {fmt(row.amount)}
@@ -157,8 +157,8 @@ function AgingTable({
                         className={`text-xs font-medium px-2 py-0.5 rounded-full border ${BUCKET_COLORS[row.bucket]}`}
                       >
                         {row.bucket === "current"
-                          ? "Current"
-                          : `${row.daysOverdue}d overdue`}
+                          ? t("aging.status.current")
+                          : t("aging.status.daysOverdue", { days: row.daysOverdue })}
                       </span>
                     </td>
                   </tr>
@@ -172,12 +172,15 @@ function AgingTable({
 }
 
 export default async function AgingPage() {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const currency = await orgCurrency(orgId);
+  const fmt = moneyFormatter(locale, currency);
   const supabase = await createClient();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayStr = today.toISOString().slice(0, 10);
 
   const [invoicesRes, billsRes] = await Promise.all([
     supabase
@@ -200,8 +203,8 @@ export default async function AgingPage() {
     const daysOverdue = Math.max(0, Math.floor((today.getTime() - due.getTime()) / 86_400_000));
     const clientRaw = inv.client as unknown as { first_name?: string; last_name?: string; company?: string } | null;
     const clientName = clientRaw
-      ? [clientRaw.first_name, clientRaw.last_name].filter(Boolean).join(" ") || clientRaw.company || "Client"
-      : "Client";
+      ? [clientRaw.first_name, clientRaw.last_name].filter(Boolean).join(" ") || clientRaw.company || t("aging.unnamedClient")
+      : t("aging.unnamedClient");
     return {
       id: inv.id,
       label: clientName,
@@ -233,12 +236,45 @@ export default async function AgingPage() {
   const overdueAR = arRows.filter((r) => r.bucket !== "current").reduce((s, r) => s + r.amount, 0);
   const overdueAP = apRows.filter((r) => r.bucket !== "current").reduce((s, r) => s + r.amount, 0);
 
+  const asOf = dateFormatter(locale, { month: "long", day: "numeric", year: "numeric" });
+
+  const cards = [
+    {
+      key: "totalReceivable",
+      value: fmt(totalAR),
+      sub: t("aging.cards.openInvoices", { count: arRows.length }),
+      color: "text-indigo-600",
+      warn: false,
+    },
+    {
+      key: "arOverdue",
+      value: fmt(overdueAR),
+      sub: t("aging.cards.invoices", { count: arRows.filter((r) => r.bucket !== "current").length }),
+      color: overdueAR > 0 ? "text-rose-600" : "text-emerald-600",
+      warn: overdueAR > 0,
+    },
+    {
+      key: "totalPayable",
+      value: fmt(totalAP),
+      sub: t("aging.cards.openBills", { count: apRows.length }),
+      color: "text-slate-700",
+      warn: false,
+    },
+    {
+      key: "apOverdue",
+      value: fmt(overdueAP),
+      sub: t("aging.cards.bills", { count: apRows.filter((r) => r.bucket !== "current").length }),
+      color: overdueAP > 0 ? "text-rose-600" : "text-emerald-600",
+      warn: overdueAP > 0,
+    },
+  ];
+
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Aging Reports</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("aging.title")}</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Accounts receivable and payable — as of {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          {t("aging.subtitle", { date: asOf(new Date()) })}
         </p>
       </div>
 
@@ -246,40 +282,15 @@ export default async function AgingPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-4 mb-8">
-        {[
-          {
-            label: "Total Receivable",
-            value: fmt(totalAR),
-            sub: `${arRows.length} open invoices`,
-            color: "text-indigo-600",
-          },
-          {
-            label: "AR Overdue",
-            value: fmt(overdueAR),
-            sub: `${arRows.filter((r) => r.bucket !== "current").length} invoices`,
-            color: overdueAR > 0 ? "text-rose-600" : "text-emerald-600",
-            warn: overdueAR > 0,
-          },
-          {
-            label: "Total Payable",
-            value: fmt(totalAP),
-            sub: `${apRows.length} open bills`,
-            color: "text-slate-700",
-          },
-          {
-            label: "AP Overdue",
-            value: fmt(overdueAP),
-            sub: `${apRows.filter((r) => r.bucket !== "current").length} bills`,
-            color: overdueAP > 0 ? "text-rose-600" : "text-emerald-600",
-            warn: overdueAP > 0,
-          },
-        ].map(({ label, value, sub, color, warn }) => (
+        {cards.map(({ key, value, sub, color, warn }) => (
           <div
-            key={label}
+            key={key}
             className={`rounded-xl border p-5 ${warn ? "bg-rose-50 border-rose-200" : "bg-white border-slate-200"}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                {t(`aging.cards.${key}`)}
+              </span>
               {warn && <AlertTriangle className="w-4 h-4 text-rose-400" />}
             </div>
             <p className={`text-2xl font-bold tabular-nums ${color}`}>{value}</p>
@@ -289,8 +300,8 @@ export default async function AgingPage() {
       </div>
 
       <div className="space-y-6">
-        <AgingTable title="Accounts Receivable (AR)" rows={arRows} type="ar" />
-        <AgingTable title="Accounts Payable (AP)" rows={apRows} type="ap" />
+        <AgingTable rows={arRows} type="ar" />
+        <AgingTable rows={apRows} type="ap" />
       </div>
     </div>
   );

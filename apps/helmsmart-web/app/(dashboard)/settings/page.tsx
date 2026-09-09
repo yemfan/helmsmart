@@ -17,9 +17,14 @@ import { InvoiceReminderSettings } from "@/components/invoice-reminder-settings"
 import { LanguagePanel } from "@/components/language-panel";
 import { getActivePack } from "@/lib/packs";
 import { requirePermission } from "@/lib/rbac";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 import { Users, ChevronRight } from "lucide-react";
 
-export const metadata: Metadata = { title: "Settings" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("settings");
+  return { title: t("meta.title") };
+}
 
 const TIMEZONES = [
   "America/New_York",
@@ -34,6 +39,9 @@ const SECTION_H2 = "text-sm font-semibold text-slate-700 mb-4 pb-2 border-b bord
 
 export default async function SettingsPage() {
   await requirePermission("settings.read");
+
+  const t = await getServerT("settings");
+  const locale = await getServerLocale();
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
@@ -74,8 +82,8 @@ export default async function SettingsPage() {
   return (
     <div className="p-8 max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Manage your organization and integrations.</p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("page.title")}</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{t("page.subtitle")}</p>
       </div>
 
       <SettingsTabs
@@ -84,7 +92,7 @@ export default async function SettingsPage() {
             <LanguagePanel />
 
             <section>
-              <h2 className={SECTION_H2}>Business information</h2>
+              <h2 className={SECTION_H2}>{t("sections.businessInfo")}</h2>
               <OrgSettingsForm
                 org={org}
                 timezones={TIMEZONES}
@@ -95,13 +103,13 @@ export default async function SettingsPage() {
 
             {isMedical && (
               <section>
-                <h2 className={SECTION_H2}>Insurance eligibility</h2>
+                <h2 className={SECTION_H2}>{t("sections.insuranceEligibility")}</h2>
                 <NpiSetting initial={org?.npi ?? ""} />
               </section>
             )}
 
             <section>
-              <h2 className={SECTION_H2}>Team &amp; plan</h2>
+              <h2 className={SECTION_H2}>{t("sections.teamAndPlan")}</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <Link
                   href="/settings/team"
@@ -111,24 +119,40 @@ export default async function SettingsPage() {
                     <Users className="w-4 h-4 text-indigo-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">Team members</p>
-                    <p className="text-xs text-slate-500">Invite, roles, access</p>
+                    <p className="text-sm font-semibold text-slate-800">{t("teamPlan.membersTitle")}</p>
+                    <p className="text-xs text-slate-500">{t("teamPlan.membersSubtitle")}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
                 </Link>
 
                 <div className="flex items-center gap-3 bg-slate-50 rounded-xl border border-slate-200 p-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 capitalize">{org?.plan ?? "Starter"} plan</p>
-                    <p className="text-xs text-slate-500 capitalize truncate">
-                      {org?.subscription_status ?? "trialing"}
+                    <p className="text-sm font-semibold text-slate-800">
+                      {t("teamPlan.planName", {
+                        plan: t(`teamPlan.plans.${org?.plan ?? "starter"}`, {
+                          defaultValue: org?.plan ?? "starter",
+                        }),
+                      })}
+                    </p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {t(`teamPlan.status.${org?.subscription_status ?? "trialing"}`, {
+                        defaultValue: org?.subscription_status ?? "trialing",
+                      })}
                       {org?.trial_ends_at && (
-                        <> · ends {new Date(org.trial_ends_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</>
+                        <>
+                          {" · "}
+                          {t("teamPlan.trialEnds", {
+                            date: new Date(org.trial_ends_at).toLocaleDateString(intlLocale(locale), {
+                              month: "short",
+                              day: "numeric",
+                            }),
+                          })}
+                        </>
                       )}
                     </p>
                   </div>
                   <span className="inline-block px-2.5 py-1 text-[11px] font-semibold text-indigo-700 bg-indigo-100 rounded-full shrink-0">
-                    Free during beta
+                    {t("teamPlan.freeDuringBeta")}
                   </span>
                 </div>
               </div>
@@ -138,11 +162,8 @@ export default async function SettingsPage() {
         financial={
           <>
             <section>
-              <h2 className={SECTION_H2}>Bank accounts</h2>
-              <p className="text-xs text-slate-500 mb-4">
-                Link a bank via Plaid to import the last 90 days of transactions (AI-categorized), then map
-                each account to a chart-of-accounts entry so it posts to the double-entry journal.
-              </p>
+              <h2 className={SECTION_H2}>{t("sections.bankAccounts")}</h2>
+              <p className="text-xs text-slate-500 mb-4">{t("financial.bank.description")}</p>
               <div className="mb-4">
                 <PlaidLink />
               </div>
@@ -154,13 +175,13 @@ export default async function SettingsPage() {
                 </div>
               ) : (
                 <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-400">
-                  No bank accounts linked yet — click <strong>Link Bank</strong> above to connect one.
+                  {t("financial.bank.empty")}
                 </div>
               )}
             </section>
 
             <section>
-              <h2 className={SECTION_H2}>Billing rates</h2>
+              <h2 className={SECTION_H2}>{t("sections.billingRates")}</h2>
               <BillingRatesForm
                 hourlyRate={Number(org?.default_hourly_rate ?? 0) || null}
                 laborCostRate={Number(org?.default_labor_cost_rate ?? 0) || null}
@@ -168,7 +189,7 @@ export default async function SettingsPage() {
             </section>
 
             <section>
-              <h2 className={SECTION_H2}>Invoice payment reminders</h2>
+              <h2 className={SECTION_H2}>{t("sections.invoiceReminders")}</h2>
               <InvoiceReminderSettings
                 orgId={org?.id ?? ""}
                 autoSend={org?.auto_send_reminders ?? true}
@@ -181,27 +202,21 @@ export default async function SettingsPage() {
         marketing={
           <>
             <section>
-              <h2 className={SECTION_H2}>Social channels</h2>
-              <p className="text-xs text-slate-500 mb-4">
-                Connect the accounts your AI marketing posts to. Connecting opens the
-                provider&apos;s secure sign-in; disconnecting removes the stored access here.
-              </p>
+              <h2 className={SECTION_H2}>{t("sections.socialChannels")}</h2>
+              <p className="text-xs text-slate-500 mb-4">{t("marketing.socialChannelsDescription")}</p>
               <SocialConnections connected={connectedProviders} />
             </section>
 
             <section>
-              <h2 className={SECTION_H2}>Social autopilot</h2>
-              <p className="text-xs text-slate-500 mb-4">
-                Turn it on and Emily writes &amp; schedules posts about your business on the
-                cadence you choose.
-              </p>
+              <h2 className={SECTION_H2}>{t("sections.socialAutopilot")}</h2>
+              <p className="text-xs text-slate-500 mb-4">{t("marketing.socialAutopilotDescription")}</p>
               <SocialAutopilotPanel variant="full" />
             </section>
           </>
         }
         voice={
           <section id="voice-agent" className="scroll-mt-8">
-            <h2 className={SECTION_H2}>AI Voice agent</h2>
+            <h2 className={SECTION_H2}>{t("sections.voiceAgent")}</h2>
             <VoiceAgentSettingsSection />
           </section>
         }
@@ -215,7 +230,7 @@ export default async function SettingsPage() {
             />
 
             <section>
-              <h2 className={SECTION_H2}>Slack notifications</h2>
+              <h2 className={SECTION_H2}>{t("sections.slackNotifications")}</h2>
               <SlackSettings
                 webhookUrl={org?.slack_webhook_url ?? null}
                 notifyNewLead={org?.slack_notify_new_lead ?? true}

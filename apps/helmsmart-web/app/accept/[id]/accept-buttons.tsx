@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function AcceptButtons({ estimateId }: Props) {
+  const { t } = useTranslation("auth");
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState<"accepted" | "declined" | null>(null);
   const [activeAction, setActiveAction] = useState<"accept" | "decline" | null>(null);
@@ -28,7 +30,7 @@ export function AcceptButtons({ estimateId }: Props) {
         setDone(status);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Something went wrong. Please try again."
+          err instanceof Error ? err.message : t("common:errors.generic")
         );
       } finally {
         setActiveAction(null);
@@ -64,7 +66,7 @@ export function AcceptButtons({ estimateId }: Props) {
             color: "#15803d",
           }}
         >
-          Estimate accepted!
+          {t("accept.accepted.title")}
         </p>
         <p
           style={{
@@ -73,7 +75,7 @@ export function AcceptButtons({ estimateId }: Props) {
             color: "#166534",
           }}
         >
-          We&apos;ll be in touch shortly to get started.
+          {t("accept.accepted.body")}
         </p>
       </div>
     );
@@ -107,7 +109,7 @@ export function AcceptButtons({ estimateId }: Props) {
             color: "#b91c1c",
           }}
         >
-          Estimate declined
+          {t("accept.declined.title")}
         </p>
         <p
           style={{
@@ -116,7 +118,7 @@ export function AcceptButtons({ estimateId }: Props) {
             color: "#991b1b",
           }}
         >
-          Thank you for letting us know. Feel free to reach out with any questions.
+          {t("accept.declined.body")}
         </p>
       </div>
     );
@@ -132,7 +134,7 @@ export function AcceptButtons({ estimateId }: Props) {
           marginBottom: 16,
         }}
       >
-        Ready to move forward?
+        {t("accept.buttons.prompt")}
       </p>
       {error && (
         <p
@@ -173,7 +175,7 @@ export function AcceptButtons({ estimateId }: Props) {
           ) : (
             <CheckCircle2 style={{ width: 18, height: 18 }} />
           )}
-          Accept estimate
+          {t("accept.buttons.accept")}
         </button>
         <button
           onClick={() => handleAction("decline")}
@@ -201,7 +203,7 @@ export function AcceptButtons({ estimateId }: Props) {
           ) : (
             <XCircle style={{ width: 16, height: 16 }} />
           )}
-          Decline
+          {t("accept.buttons.decline")}
         </button>
       </div>
     </div>

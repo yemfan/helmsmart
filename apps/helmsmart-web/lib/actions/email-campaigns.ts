@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { sendEmailCampaign } from "@/lib/integrations/email-campaign-sender";
 import { checkActionPermission } from "@/components/role-guard";
 import { computeNextRun, type RecurrenceInterval } from "@/lib/recurrence";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface CreateEmailCampaignInput {
   name: string;
@@ -35,11 +36,12 @@ export async function createEmailCampaign(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "No user session" };
+  if (!user) return { ok: false, error: t("errors.noUserSession") };
 
   const db = await createServiceClient();
 
@@ -84,7 +86,7 @@ export async function createEmailCampaign(
     .single();
 
   if (error || !campaign) {
-    return { ok: false, error: error?.message || "Failed to create campaign" };
+    return { ok: false, error: error?.message || t("errors.campaigns.createFailed") };
   }
 
   revalidatePath("/marketing/email");
@@ -100,7 +102,8 @@ export async function updateEmailCampaign(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 
@@ -139,7 +142,8 @@ export async function sendEmailCampaignNow(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
   const { data: campaign } = await supabase
@@ -149,9 +153,9 @@ export async function sendEmailCampaignNow(
     .eq("organization_id", orgId)
     .single();
 
-  if (!campaign) return { ok: false, error: "Campaign not found" };
+  if (!campaign) return { ok: false, error: t("errors.campaigns.notFound") };
   if (campaign.status !== "draft" && campaign.status !== "scheduled") {
-    return { ok: false, error: `Cannot send a ${campaign.status} campaign` };
+    return { ok: false, error: t("errors.campaigns.cannotSendStatus", { status: campaign.status }) };
   }
 
   const result = await sendEmailCampaign(orgId, campaignId);
@@ -169,7 +173,8 @@ export async function deleteEmailCampaign(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
   const { data: campaign } = await supabase
@@ -179,8 +184,8 @@ export async function deleteEmailCampaign(
     .eq("organization_id", orgId)
     .single();
 
-  if (!campaign) return { ok: false, error: "Campaign not found" };
-  if (campaign.status !== "draft") return { ok: false, error: "Can only delete draft campaigns" };
+  if (!campaign) return { ok: false, error: t("errors.campaigns.notFound") };
+  if (campaign.status !== "draft") return { ok: false, error: t("errors.campaigns.onlyDraftsDeletable") };
 
   const db = await createServiceClient();
   await db.from("email_campaigns").delete().eq("id", campaignId).eq("organization_id", orgId);

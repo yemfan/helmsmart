@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle, X } from "lucide-react";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function StripeResultBanner({ result }: Props) {
+  const { t } = useTranslation("books");
   const [visible, setVisible] = useState(true);
   if (!visible) return null;
 
@@ -28,13 +30,13 @@ export function StripeResultBanner({ result }: Props) {
       )}
       <span className="flex-1">
         {isSuccess
-          ? "Payment completed successfully — the invoice will be marked paid shortly."
-          : "Payment was cancelled. The invoice has not been charged."}
+          ? t("invoices.stripe.success")
+          : t("invoices.stripe.cancelled")}
       </span>
       <button
         onClick={() => setVisible(false)}
         className="p-0.5 rounded hover:bg-black/5 transition-colors flex-shrink-0"
-        aria-label="Dismiss"
+        aria-label={t("common:actions.dismiss")}
       >
         <X className="w-3.5 h-3.5" />
       </button>

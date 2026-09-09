@@ -1,6 +1,222 @@
 {
+  "meta": {
+    "title": "Settings",
+    "team": "Team · Settings"
+  },
+  "page": {
+    "title": "Settings",
+    "subtitle": "Manage your organization and integrations."
+  },
+  "actions": {
+    "saving": "Saving…",
+    "saved": "Saved!"
+  },
+  "sections": {
+    "businessInfo": "Business information",
+    "teamAndPlan": "Team & plan",
+    "bankAccounts": "Bank accounts",
+    "billingRates": "Billing rates",
+    "invoiceReminders": "Invoice payment reminders",
+    "socialChannels": "Social channels",
+    "socialAutopilot": "Social autopilot",
+    "voiceAgent": "AI Voice agent",
+    "slackNotifications": "Slack notifications",
+    "insuranceEligibility": "Insurance eligibility"
+  },
   "language": {
     "title": "Language",
     "description": "The language you read HelmSmart in. Your own choice — it does not change what your customers receive."
+  },
+  "general": {
+    "businessName": "Business name",
+    "timezone": "Timezone",
+    "timezones": {
+      "America/New_York": "New York",
+      "America/Chicago": "Chicago",
+      "America/Denver": "Denver",
+      "America/Los_Angeles": "Los Angeles",
+      "America/Anchorage": "Anchorage",
+      "Pacific/Honolulu": "Honolulu"
+    },
+    "entityType": "Entity type",
+    "entityTypes": {
+      "sole_prop": "Sole proprietorship",
+      "llc": "LLC",
+      "s_corp": "S corporation",
+      "c_corp": "C corporation",
+      "partnership": "Partnership",
+      "nonprofit": "Nonprofit"
+    },
+    "entityTypeHelp": "Contact support to change entity type. Billing rates are under the Financial tab.",
+    "weeklyDigest": {
+      "label": "Weekly digest email",
+      "help": "A Monday summary of cash, receivables, bills, and tasks — emailed to owners & admins."
+    },
+    "englishAssist": {
+      "label": "Show me English (multi-language assist)",
+      "help": "Translate non-English customer messages to English in your inbox, and send replies & reminders bilingually (their language + English) so you can read what went out."
+    },
+    "save": "Save changes"
+  },
+  "teamPlan": {
+    "membersTitle": "Team members",
+    "membersSubtitle": "Invite, roles, access",
+    "planName": "{{plan}} plan",
+    "plans": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "pro": "Pro"
+    },
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past due",
+      "canceled": "Canceled",
+      "cancelled": "Cancelled",
+      "unpaid": "Unpaid",
+      "incomplete": "Incomplete",
+      "incomplete_expired": "Expired",
+      "paused": "Paused"
+    },
+    "trialEnds": "ends {{date}}",
+    "freeDuringBeta": "Free during beta"
+  },
+  "financial": {
+    "bank": {
+      "description": "Link a bank via Plaid to import the last 90 days of transactions (AI-categorized), then map each account to a chart-of-accounts entry so it posts to the double-entry journal.",
+      "empty": "No bank accounts linked yet — use the Link Bank button above to connect one."
+    },
+    "rates": {
+      "hourly": "Default hourly rate",
+      "hourlyPlaceholder": "e.g. 125",
+      "hourlyHelp": "Your billable rate — applied automatically when starting a timer.",
+      "laborCost": "Default labor cost rate",
+      "laborCostPlaceholder": "e.g. 45",
+      "laborCostHelp": "What an hour of work costs you (wages/contractor pay). Used for project profit.",
+      "save": "Save rates"
+    },
+    "reminders": {
+      "title": "Automatic payment reminders",
+      "description": "Automatically email clients about overdue invoices on a schedule",
+      "presetsLabel": "Quick presets:",
+      "presets": {
+        "gentle": "Gentle (7, 21 days)",
+        "standard": "Standard (3, 7, 14, 30 days)",
+        "aggressive": "Aggressive (1, 3, 7, 14, 21, 30 days)"
+      },
+      "intervalsLabel": "Send reminders when overdue by (days, comma-separated)",
+      "intervalsHelp": "Example: 3, 7, 14, 30 sends reminders at 3, 7, 14, and 30 days overdue",
+      "maxLabel": "Stop after this many reminders per invoice",
+      "save": "Save settings",
+      "savedNote": "Saved",
+      "errors": {
+        "noDays": "Enter at least one reminder day (e.g. 3, 7, 14)",
+        "saveFailed": "Failed to save"
+      }
+    }
+  },
+  "marketing": {
+    "socialChannelsDescription": "Connect the accounts your AI marketing posts to. Connecting opens the provider's secure sign-in; disconnecting removes the stored access here.",
+    "socialAutopilotDescription": "Turn it on and Emily writes & schedules posts about your business on the cadence you choose."
+  },
+  "slack": {
+    "connected": "Connected",
+    "description": "Get notified in Slack for leads, calls, and approvals",
+    "createApp": "Create app",
+    "webhookLabel": "Incoming Webhook URL",
+    "webhookHelp": "In your Slack app: Features → Incoming Webhooks → Add New Webhook to Workspace. Copy the URL here.",
+    "save": "Save",
+    "sendTest": "Send test message",
+    "testSent": "Test message sent ✓",
+    "notifyHeading": "Notify me for",
+    "toggles": {
+      "slack_notify_new_lead": {
+        "label": "New lead added",
+        "description": "When a client is created manually or via form"
+      },
+      "slack_notify_form_submission": {
+        "label": "Form submission",
+        "description": "When someone submits a lead capture form"
+      },
+      "slack_notify_missed_call": {
+        "label": "Missed call",
+        "description": "When the AI receptionist logs a missed inbound call"
+      },
+      "slack_notify_approval": {
+        "label": "AI approval needed",
+        "description": "When an AI employee action requires your approval"
+      }
+    },
+    "test": {
+      "text": "✅ HelmSmart Slack integration is working!",
+      "blockText": "✅ *HelmSmart is connected to Slack!*\nYou'll receive notifications here for new leads, missed calls, form submissions, and AI approvals."
+    },
+    "errors": {
+      "notAuthenticated": "Not authenticated",
+      "invalidUrl": "Must be a valid Slack incoming webhook URL (hooks.slack.com)",
+      "saveFailed": "Failed to save",
+      "testFailed": "Test failed",
+      "testSendFailed": "Failed to send test message. Check your webhook URL."
+    }
+  },
+  "team": {
+    "title": "Team",
+    "subtitle": "Manage who has access to your workspace",
+    "backToSettings": "Settings",
+    "membersTitle": "Team members",
+    "pendingTitle": "Pending invitations",
+    "unknownUser": "Unknown",
+    "you": "you",
+    "invitedAs": "Invited as {{role}} · expires in {{days}}d",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "bookkeeper": "Bookkeeper",
+      "viewer": "Viewer"
+    },
+    "roleDescriptions": {
+      "admin": "Full access, can manage members",
+      "bookkeeper": "Access to Books and Reports",
+      "viewer": "Read-only access"
+    },
+    "invite": {
+      "title": "Invite a team member",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "colleague@example.com",
+      "roleLabel": "Role",
+      "roleOption": "{{label}} — {{description}}",
+      "send": "Send invite",
+      "sending": "Sending…",
+      "sent": "Invitation sent to {{email}}. They have 7 days to accept.",
+      "sentFallbackRecipient": "them",
+      "invalidEmail": "Enter a valid email address.",
+      "genericError": "Something went wrong"
+    },
+    "removeConfirm": "Remove this team member? They will lose access immediately.",
+    "removeTitle": "Remove member",
+    "revokeConfirm": "Revoke this invitation?",
+    "revoke": "Revoke",
+    "revoking": "Revoking…",
+    "errors": {
+      "notAuthenticated": "Not authenticated",
+      "invitePending": "An active invitation is already pending for this email",
+      "inviteFailed": "Failed to create invitation",
+      "memberNotFound": "Member not found"
+    }
+  },
+  "errors": {
+    "noOrganization": "No organization found.",
+    "unauthorized": "Unauthorized.",
+    "businessNameRequired": "Business name is required.",
+    "missingBankAccount": "Missing bank account.",
+    "bankLinkFailed": "Failed to update account link.",
+    "orgUpdateRefused": "Couldn't save — you may not have permission for this organization."
+  },
+  "org": {
+    "errors": {
+      "structureRequired": "Please select a business structure.",
+      "createFailed": "Failed to create organization. Please try again.",
+      "membershipFailed": "Organization created but membership failed. Contact support."
+    }
   }
 }

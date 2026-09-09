@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle, XCircle, TrendingUp, Search } from "lucide-react";
+import { CheckCircle2, AlertCircle, XCircle, Search } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "SEO Audit · Google Business" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.seoAudit") };
+}
 
 type Status = "pass" | "warn" | "fail";
 
 interface AuditItem {
+  id: string;
   title: string;
   description: string;
   status: Status;
@@ -20,6 +26,7 @@ export default async function SEOAuditPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+  const [t, locale] = await Promise.all([getServerT("marketing"), getServerLocale()]);
 
   const { data: org } = await supabase
     .from("organizations")
@@ -41,50 +48,60 @@ export default async function SEOAuditPage() {
   // Generate audit items
   const auditItems: AuditItem[] = [
     {
-      title: "Google Business Profile Connected",
-      description: "Your Google Business Profile is connected and synced.",
+      id: "profile",
+      title: t("google.seo.profileTitle"),
+      description: t("google.seo.profileDesc"),
       status: profile ? "pass" : "fail",
-      recommendation: !profile ? "Connect your Google Business Profile to enable local SEO features" : undefined,
+      recommendation: !profile ? t("google.seo.profileRec") : undefined,
     },
     {
-      title: "Business Reviews (5+ recommended)",
-      description: `You have ${reviewCount || 0} reviews synced.`,
+      id: "reviews",
+      title: t("google.seo.reviewsTitle"),
+      description: t("google.seo.reviewsDesc", { count: reviewCount || 0 }),
       status: (reviewCount ?? 0) >= 5 ? "pass" : (reviewCount ?? 0) > 0 ? "warn" : "fail",
-      recommendation:
-        (reviewCount ?? 0) < 5
-          ? "Request more reviews to improve your local search visibility. Businesses with 5+ reviews rank higher."
-          : undefined,
+      recommendation: (reviewCount ?? 0) < 5 ? t("google.seo.reviewsRec") : undefined,
     },
     {
-      title: "Average Rating",
-      description: profile?.rating ? `${profile.rating.toFixed(1)} / 5.0 stars` : "No rating yet",
+      id: "rating",
+      title: t("google.seo.ratingTitle"),
+      description: profile?.rating
+        ? t("google.seo.ratingDesc", {
+            rating: profile.rating.toLocaleString(intlLocale(locale), {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }),
+          })
+        : t("google.seo.ratingNone"),
       status: (profile?.rating ?? 0) >= 4.0 ? "pass" : (profile?.rating ?? 0) > 0 ? "warn" : "fail",
-      recommendation:
-        (profile?.rating ?? 0) < 4.0
-          ? "Encourage happy customers to review and respond professionally to negative reviews"
-          : undefined,
+      recommendation: (profile?.rating ?? 0) < 4.0 ? t("google.seo.ratingRec") : undefined,
     },
     {
-      title: "Auto-Request Reviews Enabled",
-      description: org?.auto_request_reviews ? "Automatically requesting reviews after appointments" : "Not enabled",
+      id: "autoRequest",
+      title: t("google.seo.autoRequestTitle"),
+      description: org?.auto_request_reviews
+        ? t("google.seo.autoRequestOn")
+        : t("google.seo.autoRequestOff"),
       status: org?.auto_request_reviews ? "pass" : "warn",
-      recommendation: !org?.auto_request_reviews ? "Enable auto-request reviews to increase review volume" : undefined,
+      recommendation: !org?.auto_request_reviews ? t("google.seo.autoRequestRec") : undefined,
     },
     {
-      title: "Structured Data (Schema.org)",
-      description: "LocalBusiness schema with reviews markup is enabled on your site.",
+      id: "schema",
+      title: t("google.seo.schemaTitle"),
+      description: t("google.seo.schemaDesc"),
       status: "pass",
       recommendation: undefined,
     },
     {
-      title: "Sitemap Generated",
-      description: "Your sitemap.xml is automatically generated and updated.",
+      id: "sitemap",
+      title: t("google.seo.sitemapTitle"),
+      description: t("google.seo.sitemapDesc"),
       status: "pass",
       recommendation: undefined,
     },
     {
-      title: "Robots.txt Configured",
-      description: "Search engines can crawl public pages; API and dashboard are blocked.",
+      id: "robots",
+      title: t("google.seo.robotsTitle"),
+      description: t("google.seo.robotsDesc"),
       status: "pass",
       recommendation: undefined,
     },
@@ -101,20 +118,20 @@ export default async function SEOAuditPage() {
       <div className="mb-8">
         <Link href="/google" className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back
+          {t("google.seo.back")}
         </Link>
-        <h1 className="text-2xl font-semibold text-slate-900">SEO Audit</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Check your on-page SEO and local search visibility</p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("google.seo.title")}</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{t("google.seo.subtitle")}</p>
       </div>
 
       {/* Score Card */}
       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border border-indigo-200 p-8 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-indigo-700 uppercase">SEO Health Score</p>
+            <p className="text-sm font-medium text-indigo-700 uppercase">{t("google.seo.score")}</p>
             <p className="text-5xl font-bold text-indigo-900 mt-2">{score}%</p>
             <p className="text-sm text-indigo-600 mt-2">
-              {passCount} passing · {warnCount} warnings · {failCount} issues
+              {t("google.seo.summary", { pass: passCount, warn: warnCount, fail: failCount })}
             </p>
           </div>
           <div className="text-6xl font-bold text-indigo-200">
@@ -125,8 +142,8 @@ export default async function SEOAuditPage() {
 
       {/* Audit Items */}
       <div className="space-y-4">
-        {auditItems.map((item, idx) => (
-          <div key={idx} className="bg-white rounded-xl border border-slate-200 p-5">
+        {auditItems.map((item) => (
+          <div key={item.id} className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-start gap-4">
               {item.status === "pass" && (
                 <CheckCircle2 className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
@@ -157,14 +174,11 @@ export default async function SEOAuditPage() {
         <div className="flex gap-3">
           <Search className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-semibold text-blue-900">Local SEO Tips</h3>
+            <h3 className="font-semibold text-blue-900">{t("google.seo.tipsTitle")}</h3>
             <ul className="text-sm text-blue-800 mt-2 space-y-2">
-              <li>✓ Keep your Google Business Profile updated with current hours and contact info</li>
-              <li>✓ Encourage recent customers to leave reviews on Google</li>
-              <li>✓ Respond professionally to all reviews (especially negative ones)</li>
-              <li>✓ Use consistent business name, address, and phone across the web</li>
-              <li>✓ Add local structured data to your website (we've done this for you)</li>
-              <li>✓ Build local citations by listing your business on directories</li>
+              {(["tip1", "tip2", "tip3", "tip4", "tip5", "tip6"] as const).map((key) => (
+                <li key={key}>✓ {t(`google.seo.${key}`)}</li>
+              ))}
             </ul>
           </div>
         </div>

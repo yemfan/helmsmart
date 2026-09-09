@@ -15,6 +15,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { languageDirectiveForExtraction } from "@/lib/i18n/directives";
 
 export const dynamic = "force-dynamic";
 
@@ -36,9 +38,11 @@ Respond with ONLY a JSON object in this exact format — no markdown, no code bl
 If you cannot read a field reliably, set it to null and use confidence "low".`;
 
 export async function POST(request: NextRequest) {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+    return NextResponse.json({ error: t("expenses.scan.notConfigured") }, { status: 503 });
   }
 
   let imageData: string;
@@ -49,28 +53,42 @@ export async function POST(request: NextRequest) {
     const file = formData.get("image") as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No image provided" }, { status: 400 });
+      return NextResponse.json({ error: t("expenses.scan.noImage") }, { status: 400 });
     }
 
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Unsupported image type. Please upload a JPEG, PNG, or WebP file." },
+        { error: t("expenses.scan.unsupportedType") },
         { status: 400 }
       );
     }
 
     // 10 MB limit
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "Image must be under 10 MB" }, { status: 400 });
+      return NextResponse.json({ error: t("expenses.scan.tooLarge") }, { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     imageData = Buffer.from(arrayBuffer).toString("base64");
     mediaType = (file.type === "image/jpg" ? "image/jpeg" : file.type) as typeof mediaType;
   } catch {
-    return NextResponse.json({ error: "Failed to read image" }, { status: 400 });
+    return NextResponse.json({ error: t("expenses.scan.readFailed") }, { status: 400 });
   }
+
+  /*
+   * "description" is the only prose here — the form drops it straight into
+   * the Description field the owner then reads and edits, so it comes back
+   * in their language. Everything else is lifted off the receipt or chosen
+   * from a fixed list: "category" is matched against CATEGORY_HINTS in
+   * components/expense-form.tsx and "confidence" against three class names,
+   * so a translated value there silently loses the match.
+   */
+  const directive = languageDirectiveForExtraction(locale, ["description"]);
+  const prompt = directive
+    ? `${PROMPT}${directive}
+"category" and "confidence" are fixed enum values chosen from the lists above — return them in English, exactly as written there.`
+    : PROMPT;
 
   const anthropic = new Anthropic({ apiKey });
 
@@ -86,7 +104,7 @@ export async function POST(request: NextRequest) {
               type: "image",
               source: { type: "base64", media_type: mediaType, data: imageData },
             },
-            { type: "text", text: PROMPT },
+            { type: "text", text: prompt },
           ],
         },
       ],
@@ -110,13 +128,13 @@ export async function POST(request: NextRequest) {
       parsed = JSON.parse(cleaned);
     } catch {
       console.error("[scan-receipt] JSON parse failed:", rawText);
-      return NextResponse.json({ error: "Failed to parse AI response" }, { status: 500 });
+      return NextResponse.json({ error: t("expenses.scan.parseFailed") }, { status: 500 });
     }
 
     return NextResponse.json(parsed);
   } catch (err) {
     console.error("[scan-receipt] Anthropic error:", err);
-    const msg = err instanceof Error ? err.message : "Failed to scan receipt";
+    const msg = err instanceof Error ? err.message : t("expenses.scan.failed");
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

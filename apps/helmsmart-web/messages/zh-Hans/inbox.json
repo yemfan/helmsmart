@@ -1,1 +1,91 @@
-{}
+{
+  "meta": {
+    "title": "收件箱"
+  },
+  "list": {
+    "title": "收件箱",
+    "newConversation": "新建会话",
+    "unknownSender": "未知联系人",
+    "outboundPrefix": "您：",
+    "filters": {
+      "all": "全部",
+      "sms": "短信",
+      "email": "邮件"
+    },
+    "empty": {
+      "title": "还没有消息",
+      "hint": "客户的短信和邮件会显示在这里。"
+    },
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo": "{{n}} 分钟前",
+      "hoursAgo": "{{n}} 小时前"
+    }
+  },
+  "badges": {
+    "urgent": "紧急",
+    "intent": {
+      "question": "咨询",
+      "booking": "预约请求",
+      "billing": "账务",
+      "complaint": "投诉",
+      "other": "消息"
+    }
+  },
+  "thread": {
+    "channel": {
+      "email": "邮件",
+      "sms": "短信"
+    },
+    "addAsClient": "添加为客户",
+    "addAsClientTitle": "根据这段会话创建客户",
+    "translationLabel": "英文",
+    "draftWithAi": "用 AI 起草",
+    "replyPlaceholder": {
+      "email": "用邮件回复…（⌘↵ 发送）",
+      "sms": "用短信回复…（⌘↵ 发送）"
+    }
+  },
+  "unselected": {
+    "title": "请选择一段会话",
+    "hint": "在一个收件箱里回复客户的短信和邮件。",
+    "newMessage": "新建消息"
+  },
+  "compose": {
+    "title": "新建消息",
+    "to": "收件人",
+    "selectClient": "请选择客户…",
+    "unnamedClient": "未命名",
+    "subject": "主题",
+    "subjectPlaceholder": "邮件主题…",
+    "noSubject": "（无主题）",
+    "message": "内容",
+    "bodyPlaceholder": {
+      "email": "撰写邮件…",
+      "sms": "输入短信…"
+    },
+    "errors": {
+      "noEmail": "该客户没有邮箱地址。",
+      "noPhone": "该客户没有电话号码。",
+      "sendFailed": "消息发送失败，请重试。"
+    },
+    "cancel": "取消",
+    "send": "发送"
+  },
+  "forwarding": {
+    "label": "把邮件转发到这里",
+    "copy": "复制地址",
+    "copied": "地址已复制",
+    "copyTitle": "复制",
+    "copiedTitle": "已复制"
+  },
+  "errors": {
+    "noOrganization": "尚未选择组织。",
+    "noSendingNumber": "尚未配置用于发送短信的电话号码。",
+    "nothingToReplyTo": "目前还没有可回复的会话。",
+    "draftFailed": "起草回复失败，请重试。",
+    "nameRequired": "请填写姓名。",
+    "unauthorized": "登录已失效，请重新登录。",
+    "createClientFailed": "创建客户失败，请重试。"
+  }
+}

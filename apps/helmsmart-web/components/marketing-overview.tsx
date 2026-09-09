@@ -2,6 +2,7 @@
 
 import { useState, type ComponentType } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { Phone, MessageSquare, Mail, Settings, ArrowRight, CheckCircle2, Plus } from "lucide-react";
 
 type Channel = "voice" | "sms" | "email";
@@ -12,17 +13,19 @@ interface Props {
   email: { sent: number; reached: number };
 }
 
-const TABS: { key: Channel; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { key: "voice", label: "Voice", icon: Phone },
-  { key: "sms", label: "SMS", icon: MessageSquare },
-  { key: "email", label: "Email", icon: Mail },
+// Keys stay the channel vocabulary; labels come from `overview.tabs.<key>`.
+const TABS: { key: Channel; icon: ComponentType<{ className?: string }> }[] = [
+  { key: "voice", icon: Phone },
+  { key: "sms", icon: MessageSquare },
+  { key: "email", icon: Mail },
 ];
 
 // The active channel's "create new" action, shown in the tab bar (changes per tab).
-const CREATE: Record<Channel, { label: string; href: string }> = {
-  voice: { label: "New call campaign", href: "/client-assistant" },
-  sms:   { label: "Set up text-back",  href: "/settings#operations" },
-  email: { label: "New campaign",      href: "/marketing/new" },
+// The label comes from `overview.create.<channel>`.
+const CREATE_HREF: Record<Channel, string> = {
+  voice: "/client-assistant",
+  sms: "/settings#operations",
+  email: "/marketing/new",
 };
 
 /**
@@ -32,15 +35,16 @@ const CREATE: Record<Channel, { label: string; href: string }> = {
  */
 export function MarketingOverview({ voice, sms, email }: Props) {
   const [tab, setTab] = useState<Channel>("voice");
+  const { t } = useTranslation("marketing");
 
   return (
     <section className="mb-8">
-      <h2 className="text-sm font-semibold text-slate-700 mb-3">Overview</h2>
+      <h2 className="text-sm font-semibold text-slate-700 mb-3">{t("overview.title")}</h2>
       <div className="bg-white rounded-xl border border-slate-200">
         {/* Channel tabs + the active channel's "create new" action */}
         <div className="flex items-center justify-between border-b border-slate-100 pr-3">
           <div className="flex">
-            {TABS.map(({ key, label, icon: Icon }) => (
+            {TABS.map(({ key, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => setTab(key)}
@@ -51,16 +55,16 @@ export function MarketingOverview({ voice, sms, email }: Props) {
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                {label}
+                {t(`overview.tabs.${key}`)}
               </button>
             ))}
           </div>
           <Link
-            href={CREATE[tab].href}
+            href={CREATE_HREF[tab]}
             className="flex items-center gap-1.5 shrink-0 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            {CREATE[tab].label}
+            {t(`overview.create.${tab}`)}
           </Link>
         </div>
 
@@ -69,19 +73,19 @@ export function MarketingOverview({ voice, sms, email }: Props) {
           {tab === "voice" && (
             <div className="grid sm:grid-cols-2 gap-4">
               <SetupCard
-                title="Set up virtual calls"
-                desc="Let the AI place and answer calls for you — book appointments, run reminders, follow up with contacts."
+                title={t("overview.voice.setupTitle")}
+                desc={t("overview.voice.setupDesc")}
                 ok={voice.configured}
-                status={voice.configured ? "Connected" : "Not set up"}
+                status={voice.configured ? t("overview.voice.connected") : t("overview.voice.notSetUp")}
                 href="/settings#voice-agent"
-                cta="Configure"
+                cta={t("overview.voice.configure")}
               />
               <MonitorCard
-                title="Monitor virtual calls"
+                title={t("overview.voice.monitorTitle")}
                 metric={String(voice.callsHandled)}
-                metricLabel="calls handled, all time"
+                metricLabel={t("overview.voice.monitorLabel")}
                 href="/voice"
-                cta="View calls"
+                cta={t("overview.voice.viewCalls")}
               />
             </div>
           )}
@@ -89,19 +93,25 @@ export function MarketingOverview({ voice, sms, email }: Props) {
           {tab === "sms" && (
             <div className="grid sm:grid-cols-2 gap-4">
               <SetupCard
-                title="Set up text messaging"
-                desc="Text back missed calls automatically and message your contacts from the AI assistant."
+                title={t("overview.sms.setupTitle")}
+                desc={t("overview.sms.setupDesc")}
                 ok={Boolean(sms.number) && sms.active}
-                status={sms.number ? (sms.active ? "Auto-reply on" : "Auto-reply off") : "No number"}
+                status={
+                  sms.number
+                    ? sms.active
+                      ? t("overview.sms.autoReplyOn")
+                      : t("overview.sms.autoReplyOff")
+                    : t("overview.sms.noNumber")
+                }
                 href="/settings#operations"
-                cta="Configure"
+                cta={t("overview.sms.configure")}
               />
               <MonitorCard
-                title="Monitor text-back"
-                metric={sms.active ? "On" : "Off"}
-                metricLabel={sms.number ?? "no number configured"}
+                title={t("overview.sms.monitorTitle")}
+                metric={sms.active ? t("overview.sms.on") : t("overview.sms.off")}
+                metricLabel={sms.number ?? t("overview.sms.noNumberConfigured")}
                 href="/voice"
-                cta="View activity"
+                cta={t("overview.sms.viewActivity")}
               />
             </div>
           )}
@@ -109,19 +119,19 @@ export function MarketingOverview({ voice, sms, email }: Props) {
           {tab === "email" && (
             <div className="grid sm:grid-cols-2 gap-4">
               <SetupCard
-                title="Set up an email campaign"
-                desc="Send personalized campaigns to your client segments — leads, active clients, or prospects — via Resend."
+                title={t("overview.email.setupTitle")}
+                desc={t("overview.email.setupDesc")}
                 ok
-                status="Ready"
+                status={t("overview.email.ready")}
                 href="/marketing/new"
-                cta="New campaign"
+                cta={t("overview.email.newCampaign")}
               />
               <MonitorCard
-                title="Monitor campaigns"
+                title={t("overview.email.monitorTitle")}
                 metric={String(email.sent)}
-                metricLabel={`campaigns sent · ${email.reached} reached`}
+                metricLabel={t("overview.email.monitorLabel", { reached: email.reached })}
                 href="#email-campaigns"
-                cta="View campaigns"
+                cta={t("overview.email.viewCampaigns")}
               />
             </div>
           )}

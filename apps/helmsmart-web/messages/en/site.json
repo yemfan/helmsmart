@@ -1,1 +1,904 @@
-{}
+{
+  "meta": {
+    "description": "More control, less effort — AI-powered front office for small businesses.",
+    "marketingTitle": "HelmSmart — More control, less effort"
+  },
+  "nav": {
+    "product": "Product",
+    "pricing": "Pricing",
+    "schedule": "Schedule",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "signIn": "Sign in",
+    "startFree": "Start free",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "groups": {
+      "product": "Product",
+      "company": "Company",
+      "resources": "Resources",
+      "legal": "Legal"
+    },
+    "links": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "scheduleDemo": "Schedule Demo",
+      "startFreeTrial": "Start Free Trial",
+      "about": "About",
+      "blog": "Blog",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "signIn": "Sign In",
+      "getStarted": "Get Started",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "partners": {
+      "title": "Business partners",
+      "propertytools": "Real estate tools & data",
+      "closeboss": "Your AI real estate team",
+      "marketingboss": "AI marketing creative"
+    },
+    "tagline": "More control, less effort",
+    "copyright": "© 2026 MAXY Investment Inc. HelmSmart is a DBA of MAXY Investment Inc. All rights reserved."
+  },
+  "landing": {
+    "badge": "Trusted by 500+ small businesses",
+    "hero": {
+      "title": "Your business answers every call, sends every invoice, and never misses a beat — <em>automatically.</em>",
+      "subtitle": "HelmSmart gives small businesses a 24/7 AI front office. More control, less effort.",
+      "startTrial": "Start free trial",
+      "schedule": "Schedule Appointment",
+      "seeHow": "See how it works"
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "HelmSmart runs your front office so you can focus on the work you love.",
+      "steps": {
+        "call": {
+          "title": "A customer calls",
+          "description": "Your AI receptionist answers every call 24/7, collects details, and books the appointment directly into your calendar — no hold music, no voicemail."
+        },
+        "invoice": {
+          "title": "Invoice is sent",
+          "description": "The moment a job is marked complete, HelmSmart auto-generates the invoice, emails it to your client, and tracks payment status in real time."
+        },
+        "briefing": {
+          "title": "You wake up informed",
+          "description": "Each morning your AI briefing surfaces today's appointments, overdue invoices, and any urgent messages — so you always know what matters most."
+        }
+      }
+    },
+    "features": {
+      "title": "Everything you need to run your business",
+      "subtitle": "Powerful tools, one simple platform.",
+      "items": {
+        "receptionist": {
+          "title": "AI Receptionist",
+          "description": "Answers every inbound call around the clock. Books appointments, captures leads, and routes urgent calls — no human operator needed."
+        },
+        "concierge": {
+          "title": "AI Concierge",
+          "description": "Your AI makes the calls you don't have time for — appointment confirmations & reminders, lead and past-client follow-ups, surveys, and promos. Every call logged."
+        },
+        "assistant": {
+          "title": "HelmSmart AI Assistant",
+          "description": "A co-pilot on every screen: ask plain-English questions about your business and get answers from your live data, or have it draft and send the perfect text to any client."
+        },
+        "inbox": {
+          "title": "Smart Inbox",
+          "description": "Email and SMS in one place. AI triage surfaces urgent messages, drafts replies, and missed-call text-back turns a missed call into a lead instead of a lost one."
+        },
+        "invoicing": {
+          "title": "Invoicing & Bookkeeping",
+          "description": "Create and send invoices in seconds. Track expenses, flag overdue payments, and get a real-time view of your cash flow."
+        },
+        "calendar": {
+          "title": "Calendar & Scheduling",
+          "description": "Syncs with Google Calendar so bookings land where you already live. Avoid double-bookings and automated reminders handle no-shows."
+        },
+        "crm": {
+          "title": "Client CRM",
+          "description": "Track every client, deal, and follow-up in a simple pipeline. Know exactly where each relationship stands without digging through notes."
+        },
+        "briefing": {
+          "title": "AI Daily Briefing",
+          "description": "Start each morning with a plain-English summary of your day — top priorities, upcoming appointments, and anything that needs your attention."
+        }
+      }
+    },
+    "stats": {
+      "alwaysOn": {
+        "value": "24/7",
+        "label": "Always-on AI receptionist"
+      },
+      "booking": {
+        "value": "< 2 min",
+        "label": "Average time to book an appointment"
+      },
+      "saved": {
+        "value": "10+ hours",
+        "label": "Admin time saved per week"
+      }
+    },
+    "testimonial": {
+      "title": "Real businesses. Real results.",
+      "quote": "Before HelmSmart I was losing jobs every week because I couldn't answer the phone while on-site. Now the AI picks up every call, books the job, and sends me a summary. I haven't missed a lead in months — and my invoices actually go out the same day.",
+      "author": "Sarah K.",
+      "role": "Owner, Bright & Clean Services"
+    },
+    "finalCta": {
+      "badge": "14-day free trial · No credit card required",
+      "title": "Ready to take the helm?",
+      "subtitle": "Start your 14-day free trial — no credit card required.",
+      "cta": "Start free trial"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "About — HelmSmart",
+      "description": "HelmSmart is an AI-powered front office for small businesses — built by the team behind LeadSmart AI. More control, less effort."
+    },
+    "hero": {
+      "eyebrow": "Our story",
+      "title": "Built for the business owner who does it all",
+      "subtitle": "HelmSmart gives small business owners a 24/7 AI front office — so they can stop missing calls, drowning in admin, and chasing late payments. More control, less effort."
+    },
+    "origin": {
+      "title": "Where HelmSmart came from",
+      "p1": "We built <a>LeadSmart AI</a> — an AI growth platform for real estate agents and mortgage professionals — and watched it transform how thousands of professionals handle leads, follow-ups, and client communication.",
+      "p2": "Along the way, we kept hearing the same story from a different crowd: plumbers, salon owners, contractors, consultants, and every other small business owner who isn't a real estate agent but faces the exact same problems. Missed calls. Admin overload. Invoices that go out late. Expensive after-hours answering services.",
+      "p3": "HelmSmart is our answer. The same AI infrastructure and product philosophy behind LeadSmart AI — rebuilt from the ground up for every small business that needs a smarter front office."
+    },
+    "sibling": {
+      "eyebrow": "Our sibling product",
+      "name": "LeadSmart AI",
+      "description": "AI growth engine for real estate agents and mortgage professionals — capturing, qualifying, and converting leads automatically.",
+      "link": "Visit LeadSmart AI →",
+      "note": "Both products are built by the same team and share the same commitment: AI that actually works, built around real-world pain, not feature lists."
+    },
+    "mission": {
+      "title": "Our mission",
+      "body": "To give every small business owner the same AI-powered front office that large businesses take for granted — at a price that actually makes sense."
+    },
+    "values": {
+      "title": "How we work",
+      "items": {
+        "pain": {
+          "title": "Pain first, features second",
+          "description": "Every tool we build starts with a real problem small business owners told us about. We don't add features for the sake of it."
+        },
+        "works": {
+          "title": "AI that actually works",
+          "description": "We've spent years building production AI systems. HelmSmart uses the same battle-tested AI infrastructure behind LeadSmart AI."
+        },
+        "clarity": {
+          "title": "Plain-English clarity",
+          "description": "No dashboards full of jargon. Everything HelmSmart surfaces is written the way you'd say it out loud."
+        },
+        "corner": {
+          "title": "Always in your corner",
+          "description": "We're a small team that cares. When something breaks or doesn't work the way you expect, a real person fixes it."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to take the helm?",
+      "subtitle": "14-day free trial — no credit card required.",
+      "primary": "Start free trial",
+      "secondary": "Talk to us"
+    }
+  },
+  "features": {
+    "meta": {
+      "title": "Features — HelmSmart",
+      "description": "One platform that handles calls, messages, books, and clients — while you focus on the work."
+    },
+    "hero": {
+      "title": "Everything your front office needs",
+      "subtitle": "One platform that handles calls, messages, books, and clients — while you focus on the work."
+    },
+    "items": {
+      "ai-receptionist": {
+        "headline": "AI Receptionist",
+        "subheadline": "Never miss a call again",
+        "bullets": {
+          "b1": "Answers calls 24/7 — even when you're on the job",
+          "b2": "Cuts the cost of after-hours answering services and on-call staff",
+          "b3": "Books appointments directly to your Google Calendar",
+          "b4": "Takes messages and routes them to the right person",
+          "b5": "Handles FAQs so you don't have to repeat yourself",
+          "b6": "Sends a post-call summary straight to your inbox"
+        }
+      },
+      "outbound-calling": {
+        "headline": "AI Concierge",
+        "subheadline": "Your AI makes the outbound calls you don't have time for",
+        "bullets": {
+          "b1": "Appointment confirmations & reminders — cut no-shows automatically",
+          "b2": "Lead and past-client follow-ups, on time every time",
+          "b3": "Surveys and review requests once the job's done",
+          "b4": "Promos and announcements to the right group of clients",
+          "b5": "Every call logged with a summary and the outcome"
+        }
+      },
+      "ai-assistant": {
+        "headline": "HelmSmart AI Assistant",
+        "subheadline": "Your business co-pilot, one tap away",
+        "bullets": {
+          "b1": "Ask plain-English questions — \"what's overdue?\", \"how's cash flow?\", \"who should I follow up with?\"",
+          "b2": "Answers come from your live business data, not generic advice",
+          "b3": "Drafts the perfect text to any client in seconds — then sends it for you",
+          "b4": "Auto Pilot can reply to a client's incoming texts automatically, in their language",
+          "b5": "Floats on every screen, so help is always within reach"
+        }
+      },
+      "smart-inbox": {
+        "headline": "Smart Inbox",
+        "subheadline": "Every message, handled intelligently",
+        "bullets": {
+          "b1": "Email and SMS unified in one clean inbox",
+          "b2": "AI triage flags urgent messages vs. routine ones",
+          "b3": "Auto-replies acknowledge clients instantly",
+          "b4": "Missed-call text-back — a missed call becomes a friendly text, so the lead doesn't slip away",
+          "b5": "Detects language and responds accordingly"
+        }
+      },
+      "invoicing": {
+        "headline": "Invoicing & Bookkeeping",
+        "subheadline": "Get paid faster, stay on top of your books",
+        "bullets": {
+          "b1": "Create and send professional invoices in seconds",
+          "b2": "Track expenses and categorize automatically",
+          "b3": "Bank reconciliation without the spreadsheet headache",
+          "b4": "Profit & loss reports ready when you need them"
+        }
+      },
+      "calendar": {
+        "headline": "Calendar & Scheduling",
+        "subheadline": "Your calendar, always current",
+        "bullets": {
+          "b1": "Two-way Google Calendar sync keeps everything aligned",
+          "b2": "Clients can book open slots without back-and-forth",
+          "b3": "Automated reminders reduce no-shows",
+          "b4": "Manage availability across multiple team members"
+        }
+      },
+      "crm": {
+        "headline": "Client CRM & Pipeline",
+        "subheadline": "Know every client, close every deal",
+        "bullets": {
+          "b1": "Full client profiles with contact history",
+          "b2": "Visual deal pipeline from lead to closed",
+          "b3": "Notes and follow-up reminders in one place",
+          "b4": "Import existing contacts in minutes"
+        }
+      },
+      "daily-briefing": {
+        "headline": "AI Daily Briefing",
+        "subheadline": "Start every day knowing what matters",
+        "bullets": {
+          "b1": "Morning summary of overdue invoices that need attention",
+          "b2": "Today's calls and appointments at a glance",
+          "b3": "Unread messages ranked by urgency",
+          "b4": "Tasks due so nothing slips through the cracks"
+        }
+      }
+    },
+    "cta": {
+      "title": "Start your free trial today",
+      "subtitle": "No credit card required. Set up in minutes. Cancel any time.",
+      "button": "Get started for free"
+    }
+  },
+  "pricing": {
+    "hero": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "All plans include a 14-day free trial. No credit card required."
+    },
+    "mostPopular": "Most Popular",
+    "perMonth": "/month",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "$29",
+        "description": "Perfect for solo operators",
+        "cta": "Start free trial",
+        "features": {
+          "f1": "Smart Inbox",
+          "f2": "Basic Invoicing",
+          "f3": "Calendar Sync",
+          "f4": "Client CRM",
+          "f5": "1 user"
+        }
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "$79",
+        "description": "For growing small businesses",
+        "cta": "Start free trial",
+        "features": {
+          "f1": "Everything in Starter",
+          "f2": "AI Receptionist",
+          "f3": "AI Concierge (confirmations, follow-ups, surveys)",
+          "f4": "HelmSmart AI Assistant",
+          "f5": "Missed-call text-back & Auto Pilot",
+          "f6": "Bookkeeping & expenses",
+          "f7": "AI Daily Briefing",
+          "f8": "3 users",
+          "f9": "Priority support"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$199",
+        "description": "For established businesses",
+        "cta": "Contact sales",
+        "features": {
+          "f1": "Everything in Growth",
+          "f2": "Multiple locations",
+          "f3": "Custom AI prompt",
+          "f4": "Advanced reports",
+          "f5": "API access",
+          "f6": "Unlimited users",
+          "f7": "Dedicated support"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "cancel": {
+          "question": "Can I cancel anytime?",
+          "answer": "Yes. HelmSmart has no long-term contracts. You can cancel your subscription at any time from your account settings and you will not be charged again."
+        },
+        "afterTrial": {
+          "question": "What happens after the trial?",
+          "answer": "When your 14-day free trial ends, we will ask you to add a payment method to continue. You will never be charged automatically during the trial period."
+        },
+        "alwaysOn": {
+          "question": "Is the voice AI really available 24/7?",
+          "answer": "Yes. The AI Voice Receptionist is powered by Retell AI and answers calls around the clock — nights, weekends, and holidays — so you never miss a customer. It also cuts the cost of after-hours answering services, replacing expensive on-call staff or third-party call centers."
+        },
+        "refunds": {
+          "question": "Do you offer refunds?",
+          "answer": "We offer a 30-day money-back guarantee on all paid plans. If you are not satisfied for any reason, contact us within 30 days of your first charge and we will issue a full refund."
+        }
+      }
+    },
+    "stillQuestions": "Still have questions? <a>Chat with us.</a>"
+  },
+  "faq": {
+    "meta": {
+      "title": "Frequently Asked Questions | HelmSmart",
+      "description": "Everything you need to know about HelmSmart."
+    },
+    "hero": {
+      "title": "Frequently asked questions",
+      "subtitle": "Everything you need to know about HelmSmart."
+    },
+    "categories": {
+      "gettingStarted": {
+        "title": "Getting Started",
+        "items": {
+          "what": {
+            "q": "What is HelmSmart?",
+            "a": "HelmSmart is an AI-powered front office for small businesses. It combines a voice receptionist, unified inbox, bookkeeping, and CRM into one platform — so you can focus on running your business, not managing tools."
+          },
+          "setup": {
+            "q": "How do I set up the voice receptionist?",
+            "a": "Connect your Twilio number or use Retell AI, then configure your business hours and appointment types in the Voice settings. The setup wizard walks you through each step in minutes."
+          },
+          "technical": {
+            "q": "Do I need technical skills?",
+            "a": "No. Everything is configured through a simple dashboard. No coding, no complex integrations — just fill in your business details and you're live."
+          },
+          "trial": {
+            "q": "Is there a free trial?",
+            "a": "Yes. You get 14 days free with full access to all features. No credit card required to start."
+          }
+        }
+      },
+      "voice": {
+        "title": "Voice Receptionist",
+        "items": {
+          "unknown": {
+            "q": "What happens when the AI can't answer a question?",
+            "a": "If the AI doesn't have enough information to help, it offers to take a message or schedule a callback. You'll be notified immediately so you can follow up."
+          },
+          "booking": {
+            "q": "Can it book real appointments?",
+            "a": "Yes. The voice receptionist syncs with your Google Calendar and only offers time slots that are genuinely available. Bookings appear on your calendar in real time."
+          },
+          "languages": {
+            "q": "What languages does it support?",
+            "a": "The voice agent operates in English by default. SMS and email communications include multilingual detection to match the language your clients use."
+          },
+          "disclosure": {
+            "q": "Will callers know they're talking to AI?",
+            "a": "Yes. The agent identifies itself as an AI assistant for your business. We believe in transparent, honest AI interactions — and it builds trust with your clients."
+          }
+        }
+      },
+      "billing": {
+        "title": "Billing & Plans",
+        "items": {
+          "changePlans": {
+            "q": "Can I change plans anytime?",
+            "a": "Yes. Upgrades take effect immediately. Downgrades take effect at the start of your next billing cycle so you never lose access mid-period."
+          },
+          "voiceCharge": {
+            "q": "What is the $0.10/min voice charge?",
+            "a": "Voice calls are billed at $0.10 per minute on top of your base plan. This covers both the AI processing and telephony costs. You only pay for calls that are actually handled."
+          },
+          "contract": {
+            "q": "Is there a contract?",
+            "a": "No contracts, no commitments. HelmSmart is month-to-month and you can cancel anytime from your account settings."
+          }
+        }
+      },
+      "integrations": {
+        "title": "Integrations",
+        "items": {
+          "googleCalendar": {
+            "q": "Does it work with Google Calendar?",
+            "a": "Yes. HelmSmart connects via OAuth for a full two-way sync. The voice receptionist checks real-time availability and writes confirmed bookings directly to your calendar."
+          },
+          "phone": {
+            "q": "What phone providers work?",
+            "a": "Twilio numbers work out of the box — you can bring an existing number or provision a new one. Retell AI powers the voice AI layer for natural, low-latency conversations."
+          },
+          "import": {
+            "q": "Can I import my existing clients?",
+            "a": "Yes. CSV import is available in the Clients section. Map your columns to HelmSmart fields and your contacts are ready to use in minutes."
+          }
+        }
+      }
+    },
+    "cta": {
+      "title": "Still have questions?",
+      "body": "We're happy to help. Reach out and we'll get back to you within one business day.",
+      "button": "Contact support"
+    }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog — HelmSmart",
+      "description": "Tips, guides, and insights for small business owners."
+    },
+    "hero": {
+      "title": "The HelmSmart Blog",
+      "subtitle": "Tips, guides, and insights for small business owners."
+    },
+    "pains": {
+      "title": "Small business pains — solved",
+      "subtitle": "Every feature in HelmSmart was built around a real pain that small business owners told us about.",
+      "items": {
+        "missedCalls": {
+          "pain": "Missed calls while on the job",
+          "solution": "AI Voice Receptionist answers every call 24/7 — books appointments and takes messages while you work."
+        },
+        "answeringService": {
+          "pain": "Expensive after-hours answering services",
+          "solution": "Replace costly on-call staff and third-party call centres with an AI that costs a fraction of the price."
+        },
+        "admin": {
+          "pain": "10+ hours a week on admin",
+          "solution": "Smart Inbox triages emails and SMS, drafts replies, and flags what actually needs your attention."
+        },
+        "invoices": {
+          "pain": "Invoices that go out late — or not at all",
+          "solution": "Automated invoicing sends bills the moment a job is done and follows up on overdue payments."
+        },
+        "scheduling": {
+          "pain": "Double-bookings and scheduling chaos",
+          "solution": "Calendar sync and AI booking mean appointments land in the right slot — automatically."
+        },
+        "leads": {
+          "pain": "Leads slipping through the cracks",
+          "solution": "Client CRM and pipeline tracking keep every prospect and customer visible in one place."
+        }
+      }
+    },
+    "readMore": "Read more",
+    "posts": {
+      "smb-pains-and-solutions": {
+        "title": "Small Business Pains — And How HelmSmart Solves Them",
+        "excerpt": "Missed calls, admin overload, late invoices, expensive after-hours services — sound familiar? Here's exactly how HelmSmart addresses the six biggest headaches small business owners face every day.",
+        "category": "Strategy",
+        "date": "May 22, 2025",
+        "readTime": "6 min read"
+      },
+      "ai-receptionist-guide": {
+        "title": "How AI Receptionists Are Helping Small Businesses Never Miss a Call",
+        "excerpt": "Every missed call is a potential lost customer. Here's how AI voice technology is changing the game for service businesses.",
+        "category": "Voice AI",
+        "date": "May 15, 2025",
+        "readTime": "5 min read"
+      },
+      "cost-of-admin-work": {
+        "title": "The True Cost of Admin Work for Small Business Owners",
+        "excerpt": "The average small business owner spends 10+ hours per week on administrative tasks. Here's how to take that time back.",
+        "category": "Productivity",
+        "date": "May 8, 2025",
+        "readTime": "4 min read"
+      },
+      "get-paid-faster": {
+        "title": "5 Ways to Get Paid Faster as a Service Business",
+        "excerpt": "Late payments kill cash flow. These proven strategies — including automated invoicing — can cut your payment cycle in half.",
+        "category": "Finance",
+        "date": "April 30, 2025",
+        "readTime": "6 min read"
+      },
+      "ai-receptionist-setup": {
+        "title": "Setting Up Your AI Receptionist: A Step-by-Step Guide",
+        "excerpt": "A complete walkthrough of configuring HelmSmart's voice agent — from business hours to appointment types to knowledge base.",
+        "category": "Guide",
+        "date": "April 22, 2025",
+        "readTime": "8 min read"
+      }
+    },
+    "subscribe": {
+      "body": "More posts coming soon. Subscribe for updates.",
+      "emailLabel": "Email address",
+      "placeholder": "you@example.com",
+      "button": "Notify me"
+    }
+  },
+  "post": {
+    "metaTitle": "{{title}} — HelmSmart Blog",
+    "notFoundTitle": "Post Not Found — HelmSmart",
+    "back": "Back to blog",
+    "cta": {
+      "title": "Ready to put this into practice?",
+      "subtitle": "Start your 14-day free trial — no credit card required.",
+      "button": "Get started for free"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact — HelmSmart",
+      "description": "Get in touch with the HelmSmart team. We're here to help."
+    },
+    "hero": {
+      "title": "Get in touch",
+      "subtitle": "Questions, feedback, or just want to say hi — we'd love to hear from you."
+    },
+    "channels": {
+      "email": {
+        "title": "Email us",
+        "description": "General questions, billing, or help with your account — all reach the same inbox.",
+        "contact": "contact@helmsmart.ai"
+      },
+      "hours": {
+        "title": "Response time",
+        "description": "We typically reply within one business day.",
+        "contact": "Mon – Fri, 9 am – 6 pm PT"
+      }
+    },
+    "form": {
+      "title": "Send us a message",
+      "name": {
+        "label": "Name",
+        "placeholder": "Jane Smith"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "jane@example.com"
+      },
+      "subject": {
+        "label": "Subject",
+        "options": {
+          "placeholder": "Select a subject",
+          "general": "General question",
+          "sales": "Pricing & plans",
+          "support": "Technical support",
+          "billing": "Billing",
+          "other": "Other"
+        }
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Tell us how we can help..."
+      },
+      "success": "✓ Message sent! We'll get back to you within one business day.",
+      "submit": "Send message",
+      "submitting": "Sending…",
+      "sent": "Message sent"
+    },
+    "errors": {
+      "required": "All fields are required",
+      "email": "Please provide a valid email address",
+      "failed": "Failed to send message. Please try again or email contact@helmsmart.ai"
+    },
+    "demoNote": "Looking to schedule a demo? <a>Get a personalized quote</a> or check our <a>FAQ</a>.",
+    "business": {
+      "title": "Business information",
+      "subtitle": "Operating company & mailing address",
+      "dba": "HelmSmart is a DBA of MAXY Investment Inc.",
+      "country": "United States"
+    }
+  },
+  "sales": {
+    "meta": {
+      "title": "Get a Demo — HelmSmart",
+      "description": "Schedule a personalized demo of HelmSmart for your business."
+    },
+    "hero": {
+      "title": "Let's find the right plan for your business",
+      "subtitle": "Tell us about your needs and we'll show you how HelmSmart can save you time and money."
+    },
+    "stats": {
+      "trial": {
+        "value": "14 days",
+        "label": "Free trial, no card needed"
+      },
+      "response": {
+        "value": "24h",
+        "label": "Response time guarantee"
+      },
+      "refund": {
+        "value": "30 days",
+        "label": "Money-back guarantee"
+      }
+    },
+    "footerNote": "Not ready to chat? <a>Check out our pricing</a> or start with a <a>free trial</a>.",
+    "form": {
+      "name": {
+        "label": "Full name *",
+        "placeholder": "Jane Smith"
+      },
+      "email": {
+        "label": "Work email *",
+        "placeholder": "jane@company.com"
+      },
+      "company": {
+        "label": "Company name *",
+        "placeholder": "Your business name"
+      },
+      "interest": {
+        "label": "What are you interested in? *",
+        "options": {
+          "voice": "AI Receptionist",
+          "outbound": "AI Concierge",
+          "ai-assistant": "HelmSmart AI Assistant",
+          "inbox": "Smart Inbox",
+          "invoicing": "Invoicing & Bookkeeping",
+          "calendar": "Calendar & Scheduling",
+          "crm": "Client CRM",
+          "all": "Full HelmSmart platform"
+        }
+      },
+      "teamSize": {
+        "label": "Team size",
+        "options": {
+          "placeholder": "Select team size",
+          "solo": "Solo / 1 person",
+          "small": "2–5 people",
+          "medium": "6–10 people",
+          "large": "11–25 people",
+          "xlarge": "25+ people"
+        }
+      },
+      "timeline": {
+        "label": "Implementation timeline",
+        "options": {
+          "placeholder": "Select timeline",
+          "asap": "ASAP (this month)",
+          "q2": "Next 1–2 months",
+          "q3": "2–3 months",
+          "exploring": "Just exploring"
+        }
+      },
+      "message": {
+        "label": "Anything else we should know?",
+        "placeholder": "Tell us about your biggest pain point or specific use case..."
+      },
+      "success": "✓ Thanks! Our sales team will reach out within one business day.",
+      "submit": "Get a demo",
+      "submitting": "Submitting…",
+      "submitted": "Inquiry submitted",
+      "requiredNote": "* Required fields. We'll follow up with a personalized proposal."
+    },
+    "errors": {
+      "required": "Name, email, and company are required",
+      "email": "Please provide a valid email address",
+      "interest": "Please select at least one product of interest",
+      "failed": "Failed to submit inquiry. Please try again or email contact@helmsmart.ai"
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacy Policy — HelmSmart",
+      "description": "HelmSmart's privacy policy and data handling practices."
+    },
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: June 8, 2026",
+    "sections": {
+      "intro": {
+        "title": "1. Introduction",
+        "p": "HelmSmart, a DBA of MAXY Investment Inc (\"we,\" \"us,\" \"our,\" or \"Company\"), is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services."
+      },
+      "collect": {
+        "title": "2. Information We Collect",
+        "intro": "We collect information you provide directly:",
+        "items": {
+          "i1": "Account information (name, email, company)",
+          "i2": "Contact preferences and communication history",
+          "i3": "Business information and usage data",
+          "i4": "Payment information (processed securely through third parties)",
+          "i5": "Customer support inquiries and feedback"
+        }
+      },
+      "use": {
+        "title": "3. How We Use Your Information",
+        "intro": "We use collected information to:",
+        "items": {
+          "i1": "Provide, maintain, and improve HelmSmart services",
+          "i2": "Process transactions and send related confirmations",
+          "i3": "Send transactional emails and account notifications",
+          "i4": "Respond to your inquiries and customer support requests",
+          "i5": "Monitor and analyze service usage and trends",
+          "i6": "Detect and prevent fraud or security issues"
+        }
+      },
+      "security": {
+        "title": "4. Data Security",
+        "p": "We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure."
+      },
+      "thirdParty": {
+        "title": "5. Third-Party Services",
+        "intro": "HelmSmart is built by the same team behind <a>LeadSmart AI</a>, and both products share similar privacy standards and infrastructure. We use third-party service providers for:",
+        "items": {
+          "i1": "Email delivery (Resend)",
+          "i2": "Authentication (Supabase)",
+          "i3": "Payment processing (PCI-compliant providers)",
+          "i4": "Analytics and monitoring"
+        }
+      },
+      "sms": {
+        "title": "6. Mobile Information & Text Messaging",
+        "p1": "If you opt in to receive text messages, we collect your mobile phone number and your consent. We use them only to send the messages you requested — such as appointment reminders and confirmations, follow-ups, account and document notifications, and replies to your inquiries. Message frequency varies, and message and data rates may apply. You can opt out at any time by replying STOP, or get help by replying HELP.",
+        "p2": "No mobile information (including your phone number and SMS opt-in or consent) is shared with or sold to third parties or affiliates for their marketing or promotional purposes. Phone numbers are shared only with our SMS delivery provider (Twilio) strictly to transmit the messages you requested, and never for any other purpose."
+      },
+      "rights": {
+        "title": "7. User Rights",
+        "p": "Depending on your location, you may have rights to access, correct, or delete your personal information. Contact us at privacy@helmsmart.ai to exercise these rights."
+      },
+      "changes": {
+        "title": "8. Changes to This Policy",
+        "p": "We may update this Privacy Policy from time to time. We will notify you of any material changes by updating the date at the top of this policy."
+      },
+      "contact": {
+        "title": "9. Contact Us",
+        "p": "If you have questions about this Privacy Policy or our privacy practices, please contact us at:",
+        "emailLabel": "Email:",
+        "webLabel": "Web:"
+      }
+    },
+    "footerNote": "HelmSmart is committed to the same privacy standards as our sibling product, <a>LeadSmart AI</a>. Both products prioritize user privacy and data security."
+  },
+  "terms": {
+    "meta": {
+      "title": "Terms of Service — HelmSmart",
+      "description": "HelmSmart's terms of service and user agreement."
+    },
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: June 8, 2026",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "p": "By accessing and using HelmSmart, a DBA of MAXY Investment Inc (\"Service\"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service."
+      },
+      "license": {
+        "title": "2. License Grant",
+        "p": "HelmSmart grants you a non-exclusive, non-transferable, revocable license to access and use HelmSmart strictly in accordance with these Terms of Service. You may not copy, modify, or distribute the Service or its content without express written permission from HelmSmart."
+      },
+      "responsibilities": {
+        "title": "3. User Responsibilities",
+        "intro": "You agree that you will:",
+        "items": {
+          "i1": "Use HelmSmart only for lawful purposes and in a way that does not infringe upon the rights of others",
+          "i2": "Maintain the confidentiality of your account credentials",
+          "i3": "Notify HelmSmart immediately of any unauthorized use of your account",
+          "i4": "Comply with all applicable laws and regulations",
+          "i5": "Not engage in harassment, abuse, or spam"
+        }
+      },
+      "ip": {
+        "title": "4. Intellectual Property Rights",
+        "p": "The Service and its entire contents, features, and functionality (including but not limited to all information, software, text, displays, images, video, and audio) are owned by HelmSmart, its licensors, or other providers of such material and are protected by copyright, trademark, and other intellectual property laws."
+      },
+      "payment": {
+        "title": "5. Payment Terms",
+        "intro": "If you subscribe to a paid plan, you agree to:",
+        "items": {
+          "i1": "Pay all charges that you incur",
+          "i2": "Pay any applicable taxes",
+          "i3": "Authorize HelmSmart to charge your payment method automatically for each renewal term",
+          "i4": "Give us advance notice if you wish to cancel your subscription"
+        }
+      },
+      "liability": {
+        "title": "6. Limitation of Liability",
+        "p": "HelmSmart and its team members, affiliates, licensors, and service providers will not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the Service, even if we have been advised of the possibility of such damages."
+      },
+      "warranty": {
+        "title": "7. Warranty Disclaimer",
+        "p": "HelmSmart is provided on an \"AS IS\" and \"AS AVAILABLE\" basis. We make no warranties, expressed or implied, regarding the Service. To the fullest extent permissible by law, HelmSmart disclaims all warranties, express or implied, including but not limited to implied warranties of merchantability and fitness for a particular purpose."
+      },
+      "refund": {
+        "title": "8. Refund Policy",
+        "p": "HelmSmart offers a 30-day money-back guarantee on all paid plans. If you are not satisfied with the Service for any reason, contact us within 30 days of your first charge for a full refund."
+      },
+      "termination": {
+        "title": "9. Termination",
+        "p": "We may terminate or suspend your account and access to HelmSmart immediately, without prior notice or liability, for any reason whatsoever, including if you breach the Terms."
+      },
+      "sms": {
+        "title": "10. SMS / Text Messaging Program",
+        "intro": "If you provide your mobile phone number and opt in, you consent to receive text messages from HelmSmart (a DBA of MAXY Investment Inc) and, where applicable, from businesses that use the HelmSmart platform to communicate with their own customers. The terms of our SMS program are:",
+        "items": {
+          "i1": "<b>Program description:</b> recurring messages such as appointment reminders and confirmations, follow-ups to prior conversations, account and document notifications, and replies to your inquiries.",
+          "i2": "<b>Message frequency:</b> message frequency varies based on your interactions.",
+          "i3": "<b>Cost:</b> message and data rates may apply.",
+          "i4": "<b>Opt-out:</b> reply <b>STOP</b> at any time to unsubscribe. You will receive a confirmation and no further messages.",
+          "i5": "<b>Help:</b> reply <b>HELP</b> for assistance, or contact us at contact@helmsmart.ai.",
+          "i6": "Consent to receive text messages is not a condition of any purchase. Carriers are not liable for delayed or undelivered messages."
+        },
+        "outro": "Mobile opt-in information and consent are never shared with third parties or affiliates for marketing or promotional purposes. See our <a>Privacy Policy</a> for details."
+      },
+      "related": {
+        "title": "11. Related Products",
+        "p": "HelmSmart is built by the same team behind <a>LeadSmart AI</a>, another AI-powered business platform. Both products share similar terms of service standards and are committed to the same level of quality and support."
+      },
+      "changes": {
+        "title": "12. Changes to Terms",
+        "p": "HelmSmart reserves the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days notice prior to any new terms taking effect."
+      },
+      "contact": {
+        "title": "13. Contact Us",
+        "p": "If you have any questions about these Terms of Service, please contact us at:",
+        "emailLabel": "Email:",
+        "webLabel": "Web:"
+      }
+    },
+    "footerNote": "For more information about HelmSmart's privacy practices, please see our <a>Privacy Policy</a>. Both HelmSmart and our sibling product <a>LeadSmart AI</a> follow the same commitment to transparency and user rights."
+  },
+  "book": {
+    "meta": {
+      "title": "Schedule Appointment — HelmSmart"
+    },
+    "duration": "{{minutes}} min",
+    "eventTitle": "{{type}} — {{client}}",
+    "eventTitleDefault": "Appointment — {{client}}",
+    "done": {
+      "title": "Appointment booked!",
+      "summary": "{{date}} at {{time}} with {{client}}",
+      "viewCalendar": "View calendar"
+    },
+    "type": {
+      "title": "What type of appointment?",
+      "subtitle": "Select the service you need"
+    },
+    "client": {
+      "title": "Who is this for?",
+      "subtitle": "Select a client to schedule with",
+      "empty": "No active clients yet. <a>Add a client</a> first."
+    },
+    "time": {
+      "title": "Pick a time",
+      "subtitle": "<em>{{type}} · {{duration}}</em> for {{client}}",
+      "empty": "No available slots in the next 14 days. <a>Update your business hours</a>."
+    },
+    "summary": {
+      "title": "Appointment summary",
+      "when": "{{date}} at {{time}}",
+      "whenWithDuration": "{{date}} at {{time}} · {{duration}}"
+    },
+    "confirm": "Confirm Appointment",
+    "booking": "Booking…"
+  }
+}

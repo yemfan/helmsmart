@@ -3,6 +3,8 @@
 import { useTransition } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, Trash2, Building2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { updateTaskStatus, deleteTask } from "@/lib/actions/tasks";
 
 interface Task {
@@ -29,13 +31,6 @@ interface Props {
   task: Task;
 }
 
-const PRIORITY_STYLES: Record<string, string> = {
-  low:    "text-slate-400",
-  normal: "text-slate-500",
-  high:   "text-amber-600",
-  urgent: "text-rose-600 font-semibold",
-};
-
 const PRIORITY_DOT: Record<string, string> = {
   low:    "bg-slate-300",
   normal: "bg-slate-400",
@@ -43,20 +38,8 @@ const PRIORITY_DOT: Record<string, string> = {
   urgent: "bg-rose-500",
 };
 
-function fmtDate(d: string): string {
-  const date = new Date(d + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diff = Math.floor((date.getTime() - today.getTime()) / 86400000);
-
-  if (diff < 0) return `${Math.abs(diff)}d overdue`;
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  if (diff <= 7) return `${diff}d`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
 export function TaskRow({ task }: Props) {
+  const { t, i18n } = useTranslation("tasks");
   const [isPending, startTransition] = useTransition();
 
   const isDone = task.status === "done" || task.status === "cancelled";
@@ -73,6 +56,19 @@ export function TaskRow({ task }: Props) {
     task.due_date &&
     new Date(task.due_date + "T00:00:00") < new Date(new Date().setHours(0, 0, 0, 0));
 
+  function fmtDate(d: string): string {
+    const date = new Date(d + "T00:00:00");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = Math.floor((date.getTime() - today.getTime()) / 86400000);
+
+    if (diff < 0) return t("row.overdueDays", { count: Math.abs(diff) });
+    if (diff === 0) return t("row.today");
+    if (diff === 1) return t("row.tomorrow");
+    if (diff <= 7) return t("row.inDays", { count: diff });
+    return date.toLocaleDateString(intlLocale(i18n.language), { month: "short", day: "numeric" });
+  }
+
   function handleToggle() {
     startTransition(() => {
       updateTaskStatus(task.id, isDone ? "open" : "done");
@@ -80,7 +76,7 @@ export function TaskRow({ task }: Props) {
   }
 
   function handleDelete() {
-    if (!window.confirm("Delete this task?")) return;
+    if (!window.confirm(t("row.confirmDelete"))) return;
     startTransition(() => {
       deleteTask(task.id);
     });
@@ -118,7 +114,7 @@ export function TaskRow({ task }: Props) {
           {/* Priority dot */}
           <span
             className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${PRIORITY_DOT[task.priority] ?? "bg-slate-400"}`}
-            title={`Priority: ${task.priority}`}
+            title={t("row.priorityTitle", { priority: t(`priority.${task.priority}`) })}
           />
         </div>
 

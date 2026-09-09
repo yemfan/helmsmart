@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { listTimeEntries, getActiveTimer, getTimeStats } from "@/lib/actions/time-entries";
 import { listProjects } from "@/lib/actions/projects";
 import { TimerClient } from "./timer-client";
 
-export const metadata: Metadata = { title: "Timesheets" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("projects");
+  return { title: t("meta.timesheets") };
+}
 
 function weekBounds() {
   const now = new Date();

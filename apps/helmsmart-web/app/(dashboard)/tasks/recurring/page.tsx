@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { listRecurringTasks } from "@/lib/actions/recurring-tasks";
 import { RecurringTasksClient } from "./recurring-tasks-client";
 
-export const metadata: Metadata = { title: "Recurring Tasks" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("tasks");
+  return { title: t("meta.recurringTasks") };
+}
 
 export default async function RecurringTasksPage() {
   const cookieStore = await cookies();

@@ -11,15 +11,20 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { PrintButton } from "./print-button";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Client Statement" };
-
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("clients");
+  return { title: t("meta.statementTitle") };
 }
 
-function fmtDate(iso: string) {
-  return new Date(iso + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+function fmt(n: number, locale: string) {
+  return new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD" }).format(n);
+}
+
+function fmtDate(iso: string, locale: string) {
+  return new Date(iso + "T00:00:00").toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric", year: "numeric" });
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -34,6 +39,7 @@ export default async function ClientStatementPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const [t, locale] = await Promise.all([getServerT("clients"), getServerLocale()]);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -58,7 +64,9 @@ export default async function ClientStatementPage({
   if (!client) notFound();
 
   const clientName =
-    [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "Client";
+    [client.first_name, client.last_name].filter(Boolean).join(" ") ||
+    client.company ||
+    t("detail.fallbackName");
 
   const today = new Date().toISOString().slice(0, 10);
   const rows = (invoices ?? []).map((inv) => ({
@@ -70,14 +78,14 @@ export default async function ClientStatementPage({
   const totalPaid = rows.filter((r) => r.status === "paid").reduce((s, r) => s + Number(r.total), 0);
   const balanceDue = totalBilled - totalPaid;
 
-  const statementDate = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const statementDate = new Date().toLocaleDateString(intlLocale(locale), { month: "long", day: "numeric", year: "numeric" });
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Statement — {clientName}</title>
+        <title>{t("statement.documentTitle", { name: clientName })}</title>
         <style>{`
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #0f172a; background: #fff; font-size: 13px; }
@@ -107,7 +115,7 @@ export default async function ClientStatementPage({
       <body>
         <div className="page">
           <div className="no-print">
-            <a href={`/clients/${id}`}>← Back to client</a>
+            <a href={`/clients/${id}`}>{t("statement.back")}</a>
             <PrintButton />
           </div>
 
@@ -119,15 +127,15 @@ export default async function ClientStatementPage({
               )}
             </div>
             <div style={{ textAlign: "right" }}>
-              <div className="label">Statement</div>
-              <div className="title">Account statement</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>As of {statementDate}</div>
+              <div className="label">{t("statement.label")}</div>
+              <div className="title">{t("statement.title")}</div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{t("statement.asOf", { date: statementDate })}</div>
             </div>
           </div>
 
           <div className="meta-grid">
             <div>
-              <div className="label">Statement for</div>
+              <div className="label">{t("statement.statementFor")}</div>
               <div style={{ marginTop: 4, lineHeight: 1.6 }}>
                 <div style={{ fontWeight: 600, fontSize: 14, color: "#0f172a" }}>{clientName}</div>
                 {client.company && [client.first_name, client.last_name].filter(Boolean).length > 0 && (
@@ -138,36 +146,36 @@ export default async function ClientStatementPage({
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div className="label">Balance due</div>
+              <div className="label">{t("statement.balanceDue")}</div>
               <div style={{ fontSize: 28, fontWeight: 800, color: balanceDue > 0 ? "#dc2626" : "#16a34a", fontVariantNumeric: "tabular-nums" }}>
-                {fmt(balanceDue)}
+                {fmt(balanceDue, locale)}
               </div>
             </div>
           </div>
 
           {rows.length === 0 ? (
-            <div className="empty">No invoices on record for this client.</div>
+            <div className="empty">{t("statement.empty")}</div>
           ) : (
             <table>
               <thead>
                 <tr>
-                  <th style={{ width: "16%" }}>Date</th>
-                  <th style={{ width: "22%" }}>Invoice</th>
-                  <th style={{ width: "18%" }}>Due</th>
-                  <th style={{ width: "20%" }}>Status</th>
-                  <th className="r" style={{ width: "24%" }}>Amount</th>
+                  <th style={{ width: "16%" }}>{t("statement.columns.date")}</th>
+                  <th style={{ width: "22%" }}>{t("statement.columns.invoice")}</th>
+                  <th style={{ width: "18%" }}>{t("statement.columns.due")}</th>
+                  <th style={{ width: "20%" }}>{t("statement.columns.status")}</th>
+                  <th className="r" style={{ width: "24%" }}>{t("statement.columns.amount")}</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id}>
-                    <td>{fmtDate(r.issue_date as string)}</td>
+                    <td>{fmtDate(r.issue_date as string, locale)}</td>
                     <td style={{ fontFamily: "monospace" }}>{r.invoice_number}</td>
-                    <td style={{ color: "#64748b" }}>{fmtDate(r.due_date as string)}</td>
+                    <td style={{ color: "#64748b" }}>{fmtDate(r.due_date as string, locale)}</td>
                     <td className="status" style={{ color: STATUS_COLOR[r.effectiveStatus] ?? "#64748b" }}>
-                      {r.effectiveStatus}
+                      {t(`invoiceStatus.${r.effectiveStatus}`, { defaultValue: r.effectiveStatus })}
                     </td>
-                    <td className="r" style={{ fontWeight: 600 }}>{fmt(Number(r.total))}</td>
+                    <td className="r" style={{ fontWeight: 600 }}>{fmt(Number(r.total), locale)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -178,23 +186,23 @@ export default async function ClientStatementPage({
             <div className="totals">
               <div className="totals-inner">
                 <div className="totals-row">
-                  <span>Total billed</span>
-                  <span>{fmt(totalBilled)}</span>
+                  <span>{t("statement.totalBilled")}</span>
+                  <span>{fmt(totalBilled, locale)}</span>
                 </div>
                 <div className="totals-row">
-                  <span>Total paid</span>
-                  <span style={{ color: "#16a34a" }}>−{fmt(totalPaid)}</span>
+                  <span>{t("statement.totalPaid")}</span>
+                  <span style={{ color: "#16a34a" }}>−{fmt(totalPaid, locale)}</span>
                 </div>
                 <div className="totals-total">
-                  <span>Balance due</span>
-                  <span>{fmt(balanceDue)}</span>
+                  <span>{t("statement.balanceDue")}</span>
+                  <span>{fmt(balanceDue, locale)}</span>
                 </div>
               </div>
             </div>
           )}
 
           <div className="footer">
-            {org?.name} · Statement for {clientName} · Generated {statementDate}
+            {t("statement.footer", { org: org?.name ?? "", name: clientName, date: statementDate })}
           </div>
         </div>
       </body>

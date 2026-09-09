@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 import { getProjectExpenseTotal } from "./expenses";
 import { checkActionPermission } from "@/components/role-guard";
 
@@ -29,7 +30,7 @@ export type Project = {
 async function getOrgId(): Promise<string> {
   const cookieStore = await cookies();
   const id = cookieStore.get("helmsmart-org-id")?.value;
-  if (!id) throw new Error("No org");
+  if (!id) throw new Error((await getServerT("projects"))("errors.noOrg"));
   return id;
 }
 
@@ -175,6 +176,7 @@ export type ClientPnL = {
  * projects will show their billings as ~100% margin.
  */
 export async function listClientsPnL(): Promise<ClientPnL[]> {
+  const t = await getServerT("projects");
   const orgId = await getOrgId();
   const supabase = await createClient();
 
@@ -211,7 +213,7 @@ export async function listClientsPnL(): Promise<ClientPnL[]> {
 
   return (clients ?? []).map((c) => {
     const name =
-      [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "Unnamed client";
+      [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || t("errors.unnamedClient");
     const cost = costByClient.get(c.id) ?? { laborCost: 0, expensesTotal: 0 };
     const revenue = revenueByClient.get(c.id) ?? 0;
     const profit = revenue - cost.laborCost - cost.expensesTotal;

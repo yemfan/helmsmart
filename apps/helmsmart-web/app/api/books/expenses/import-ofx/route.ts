@@ -18,8 +18,11 @@ import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { recordExpense } from "@helm/dna-finance";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
-// Map AI category → CoA account name fragment (case-insensitive partial match)
+// Map AI category → CoA account name fragment (case-insensitive partial match).
+// Lookup data on both sides — the keys are the category enum and the hints
+// are matched against account names — so this stays English in every locale.
 const CATEGORY_HINTS: Record<string, string[]> = {
   "Advertising & Marketing": ["advertising", "marketing", "ad", "facebook", "google ads"],
   "Bank Fees":               ["bank fee", "bank charge", "atm", "overdraft"],
@@ -82,18 +85,19 @@ interface ImportRow {
 }
 
 export async function POST(request: NextRequest) {
+  const t = await getServerT("books");
   try {
     const cookieStore = await cookies();
     const orgId = cookieStore.get("helmsmart-org-id")?.value;
     if (!orgId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      return NextResponse.json({ error: t("errors.unauthorized", { ns: "common" }) }, { status: 401 });
     }
 
     const body = await request.json();
     const rows = (body.rows ?? []) as ImportRow[];
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      return NextResponse.json({ error: "No rows provided" }, { status: 400 });
+      return NextResponse.json({ error: t("expenses.import.noRows") }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -168,7 +172,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ inserted, failed, skipped });
   } catch (err) {
     console.error("[ofx-import] Endpoint error:", err);
-    const msg = err instanceof Error ? err.message : "Import failed";
+    const msg = err instanceof Error ? err.message : t("expenses.import.failed");
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

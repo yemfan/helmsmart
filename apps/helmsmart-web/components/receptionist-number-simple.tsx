@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, Loader2, Phone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { saveTwilioNumber } from "@/lib/actions/messages";
 import { verifyNumberWiring } from "@/lib/actions/voice-setup";
 
@@ -36,6 +37,7 @@ import { verifyNumberWiring } from "@/lib/actions/voice-setup";
 type Wiring = Awaited<ReturnType<typeof verifyNumberWiring>>;
 
 export function ReceptionistNumberSimple({ current }: { current: string | null }) {
+  const { t } = useTranslation("voice");
   const router = useRouter();
   const [number, setNumber] = useState(current ?? "");
   const [isPending, start] = useTransition();
@@ -48,7 +50,7 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
     start(async () => {
       const saved = await saveTwilioNumber(number);
       if (!saved.ok) {
-        setError(saved.error ?? "Couldn't save that number.");
+        setError(saved.error ?? t("number.saveFailed"));
         return;
       }
       if (saved.value !== undefined) setNumber(saved.value); // normalised E.164
@@ -62,11 +64,10 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
   return (
     <div className="border border-slate-200 rounded-lg p-4 mb-5">
       <label className="block text-xs font-medium text-slate-600 mb-1">
-        Your phone number
+        {t("number.label")}
       </label>
       <p className="text-xs text-slate-500 mb-2">
-        The number callers dial. Point it at the platform in your carrier console,
-        then enter it here.
+        {t("number.help")}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +96,7 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
-          {isPending ? "Saving…" : "Save number"}
+          {isPending ? t("number.saving") : t("number.save")}
         </button>
       </div>
 
@@ -109,19 +110,19 @@ export function ReceptionistNumberSimple({ current }: { current: string | null }
         wiring.ok ? (
           <p className="text-xs text-emerald-700 mt-2 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Saved and wired — the agent will answer this number.
+            {t("number.wiredOk")}
           </p>
         ) : (
           <div className="mt-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
             <p className="text-xs font-medium text-amber-800 flex items-center gap-1.5">
               <AlertCircle className="w-3.5 h-3.5" />
-              Saved, but not answering calls yet
+              {t("number.savedNotAnswering")}
             </p>
             {/* Name the failing check — "it doesn't work" is not actionable. */}
             <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
-              {!wiring.numberFound ? <li>This number isn&apos;t in the voice provider yet.</li> : null}
-              {wiring.numberFound && !wiring.agentOk ? <li>It isn&apos;t attached to the receptionist agent.</li> : null}
-              {wiring.numberFound && !wiring.webhookOk ? <li>Its inbound webhook doesn&apos;t point here.</li> : null}
+              {!wiring.numberFound ? <li>{t("number.notInProvider")}</li> : null}
+              {wiring.numberFound && !wiring.agentOk ? <li>{t("number.notAttached")}</li> : null}
+              {wiring.numberFound && !wiring.webhookOk ? <li>{t("number.webhookWrong")}</li> : null}
               {wiring.error ? <li>{wiring.error}</li> : null}
             </ul>
           </div>

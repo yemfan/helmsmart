@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 interface Field {
@@ -29,6 +30,7 @@ export function PublicFormRenderer({
   successMessage,
   redirectUrl,
 }: Props) {
+  const { t } = useTranslation("marketing");
   const [values, setValues] = useState<Record<string, string>>({});
   const [honeypot, setHoneypot] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -54,7 +56,7 @@ export function PublicFormRenderer({
         const data = await res.json();
 
         if (!data.ok) {
-          setError(data.error || "Something went wrong. Please try again.");
+          setError(data.error || t("publicForm.genericError"));
           return;
         }
 
@@ -66,7 +68,7 @@ export function PublicFormRenderer({
           }, 2000);
         }
       } catch {
-        setError("Network error. Please check your connection and try again.");
+        setError(t("publicForm.networkError"));
       }
     });
   };
@@ -79,7 +81,7 @@ export function PublicFormRenderer({
         </div>
         <p className="text-lg font-semibold text-slate-900 mb-2">{successMessage}</p>
         {redirectUrl && (
-          <p className="text-sm text-slate-400 mt-4">Redirecting you shortly…</p>
+          <p className="text-sm text-slate-400 mt-4">{t("publicForm.redirecting")}</p>
         )}
       </div>
     );
@@ -132,7 +134,7 @@ export function PublicFormRenderer({
                 required={field.required}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="">Select…</option>
+                <option value="">{t("publicForm.select")}</option>
                 {field.options?.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
@@ -164,7 +166,7 @@ export function PublicFormRenderer({
         ))}
 
         {error && (
-          <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3" role="alert">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
           </div>
@@ -175,7 +177,7 @@ export function PublicFormRenderer({
           disabled={isPending}
           className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60 mt-2"
         >
-          {isPending ? "Submitting…" : "Submit"}
+          {isPending ? t("common:status.submitting") : t("publicForm.submit")}
         </button>
       </form>
     </div>

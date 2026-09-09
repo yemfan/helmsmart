@@ -7,25 +7,38 @@ import { BooksNav } from "@/components/books-nav";
 import { Plus, FileText, Send, CheckCircle2, Clock, XCircle, Download } from "lucide-react";
 import { AlexReminderBanner } from "@/components/alex-reminder-button";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Invoices · Books" };
-
-const STATUS_CONFIG = {
-  draft:   { label: "Draft",   color: "bg-slate-100 text-slate-600",   icon: FileText },
-  sent:    { label: "Sent",    color: "bg-blue-100 text-blue-700",     icon: Send },
-  paid:    { label: "Paid",    color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  overdue: { label: "Overdue", color: "bg-rose-100 text-rose-700",     icon: Clock },
-  void:    { label: "Void",    color: "bg-slate-100 text-slate-400",   icon: XCircle },
-} as const;
-
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("invoices.list.metaTitle") };
 }
+
+/**
+ * Status → chip. The label is a bundle key, not a string: the enum value is
+ * what the database stores, `status.<value>` is what the owner reads.
+ */
+const STATUS_CONFIG = {
+  draft:   { color: "bg-slate-100 text-slate-600",     icon: FileText },
+  sent:    { color: "bg-blue-100 text-blue-700",       icon: Send },
+  paid:    { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  overdue: { color: "bg-rose-100 text-rose-700",       icon: Clock },
+  void:    { color: "bg-slate-100 text-slate-400",     icon: XCircle },
+} as const;
 
 export default async function InvoicesPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
+  const currency = await orgCurrency(orgId);
+  const fmt = moneyFormatter(locale, currency);
+  const issuedDate = dateFormatter(locale, { month: "short", day: "numeric", year: "numeric" });
+  const dueDate = dateFormatter(locale, { month: "short", day: "numeric" });
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -57,21 +70,21 @@ export default async function InvoicesPage() {
         <div>
           <ResponsibleEmployee slug="alex" className="mb-2" />
           <PageTitle base="Books" />
-          <p className="text-sm text-slate-500 mt-0.5">AI-powered bookkeeping — cash basis, double-entry</p>
+          <p className="text-sm text-slate-500 mt-0.5">{t("overview.subtitle")}</p>
         </div>
         <Link
           href="/api/export/invoices"
           className="flex items-center gap-2 px-3 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
         >
           <Download className="w-4 h-4" />
-          Export
+          {t("invoices.list.export")}
         </Link>
         <Link
           href="/books/invoices/new"
           className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
-          New invoice
+          {t("invoices.list.newInvoice")}
         </Link>
       </div>
 
@@ -80,9 +93,24 @@ export default async function InvoicesPage() {
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: "Outstanding",   value: fmt(totalOutstanding), sub: `${outstanding.length} invoice${outstanding.length !== 1 ? "s" : ""}`, color: "text-slate-800" },
-          { label: "Overdue",       value: fmt(totalOverdue),     sub: `${overdue.length} past due`,    color: totalOverdue > 0 ? "text-rose-700" : "text-slate-800" },
-          { label: "Collected (30d)",value: fmt(totalPaid30),     sub: `${paid30.length} paid`,         color: "text-emerald-700" },
+          {
+            label: t("invoices.list.outstanding"),
+            value: fmt(totalOutstanding),
+            sub: t("invoices.list.invoiceCount", { count: outstanding.length }),
+            color: "text-slate-800",
+          },
+          {
+            label: t("invoices.list.overdue"),
+            value: fmt(totalOverdue),
+            sub: t("invoices.list.pastDueCount", { count: overdue.length }),
+            color: totalOverdue > 0 ? "text-rose-700" : "text-slate-800",
+          },
+          {
+            label: t("invoices.list.collected30d"),
+            value: fmt(totalPaid30),
+            sub: t("invoices.list.paidCount", { count: paid30.length }),
+            color: "text-emerald-700",
+          },
         ].map(({ label, value, sub, color }) => (
           <div key={label} className="bg-white rounded-xl border border-slate-200 p-5">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{label}</p>
@@ -101,26 +129,26 @@ export default async function InvoicesPage() {
             <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
               <FileText className="w-6 h-6 text-slate-400" />
             </div>
-            <p className="text-sm font-medium text-slate-600 mb-1">No invoices yet</p>
+            <p className="text-sm font-medium text-slate-600 mb-1">{t("invoices.list.emptyTitle")}</p>
             <p className="text-xs text-slate-400 max-w-xs mb-4">
-              Create your first invoice and send it directly to a client via email.
+              {t("invoices.list.emptyBody")}
             </p>
             <Link
               href="/books/invoices/new"
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
             >
-              <Plus className="w-4 h-4" /> Create invoice
+              <Plus className="w-4 h-4" /> {t("invoices.list.createInvoice")}
             </Link>
           </div>
         ) : (
           <>
             {/* Table header */}
             <div className="grid grid-cols-[1fr_120px_100px_100px_120px] gap-4 px-6 py-3 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              <span>Client / Number</span>
-              <span>Issued</span>
-              <span>Due</span>
-              <span className="text-right">Amount</span>
-              <span className="text-right">Status</span>
+              <span>{t("invoices.list.columns.client")}</span>
+              <span>{t("invoices.list.columns.issued")}</span>
+              <span>{t("invoices.list.columns.due")}</span>
+              <span className="text-right">{t("invoices.list.columns.amount")}</span>
+              <span className="text-right">{t("invoices.list.columns.status")}</span>
             </div>
 
             <div className="divide-y divide-slate-50">
@@ -150,10 +178,10 @@ export default async function InvoicesPage() {
                       <p className="text-xs text-slate-400 font-mono">{inv.invoice_number}</p>
                     </div>
                     <span className="text-sm text-slate-600">
-                      {new Date(inv.issue_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {issuedDate(inv.issue_date)}
                     </span>
                     <span className={`text-sm ${effectiveStatus === "overdue" ? "text-rose-600 font-medium" : "text-slate-600"}`}>
-                      {new Date(inv.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      {dueDate(inv.due_date)}
                     </span>
                     <span className="text-sm font-semibold text-slate-800 tabular-nums text-right">
                       {fmt(Number(inv.total))}
@@ -161,7 +189,7 @@ export default async function InvoicesPage() {
                     <div className="flex justify-end">
                       <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${cfg.color}`}>
                         <StatusIcon className="w-3 h-3" />
-                        {cfg.label}
+                        {t(`status.invoice.${effectiveStatus}`)}
                       </span>
                     </div>
                   </Link>

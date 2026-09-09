@@ -1,1 +1,46 @@
-{}
+{
+  "meta": {
+    "title": "Pipeline"
+  },
+  "stages": {
+    "lead": "Lead",
+    "qualified": "Qualified",
+    "proposal": "Proposal",
+    "negotiation": "Negotiation",
+    "won": "Won",
+    "lost": "Lost"
+  },
+  "board": {
+    "title": "Pipeline",
+    "subtitle_one": "Drag clients between stages · {{count}} active deal",
+    "subtitle_other": "Drag clients between stages · {{count}} active deals",
+    "pipelineValue": "Pipeline value",
+    "won": "Won",
+    "manageClients": "Manage clients",
+    "dropHere": "Drop here"
+  },
+  "card": {
+    "unnamed": "Unnamed",
+    "today": "Today",
+    "daysInStage": "{{count}}d"
+  },
+  "detail": {
+    "sinceToday": "Since today",
+    "daysInStage_one": "{{count}} day in stage",
+    "daysInStage_other": "{{count}} days in stage",
+    "expectedValue": "Expected value",
+    "note": "Note",
+    "notePlaceholder": "Deal notes, next steps…",
+    "noNote": "No note",
+    "contact": "Contact",
+    "moveToStage": "Move to stage",
+    "viewProfile": "View full profile",
+    "sarah": {
+      "queued": "Sarah created a task for you",
+      "seeTasks": "see Tasks",
+      "noPhone": "No phone number on file.",
+      "drafting": "Drafting…",
+      "ask": "Ask Sarah to follow up"
+    }
+  }
+}

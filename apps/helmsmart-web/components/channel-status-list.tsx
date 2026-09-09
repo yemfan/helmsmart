@@ -1,22 +1,24 @@
 import Link from "next/link";
 import { SOCIAL_CHANNELS, isChannelConnected } from "@/lib/social-channels";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Read-only channel status for /social. Connected channels show nothing extra
  * (just a green dot + name); only not-connected ones say "not connected".
  * Connect/disconnect lives in Settings → Marketing.
  */
-export function ChannelStatusList({ connected }: { connected: string[] }) {
+export async function ChannelStatusList({ connected }: { connected: string[] }) {
+  const t = await getServerT("voice");
   const set = new Set(connected);
   return (
     <div className="mx-4 mt-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-semibold text-slate-900">Channels</p>
+        <p className="text-sm font-semibold text-slate-900">{t("channels.title")}</p>
         <Link
           href="/settings?tab=marketing"
           className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
         >
-          Manage in Settings →
+          {t("channels.manage")} →
         </Link>
       </div>
       <ul className="flex flex-wrap gap-2">
@@ -39,7 +41,7 @@ export function ChannelStatusList({ connected }: { connected: string[] }) {
               {/* Say nothing when connected; only flag what still needs attention. */}
               {!on && (
                 <span className="text-[11px] font-normal text-slate-400">
-                  {manual ? "manual" : "not connected"}
+                  {manual ? t("channels.manual") : t("channels.notConnected")}
                 </span>
               )}
             </li>

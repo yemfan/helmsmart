@@ -1,12 +1,16 @@
 # HelmSmart three-language design (en · zh-Hans · es)
 
-Status: design, 2026-09-09. Chinese ships first; Spanish is wired for but not
-bundled until its translations exist.
+Status: **built and verified, 2026-09-09**, on branch `feat/helmsmart-i18n`.
+English and Simplified Chinese ship; Spanish is fully wired for — contract,
+`Intl` tag, AI directive, picker — and needs only its bundles.
+
+This document is both the design and the record of what was built. Where the
+two diverged, the divergence and its reason are marked **Changed in build**.
 
 ## Summary
 
-HelmSmart has no UI localization today. Every heading, label, email and AI
-briefing is English in source. CloseBoss (`apps/leadsmartai`) has a complete,
+HelmSmart had no UI localization. Every heading, label, email and AI
+briefing was English in source. CloseBoss (`apps/leadsmartai`) has a complete,
 battle-tested i18n stack — locale contract, server and client translators,
 language picker, AI language directives, and nine CI guard tests that caught
 the "half-Chinese page" in each of its disguises. This design moves the
@@ -69,8 +73,12 @@ Decisions at a glance:
 - **Pack terms relabel the nav.** `components/sidebar.tsx` applies
   `terms[label] ?? label` from the active industry pack (medical: Clients →
   Patients, Books → Billing). Translation has to compose with that.
-- **Two Supabase projects.** Core (`vpmwsnoosuiknyzdxgtk`) and the medical
-  island. Any new table ships to both.
+- **One live Supabase project.** Core (`vpmwsnoosuiknyzdxgtk`). The medical
+  vertical (`doctor.helmsmart.ai`, its own auth island) was **archived
+  2026-09-09** — its code stays where it is, but nothing in this design ships
+  to it: no migration, no pack-term translation, no cross-subdomain cookie
+  work. If it returns, possibly on a new domain, replay the migrations that
+  landed after that date.
 - **No vitest CI gate.** `vitest.config.ts` includes `lib/**/*.test.ts`, but no
   workflow runs it. The guard tests are worthless until one does.
 - **Server-rendered by default.** 91 of 95 pages are Server Components, so most
@@ -251,8 +259,8 @@ create policy "own preferences" on user_preferences
 
 Per user, not per membership or per org: language belongs to the person. The
 file lands in `apps/helmsmart-web/supabase/migrations/` (the canonical source
-for Core) and is applied to **both** Supabase projects; the medical island has
-its own `auth.users`. Repo-first, then `apply_migration`.
+for Core) and is applied to Core alone — the medical island is archived.
+Repo-first, then `apply_migration`.
 
 Write path: `POST /api/me/ui-locale` upserts through the RLS client and asks
 for the row back (`.select("user_id")`), returning 401 signed-out — the cookie
@@ -284,17 +292,35 @@ HelmSmart is roughly 1,500 strings against CloseBoss's 9,000-key `dashboard`
 namespace, so the split is by product surface, small enough to translate in
 one sitting each:
 
-| Namespace | Covers | Est. keys |
-| --- | --- | --- |
-| `common` | package `common` + `app_name` | 0 new |
-| `nav` | sidebar sections and items, pack nouns, settings tabs, books sub-nav | ~60 |
-| `settings` | Settings page and every settings form | ~200 |
-| `dashboard` | Home, Command Center, Insights, Inbox, Calendar, Tasks, Clients, Pipeline, Projects, Timesheets, Workflows, Automations, Reception, Voice | ~600 |
-| `books` | Invoices, Quotes, Bills, Expenses, Reports, Journal, Aging, Vendors, 1099 | ~350 |
-| `auth` | login, signup, forgot/reset, accept invite, onboarding | ~80 |
-| `site` | marketing pages, metadata titles/descriptions, footer | ~250 |
-| `emails` | owner-facing email subjects and bodies | ~40 |
-| `errors` | server-action error strings (`{ ok: false, error }`) | ~260 |
+| Namespace | Covers | en | zh-Hans |
+| --- | --- | --- | --- |
+| `common` | package `common` (37 verbs, 90 keys) + app additions | 9 | 9 |
+| `nav` | sidebar, pack nouns, settings tabs, books sub-nav, account menu | 55 | 55 |
+| `settings` | Settings page and every settings form | 148 | 148 |
+| `auth` | login, signup, forgot/reset, accept invite, onboarding | 131 | 131 |
+| `home` | Home, Command Center, Insights, Ask | 319 | 319 |
+| `inbox` | Inbox + compose | 57 | 57 |
+| `clients` | Clients list, detail, statement, import | 265 | 265 |
+| `tasks` | Tasks + Calendar | 142 | 142 |
+| `pipeline` | Pipeline | 32 | 32 |
+| `projects` | Projects + Timesheets | 250 | 250 |
+| `workflows` | Workflows + Automations | 183 | 180 |
+| `voice` | Receptionist, Client Assistant, Reception | 277 | 270 |
+| `marketing` | Marketing, Social, Forms, Google Business | 688 | 688 |
+| `books` | Invoices through 1099, Reports | 920 | 896 |
+| `site` | public marketing pages, metadata, footer | 504 | 504 |
+| `emails` | owner-facing email subjects and bodies | 53 | 53 |
+| **Total** | **283 source files converted** | **4,033** | **3,999** |
+
+The zh-Hans column is smaller by exactly the English `_one` plural forms;
+Chinese has no `one` category, so it carries `_other` alone and the parity
+guard strips the suffix before comparing.
+
+**There is no `errors` namespace.** The design called for one and it turned out
+to have no reader: an error string belongs to the screen that shows it, and a
+server action already knows which surface it serves, so each namespace keeps
+its own `errors.*` group and actions reach them with the same `getServerT(ns)`
+their page uses.
 
 Server actions return **keys**, not English, once their surface is
 internationalized: `{ ok: false, error: "errors.invoice.notFound" }`, and the
@@ -358,7 +384,7 @@ Pipeline, Projects, Timesheets, Workflows, Automations, Reception, Voice
 (`dashboard` part 2); Invoices through 1099 (`books`); `errors` namespace
 with server actions returning keys; money via `Intl.NumberFormat` +
 `org.currency`. Ask, client brief, insights and categorizers get the
-directive. Medical pack terms and tagline in zh-Hans.
+directive.
 
 **Phase 3 — what reaches the owner outside the app.** `emails` namespace,
 weekly digest and invites rendered per recipient via `userUiLocale`;
@@ -372,6 +398,67 @@ option in the picker (`ES` / `Español`). Nothing else changes — every
 directive, Intl tag and guard already knows `es`. CloseBoss can adopt the same
 bundles' `common` half for free.
 
+## Changed in build
+
+Five decisions moved between the design and the delivered code. Each is here
+because the design was wrong or silent, not because the plan drifted.
+
+**The `common` overlay is a deep merge, not a spread.** The design said the
+app's `common.json` overlays the package's, and the first implementation used
+`{ ...pkg, ...app }`. That replaces a whole GROUP whenever the app declares
+one: adding a single `actions.saved_bang` deleted the package's entire
+`actions` set — `save`, `cancel`, `dismiss`, thirty-odd more — and every call
+site reading one rendered its raw key. Nothing was visible at the merge; the
+bundle stayed a valid object with forty strings missing. `config.ts` and the
+guards' `bundles.ts` now merge key by key all the way down, and
+`navLabels.test.ts` asserts that every package leaf survives the overlay.
+
+**There is no `errors` namespace.** The design gave it ~260 keys. It turned
+out to have no reader: an error string belongs to the screen that shows it,
+and a server action already knows which surface it serves, so each namespace
+keeps its own `errors.*` group. Shipping an empty shared bundle would have
+broken the repo's own rule about storing what nothing consumes.
+
+**The daily briefing cache is keyed by language.** `daily_briefings` was
+unique on `(organization_id, briefing_date)`, so the first read of the day
+froze the briefing's language: an owner who switched to 简体中文 kept an English
+paragraph at the top of a fully translated dashboard until the next morning,
+and two owners of one business who read different languages had it
+permanently. Migration `20260909010000_daily_briefings_locale.sql` adds
+`locale` and replaces the constraint with `(organization_id, briefing_date,
+locale)` — a full constraint, not a partial index, because PostgREST's
+`onConflict` throws 42P10 against a partial one.
+
+**AI employee roles translate; their names do not.** `Mark`, `Tim`, `Emily`,
+`Alex`, `Sarah` and `Emma` are people's names and stay in every language.
+Their job titles are job titles, so `common.aiRoles.*` carries them keyed by
+the English title, and a role added to the roster or renamed in the database
+renders itself rather than a raw key.
+
+**The blog route had to stop being statically generated.** Not an i18n
+decision, a consequence of one: the root layout now reads `cookies()` to
+resolve the locale, and `app/(marketing)/blog/[slug]` exported
+`generateStaticParams`. A page that opts into static generation under a layout
+with a request-time dependency throws `DYNAMIC_SERVER_USAGE` and returns HTTP
+500 — **in a production build only**, never in `next dev`. The route is now
+`force-dynamic`, and a production build plus a live request confirmed it.
+
+## How it was verified
+
+| Check | Result |
+| --- | --- |
+| `tsc --noEmit`, helmsmart-web | 0 errors |
+| `vitest run`, helmsmart-web | 27 files, 201 tests passing |
+| i18n guards (12 files, 79 tests) | passing, 0 findings |
+| `tsc --noEmit`, leadsmartai (regression) | 0 errors |
+| `vitest run`, leadsmartai (regression) | 229 files, 2,333 tests passing |
+| `tsc --noEmit`, leadsmart-mobile (regression) | 0 errors |
+| Production build | succeeds; no blog route prerendered |
+| `/blog/<slug>` against `next start` | HTTP 200 |
+| `<html lang>` by cookie / by `Accept-Language` / default | `zh-Hans` / `zh-Hans` / `en` |
+| Marketing + auth pages under a zh cookie | Chinese, 0 raw keys across 8 routes |
+| Signed-in dashboard, Books, briefing | Chinese including dates, money and the AI briefing |
+
 ## Non-goals and open questions
 
 - **Not renaming `@leadsmart/i18n`.** It is namespaced for CloseBoss, and
@@ -382,12 +469,11 @@ bundles' `common` half for free.
   alone.
 - **Not Traditional Chinese.** `zh-Hant` resolves to English until a bundle
   set exists.
-- **Open: cookie domain across verticals.** `helmsmart.ai` and
-  `doctor.helmsmart.ai` are different cookie hosts. Setting `domain=.helmsmart.ai`
-  in production would carry the choice across; the durable copy in
-  `user_preferences` makes this cosmetic, so it is a Phase 1 detail to
-  measure, not decide now.
-- **Open: which pages the medical pack translates first.** Medical is live on
-  its own island with its own owners; the pack's `terms` get zh in Phase 2
-  but its surfaces are the same Core routes, so nothing pack-specific is
-  blocked on this.
+- **Closed: cookie domain across verticals.** Was an open question only
+  because `doctor.helmsmart.ai` is a separate cookie host. That vertical is
+  archived, so one host, one cookie. If it returns, the durable copy in
+  `user_preferences` already carries the choice across a sign-in, which makes
+  a shared `domain=.helmsmart.ai` cookie a nicety rather than a fix.
+- **Closed: medical pack translation.** Archived. The pack-term machinery
+  stays wired (relabel, then translate), so a revived vertical only needs its
+  own nouns added to `nav.json`.

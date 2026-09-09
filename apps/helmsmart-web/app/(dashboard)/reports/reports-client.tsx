@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, TrendingUp, TrendingDown, DollarSign, Clock, Users, FolderOpen, Receipt, Wallet, AlertTriangle } from "lucide-react";
 import type { PnLReport, CashFlowSummary, TimeReport, ReceivablesAging, CashFlowForecast, SalesTaxReport } from "@/lib/actions/reports";
 import type { ProjectWithPnL, ClientPnL } from "@/lib/actions/projects";
+import { moneyFormatter, dateFormatter } from "@/lib/books-format";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
@@ -34,44 +36,32 @@ function lastQuarter() {
   const sm = starts[pq];
   const em = sm + 2;
   const lastDay = new Date(y, em, 0).getDate();
-  const fmt = (n: number) => String(n).padStart(2, "0");
-  return { from: `${y}-${fmt(sm)}-01`, to: `${y}-${fmt(em)}-${lastDay}` };
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return { from: `${y}-${pad(sm)}-01`, to: `${y}-${pad(em)}-${lastDay}` };
 }
 
+// `key` names the label in `reports.business.presets.*`; the function is the range.
 const PRESETS = [
-  { label: "This month",   fn: thisMonth },
-  { label: "Last quarter", fn: lastQuarter },
-  { label: "This year",    fn: thisYear },
-  { label: "Last year",    fn: lastYear },
+  { key: "thisMonth",   fn: thisMonth },
+  { key: "lastQuarter", fn: lastQuarter },
+  { key: "thisYear",    fn: thisYear },
+  { key: "lastYear",    fn: lastYear },
 ];
 
-// ─── Formatters ───────────────────────────────────────────────────────────────
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n);
-
-function fmtHours(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
-}
-
 // ─── Stat card ────────────────────────────────────────────────────────────────
+// `value` arrives already formatted — the money and hours formatters both need
+// the reader's locale, which lives in the one component that binds i18n.
 
 function StatCard({
   label,
   value,
   sub,
   positive,
-  money = true,
 }: {
   label: string;
-  value: number;
+  value: string;
   sub?: string;
   positive?: boolean;
-  money?: boolean;
 }) {
   const color =
     positive === undefined
@@ -83,9 +73,7 @@ function StatCard({
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{label}</p>
-      <p className={`text-2xl font-semibold tabular-nums ${color}`}>
-        {money ? fmt(value) : fmtHours(value)}
-      </p>
+      <p className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</p>
       {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
     </div>
   );
@@ -104,13 +92,23 @@ function MiniBar({ value, max, color = "bg-indigo-500" }: { value: number; max: 
 
 // ─── Aging cell ───────────────────────────────────────────────────────────────
 
-function AgingCell({ value, tone = "slate" }: { value: number; tone?: "slate" | "warn" | "danger" }) {
+function AgingCell({
+  value,
+  fmt,
+  tone = "slate",
+}: {
+  value: number;
+  fmt: (n: number) => string;
+  tone?: "slate" | "warn" | "danger";
+}) {
   if (value <= 0) return <span className="text-sm text-right tabular-nums text-slate-300">—</span>;
   const color = tone === "danger" ? "text-rose-600 font-medium" : tone === "warn" ? "text-amber-600" : "text-slate-600";
   return <span className={`text-sm text-right tabular-nums ${color}`}>{fmt(value)}</span>;
 }
 
 // ─── CSV export ───────────────────────────────────────────────────────────────
+// Headers and row labels stay English on purpose: a spreadsheet, an accountant's
+// import template or a downstream tool reads these, not the owner.
 
 function exportPnLCsv(report: PnLReport) {
   const rows: string[] = [
@@ -256,6 +254,8 @@ const COLOR_DOTS: Record<string, string> = {
 
 interface Props {
   initialTab?: string;
+  /** `organizations.currency` — the ledger's currency, not the reader's country. */
+  currency: string;
   initialPnL: PnLReport;
   initialCashFlow: CashFlowSummary;
   initialTimeReport: TimeReport;
@@ -272,6 +272,7 @@ interface Props {
 
 export function ReportsClient({
   initialTab,
+  currency,
   initialPnL,
   initialCashFlow,
   initialTimeReport,
@@ -285,6 +286,18 @@ export function ReportsClient({
   fetchTimeReport,
   fetchSalesTax,
 }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency, { minimumFractionDigits: 2 });
+  const fmtDate = dateFormatter(i18n.language, { year: "numeric", month: "short", day: "numeric" });
+
+  function fmtHours(minutes: number): string {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h === 0) return t("reports.business.hours.minutes", { minutes: m });
+    if (m === 0) return t("reports.business.hours.hours", { hours: h });
+    return t("reports.business.hours.hoursMinutes", { hours: h, minutes: m });
+  }
+
   const [from, setFrom]     = useState(initialPnL.from);
   const [to, setTo]         = useState(initialPnL.to);
   const [pnl, setPnl]       = useState(initialPnL);
@@ -306,9 +319,9 @@ export function ReportsClient({
     runFetch(r.from, r.to);
   }
 
-  function runFetch(f: string, t: string) {
+  function runFetch(f: string, t2: string) {
     start(async () => {
-      const [p, c, tr, st] = await Promise.all([fetchPnL(f, t), fetchCashFlow(f, t), fetchTimeReport(f, t), fetchSalesTax(f, t)]);
+      const [p, c, tr, st] = await Promise.all([fetchPnL(f, t2), fetchCashFlow(f, t2), fetchTimeReport(f, t2), fetchSalesTax(f, t2)]);
       setPnl(p);
       setCash(c);
       setTime(tr);
@@ -350,7 +363,7 @@ export function ReportsClient({
       {/* Date range + presets */}
       <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-wrap items-end gap-4">
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">From</label>
+          <label className="block text-xs font-medium text-slate-500 mb-1">{t("reports.business.range.from")}</label>
           <input
             type="date"
             value={from}
@@ -359,7 +372,7 @@ export function ReportsClient({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">To</label>
+          <label className="block text-xs font-medium text-slate-500 mb-1">{t("reports.business.range.to")}</label>
           <input
             type="date"
             value={to}
@@ -372,17 +385,17 @@ export function ReportsClient({
           disabled={pending}
           className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
         >
-          {pending ? "Loading…" : "Apply"}
+          {pending ? t("common:actions.loading") : t("reports.business.range.apply")}
         </button>
         <div className="flex items-center gap-2 ml-2">
           {PRESETS.map((p) => (
             <button
-              key={p.label}
+              key={p.key}
               onClick={() => applyPreset(p.fn)}
               disabled={pending}
               className="text-xs text-slate-600 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
             >
-              {p.label}
+              {t(`reports.business.presets.${p.key}`)}
             </button>
           ))}
         </div>
@@ -390,15 +403,15 @@ export function ReportsClient({
 
       {/* Tab selector */}
       <div className="flex flex-wrap gap-1 bg-slate-100 rounded-lg p-1 w-fit">
-        {(["pnl", "cash", "time", "projects", "clients", "receivables", "forecast", "tax"] as const).map((t) => (
+        {allowedTabs.map((key) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={key}
+            onClick={() => setTab(key)}
             className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              tab === t ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              tab === key ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {t === "pnl" ? "Profit & Loss" : t === "cash" ? "Cash Flow" : t === "time" ? "Time Tracking" : t === "projects" ? "Projects" : t === "clients" ? "Clients" : t === "receivables" ? "Receivables" : t === "forecast" ? "Forecast" : "Sales Tax"}
+            {t(`reports.business.tabs.${key}`)}
           </button>
         ))}
       </div>
@@ -407,13 +420,13 @@ export function ReportsClient({
       {tab === "pnl" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
           <div className="grid grid-cols-3 gap-4">
-            <StatCard label="Total Revenue" value={pnl.grossRevenue} positive={true} />
-            <StatCard label="Total Expenses" value={pnl.totalExpenses} positive={false} />
+            <StatCard label={t("reports.business.pnl.totalRevenue")} value={fmt(pnl.grossRevenue)} positive={true} />
+            <StatCard label={t("reports.business.pnl.totalExpenses")} value={fmt(pnl.totalExpenses)} positive={false} />
             <StatCard
-              label="Net Income"
-              value={pnl.netIncome}
+              label={t("reports.business.pnl.netIncome")}
+              value={fmt(pnl.netIncome)}
               positive={pnl.netIncome >= 0}
-              sub={pnl.netIncome >= 0 ? "Profitable period" : "Net loss"}
+              sub={pnl.netIncome >= 0 ? t("reports.business.pnl.profitablePeriod") : t("reports.business.pnl.netLoss")}
             />
           </div>
 
@@ -422,18 +435,18 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Revenue</h2>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.pnl.revenue")}</h2>
               </div>
               <button
                 onClick={() => exportPnLCsv(pnl)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {pnl.revenue.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No revenue entries in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.pnl.noRevenue")}</p>
             ) : (
               <div className="divide-y divide-slate-50">
                 {pnl.revenue.map((r) => (
@@ -446,7 +459,7 @@ export function ReportsClient({
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-6 py-3 bg-emerald-50">
-                  <span className="text-sm font-semibold text-slate-700">Total Revenue</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.pnl.totalRevenue")}</span>
                   <span className="text-sm font-bold text-emerald-700 tabular-nums">{fmt(pnl.grossRevenue)}</span>
                 </div>
               </div>
@@ -457,10 +470,10 @@ export function ReportsClient({
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100">
               <TrendingDown className="w-4 h-4 text-rose-500" />
-              <h2 className="text-sm font-semibold text-slate-800">Expenses</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.pnl.expenses")}</h2>
             </div>
             {pnl.expenses.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No expense entries in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.pnl.noExpenses")}</p>
             ) : (
               <div className="divide-y divide-slate-50">
                 {pnl.expenses.map((e) => (
@@ -473,7 +486,7 @@ export function ReportsClient({
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-6 py-3 bg-rose-50">
-                  <span className="text-sm font-semibold text-slate-700">Total Expenses</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.pnl.totalExpenses")}</span>
                   <span className="text-sm font-bold text-rose-700 tabular-nums">{fmt(pnl.totalExpenses)}</span>
                 </div>
               </div>
@@ -488,8 +501,10 @@ export function ReportsClient({
           }`}>
             <div className="flex items-center gap-2">
               <DollarSign className={`w-5 h-5 ${pnl.netIncome >= 0 ? "text-emerald-600" : "text-rose-600"}`} />
-              <span className="text-sm font-semibold text-slate-800">Net Income</span>
-              <span className="text-xs text-slate-500">{pnl.from} – {pnl.to}</span>
+              <span className="text-sm font-semibold text-slate-800">{t("reports.business.pnl.netIncome")}</span>
+              <span className="text-xs text-slate-500">
+                {t("reports.business.dateRange", { from: fmtDate(pnl.from), to: fmtDate(pnl.to) })}
+              </span>
             </div>
             <span className={`text-xl font-bold tabular-nums ${pnl.netIncome >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
               {fmt(pnl.netIncome)}
@@ -502,28 +517,38 @@ export function ReportsClient({
       {tab === "cash" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
           <div className="grid grid-cols-3 gap-4">
-            <StatCard label="Money In" value={cash.totalIn} positive={true} sub="Deposits & credits" />
-            <StatCard label="Money Out" value={cash.totalOut} positive={false} sub="Withdrawals & debits" />
             <StatCard
-              label="Net Cash Flow"
-              value={cash.net}
+              label={t("reports.business.cash.moneyIn")}
+              value={fmt(cash.totalIn)}
+              positive={true}
+              sub={t("reports.business.cash.moneyInSub")}
+            />
+            <StatCard
+              label={t("reports.business.cash.moneyOut")}
+              value={fmt(cash.totalOut)}
+              positive={false}
+              sub={t("reports.business.cash.moneyOutSub")}
+            />
+            <StatCard
+              label={t("reports.business.cash.net")}
+              value={fmt(cash.net)}
               positive={cash.net >= 0}
-              sub={cash.net >= 0 ? "Positive flow" : "Negative flow"}
+              sub={cash.net >= 0 ? t("reports.business.cash.positiveFlow") : t("reports.business.cash.negativeFlow")}
             />
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-800">By Category</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.cash.byCategory")}</h2>
             </div>
             {cash.byCategory.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No transactions in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.cash.noTransactions")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_140px_140px] gap-4 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  <span>Category</span>
-                  <span className="text-right">In</span>
-                  <span className="text-right">Out</span>
+                  <span>{t("reports.business.cash.columns.category")}</span>
+                  <span className="text-right">{t("reports.business.cash.columns.in")}</span>
+                  <span className="text-right">{t("reports.business.cash.columns.out")}</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {cash.byCategory.map((c) => (
@@ -549,14 +574,14 @@ export function ReportsClient({
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
           {/* KPI cards */}
           <div className="grid grid-cols-4 gap-4">
-            <StatCard label="Total Hours"    value={time.totalMinutes}    money={false} />
-            <StatCard label="Billable Hours" value={time.billableMinutes} money={false} positive={true} />
-            <StatCard label="Billable Amount" value={time.billableAmount} positive={true} />
+            <StatCard label={t("reports.business.time.totalHours")} value={fmtHours(time.totalMinutes)} />
+            <StatCard label={t("reports.business.time.billableHours")} value={fmtHours(time.billableMinutes)} positive={true} />
+            <StatCard label={t("reports.business.time.billableAmount")} value={fmt(time.billableAmount)} positive={true} />
             <StatCard
-              label="Uninvoiced"
-              value={time.uninvoicedAmount}
+              label={t("reports.business.time.uninvoiced")}
+              value={fmt(time.uninvoicedAmount)}
               positive={time.uninvoicedAmount === 0}
-              sub={time.uninvoicedAmount > 0 ? "ready to invoice" : "fully invoiced"}
+              sub={time.uninvoicedAmount > 0 ? t("reports.business.time.readyToInvoice") : t("reports.business.time.fullyInvoiced")}
             />
           </div>
 
@@ -565,18 +590,18 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <FolderOpen className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Hours by project</h2>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.time.hoursByProject")}</h2>
               </div>
               <button
                 onClick={() => exportTimeCsv(time)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {time.byProject.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No time entries in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.time.noEntries")}</p>
             ) : (
               <div className="divide-y divide-slate-50">
                 {time.byProject.map((p, i) => (
@@ -595,7 +620,7 @@ export function ReportsClient({
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-6 py-3 bg-slate-50">
-                  <span className="text-sm font-semibold text-slate-700">Total</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.time.total")}</span>
                   <div className="flex items-center gap-6">
                     <span className="text-sm font-medium text-slate-700 tabular-nums">
                       {fmtHours(time.totalMinutes)}
@@ -615,10 +640,10 @@ export function ReportsClient({
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100">
               <Users className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-sm font-semibold text-slate-800">Billable revenue by client</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.time.byClient")}</h2>
             </div>
             {time.byClient.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No time entries in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.time.noEntries")}</p>
             ) : (
               <div className="divide-y divide-slate-50">
                 {time.byClient.map((c, i) => (
@@ -644,16 +669,18 @@ export function ReportsClient({
           <div className="flex items-center justify-between px-6 py-4 rounded-xl border-2 border-indigo-100 bg-indigo-50">
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-indigo-600" />
-              <span className="text-sm font-semibold text-slate-800">Period summary</span>
-              <span className="text-xs text-slate-500">{time.from} – {time.to}</span>
+              <span className="text-sm font-semibold text-slate-800">{t("reports.business.time.periodSummary")}</span>
+              <span className="text-xs text-slate-500">
+                {t("reports.business.dateRange", { from: fmtDate(time.from), to: fmtDate(time.to) })}
+              </span>
             </div>
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <p className="text-xs text-slate-500">Billable hours</p>
+                <p className="text-xs text-slate-500">{t("reports.business.time.billableHoursLabel")}</p>
                 <p className="text-base font-bold text-indigo-700 tabular-nums">{fmtHours(time.billableMinutes)}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-slate-500">Earned</p>
+                <p className="text-xs text-slate-500">{t("reports.business.time.earned")}</p>
                 <p className="text-base font-bold text-emerald-700 tabular-nums">{fmt(time.billableAmount)}</p>
               </div>
             </div>
@@ -665,14 +692,18 @@ export function ReportsClient({
       {tab === "projects" && (
         <div className="space-y-6">
           <div className="grid grid-cols-4 gap-4">
-            <StatCard label="Revenue" value={projTotals.revenue} positive={true} />
-            <StatCard label="Labor cost" value={projTotals.laborCost} positive={false} />
-            <StatCard label="Expenses" value={projTotals.expensesTotal} positive={false} />
+            <StatCard label={t("reports.business.projects.revenue")} value={fmt(projTotals.revenue)} positive={true} />
+            <StatCard label={t("reports.business.projects.laborCost")} value={fmt(projTotals.laborCost)} positive={false} />
+            <StatCard label={t("reports.business.projects.expenses")} value={fmt(projTotals.expensesTotal)} positive={false} />
             <StatCard
-              label="Profit"
-              value={projTotals.profit}
+              label={t("reports.business.projects.profit")}
+              value={fmt(projTotals.profit)}
               positive={projTotals.profit >= 0}
-              sub={projBlendedMargin !== null ? `${(projBlendedMargin * 100).toFixed(0)}% blended margin` : undefined}
+              sub={
+                projBlendedMargin !== null
+                  ? t("reports.business.blendedMargin", { percent: (projBlendedMargin * 100).toFixed(0) })
+                  : undefined
+              }
             />
           </div>
 
@@ -680,28 +711,28 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <FolderOpen className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Profit by project</h2>
-                <span className="text-xs text-slate-400">· lifetime to date</span>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.projects.profitByProject")}</h2>
+                <span className="text-xs text-slate-400">{t("reports.business.lifetimeToDate")}</span>
               </div>
               <button
                 onClick={() => exportProjectsCsv(sortedProjects)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {sortedProjects.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No projects yet</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.projects.empty")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_104px_104px_104px_104px_64px] gap-3 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  <span>Project</span>
-                  <span className="text-right">Revenue</span>
-                  <span className="text-right">Labor</span>
-                  <span className="text-right">Expenses</span>
-                  <span className="text-right">Profit</span>
-                  <span className="text-right">Margin</span>
+                  <span>{t("reports.business.projects.columns.project")}</span>
+                  <span className="text-right">{t("reports.business.projects.columns.revenue")}</span>
+                  <span className="text-right">{t("reports.business.projects.columns.labor")}</span>
+                  <span className="text-right">{t("reports.business.projects.columns.expenses")}</span>
+                  <span className="text-right">{t("reports.business.projects.columns.profit")}</span>
+                  <span className="text-right">{t("reports.business.projects.columns.margin")}</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {sortedProjects.map((p) => (
@@ -721,7 +752,7 @@ export function ReportsClient({
                   ))}
                 </div>
                 <div className="grid grid-cols-[1fr_104px_104px_104px_104px_64px] gap-3 px-6 py-3 bg-slate-50 border-t border-slate-100 items-center">
-                  <span className="text-sm font-semibold text-slate-700">Total</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.projects.total")}</span>
                   <span className="text-sm font-semibold text-slate-700 text-right tabular-nums">{fmt(projTotals.revenue)}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">{fmt(projTotals.laborCost)}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">{fmt(projTotals.expensesTotal)}</span>
@@ -734,10 +765,7 @@ export function ReportsClient({
             )}
           </div>
 
-          <p className="text-xs text-slate-400">
-            Revenue is invoiced billable time. Profit nets labor cost (from your default labor rate) and tagged expenses.
-            Figures are lifetime-to-date per project and aren&apos;t affected by the date range above.
-          </p>
+          <p className="text-xs text-slate-400">{t("reports.business.projects.note")}</p>
         </div>
       )}
 
@@ -745,14 +773,18 @@ export function ReportsClient({
       {tab === "clients" && (
         <div className="space-y-6">
           <div className="grid grid-cols-4 gap-4">
-            <StatCard label="Revenue" value={clientTotals.revenue} positive={true} />
-            <StatCard label="Labor cost" value={clientTotals.laborCost} positive={false} />
-            <StatCard label="Expenses" value={clientTotals.expensesTotal} positive={false} />
+            <StatCard label={t("reports.business.clients.revenue")} value={fmt(clientTotals.revenue)} positive={true} />
+            <StatCard label={t("reports.business.clients.laborCost")} value={fmt(clientTotals.laborCost)} positive={false} />
+            <StatCard label={t("reports.business.clients.expenses")} value={fmt(clientTotals.expensesTotal)} positive={false} />
             <StatCard
-              label="Profit"
-              value={clientTotals.profit}
+              label={t("reports.business.clients.profit")}
+              value={fmt(clientTotals.profit)}
               positive={clientTotals.profit >= 0}
-              sub={clientBlendedMargin !== null ? `${(clientBlendedMargin * 100).toFixed(0)}% blended margin` : undefined}
+              sub={
+                clientBlendedMargin !== null
+                  ? t("reports.business.blendedMargin", { percent: (clientBlendedMargin * 100).toFixed(0) })
+                  : undefined
+              }
             />
           </div>
 
@@ -760,28 +792,28 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Profit by client</h2>
-                <span className="text-xs text-slate-400">· lifetime to date</span>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.clients.profitByClient")}</h2>
+                <span className="text-xs text-slate-400">{t("reports.business.lifetimeToDate")}</span>
               </div>
               <button
                 onClick={() => exportClientsCsv(sortedClients)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {sortedClients.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No clients yet</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.clients.empty")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_104px_104px_104px_104px_64px] gap-3 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  <span>Client</span>
-                  <span className="text-right">Revenue</span>
-                  <span className="text-right">Labor</span>
-                  <span className="text-right">Expenses</span>
-                  <span className="text-right">Profit</span>
-                  <span className="text-right">Margin</span>
+                  <span>{t("reports.business.clients.columns.client")}</span>
+                  <span className="text-right">{t("reports.business.clients.columns.revenue")}</span>
+                  <span className="text-right">{t("reports.business.clients.columns.labor")}</span>
+                  <span className="text-right">{t("reports.business.clients.columns.expenses")}</span>
+                  <span className="text-right">{t("reports.business.clients.columns.profit")}</span>
+                  <span className="text-right">{t("reports.business.clients.columns.margin")}</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {sortedClients.map((c) => (
@@ -798,7 +830,7 @@ export function ReportsClient({
                   ))}
                 </div>
                 <div className="grid grid-cols-[1fr_104px_104px_104px_104px_64px] gap-3 px-6 py-3 bg-slate-50 border-t border-slate-100 items-center">
-                  <span className="text-sm font-semibold text-slate-700">Total</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.clients.total")}</span>
                   <span className="text-sm font-semibold text-slate-700 text-right tabular-nums">{fmt(clientTotals.revenue)}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">{fmt(clientTotals.laborCost)}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">{fmt(clientTotals.expensesTotal)}</span>
@@ -811,9 +843,7 @@ export function ReportsClient({
             )}
           </div>
 
-          <p className="text-xs text-slate-400">
-            Revenue is everything invoiced to the client. Cost is the labor and expenses tracked against their projects — a client billed by flat fee with no project tracking will show a high margin.
-          </p>
+          <p className="text-xs text-slate-400">{t("reports.business.clients.note")}</p>
         </div>
       )}
 
@@ -821,19 +851,27 @@ export function ReportsClient({
       {tab === "receivables" && (
         <div className="space-y-6">
           <div className="grid grid-cols-4 gap-4">
-            <StatCard label="Outstanding" value={initialReceivables.totalOutstanding} />
-            <StatCard label="Current" value={initialReceivables.totals.current} positive={true} sub="Not yet due" />
             <StatCard
-              label="Overdue"
-              value={initialReceivables.overdueAmount}
-              positive={initialReceivables.overdueAmount === 0}
-              sub="Past due date"
+              label={t("reports.business.receivables.outstanding")}
+              value={fmt(initialReceivables.totalOutstanding)}
             />
             <StatCard
-              label="90+ days"
-              value={initialReceivables.totals.d90_plus}
+              label={t("reports.business.receivables.current")}
+              value={fmt(initialReceivables.totals.current)}
+              positive={true}
+              sub={t("reports.business.receivables.notYetDue")}
+            />
+            <StatCard
+              label={t("reports.business.receivables.overdue")}
+              value={fmt(initialReceivables.overdueAmount)}
+              positive={initialReceivables.overdueAmount === 0}
+              sub={t("reports.business.receivables.pastDueDate")}
+            />
+            <StatCard
+              label={t("reports.business.receivables.d90Plus")}
+              value={fmt(initialReceivables.totals.d90_plus)}
               positive={initialReceivables.totals.d90_plus === 0}
-              sub="At risk"
+              sub={t("reports.business.receivables.atRisk")}
             />
           </div>
 
@@ -841,31 +879,31 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Receivables by client</h2>
-                <span className="text-xs text-slate-400">· as of {initialReceivables.asOf}</span>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.receivables.byClient")}</h2>
+                <span className="text-xs text-slate-400">
+                  {t("reports.business.asOf", { date: fmtDate(initialReceivables.asOf) })}
+                </span>
               </div>
               <button
                 onClick={() => exportAgingCsv(initialReceivables)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {initialReceivables.rows.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">
-                No outstanding invoices — you&apos;re all paid up.
-              </p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.receivables.empty")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr_1.1fr] gap-3 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  <span>Client</span>
-                  <span className="text-right">Current</span>
-                  <span className="text-right">1–30</span>
-                  <span className="text-right">31–60</span>
-                  <span className="text-right">61–90</span>
-                  <span className="text-right">90+</span>
-                  <span className="text-right">Total</span>
+                  <span>{t("reports.business.receivables.columns.client")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.current")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.d1_30")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.d31_60")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.d61_90")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.d90_plus")}</span>
+                  <span className="text-right">{t("reports.business.receivables.columns.total")}</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {initialReceivables.rows.map((r) => (
@@ -876,20 +914,20 @@ export function ReportsClient({
                       <div className="min-w-0">
                         <p className="text-sm text-slate-700 truncate">{r.client_name}</p>
                         <p className="text-xs text-slate-400">
-                          {r.invoiceCount} invoice{r.invoiceCount === 1 ? "" : "s"}
+                          {t("reports.business.receivables.invoiceCount", { count: r.invoiceCount })}
                         </p>
                       </div>
-                      <AgingCell value={r.current} />
-                      <AgingCell value={r.d1_30} tone="warn" />
-                      <AgingCell value={r.d31_60} tone="warn" />
-                      <AgingCell value={r.d61_90} tone="warn" />
-                      <AgingCell value={r.d90_plus} tone="danger" />
+                      <AgingCell value={r.current} fmt={fmt} />
+                      <AgingCell value={r.d1_30} fmt={fmt} tone="warn" />
+                      <AgingCell value={r.d31_60} fmt={fmt} tone="warn" />
+                      <AgingCell value={r.d61_90} fmt={fmt} tone="warn" />
+                      <AgingCell value={r.d90_plus} fmt={fmt} tone="danger" />
                       <span className="text-sm font-medium text-slate-700 text-right tabular-nums">{fmt(r.total)}</span>
                     </div>
                   ))}
                 </div>
                 <div className="grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr_1fr_1.1fr] gap-3 px-6 py-3 bg-slate-50 border-t border-slate-100 items-center">
-                  <span className="text-sm font-semibold text-slate-700">Total</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.receivables.total")}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">
                     {initialReceivables.totals.current > 0 ? fmt(initialReceivables.totals.current) : "—"}
                   </span>
@@ -913,9 +951,7 @@ export function ReportsClient({
             )}
           </div>
 
-          <p className="text-xs text-slate-400">
-            Unpaid invoices (sent or overdue) bucketed by days past their due date, as of today. Independent of the date range above.
-          </p>
+          <p className="text-xs text-slate-400">{t("reports.business.receivables.note")}</p>
         </div>
       )}
 
@@ -926,26 +962,38 @@ export function ReportsClient({
             <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl border border-rose-200 bg-rose-50">
               <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-rose-700">
-                Projected cash dips to{" "}
-                <span className="font-semibold tabular-nums">{fmt(initialForecast.lowestBalance)}</span>{" "}
-                within 90 days. Consider prioritizing collections on overdue invoices or delaying non-urgent bills.
+                {t("reports.business.forecast.dipWarning", { amount: fmt(initialForecast.lowestBalance) })}
               </p>
             </div>
           )}
 
           <div className="grid grid-cols-4 gap-4">
             <StatCard
-              label="Cash on hand"
-              value={initialForecast.startingBalance}
-              sub={initialForecast.hasBank ? "Linked accounts" : "Link a bank for accuracy"}
+              label={t("reports.business.forecast.cashOnHand")}
+              value={fmt(initialForecast.startingBalance)}
+              sub={
+                initialForecast.hasBank
+                  ? t("reports.business.forecast.linkedAccounts")
+                  : t("reports.business.forecast.linkABank")
+              }
             />
-            <StatCard label="Expected in" value={initialForecast.totalInflow} positive={true} sub="Open invoices" />
-            <StatCard label="Expected out" value={initialForecast.totalOutflow} positive={false} sub="Open bills" />
             <StatCard
-              label="Projected (90d)"
-              value={initialForecast.endingBalance}
+              label={t("reports.business.forecast.expectedIn")}
+              value={fmt(initialForecast.totalInflow)}
+              positive={true}
+              sub={t("reports.business.forecast.openInvoices")}
+            />
+            <StatCard
+              label={t("reports.business.forecast.expectedOut")}
+              value={fmt(initialForecast.totalOutflow)}
+              positive={false}
+              sub={t("reports.business.forecast.openBills")}
+            />
+            <StatCard
+              label={t("reports.business.forecast.projected90")}
+              value={fmt(initialForecast.endingBalance)}
               positive={initialForecast.endingBalance >= 0}
-              sub="After all open items"
+              sub={t("reports.business.forecast.afterOpenItems")}
             />
           </div>
 
@@ -953,28 +1001,30 @@ export function ReportsClient({
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Wallet className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Projected cash flow</h2>
-                <span className="text-xs text-slate-400">· as of {initialForecast.asOf}</span>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.forecast.title")}</h2>
+                <span className="text-xs text-slate-400">
+                  {t("reports.business.asOf", { date: fmtDate(initialForecast.asOf) })}
+                </span>
               </div>
               <button
                 onClick={() => exportForecastCsv(initialForecast)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
 
             <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-3 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-              <span>Period</span>
-              <span className="text-right">Expected in</span>
-              <span className="text-right">Expected out</span>
-              <span className="text-right">Net</span>
-              <span className="text-right">Projected balance</span>
+              <span>{t("reports.business.forecast.columns.period")}</span>
+              <span className="text-right">{t("reports.business.forecast.columns.expectedIn")}</span>
+              <span className="text-right">{t("reports.business.forecast.columns.expectedOut")}</span>
+              <span className="text-right">{t("reports.business.forecast.columns.net")}</span>
+              <span className="text-right">{t("reports.business.forecast.columns.projectedBalance")}</span>
             </div>
 
             <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-3 px-6 py-3 items-center border-b border-slate-50">
-              <span className="text-sm text-slate-500">Starting balance</span>
+              <span className="text-sm text-slate-500">{t("reports.business.forecast.startingBalance")}</span>
               <span className="text-sm text-right tabular-nums text-slate-300">—</span>
               <span className="text-sm text-right tabular-nums text-slate-300">—</span>
               <span className="text-sm text-right tabular-nums text-slate-300">—</span>
@@ -984,7 +1034,7 @@ export function ReportsClient({
             <div className="divide-y divide-slate-50">
               {initialForecast.periods.map((p) => (
                 <div key={p.key} className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-3 px-6 py-3 items-center">
-                  <span className="text-sm text-slate-700">{p.label}</span>
+                  <span className="text-sm text-slate-700">{t(`reports.business.forecast.buckets.${p.key}`)}</span>
                   <span className={`text-sm text-right tabular-nums ${p.inflow > 0 ? "text-emerald-600" : "text-slate-300"}`}>
                     {p.inflow > 0 ? fmt(p.inflow) : "—"}
                   </span>
@@ -1002,7 +1052,7 @@ export function ReportsClient({
             </div>
 
             <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-3 px-6 py-3 bg-slate-50 border-t border-slate-100 items-center">
-              <span className="text-sm font-semibold text-slate-700">Total</span>
+              <span className="text-sm font-semibold text-slate-700">{t("reports.business.forecast.total")}</span>
               <span className="text-sm font-semibold text-emerald-600 text-right tabular-nums">{fmt(initialForecast.totalInflow)}</span>
               <span className="text-sm font-semibold text-rose-600 text-right tabular-nums">{fmt(initialForecast.totalOutflow)}</span>
               <span className={`text-sm font-bold text-right tabular-nums ${initialForecast.totalInflow - initialForecast.totalOutflow >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
@@ -1014,9 +1064,7 @@ export function ReportsClient({
             </div>
           </div>
 
-          <p className="text-xs text-slate-400">
-            Projection combines open invoices (money in) and open bills (money out) against your current bank balance, bucketed by due date as of today. It doesn&apos;t include recurring items not yet invoiced or billed, payroll, or taxes.
-          </p>
+          <p className="text-xs text-slate-400">{t("reports.business.forecast.note")}</p>
         </div>
       )}
 
@@ -1024,35 +1072,43 @@ export function ReportsClient({
       {tab === "tax" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
           <div className="grid grid-cols-4 gap-4">
-            <StatCard label="Tax collected" value={salesTax.taxCollected} sub="To remit" />
-            <StatCard label="Taxable sales" value={salesTax.taxableSales} />
-            <StatCard label="Non-taxable sales" value={salesTax.nonTaxableSales} />
-            <StatCard label="Total sales" value={salesTax.totalSales} sub="Pre-tax" />
+            <StatCard
+              label={t("reports.business.tax.collected")}
+              value={fmt(salesTax.taxCollected)}
+              sub={t("reports.business.tax.toRemit")}
+            />
+            <StatCard label={t("reports.business.tax.taxableSales")} value={fmt(salesTax.taxableSales)} />
+            <StatCard label={t("reports.business.tax.nonTaxableSales")} value={fmt(salesTax.nonTaxableSales)} />
+            <StatCard
+              label={t("reports.business.tax.totalSales")}
+              value={fmt(salesTax.totalSales)}
+              sub={t("reports.business.tax.preTax")}
+            />
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-indigo-500" />
-                <h2 className="text-sm font-semibold text-slate-800">Tax collected by rate</h2>
+                <h2 className="text-sm font-semibold text-slate-800">{t("reports.business.tax.byRate")}</h2>
               </div>
               <button
                 onClick={() => exportSalesTaxCsv(salesTax)}
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                Export CSV
+                {t("reports.business.exportCsv")}
               </button>
             </div>
             {salesTax.byRate.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No taxed invoices paid in this period</p>
+              <p className="text-sm text-slate-400 text-center py-8">{t("reports.business.tax.empty")}</p>
             ) : (
               <>
                 <div className="grid grid-cols-[1fr_1fr_1fr_100px] gap-3 px-6 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-                  <span>Rate</span>
-                  <span className="text-right">Taxable sales</span>
-                  <span className="text-right">Tax collected</span>
-                  <span className="text-right">Invoices</span>
+                  <span>{t("reports.business.tax.columns.rate")}</span>
+                  <span className="text-right">{t("reports.business.tax.columns.taxableSales")}</span>
+                  <span className="text-right">{t("reports.business.tax.columns.taxCollected")}</span>
+                  <span className="text-right">{t("reports.business.tax.columns.invoices")}</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                   {salesTax.byRate.map((r) => (
@@ -1065,7 +1121,7 @@ export function ReportsClient({
                   ))}
                 </div>
                 <div className="grid grid-cols-[1fr_1fr_1fr_100px] gap-3 px-6 py-3 bg-slate-50 border-t border-slate-100 items-center">
-                  <span className="text-sm font-semibold text-slate-700">Total</span>
+                  <span className="text-sm font-semibold text-slate-700">{t("reports.business.tax.total")}</span>
                   <span className="text-sm font-semibold text-slate-600 text-right tabular-nums">{fmt(salesTax.taxableSales)}</span>
                   <span className="text-sm font-bold text-slate-800 text-right tabular-nums">{fmt(salesTax.taxCollected)}</span>
                   <span className="text-sm font-semibold text-slate-500 text-right tabular-nums">{salesTax.taxedInvoiceCount}</span>
@@ -1075,7 +1131,7 @@ export function ReportsClient({
           </div>
 
           <p className="text-xs text-slate-400">
-            Cash-basis: sales tax on invoices <span className="font-medium">paid</span> between {salesTax.from} and {salesTax.to}, grouped by rate. Non-taxable sales are paid invoices with no tax applied. Use the date range above to match your filing period.
+            {t("reports.business.tax.note", { from: fmtDate(salesTax.from), to: fmtDate(salesTax.to) })}
           </p>
         </div>
       )}

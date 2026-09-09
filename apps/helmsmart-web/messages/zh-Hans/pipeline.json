@@ -1,1 +1,46 @@
-{}
+{
+  "meta": {
+    "title": "销售管道"
+  },
+  "stages": {
+    "lead": "线索",
+    "qualified": "已确认意向",
+    "proposal": "已提案",
+    "negotiation": "商务谈判",
+    "won": "已赢单",
+    "lost": "已丢单"
+  },
+  "board": {
+    "title": "销售管道",
+    "subtitle_one": "拖动客户卡片切换阶段 · {{count}} 个进行中的商机",
+    "subtitle_other": "拖动客户卡片切换阶段 · {{count}} 个进行中的商机",
+    "pipelineValue": "管道金额",
+    "won": "已赢单",
+    "manageClients": "管理客户",
+    "dropHere": "拖到这里"
+  },
+  "card": {
+    "unnamed": "未命名",
+    "today": "今天",
+    "daysInStage": "{{count}} 天"
+  },
+  "detail": {
+    "sinceToday": "今天进入本阶段",
+    "daysInStage_one": "已在本阶段 {{count}} 天",
+    "daysInStage_other": "已在本阶段 {{count}} 天",
+    "expectedValue": "预计金额",
+    "note": "备注",
+    "notePlaceholder": "商机备注、下一步计划…",
+    "noNote": "暂无备注",
+    "contact": "联系方式",
+    "moveToStage": "移至阶段",
+    "viewProfile": "查看完整客户档案",
+    "sarah": {
+      "queued": "Sarah 已为你创建一项任务",
+      "seeTasks": "查看任务",
+      "noPhone": "该客户没有留电话号码。",
+      "drafting": "拟稿中…",
+      "ask": "请 Sarah 去跟进"
+    }
+  }
+}

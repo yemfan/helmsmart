@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Phone, MessageCircle, Mail, FileText, Calendar, Clock, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 
 interface Log {
   id: string;
@@ -21,40 +23,35 @@ interface Props {
   onAddNote?: (note: string) => void;
 }
 
-const TYPE_CONFIG: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
+const TYPE_CONFIG: Record<string, { icon: React.ReactNode; color: string }> = {
   call: {
     icon: <Phone className="w-4 h-4" />,
-    label: "Call",
     color: "bg-blue-50 border-blue-200 text-blue-900",
   },
   sms: {
     icon: <MessageCircle className="w-4 h-4" />,
-    label: "SMS",
     color: "bg-green-50 border-green-200 text-green-900",
   },
   email: {
     icon: <Mail className="w-4 h-4" />,
-    label: "Email",
     color: "bg-purple-50 border-purple-200 text-purple-900",
   },
   note: {
     icon: <FileText className="w-4 h-4" />,
-    label: "Note",
     color: "bg-amber-50 border-amber-200 text-amber-900",
   },
   appointment: {
     icon: <Calendar className="w-4 h-4" />,
-    label: "Appointment",
     color: "bg-indigo-50 border-indigo-200 text-indigo-900",
   },
   other: {
     icon: <Clock className="w-4 h-4" />,
-    label: "Other",
     color: "bg-slate-50 border-slate-200 text-slate-900",
   },
 };
 
 export function CommunicationTimeline({ logs, onAddNote }: Props) {
+  const { t, i18n } = useTranslation("clients");
   const [filter, setFilter] = useState<string | null>(null);
   const [newNote, setNewNote] = useState("");
 
@@ -79,7 +76,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
               : "border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
-          All
+          {t("timeline.all")}
         </button>
         {Object.entries(TYPE_CONFIG).map(([type, config]) => (
           <button
@@ -90,7 +87,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
             }`}
           >
             {config.icon}
-            {config.label}
+            {t(`timeline.types.${type}`)}
           </button>
         ))}
       </div>
@@ -98,11 +95,11 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
       {/* Add note */}
       {onAddNote && (
         <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <p className="text-xs font-medium text-slate-600 mb-2">Add a note</p>
+          <p className="text-xs font-medium text-slate-600 mb-2">{t("timeline.addNote")}</p>
           <textarea
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Type a note about this client..."
+            placeholder={t("timeline.notePlaceholder")}
             rows={2}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
           />
@@ -112,7 +109,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
               disabled={!newNote.trim()}
               className="text-xs px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors font-medium"
             >
-              Save note
+              {t("timeline.saveNote")}
             </button>
           </div>
         </div>
@@ -122,7 +119,11 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
       <div className="space-y-3">
         {filtered.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-slate-500">No {filter ? `${filter}s` : "communications"} yet</p>
+            <p className="text-sm text-slate-500">
+              {filter
+                ? t("timeline.emptyFiltered", { type: t(`timeline.types.${filter}`) })
+                : t("timeline.empty")}
+            </p>
           </div>
         ) : (
           filtered.map((log) => {
@@ -136,10 +137,10 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
                   <div className="flex-shrink-0 pt-1">{config.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-sm">{config.label}</p>
+                      <p className="font-medium text-sm">{t(`timeline.types.${log.type}`)}</p>
                       {log.direction && (
                         <span className="text-xs opacity-75">
-                          ({log.direction === "inbound" ? "← received" : "→ sent"})
+                          ({log.direction === "inbound" ? t("timeline.received") : t("timeline.sent")})
                         </span>
                       )}
                       {log.status && log.type !== "appointment" && (
@@ -147,7 +148,10 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
                       )}
                       {log.duration_seconds && (
                         <span className="text-xs opacity-75">
-                          • {Math.floor(log.duration_seconds / 60)}m{log.duration_seconds % 60}s
+                          • {t("timeline.duration", {
+                            minutes: Math.floor(log.duration_seconds / 60),
+                            seconds: log.duration_seconds % 60,
+                          })}
                         </span>
                       )}
                       {log.sentiment && (
@@ -160,7 +164,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
                                 : "bg-slate-100"
                           }`}
                         >
-                          {log.sentiment}
+                          {t(`timeline.sentiment.${log.sentiment}`, { defaultValue: log.sentiment })}
                         </span>
                       )}
                     </div>
@@ -175,7 +179,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
                     )}
 
                     <p className="text-xs opacity-60 mt-2">
-                      {new Date(log.created_at).toLocaleDateString("en-US", {
+                      {new Date(log.created_at).toLocaleDateString(intlLocale(i18n.language), {
                         month: "short",
                         day: "numeric",
                         hour: "2-digit",
@@ -183,7 +187,7 @@ export function CommunicationTimeline({ logs, onAddNote }: Props) {
                       })}
                       {log.from_ai_employee_id && (
                         <span className="ml-2 inline-flex items-center gap-1">
-                          <User className="w-3 h-3" /> AI
+                          <User className="w-3 h-3" /> {t("timeline.aiBadge")}
                         </span>
                       )}
                     </p>

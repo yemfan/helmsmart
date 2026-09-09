@@ -5,8 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import { OutboundCalls } from "@/components/outbound-calls";
 import { AppointmentReminders } from "@/components/appointment-reminders";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "AI Client Assistant" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("voice");
+  return { title: t("meta.clientAssistant") };
+}
 
 /**
  * AI Client Assistant — the OUTBOUND half of the front desk: the AI calls your
@@ -14,6 +18,7 @@ export const metadata: Metadata = { title: "AI Client Assistant" };
  * from the old Voice Agent page so inbound (AI Receptionist) and outbound stay distinct.
  */
 export default async function ClientAssistantPage() {
+  const t = await getServerT("voice");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -88,7 +93,7 @@ export default async function ClientAssistantPage() {
         <ResponsibleEmployee slug="sarah" className="mb-3" />
         <PageTitle base="AI Client Assistant" />
         <p className="text-sm text-slate-500 mt-0.5">
-          Your AI calls your contacts on your behalf — follow-ups, appointment reminders, surveys, and announcements
+          {t("clientAssistant.subtitle")}
         </p>
       </div>
 

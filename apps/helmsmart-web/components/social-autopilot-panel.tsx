@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { Toggle } from "@/components/ui/toggle";
 
 /**
@@ -35,17 +36,20 @@ const PLATFORM_LABELS: Record<string, string> = {
   threads: "Threads",
 };
 
+// Stored tone vocabulary; labels come from `social.autopilot.tones.<tone>`.
 const TONES = ["professional", "casual", "witty", "promotional", "educational"];
 
+// `value` is the JS day-of-week the engine stores; the label key names the
+// weekday in `social.autopilot.days.<key>`.
 const DAYS = [
-  { value: 1, label: "Mon" },
-  { value: 2, label: "Tue" },
-  { value: 3, label: "Wed" },
-  { value: 4, label: "Thu" },
-  { value: 5, label: "Fri" },
-  { value: 6, label: "Sat" },
-  { value: 0, label: "Sun" },
-];
+  { value: 1, key: "mon" },
+  { value: 2, key: "tue" },
+  { value: 3, key: "wed" },
+  { value: 4, key: "thu" },
+  { value: 5, key: "fri" },
+  { value: 6, key: "sat" },
+  { value: 0, key: "sun" },
+] as const;
 
 function utcHourToLocal(utcHour: number): number {
   const off = new Date().getTimezoneOffset() / 60;
@@ -55,10 +59,9 @@ function localHourToUtc(localHour: number): number {
   const off = new Date().getTimezoneOffset() / 60;
   return (((localHour + off) % 24) + 24) % 24;
 }
-function formatHour(h: number): string {
-  const s = h < 12 ? "am" : "pm";
-  const d = h % 12 === 0 ? 12 : h % 12;
-  return `${d}${s}`;
+/** 13 → { hour: 1, isPm: true }; the words come from the bundle. */
+function hourParts(h: number): { hour: number; isPm: boolean } {
+  return { hour: h % 12 === 0 ? 12 : h % 12, isPm: h >= 12 };
 }
 
 export function SocialAutopilotPanel({
@@ -68,6 +71,7 @@ export function SocialAutopilotPanel({
    *  Settings → Marketing): the toggle + the whole config form, always open. */
   variant?: "bar" | "full";
 } = {}) {
+  const { t } = useTranslation("marketing");
   const [settings, setSettings] = useState<Settings | null>(null);
   const [platformOptions, setPlatformOptions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -83,9 +87,10 @@ export function SocialAutopilotPanel({
         setSettings(json.settings as Settings);
         setPlatformOptions(json.options?.platforms ?? []);
       } catch {
-        setError("Couldn't load autopilot settings.");
+        setError(t("social.autopilot.loadError"));
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save = useCallback(
@@ -105,18 +110,18 @@ export function SocialAutopilotPanel({
         setSettings(json.settings as Settings);
       } catch {
         setSettings(prev);
-        setError("Couldn't save that. Try again.");
+        setError(t("social.autopilot.saveError"));
       } finally {
         setSaving(false);
       }
     },
-    [settings],
+    [settings, t],
   );
 
   if (!settings) {
     return (
       <div className="mx-4 mt-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-        {error ?? "Loading autopilot…"}
+        {error ?? t("social.autopilot.loading")}
       </div>
     );
   }
@@ -137,12 +142,12 @@ export function SocialAutopilotPanel({
             checked={s.enabled}
             disabled={saving}
             onChange={(v) => void save({ enabled: v })}
-            label="Social autopilot"
+            label={t("social.autopilot.label")}
           />
           <div className="leading-tight">
-            <span className="text-sm font-semibold text-slate-900">Social autopilot</span>
+            <span className="text-sm font-semibold text-slate-900">{t("social.autopilot.label")}</span>
             <span className="ml-2 text-xs text-slate-500">
-              {s.enabled ? "On — writing & scheduling posts for you" : "Off"}
+              {s.enabled ? t("social.autopilot.on") : t("social.autopilot.off")}
             </span>
           </div>
         </div>
@@ -151,14 +156,14 @@ export function SocialAutopilotPanel({
         {variant === "bar" && (
           <Link
             href="/settings?tab=marketing"
-            title="Autopilot settings"
+            title={t("social.autopilot.settingsTitle")}
             className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
-            Settings
+            {t("social.autopilot.settings")}
           </Link>
         )}
       </div>
@@ -167,12 +172,12 @@ export function SocialAutopilotPanel({
         <div className={`space-y-5 border-t border-slate-100 px-4 py-4 ${s.enabled ? "" : "opacity-60"}`}>
           {/* Mode */}
           <div>
-            <p className="text-xs font-semibold text-slate-700">Who approves posts</p>
+            <p className="text-xs font-semibold text-slate-700">{t("social.autopilot.modeTitle")}</p>
             <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
               {(
                 [
-                  { v: "review", label: "I review first", blurb: "Generated as drafts for you to schedule." },
-                  { v: "auto", label: "Full autopilot", blurb: "Scheduled and published automatically." },
+                  { v: "review", label: t("social.autopilot.modeReview"), blurb: t("social.autopilot.modeReviewBlurb") },
+                  { v: "auto", label: t("social.autopilot.modeAuto"), blurb: t("social.autopilot.modeAutoBlurb") },
                 ] as const
               ).map((o) => (
                 <label
@@ -199,9 +204,9 @@ export function SocialAutopilotPanel({
           {/* Platforms */}
           <div>
             <p className="text-xs font-semibold text-slate-700">
-              Where to post{" "}
+              {t("social.autopilot.platformsTitle")}{" "}
               <span className="font-normal text-slate-400">
-                {s.platforms === null ? "(all connected)" : ""}
+                {s.platforms === null ? t("social.autopilot.allConnected") : ""}
               </span>
             </p>
             <div className="mt-1.5 flex flex-wrap gap-2">
@@ -228,14 +233,14 @@ export function SocialAutopilotPanel({
               })}
             </div>
             <p className="mt-1 text-[11px] text-slate-400">
-              Instagram isn&apos;t available for autopilot — it requires an image on every post.
+              {t("social.autopilot.instagramNote")}
             </p>
           </div>
 
           {/* Cadence */}
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="block text-xs">
-              <span className="font-semibold text-slate-700">Posts / week</span>
+              <span className="font-semibold text-slate-700">{t("social.autopilot.postsPerWeek")}</span>
               <select
                 value={s.postsPerWeek}
                 disabled={saving}
@@ -248,29 +253,29 @@ export function SocialAutopilotPanel({
               </select>
             </label>
             <label className="block text-xs">
-              <span className="font-semibold text-slate-700">Max / day</span>
+              <span className="font-semibold text-slate-700">{t("social.autopilot.maxPerDay")}</span>
               <select
                 value={s.postsPerDay ?? ""}
                 disabled={saving}
                 onChange={(e) => save({ postsPerDay: e.target.value === "" ? null : Number(e.target.value) })}
                 className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5"
               >
-                <option value="">1 (spread)</option>
+                <option value="">{t("social.autopilot.spread")}</option>
                 {[1, 2, 3, 4, 5].map((n) => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
             </label>
             <label className="block text-xs">
-              <span className="font-semibold text-slate-700">Voice</span>
+              <span className="font-semibold text-slate-700">{t("social.autopilot.voice")}</span>
               <select
                 value={s.tone}
                 disabled={saving}
                 onChange={(e) => save({ tone: e.target.value })}
-                className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 capitalize"
+                className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5"
               >
-                {TONES.map((t) => (
-                  <option key={t} value={t} className="capitalize">{t}</option>
+                {TONES.map((tone) => (
+                  <option key={tone} value={tone}>{t(`social.autopilot.tones.${tone}`)}</option>
                 ))}
               </select>
             </label>
@@ -278,14 +283,13 @@ export function SocialAutopilotPanel({
 
           {/* Per-day schedule: pick days, give each a topic. */}
           <div>
-            <p className="text-xs font-semibold text-slate-700">Posting schedule</p>
+            <p className="text-xs font-semibold text-slate-700">{t("social.autopilot.scheduleTitle")}</p>
             <p className="mt-0.5 text-[11px] text-slate-500">
-              Tick the days to post and choose a topic for each — pick one or type your own. AI researches each topic on
-              the web so the post is current, then writes it.
+              {t("social.autopilot.scheduleHint")}
             </p>
             <datalist id="autopilot-topics">
-              {PREDEFINED_TOPICS.map((t) => (
-                <option key={t} value={t} />
+              {PREDEFINED_TOPICS.map((topic) => (
+                <option key={topic} value={topic} />
               ))}
             </datalist>
             <div className="mt-2 space-y-1.5">
@@ -306,13 +310,13 @@ export function SocialAutopilotPanel({
                           void save({ dayTopics: next });
                         }}
                       />
-                      {d.label}
+                      {t(`social.autopilot.days.${d.key}`)}
                     </label>
                     <input
                       list="autopilot-topics"
                       value={s.dayTopics[key] ?? ""}
                       disabled={saving || !checked}
-                      placeholder={checked ? "Topic (or type your own)" : "—"}
+                      placeholder={checked ? t("social.autopilot.topicPlaceholder") : t("social.autopilot.noTopic")}
                       onChange={(e) =>
                         setSettings((prev) =>
                           prev
@@ -334,12 +338,11 @@ export function SocialAutopilotPanel({
               })}
             </div>
             <p className="mt-1.5 text-[11px] text-slate-400">
-              When no days are ticked, posting falls back to {s.postsPerWeek}× a week spread
-              automatically.
+              {t("social.autopilot.fallback", { count: s.postsPerWeek })}
             </p>
 
             <label className="mt-2 block max-w-[220px] text-xs">
-              <span className="font-semibold text-slate-700">Time of day</span>
+              <span className="font-semibold text-slate-700">{t("social.autopilot.timeOfDay")}</span>
               <select
                 value={s.postHourUtc === null ? "" : utcHourToLocal(s.postHourUtc)}
                 disabled={saving}
@@ -348,18 +351,26 @@ export function SocialAutopilotPanel({
                 }
                 className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5"
               >
-                <option value="">Default (noon ET)</option>
-                {Array.from({ length: 24 }, (_, h) => (
-                  <option key={h} value={h}>{formatHour(h)} your time</option>
-                ))}
+                <option value="">{t("social.autopilot.defaultTime")}</option>
+                {Array.from({ length: 24 }, (_, h) => {
+                  const { hour, isPm } = hourParts(h);
+                  return (
+                    <option key={h} value={h}>
+                      {t("social.autopilot.hourOption", {
+                        hour,
+                        ampm: isPm ? t("social.autopilot.pm") : t("social.autopilot.am"),
+                      })}
+                    </option>
+                  );
+                })}
               </select>
               <span className="mt-0.5 block text-[11px] text-slate-400">
-                Applies in full autopilot mode.
+                {t("social.autopilot.appliesInAuto")}
               </span>
             </label>
           </div>
 
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && <p className="text-xs text-red-600" role="alert">{error}</p>}
         </div>
       )}
     </div>

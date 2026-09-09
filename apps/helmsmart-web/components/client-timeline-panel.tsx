@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { CommunicationTimeline } from "./communication-timeline";
 import { logCommunication } from "@/lib/actions/communication-logs";
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function ClientTimelinePanel({ clientId, initialLogs }: Props) {
+  const { t } = useTranslation("clients");
   const [logs, setLogs] = useState<Log[]>(initialLogs);
   const [isPending, startTransition] = useTransition();
 
@@ -52,8 +54,8 @@ export function ClientTimelinePanel({ clientId, initialLogs }: Props) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-        <h2 className="text-sm font-semibold text-slate-700">Communication History</h2>
-        <span className="text-xs text-slate-400">{logs.length} entries</span>
+        <h2 className="text-sm font-semibold text-slate-700">{t("timeline.title")}</h2>
+        <span className="text-xs text-slate-400">{t("timeline.entries", { count: logs.length })}</span>
       </div>
       <div className="p-5">
         <CommunicationTimeline

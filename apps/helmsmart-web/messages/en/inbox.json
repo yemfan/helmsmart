@@ -1,1 +1,91 @@
-{}
+{
+  "meta": {
+    "title": "Inbox"
+  },
+  "list": {
+    "title": "Inbox",
+    "newConversation": "New conversation",
+    "unknownSender": "Unknown",
+    "outboundPrefix": "You: ",
+    "filters": {
+      "all": "All",
+      "sms": "SMS",
+      "email": "Email"
+    },
+    "empty": {
+      "title": "No messages yet",
+      "hint": "Client SMS and emails will appear here."
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{n}}m ago",
+      "hoursAgo": "{{n}}h ago"
+    }
+  },
+  "badges": {
+    "urgent": "Urgent",
+    "intent": {
+      "question": "Question",
+      "booking": "Scheduling request",
+      "billing": "Billing",
+      "complaint": "Complaint",
+      "other": "Message"
+    }
+  },
+  "thread": {
+    "channel": {
+      "email": "Email",
+      "sms": "SMS"
+    },
+    "addAsClient": "Add as client",
+    "addAsClientTitle": "Create a client from this conversation",
+    "translationLabel": "EN",
+    "draftWithAi": "Draft with AI",
+    "replyPlaceholder": {
+      "email": "Reply by email… (⌘↵ to send)",
+      "sms": "Reply by text… (⌘↵ to send)"
+    }
+  },
+  "unselected": {
+    "title": "Select a conversation",
+    "hint": "Reply to client SMS and emails from one unified inbox.",
+    "newMessage": "New message"
+  },
+  "compose": {
+    "title": "New message",
+    "to": "To",
+    "selectClient": "Select a client…",
+    "unnamedClient": "Unnamed",
+    "subject": "Subject",
+    "subjectPlaceholder": "Subject line…",
+    "noSubject": "(No subject)",
+    "message": "Message",
+    "bodyPlaceholder": {
+      "email": "Write your email…",
+      "sms": "Type your SMS…"
+    },
+    "errors": {
+      "noEmail": "This client has no email address.",
+      "noPhone": "This client has no phone number.",
+      "sendFailed": "Couldn't send the message. Try again."
+    },
+    "cancel": "Cancel",
+    "send": "Send"
+  },
+  "forwarding": {
+    "label": "Forward your email here",
+    "copy": "Copy address",
+    "copied": "Address copied",
+    "copyTitle": "Copy",
+    "copiedTitle": "Copied"
+  },
+  "errors": {
+    "noOrganization": "No organization selected.",
+    "noSendingNumber": "No phone number is configured for sending texts.",
+    "nothingToReplyTo": "There's no conversation to reply to yet.",
+    "draftFailed": "Couldn't draft a reply — try again.",
+    "nameRequired": "A name is required.",
+    "unauthorized": "Please sign in again.",
+    "createClientFailed": "Couldn't create the client. Try again."
+  }
+}

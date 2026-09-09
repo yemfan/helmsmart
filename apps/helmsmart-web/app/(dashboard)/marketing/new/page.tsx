@@ -3,21 +3,26 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { CampaignForm } from "./campaign-form";
 
-export const metadata: Metadata = { title: "New Campaign · Marketing" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.newCampaign") };
+}
 
 export default async function NewCampaignPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+  const t = await getServerT("marketing");
   const { data: rows } = await supabase
     .from("clients")
     .select("tags")
     .eq("organization_id", orgId);
   const tagSet = new Set<string>();
   for (const r of rows ?? []) {
-    for (const t of ((r.tags as string[] | null) ?? [])) tagSet.add(t);
+    for (const tag of ((r.tags as string[] | null) ?? [])) tagSet.add(tag);
   }
   const availableTags = Array.from(tagSet).sort();
 
@@ -26,10 +31,10 @@ export default async function NewCampaignPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">
-            New Campaign
+            {t("campaigns.new.title")}
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Compose and send to a client segment
+            {t("campaigns.new.subtitle")}
           </p>
         </div>
         <Link
@@ -37,7 +42,7 @@ export default async function NewCampaignPage() {
           className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Campaigns
+          {t("campaigns.new.back")}
         </Link>
       </div>
 

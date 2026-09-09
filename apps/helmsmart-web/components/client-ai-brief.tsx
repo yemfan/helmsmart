@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { Sparkles, RefreshCw, TrendingUp, TrendingDown, Minus, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { generateClientBrief, type ClientBrief } from "@/lib/actions/client-brief";
 
 interface Props {
@@ -9,7 +11,7 @@ interface Props {
   initialBrief?: ClientBrief | null;
 }
 
-function HealthBadge({ score, label }: { score?: number; label?: string }) {
+function HealthBadge({ score, label, text }: { score?: number; label?: string; text: string }) {
   if (!score || !label) return null;
   const color =
     score >= 8 ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
@@ -23,12 +25,13 @@ function HealthBadge({ score, label }: { score?: number; label?: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${color}`}>
       <Icon className="w-3 h-3" />
-      {label} ({score}/10)
+      {text}
     </span>
   );
 }
 
 export function ClientAIBrief({ clientId, initialBrief }: Props) {
+  const { t, i18n } = useTranslation("clients");
   const [brief, setBrief] = useState<ClientBrief | null | undefined>(initialBrief);
   const [expanded, setExpanded] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -42,7 +45,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
     startTransition(async () => {
       const result = await generateClientBrief(clientId);
       if (!result.ok) {
-        setError(result.error ?? "Failed to generate");
+        setError(result.error ?? t("errors.briefFailed"));
       } else if (result.brief) {
         setBrief(result.brief);
         setExpanded(true);
@@ -62,14 +65,18 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-semibold text-indigo-900">AI Client Brief</p>
+            <p className="text-sm font-semibold text-indigo-900">{t("brief.title")}</p>
             {brief?.healthLabel && (
-              <HealthBadge score={brief.healthScore} label={brief.healthLabel} />
+              <HealthBadge
+                score={brief.healthScore}
+                label={brief.healthLabel}
+                text={t("brief.health", { label: brief.healthLabel, score: brief.healthScore })}
+              />
             )}
             {showStaleWarning && (
               <span className="text-xs text-amber-600 flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
-                Refresh recommended
+                {t("brief.stale")}
               </span>
             )}
           </div>
@@ -81,7 +88,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
           <button
             onClick={(e) => { e.stopPropagation(); handleGenerate(); }}
             disabled={isPending}
-            title={hasBrief ? "Refresh brief" : "Generate brief"}
+            title={hasBrief ? t("brief.refresh") : t("brief.generateTitle")}
             className="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-40"
           >
             <RefreshCw className={`w-4 h-4 ${isPending ? "animate-spin" : ""}`} />
@@ -98,7 +105,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
       {!hasBrief && !isPending && (
         <div className="px-5 pb-5">
           <p className="text-xs text-indigo-600 mb-3">
-            Generate an AI-powered summary of this client's relationship, history, and recommended next actions.
+            {t("brief.intro")}
           </p>
           <button
             onClick={handleGenerate}
@@ -106,7 +113,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            Generate Brief
+            {t("brief.generate")}
           </button>
         </div>
       )}
@@ -116,7 +123,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
         <div className="px-5 pb-5">
           <div className="flex items-center gap-3 text-sm text-indigo-600">
             <div className="w-4 h-4 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
-            Analysing client data…
+            {t("brief.loading")}
           </div>
         </div>
       )}
@@ -153,7 +160,7 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
           {brief.nextAction && (
             <div className="bg-indigo-600 rounded-lg px-4 py-3">
               <p className="text-[11px] font-semibold text-indigo-200 uppercase tracking-wide mb-1">
-                Recommended next action
+                {t("brief.nextAction")}
               </p>
               <p className="text-sm text-white font-medium leading-snug">{brief.nextAction}</p>
             </div>
@@ -161,8 +168,10 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
 
           {/* Generated at */}
           <p className="text-[11px] text-indigo-400">
-            Generated {new Date(brief.generatedAt).toLocaleDateString("en-US", {
-              month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+            {t("brief.generatedAt", {
+              date: new Date(brief.generatedAt).toLocaleDateString(intlLocale(i18n.language), {
+                month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+              }),
             })}
           </p>
         </div>

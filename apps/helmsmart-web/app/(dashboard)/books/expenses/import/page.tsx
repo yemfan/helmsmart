@@ -2,17 +2,25 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { ImportForm } from "./import-form";
+import { getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
 
-export const metadata: Metadata = { title: "Import Expenses" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("expenses.import.csv.metaTitle") };
+}
 
-export default function ImportExpensesPage() {
+export default async function ImportExpensesPage() {
+  const t = await getServerT("books");
+  const currency = await orgCurrency();
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Import Expenses</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("expenses.import.csv.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Upload a CSV to add multiple expenses at once — import from spreadsheets, bank exports, or accounting software
+            {t("expenses.import.csv.subtitle")}
           </p>
         </div>
         <Link
@@ -20,11 +28,11 @@ export default function ImportExpensesPage() {
           className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Expenses
+          {t("expenses.import.back")}
         </Link>
       </div>
 
-      <ImportForm />
+      <ImportForm currency={currency} />
     </div>
   );
 }

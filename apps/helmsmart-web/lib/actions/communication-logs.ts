@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface LogCommunicationInput {
   clientId: string;
@@ -31,9 +32,10 @@ export interface LogCommunicationInput {
 export async function logCommunication(
   input: LogCommunicationInput
 ): Promise<{ ok: boolean; logId?: string; error?: string }> {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const supabase = await createClient();
   const {
@@ -71,7 +73,7 @@ export async function logCommunication(
 
   if (error || !log) {
     console.error("[communication-logs] insert error:", error);
-    return { ok: false, error: error?.message || "Failed to log communication" };
+    return { ok: false, error: t("errors.logFailed") };
   }
 
   revalidatePath(`/clients/${input.clientId}`);
@@ -147,9 +149,10 @@ export async function updateClientPreferences(
     notes?: string;
   }
 ): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const db = await createServiceClient();
 
@@ -171,7 +174,7 @@ export async function updateClientPreferences(
 
   if (error) {
     console.error("[communication-prefs] update error:", error);
-    return { ok: false, error: error.message };
+    return { ok: false, error: t("errors.preferencesFailed") };
   }
 
   revalidatePath(`/clients/${clientId}`);

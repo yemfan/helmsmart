@@ -1,6 +1,7 @@
 "use server";
 
 import { sendEmail } from "@/lib/email";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface ContactState {
   success?: boolean;
@@ -11,6 +12,10 @@ export async function submitContactForm(
   _: ContactState,
   formData: FormData
 ): Promise<ContactState> {
+  // What the VISITOR reads comes back in their language. The notification
+  // below goes to the HelmSmart team, so it stays English.
+  const t = await getServerT("site");
+
   try {
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
@@ -18,11 +23,11 @@ export async function submitContactForm(
     const message = formData.get("body") as string;
 
     if (!name || !email || !subject || !message) {
-      return { error: "All fields are required" };
+      return { error: t("contact.errors.required") };
     }
 
     if (!email.includes("@")) {
-      return { error: "Please provide a valid email address" };
+      return { error: t("contact.errors.email") };
     }
 
     // Send to support email
@@ -56,9 +61,6 @@ export async function submitContactForm(
     return { success: true };
   } catch (error) {
     console.error("Contact form error:", error);
-    return {
-      error:
-        "Failed to send message. Please try again or email contact@helmsmart.ai",
-    };
+    return { error: t("contact.errors.failed") };
   }
 }

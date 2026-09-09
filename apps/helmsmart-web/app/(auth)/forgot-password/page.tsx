@@ -2,22 +2,26 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { requestPasswordReset } from "@/lib/actions/auth";
 import type { AuthState } from "@/lib/actions/auth";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation("auth");
   const [state, action, isPending] = useActionState<AuthState, FormData>(
     requestPasswordReset,
     null
   );
 
-  const isSent = state?.error?.toLowerCase().includes("check your email");
+  // The action flags the "check your email" outcome explicitly — sniffing the
+  // message text stops working the moment the message is translated.
+  const isSent = state?.sent === true;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-      <h1 className="text-xl font-semibold text-slate-900 mb-1">Reset your password</h1>
+      <h1 className="text-xl font-semibold text-slate-900 mb-1">{t("forgotPassword.title")}</h1>
       <p className="text-sm text-slate-500 mb-6">
-        Enter your email and we&apos;ll send you a reset link.
+        {t("forgotPassword.subtitle")}
       </p>
 
       {isSent ? (
@@ -28,7 +32,7 @@ export default function ForgotPasswordPage() {
         <form action={action} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-              Email
+              {t("forgotPassword.email")}
             </label>
             <input
               id="email"
@@ -40,7 +44,7 @@ export default function ForgotPasswordPage() {
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                          focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                          disabled:bg-slate-50 disabled:text-slate-500"
-              placeholder="you@example.com"
+              placeholder={t("forgotPassword.emailPlaceholder")}
             />
           </div>
 
@@ -57,14 +61,14 @@ export default function ForgotPasswordPage() {
                        hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                        disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
-            {isPending ? "Sending…" : "Send reset link"}
+            {isPending ? t("common:status.sending") : t("forgotPassword.submit")}
           </button>
         </form>
       )}
 
       <p className="mt-6 text-center text-sm text-slate-500">
         <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
-          Back to sign in
+          {t("forgotPassword.backToSignIn")}
         </Link>
       </p>
     </div>

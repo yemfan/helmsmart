@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,7 +43,10 @@ export interface AutomationRule {
 async function getOrgId(): Promise<string> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) {
+    const t = await getServerT("workflows");
+    throw new Error(t("automations.errors.notAuthenticated"));
+  }
   return orgId;
 }
 
@@ -86,7 +90,10 @@ export async function createAutomationRule(params: {
     .select("id")
     .single();
 
-  if (error || !rule) throw new Error(error?.message ?? "Failed to create rule");
+  if (error || !rule) {
+    const t = await getServerT("workflows");
+    throw new Error(error?.message ?? t("automations.errors.createFailed"));
+  }
   revalidatePath("/automations");
   return (rule as { id: string }).id;
 }

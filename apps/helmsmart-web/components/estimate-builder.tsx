@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Sparkles } from "lucide-react";
+import { moneyFormatter } from "@/lib/books-format";
 import { createEstimate, generateEstimateLines, type EstimateLine } from "@/lib/actions/estimates";
 import { createEstimateTemplate, type EstimateTemplate } from "@/lib/actions/estimate-templates";
 
@@ -18,6 +20,8 @@ interface Props {
   clients: Client[];
   preselectedClientId?: string;
   templates: EstimateTemplate[];
+  /** `organizations.currency`, resolved on the server by the page. */
+  currency: string;
 }
 
 function emptyLine(): EstimateLine & { key: string } {
@@ -36,7 +40,9 @@ function defaultExpiryDate(): string {
   return d.toISOString().slice(0, 10);
 }
 
-export function EstimateBuilder({ clients, preselectedClientId, templates }: Props) {
+export function EstimateBuilder({ clients, preselectedClientId, templates, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -79,12 +85,12 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
 
   function submit() {
     if (!expiryDate) {
-      setError("Expiry date is required");
+      setError(t("estimates.builder.errors.expiryRequired"));
       return;
     }
     const validLines = lines.filter((l) => l.description.trim());
     if (!validLines.length) {
-      setError("Add at least one line item");
+      setError(t("estimates.builder.errors.lineRequired"));
       return;
     }
     setError(null);
@@ -100,13 +106,13 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
         });
         router.push(`/books/estimates/${id}`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError(err instanceof Error ? err.message : t("common:errors.generic"));
       }
     });
   }
 
   function loadTemplate(templateId: string) {
-    const tpl = templates.find((t) => t.id === templateId);
+    const tpl = templates.find((x) => x.id === templateId);
     if (!tpl) return;
     setError(null);
     const src = tpl.lines.length
@@ -128,10 +134,10 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
   function saveAsTemplate() {
     const validLines = lines.filter((l) => l.description.trim());
     if (!validLines.length) {
-      setError("Add line items before saving a template");
+      setError(t("estimates.builder.errors.linesBeforeTemplate"));
       return;
     }
-    const name = window.prompt("Save these line items as a template. Template name:");
+    const name = window.prompt(t("estimates.builder.templateNamePrompt"));
     if (!name?.trim()) return;
     setError(null);
     startTransition(async () => {
@@ -151,7 +157,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
         setTimeout(() => setTemplateSaved(false), 2500);
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to save template");
+        setError(e instanceof Error ? e.message : t("estimates.builder.errors.templateSaveFailed"));
       }
     });
   }
@@ -175,7 +181,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
         if (result.note) setNotes(result.note);
         setError(null);
       } catch (e) {
-        setAiError(e instanceof Error ? e.message : "Failed to draft estimate");
+        setAiError(e instanceof Error ? e.message : t("estimates.builder.errors.draftFailed"));
       } finally {
         setAiLoading(false);
       }
@@ -188,13 +194,13 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
       <div className="mb-6 pb-6 border-b border-slate-100">
         <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
           <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-          Draft with AI
+          {t("estimates.builder.aiLabel")}
         </label>
         <div className="flex gap-2">
           <input
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
-            placeholder="Describe the job — e.g. Airport transfer for 6, round trip with 1hr wait"
+            placeholder={t("estimates.builder.aiPlaceholder")}
             className="flex-1 text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
@@ -204,19 +210,19 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors whitespace-nowrap"
           >
             <Sparkles className="w-4 h-4" />
-            {aiLoading ? "Drafting…" : "Draft"}
+            {aiLoading ? t("common:status.drafting") : t("estimates.builder.aiDraft")}
           </button>
         </div>
         {aiError && <p className="text-xs text-rose-600 mt-1.5">{aiError}</p>}
         <p className="text-[11px] text-slate-400 mt-1.5">
-          AI fills in line items and a scope note — review and edit before sending.
+          {t("estimates.builder.aiHint")}
         </p>
       </div>
 
       {templates.length > 0 && (
         <div className="mb-6 pb-6 border-b border-slate-100">
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Start from template
+            {t("estimates.builder.startFromTemplate")}
           </label>
           <select
             defaultValue=""
@@ -225,10 +231,10 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
             }}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">— Blank estimate —</option>
-            {templates.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
+            <option value="">{t("estimates.builder.blankEstimate")}</option>
+            {templates.map((tpl) => (
+              <option key={tpl.id} value={tpl.id}>
+                {tpl.name}
               </option>
             ))}
           </select>
@@ -238,14 +244,14 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
         {/* Client */}
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Client
+            {t("estimates.builder.client")}
           </label>
           <select
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
-            <option value="">No client</option>
+            <option value="">{t("estimates.builder.noClient")}</option>
             {clients.map((c) => {
               const name =
                 [c.first_name, c.last_name].filter(Boolean).join(" ") ||
@@ -263,7 +269,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
         {/* Expiry date */}
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Valid until (expiry date)
+            {t("estimates.builder.validUntil")}
           </label>
           <input
             type="date"
@@ -279,30 +285,30 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-            Line Items
+            {t("estimates.builder.lineItems")}
           </h3>
           <button
             type="button"
             onClick={() => setLines((p) => [...p, emptyLine()])}
             className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
           >
-            <Plus className="w-3 h-3" /> Add line
+            <Plus className="w-3 h-3" /> {t("estimates.builder.addLine")}
           </button>
         </div>
 
         {/* Column headers */}
         <div className="grid grid-cols-[1fr_80px_100px_100px_36px] gap-3 mb-2 px-1">
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-            Description
+            {t("estimates.builder.columns.description")}
           </span>
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-            Qty
+            {t("estimates.builder.columns.qty")}
           </span>
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-            Unit price
+            {t("estimates.builder.columns.unitPrice")}
           </span>
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide text-right">
-            Amount
+            {t("estimates.builder.columns.amount")}
           </span>
         </div>
 
@@ -318,7 +324,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
                 onChange={(e) =>
                   updateLine(line.key, "description", e.target.value)
                 }
-                placeholder="Service or product"
+                placeholder={t("estimates.builder.descriptionPlaceholder")}
                 className="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
@@ -343,7 +349,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
                 className="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <div className="text-sm text-slate-700 font-medium tabular-nums text-right pr-1">
-                ${line.amount.toFixed(2)}
+                {fmt(line.amount)}
               </div>
               <button
                 type="button"
@@ -364,7 +370,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
       <div className="grid grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Tax rate (%)
+            {t("estimates.builder.taxRate")}
           </label>
           <input
             type="number"
@@ -379,18 +385,18 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
 
         <div className="bg-slate-50 rounded-xl p-4 text-sm space-y-2">
           <div className="flex justify-between text-slate-600">
-            <span>Subtotal</span>
-            <span className="tabular-nums">${subtotal.toFixed(2)}</span>
+            <span>{t("estimates.builder.subtotal")}</span>
+            <span className="tabular-nums">{fmt(subtotal)}</span>
           </div>
           {taxRate > 0 && (
             <div className="flex justify-between text-slate-600">
-              <span>Tax ({taxRate}%)</span>
-              <span className="tabular-nums">${taxAmount.toFixed(2)}</span>
+              <span>{t("estimates.builder.taxWithRate", { rate: taxRate })}</span>
+              <span className="tabular-nums">{fmt(taxAmount)}</span>
             </div>
           )}
           <div className="flex justify-between font-semibold text-slate-900 border-t border-slate-200 pt-2">
-            <span>Total</span>
-            <span className="tabular-nums font-mono">${total.toFixed(2)}</span>
+            <span>{t("estimates.builder.total")}</span>
+            <span className="tabular-nums font-mono">{fmt(total)}</span>
           </div>
         </div>
       </div>
@@ -398,20 +404,22 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
       {/* Notes */}
       <div className="mb-6">
         <label className="block text-xs font-medium text-slate-600 mb-1.5">
-          Notes{" "}
-          <span className="text-slate-400 font-normal">(optional)</span>
+          {t("estimates.builder.notes")}{" "}
+          <span className="text-slate-400 font-normal">
+            {t("estimates.builder.optional")}
+          </span>
         </label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          placeholder="Scope of work, terms, assumptions…"
+          placeholder={t("estimates.builder.notesPlaceholder")}
           className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
         />
       </div>
 
       {error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2 mb-4">
+        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2 mb-4" role="alert">
           {error}
         </p>
       )}
@@ -424,7 +432,9 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
           disabled={isPending}
           className="text-sm font-medium text-slate-500 hover:text-indigo-600 disabled:opacity-50 transition-colors"
         >
-          {templateSaved ? "Template saved" : "Save as template"}
+          {templateSaved
+            ? t("estimates.builder.templateSaved")
+            : t("estimates.builder.saveAsTemplate")}
         </button>
         <button
           type="button"
@@ -432,7 +442,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates }: Pro
           disabled={isPending}
           className="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-60 transition-colors"
         >
-          {isPending ? "Creating…" : "Create estimate"}
+          {isPending ? t("common:status.creating") : t("estimates.builder.create")}
         </button>
       </div>
     </div>

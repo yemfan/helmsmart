@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { getEmailCampaign, getEmailCampaignRecipients } from "@/lib/actions/email-campaigns";
 import { EmailCampaignEditor } from "@/components/email-campaign-editor";
 import { EmailCampaignAnalytics } from "@/components/email-campaign-analytics";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Email Campaign · Marketing" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.emailCampaign") };
+}
 
 export default async function EmailCampaignDetailPage({
   params,

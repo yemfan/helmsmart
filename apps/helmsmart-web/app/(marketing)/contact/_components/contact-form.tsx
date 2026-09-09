@@ -1,10 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { submitContactForm } from "@/lib/actions/contact";
 import type { ContactState } from "@/lib/actions/contact";
 
+// The value is what the form posts; the label is a key into
+// `site.contact.form.subject.options`.
+const SUBJECTS = ["general", "sales", "support", "billing", "other"];
+
 export default function ContactFormComponent() {
+  const { t } = useTranslation("site");
   const [state, action, isPending] = useActionState<ContactState, FormData>(
     submitContactForm,
     {}
@@ -18,7 +24,7 @@ export default function ContactFormComponent() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Name
+            {t("contact.form.name.label")}
           </label>
           <input
             id="name"
@@ -26,7 +32,7 @@ export default function ContactFormComponent() {
             type="text"
             required
             disabled={isPending || isSuccess}
-            placeholder="Jane Smith"
+            placeholder={t("contact.form.name.placeholder")}
             className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
@@ -34,7 +40,7 @@ export default function ContactFormComponent() {
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
+            {t("contact.form.email.label")}
           </label>
           <input
             id="email"
@@ -42,7 +48,7 @@ export default function ContactFormComponent() {
             type="email"
             required
             disabled={isPending || isSuccess}
-            placeholder="jane@example.com"
+            placeholder={t("contact.form.email.placeholder")}
             className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
@@ -52,7 +58,7 @@ export default function ContactFormComponent() {
 
       <div>
         <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-          Subject
+          {t("contact.form.subject.label")}
         </label>
         <select
           id="subject"
@@ -63,18 +69,18 @@ export default function ContactFormComponent() {
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                      disabled:bg-gray-50 disabled:text-gray-500"
         >
-          <option value="">Select a subject</option>
-          <option value="general">General question</option>
-          <option value="sales">Pricing & plans</option>
-          <option value="support">Technical support</option>
-          <option value="billing">Billing</option>
-          <option value="other">Other</option>
+          <option value="">{t("contact.form.subject.options.placeholder")}</option>
+          {SUBJECTS.map((value) => (
+            <option key={value} value={value}>
+              {t(`contact.form.subject.options.${value}`)}
+            </option>
+          ))}
         </select>
       </div>
 
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-          Message
+          {t("contact.form.message.label")}
         </label>
         <textarea
           id="message"
@@ -82,7 +88,7 @@ export default function ContactFormComponent() {
           rows={5}
           required
           disabled={isPending || isSuccess}
-          placeholder="Tell us how we can help..."
+          placeholder={t("contact.form.message.placeholder")}
           className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                      disabled:bg-gray-50 disabled:text-gray-500 resize-none"
@@ -91,14 +97,14 @@ export default function ContactFormComponent() {
 
       {error && (
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
-          <p className="text-sm text-red-700">{error}</p>
+          <p className="text-sm text-red-700" role="alert">{error}</p>
         </div>
       )}
 
       {isSuccess && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3">
           <p className="text-sm text-emerald-700 font-medium">
-            ✓ Message sent! We'll get back to you within one business day.
+            {t("contact.form.success")}
           </p>
         </div>
       )}
@@ -110,7 +116,11 @@ export default function ContactFormComponent() {
                    hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40
                    disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
       >
-        {isPending ? "Sending…" : isSuccess ? "Message sent" : "Send message"}
+        {isPending
+          ? t("contact.form.submitting")
+          : isSuccess
+            ? t("contact.form.sent")
+            : t("contact.form.submit")}
       </button>
     </form>
   );

@@ -2,6 +2,8 @@
 
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { createBrowserClient } from "@supabase/ssr";
 import { MessageSquarePlus, Send, Mail, MessageSquare, RefreshCw, Sparkles, UserPlus } from "lucide-react";
 import { markThreadRead, sendEmail, sendSms, draftReply, createClientFromConversation } from "@/lib/actions/messages";
@@ -52,14 +54,16 @@ interface Props {
   inboundAddress: string | null;
 }
 
-function timeAgo(iso: string) {
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+function timeAgo(iso: string, t: Translate, language: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m ago`;
+  if (m < 1) return t("list.time.justNow");
+  if (m < 60) return t("list.time.minutesAgo", { n: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (h < 24) return t("list.time.hoursAgo", { n: h });
+  return new Date(iso).toLocaleDateString(intlLocale(language), { month: "short", day: "numeric" });
 }
 
 /** Guess a client name from an email/phone when creating one from a thread. */
@@ -74,6 +78,7 @@ function deriveClientName(address: string): string {
 
 export function InboxClient({ threads: initialThreads, clients, orgId, inboundAddress }: Props) {
   const router = useRouter();
+  const { t, i18n } = useTranslation("inbox");
   const [threads, setThreads] = useState(initialThreads);
   const [channel, setChannel] = useState<Channel>("all");
   const [selectedKey, setSelectedKey] = useState<string | null>(
@@ -120,12 +125,12 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
 
   function selectThread(key: string) {
     setSelectedKey(key);
-    const t = threads.find((x) => x.key === key);
+    const thread = threads.find((x) => x.key === key);
     // Mark read optimistically
     setThreads((prev) =>
       prev.map((x) => (x.key === key ? { ...x, unreadCount: 0 } : x))
     );
-    startTransition(() => markThreadRead(t?.clientId ?? null, t?.contactAddress ?? null));
+    startTransition(() => markThreadRead(thread?.clientId ?? null, thread?.contactAddress ?? null));
   }
 
   function sendReply() {
@@ -209,7 +214,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
         <div className="w-80 flex-shrink-0 border-r border-slate-200 bg-white flex flex-col">
           <div className="px-4 py-4 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h1 className="text-sm font-semibold text-slate-800">Inbox</h1>
+              <h1 className="text-sm font-semibold text-slate-800">{t("list.title")}</h1>
               {totalUnread > 0 && (
                 <span className="text-xs font-semibold bg-indigo-600 text-white rounded-full px-1.5 py-0.5 leading-none">
                   {totalUnread}
@@ -219,7 +224,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
             <button
               onClick={() => setComposing(true)}
               className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-              title="New conversation"
+              title={t("list.newConversation")}
             >
               <MessageSquarePlus className="w-4 h-4 text-slate-500" />
             </button>
@@ -237,7 +242,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                     : "text-slate-500 hover:bg-slate-100"
                 }`}
               >
-                {tab === "all" ? "All" : tab.toUpperCase()}
+                {t(`list.filters.${tab}`)}
               </button>
             ))}
           </div>
@@ -247,54 +252,56 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center p-8 mt-8">
                 <MessageSquare className="w-8 h-8 text-slate-300 mb-2" />
-                <p className="text-xs font-medium text-slate-500 mb-1">No messages yet</p>
+                <p className="text-xs font-medium text-slate-500 mb-1">{t("list.empty.title")}</p>
                 <p className="text-xs text-slate-400">
-                  Client SMS and emails will appear here.
+                  {t("list.empty.hint")}
                 </p>
               </div>
             ) : (
-              filtered.map((t) => (
+              filtered.map((thread) => (
                 <button
-                  key={t.key}
-                  onClick={() => selectThread(t.key)}
+                  key={thread.key}
+                  onClick={() => selectThread(thread.key)}
                   className={`w-full text-left px-4 py-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors ${
-                    selectedKey === t.key ? "bg-indigo-50" : ""
+                    selectedKey === thread.key ? "bg-indigo-50" : ""
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-xs font-semibold text-indigo-600">
-                      {(t.clientName[0] ?? "?").toUpperCase()}
+                      {(thread.clientName[0] ?? "?").toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className={`text-sm ${t.unreadCount > 0 ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
-                          {t.clientName}
+                        <span className={`text-sm ${thread.unreadCount > 0 ? "font-semibold text-slate-900" : "font-medium text-slate-700"}`}>
+                          {thread.clientName}
                         </span>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          {t.unreadCount > 0 && (
+                          {thread.unreadCount > 0 && (
                             <span className="w-2 h-2 rounded-full bg-indigo-600" />
                           )}
-                          <span className="text-xs text-slate-400">{timeAgo(t.lastMessage.sent_at)}</span>
+                          <span className="text-xs text-slate-400">{timeAgo(thread.lastMessage.sent_at, t, i18n.language)}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        {t.lastMessage.channel === "sms"
+                        {thread.lastMessage.channel === "sms"
                           ? <MessageSquare className="w-3 h-3 text-slate-400 flex-shrink-0" />
                           : <Mail className="w-3 h-3 text-slate-400 flex-shrink-0" />
                         }
                         <p className="text-xs text-slate-500 truncate">
-                          {t.lastMessage.direction === "outbound" ? "You: " : ""}
-                          {t.lastMessage.body}
+                          {thread.lastMessage.direction === "outbound" ? t("list.outboundPrefix") : ""}
+                          {thread.lastMessage.body}
                         </p>
                       </div>
-                      {(t.lastMessage.priority === "high" || (t.lastMessage.intent && t.lastMessage.intent !== "other")) && (
+                      {(thread.lastMessage.priority === "high" || (thread.lastMessage.intent && thread.lastMessage.intent !== "other")) && (
                         <div className="flex items-center gap-1 mt-1">
-                          {t.lastMessage.priority === "high" && (
-                            <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 rounded px-1.5 py-0.5">Urgent</span>
+                          {thread.lastMessage.priority === "high" && (
+                            <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 rounded px-1.5 py-0.5">{t("badges.urgent")}</span>
                           )}
-                          {t.lastMessage.intent && t.lastMessage.intent !== "other" && (
-                            <span className="text-[10px] font-medium text-slate-500 bg-slate-100 rounded px-1.5 py-0.5 capitalize">{t.lastMessage.intent}</span>
+                          {thread.lastMessage.intent && thread.lastMessage.intent !== "other" && (
+                            <span className="text-[10px] font-medium text-slate-500 bg-slate-100 rounded px-1.5 py-0.5">
+                              {t(`badges.intent.${thread.lastMessage.intent}`, { defaultValue: thread.lastMessage.intent })}
+                            </span>
                           )}
                         </div>
                       )}
@@ -330,10 +337,10 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                     onClick={addAsClient}
                     disabled={addingClient}
                     className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-50 transition-colors"
-                    title="Create a client from this conversation"
+                    title={t("thread.addAsClientTitle")}
                   >
                     <UserPlus className="w-3.5 h-3.5" />
-                    {addingClient ? "Adding…" : "Add as client"}
+                    {addingClient ? t("common:status.adding") : t("thread.addAsClient")}
                   </button>
                 )}
                 <div className="flex items-center gap-2">
@@ -341,7 +348,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                     ? <Mail className="w-4 h-4 text-slate-400" />
                     : <MessageSquare className="w-4 h-4 text-slate-400" />
                   }
-                  <span className="text-xs text-slate-400 capitalize">{selected.lastMessage.channel}</span>
+                  <span className="text-xs text-slate-400">{t(`thread.channel.${selected.lastMessage.channel}`)}</span>
                 </div>
               </div>
             </div>
@@ -363,11 +370,11 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                       <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
                       {!isOut && msg.translationEn && (
                         <p className="text-xs mt-1.5 pt-1.5 border-t border-slate-200/70 text-slate-500 italic whitespace-pre-wrap">
-                          EN: {msg.translationEn}
+                          {t("thread.translationLabel")}: {msg.translationEn}
                         </p>
                       )}
                       <p className={`text-xs mt-1 ${isOut ? "text-indigo-200" : "text-slate-400"}`}>
-                        {timeAgo(msg.sent_at)}
+                        {timeAgo(msg.sent_at, t, i18n.language)}
                       </p>
                     </div>
                   </div>
@@ -385,7 +392,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                   className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:opacity-50 transition-colors"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  {drafting ? "Drafting…" : "Draft with AI"}
+                  {drafting ? t("common:status.drafting") : t("thread.draftWithAi")}
                 </button>
               </div>
               <div className="flex items-end gap-3">
@@ -396,7 +403,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendReply();
                   }}
                   rows={2}
-                  placeholder={`Reply via ${selected.lastMessage.channel}… (⌘↵ to send)`}
+                  placeholder={t(`thread.replyPlaceholder.${selected.lastMessage.channel}`)}
                   className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
                 <button
@@ -418,15 +425,15 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
               <MessageSquarePlus className="w-5 h-5 text-slate-400" />
             </div>
-            <p className="text-sm font-medium text-slate-600 mb-1">Select a conversation</p>
+            <p className="text-sm font-medium text-slate-600 mb-1">{t("unselected.title")}</p>
             <p className="text-xs text-slate-400 max-w-xs">
-              Reply to client SMS and emails from one unified inbox.
+              {t("unselected.hint")}
             </p>
             <button
               onClick={() => setComposing(true)}
               className="mt-4 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              New message
+              {t("unselected.newMessage")}
             </button>
           </div>
         )}

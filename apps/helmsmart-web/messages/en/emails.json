@@ -1,1 +1,77 @@
-{}
+{
+  "digest": {
+    "fromName": "{{org}} via HelmSmart",
+    "subject": "Your week at {{org}}: {{outstanding}} outstanding",
+    "headerNote": "Your week ahead",
+    "title": "Monday snapshot",
+    "intro": "Here's where things stand to start the week.",
+    "cash": {
+      "label": "Cash on hand",
+      "linked": "Linked accounts",
+      "none": "Link a bank"
+    },
+    "outstanding": {
+      "label": "Outstanding",
+      "overdue": "{{amount}} overdue",
+      "open": "{{count}} open"
+    },
+    "bills": {
+      "label": "Bills to pay",
+      "dueThisWeek": "{{amount}} due this week",
+      "open": "{{count}} open"
+    },
+    "tasks": {
+      "label": "Open tasks",
+      "overdue": "{{count}} overdue",
+      "onTrack": "on track"
+    },
+    "openDashboard": "Open dashboard →",
+    "viewForecast": "View cash-flow forecast",
+    "footer": "Weekly digest · Powered by HelmSmart",
+    "text": {
+      "heading": "{{org}} — your week ahead",
+      "cash": "Cash on hand: {{amount}}",
+      "outstanding": "Outstanding: {{amount}}",
+      "outstandingOverdue": "Outstanding: {{amount}} ({{overdue}} overdue)",
+      "bills": "Bills to pay: {{amount}}",
+      "billsDueSoon": "Bills to pay: {{amount}} ({{dueSoon}} due this week)",
+      "tasks": "Open tasks: {{count}}",
+      "tasksOverdue": "Open tasks: {{count}} ({{overdue}} overdue)",
+      "dashboard": "Dashboard: {{url}}"
+    }
+  },
+  "invite": {
+    "fromName": "{{org}} via HelmSmart",
+    "subject": "You've been invited to join {{org}} on HelmSmart",
+    "heading": "You're invited!",
+    "body": "<strong>{{org}}</strong> has invited you to join their workspace on HelmSmart as a <strong>{{role}}</strong>.",
+    "accept": "Accept invitation",
+    "expiry": "This invitation expires in 7 days. If you weren't expecting this, you can ignore this email.",
+    "footer": "Powered by HelmSmart",
+    "roles": {
+      "admin": "admin",
+      "bookkeeper": "bookkeeper",
+      "viewer": "viewer"
+    },
+    "text": {
+      "body": "You've been invited to join {{org}} on HelmSmart as a {{role}}.",
+      "accept": "Accept here: {{url}}",
+      "expiry": "This link expires in 7 days."
+    }
+  },
+  "formAlert": {
+    "fromName": "HelmSmart Forms",
+    "subject": "New form submission: {{form}}",
+    "heading": "New submission: {{form}}",
+    "submitted": "Submitted {{date}}",
+    "view": "View in HelmSmart →"
+  },
+  "bookingAlert": {
+    "subject": "New appointment: {{when}}",
+    "intro": "Your AI receptionist booked an appointment.",
+    "when": "When: {{when}}",
+    "caller": "Caller: {{caller}}",
+    "unknownCaller": "an unknown number",
+    "onCalendar": "It is on your calendar: {{url}}"
+  }
+}

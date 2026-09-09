@@ -2,8 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { createInvoice, type InvoiceLine } from "@/lib/actions/invoices";
+import { moneyFormatter } from "@/lib/books-format";
 
 interface Client {
   id: string;
@@ -23,6 +25,8 @@ interface Props {
   clients: Client[];
   revenueAccounts: CoaAccount[];
   preselectedClientId?: string;
+  /** `organizations.currency` — the ledger's currency, not the reader's country. */
+  currency: string;
 }
 
 const emptyLine = (): InvoiceLine & { key: string } => ({
@@ -34,7 +38,9 @@ const emptyLine = (): InvoiceLine & { key: string } => ({
   coa_account_id: null,
 });
 
-export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }: Props) {
+export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const money = moneyFormatter(i18n.language, currency);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -71,9 +77,9 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
   }
 
   function submit(action: "draft" | "save") {
-    if (!dueDate) { setError("Due date is required"); return; }
+    if (!dueDate) { setError(t("invoices.builder.errors.dueDateRequired")); return; }
     const validLines = lines.filter((l) => l.description.trim());
-    if (!validLines.length) { setError("Add at least one line item"); return; }
+    if (!validLines.length) { setError(t("invoices.builder.errors.noLineItems")); return; }
     setError(null);
 
     startTransition(async () => {
@@ -93,7 +99,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
         });
         router.push(`/books/invoices/${id}`);
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : "Failed to save");
+        setError(e instanceof Error ? e.message : t("invoices.builder.errors.saveFailed"));
       }
     });
   }
@@ -103,24 +109,24 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         {/* Header bar */}
         <div className="px-8 py-5 border-b border-slate-100 bg-slate-50">
-          <h2 className="text-sm font-semibold text-slate-700">Invoice details</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{t("invoices.builder.title")}</h2>
         </div>
 
         <div className="px-8 py-6 space-y-6">
           {/* Client + dates row */}
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-1">
-              <label className="block text-xs font-medium text-slate-500 mb-1.5">Bill to</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("invoices.builder.billTo")}</label>
               <div className="relative">
                 <select
                   value={clientId}
                   onChange={(e) => setClientId(e.target.value)}
                   className="w-full appearance-none border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-8"
                 >
-                  <option value="">No client</option>
+                  <option value="">{t("invoices.builder.noClient")}</option>
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {[c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || c.email || "Unnamed"}
+                      {[c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || c.email || t("invoices.builder.unnamedClient")}
                     </option>
                   ))}
                 </select>
@@ -128,7 +134,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1.5">Issue date</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("invoices.builder.issueDate")}</label>
               <input
                 type="date"
                 defaultValue={new Date().toISOString().slice(0, 10)}
@@ -137,7 +143,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1.5">Due date</label>
+              <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("invoices.builder.dueDate")}</label>
               <input
                 type="date"
                 value={dueDate}
@@ -151,9 +157,12 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
           {/* Line items */}
           <div>
             <div className="grid grid-cols-[1fr_80px_110px_110px_36px] gap-2 mb-2">
-              {["Description", "Qty", "Unit price", "Amount", ""].map((h) => (
-                <span key={h} className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</span>
+              {(["description", "qty", "unitPrice", "amount"] as const).map((h) => (
+                <span key={h} className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  {t(`invoices.builder.columns.${h}`)}
+                </span>
               ))}
+              <span />
             </div>
 
             <div className="space-y-2">
@@ -162,7 +171,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
                   <div className="space-y-1">
                     <input
                       type="text"
-                      placeholder="Service or product description"
+                      placeholder={t("invoices.builder.descriptionPlaceholder")}
                       value={line.description}
                       onChange={(e) => updateLine(line.key, "description", e.target.value)}
                       className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -173,7 +182,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
                         onChange={(e) => updateLine(line.key, "coa_account_id", e.target.value)}
                         className="w-full border border-slate-100 rounded-lg px-3 py-1.5 text-xs text-slate-500 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                       >
-                        <option value="">Revenue account (optional)</option>
+                        <option value="">{t("invoices.builder.revenueAccountOptional")}</option>
                         {revenueAccounts.map((a) => (
                           <option key={a.id} value={a.id}>{a.code} · {a.name}</option>
                         ))}
@@ -198,7 +207,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
                     placeholder="0.00"
                   />
                   <div className="border border-slate-100 rounded-lg px-3 py-2 text-sm text-right bg-slate-50 text-slate-700 tabular-nums">
-                    ${line.amount.toFixed(2)}
+                    {money(line.amount)}
                   </div>
                   <button
                     onClick={() => setLines((p) => p.filter((l) => l.key !== line.key))}
@@ -216,7 +225,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
               className="mt-3 flex items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Add line item
+              {t("invoices.builder.addLineItem")}
             </button>
           </div>
 
@@ -224,12 +233,12 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
           <div className="flex justify-end">
             <div className="w-72 space-y-2">
               <div className="flex justify-between text-sm text-slate-600">
-                <span>Subtotal</span>
-                <span className="tabular-nums">${subtotal.toFixed(2)}</span>
+                <span>{t("invoices.builder.subtotal")}</span>
+                <span className="tabular-nums">{money(subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-sm text-slate-600">
                 <div className="flex items-center gap-2">
-                  <span>Tax</span>
+                  <span>{t("invoices.builder.tax")}</span>
                   <input
                     type="number"
                     min="0"
@@ -241,23 +250,23 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
                   />
                   <span className="text-xs text-slate-400">%</span>
                 </div>
-                <span className="tabular-nums">${taxAmount.toFixed(2)}</span>
+                <span className="tabular-nums">{money(taxAmount)}</span>
               </div>
               <div className="flex justify-between text-base font-semibold text-slate-800 pt-2 border-t border-slate-200">
-                <span>Total</span>
-                <span className="tabular-nums">${total.toFixed(2)}</span>
+                <span>{t("invoices.builder.total")}</span>
+                <span className="tabular-nums">{money(total)}</span>
               </div>
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Notes (optional)</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("invoices.builder.notesOptional")}</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Payment terms, bank details, thank you note…"
+              placeholder={t("invoices.builder.notesPlaceholder")}
               className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
             />
           </div>
@@ -272,7 +281,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
               onClick={() => router.back()}
               className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
             >
-              Cancel
+              {t("common:actions.cancel")}
             </button>
             <div className="flex gap-3">
               <button
@@ -280,14 +289,14 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId }
                 disabled={isPending}
                 className="px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
               >
-                Save as draft
+                {t("invoices.builder.saveAsDraft")}
               </button>
               <button
                 onClick={() => submit("save")}
                 disabled={isPending}
                 className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors"
               >
-                {isPending ? "Saving…" : "Create invoice"}
+                {isPending ? t("common:status.saving") : t("invoices.builder.createInvoice")}
               </button>
             </div>
           </div>

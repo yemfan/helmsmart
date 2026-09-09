@@ -1,1 +1,250 @@
-{}
+{
+  "meta": {
+    "list": "审批工作流",
+    "new": "新建工作流",
+    "edit": "编辑工作流",
+    "requests": "审批申请",
+    "request": "审批申请详情",
+    "automations": "自动化"
+  },
+  "status": {
+    "pending": "待审批",
+    "approved": "已批准",
+    "rejected": "已拒绝",
+    "cancelled": "已取消",
+    "expired": "已过期",
+    "waiting": "等待中",
+    "skipped": "已跳过"
+  },
+  "subjectType": {
+    "estimate": "报价单",
+    "expense": "支出",
+    "invoice": "发票",
+    "bill": "账单",
+    "manual": "手动",
+    "custom": "自定义"
+  },
+  "triggers": {
+    "manual": "手动触发",
+    "estimate_over_amount": "报价单超阈值",
+    "expense_over_amount": "支出超阈值",
+    "custom": "自定义"
+  },
+  "list": {
+    "title": "审批工作流",
+    "subtitle": "为报价单、支出等事项设置多级顺序审批",
+    "newWorkflow": "新建工作流",
+    "pendingBanner_other": "有 {{count}} 项审批等待您处理",
+    "morePending": "还有 {{count}} 项",
+    "configured": "已配置的工作流",
+    "emptyTitle": "还没有工作流",
+    "emptyBody": "创建审批工作流，让报价单、支出或其他事项在执行前先获得签批。",
+    "createFirst": "创建第一个工作流",
+    "inactive": "已停用",
+    "overThreshold": "超过 ${{amount}}",
+    "stepCount_other": "{{count}} 个步骤",
+    "recentRequests": "最近的申请",
+    "viewAll": "查看全部",
+    "noRequests": "还没有审批申请"
+  },
+  "requests": {
+    "title": "审批申请",
+    "filterAll": "全部",
+    "empty": "没有申请",
+    "step": "第 {{number}} 步"
+  },
+  "request": {
+    "workflowLabel": "工作流：",
+    "requestedOn": "提交于 {{date}}",
+    "stepsTitle": "审批步骤",
+    "waiting": "等待中",
+    "awaitingDecision": "等待您的决定",
+    "rejectionTitle": "拒绝原因",
+    "detailsTitle": "申请详情"
+  },
+  "decision": {
+    "title": "您的决定",
+    "rejectReasonLabel": "拒绝原因（选填）",
+    "rejectReasonPlaceholder": "说明拒绝的原因…",
+    "noteLabel": "备注（选填）",
+    "notePlaceholder": "在批准时附上一句说明…",
+    "approve": "批准",
+    "reject": "拒绝",
+    "confirmReject": "确认拒绝",
+    "cancel": "取消",
+    "approveFailed": "无法批准该步骤。",
+    "rejectFailed": "无法拒绝该步骤。"
+  },
+  "editor": {
+    "newTitle": "新建审批工作流",
+    "editTitle": "编辑工作流",
+    "save": "保存工作流",
+    "saved": "已保存！",
+    "saving": "保存中…",
+    "detailsTitle": "工作流信息",
+    "nameLabel": "名称",
+    "namePlaceholder": "例如：大额采购审批",
+    "descriptionLabel": "说明（选填）",
+    "descriptionPlaceholder": "什么情况下适用该工作流",
+    "triggerTitle": "触发条件",
+    "triggerTypes": {
+      "manual": {
+        "label": "手动触发",
+        "description": "从单据上手动发起"
+      },
+      "estimate_over_amount": {
+        "label": "报价单超金额",
+        "description": "报价单总额超过阈值时自动触发"
+      },
+      "expense_over_amount": {
+        "label": "支出超金额",
+        "description": "支出金额超过阈值时自动触发"
+      },
+      "custom": {
+        "label": "自定义",
+        "description": "用于其他任何用途"
+      }
+    },
+    "amountLabel": "金额阈值（美元）",
+    "amountPlaceholder": "例如：5000",
+    "stepsTitle": "审批步骤",
+    "addStep": "添加步骤",
+    "firstStepName": "主管审批",
+    "nextStepName": "第 {{number}} 步",
+    "stepNameLabel": "步骤名称",
+    "stepNamePlaceholder": "例如：主管复核",
+    "approverRoleLabel": "审批人角色",
+    "roles": {
+      "any": "任意管理员或所有者",
+      "owner": "仅所有者",
+      "admin": "管理员或所有者",
+      "bookkeeper": "记账员、管理员或所有者"
+    },
+    "timeoutLabel": "自动升级前等待（小时）",
+    "timeoutPlaceholder": "留空则不升级",
+    "activeTitle": "工作流已启用",
+    "activeHint": "停用的工作流无法受理新申请",
+    "deleteWorkflow": "删除此工作流",
+    "deleteConfirm": "确定删除此工作流？",
+    "errors": {
+      "nameRequired": "请填写工作流名称",
+      "stepRequired": "至少添加一个审批步骤",
+      "amountRequired": "请输入金额阈值",
+      "saveFailed": "无法保存该工作流。",
+      "createFailed": "无法创建该工作流。"
+    }
+  },
+  "automations": {
+    "title": "自动化",
+    "subtitle": "当业务事件发生时自动执行动作",
+    "rules": "规则",
+    "newAutomation": "新建自动化",
+    "emptyTitle": "还没有自动化规则",
+    "emptyBody": "创建规则，在业务事件发生时自动创建任务、发送邮件或记录备注。",
+    "createFirst": "创建第一条规则",
+    "enable": "启用",
+    "disable": "停用",
+    "deleteConfirm": "确定删除自动化规则“{{name}}”？",
+    "runs_other": "运行 {{count}} 次",
+    "neverRun": "从未运行",
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo": "{{count}} 分钟前",
+      "hoursAgo": "{{count}} 小时前",
+      "daysAgo": "{{count}} 天前"
+    },
+    "triggerLabels": {
+      "invoice_overdue": "发票逾期",
+      "invoice_paid": "发票已付款",
+      "new_lead": "新线索",
+      "campaign_sent": "活动已发送"
+    },
+    "actionLabels": {
+      "create_task": "创建任务",
+      "send_email": "发送邮件",
+      "add_note": "添加备注"
+    },
+    "variables": {
+      "title": "模板变量",
+      "client_name": "客户全名",
+      "invoice_number": "发票号（如 INV-0012）",
+      "amount": "发票总额（如 $1,200.00）",
+      "campaign_name": "活动名称"
+    },
+    "errors": {
+      "notAuthenticated": "登录已失效，请重新登录后再管理自动化规则。",
+      "createFailed": "无法创建该自动化规则。"
+    },
+    "modal": {
+      "title": "新建自动化",
+      "close": "关闭",
+      "nameLabel": "名称",
+      "namePlaceholder": "例如：发票逾期时创建跟进任务",
+      "whenLabel": "当发生以下事件…",
+      "doLabel": "就执行…",
+      "triggers": {
+        "invoice_overdue": {
+          "label": "发票逾期",
+          "hint": "每日检查，已发送的发票超过到期日时触发"
+        },
+        "invoice_paid": {
+          "label": "发票已付款",
+          "hint": "发票被标记为已付款时触发"
+        },
+        "new_lead": {
+          "label": "新建线索",
+          "hint": "创建状态为线索的客户时触发"
+        },
+        "campaign_sent": {
+          "label": "活动已发送",
+          "hint": "营销活动发送完成后触发"
+        }
+      },
+      "actions": {
+        "create_task": {
+          "label": "创建一个任务",
+          "hint": "向任务列表添加任务，可关联到客户"
+        },
+        "send_email": {
+          "label": "发送一封邮件",
+          "hint": "向客户发送一封事务邮件"
+        },
+        "add_note": {
+          "label": "添加一条备注",
+          "hint": "在客户记录上记一条活动备注"
+        }
+      },
+      "configureAction": "配置动作",
+      "taskTitleLabel": "任务标题",
+      "taskTitlePlaceholder": "跟进 {{client_name}}",
+      "dueInDaysLabel": "几天后到期",
+      "emailSubjectLabel": "邮件主题",
+      "emailBodyLabel": "邮件正文",
+      "noteBodyLabel": "备注内容",
+      "notePlaceholder": "自动记录：发票 {{invoice_number}} 已逾期",
+      "create": "创建自动化",
+      "creating": "创建中…",
+      "cancel": "取消",
+      "nameRequired": "请填写名称",
+      "createFailed": "创建自动化规则失败",
+      "defaults": {
+        "taskInvoiceOverdue": "跟进：{{client_name}} 的逾期发票 {{invoice_number}}",
+        "taskInvoicePaid": "跟进：{{client_name}} 已付款的发票 {{invoice_number}}",
+        "taskNewLead": "跟进新线索 {{client_name}}",
+        "taskCampaignSent": "活动 {{campaign_name}} 后的跟进",
+        "taskGeneric": "跟进 {{client_name}}",
+        "note": "自动记录的活动备注"
+      }
+    }
+  },
+  "errors": {
+    "unauthorized": "您已退出登录，请重新登录后继续。",
+    "noSession": "您已退出登录，请重新登录后继续。",
+    "workflowNotFound": "该审批流程已不存在。",
+    "workflowInactive": "该审批流程已停用。请在「工作流」中启用后再使用。",
+    "workflowNoSteps": "该审批流程还没有任何步骤，请至少添加一位审批人。",
+    "requestNotFound": "该审批请求已不存在。",
+    "requestNotPending": "该请求已完成审批。",
+    "noPendingStep": "该请求没有待决定的步骤。"
+  }
+}

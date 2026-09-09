@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { getAccountsForEntityType } from "@/lib/data/chart-of-accounts-seed";
 
 export type OrgState = { error: string } | null;
@@ -51,8 +52,9 @@ export async function createOrg(
   const businessDescription = (formData.get("business_description") as string)?.trim() || null;
   const businessLocation = (formData.get("business_location") as string)?.trim() || null;
 
-  if (!name) return { error: "Business name is required." };
-  if (!entityType) return { error: "Please select a business structure." };
+  const t = await getServerT("settings");
+  if (!name) return { error: t("errors.businessNameRequired") };
+  if (!entityType) return { error: t("org.errors.structureRequired") };
 
   const supabase = await createClient();
   const {
@@ -100,7 +102,7 @@ export async function createOrg(
 
   if (orgError) {
     console.error("createOrg error:", orgError);
-    return { error: "Failed to create organization. Please try again." };
+    return { error: t("org.errors.createFailed") };
   }
 
   // Add the user as owner
@@ -112,7 +114,7 @@ export async function createOrg(
 
   if (memberError) {
     console.error("createOrg membership error:", memberError);
-    return { error: "Organization created but membership failed. Contact support." };
+    return { error: t("org.errors.membershipFailed") };
   }
 
   // Persist the onboarding details that depend on migration 00085 — the

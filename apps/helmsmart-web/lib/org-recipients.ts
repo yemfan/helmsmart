@@ -5,7 +5,17 @@ import type { createServiceClient } from "@/lib/supabase/server";
 type ServiceClient = Awaited<ReturnType<typeof createServiceClient>>;
 
 /**
- * The email addresses of an organization's owners and admins.
+ * One person who should get an organization's owner mail.
+ *
+ * `userId` is here because the address alone cannot answer what language to
+ * write in. `user_preferences.ui_locale` is keyed by user, so a digest that
+ * only knew the email had no way to reach the recipient's own language and
+ * every owner got English. See `lib/i18n/userLocale.ts`.
+ */
+export type OrgRecipient = { userId: string; email: string };
+
+/**
+ * The owners and admins of an organization, as id + address pairs.
  *
  * WHY THIS IS NOT A JOIN. The obvious query is the one that was here:
  *
@@ -26,7 +36,10 @@ type ServiceClient = Awaited<ReturnType<typeof createServiceClient>>;
  * code holding the service key, so that is what this uses. One lookup per
  * member — these lists are a handful of people, not a table scan.
  */
-export async function orgOwnerEmails(db: ServiceClient, orgId: string): Promise<string[]> {
+export async function orgOwnerRecipients(
+  db: ServiceClient,
+  orgId: string,
+): Promise<OrgRecipient[]> {
   const { data: members, error } = await db
     .from("organization_members")
     .select("user_id, role")
@@ -43,15 +56,16 @@ export async function orgOwnerEmails(db: ServiceClient, orgId: string): Promise<
     .filter(Boolean);
   if (!ids.length) return [];
 
-  const emails = await Promise.all(
-    ids.map(async (id) => {
+  const found = await Promise.all(
+    ids.map(async (id): Promise<OrgRecipient | null> => {
       try {
         const { data, error: authError } = await db.auth.admin.getUserById(id);
         if (authError) {
           console.error("[org-recipients] auth lookup failed for", id, authError.message);
           return null;
         }
-        return data?.user?.email ?? null;
+        const email = data?.user?.email ?? null;
+        return email ? { userId: id, email } : null;
       } catch (e) {
         console.error("[org-recipients] auth lookup threw for", id, e);
         return null;
@@ -59,7 +73,16 @@ export async function orgOwnerEmails(db: ServiceClient, orgId: string): Promise<
     }),
   );
 
-  // De-duplicated: one person can hold both roles across a merged membership,
-  // and nobody wants the same alert twice.
-  return [...new Set(emails.filter((e): e is string => Boolean(e)))];
+  // De-duplicated by address: one person can hold both roles across a merged
+  // membership, and nobody wants the same alert twice.
+  const byEmail = new Map<string, OrgRecipient>();
+  for (const r of found) {
+    if (r && !byEmail.has(r.email)) byEmail.set(r.email, r);
+  }
+  return [...byEmail.values()];
+}
+
+/** Just the addresses, for senders that do not render per recipient. */
+export async function orgOwnerEmails(db: ServiceClient, orgId: string): Promise<string[]> {
+  return (await orgOwnerRecipients(db, orgId)).map((r) => r.email);
 }

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { insertVendor, updateVendor as updateVendorFinance, deleteVendor as deleteVendorFinance } from "@helm/dna-finance";
+import { getServerT } from "@/lib/i18n/server";
 
 export type Vendor = {
   id: string;
@@ -90,8 +91,9 @@ export async function createVendor(input: {
   notes: string | null;
   is1099: boolean;
 }): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("vendors.errors.noOrg"));
 
   const supabase = await createClient();
   await insertVendor(supabase, orgId, input);
@@ -102,8 +104,9 @@ export async function updateVendor(
   id: string,
   input: { name: string; email: string | null; phone: string | null; notes: string | null; is1099: boolean }
 ): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("vendors.errors.noOrg"));
 
   const supabase = await createClient();
   await updateVendorFinance(supabase, orgId, id, input);
@@ -173,8 +176,9 @@ export async function get1099Report(year: number): Promise<Report1099> {
 }
 
 export async function deleteVendor(id: string): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("vendors.errors.noOrg"));
   const supabase = await createClient();
   await deleteVendorFinance(supabase, orgId, id);
   revalidatePath("/books/vendors");

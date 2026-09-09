@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { getServerT } from "@/lib/i18n/server";
 import { updateOrg as writeOrg } from "@/lib/actions/org-update";
 
 export type SettingsState = { error?: string; success?: boolean } | null;
@@ -13,16 +14,17 @@ export async function updateOrg(
   _: SettingsState,
   formData: FormData
 ): Promise<SettingsState> {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { error: "No organization found." };
+  if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const name = (formData.get("name") as string)?.trim();
-  if (!name) return { error: "Business name is required." };
+  if (!name) return { error: t("errors.businessNameRequired") };
 
   // Routed through writeOrg, which asks for the changed rows back. Through the
   // RLS-enforced client a forbidden update is not an error — it matches zero
@@ -50,13 +52,14 @@ export async function saveBillingRates(input: {
   hourlyRate: number | null;
   laborCostRate: number | null;
 }): Promise<SettingsState> {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { error: "No organization found." };
+  if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const res = await writeOrg(
     orgId,
@@ -79,21 +82,22 @@ export async function linkBankAccountToCoa(
   _: SettingsState,
   formData: FormData
 ): Promise<SettingsState> {
+  const t = await getServerT("settings");
   const bankAccountId = formData.get("bank_account_id") as string;
   const coaAccountId = (formData.get("coa_account_id") as string) || null;
 
-  if (!bankAccountId) return { error: "Missing bank account." };
+  if (!bankAccountId) return { error: t("errors.missingBankAccount") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const { error } = await supabase
     .from("bank_accounts")
     .update({ coa_account_id: coaAccountId })
     .eq("id", bankAccountId);
 
-  if (error) return { error: "Failed to update account link." };
+  if (error) return { error: t("errors.bankLinkFailed") };
 
   revalidatePath("/settings");
   return { success: true };

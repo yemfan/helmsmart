@@ -1,5 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/server";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { translatorFor } from "@/lib/i18n/server";
+import { moneyFormatter } from "@/lib/books-format";
 
 // Plain server module. Turns the dashboard's signals into a plain-English
 // "what needs you today" briefing, cached once per org per day.
@@ -18,40 +21,72 @@ export type BriefingSignals = {
   uninvoicedAmount: number;
 };
 
+/**
+ * Who the briefing is being written for: the language they read the dashboard
+ * in, and the currency their ledger is kept in. The two are independent — a
+ * Canadian owner reading Chinese still sees CAD.
+ */
+export type BriefingReader = {
+  locale: string | null | undefined;
+  currency: string | null | undefined;
+};
+
 export type Briefing = { headline: string; actions: string[] };
 
-const dollars = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
-
 /** Deterministic briefing used when the AI is unavailable. */
-function fallback(s: BriefingSignals): Briefing {
+function fallback(s: BriefingSignals, reader: BriefingReader): Briefing {
+  const t = translatorFor(reader.locale, "home");
+  const money = moneyFormatter(reader.locale, reader.currency, { maximumFractionDigits: 0 });
   const actions: string[] = [];
   if (s.overdueCount > 0) {
-    actions.push(`Chase ${s.overdueCount} overdue invoice${s.overdueCount !== 1 ? "s" : ""} (${dollars(s.overdueAmount)})`);
+    actions.push(
+      t("briefing.chaseOverdue", { count: s.overdueCount, amount: money(s.overdueAmount) }),
+    );
   }
   if (s.urgentMessages > 0) {
-    actions.push(`Reply to ${s.urgentMessages} urgent message${s.urgentMessages !== 1 ? "s" : ""}`);
+    actions.push(t("briefing.replyUrgent", { count: s.urgentMessages }));
   } else if (s.unreadMessages > 0) {
-    actions.push(`${s.unreadMessages} unread message${s.unreadMessages !== 1 ? "s" : ""} waiting in the inbox`);
+    actions.push(t("briefing.unread", { count: s.unreadMessages }));
   }
   const tasks = s.tasksOverdue + s.tasksDueToday;
-  if (tasks > 0) actions.push(`${tasks} task${tasks !== 1 ? "s" : ""} need attention today`);
+  if (tasks > 0) actions.push(t("briefing.tasksDue", { count: tasks }));
   return {
-    headline: actions.length ? "Here's what needs you today." : "You're all caught up — nothing pressing today.",
+    headline: actions.length ? t("briefing.headline") : t("briefing.allClear"),
     actions: actions.slice(0, 3),
   };
 }
 
-export async function getOrCreateDailyBriefing(orgId: string, signals: BriefingSignals): Promise<Briefing> {
+/**
+ * The morning briefing for one org, cached once per (org, day, LANGUAGE).
+ *
+ * The language belongs in the key. Without it the first read of the day froze
+ * the briefing's language for everyone: an owner who switched to 简体中文 kept
+ * an English paragraph sitting at the top of a fully translated dashboard
+ * until the next morning — the half-translated page this whole effort exists
+ * to remove, on the most-read line of the app. Two owners of one business who
+ * read different languages had the same problem permanently, and for them
+ * "wait until tomorrow" was never a fix at all.
+ *
+ * The cost is one extra generation per language actually in use, which is the
+ * honest price of the feature.
+ */
+export async function getOrCreateDailyBriefing(
+  orgId: string,
+  signals: BriefingSignals,
+  reader: BriefingReader,
+): Promise<Briefing> {
   const s = signals;
   const db = await createServiceClient();
   const today = new Date().toISOString().slice(0, 10);
+  const money = moneyFormatter(reader.locale, reader.currency, { maximumFractionDigits: 0 });
 
-  // Cached once per org per day.
+  // Cached once per org per day per language.
   const { data: existing } = await db
     .from("daily_briefings")
     .select("headline, actions")
     .eq("organization_id", orgId)
     .eq("briefing_date", today)
+    .eq("locale", reader.locale)
     .maybeSingle();
   if (existing) {
     return { headline: existing.headline as string, actions: (existing.actions as string[]) ?? [] };
@@ -62,20 +97,27 @@ export async function getOrCreateDailyBriefing(orgId: string, signals: BriefingS
     const res = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 300,
+      // The owner reads this, so it goes out in their language. The JSON
+      // variant keeps "headline" and "actions" as the parser expects them.
+      system: `You are a small-business owner's assistant writing their morning briefing.${languageDirectiveForJson(
+        reader.locale,
+      )}`,
       messages: [
         {
           role: "user",
-          content: `You are a small-business owner's assistant writing their morning briefing. Today's numbers:
-- Overdue invoices: ${s.overdueCount} totaling ${dollars(s.overdueAmount)}
+          content: `Today's numbers:
+- Overdue invoices: ${s.overdueCount} totaling ${money(s.overdueAmount)}
 - Unread inbox messages: ${s.unreadMessages} (${s.urgentMessages} marked urgent)
 - Tasks: ${s.tasksOverdue} overdue, ${s.tasksDueToday} due today
-- Uninvoiced billable time: ${dollars(s.uninvoicedAmount)}${
+- Uninvoiced billable time: ${money(s.uninvoicedAmount)}${
             s.lowestProjectedCash !== null && s.lowestProjectedCash < 0
-              ? `\n- WARNING: projected cash dips to ${dollars(s.lowestProjectedCash)} within 90 days`
+              ? `\n- WARNING: projected cash dips to ${money(s.lowestProjectedCash)} within 90 days`
               : ""
           }
 
-Return ONLY a JSON object: {"headline":"one warm, specific sentence","actions":["up to 3 prioritized, specific items, most urgent first, with the numbers — e.g. 'Chase $1,200 across 2 overdue invoices'"]}.
+Return ONLY a JSON object: {"headline":"one warm, specific sentence","actions":["up to 3 prioritized, specific items, most urgent first, with the numbers — e.g. 'Chase ${money(
+            1200,
+          )} across 2 overdue invoices'"]}.
 Only include actions that genuinely need the owner today. If nothing is pressing, the headline says they're caught up and actions is [].`,
         },
       ],
@@ -89,14 +131,20 @@ Only include actions that genuinely need the owner today. If nothing is pressing
             headline: parsed.headline,
             actions: Array.isArray(parsed.actions) ? parsed.actions.slice(0, 3).map(String) : [],
           }
-        : fallback(s);
+        : fallback(s, reader);
   } catch {
-    briefing = fallback(s);
+    briefing = fallback(s, reader);
   }
 
   await db.from("daily_briefings").upsert(
-    { organization_id: orgId, briefing_date: today, headline: briefing.headline, actions: briefing.actions },
-    { onConflict: "organization_id,briefing_date" }
+    {
+      organization_id: orgId,
+      briefing_date: today,
+      locale: reader.locale,
+      headline: briefing.headline,
+      actions: briefing.actions,
+    },
+    { onConflict: "organization_id,briefing_date,locale" }
   );
   return briefing;
 }

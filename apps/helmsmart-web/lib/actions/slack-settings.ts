@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { notifySlack } from "@/lib/integrations/slack";
 
@@ -11,13 +12,14 @@ import { notifySlack } from "@/lib/integrations/slack";
 export async function saveSlackWebhook(
   webhookUrl: string
 ): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
   // Basic URL validation
   if (webhookUrl && !webhookUrl.startsWith("https://hooks.slack.com/")) {
-    return { ok: false, error: "Must be a valid Slack incoming webhook URL (hooks.slack.com)" };
+    return { ok: false, error: t("slack.errors.invalidUrl") };
   }
 
   const db = await createServiceClient();
@@ -28,7 +30,7 @@ export async function saveSlackWebhook(
 
   if (error) {
     console.error("[slack-settings] save error:", error);
-    return { ok: false, error: error.message };
+    return { ok: false, error: t("slack.errors.saveFailed") };
   }
 
   revalidatePath("/settings");
@@ -64,25 +66,28 @@ export async function saveSlackNotifyToggle(
  * Send a test message to the configured Slack channel
  */
 export async function testSlackWebhook(): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
+  // This lands in the owner's own workspace, not a customer's inbox, so it
+  // goes out in the language the owner reads HelmSmart in.
   const ok = await notifySlack(orgId, {
-    text: "✅ HelmSmart Slack integration is working!",
+    text: t("slack.test.text"),
     blocks: [
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: "✅ *HelmSmart is connected to Slack!*\nYou'll receive notifications here for new leads, missed calls, form submissions, and AI approvals.",
+          text: t("slack.test.blockText"),
         },
       },
     ],
   });
 
   if (!ok) {
-    return { ok: false, error: "Failed to send test message. Check your webhook URL." };
+    return { ok: false, error: t("slack.errors.testSendFailed") };
   }
 
   return { ok: true };

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from "plaid";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -30,7 +31,10 @@ export async function POST() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: (await getServerT("books"))("transactions.plaid.unauthorized") },
+        { status: 401 },
+      );
     }
 
     const response = await plaidClient.linkTokenCreate({
@@ -49,7 +53,7 @@ export async function POST() {
   } catch (err) {
     console.error("[plaid] create-link-token error:", err);
     return NextResponse.json(
-      { error: "Failed to create Plaid link token." },
+      { error: (await getServerT("books"))("transactions.plaid.linkTokenFailed") },
       { status: 500 }
     );
   }

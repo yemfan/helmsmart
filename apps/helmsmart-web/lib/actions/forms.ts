@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface FormField {
   id: string;
@@ -88,7 +89,8 @@ export async function createForm(input: {
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 
@@ -111,7 +113,7 @@ export async function createForm(input: {
 
   if (error || !form) {
     console.error("[forms] create error:", error);
-    return { ok: false, error: error?.message || "Failed to create form" };
+    return { ok: false, error: error?.message || t("errors.forms.createFailed") };
   }
 
   revalidatePath("/forms");
@@ -138,7 +140,8 @@ export async function updateForm(
 ): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 
@@ -176,7 +179,8 @@ export async function updateForm(
 export async function deleteForm(formId: string): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 

@@ -2,10 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { Mic, Save, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
 import { saveVoiceSettings } from "@/lib/actions/social";
 
 // Generic small-business example, shown when the active pack doesn't supply its own.
+//
+// This is PROMPT content: "Use this template" writes it into the text the
+// receptionist is briefed with, and the receptionist speaks the caller's
+// language at call time. It stays in English in every UI language, the same way
+// the opening greeting does.
 const DEFAULT_CONTEXT_EXAMPLE = `## BUSINESS
 Name: Acme Plumbing
 Services: residential plumbing, drain cleaning, water heater installation
@@ -34,6 +40,7 @@ interface Props {
 }
 
 export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true, bookingAlertPhone = "" }: Props) {
+  const { t } = useTranslation("voice");
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [agentNameText, setAgentName] = useState(agentName ?? "");
   const [businessNameText, setBusinessName] = useState(businessName ?? "");
@@ -59,7 +66,7 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       } catch (e) {
         // A refused save has to say so. The button used to read "Saved!" over a
         // rejected write, which is the same lie as a toggle that saves nothing.
-        setSaveError(e instanceof Error ? e.message : "Couldn't save those settings.");
+        setSaveError(e instanceof Error ? e.message : t("settings.saveFailed"));
         return;
       }
       setSaveError(null);
@@ -75,8 +82,8 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           <Mic className="w-4 h-4 text-indigo-600" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-slate-800">AI Voice Agent</h2>
-          <p className="text-xs text-slate-500">Answers your calls with Claude when you're unavailable</p>
+          <h2 className="text-sm font-semibold text-slate-800">{t("settings.title")}</h2>
+          <p className="text-xs text-slate-500">{t("settings.subtitle")}</p>
         </div>
         {/*
           Disabled without a number. It was switchable either way, so the screen
@@ -86,7 +93,8 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
         <button
           onClick={() => setIsEnabled((v) => !v)}
           disabled={!twilioNumber}
-          title={twilioNumber ? undefined : "Add a phone number first — the agent has nothing to answer on."}
+          title={twilioNumber ? undefined : t("settings.toggleNeedsNumber")}
+          aria-label={t("settings.title")}
           className={`ml-auto relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${isEnabled ? "bg-indigo-600" : "bg-slate-200"}`}
         >
           <span className={`inline-block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${isEnabled ? "translate-x-6" : "translate-x-1"}`} />
@@ -107,7 +115,7 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       {!twilioNumber ? (
         <div className="space-y-3">
           <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-sm text-amber-700">
-            ⚠ The voice agent needs a phone number before it can answer calls.
+            ⚠ {t("settings.needsNumber")}
           </div>
           <ReceptionistNumberSimple current={null} />
         </div>
@@ -123,26 +131,22 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           {answersThisOrg ? (
             <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-sm text-emerald-700">Connected to <strong>{twilioNumber}</strong></span>
+              <span className="text-sm text-emerald-700">{t("settings.connected", { number: twilioNumber })}</span>
             </div>
           ) : (
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
               <p className="text-sm font-medium text-amber-800">
-                Calls to <strong>{twilioNumber}</strong> are not answered by your receptionist
+                {t("settings.notAnswered", { number: twilioNumber })}
               </p>
               <p className="text-xs text-amber-700 mt-1">
-                This number is shared with {sharedWith === 1 ? "another account" : `${sharedWith} other accounts`},
-                and one of those answers it — so callers hear that business, not yours. Your settings
-                below are saved, but they will not be used until this number is yours alone.
+                {t("settings.sharedWarning", { count: sharedWith })}
               </p>
             </div>
           )}
 
           {answersThisOrg && sharedWith > 0 && (
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-4 py-2">
-              Heads up: this number is also used by{" "}
-              {sharedWith === 1 ? "another account" : `${sharedWith} other accounts`}. Calls are
-              answered as your business today, but that can change if their settings change.
+              {t("settings.sharedNotice", { count: sharedWith })}
             </p>
           )}
         </div>
@@ -151,56 +155,54 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       {/* Agent name */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          Agent name <span className="text-slate-400">(what the receptionist calls itself)</span>
+          {t("settings.agentName.label")} <span className="text-slate-400">{t("settings.agentName.hint")}</span>
         </label>
         <input
           type="text"
           value={agentNameText}
           onChange={(e) => setAgentName(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="e.g. Maria"
+          placeholder={t("settings.agentName.placeholder")}
         />
-        <p className="text-xs text-slate-400 mt-1">Used when the agent introduces itself. Leave blank to stay unnamed.</p>
+        <p className="text-xs text-slate-400 mt-1">{t("settings.agentName.help")}</p>
       </div>
 
       {/* DBA name — trade name the agent announces; falls back to the account name */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          DBA name <span className="text-slate-400">(Doing Business As — optional)</span>
+          {t("settings.dba.label")} <span className="text-slate-400">{t("settings.dba.hint")}</span>
         </label>
         <input
           type="text"
           value={businessNameText}
           onChange={(e) => setBusinessName(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder={orgName || "Your business name"}
+          placeholder={orgName || t("settings.dba.placeholder")}
         />
         <p className="text-xs text-slate-400 mt-1">
-          The trade name the receptionist announces. Leave blank to use your account name{orgName ? <> (<span className="font-medium text-slate-500">{orgName}</span>)</> : null} — billing &amp; invoices always keep the account name.
+          {orgName ? t("settings.dba.helpWithName", { name: orgName }) : t("settings.dba.help")}
         </p>
       </div>
 
       {/* Greeting */}
       <div>
-        <label className="block text-xs font-medium text-slate-500 mb-1.5">Opening greeting</label>
+        <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("settings.greeting.label")}</label>
         <input
           type="text"
           value={greetingText}
           onChange={(e) => setGreeting(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          placeholder="Hello! Thank you for calling. How can I help you today?"
+          placeholder={t("settings.greeting.placeholder")}
         />
         <p className="text-xs text-slate-400 mt-1">
-          First thing callers hear. Use{" "}
-          <code className="text-slate-500">{"{{agent_name}}"}</code> and{" "}
-          <code className="text-slate-500">{"{{business_name}}"}</code> as placeholders.
+          {t("settings.greeting.help", { agentToken: "{{agent_name}}", businessToken: "{{business_name}}" })}
         </p>
       </div>
 
       {/* Prompt */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          Business context <span className="text-slate-400">(what Claude knows about you)</span>
+          {t("settings.context.label")} <span className="text-slate-400">{t("settings.context.hint")}</span>
         </label>
         <textarea
           value={promptText}
@@ -210,14 +212,14 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           placeholder={example}
         />
         <div className="flex items-center justify-between gap-3 mt-1">
-          <p className="text-xs text-slate-400">Plain text is fine. The more detail, the better the agent performs.</p>
+          <p className="text-xs text-slate-400">{t("settings.context.help")}</p>
           {!promptText.trim() && (
             <button
               type="button"
               onClick={() => setPrompt(example)}
               className="shrink-0 text-xs font-medium text-indigo-600 hover:text-indigo-700"
             >
-              Use this template
+              {t("settings.context.useTemplate")}
             </button>
           )}
         </div>
@@ -226,7 +228,7 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       {/* Text me when a booking happens */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          Text me when an appointment is booked <span className="text-slate-400">(optional)</span>
+          {t("settings.bookingAlert.label")} <span className="text-slate-400">{t("settings.bookingAlert.hint")}</span>
         </label>
         <input
           type="tel"
@@ -237,8 +239,7 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
           placeholder="+1 626 555 0147"
         />
         <p className="text-xs text-slate-400 mt-1">
-          Your own mobile. The receptionist texts you the appointment as soon as it books, so you
-          don&apos;t have to be watching the app. Leave blank for no text.
+          {t("settings.bookingAlert.help")}
         </p>
       </div>
 
@@ -248,7 +249,7 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
         className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
       >
         <Save className="w-4 h-4" />
-        {saved ? "Saved!" : "Save settings"}
+        {isPending ? t("common:status.saving") : saved ? t("settings.saved") : t("settings.save")}
       </button>
 
       {saveError ? (

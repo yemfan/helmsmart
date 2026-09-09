@@ -4,13 +4,20 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { ReviewReplyForm } from "@/components/review-reply-form";
 import { ArrowLeft, StarIcon, MessageSquare } from "lucide-react";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Reviews · Google Business" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.reviews") };
+}
 
 export default async function ReviewsPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+  const [t, locale] = await Promise.all([getServerT("marketing"), getServerLocale()]);
+  const intl = intlLocale(locale);
 
   const { data: reviews } = await supabase
     .from("google_reviews")
@@ -34,24 +41,24 @@ export default async function ReviewsPage() {
       <div className="mb-8">
         <Link href="/google" className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 mb-4">
           <ArrowLeft className="w-4 h-4" />
-          Back
+          {t("google.reviews.back")}
         </Link>
-        <h1 className="text-2xl font-semibold text-slate-900">All Reviews</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("google.reviews.title")}</h1>
         <p className="text-sm text-slate-500 mt-0.5">{profile?.business_name}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-xs font-medium text-slate-600 uppercase">Unreplied</p>
+          <p className="text-xs font-medium text-slate-600 uppercase">{t("google.reviews.unreplied")}</p>
           <p className="text-2xl font-bold text-slate-900 mt-2">{unreplied.length}</p>
         </div>
         <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-xs font-medium text-slate-600 uppercase">Positive (4-5★)</p>
+          <p className="text-xs font-medium text-slate-600 uppercase">{t("google.reviews.positive")}</p>
           <p className="text-2xl font-bold text-emerald-600 mt-2">{positive.length}</p>
         </div>
         <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-xs font-medium text-slate-600 uppercase">Critical (1-2★)</p>
+          <p className="text-xs font-medium text-slate-600 uppercase">{t("google.reviews.critical")}</p>
           <p className="text-2xl font-bold text-rose-600 mt-2">{critical.length}</p>
         </div>
       </div>
@@ -77,7 +84,7 @@ export default async function ReviewsPage() {
                         ))}
                       </div>
                       <span className="text-xs text-slate-500">
-                        {new Date(review.review_created_at).toLocaleDateString("en-US", {
+                        {new Date(review.review_created_at).toLocaleDateString(intl, {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
@@ -93,7 +100,9 @@ export default async function ReviewsPage() {
                         : "bg-rose-50 text-rose-700"
                     }`}
                   >
-                    {review.response_status === "replied" ? "✓ Replied" : "• Unreplied"}
+                    {review.response_status === "replied"
+                      ? t("google.reviews.repliedBadge")
+                      : t("google.reviews.unrepliedBadge")}
                   </span>
                 </div>
 
@@ -103,16 +112,17 @@ export default async function ReviewsPage() {
 
                 {review.response_status === "replied" && review.response_text ? (
                   <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
-                    <p className="text-xs font-medium text-emerald-900 mb-2">Your response:</p>
+                    <p className="text-xs font-medium text-emerald-900 mb-2">{t("google.reviews.yourResponse")}</p>
                     <p className="text-sm text-emerald-800 whitespace-pre-wrap">{review.response_text}</p>
                     {review.responded_at && (
                       <p className="text-xs text-emerald-600 mt-2">
-                        Replied{" "}
-                        {new Date(review.responded_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
+                        {t("google.reviews.repliedAt", {
+                          date: new Date(review.responded_at).toLocaleDateString(intl, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }),
                         })}
                       </p>
                     )}
@@ -126,7 +136,7 @@ export default async function ReviewsPage() {
         ) : (
           <div className="px-6 py-12 text-center">
             <MessageSquare className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-            <p className="text-sm text-slate-600">No reviews yet</p>
+            <p className="text-sm text-slate-600">{t("google.reviews.none")}</p>
           </div>
         )}
       </div>

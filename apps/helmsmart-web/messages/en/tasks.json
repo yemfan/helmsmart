@@ -1,1 +1,188 @@
-{}
+{
+  "meta": {
+    "tasks": "Tasks",
+    "recurringTasks": "Recurring Tasks",
+    "calendar": "Calendar"
+  },
+  "priority": {
+    "low": "Low",
+    "normal": "Normal",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "frequency": {
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "annually": "Annually"
+  },
+  "responsibleEmployee": {
+    "handledBy": "Handled by"
+  },
+  "list": {
+    "title": "Tasks",
+    "count_one": "{{count}} task",
+    "count_other": "{{count}} tasks",
+    "overdue": "· {{count}} overdue",
+    "recurringLink": "Recurring",
+    "allPriorities": "All priorities",
+    "tabs": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "done": "Done"
+    },
+    "empty": {
+      "done": "No completed tasks",
+      "inProgress": "No tasks in progress",
+      "open": "No open tasks 🎉",
+      "hint": "Create tasks to track your work, follow-ups, and client commitments."
+    }
+  },
+  "row": {
+    "priorityTitle": "Priority: {{priority}}",
+    "confirmDelete": "Delete this task?",
+    "overdueDays": "{{count}}d overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays": "{{count}}d"
+  },
+  "add": {
+    "trigger": "Add task",
+    "title": "New Task",
+    "taskLabel": "Task",
+    "taskPlaceholder": "What needs to be done?",
+    "dueDate": "Due date",
+    "priority": "Priority",
+    "client": "Client",
+    "optional": "(optional)",
+    "noClient": "No client",
+    "notes": "Notes",
+    "notesPlaceholder": "Any additional context…",
+    "submit": "Create task",
+    "titleRequired": "Title is required"
+  },
+  "mark": {
+    "ask": "Ask Mark to create a task",
+    "created": "Task created",
+    "viewIt": "view it"
+  },
+  "recurring": {
+    "title": "Recurring tasks",
+    "subtitle": "{{count}} active · auto-create to-dos on a schedule",
+    "backToTasks": "Tasks",
+    "new": "New recurring",
+    "emptyTitle": "No recurring tasks yet",
+    "emptyBody": "Set up repeating chores once — payroll, quarterly filings, license renewals — and we’ll add a fresh to-do each cycle so nothing slips.",
+    "createFirst": "Create first template",
+    "footnote": "Active templates are checked daily. When a template’s next date arrives, a new open task is created (due that day) and the date advances by its frequency. Pause to skip upcoming cycles.",
+    "paused": "Paused",
+    "resume": "Resume",
+    "pause": "Pause",
+    "confirm": "Confirm",
+    "next": "Next {{date}}",
+    "last": "Last {{date}}",
+    "modal": {
+      "title": "New recurring task",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "e.g. Run payroll",
+      "notes": "Notes",
+      "notesPlaceholder": "Details, checklist, links…",
+      "client": "Client",
+      "noClient": "No client",
+      "priority": "Priority",
+      "frequency": "Frequency",
+      "firstDate": "First date",
+      "hint": "A fresh open task is created each cycle, due on its run date — then the date advances by the frequency.",
+      "submit": "Save template",
+      "titleRequired": "Title is required",
+      "firstDateRequired": "First date is required",
+      "createFailed": "Failed to create recurring task"
+    }
+  },
+  "calendar": {
+    "newEvent": "New event",
+    "today": "Today",
+    "monthView": "Month view",
+    "listView": "List view",
+    "filters": {
+      "all": "All",
+      "appointment": "Appointments",
+      "task": "Tasks",
+      "meeting": "Meetings",
+      "reminder": "Reminders"
+    },
+    "types": {
+      "appointment": "Appointment",
+      "task": "Task",
+      "meeting": "Meeting",
+      "reminder": "Reminder"
+    },
+    "more": "+{{count}} more",
+    "allDay": "All day",
+    "durationHoursMinutes": "{{hours}}h {{minutes}}m",
+    "durationMinutes": "{{minutes}}m",
+    "empty": {
+      "all": "No events this month",
+      "appointment": "No appointments this month",
+      "task": "No tasks this month",
+      "meeting": "No meetings this month",
+      "reminder": "No reminders this month"
+    },
+    "modal": {
+      "title": "New event",
+      "titlePlaceholder": "Event title",
+      "date": "Date",
+      "type": "Type",
+      "color": "Color",
+      "allDay": "All day",
+      "client": "Client (optional)",
+      "noClient": "No client",
+      "unnamed": "Unnamed",
+      "descriptionPlaceholder": "Description (optional)",
+      "submit": "Create event",
+      "durationMinutes": "{{count}}m",
+      "durationHours": "{{count}}h"
+    },
+    "detail": {
+      "reopen": "Reopen",
+      "complete": "Complete",
+      "confirmDelete": "Delete this event?"
+    }
+  },
+  "reminders": {
+    "title": "Automatic appointment reminders",
+    "subtitle": "The agent auto-calls to confirm upcoming appointments.",
+    "leadBefore": "Call",
+    "leadAfter": "before the appointment.",
+    "unitHours": "hours",
+    "unitDays": "days",
+    "save": "Save",
+    "saved": "Saved!",
+    "noNumber": "Connect a phone number in <link>Settings → AI Voice agent</link> to place reminder calls.",
+    "upcoming": "Upcoming reminders",
+    "empty": "No upcoming appointments with a phone number.",
+    "unnamed": "Unnamed",
+    "when": "Appt {{start}} · reminder {{reminder}}",
+    "off": "Reminders are off — turn on the toggle above and Save to start auto-calling.",
+    "status": {
+      "pending": "Scheduled",
+      "queued": "Dialing soon",
+      "calling": "Calling…",
+      "done": "Called",
+      "failed": "Failed"
+    }
+  },
+  "alexReminder": {
+    "queued": "Alex created a task for you",
+    "seeTasks": "see Tasks",
+    "summary_one": "<b>{{count}} overdue invoice</b> totaling <b>{{total}}</b> with no reminders sent yet.",
+    "summary_other": "<b>{{count}} overdue invoices</b> totaling <b>{{total}}</b> with no reminders sent yet.",
+    "ask": "Ask Alex to remind them"
+  },
+  "errors": {
+    "notAuthenticated": "Not authenticated",
+    "noOrg": "No org",
+    "titleRequired": "Title is required",
+    "firstRunDateRequired": "First run date is required"
+  }
+}

@@ -4,14 +4,24 @@
  */
 import { notFound } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 import { AcceptButtons } from "./accept-buttons";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
+function fmt(n: number, locale: string) {
+  return new Intl.NumberFormat(intlLocale(locale), {
     style: "currency",
     currency: "USD",
   }).format(n);
+}
+
+function longDate(ymd: string, locale: string) {
+  return new Date(ymd + "T00:00:00").toLocaleDateString(intlLocale(locale), {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export default async function AcceptEstimatePage({
@@ -20,6 +30,9 @@ export default async function AcceptEstimatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  // This page has no signed-in owner: the locale falls back to the visitor's
+  // Accept-Language, which is the closest thing to the reader's own language.
+  const [locale, t] = await Promise.all([getServerLocale(), getServerT("auth")]);
   const supabase = await createServiceClient();
 
   const { data: est } = await supabase
@@ -112,7 +125,9 @@ export default async function AcceptEstimatePage({
                 {est.estimate_number}
               </div>
               <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>
-                From {org?.name ?? "your service provider"}
+                {t("accept.header.from", {
+                  name: org?.name ?? t("accept.header.fromFallback"),
+                })}
               </div>
               {clientName && (
                 <div
@@ -122,7 +137,7 @@ export default async function AcceptEstimatePage({
                     marginTop: 2,
                   }}
                 >
-                  For {clientName}
+                  {t("accept.header.for", { name: clientName })}
                 </div>
               )}
             </div>
@@ -135,14 +150,12 @@ export default async function AcceptEstimatePage({
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {fmt(Number(est.total))}
+                {fmt(Number(est.total), locale)}
               </div>
               <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
-                Valid until{" "}
-                {new Date(est.expiry_date + "T00:00:00").toLocaleDateString(
-                  "en-US",
-                  { month: "long", day: "numeric", year: "numeric" }
-                )}
+                {t("accept.header.validUntil", {
+                  date: longDate(est.expiry_date, locale),
+                })}
               </div>
             </div>
           </div>
@@ -167,7 +180,7 @@ export default async function AcceptEstimatePage({
                 style={{ width: 20, height: 20, color: "#16a34a", flexShrink: 0 }}
               />
               <p style={{ margin: 0, fontSize: 14, color: "#15803d" }}>
-                You accepted this estimate. Thank you!
+                {t("accept.status.accepted")}
               </p>
             </div>
           )}
@@ -189,7 +202,7 @@ export default async function AcceptEstimatePage({
                 style={{ width: 20, height: 20, color: "#dc2626", flexShrink: 0 }}
               />
               <p style={{ margin: 0, fontSize: 14, color: "#b91c1c" }}>
-                This estimate has been declined.
+                {t("accept.status.declined")}
               </p>
             </div>
           )}
@@ -211,12 +224,9 @@ export default async function AcceptEstimatePage({
                 style={{ width: 20, height: 20, color: "#d97706", flexShrink: 0 }}
               />
               <p style={{ margin: 0, fontSize: 14, color: "#b45309" }}>
-                This estimate expired on{" "}
-                {new Date(est.expiry_date + "T00:00:00").toLocaleDateString(
-                  "en-US",
-                  { month: "long", day: "numeric", year: "numeric" }
-                )}
-                .
+                {t("accept.status.expired", {
+                  date: longDate(est.expiry_date, locale),
+                })}
               </p>
             </div>
           )}
@@ -225,7 +235,7 @@ export default async function AcceptEstimatePage({
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
-                {["Description", "Qty", "Price", "Amount"].map((h, i) => (
+                {(["description", "qty", "price", "amount"] as const).map((h, i) => (
                   <th
                     key={h}
                     style={{
@@ -238,7 +248,7 @@ export default async function AcceptEstimatePage({
                       letterSpacing: "0.05em",
                     }}
                   >
-                    {h}
+                    {t(`accept.table.${h}`)}
                   </th>
                 ))}
               </tr>
@@ -273,7 +283,7 @@ export default async function AcceptEstimatePage({
                       textAlign: "right",
                     }}
                   >
-                    {fmt(Number(line.unit_price))}
+                    {fmt(Number(line.unit_price), locale)}
                   </td>
                   <td
                     style={{
@@ -284,7 +294,7 @@ export default async function AcceptEstimatePage({
                       textAlign: "right",
                     }}
                   >
-                    {fmt(Number(line.amount))}
+                    {fmt(Number(line.amount), locale)}
                   </td>
                 </tr>
               ))}
@@ -309,8 +319,8 @@ export default async function AcceptEstimatePage({
                   padding: "4px 0",
                 }}
               >
-                <span>Subtotal</span>
-                <span>{fmt(Number(est.subtotal))}</span>
+                <span>{t("accept.totals.subtotal")}</span>
+                <span>{fmt(Number(est.subtotal), locale)}</span>
               </div>
               {Number(est.tax_rate) > 0 && (
                 <div
@@ -323,9 +333,11 @@ export default async function AcceptEstimatePage({
                   }}
                 >
                   <span>
-                    Tax ({(Number(est.tax_rate) * 100).toFixed(0)}%)
+                    {t("accept.totals.tax", {
+                      rate: (Number(est.tax_rate) * 100).toFixed(0),
+                    })}
                   </span>
-                  <span>{fmt(Number(est.tax_amount))}</span>
+                  <span>{fmt(Number(est.tax_amount), locale)}</span>
                 </div>
               )}
               <div
@@ -340,8 +352,8 @@ export default async function AcceptEstimatePage({
                   marginTop: 8,
                 }}
               >
-                <span>Total</span>
-                <span>{fmt(Number(est.total))}</span>
+                <span>{t("accept.totals.total")}</span>
+                <span>{fmt(Number(est.total), locale)}</span>
               </div>
             </div>
           </div>
@@ -362,7 +374,7 @@ export default async function AcceptEstimatePage({
                   lineHeight: 1.6,
                 }}
               >
-                <strong style={{ color: "#334155" }}>Notes: </strong>
+                <strong style={{ color: "#334155" }}>{t("accept.notesLabel")}</strong>
                 {est.notes}
               </p>
             </div>
@@ -385,7 +397,7 @@ export default async function AcceptEstimatePage({
             color: "#94a3b8",
           }}
         >
-          {est.estimate_number} · Powered by HelmSmart
+          {est.estimate_number} · {t("accept.footer.poweredBy")}
         </div>
       </div>
     </div>

@@ -1,1 +1,253 @@
-{}
+{
+  "meta": {
+    "list": "Approval Workflows",
+    "new": "New Workflow",
+    "edit": "Edit Workflow",
+    "requests": "Approval Requests",
+    "request": "Approval Request",
+    "automations": "Automations"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "cancelled": "Cancelled",
+    "expired": "Expired",
+    "waiting": "Waiting",
+    "skipped": "Skipped"
+  },
+  "subjectType": {
+    "estimate": "Estimate",
+    "expense": "Expense",
+    "invoice": "Invoice",
+    "bill": "Bill",
+    "manual": "Manual",
+    "custom": "Custom"
+  },
+  "triggers": {
+    "manual": "Manual trigger",
+    "estimate_over_amount": "Estimate over threshold",
+    "expense_over_amount": "Expense over threshold",
+    "custom": "Custom"
+  },
+  "list": {
+    "title": "Approval Workflows",
+    "subtitle": "Multi-step sequential approvals for estimates, expenses, and more",
+    "newWorkflow": "New Workflow",
+    "pendingBanner_one": "{{count}} pending approval waiting for your review",
+    "pendingBanner_other": "{{count}} pending approvals waiting for your review",
+    "morePending": "+{{count}} more",
+    "configured": "Configured Workflows",
+    "emptyTitle": "No workflows yet",
+    "emptyBody": "Create an approval workflow to require sign-offs before acting on estimates, expenses, or other items.",
+    "createFirst": "Create first workflow",
+    "inactive": "Inactive",
+    "overThreshold": "over ${{amount}}",
+    "stepCount_one": "{{count}} step",
+    "stepCount_other": "{{count}} steps",
+    "recentRequests": "Recent Requests",
+    "viewAll": "View all",
+    "noRequests": "No approval requests yet"
+  },
+  "requests": {
+    "title": "Approval Requests",
+    "filterAll": "All",
+    "empty": "No requests",
+    "step": "Step {{number}}"
+  },
+  "request": {
+    "workflowLabel": "Workflow:",
+    "requestedOn": "Requested {{date}}",
+    "stepsTitle": "Approval Steps",
+    "waiting": "waiting",
+    "awaitingDecision": "Awaiting your decision",
+    "rejectionTitle": "Rejection reason",
+    "detailsTitle": "Request Details"
+  },
+  "decision": {
+    "title": "Your Decision",
+    "rejectReasonLabel": "Reason for rejection (optional)",
+    "rejectReasonPlaceholder": "Explain why this is being rejected…",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "Add an optional comment with your approval…",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmReject": "Confirm Rejection",
+    "cancel": "Cancel",
+    "approveFailed": "Couldn't approve that step.",
+    "rejectFailed": "Couldn't reject that step."
+  },
+  "editor": {
+    "newTitle": "New Approval Workflow",
+    "editTitle": "Edit Workflow",
+    "save": "Save Workflow",
+    "saved": "Saved!",
+    "saving": "Saving…",
+    "detailsTitle": "Workflow Details",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Large Purchase Approval",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "When this workflow applies",
+    "triggerTitle": "Trigger",
+    "triggerTypes": {
+      "manual": {
+        "label": "Manual trigger",
+        "description": "Started manually from a record"
+      },
+      "estimate_over_amount": {
+        "label": "Estimate over amount",
+        "description": "Auto-triggers when estimate total exceeds threshold"
+      },
+      "expense_over_amount": {
+        "label": "Expense over amount",
+        "description": "Auto-triggers when expense amount exceeds threshold"
+      },
+      "custom": {
+        "label": "Custom",
+        "description": "For any other purpose"
+      }
+    },
+    "amountLabel": "Amount threshold ($)",
+    "amountPlaceholder": "e.g. 5000",
+    "stepsTitle": "Approval Steps",
+    "addStep": "Add step",
+    "firstStepName": "Manager approval",
+    "nextStepName": "Step {{number}}",
+    "stepNameLabel": "Step name",
+    "stepNamePlaceholder": "e.g. Manager review",
+    "approverRoleLabel": "Approver role",
+    "roles": {
+      "any": "Any admin or owner",
+      "owner": "Owner only",
+      "admin": "Admin or owner",
+      "bookkeeper": "Bookkeeper, admin, or owner"
+    },
+    "timeoutLabel": "Auto-escalate after (hours)",
+    "timeoutPlaceholder": "Leave blank to disable",
+    "activeTitle": "Workflow is active",
+    "activeHint": "Inactive workflows cannot accept new requests",
+    "deleteWorkflow": "Delete this workflow",
+    "deleteConfirm": "Delete this workflow?",
+    "errors": {
+      "nameRequired": "Workflow name is required",
+      "stepRequired": "Add at least one approval step",
+      "amountRequired": "Enter an amount threshold",
+      "saveFailed": "Couldn't save that workflow.",
+      "createFailed": "Couldn't create that workflow."
+    }
+  },
+  "automations": {
+    "title": "Automations",
+    "subtitle": "Trigger automatic actions when business events occur",
+    "rules": "Rules",
+    "newAutomation": "New automation",
+    "emptyTitle": "No automations yet",
+    "emptyBody": "Create rules to automatically create tasks, send emails, or log notes when business events happen.",
+    "createFirst": "Create first automation",
+    "enable": "Enable",
+    "disable": "Disable",
+    "deleteConfirm": "Delete automation “{{name}}”?",
+    "runs_one": "{{count}} run",
+    "runs_other": "{{count}} runs",
+    "neverRun": "never run",
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    },
+    "triggerLabels": {
+      "invoice_overdue": "Invoice overdue",
+      "invoice_paid": "Invoice paid",
+      "new_lead": "New lead",
+      "campaign_sent": "Campaign sent"
+    },
+    "actionLabels": {
+      "create_task": "Create task",
+      "send_email": "Send email",
+      "add_note": "Add note"
+    },
+    "variables": {
+      "title": "Template variables",
+      "client_name": "Client's full name",
+      "invoice_number": "Invoice number (e.g. INV-0012)",
+      "amount": "Invoice total (e.g. $1,200.00)",
+      "campaign_name": "Campaign name"
+    },
+    "errors": {
+      "notAuthenticated": "You're signed out. Sign in again to manage automations.",
+      "createFailed": "Couldn't create that automation rule."
+    },
+    "modal": {
+      "title": "New automation",
+      "close": "Close",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Create follow-up task when invoice overdue",
+      "whenLabel": "When this happens…",
+      "doLabel": "Do this…",
+      "triggers": {
+        "invoice_overdue": {
+          "label": "Invoice becomes overdue",
+          "hint": "Fires daily when a sent invoice passes its due date"
+        },
+        "invoice_paid": {
+          "label": "Invoice is paid",
+          "hint": "Fires when an invoice is marked as paid"
+        },
+        "new_lead": {
+          "label": "New lead created",
+          "hint": "Fires when a client with the lead status is created"
+        },
+        "campaign_sent": {
+          "label": "Campaign is sent",
+          "hint": "Fires after a marketing campaign is dispatched"
+        }
+      },
+      "actions": {
+        "create_task": {
+          "label": "Create a task",
+          "hint": "Adds a task to the task list, optionally linked to the client"
+        },
+        "send_email": {
+          "label": "Send an email",
+          "hint": "Sends a transactional email to the client"
+        },
+        "add_note": {
+          "label": "Add a note",
+          "hint": "Logs an activity note on the client record"
+        }
+      },
+      "configureAction": "Configure action",
+      "taskTitleLabel": "Task title",
+      "taskTitlePlaceholder": "Follow up with {{client_name}}",
+      "dueInDaysLabel": "Due in (days)",
+      "emailSubjectLabel": "Email subject",
+      "emailBodyLabel": "Email body",
+      "noteBodyLabel": "Note body",
+      "notePlaceholder": "Auto-logged: invoice {{invoice_number}} is overdue",
+      "create": "Create automation",
+      "creating": "Creating…",
+      "cancel": "Cancel",
+      "nameRequired": "Name is required",
+      "createFailed": "Failed to create automation",
+      "defaults": {
+        "taskInvoiceOverdue": "Follow up: overdue invoice {{invoice_number}} for {{client_name}}",
+        "taskInvoicePaid": "Follow up: paid invoice {{invoice_number}} for {{client_name}}",
+        "taskNewLead": "Follow up with new lead {{client_name}}",
+        "taskCampaignSent": "Follow up after campaign {{campaign_name}}",
+        "taskGeneric": "Follow up with {{client_name}}",
+        "note": "Automated activity note"
+      }
+    }
+  },
+  "errors": {
+    "unauthorized": "You're signed out. Sign in again to continue.",
+    "noSession": "You're signed out. Sign in again to continue.",
+    "workflowNotFound": "That approval workflow no longer exists.",
+    "workflowInactive": "That approval workflow is turned off. Turn it on in Workflows to use it.",
+    "workflowNoSteps": "That approval workflow has no steps yet. Add at least one approver.",
+    "requestNotFound": "That approval request no longer exists.",
+    "requestNotPending": "That request has already been decided.",
+    "noPendingStep": "That request has no step waiting on a decision."
+  }
+}

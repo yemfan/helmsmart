@@ -1,6 +1,7 @@
 "use server";
 
 import { after } from "next/server";
+import { getServerT } from "@/lib/i18n/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -30,7 +31,7 @@ const STAGGER_MS = 1500;
 export async function callLead(input: { clientId: string; purpose: OutboundPurpose; detail?: string }): Promise<CallResult> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization." };
+  if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const db = await createServiceClient();
 
@@ -44,12 +45,12 @@ export async function callLead(input: { clientId: string; purpose: OutboundPurpo
       .single(),
     loadReceptionistContext(db, orgId),
   ]);
-  if (!client) return { ok: false, error: "Contact not found." };
-  if (!client.phone) return { ok: false, error: "This contact has no phone number." };
-  if (!ctx.twilioNumber) return { ok: false, error: "Connect a phone number first in Settings → AI Voice agent." };
-  if (!withinCallingHours(ctx.timezone)) return { ok: false, error: "Outside calling hours (8am–9pm local). Try again later." };
+  if (!client) return { ok: false, error: (await getServerT("voice"))("outbound.errors.contactNotFound") };
+  if (!client.phone) return { ok: false, error: (await getServerT("voice"))("outbound.errors.contactNoPhone") };
+  if (!ctx.twilioNumber) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noNumber") };
+  if (!withinCallingHours(ctx.timezone)) return { ok: false, error: (await getServerT("voice"))("outbound.errors.outsideHours") };
   const agentId = await resolveOutboundAgentId(ctx);
-  if (!agentId) return { ok: false, error: "No voice agent is connected to your number yet." };
+  if (!agentId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noAgent") };
 
   const leadName = `${client.first_name}${client.last_name ? ` ${client.last_name}` : ""}`.trim();
   try {
@@ -69,19 +70,19 @@ export async function callLead(input: { clientId: string; purpose: OutboundPurpo
 export async function callAll(input: { purpose: OutboundPurpose; clientIds: string[]; detail?: string }): Promise<BulkResult> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization." };
+  if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const db = await createServiceClient();
 
   const ctx = await loadReceptionistContext(db, orgId);
-  if (!ctx.twilioNumber) return { ok: false, error: "Connect a phone number first in Settings → AI Voice agent." };
-  if (!withinCallingHours(ctx.timezone)) return { ok: false, error: "Outside calling hours (8am–9pm local). Try again later." };
+  if (!ctx.twilioNumber) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noNumber") };
+  if (!withinCallingHours(ctx.timezone)) return { ok: false, error: (await getServerT("voice"))("outbound.errors.outsideHours") };
   const agentId = await resolveOutboundAgentId(ctx);
-  if (!agentId) return { ok: false, error: "No voice agent is connected to your number yet." };
+  if (!agentId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noAgent") };
 
   // Validate the requested contacts belong to this org + have a phone; cap the batch.
   const requested = Array.from(new Set(input.clientIds)).slice(0, BULK_LIMIT);
-  if (!requested.length) return { ok: false, error: "No contacts selected." };
+  if (!requested.length) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noneSelected") };
 
   const { data: valid } = await db
     .from("clients")
@@ -90,10 +91,10 @@ export async function callAll(input: { purpose: OutboundPurpose; clientIds: stri
     .not("phone", "is", null)
     .in("id", requested);
   const validIds = (valid ?? []).map((c) => c.id as string);
-  if (!validIds.length) return { ok: false, error: "No reachable contacts (they need a phone number)." };
+  if (!validIds.length) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noneReachable") };
 
   const queued = await enqueueCalls(db, orgId, input.purpose, validIds, input.detail);
-  if (queued === 0) return { ok: false, error: "Those contacts are already queued or being called." };
+  if (queued === 0) return { ok: false, error: (await getServerT("voice"))("outbound.errors.alreadyQueued") };
 
   // Dial the batch in the background so the click returns immediately.
   after(async () => {
@@ -111,7 +112,7 @@ export async function saveReminderSettings(input: {
 }): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization." };
+  if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const lead = Math.max(15, Math.min(43200, Math.round(input.leadMinutes || 0)));
   const db = await createServiceClient();

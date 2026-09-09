@@ -6,7 +6,9 @@ import { describeHours, defaultBusinessHours, type BusinessHours, type Appointme
 import twilio from "twilio";
 import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { sendEmail } from "@/lib/email";
-import { orgOwnerEmails } from "@/lib/org-recipients";
+import { orgOwnerRecipients } from "@/lib/org-recipients";
+import { translatorFor } from "@/lib/i18n/translator";
+import { userUiLocales } from "@/lib/i18n/userLocale";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
 import { phoneLast10 } from "@repo/voice/phone";
@@ -453,6 +455,11 @@ export async function notifyBooking(
  * during a call you did not hear, is not something an owner opts into being
  * told about. Recipients are owners and admins, the same audience as the weekly
  * digest.
+ *
+ * This is OWNER mail, so it follows each owner's UI locale — unlike everything
+ * the receptionist says on the call, which follows the CALLER's language. The
+ * two are independent: an owner who reads Chinese still has their English
+ * callers greeted in English.
  */
 async function emailBookingAlert(
   db: ServiceClient,
@@ -461,22 +468,45 @@ async function emailBookingAlert(
   bookedLabel: string,
 ): Promise<void> {
   try {
-    // orgOwnerEmails, not a join: organization_members has no email column and
-    // user_id lives in auth.users, which PostgREST cannot embed from public.
-    const to = await orgOwnerEmails(db, org.orgId);
-    if (!to.length) return;
+    // orgOwnerRecipients, not a join: organization_members has no email column
+    // and user_id lives in auth.users, which PostgREST cannot embed from
+    // public. It returns ids alongside addresses because the address alone
+    // cannot say what language to write in.
+    const recipients = await orgOwnerRecipients(db, org.orgId);
+    if (!recipients.length) return;
 
-    const caller = callerNumber ? displayPhone(callerNumber) : "an unknown number";
-    await sendEmail({
-      to,
-      fromName: org.orgName,
-      subject: `New appointment: ${bookedLabel}`,
-      text:
-        `Your AI receptionist booked an appointment.\n\n` +
-        `When: ${bookedLabel}\n` +
-        `Caller: ${caller}\n\n` +
-        `It is on your calendar: ${process.env.NEXT_PUBLIC_APP_URL ?? ""}/calendar`,
-    });
+    /*
+     * Rendered once per language, not once per person. A call has no request
+     * behind it — the receptionist runs from a webhook — so there is no cookie
+     * to read and the locale comes from each owner's stored preference. An org
+     * whose owners read different languages gets one send per language; the
+     * common case is one language and one send, exactly as before.
+     */
+    const locales = await userUiLocales(recipients.map((r) => r.userId), db);
+    const byLocale = new Map<string, string[]>();
+    for (const r of recipients) {
+      const key = locales.get(r.userId) ?? "en";
+      byLocale.set(key, [...(byLocale.get(key) ?? []), r.email]);
+    }
+
+    for (const [locale, to] of byLocale) {
+      const t = translatorFor(locale, "emails");
+      const caller = callerNumber
+        ? displayPhone(callerNumber)
+        : t("bookingAlert.unknownCaller");
+      await sendEmail({
+        to,
+        fromName: org.orgName,
+        subject: t("bookingAlert.subject", { when: bookedLabel }),
+        text:
+          `${t("bookingAlert.intro")}\n\n` +
+          `${t("bookingAlert.when", { when: bookedLabel })}\n` +
+          `${t("bookingAlert.caller", { caller })}\n\n` +
+          t("bookingAlert.onCalendar", {
+            url: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/calendar`,
+          }),
+      });
+    }
   } catch (e) {
     // Best-effort, like every other notification here: the appointment is
     // already booked and must not be undone by a mail failure.

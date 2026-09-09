@@ -12,6 +12,10 @@ import { maybeTrigerEstimateWorkflow } from "@/lib/integrations/workflow-trigger
 import { checkActionPermission } from "@/components/role-guard";
 import { sendEmail } from "@/lib/email";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { money } from "@/lib/books-format";
+import { orgCurrency } from "@/lib/books-currency";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -34,11 +38,12 @@ export async function createEstimate(data: {
   notes: string;
   lines: EstimateLine[];
 }) {
+  const t = await getServerT("books");
   const denied = await checkActionPermission("invoices.write");
   if (denied) throw new Error(denied.error);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
   const id = await insertEstimateWithLines(supabase, orgId, data);
@@ -48,12 +53,16 @@ export async function createEstimate(data: {
   const taxAmount = total * (data.taxRate / 100);
   const grandTotal = total + taxAmount;
 
-  // Auto-trigger any configured approval workflows (fire-and-forget)
+  // Auto-trigger any configured approval workflows (fire-and-forget). The
+  // title is what the OWNER reads in the approval queue, so it carries their
+  // language and the organization's own currency.
   void maybeTrigerEstimateWorkflow(
     orgId,
     id,
     grandTotal,
-    `Estimate — ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(grandTotal)}`,
+    t("estimates.workflowTitle", {
+      amount: money(grandTotal, await getServerLocale(), await orgCurrency(orgId)),
+    }),
     { total: grandTotal, clientId: data.clientId }
   );
 
@@ -64,9 +73,10 @@ export async function createEstimate(data: {
 // ─── Send estimate ────────────────────────────────────────────────────────────
 
 export async function sendEstimate(estimateId: string) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -82,7 +92,7 @@ export async function sendEstimate(estimateId: string) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!est) throw new Error("Estimate not found");
+  if (!est) throw new Error(t("estimates.errors.notFound"));
 
   const clientRaw = est.clients as {
     first_name: string | null;
@@ -90,7 +100,7 @@ export async function sendEstimate(estimateId: string) {
     email: string | null;
   } | null;
   const client = Array.isArray(clientRaw) ? clientRaw[0] : clientRaw;
-  if (!client?.email) throw new Error("Client has no email address");
+  if (!client?.email) throw new Error(t("estimates.errors.clientNoEmail"));
 
   const clientName =
     [client.first_name, client.last_name].filter(Boolean).join(" ") || "there";
@@ -226,9 +236,10 @@ export async function setEstimateStatus(
   estimateId: string,
   status: "accepted" | "declined" | "expired"
 ) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
   await setEstimateStatusFinance(supabase, orgId, estimateId, status);
@@ -242,9 +253,10 @@ export async function setEstimateStatus(
 export async function convertEstimateToInvoice(
   estimateId: string
 ): Promise<string> {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
   const { invoiceId } = await convertEstimateToInvoiceFinance(
@@ -268,9 +280,10 @@ export async function convertEstimateToInvoice(
 export async function convertEstimateToProject(
   estimateId: string
 ): Promise<string> {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -281,7 +294,7 @@ export async function convertEstimateToProject(
     .eq("organization_id", orgId)
     .single();
 
-  if (!est) throw new Error("Estimate not found");
+  if (!est) throw new Error(t("estimates.errors.notFound"));
   if (est.converted_project_id) return est.converted_project_id as string;
 
   const lines = (
@@ -291,7 +304,8 @@ export async function convertEstimateToProject(
     (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
   )[0];
   const projectName = (
-    firstLine?.description?.trim() || `Project ${est.estimate_number}`
+    firstLine?.description?.trim() ||
+    t("estimates.projectNameFallback", { number: est.estimate_number })
   ).slice(0, 120);
 
   const { data: proj, error } = await supabase
@@ -308,7 +322,8 @@ export async function convertEstimateToProject(
     .select("id")
     .single();
 
-  if (error || !proj) throw new Error(error?.message ?? "Failed to create project");
+  if (error || !proj)
+    throw new Error(error?.message ?? t("estimates.errors.projectCreateFailed"));
 
   await supabase
     .from("estimates")
@@ -361,10 +376,12 @@ function parseEstimate(raw: string): GeneratedEstimate {
 }
 
 export async function generateEstimateLines(input: { prompt: string }): Promise<GeneratedEstimate> {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
-  if (!input.prompt.trim()) throw new Error("Describe the job to estimate");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
+  if (!input.prompt.trim()) throw new Error(t("estimates.errors.describeJob"));
 
   const supabase = await createClient();
   const { data: org } = await supabase.from("organizations").select("name").eq("id", orgId).single();
@@ -380,7 +397,7 @@ Rules:
 - 1–8 line items. Each has a short description, a quantity (number), and a unit_price in USD (number, no currency symbol).
 - Price realistically for a US small business; round to sensible amounts.
 - "note" is a brief one-sentence scope/assumptions caption (or an empty string).
-- quantity and unit_price MUST be plain numbers — no strings, no "$".`;
+- quantity and unit_price MUST be plain numbers — no strings, no "$".${languageDirectiveForJson(locale)}`;
 
   const response = await anthropic.messages.create({
     model: "claude-opus-4-5",
@@ -390,6 +407,6 @@ Rules:
 
   const text = (response.content[0] as { type: string; text: string }).text ?? "";
   const parsed = parseEstimate(text);
-  if (!parsed.lines.length) throw new Error("Couldn't draft an estimate — try adding more detail");
+  if (!parsed.lines.length) throw new Error(t("estimates.errors.draftFailed"));
   return parsed;
 }

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { senderFrom } from "@/lib/email";
+import { getServerT } from "@/lib/i18n/server";
 import { runAutomations } from "@/lib/automation-engine";
 import Anthropic from "@anthropic-ai/sdk";
 import {
@@ -34,7 +35,8 @@ export async function createCampaign(data: {
 }): Promise<string> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -52,7 +54,7 @@ export async function createCampaign(data: {
     .select("id")
     .single();
 
-  if (error || !campaign) throw new Error(error?.message ?? "Failed to create campaign");
+  if (error || !campaign) throw new Error(error?.message ?? t("errors.campaigns.createFailed"));
 
   revalidatePath("/marketing");
   return campaign.id;
@@ -63,7 +65,8 @@ export async function createCampaign(data: {
 export async function sendCampaign(campaignId: string) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -75,8 +78,8 @@ export async function sendCampaign(campaignId: string) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!campaign) throw new Error("Campaign not found");
-  if (campaign.status !== "draft") throw new Error("Campaign already sent");
+  if (!campaign) throw new Error(t("errors.campaigns.notFound"));
+  if (campaign.status !== "draft") throw new Error(t("errors.campaigns.alreadySent"));
 
   // Resolve recipients
   let clientQuery = supabase
@@ -97,7 +100,7 @@ export async function sendCampaign(campaignId: string) {
   const recipients = (clients ?? []).filter((c) => c.email);
 
   if (!recipients.length) {
-    throw new Error("No recipients found for this segment. Add email addresses to clients first.");
+    throw new Error(t("errors.campaigns.noRecipients"));
   }
 
   // Mark as sending
@@ -205,7 +208,8 @@ export async function sendCampaign(campaignId: string) {
 export async function deleteCampaign(campaignId: string) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -229,8 +233,9 @@ export async function generateCampaignCopy(input: {
 }): Promise<{ subject: string; body: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
-  if (!input.prompt.trim()) throw new Error("Describe what the campaign is about");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
+  if (!input.prompt.trim()) throw new Error(t("errors.campaigns.describeFirst"));
 
   const supabase = await createClient();
   const { data: org } = await supabase.from("organizations").select("name").eq("id", orgId).single();
@@ -260,7 +265,7 @@ Rules:
 
   const text = (response.content[0] as { type: string; text: string }).text ?? "";
   const parsed = parseCampaignCopy(text);
-  if (!parsed.body) throw new Error("Couldn't generate copy — try rephrasing your prompt");
+  if (!parsed.body) throw new Error(t("errors.campaigns.generateFailed"));
   return parsed;
 }
 
@@ -270,8 +275,9 @@ export async function generateSubjectLines(input: {
 }): Promise<string[]> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
-  if (!input.context.trim()) throw new Error("Write a message or describe the campaign first");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
+  if (!input.context.trim()) throw new Error(t("errors.campaigns.contextFirst"));
 
   const supabase = await createClient();
   const { data: org } = await supabase.from("organizations").select("name").eq("id", orgId).single();
@@ -302,15 +308,16 @@ Respond with ONLY a JSON array of 5 strings, e.g.:
 
   const text = (response.content[0] as { type: string; text: string }).text ?? "";
   const ideas = parseSubjectLines(text);
-  if (!ideas.length) throw new Error("Couldn't generate subject lines — try again");
+  if (!ideas.length) throw new Error(t("errors.campaigns.subjectsFailed"));
   return ideas;
 }
 
 export async function refineCampaignBody(input: { body: string; mode: RefineMode }): Promise<string> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
-  if (!input.body.trim()) throw new Error("Nothing to refine yet");
+  const t = await getServerT("marketing");
+  if (!orgId) throw new Error(t("errors.notAuthenticated"));
+  if (!input.body.trim()) throw new Error(t("errors.campaigns.nothingToRefine"));
 
   const supabase = await createClient();
   const { data: org } = await supabase.from("organizations").select("name").eq("id", orgId).single();
@@ -340,6 +347,6 @@ ${input.body.trim()}`;
   text = text.trim();
   const fence = text.match(/```(?:\w+)?\s*([\s\S]*?)```/);
   if (fence) text = fence[1].trim();
-  if (!text) throw new Error("Couldn't refine — try again");
+  if (!text) throw new Error(t("errors.campaigns.refineFailed"));
   return text;
 }

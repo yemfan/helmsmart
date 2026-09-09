@@ -2,22 +2,21 @@
 
 import { useState, useTransition } from "react";
 import { Bot, Loader2, PhoneOutgoing, Users, CalendarClock, ClipboardList, Megaphone } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { callLead, callAll } from "@/lib/actions/outbound";
 
 type FollowUpContact = { id: string; name: string; phone: string | null; company: string | null; stage: string };
 type ApptContact = { clientId: string; name: string; phone: string | null; startAt: string };
 type Purpose = "follow_up" | "appointment_reminder" | "survey" | "promo";
 
-const PURPOSES: { key: Purpose; label: string; hint: string; icon: typeof Users }[] = [
-  { key: "follow_up", label: "Follow-up", hint: "Re-engage leads & clients", icon: Users },
-  { key: "appointment_reminder", label: "Appointment reminder", hint: "Confirm upcoming bookings", icon: CalendarClock },
-  { key: "survey", label: "Survey / review", hint: "Ask for feedback or a review", icon: ClipboardList },
-  { key: "promo", label: "Promo / announcement", hint: "Share news or an offer", icon: Megaphone },
+/** The purpose value is what the outbound action stores; label + hint come from the bundle. */
+const PURPOSES: { key: Purpose; icon: typeof Users }[] = [
+  { key: "follow_up", icon: Users },
+  { key: "appointment_reminder", icon: CalendarClock },
+  { key: "survey", icon: ClipboardList },
+  { key: "promo", icon: Megaphone },
 ];
-
-function formatWhen(iso: string) {
-  return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-}
 
 export function OutboundCalls({
   followUp,
@@ -28,6 +27,7 @@ export function OutboundCalls({
   appointments: ApptContact[];
   hasNumber: boolean;
 }) {
+  const { t, i18n } = useTranslation("voice");
   const [purpose, setPurpose] = useState<Purpose>("follow_up");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -38,19 +38,31 @@ export function OutboundCalls({
   const needsDetail = purpose === "survey" || purpose === "promo";
   const detailMissing = needsDetail && !detail.trim();
 
+  function formatWhen(iso: string) {
+    return new Date(iso).toLocaleString(intlLocale(i18n.language), {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
   function call(clientId: string, name: string, phone: string | null) {
     if (!phone || pendingId) return;
     if (detailMissing) {
-      setMsg({ ok: false, text: purpose === "survey" ? "Add the survey questions first." : "Add the announcement message first." });
+      setMsg({
+        ok: false,
+        text: purpose === "survey" ? t("outbound.surveyDetailRequired") : t("outbound.promoDetailRequired"),
+      });
       return;
     }
-    if (!window.confirm(`Place an AI call to ${name} at ${phone}?\n\nThe AI agent will call them now on your behalf.`)) return;
+    if (!window.confirm(t("outbound.confirmOne", { name, phone }))) return;
     setPendingId(clientId);
     setMsg(null);
     startTransition(async () => {
       const res = await callLead({ clientId, purpose, detail: needsDetail ? detail.trim() : undefined });
       setPendingId(null);
-      setMsg(res.ok ? { ok: true, text: `📞 Calling ${res.name} now — the AI agent is dialing.` } : { ok: false, text: res.error });
+      setMsg(res.ok ? { ok: true, text: t("outbound.calling", { name: res.name }) } : { ok: false, text: res.error });
     });
   }
 
@@ -63,11 +75,14 @@ export function OutboundCalls({
     const ids = Array.from(new Set(rows.map((r) => r.id)));
     if (!ids.length || bulkPending || pendingId) return;
     if (detailMissing) {
-      setMsg({ ok: false, text: purpose === "survey" ? "Add the survey questions first." : "Add the announcement message first." });
+      setMsg({
+        ok: false,
+        text: purpose === "survey" ? t("outbound.surveyDetailRequired") : t("outbound.promoDetailRequired"),
+      });
       return;
     }
     const n = Math.min(ids.length, 15);
-    if (!window.confirm(`Place AI calls to ${n} contact${n !== 1 ? "s" : ""}?\n\nThey'll be dialed in the background — staggered and only within calling hours.`)) return;
+    if (!window.confirm(t("outbound.confirmAll", { count: n }))) return;
     setBulkPending(true);
     setMsg(null);
     startTransition(async () => {
@@ -75,7 +90,7 @@ export function OutboundCalls({
       setBulkPending(false);
       setMsg(
         res.ok
-          ? { ok: true, text: `📞 Queued ${res.queued} call${res.queued !== 1 ? "s" : ""} — dialing now, staggered and within calling hours.` }
+          ? { ok: true, text: t("outbound.queued", { count: res.queued }) }
           : { ok: false, text: res.error }
       );
     });
@@ -86,32 +101,31 @@ export function OutboundCalls({
       <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
         <PhoneOutgoing className="w-4 h-4 text-indigo-500" />
         <div>
-          <h2 className="text-sm font-semibold text-slate-700">Place AI calls</h2>
-          <p className="text-xs text-slate-400">Pick a purpose, then call one contact or the whole list.</p>
+          <h2 className="text-sm font-semibold text-slate-700">{t("outbound.title")}</h2>
+          <p className="text-xs text-slate-400">{t("outbound.subtitle")}</p>
         </div>
       </div>
 
       {!hasNumber ? (
         <div className="px-6 py-8 text-center text-sm text-slate-500">
-          Connect a phone number in{" "}
-          <a href="/settings#voice-agent" className="text-indigo-600 hover:underline">Settings → AI Voice agent</a>{" "}
-          to place outbound calls.
+          <p>{t("outbound.noNumber")}</p>
+          <a href="/settings#voice-agent" className="text-indigo-600 hover:underline">{t("outbound.noNumberLink")}</a>
         </div>
       ) : (
         <div className="p-6 space-y-4">
           {/* Purpose picker */}
           <div className="flex flex-wrap gap-2">
-            {PURPOSES.map(({ key, label, hint, icon: Icon }) => (
+            {PURPOSES.map(({ key, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => { setPurpose(key); setMsg(null); }}
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
                   purpose === key ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
-                title={hint}
+                title={t(`outbound.purposes.${key}.hint`)}
               >
                 <Icon className="w-4 h-4" />
-                {label}
+                {t(`outbound.purposes.${key}.label`)}
               </button>
             ))}
           </div>
@@ -120,7 +134,7 @@ export function OutboundCalls({
           {needsDetail && (
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-600">
-                {purpose === "survey" ? "What should the AI ask?" : "What's the announcement?"}
+                {purpose === "survey" ? t("outbound.surveyLabel") : t("outbound.promoLabel")}
               </label>
               <textarea
                 value={detail}
@@ -128,34 +142,39 @@ export function OutboundCalls({
                 rows={2}
                 placeholder={
                   purpose === "survey"
-                    ? 'e.g. "How was your recent service, 1–5? Would you leave us a Google review?"'
-                    : 'e.g. "We\'re running 15% off new bookings through Friday — want me to book you in?"'
+                    ? t("outbound.surveyPlaceholder")
+                    : t("outbound.promoPlaceholder")
                 }
                 className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none"
               />
               <p className="mt-1 text-[11px] text-slate-400">
-                The AI works this into a short, friendly call and adapts to each contact.
+                {t("outbound.detailHint")}
               </p>
             </div>
           )}
 
           {msg && (
-            <div className={`rounded-lg px-3 py-2 text-sm ${msg.ok ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"}`}>
-              {msg.text}
+            <div
+              role={msg.ok ? undefined : "alert"}
+              className={`rounded-lg px-3 py-2 text-sm ${msg.ok ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"}`}
+            >
+              {msg.ok ? "📞 " : ""}{msg.text}
             </div>
           )}
 
           {/* Call all */}
           {rows.length > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500">{rows.length} contact{rows.length !== 1 ? "s" : ""}</span>
+              <span className="text-xs text-slate-500">{t("outbound.contacts", { count: rows.length })}</span>
               <button
                 onClick={callEveryone}
                 disabled={bulkPending || pendingId !== null}
                 className="flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 transition-colors"
               >
                 {bulkPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PhoneOutgoing className="w-3.5 h-3.5" />}
-                Call all{rows.length > 15 ? " (first 15)" : ` (${rows.length})`}
+                {rows.length > 15
+                  ? t("outbound.callAllCapped", { count: 15 })
+                  : t("outbound.callAll", { count: rows.length })}
               </button>
             </div>
           )}
@@ -164,26 +183,26 @@ export function OutboundCalls({
           {rows.length === 0 ? (
             <div className="rounded-lg border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">
               {purpose === "appointment_reminder"
-                ? "No upcoming appointments with a phone number."
-                : "No contacts with a phone number yet."}
+                ? t("outbound.emptyAppointments")
+                : t("outbound.emptyContacts")}
             </div>
           ) : (
             <div className="divide-y divide-slate-50 border border-slate-100 rounded-lg overflow-hidden">
               {rows.map((r) => (
                 <div key={r.key} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{r.name || "Unnamed"}</p>
+                    <p className="text-sm font-medium text-slate-800 truncate">{r.name || t("outbound.unnamed")}</p>
                     <p className="text-xs text-slate-400 truncate">
-                      {r.phone || "no phone"}{r.meta ? ` · ${r.meta}` : ""}
+                      {r.phone || t("outbound.noPhone")}{r.meta ? ` · ${r.meta}` : ""}
                     </p>
                   </div>
                   <button
-                    onClick={() => call(r.id, r.name || "this contact", r.phone)}
+                    onClick={() => call(r.id, r.name || t("outbound.thisContact"), r.phone)}
                     disabled={!r.phone || pendingId !== null || bulkPending}
                     className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors shrink-0"
                   >
                     {pendingId === r.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
-                    AI Call
+                    {t("outbound.aiCall")}
                   </button>
                 </div>
               ))}
@@ -191,7 +210,7 @@ export function OutboundCalls({
           )}
 
           <p className="text-[11px] text-slate-400">
-            Calls disclose they&apos;re AI and only dial 8am–9pm local time.
+            {t("outbound.disclosure")}
           </p>
         </div>
       )}

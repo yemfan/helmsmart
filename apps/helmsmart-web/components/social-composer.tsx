@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition, type ChangeEvent, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { Sparkles, Send, Calendar, Copy, Check, Trash2, ExternalLink, Clock, ImagePlus, X } from "lucide-react";
 import { generateSocialPost, generateSocialVariants, refineSocialPost, createSocialPost, updateSocialPost, deleteSocialPost, type SocialRefineMode } from "@/lib/actions/social";
 import { uploadSocialImage } from "@/lib/actions/social-media";
@@ -50,13 +52,8 @@ const PLATFORM_META: Record<Platform, { label: string; icon: string; limit: numb
   threads:   { label: "Threads",     icon: "@",  limit: 500,   color: "bg-black" },
 };
 
-const TONES: { value: Tone; label: string }[] = [
-  { value: "professional", label: "Professional" },
-  { value: "casual",       label: "Casual" },
-  { value: "witty",        label: "Witty" },
-  { value: "promotional",  label: "Promotional" },
-  { value: "educational",  label: "Educational" },
-];
+// Values are the stored tone vocabulary; labels come from `social.composer.tones.<value>`.
+const TONES: Tone[] = ["professional", "casual", "witty", "promotional", "educational"];
 
 const STATUS_STYLE: Record<PostStatus, string> = {
   draft:     "bg-slate-100 text-slate-600",
@@ -65,18 +62,8 @@ const STATUS_STYLE: Record<PostStatus, string> = {
   failed:    "bg-rose-100 text-rose-700",
 };
 
-const SOCIAL_REFINE_MODES: { mode: SocialRefineMode; label: string }[] = [
-  { mode: "shorter",  label: "Shorter" },
-  { mode: "punchier", label: "Punchier" },
-  { mode: "cta",      label: "Add CTA" },
-  { mode: "hashtags", label: "Hashtags" },
-  { mode: "grammar",  label: "Grammar" },
-];
-
-function timeLabel(iso: string | null) {
-  if (!iso) return null;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-}
+// Labels come from `social.composer.refineModes.<mode>`.
+const SOCIAL_REFINE_MODES: SocialRefineMode[] = ["shorter", "punchier", "cta", "hashtags", "grammar"];
 
 export function SocialComposer({
   posts: initialPosts,
@@ -84,6 +71,15 @@ export function SocialComposer({
   owner,
   connectedProviders = [],
 }: Props) {
+  const { t, i18n } = useTranslation("marketing");
+
+  const timeLabel = (iso: string | null) =>
+    iso
+      ? new Date(iso).toLocaleDateString(intlLocale(i18n.language), {
+          month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+        })
+      : null;
+
   /** Is this platform's OAuth provider linked for this org? */
   const isConnected = (platform: Platform): boolean => {
     const provider = providerFor(platform);
@@ -254,7 +250,7 @@ export function SocialComposer({
             <button
               key={p}
               onClick={() => setActivePlatform(p)}
-              title={canPublish(p) ? undefined : "Manual posting only — auto-publishing isn't connected"}
+              title={canPublish(p) ? undefined : t("social.composer.manualOnlyTitle")}
               className={`flex items-center gap-2 px-4 py-3.5 text-sm font-medium border-b-2 transition-colors ${
                 activePlatform === p
                   ? "border-indigo-600 text-indigo-600"
@@ -270,9 +266,9 @@ export function SocialComposer({
                   Collapsing the middle one into "manual" would hide a feature
                   that's one click away. */}
               {!canPublish(p) ? (
-                <span className="text-[10px] font-normal text-slate-400">manual</span>
+                <span className="text-[10px] font-normal text-slate-400">{t("social.composer.manual")}</span>
               ) : !isConnected(p) ? (
-                <span className="text-[10px] font-normal text-amber-600">connect</span>
+                <span className="text-[10px] font-normal text-amber-600">{t("social.composer.connect")}</span>
               ) : null}
               {count > 0 && (
                 <span className="text-xs bg-slate-100 text-slate-500 rounded-full px-1.5 py-0.5">{count}</span>
@@ -287,29 +283,21 @@ export function SocialComposer({
       {!canPublish(activePlatform) ? (
         <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-xs text-amber-900">
           <strong className="font-semibold">
-            {PLATFORM_META[activePlatform].label} posts won&apos;t send automatically.
+            {t("social.composer.noPublisherTitle", { platform: PLATFORM_META[activePlatform].label })}
           </strong>{" "}
-          There&apos;s no {PLATFORM_META[activePlatform].label} publisher yet. You can
-          still write, generate and save drafts here — then copy the text and post
-          it yourself. Anything scheduled will be marked failed rather than
-          published.
+          {t("social.composer.noPublisherBody", { platform: PLATFORM_META[activePlatform].label })}
         </div>
       ) : !isConnected(activePlatform) ? (
         <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-xs text-amber-900">
           <strong className="font-semibold">
-            Connect {providerLabel(activePlatform)} to publish automatically.
+            {t("social.composer.connectTitle", { provider: providerLabel(activePlatform) })}
           </strong>{" "}
-          {PLATFORM_META[activePlatform].label} posting is supported — this account
-          just isn&apos;t linked yet, so anything scheduled now will fail. Use the
-          connect button above.
-          {activePlatform === "instagram" && (
-            <> Instagram also needs an image on every post, and an Instagram
-            Business account linked to your Facebook Page.</>
-          )}
+          {t("social.composer.connectBody", { platform: PLATFORM_META[activePlatform].label })}
+          {activePlatform === "instagram" && <> {t("social.composer.connectInstagram")}</>}
         </div>
       ) : activePlatform === "instagram" ? (
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-2 text-xs text-slate-600">
-          Instagram requires an image on every post — text-only posts will fail.
+          {t("social.composer.instagramNote")}
         </div>
       ) : null}
 
@@ -317,15 +305,17 @@ export function SocialComposer({
         {/* Left: Compose */}
         <div className="w-[480px] flex-shrink-0 border-r border-slate-200 flex flex-col bg-white">
           <div className="flex border-b border-slate-100">
-            {(["compose", "queue"] as const).map((t) => (
+            {(["compose", "queue"] as const).map((key) => (
               <button
-                key={t}
-                onClick={() => setTab(t)}
+                key={key}
+                onClick={() => setTab(key)}
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                  tab === t ? "text-indigo-600 border-b-2 border-indigo-600" : "text-slate-500 hover:text-slate-800"
+                  tab === key ? "text-indigo-600 border-b-2 border-indigo-600" : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                {t === "compose" ? "Compose" : `Queue (${queuedPosts.length})`}
+                {key === "compose"
+                  ? t("social.composer.tabCompose")
+                  : t("social.composer.tabQueue", { count: queuedPosts.length })}
               </button>
             ))}
           </div>
@@ -336,7 +326,7 @@ export function SocialComposer({
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1.5">
                   <Sparkles className="w-3.5 h-3.5 inline mr-1 text-indigo-500" />
-                  Generate with AI
+                  {t("social.composer.generateLabel")}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -344,7 +334,7 @@ export function SocialComposer({
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-                    placeholder="What's the post about?"
+                    placeholder={t("social.composer.topicPlaceholder")}
                     className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
@@ -353,7 +343,7 @@ export function SocialComposer({
                     className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    {generating ? "Writing…" : "Generate"}
+                    {generating ? t("common:status.writing") : t("social.composer.generate")}
                   </button>
                 </div>
                 <button
@@ -362,11 +352,11 @@ export function SocialComposer({
                   className="mt-1.5 text-xs text-indigo-600 hover:text-indigo-800 disabled:opacity-50 flex items-center gap-1 transition-colors"
                 >
                   <Sparkles className="w-3 h-3" />
-                  {variantsLoading ? "Generating options…" : "Generate 3 options"}
+                  {variantsLoading ? t("social.composer.variantsLoading") : t("social.composer.variants")}
                 </button>
                 {variants.length > 0 && (
                   <div className="mt-2 space-y-1.5">
-                    <p className="text-[11px] text-slate-400">Pick a variant:</p>
+                    <p className="text-[11px] text-slate-400">{t("social.composer.pickVariant")}</p>
                     {variants.map((v, i) => (
                       <button
                         key={i}
@@ -383,55 +373,55 @@ export function SocialComposer({
 
               {/* Tone */}
               <div className="flex gap-1.5 flex-wrap">
-                {TONES.map((t) => (
+                {TONES.map((value) => (
                   <button
-                    key={t.value}
-                    onClick={() => setTone(t.value)}
+                    key={value}
+                    onClick={() => setTone(value)}
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                      tone === t.value
+                      tone === value
                         ? "bg-indigo-600 text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
-                    {t.label}
+                    {t(`social.composer.tones.${value}`)}
                   </button>
                 ))}
               </div>
 
               {/* Content editor */}
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1.5">Post content</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("social.composer.contentLabel")}</label>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={8}
-                  placeholder={`Write your ${PLATFORM_META[activePlatform].label} post…`}
+                  placeholder={t("social.composer.contentPlaceholder", { platform: PLATFORM_META[activePlatform].label })}
                   className={`w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none ${
                     isOverLimit ? "border-rose-300 focus:ring-rose-500" : "border-slate-200"
                   }`}
                 />
                 <div className="flex justify-between mt-1">
                   <p className="text-xs text-slate-400">
-                    {PLATFORM_META[activePlatform].label} limit
+                    {t("social.composer.limitLabel", { platform: PLATFORM_META[activePlatform].label })}
                   </p>
                   <p className={`text-xs tabular-nums ${isOverLimit ? "text-rose-600 font-semibold" : "text-slate-400"}`}>
-                    {content.length.toLocaleString()} / {limit.toLocaleString()}
+                    {content.length.toLocaleString(intlLocale(i18n.language))} / {limit.toLocaleString(intlLocale(i18n.language))}
                   </p>
                 </div>
                 {content.trim() && (
                   <div className="flex items-center gap-1.5 flex-wrap mt-2">
                     <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />Refine
+                      <Sparkles className="w-3 h-3" />{t("social.composer.refine")}
                     </span>
-                    {SOCIAL_REFINE_MODES.map((m) => (
+                    {SOCIAL_REFINE_MODES.map((mode) => (
                       <button
-                        key={m.mode}
+                        key={mode}
                         type="button"
-                        onClick={() => handleRefine(m.mode)}
+                        onClick={() => handleRefine(mode)}
                         disabled={isPending || refineLoading}
                         className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 disabled:opacity-50 transition-colors"
                       >
-                        {refineLoading && refineMode === m.mode ? "…" : m.label}
+                        {refineLoading && refineMode === mode ? "…" : t(`social.composer.refineModes.${mode}`)}
                       </button>
                     ))}
                   </div>
@@ -442,7 +432,10 @@ export function SocialComposer({
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1.5">
                   <ImagePlus className="w-3.5 h-3.5 inline mr-1" />
-                  Image {activePlatform === "instagram" ? <span className="text-rose-500">(required)</span> : "(optional)"}
+                  {t("social.composer.imageLabel")}{" "}
+                  {activePlatform === "instagram"
+                    ? <span className="text-rose-500">{t("social.composer.imageRequired")}</span>
+                    : t("social.composer.imageOptional")}
                 </label>
                 <input
                   ref={fileInputRef}
@@ -454,12 +447,12 @@ export function SocialComposer({
                 {mediaUrl ? (
                   <div className="relative inline-block">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={mediaUrl} alt="Attached" className="max-h-40 rounded-lg border border-slate-200" />
+                    <img src={mediaUrl} alt={t("social.composer.attachedAlt")} className="max-h-40 rounded-lg border border-slate-200" />
                     <button
                       type="button"
                       onClick={() => setMediaUrl(null)}
                       className="absolute -top-2 -right-2 bg-white border border-slate-200 rounded-full p-1 text-slate-500 hover:text-rose-600 shadow-sm"
-                      aria-label="Remove image"
+                      aria-label={t("social.composer.removeImage")}
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -472,17 +465,17 @@ export function SocialComposer({
                     className="w-full py-2.5 border border-dashed border-slate-300 text-slate-500 text-sm rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                   >
                     <ImagePlus className="w-4 h-4" />
-                    {uploading ? "Uploading…" : "Add a JPG image"}
+                    {uploading ? t("common:status.uploading") : t("social.composer.addImage")}
                   </button>
                 )}
-                {uploadError && <p className="text-xs text-rose-600 mt-1">{uploadError}</p>}
+                {uploadError && <p className="text-xs text-rose-600 mt-1" role="alert">{uploadError}</p>}
               </div>
 
               {/* Schedule */}
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1.5">
                   <Clock className="w-3.5 h-3.5 inline mr-1" />
-                  Schedule (optional)
+                  {t("social.composer.scheduleLabel")}
                 </label>
                 <input
                   type="datetime-local"
@@ -499,15 +492,17 @@ export function SocialComposer({
                   disabled={isPending || uploading || !content.trim() || isOverLimit || needsImage}
                   className="flex-1 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
                 >
-                  Save draft
+                  {t("social.composer.saveDraft")}
                 </button>
                 <button
                   onClick={() => handleSave(scheduleDate ? "scheduled" : "draft")}
                   disabled={isPending || uploading || !content.trim() || isOverLimit || needsImage}
-                  title={needsImage ? "Instagram posts need an image" : undefined}
+                  title={needsImage ? t("social.composer.needsImage") : undefined}
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  {scheduleDate ? <><Calendar className="w-3.5 h-3.5" /> Schedule</> : <><Send className="w-3.5 h-3.5" /> Add to queue</>}
+                  {scheduleDate
+                    ? <><Calendar className="w-3.5 h-3.5" /> {t("social.composer.schedule")}</>
+                    : <><Send className="w-3.5 h-3.5" /> {t("social.composer.addToQueue")}</>}
                 </button>
               </div>
             </div>
@@ -517,7 +512,7 @@ export function SocialComposer({
               {queuedPosts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center px-6">
                   <Send className="w-8 h-8 text-slate-300 mb-2" />
-                  <p className="text-xs text-slate-400">No posts in queue</p>
+                  <p className="text-xs text-slate-400">{t("social.composer.queueEmpty")}</p>
                 </div>
               ) : (
                 <div className="divide-y divide-slate-50">
@@ -525,7 +520,7 @@ export function SocialComposer({
                     <div key={post.id} className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_STYLE[post.status]}`}>
-                          {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                          {t(`social.composer.postStatus.${post.status}`)}
                         </span>
                         <div className="flex items-center gap-1">
                           <button onClick={() => handleCopy(post.id, post.content)} className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">
@@ -553,7 +548,7 @@ export function SocialComposer({
                         onClick={() => handleMarkPublished(post.id)}
                         className="w-full py-1.5 text-xs font-medium border border-emerald-200 text-emerald-700 rounded-lg hover:bg-emerald-50 transition-colors"
                       >
-                        Mark as published
+                        {t("social.composer.markPublished")}
                       </button>
                     </div>
                   ))}
@@ -569,7 +564,7 @@ export function SocialComposer({
           {content ? (
             <div className="bg-white rounded-xl border border-slate-200 p-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Preview</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("social.composer.preview")}</p>
                 <span className={`w-5 h-5 rounded text-white text-[10px] font-bold flex items-center justify-center ${PLATFORM_META[activePlatform].color}`}>
                   {PLATFORM_META[activePlatform].icon}
                 </span>
@@ -580,13 +575,13 @@ export function SocialComposer({
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-800">{orgName}</p>
-                  <p className="text-xs text-slate-400">Just now</p>
+                  <p className="text-xs text-slate-400">{t("social.composer.justNow")}</p>
                 </div>
               </div>
               <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{content}</p>
               {mediaUrl && (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={mediaUrl} alt="Attached" className="mt-3 w-full rounded-lg border border-slate-100" />
+                <img src={mediaUrl} alt={t("social.composer.attachedAlt")} className="mt-3 w-full rounded-lg border border-slate-100" />
               )}
               <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-100">
                 {["💬", "🔁", "❤️", "📊"].map((em) => (
@@ -596,14 +591,14 @@ export function SocialComposer({
             </div>
           ) : (
             <div className="bg-white rounded-xl border border-dashed border-slate-200 p-10 text-center">
-              <p className="text-sm text-slate-400">Your post preview will appear here</p>
+              <p className="text-sm text-slate-400">{t("social.composer.previewEmpty")}</p>
             </div>
           )}
 
           {/* Published posts */}
           {publishedPosts.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Published</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{t("social.composer.published")}</p>
               <div className="space-y-2">
                 {publishedPosts.map((post) => (
                   <div key={post.id} className="bg-white rounded-xl border border-slate-200 p-4">

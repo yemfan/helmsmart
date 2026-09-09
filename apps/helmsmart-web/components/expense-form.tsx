@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { createExpense } from "@/lib/actions/expenses";
 import { suggestExpenseAccount } from "@/lib/actions/expense-categorize";
 import { DollarSign, ScanLine, X, Loader2, ImagePlus, CheckCircle2, Camera, Sparkles } from "lucide-react";
@@ -33,7 +34,13 @@ interface Props {
   onCancel?: () => void;
 }
 
-// Map AI category → CoA account name fragment (case-insensitive partial match)
+/**
+ * AI category → CoA account name fragment (case-insensitive partial match).
+ *
+ * The keys are the enum `/api/expenses/scan` is told to answer with, and the
+ * hints are matched against account names as the owner typed them. Both halves
+ * are lookup data, never screen copy, so they stay in English in every locale.
+ */
 const CATEGORY_HINTS: Record<string, string[]> = {
   "Advertising & Marketing": ["advertising", "marketing"],
   "Bank Fees":               ["bank fee", "bank charge"],
@@ -51,6 +58,9 @@ const CATEGORY_HINTS: Record<string, string[]> = {
   "Vehicle":                ["vehicle", "auto", "car", "fuel"],
 };
 
+/** The confidence bands the receipt scanner answers with. */
+const CONFIDENCE_BANDS = ["high", "medium", "low"];
+
 function findBestAccount(category: string | null, accounts: CoAAccount[]): string {
   if (!category) return accounts[0]?.id ?? "";
   const hints = CATEGORY_HINTS[category] ?? [];
@@ -63,6 +73,7 @@ function findBestAccount(category: string | null, accounts: CoAAccount[]): strin
 
 export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess, onCancel }: Props) {
   const router = useRouter();
+  const { t } = useTranslation("books");
   const today = new Date().toISOString().slice(0, 10);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -84,12 +95,14 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
       const result = await suggestExpenseAccount(description.trim());
       if (result) {
         setExpenseAccountId(result.accountId);
-        setSuggestReason(`${result.accountName} — ${result.reason}`);
+        setSuggestReason(
+          t("expenses.form.suggestReason", { account: result.accountName, reason: result.reason })
+        );
       } else {
-        setSuggestReason("No confident match — pick manually.");
+        setSuggestReason(t("expenses.form.suggestNoMatch"));
       }
     } catch {
-      setSuggestReason("Couldn't suggest a category.");
+      setSuggestReason(t("expenses.form.suggestFailed"));
     } finally {
       setSuggesting(false);
     }
@@ -124,8 +137,8 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
       });
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({ error: "Scan failed" }));
-        throw new Error(data.error ?? "Scan failed");
+        const data = await res.json().catch(() => ({ error: t("expenses.scan.failed") }));
+        throw new Error(data.error ?? t("expenses.scan.failed"));
       }
 
       const data = await res.json();
@@ -139,7 +152,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
       if (data.confidence)  setScanConfidence(data.confidence);
 
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : "Failed to scan receipt");
+      setScanError(err instanceof Error ? err.message : t("expenses.scan.failed"));
       setScannedFile(null);
     } finally {
       setScanning(false);
@@ -151,7 +164,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
   function handleSubmit() {
     const amt = parseFloat(amount);
     if (!date || isNaN(amt) || amt <= 0 || !description.trim() || !expenseAccountId) {
-      setError("Date, amount, description, and expense account are required.");
+      setError(t("expenses.form.required"));
       return;
     }
     setError("");
@@ -172,7 +185,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
         }
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save expense");
+        setError(err instanceof Error ? err.message : t("expenses.form.saveFailed"));
       }
     });
   }
@@ -186,15 +199,15 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
             <ScanLine className="w-4.5 h-4.5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800 mb-0.5">Scan a receipt</p>
+            <p className="text-sm font-semibold text-slate-800 mb-0.5">{t("expenses.scan.title")}</p>
             <p className="text-xs text-slate-500 mb-3">
-              Upload a receipt image and AI will fill in the details automatically.
+              {t("expenses.scan.subtitle")}
             </p>
 
             {scanning ? (
               <div className="flex items-center gap-2 text-sm text-indigo-600">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Extracting receipt data…
+                {t("expenses.scan.extracting")}
               </div>
             ) : scannedFile ? (
               <div className="flex items-center justify-between">
@@ -207,14 +220,16 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
                       : scanConfidence === "medium" ? "bg-amber-100 text-amber-700"
                       : "bg-slate-100 text-slate-600"
                     }`}>
-                      {scanConfidence} confidence
+                      {CONFIDENCE_BANDS.includes(scanConfidence)
+                        ? t(`expenses.scan.confidence.${scanConfidence}`)
+                        : scanConfidence}
                     </span>
                   )}
                 </div>
                 <button
                   onClick={() => { setScannedFile(null); setScanConfidence(null); }}
                   className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-white transition-colors"
-                  title="Clear scan"
+                  title={t("expenses.scan.clear")}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -223,7 +238,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
               <div className="flex gap-2">
                 <label className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 bg-white border border-indigo-200 hover:border-indigo-400 text-indigo-700 text-sm font-medium rounded-lg transition-colors">
                   <ImagePlus className="w-4 h-4" />
-                  Upload receipt
+                  {t("expenses.scan.upload")}
                   <input
                     ref={fileRef}
                     type="file"
@@ -234,7 +249,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
                 </label>
                 <label className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 bg-white border border-indigo-200 hover:border-indigo-400 text-indigo-700 text-sm font-medium rounded-lg transition-colors">
                   <Camera className="w-4 h-4" />
-                  Take photo
+                  {t("expenses.scan.takePhoto")}
                   <input
                     ref={cameraRef}
                     type="file"
@@ -248,19 +263,19 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
             )}
 
             {scanError && (
-              <p className="text-xs text-rose-600 mt-2">{scanError}</p>
+              <p className="text-xs text-rose-600 mt-2" role="alert">{scanError}</p>
             )}
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
-        <h2 className="text-sm font-semibold text-slate-800">Expense details</h2>
+        <h2 className="text-sm font-semibold text-slate-800">{t("expenses.form.details")}</h2>
 
         {/* Date + Amount */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("expenses.form.date")}</label>
             <input
               type="date"
               value={date}
@@ -269,7 +284,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Amount</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("expenses.form.amount")}</label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
               <input
@@ -287,12 +302,12 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1.5">Description</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("expenses.form.description")}</label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g. Office supplies at Staples"
+            placeholder={t("expenses.form.descriptionPlaceholder")}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -300,18 +315,18 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
         {/* Expense account (DR) */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-medium text-slate-600">Expense account</label>
+            <label className="block text-xs font-medium text-slate-600">{t("expenses.form.expenseAccount")}</label>
             <button
               type="button"
               onClick={handleSuggestCategory}
               disabled={!description.trim() || suggesting}
-              title={description.trim() ? "Let AI pick the best account" : "Add a description first"}
+              title={description.trim() ? t("expenses.form.suggestHint") : t("expenses.form.suggestHintDisabled")}
               className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {suggesting
                 ? <Loader2 className="w-3 h-3 animate-spin" />
                 : <Sparkles className="w-3 h-3" />}
-              {suggesting ? "Thinking…" : "Suggest"}
+              {suggesting ? t("common:status.thinking") : t("expenses.form.suggest")}
             </button>
           </div>
           <select
@@ -320,7 +335,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
             {expenseAccounts.length === 0 && (
-              <option value="">No expense accounts in Chart of Accounts</option>
+              <option value="">{t("expenses.form.noExpenseAccounts")}</option>
             )}
             {expenseAccounts.map((a) => (
               <option key={a.id} value={a.id}>
@@ -334,49 +349,52 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
               {suggestReason}
             </p>
           ) : (
-            <p className="text-xs text-slate-400 mt-1">Debited (expense increases)</p>
+            <p className="text-xs text-slate-400 mt-1">{t("expenses.form.debitedHint")}</p>
           )}
         </div>
 
         {/* Payment source (CR) */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1.5">Paid from</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("expenses.form.paidFrom")}</label>
           <select
             value={paymentSourceId}
             onChange={(e) => setPaymentSourceId(e.target.value)}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
-            <option value="">Accounts Payable (not yet paid)</option>
+            <option value="">{t("expenses.form.accountsPayable")}</option>
             {bankAccounts.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}{b.mask ? ` ···${b.mask}` : ""}
               </option>
             ))}
           </select>
-          <p className="text-xs text-slate-400 mt-1">Credited (cash or liability increases)</p>
+          <p className="text-xs text-slate-400 mt-1">{t("expenses.form.creditedHint")}</p>
         </div>
 
         {/* Project (optional) — attributes this expense to a project's P&L */}
         {projects.length > 0 && (
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Project <span className="text-slate-400 font-normal">(optional)</span></label>
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">
+              {t("expenses.form.project")}
+              <span className="text-slate-400 font-normal">{t("expenses.form.optionalSuffix")}</span>
+            </label>
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
               className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
-              <option value="">No project (general expense)</option>
+              <option value="">{t("expenses.form.noProject")}</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
-            <p className="text-xs text-slate-400 mt-1">Counts against the project&apos;s profit</p>
+            <p className="text-xs text-slate-400 mt-1">{t("expenses.form.projectHint")}</p>
           </div>
         )}
       </div>
 
       {error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3">{error}</p>
+        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3" role="alert">{error}</p>
       )}
 
       <div className="flex gap-3">
@@ -386,7 +404,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
           disabled={pending}
           className="flex-1 py-3 text-sm font-medium border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-60 transition-colors"
         >
-          Cancel
+          {t("common:actions.cancel")}
         </button>
         <button
           type="button"
@@ -394,7 +412,7 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
           disabled={pending || !expenseAccountId}
           className="flex-1 py-3 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
         >
-          {pending ? "Saving…" : "Record expense"}
+          {pending ? t("common:status.saving") : t("expenses.form.save")}
         </button>
       </div>
     </div>

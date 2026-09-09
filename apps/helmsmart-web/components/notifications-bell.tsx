@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Bell, CheckCheck, FileText, MessageSquare, Phone, Calendar, Zap } from "lucide-react";
 import { markNotificationsRead } from "@/lib/actions/notifications";
 import { createBrowserClient } from "@supabase/ssr";
@@ -41,17 +43,19 @@ const TYPE_COLOR: Record<string, string> = {
   system:          "text-slate-600 bg-slate-100",
 };
 
-function timeAgo(iso: string) {
+/** "3m" / "3 分钟前" — the unit is copy, so the translator has to come in. */
+function timeAgo(iso: string, t: TFunction<"home">) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m`;
+  if (m < 1) return t("notifications.ago.justNow");
+  if (m < 60) return t("notifications.ago.minutes", { count: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h`;
-  return `${Math.floor(h / 24)}d`;
+  if (h < 24) return t("notifications.ago.hours", { count: h });
+  return t("notifications.ago.days", { count: Math.floor(h / 24) });
 }
 
 export function NotificationsBell({ orgId, initialCount, initialNotifications }: Props) {
+  const { t }                 = useTranslation("home");
   const [open, setOpen]       = useState(false);
   const [count, setCount]     = useState(initialCount);
   const [notifs, setNotifs]   = useState(initialNotifications);
@@ -107,7 +111,7 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
         className={`relative flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
           open ? "bg-slate-700" : "hover:bg-slate-800"
         }`}
-        title="Notifications"
+        title={t("notifications.title")}
       >
         <Bell className="w-4 h-4 text-slate-400" />
         {count > 0 && (
@@ -120,10 +124,10 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
       {open && (
         <div className="absolute left-full ml-2 top-0 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-            <h3 className="text-sm font-semibold text-slate-800">Notifications</h3>
+            <h3 className="text-sm font-semibold text-slate-800">{t("notifications.title")}</h3>
             {unread.length === 0 && (
               <span className="text-xs text-slate-400 flex items-center gap-1">
-                <CheckCheck className="w-3.5 h-3.5" /> All caught up
+                <CheckCheck className="w-3.5 h-3.5" /> {t("notifications.allCaughtUp")}
               </span>
             )}
           </div>
@@ -132,7 +136,7 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
             {notifs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center px-6">
                 <Bell className="w-7 h-7 text-slate-300 mb-2" />
-                <p className="text-xs text-slate-400">No notifications yet</p>
+                <p className="text-xs text-slate-400">{t("notifications.empty")}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
@@ -152,7 +156,7 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
                           <p className="text-xs text-slate-500 mt-0.5 truncate">{n.body}</p>
                         )}
                       </div>
-                      <span className="text-[10px] text-slate-400 flex-shrink-0 mt-0.5">{timeAgo(n.created_at)}</span>
+                      <span className="text-[10px] text-slate-400 flex-shrink-0 mt-0.5">{timeAgo(n.created_at, t)}</span>
                     </div>
                   );
 

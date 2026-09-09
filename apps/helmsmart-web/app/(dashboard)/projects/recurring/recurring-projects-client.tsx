@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Repeat, X, Clock, DollarSign, AlertCircle, Play, Pause, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import {
   createRecurringProject,
   setRecurringProjectStatus,
@@ -24,22 +26,11 @@ const COLOR_CLASSES: Record<ProjectColor, { dot: string; bg: string; text: strin
   slate:   { dot: "bg-slate-400",   bg: "bg-slate-100",  text: "text-slate-600" },
 };
 
-const FREQUENCY_LABELS: Record<RecurringFrequency, string> = {
-  weekly: "Weekly",
-  monthly: "Monthly",
-  quarterly: "Quarterly",
-  annually: "Annually",
-};
-
 const FREQUENCIES: RecurringFrequency[] = ["weekly", "monthly", "quarterly", "annually"];
 
 function clientName(c: { first_name: string | null; last_name: string | null; company: string | null } | null | undefined): string {
   if (!c) return "";
   return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "";
-}
-
-function fmtDate(d: string) {
-  return new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 function defaultNextRun(): string {
@@ -60,6 +51,7 @@ function NewRecurringModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const { t } = useTranslation("projects");
   const [name, setName]           = useState("");
   const [description, setDesc]    = useState("");
   const [clientId, setClientId]   = useState("");
@@ -75,8 +67,8 @@ function NewRecurringModal({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) { setError("Template name is required"); return; }
-    if (!nextRunDate) { setError("First run date is required"); return; }
+    if (!name.trim()) { setError(t("recurring.modal.nameRequired")); return; }
+    if (!nextRunDate) { setError(t("recurring.modal.firstRunDateRequired")); return; }
     setError("");
     start(async () => {
       try {
@@ -92,7 +84,7 @@ function NewRecurringModal({
         });
         onCreated();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to create recurring project");
+        setError(e instanceof Error ? e.message : t("recurring.modal.createFailed"));
       }
     });
   }
@@ -101,35 +93,37 @@ function NewRecurringModal({
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-800">New recurring project</h2>
+          <h2 className="text-base font-semibold text-slate-800">{t("recurring.modal.title")}</h2>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {error && <p className="text-xs text-rose-600 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
+        {error && <p className="text-xs text-rose-600 flex items-center gap-1" role="alert"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Template name *</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Monthly retainer" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <p className="text-[11px] text-slate-400 mt-1">Each cycle spawns a project named e.g. &ldquo;{name.trim() || "Monthly retainer"} — May 2026&rdquo;.</p>
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.nameLabel")}</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("recurring.modal.namePlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <p className="text-[11px] text-slate-400 mt-1">
+            {t("recurring.modal.nameHint", { name: name.trim() || t("recurring.modal.namePlaceholder") })}
+          </p>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Description</label>
-          <textarea value={description} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Recurring scope of work…" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.description")}</label>
+          <textarea value={description} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder={t("recurring.modal.descriptionPlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Client</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.client")}</label>
             <select value={clientId} onChange={(e) => setClientId(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="">No client</option>
+              <option value="">{t("recurring.modal.noClient")}</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{clientName(c)}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Color</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.color")}</label>
             <div className="flex items-center gap-2 mt-1">
               {COLORS.map((c) => (
                 <button key={c} type="button" onClick={() => setColor(c)} className={`w-6 h-6 rounded-full ${COLOR_CLASSES[c].dot} transition-transform ${color === c ? "scale-125 ring-2 ring-offset-1 ring-slate-400" : ""}`} />
@@ -140,11 +134,11 @@ function NewRecurringModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Budget hours</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.budgetHours")}</label>
             <input type="number" min="0" step="0.5" value={budgetHours} onChange={(e) => setBudH(e.target.value)} placeholder="0" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Hourly rate</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.hourlyRate")}</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
               <input type="number" min="0" step="0.01" value={hourlyRate} onChange={(e) => setRate(e.target.value)} placeholder="0" className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -154,21 +148,21 @@ function NewRecurringModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Frequency</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.frequency")}</label>
             <select value={frequency} onChange={(e) => setFreq(e.target.value as RecurringFrequency)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              {FREQUENCIES.map((f) => <option key={f} value={f}>{FREQUENCY_LABELS[f]}</option>)}
+              {FREQUENCIES.map((f) => <option key={f} value={f}>{t(`frequency.${f}`)}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">First run date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("recurring.modal.firstRunDate")}</label>
             <input type="date" value={nextRunDate} onChange={(e) => setNextRun(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
         <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">{t("common:actions.cancel")}</button>
           <button type="submit" disabled={isPending} className="flex-1 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
-            {isPending ? "Creating…" : "Create template"}
+            {isPending ? t("common:status.creating") : t("recurring.modal.submit")}
           </button>
         </div>
       </form>
@@ -187,10 +181,15 @@ function RecurringRow({
   onChanged: (id: string, status: "active" | "paused") => void;
   onDeleted: (id: string) => void;
 }) {
+  const { t, i18n } = useTranslation("projects");
+  const locale = intlLocale(i18n.language);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isPending, start] = useTransition();
   const c = COLOR_CLASSES[rec.color as ProjectColor] ?? COLOR_CLASSES.indigo;
   const paused = rec.status === "paused";
+
+  const fmtDate = (d: string) =>
+    new Date(d + "T00:00:00").toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
 
   function toggleStatus() {
     const next = paused ? "active" : "paused";
@@ -215,26 +214,30 @@ function RecurringRow({
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium text-slate-800 truncate">{rec.name}</p>
           <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${c.bg} ${c.text}`}>
-            {FREQUENCY_LABELS[rec.frequency]}
+            {t(`frequency.${rec.frequency}`)}
           </span>
           {paused && (
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Paused</span>
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{t("recurring.paused")}</span>
           )}
         </div>
         <p className="text-xs text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
           {clientName(rec.clients) && <span>{clientName(rec.clients)}</span>}
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            {paused ? "Paused" : `Next ${fmtDate(rec.next_run_date)}`}
+            {paused ? t("recurring.paused") : t("recurring.next", { date: fmtDate(rec.next_run_date) })}
           </span>
           {rec.budget_hours && (
-            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{rec.budget_hours}h</span>
+            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{t("recurring.hours", { hours: rec.budget_hours })}</span>
           )}
           {rec.hourly_rate && (
-            <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" />${rec.hourly_rate}/hr</span>
+            <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" />{t("recurring.rate", { rate: rec.hourly_rate })}</span>
           )}
           {rec.last_generated_at && (
-            <span>Last spawned {new Date(rec.last_generated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+            <span>
+              {t("recurring.lastSpawned", {
+                date: new Date(rec.last_generated_at).toLocaleDateString(locale, { month: "short", day: "numeric" }),
+              })}
+            </span>
           )}
         </p>
       </div>
@@ -242,10 +245,10 @@ function RecurringRow({
       <button
         onClick={toggleStatus}
         disabled={isPending}
-        title={paused ? "Resume" : "Pause"}
+        title={paused ? t("recurring.resume") : t("recurring.pause")}
         className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-50 transition-colors"
       >
-        {paused ? <><Play className="w-3 h-3" /> Resume</> : <><Pause className="w-3 h-3" /> Pause</>}
+        {paused ? <><Play className="w-3 h-3" /> {t("recurring.resume")}</> : <><Pause className="w-3 h-3" /> {t("recurring.pause")}</>}
       </button>
       <button
         onClick={handleDelete}
@@ -256,7 +259,7 @@ function RecurringRow({
             : "text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100"
         }`}
       >
-        {confirmDelete ? "Confirm" : "Delete"}
+        {confirmDelete ? t("recurring.confirm") : t("common:actions.delete")}
       </button>
     </div>
   );
@@ -270,6 +273,7 @@ interface Props {
 }
 
 export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
+  const { t } = useTranslation("projects");
   const [recurring, setRecurring] = useState<RecurringProject[]>(initialRecurring);
   const [showNew, setShowNew]     = useState(false);
 
@@ -281,10 +285,10 @@ export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-slate-900">Recurring projects</h1>
+            <h1 className="text-2xl font-semibold text-slate-900">{t("recurring.title")}</h1>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">
-            {activeCount} active template{activeCount === 1 ? "" : "s"} · auto-spawn new projects on a schedule
+            {t("recurring.subtitle", { count: activeCount })}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -293,14 +297,14 @@ export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
             className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Projects
+            {t("recurring.backToProjects")}
           </Link>
           <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            New recurring
+            {t("recurring.new")}
           </button>
         </div>
       </div>
@@ -308,16 +312,16 @@ export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
       {recurring.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-200 rounded-2xl">
           <Repeat className="w-10 h-10 text-slate-300 mb-3" />
-          <p className="text-sm font-medium text-slate-500 mb-1">No recurring projects yet</p>
+          <p className="text-sm font-medium text-slate-500 mb-1">{t("recurring.emptyTitle")}</p>
           <p className="text-xs text-slate-400 mb-4 max-w-sm">
-            Set up a retainer or recurring engagement once — we&rsquo;ll spawn a fresh project each cycle so your time entries and invoices stay organized by period.
+            {t("recurring.emptyBody")}
           </p>
           <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Create first template
+            {t("recurring.createFirst")}
           </button>
         </div>
       ) : (
@@ -336,7 +340,7 @@ export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
       )}
 
       <p className="text-xs text-slate-400 mt-4">
-        Active templates are checked daily. When a template&rsquo;s next run date arrives, a new project is created and the date advances by its frequency. Pause to skip upcoming cycles without losing the template.
+        {t("recurring.footnote")}
       </p>
 
       {showNew && (

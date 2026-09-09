@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { postTransaction } from "@/lib/actions/ledger";
 import { normalizePayee } from "@/lib/payee";
+import { getServerT } from "@/lib/i18n/server";
 
 export type ApproveState = { error?: string; success?: boolean } | null;
 
@@ -19,11 +20,13 @@ export async function approveTransaction(
   const coaAccountId = formData.get("coa_account_id") as string | null;
   const memo = (formData.get("memo") as string)?.trim() || null;
 
-  if (!transactionId) return { error: "Missing transaction ID." };
+  const t = await getServerT("books");
+
+  if (!transactionId) return { error: t("transactions.errors.missingId") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized", { ns: "common" }) };
 
   // Update the transaction
   const update: Record<string, unknown> = { reviewed: true, memo };
@@ -34,7 +37,7 @@ export async function approveTransaction(
     .update(update)
     .eq("id", transactionId);
 
-  if (updateError) return { error: "Failed to approve transaction." };
+  if (updateError) return { error: t("transactions.errors.approveFailed") };
 
   // Remember this payee → category so the same vendor auto-categorizes next time
   // (and a correction overwrites the old mapping).
@@ -67,16 +70,17 @@ export async function approveTransaction(
  * Useful for transfers, personal expenses, etc.
  */
 export async function skipTransaction(transactionId: string): Promise<{ error?: string }> {
+  const t = await getServerT("books");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized", { ns: "common" }) };
 
   const { error } = await supabase
     .from("bank_transactions")
     .update({ reviewed: true, memo: "[Skipped]" })
     .eq("id", transactionId);
 
-  if (error) return { error: "Failed to skip transaction." };
+  if (error) return { error: t("transactions.errors.skipFailed") };
 
   revalidatePath("/books/transactions");
   return {};

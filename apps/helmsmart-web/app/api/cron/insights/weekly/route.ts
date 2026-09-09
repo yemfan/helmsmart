@@ -11,6 +11,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { generateBusinessInsight } from "@/lib/business-insights";
 import { createNotificationService } from "@/lib/actions/notifications";
+import { userUiLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/server";
+import { DEFAULT_CURRENCY } from "@/lib/books-format";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     const { data: orgs } = await db
       .from("organizations")
-      .select("id, subscription_status")
+      .select("id, subscription_status, currency")
       .limit(500);
 
     for (const org of orgs ?? []) {
@@ -72,7 +75,27 @@ export async function GET(request: NextRequest) {
       }
       if (!active) { skipped++; continue; }
 
-      const result = await generateBusinessInsight(db, org.id, now);
+      /*
+       * The digest is written FOR the owner, so it is written in the owner's
+       * language — there is no cookie behind a cron, so the preference has to
+       * be looked up. `organization_members.role = 'owner'` is who that is;
+       * a missing row or a missing preference means English, same as before.
+       */
+      const { data: owner } = await db
+        .from("organization_members")
+        .select("user_id")
+        .eq("organization_id", org.id)
+        .eq("role", "owner")
+        .order("joined_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      const locale = owner?.user_id ? await userUiLocale(owner.user_id) : null;
+      const t = translatorFor(locale, "home");
+
+      const result = await generateBusinessInsight(db, org.id, now, {
+        locale,
+        currency: (org.currency as string | null) ?? DEFAULT_CURRENCY,
+      });
       if (!result.ok) {
         errors.push(`${org.id}: ${result.error}`);
         continue;
@@ -117,8 +140,8 @@ export async function GET(request: NextRequest) {
         org.id,
         {
           type: "system",
-          title: "Tim's weekly business insights are ready",
-          body: result.insight?.headline ?? "Your weekly digest is ready to review.",
+          title: t("weeklyInsights.notification.title"),
+          body: result.insight?.headline ?? t("weeklyInsights.notification.body"),
           link: "/insights",
         },
         db

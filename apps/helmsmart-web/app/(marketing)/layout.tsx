@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "HelmSmart — More control, less effort",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return { title: t("meta.marketingTitle") };
+}
 
 export default function MarketingLayout({
   children,

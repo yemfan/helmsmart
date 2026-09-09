@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 /**
  * The address to forward a mailbox to, shown at the foot of the thread list.
@@ -16,6 +17,7 @@ import { Check, Copy } from "lucide-react";
  * INBOUND_EMAIL_DOMAIN shows nothing rather than something uncopyable.
  */
 export function InboxForwardingAddress({ address }: { address: string }) {
+  const { t } = useTranslation("inbox");
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -32,7 +34,7 @@ export function InboxForwardingAddress({ address }: { address: string }) {
 
   return (
     <div className="px-4 py-3 border-t border-slate-100">
-      <p className="text-[11px] text-slate-400 mb-1">Forward your email here</p>
+      <p className="text-[11px] text-slate-400 mb-1">{t("forwarding.label")}</p>
       <div className="flex items-center gap-1.5">
         <code
           className="flex-1 min-w-0 truncate text-[11px] font-mono text-slate-600"
@@ -43,8 +45,8 @@ export function InboxForwardingAddress({ address }: { address: string }) {
         <button
           onClick={copy}
           className="p-1 rounded hover:bg-slate-100 transition-colors flex-shrink-0"
-          aria-label={copied ? "Address copied" : "Copy address"}
-          title={copied ? "Copied" : "Copy"}
+          aria-label={copied ? t("forwarding.copied") : t("forwarding.copy")}
+          title={copied ? t("forwarding.copiedTitle") : t("forwarding.copyTitle")}
         >
           {copied ? (
             <Check className="w-3.5 h-3.5 text-emerald-600" />

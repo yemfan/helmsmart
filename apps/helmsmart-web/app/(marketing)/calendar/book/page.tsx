@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -6,9 +7,13 @@ import {
   type BusinessHours,
   type AppointmentType,
 } from "@/lib/receptionist";
+import { getServerT } from "@/lib/i18n/server";
 import { BookClient } from "./book-client";
 
-export const metadata = { title: "Schedule Appointment — HelmSmart" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return { title: t("book.meta.title") };
+}
 
 export default async function BookPage() {
   const cookieStore = await cookies();

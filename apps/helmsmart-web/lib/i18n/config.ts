@@ -31,7 +31,12 @@
  *   books      Invoices, Quotes, Bills, Expenses, Reports, Journal, Aging, Vendors, 1099
  *   site       public marketing pages, metadata, footer
  *   emails     owner-facing email subjects and bodies
- *   errors     server-action error strings, returned as keys
+ *
+ * There is deliberately no `errors` namespace. An error string belongs to the
+ * screen that shows it, so each surface keeps its own `errors.*` group and a
+ * server action reaches it with the same `getServerT(ns)` its page uses. A
+ * single shared error bundle sounded tidy and had no reader: every action
+ * already knows which surface it serves.
  */
 import {
   DEFAULT_LOCALE,
@@ -57,7 +62,6 @@ import enMarketing from "@/messages/en/marketing.json";
 import enBooks from "@/messages/en/books.json";
 import enSite from "@/messages/en/site.json";
 import enEmails from "@/messages/en/emails.json";
-import enErrors from "@/messages/en/errors.json";
 
 import zhCommon from "@/messages/zh-Hans/common.json";
 import zhNav from "@/messages/zh-Hans/nav.json";
@@ -75,7 +79,6 @@ import zhMarketing from "@/messages/zh-Hans/marketing.json";
 import zhBooks from "@/messages/zh-Hans/books.json";
 import zhSite from "@/messages/zh-Hans/site.json";
 import zhEmails from "@/messages/zh-Hans/emails.json";
-import zhErrors from "@/messages/zh-Hans/errors.json";
 
 export const I18N_COOKIE_NAME = "helmsmart_locale";
 
@@ -104,17 +107,46 @@ export const namespaces = [
   "books",
   "site",
   "emails",
-  "errors",
 ] as const;
 export type AppNamespace = (typeof namespaces)[number];
 
 type Bundle = Record<string, unknown>;
 
+/**
+ * Overlay one bundle on another, key by key, all the way down.
+ *
+ * A spread would not do. `common` is the shared package's bundle with this
+ * app's additions on top, and both are nested — so `{ ...pkg, ...app }`
+ * replaces a whole GROUP whenever the app declares one. Adding a single
+ * `actions.saved_bang` here deleted the package's entire `actions` set
+ * (`save`, `cancel`, `dismiss`, …) from the app, and every call site reading
+ * one rendered its raw key. Nothing about that is visible at the merge: the
+ * bundle is still a valid object, just missing forty strings.
+ *
+ * Objects merge, everything else is replaced by the overlay — which is what
+ * "an app key wins on a clash" has to mean for a leaf.
+ */
+function overlay(base: Bundle, top: Bundle): Bundle {
+  const out: Bundle = { ...base };
+  for (const [key, value] of Object.entries(top)) {
+    const existing = out[key];
+    out[key] =
+      isPlainObject(existing) && isPlainObject(value)
+        ? overlay(existing, value)
+        : value;
+  }
+  return out;
+}
+
+function isPlainObject(v: unknown): v is Bundle {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
 export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = {
   en: {
     // The package's generic verbs first, then this app's own — an app key
     // wins on a clash, and `app_name` always has to.
-    common: { ...pkgEnCommon, ...enCommon, app_name: "HelmSmart" },
+    common: { ...overlay(pkgEnCommon, enCommon), app_name: "HelmSmart" },
     nav: enNav,
     settings: enSettings,
     auth: enAuth,
@@ -130,10 +162,9 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: enBooks,
     site: enSite,
     emails: enEmails,
-    errors: enErrors,
   },
   "zh-Hans": {
-    common: { ...pkgZhCommon, ...zhCommon, app_name: "HelmSmart" },
+    common: { ...overlay(pkgZhCommon, zhCommon), app_name: "HelmSmart" },
     nav: zhNav,
     settings: zhSettings,
     auth: zhAuth,
@@ -149,6 +180,5 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: zhBooks,
     site: zhSite,
     emails: zhEmails,
-    errors: zhErrors,
   },
 };

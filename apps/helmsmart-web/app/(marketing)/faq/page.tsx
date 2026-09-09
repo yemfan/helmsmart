@@ -1,98 +1,48 @@
-export const metadata = {
-  title: "Frequently Asked Questions | HelmSmart",
-  description: "Everything you need to know about HelmSmart.",
-};
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-const faqs: { category: string; questions: { q: string; a: string }[] }[] = [
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return {
+    title: t("faq.meta.title"),
+    description: t("faq.meta.description"),
+  };
+}
+
+// Every question and answer lives in `site.faq.categories.<id>.items.<id>`;
+// this array holds only the order.
+const faqs: { category: string; questions: string[] }[] = [
   {
-    category: "Getting Started",
-    questions: [
-      {
-        q: "What is HelmSmart?",
-        a: "HelmSmart is an AI-powered front office for small businesses. It combines a voice receptionist, unified inbox, bookkeeping, and CRM into one platform — so you can focus on running your business, not managing tools.",
-      },
-      {
-        q: "How do I set up the voice receptionist?",
-        a: "Connect your Twilio number or use Retell AI, then configure your business hours and appointment types in the Voice settings. The setup wizard walks you through each step in minutes.",
-      },
-      {
-        q: "Do I need technical skills?",
-        a: "No. Everything is configured through a simple dashboard. No coding, no complex integrations — just fill in your business details and you're live.",
-      },
-      {
-        q: "Is there a free trial?",
-        a: "Yes. You get 14 days free with full access to all features. No credit card required to start.",
-      },
-    ],
+    category: "gettingStarted",
+    questions: ["what", "setup", "technical", "trial"],
   },
   {
-    category: "Voice Receptionist",
-    questions: [
-      {
-        q: "What happens when the AI can't answer a question?",
-        a: "If the AI doesn't have enough information to help, it offers to take a message or schedule a callback. You'll be notified immediately so you can follow up.",
-      },
-      {
-        q: "Can it book real appointments?",
-        a: "Yes. The voice receptionist syncs with your Google Calendar and only offers time slots that are genuinely available. Bookings appear on your calendar in real time.",
-      },
-      {
-        q: "What languages does it support?",
-        a: "The voice agent operates in English by default. SMS and email communications include multilingual detection to match the language your clients use.",
-      },
-      {
-        q: "Will callers know they're talking to AI?",
-        a: "Yes. The agent identifies itself as an AI assistant for your business. We believe in transparent, honest AI interactions — and it builds trust with your clients.",
-      },
-    ],
+    category: "voice",
+    questions: ["unknown", "booking", "languages", "disclosure"],
   },
   {
-    category: "Billing & Plans",
-    questions: [
-      {
-        q: "Can I change plans anytime?",
-        a: "Yes. Upgrades take effect immediately. Downgrades take effect at the start of your next billing cycle so you never lose access mid-period.",
-      },
-      {
-        q: "What is the $0.10/min voice charge?",
-        a: "Voice calls are billed at $0.10 per minute on top of your base plan. This covers both the AI processing and telephony costs. You only pay for calls that are actually handled.",
-      },
-      {
-        q: "Is there a contract?",
-        a: "No contracts, no commitments. HelmSmart is month-to-month and you can cancel anytime from your account settings.",
-      },
-    ],
+    category: "billing",
+    questions: ["changePlans", "voiceCharge", "contract"],
   },
   {
-    category: "Integrations",
-    questions: [
-      {
-        q: "Does it work with Google Calendar?",
-        a: "Yes. HelmSmart connects via OAuth for a full two-way sync. The voice receptionist checks real-time availability and writes confirmed bookings directly to your calendar.",
-      },
-      {
-        q: "What phone providers work?",
-        a: "Twilio numbers work out of the box — you can bring an existing number or provision a new one. Retell AI powers the voice AI layer for natural, low-latency conversations.",
-      },
-      {
-        q: "Can I import my existing clients?",
-        a: "Yes. CSV import is available in the Clients section. Map your columns to HelmSmart fields and your contacts are ready to use in minutes.",
-      },
-    ],
+    category: "integrations",
+    questions: ["googleCalendar", "phone", "import"],
   },
 ];
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const t = await getServerT("site");
+
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto max-w-3xl px-6 py-20 sm:py-28">
         {/* Header */}
         <div className="mb-16 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Frequently asked questions
+            {t("faq.hero.title")}
           </h1>
           <p className="mt-4 text-lg text-gray-500">
-            Everything you need to know about HelmSmart.
+            {t("faq.hero.subtitle")}
           </p>
         </div>
 
@@ -101,17 +51,17 @@ export default function FAQPage() {
           {faqs.map((section) => (
             <section key={section.category}>
               <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                {section.category}
+                {t(`faq.categories.${section.category}.title`)}
               </h2>
               <div className="divide-y divide-gray-200 rounded-xl border border-gray-200">
-                {section.questions.map(({ q, a }) => (
+                {section.questions.map((id) => (
                   <details
-                    key={q}
+                    key={id}
                     className="group px-6 py-5 [&[open]>summary>span>svg]:rotate-180"
                   >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
                       <span className="text-base font-medium text-gray-900">
-                        {q}
+                        {t(`faq.categories.${section.category}.items.${id}.q`)}
                       </span>
                       <span className="flex-shrink-0 text-gray-400">
                         <svg
@@ -130,7 +80,7 @@ export default function FAQPage() {
                       </span>
                     </summary>
                     <p className="mt-3 text-base leading-relaxed text-gray-600">
-                      {a}
+                      {t(`faq.categories.${section.category}.items.${id}.a`)}
                     </p>
                   </details>
                 ))}
@@ -142,17 +92,16 @@ export default function FAQPage() {
         {/* CTA footer */}
         <div className="mt-20 rounded-2xl bg-gray-50 px-8 py-10 text-center">
           <h3 className="text-lg font-semibold text-gray-900">
-            Still have questions?
+            {t("faq.cta.title")}
           </h3>
           <p className="mt-2 text-base text-gray-500">
-            We&apos;re happy to help. Reach out and we&apos;ll get back to you
-            within one business day.
+            {t("faq.cta.body")}
           </p>
           <a
             href="mailto:contact@helmsmart.ai"
             className="mt-6 inline-block rounded-lg bg-gray-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
           >
-            Contact support
+            {t("faq.cta.button")}
           </a>
         </div>
       </div>

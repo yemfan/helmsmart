@@ -7,10 +7,12 @@
  */
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { CONNECTABLE_CHANNELS } from "@/lib/social-channels";
 import { disconnectSocialProvider } from "@/lib/actions/social-connections";
 
 export function SocialConnections({ connected }: { connected: string[] }) {
+  const { t } = useTranslation("marketing");
   const [set, setSet] = useState<Set<string>>(new Set(connected));
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -20,7 +22,7 @@ export function SocialConnections({ connected }: { connected: string[] }) {
     start(async () => {
       const res = await disconnectSocialProvider(provider);
       if (!res.ok) {
-        setError(res.error ?? "Couldn't disconnect that channel.");
+        setError(res.error ?? t("social.connections.disconnectError"));
         return;
       }
       setSet((prev) => {
@@ -55,10 +57,10 @@ export function SocialConnections({ connected }: { connected: string[] }) {
               <p className="text-xs">
                 {on ? (
                   <span className="inline-flex items-center gap-1 text-emerald-600">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Connected
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> {t("social.connections.connected")}
                   </span>
                 ) : (
-                  <span className="text-slate-400">Not connected</span>
+                  <span className="text-slate-400">{t("social.connections.notConnected")}</span>
                 )}
               </p>
             </div>
@@ -69,14 +71,14 @@ export function SocialConnections({ connected }: { connected: string[] }) {
                 onClick={() => disconnect(ch.provider)}
                 className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-60"
               >
-                Disconnect
+                {t("social.connections.disconnect")}
               </button>
             ) : (
               <a
                 href={ch.connectPath}
                 className="shrink-0 rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition hover:opacity-90"
               >
-                Connect
+                {t("social.connections.connect")}
               </a>
             )}
           </div>

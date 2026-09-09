@@ -1,10 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { updatePassword } from "@/lib/actions/auth";
 import type { AuthState } from "@/lib/actions/auth";
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation("auth");
   const [state, action, isPending] = useActionState<AuthState, FormData>(
     updatePassword,
     null
@@ -12,13 +14,13 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-      <h1 className="text-xl font-semibold text-slate-900 mb-1">Set new password</h1>
-      <p className="text-sm text-slate-500 mb-6">Choose a strong password for your account.</p>
+      <h1 className="text-xl font-semibold text-slate-900 mb-1">{t("resetPassword.title")}</h1>
+      <p className="text-sm text-slate-500 mb-6">{t("resetPassword.subtitle")}</p>
 
       <form action={action} className="space-y-4">
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-            New password
+            {t("resetPassword.newPassword")}
           </label>
           <input
             id="password"
@@ -30,13 +32,13 @@ export default function ResetPasswordPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="Min. 8 characters"
+            placeholder={t("resetPassword.newPasswordPlaceholder")}
           />
         </div>
 
         <div>
           <label htmlFor="confirm" className="block text-sm font-medium text-slate-700 mb-1">
-            Confirm password
+            {t("resetPassword.confirmPassword")}
           </label>
           <input
             id="confirm"
@@ -48,7 +50,7 @@ export default function ResetPasswordPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="Repeat password"
+            placeholder={t("resetPassword.confirmPasswordPlaceholder")}
           />
         </div>
 
@@ -65,7 +67,7 @@ export default function ResetPasswordPage() {
                      hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                      disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-          {isPending ? "Updating…" : "Update password"}
+          {isPending ? t("resetPassword.submitting") : t("resetPassword.submit")}
         </button>
       </form>
     </div>

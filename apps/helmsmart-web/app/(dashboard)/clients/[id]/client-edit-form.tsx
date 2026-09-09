@@ -1,16 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { updateClient } from "@/lib/actions/clients";
 import type { ClientState } from "@/lib/actions/clients";
 
-const STATUS_OPTIONS = [
-  { value: "lead",     label: "Lead" },
-  { value: "prospect", label: "Prospect" },
-  { value: "active",   label: "Active Client" },
-  { value: "inactive", label: "Inactive" },
-  { value: "archived", label: "Archived" },
-];
+// The values are what the database stores; only the labels are copy.
+const STATUS_VALUES = ["lead", "prospect", "active", "inactive", "archived"] as const;
 
 interface Props {
   clientId: string;
@@ -28,6 +24,7 @@ interface Props {
 }
 
 export function ClientEditForm({ clientId, initialValues }: Props) {
+  const { t } = useTranslation("clients");
   const [state, action, isPending] = useActionState<ClientState, FormData>(
     updateClient,
     null
@@ -39,7 +36,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-[11px] font-medium text-slate-500 mb-1">First name</label>
+          <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.firstName")}</label>
           <input
             name="first_name"
             type="text"
@@ -49,7 +46,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-slate-500 mb-1">Last name</label>
+          <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.lastName")}</label>
           <input
             name="last_name"
             type="text"
@@ -61,7 +58,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
       </div>
 
       <div>
-        <label className="block text-[11px] font-medium text-slate-500 mb-1">Company</label>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.company")}</label>
         <input
           name="company"
           type="text"
@@ -72,7 +69,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
       </div>
 
       <div>
-        <label className="block text-[11px] font-medium text-slate-500 mb-1">Email</label>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.email")}</label>
         <input
           name="email"
           type="email"
@@ -83,7 +80,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
       </div>
 
       <div>
-        <label className="block text-[11px] font-medium text-slate-500 mb-1">Phone</label>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.phone")}</label>
         <input
           name="phone"
           type="tel"
@@ -95,52 +92,52 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-[11px] font-medium text-slate-500 mb-1">Status</label>
+          <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.status")}</label>
           <select
             name="status"
             defaultValue={initialValues.status}
             disabled={isPending}
             className="w-full text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
           >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+            {STATUS_VALUES.map((s) => (
+              <option key={s} value={s}>{t(`form.statusOptions.${s}`)}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-slate-500 mb-1">Source</label>
+          <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.source")}</label>
           <input
             name="source"
             type="text"
             defaultValue={initialValues.source}
             disabled={isPending}
             className="w-full text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-            placeholder="Referral, website…"
+            placeholder={t("form.placeholders.source")}
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] font-medium text-slate-500 mb-1">Tags (comma-separated)</label>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.tagsLabel")}</label>
         <input
           name="tags"
           type="text"
           defaultValue={initialValues.tags}
           disabled={isPending}
           className="w-full text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-          placeholder="vip, contractor…"
+          placeholder={t("form.placeholders.tagsShort")}
         />
       </div>
 
       <div>
-        <label className="block text-[11px] font-medium text-slate-500 mb-1">Notes</label>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.notes")}</label>
         <textarea
           name="notes"
           rows={3}
           defaultValue={initialValues.notes}
           disabled={isPending}
           className="w-full text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 resize-none"
-          placeholder="Any context about this client…"
+          placeholder={t("form.placeholders.notesShort")}
         />
       </div>
 
@@ -148,7 +145,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
         <p className="text-xs text-rose-600 bg-rose-50 rounded px-2.5 py-1.5">{state.error}</p>
       )}
       {state?.success && (
-        <p className="text-xs text-emerald-700 bg-emerald-50 rounded px-2.5 py-1.5">Saved!</p>
+        <p className="text-xs text-emerald-700 bg-emerald-50 rounded px-2.5 py-1.5">{t("form.saved")}</p>
       )}
 
       <button
@@ -156,7 +153,7 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
         disabled={isPending}
         className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors"
       >
-        {isPending ? "Saving…" : "Save changes"}
+        {isPending ? t("common:status.saving") : t("form.saveChanges")}
       </button>
     </form>
   );

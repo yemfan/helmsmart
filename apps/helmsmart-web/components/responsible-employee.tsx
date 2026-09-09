@@ -1,6 +1,7 @@
 import { getWorkforce } from "@/lib/actions/workforce";
 import { getBlueprint } from "@helm/ai-workforce";
 import { Avatar, defaultAvatarForSeed } from "@helm/ui";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * A small "handled by {employee}" chip naming the AI employee responsible for this
@@ -9,6 +10,8 @@ import { Avatar, defaultAvatarForSeed } from "@helm/ui";
  * hash. Self-fetching async server component; renders nothing if the slug is unknown.
  */
 export async function ResponsibleEmployee({ slug, className }: { slug: string; className?: string }) {
+  const t = await getServerT("tasks");
+  const tc = await getServerT("common");
   const blueprint = getBlueprint(slug);
   let name = blueprint?.name;
   let role = blueprint?.role;
@@ -34,9 +37,13 @@ export async function ResponsibleEmployee({ slug, className }: { slug: string; c
     >
       <Avatar id={avatar} size={22} alt={name} />
       <span className="text-xs text-slate-600">
-        <span className="text-slate-400">Handled by</span>{" "}
+        <span className="text-slate-400">{t("responsibleEmployee.handledBy")}</span>{" "}
         <span className="font-medium text-slate-700">{name}</span>
-        <span className="text-slate-400"> · {role}</span>
+        {/* The NAME is a proper noun and stays; the ROLE is a job title and
+            translates. Keyed by the English title, like the nav, so a role
+            added to the roster (or renamed in the database) renders itself
+            rather than a raw key. */}
+        <span className="text-slate-400"> · {tc(`aiRoles.${role}`, { defaultValue: role })}</span>
       </span>
     </div>
   );

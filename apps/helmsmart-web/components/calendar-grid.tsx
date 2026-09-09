@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, ChevronDown, Grid3x3, List } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { createEvent, toggleEventComplete, deleteEvent } from "@/lib/actions/events";
 
 type EventType = "appointment" | "task" | "meeting" | "reminder";
@@ -34,12 +36,7 @@ const COLOR_CLASSES: Record<EventColor, string> = {
   slate:   "bg-slate-100 text-slate-700 border-l-2 border-slate-400",
 };
 
-const TYPE_LABELS: Record<EventType, string> = {
-  appointment: "Appointment",
-  task:        "Task",
-  meeting:     "Meeting",
-  reminder:    "Reminder",
-};
+const EVENT_TYPES: EventType[] = ["appointment", "task", "meeting", "reminder"];
 
 // Dot color shown on the filter chips, one per event type.
 const TYPE_DOT: Record<EventType, string> = {
@@ -49,9 +46,7 @@ const TYPE_DOT: Record<EventType, string> = {
   reminder:    "bg-amber-500",
 };
 
-const TYPE_FILTERS: ("all" | EventType)[] = ["all", "appointment", "task", "meeting", "reminder"];
-
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const TYPE_FILTERS: ("all" | EventType)[] = ["all", ...EVENT_TYPES];
 
 // Local YYYY-MM-DD for a Date (avoids the UTC shift toISOString would cause).
 function isoDate(d: Date) {
@@ -59,6 +54,8 @@ function isoDate(d: Date) {
 }
 
 export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients: Client[] }) {
+  const { t, i18n } = useTranslation("tasks");
+  const locale = intlLocale(i18n.language);
   const now  = new Date();
   const [viewMode, setViewMode] = useState<"month" | "list">("month");
   const [year, setYear]   = useState(now.getFullYear());
@@ -68,6 +65,15 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
   const [isPending, startTransition] = useTransition();
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const [typeFilter, setTypeFilter] = useState<"all" | EventType>("all");
+
+  // Weekday headers in the reader's language, Sunday first (2024-01-07 was a Sunday).
+  const dayHeaders = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) =>
+        new Date(Date.UTC(2024, 0, 7 + i)).toLocaleDateString(locale, { weekday: "short", timeZone: "UTC" })
+      ),
+    [locale]
+  );
 
   const visibleEvents = typeFilter === "all" ? events : events.filter((e) => e.type === typeFilter);
 
@@ -129,7 +135,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
     });
   }
 
-  const monthName = new Date(year, month, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const monthName = new Date(year, month, 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
 
   return (
     <div className="flex h-full flex-col">
@@ -143,13 +149,13 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
             onClick={() => openCreate(isoDate(new Date()))}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
           >
-            <Plus className="w-4 h-4" /> New event
+            <Plus className="w-4 h-4" /> {t("calendar.newEvent")}
           </button>
           <button
             onClick={() => { setYear(now.getFullYear()); setMonth(now.getMonth()); }}
             className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
           >
-            Today
+            {t("calendar.today")}
           </button>
           <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">
             <ChevronLeft className="w-4 h-4" />
@@ -167,7 +173,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                   ? "bg-white text-slate-800 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
               }`}
-              title="Month view"
+              title={t("calendar.monthView")}
             >
               <Grid3x3 className="w-4 h-4" />
             </button>
@@ -178,7 +184,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                   ? "bg-white text-slate-800 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
               }`}
-              title="List view"
+              title={t("calendar.listView")}
             >
               <List className="w-4 h-4" />
             </button>
@@ -190,7 +196,6 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
       <div className="flex items-center gap-2 px-8 py-3 border-b border-slate-200 bg-white overflow-x-auto">
         {TYPE_FILTERS.map((f) => {
           const active = typeFilter === f;
-          const label = f === "all" ? "All" : `${TYPE_LABELS[f]}s`;
           return (
             <button
               key={f}
@@ -202,7 +207,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
               }`}
             >
               {f !== "all" && <span className={`w-2 h-2 rounded-full ${TYPE_DOT[f]}`} />}
-              {label}
+              {t(`calendar.filters.${f}`)}
             </button>
           );
         })}
@@ -212,7 +217,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
         <>
           {/* Day headers */}
           <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
-            {DAYS.map((d) => (
+            {dayHeaders.map((d) => (
               <div key={d} className="py-2.5 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide">
                 {d}
               </div>
@@ -243,6 +248,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                         </span>
                         <button
                           onClick={() => handleCreate(day)}
+                          aria-label={t("calendar.newEvent")}
                           className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -258,7 +264,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                           >
                             {!ev.all_day && (
                               <span className="opacity-70 mr-1">
-                                {new Date(ev.start_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                                {new Date(ev.start_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
                               </span>
                             )}
                             {ev.title}
@@ -269,7 +275,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                             onClick={() => setSelectedEvent(dayEvents[3])}
                             className="w-full text-left text-xs text-slate-400 px-1.5 hover:text-slate-600"
                           >
-                            +{dayEvents.length - 3} more
+                            {t("calendar.more", { count: dayEvents.length - 3 })}
                           </button>
                         )}
                       </div>
@@ -297,13 +303,13 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 const durationHours = Math.floor(durationMs / 3600000);
                 const durationMins = Math.floor((durationMs % 3600000) / 60000);
                 const durationStr = ev.all_day
-                  ? "All day"
+                  ? t("calendar.allDay")
                   : durationHours > 0
-                    ? `${durationHours}h ${durationMins}m`
-                    : `${durationMins}m`;
+                    ? t("calendar.durationHoursMinutes", { hours: durationHours, minutes: durationMins })
+                    : t("calendar.durationMinutes", { minutes: durationMins });
                 const timeStr = ev.all_day
-                  ? "All day"
-                  : startDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+                  ? t("calendar.allDay")
+                  : startDate.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
 
                 return (
                   // A div (not button) so the nested "+" button below is valid
@@ -318,7 +324,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                   >
                     <div className="pt-0.5">
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded inline-block ${COLOR_CLASSES[ev.color]}`}>
-                        {TYPE_LABELS[ev.type]}
+                        {t(`calendar.types.${ev.type}`)}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -326,7 +332,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                         {ev.title}
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        {startDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} · {timeStr}
+                        {startDate.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" })} · {timeStr}
                       </p>
                       {ev.clients && (
                         <p className="text-xs text-slate-400 mt-1">
@@ -342,6 +348,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                         e.stopPropagation();
                         handleCreate(startDate.getDate());
                       }}
+                      aria-label={t("calendar.newEvent")}
                       className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
                     >
                       <Plus className="w-4 h-4" />
@@ -354,7 +361,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
               return eDate.getFullYear() === year && eDate.getMonth() === month;
             }).length === 0 && (
               <div className="flex-1 flex items-center justify-center text-slate-400">
-                <p className="text-sm">{typeFilter === "all" ? "No events this month" : `No ${TYPE_LABELS[typeFilter].toLowerCase()}s this month`}</p>
+                <p className="text-sm">{t(`calendar.empty.${typeFilter}`)}</p>
               </div>
             )}
           </div>
@@ -366,7 +373,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-800">New event</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("calendar.modal.title")}</h2>
               <button onClick={() => setCreating(false)} className="p-1.5 hover:bg-slate-100 rounded-lg">
                 <X className="w-4 h-4 text-slate-500" />
               </button>
@@ -376,7 +383,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
               <input
                 type="text"
                 autoFocus
-                placeholder="Event title"
+                placeholder={t("calendar.modal.titlePlaceholder")}
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 onKeyDown={(e) => e.key === "Enter" && submitCreate()}
@@ -384,7 +391,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
               />
 
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">Date</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1">{t("calendar.modal.date")}</label>
                 <input
                   type="date"
                   value={form.date}
@@ -395,17 +402,17 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Type</label>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">{t("calendar.modal.type")}</label>
                   <div className="relative">
                     <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as EventType }))}
                       className="w-full appearance-none border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-8">
-                      {Object.entries(TYPE_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                      {EVENT_TYPES.map((v) => <option key={v} value={v}>{t(`calendar.types.${v}`)}</option>)}
                     </select>
                     <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Color</label>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">{t("calendar.modal.color")}</label>
                   <div className="flex gap-2 mt-1.5">
                     {(Object.keys(COLOR_CLASSES) as EventColor[]).map((c) => (
                       <button
@@ -425,7 +432,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
                   <input type="checkbox" checked={form.allDay} onChange={(e) => setForm((f) => ({ ...f, allDay: e.target.checked }))}
                     className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
-                  All day
+                  {t("calendar.modal.allDay")}
                 </label>
                 {!form.allDay && (
                   <>
@@ -435,7 +442,11 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                     <select value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: Number(e.target.value) }))}
                       className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       {[15, 30, 45, 60, 90, 120].map((d) => (
-                        <option key={d} value={d}>{d < 60 ? `${d}m` : `${d / 60}h`}</option>
+                        <option key={d} value={d}>
+                          {d < 60
+                            ? t("calendar.modal.durationMinutes", { count: d })
+                            : t("calendar.modal.durationHours", { count: d / 60 })}
+                        </option>
                       ))}
                     </select>
                   </>
@@ -444,14 +455,14 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
 
               {clients.length > 0 && (
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 mb-1">Client (optional)</label>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">{t("calendar.modal.client")}</label>
                   <div className="relative">
                     <select value={form.clientId} onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
                       className="w-full appearance-none border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-8">
-                      <option value="">No client</option>
+                      <option value="">{t("calendar.modal.noClient")}</option>
                       {clients.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {[c.first_name, c.last_name].filter(Boolean).join(" ") || "Unnamed"}
+                          {[c.first_name, c.last_name].filter(Boolean).join(" ") || t("calendar.modal.unnamed")}
                         </option>
                       ))}
                     </select>
@@ -460,16 +471,16 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 </div>
               )}
 
-              <textarea rows={2} placeholder="Description (optional)" value={form.description}
+              <textarea rows={2} placeholder={t("calendar.modal.descriptionPlaceholder")} value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
             </div>
 
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100">
-              <button onClick={() => setCreating(false)} className="text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+              <button onClick={() => setCreating(false)} className="text-sm text-slate-500 hover:text-slate-700">{t("common:actions.cancel")}</button>
               <button onClick={submitCreate} disabled={isPending || !form.title.trim()}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
-                {isPending ? "Saving…" : "Create event"}
+                {isPending ? t("common:status.saving") : t("calendar.modal.submit")}
               </button>
             </div>
           </div>
@@ -483,13 +494,13 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded mb-2 ${COLOR_CLASSES[selectedEvent.color]}`}>
-                  {TYPE_LABELS[selectedEvent.type]}
+                  {t(`calendar.types.${selectedEvent.type}`)}
                 </span>
                 <h3 className={`text-base font-semibold text-slate-800 ${selectedEvent.completed ? "line-through opacity-50" : ""}`}>
                   {selectedEvent.title}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {selectedEvent.all_day ? "All day" : new Date(selectedEvent.start_at).toLocaleTimeString("en-US", {
+                  {selectedEvent.all_day ? t("calendar.allDay") : new Date(selectedEvent.start_at).toLocaleTimeString(locale, {
                     hour: "numeric", minute: "2-digit", weekday: "short", month: "short", day: "numeric",
                   })}
                 </p>
@@ -515,16 +526,17 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 className="flex-1 flex items-center justify-center gap-2 py-2 border border-slate-200 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50"
               >
                 <Check className="w-4 h-4" />
-                {selectedEvent.completed ? "Reopen" : "Complete"}
+                {selectedEvent.completed ? t("calendar.detail.reopen") : t("calendar.detail.complete")}
               </button>
               <button
                 onClick={() => {
-                  if (!confirm("Delete this event?")) return;
+                  if (!confirm(t("calendar.detail.confirmDelete"))) return;
                   startTransition(async () => {
                     await deleteEvent(selectedEvent.id);
                     setSelectedEvent(null);
                   });
                 }}
+                aria-label={t("common:actions.delete")}
                 className="p-2 border border-rose-200 text-rose-500 rounded-lg hover:bg-rose-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />

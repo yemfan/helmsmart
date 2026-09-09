@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +24,10 @@ Respond with ONLY a JSON array, no markdown or code fences:
 Use an empty string for unknown fields. If there are no contacts, return [].`;
 
 export async function POST(request: NextRequest) {
+  const t = await getServerT("clients");
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "AI not configured" }, { status: 503 });
+    return NextResponse.json({ error: t("errors.aiNotConfigured") }, { status: 503 });
   }
 
   let text = "";
@@ -39,19 +41,19 @@ export async function POST(request: NextRequest) {
     if (file && file.size > 0) {
       const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
       if (!allowed.includes(file.type)) {
-        return NextResponse.json({ error: "Unsupported image type. Use JPEG, PNG, or WebP." }, { status: 400 });
+        return NextResponse.json({ error: t("errors.extractUnsupportedImage") }, { status: 400 });
       }
       if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json({ error: "Image must be under 10 MB" }, { status: 400 });
+        return NextResponse.json({ error: t("errors.extractImageTooLarge") }, { status: 400 });
       }
       imageData = Buffer.from(await file.arrayBuffer()).toString("base64");
       mediaType = (file.type === "image/jpg" ? "image/jpeg" : file.type) as typeof mediaType;
     }
     if (!text && !imageData) {
-      return NextResponse.json({ error: "Paste text or upload an image." }, { status: 400 });
+      return NextResponse.json({ error: t("errors.extractNoInput") }, { status: 400 });
     }
   } catch {
-    return NextResponse.json({ error: "Failed to read input" }, { status: 400 });
+    return NextResponse.json({ error: t("errors.extractReadFailed") }, { status: 400 });
   }
 
   const anthropic = new Anthropic({ apiKey });
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
       parsed = JSON.parse(match ? match[0] : cleaned);
     } catch {
       console.error("[clients/extract] JSON parse failed:", raw);
-      return NextResponse.json({ error: "Couldn't read contacts from that input." }, { status: 500 });
+      return NextResponse.json({ error: t("errors.extractParseFailed") }, { status: 500 });
     }
 
     const arr = Array.isArray(parsed) ? (parsed as Record<string, unknown>[]) : [];
@@ -102,6 +104,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ contacts });
   } catch (err) {
     console.error("[clients/extract] Anthropic error:", err);
-    return NextResponse.json({ error: "Extraction failed" }, { status: 500 });
+    return NextResponse.json({ error: t("errors.extractFailed") }, { status: 500 });
   }
 }

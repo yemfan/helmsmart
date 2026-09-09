@@ -4,6 +4,9 @@ import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { intlLocale } from "@leadsmart/i18n";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -58,12 +61,13 @@ export async function getClientBrief(clientId: string): Promise<ClientBrief | nu
 export async function generateClientBrief(
   clientId: string
 ): Promise<{ ok: boolean; brief?: ClientBrief; error?: string }> {
+  const [t, locale] = await Promise.all([getServerT("clients"), getServerLocale()]);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return { ok: false, error: "AI not configured" };
+  if (!apiKey) return { ok: false, error: t("errors.aiNotConfigured") };
 
   const supabase = await createClient();
   const db = await createServiceClient();
@@ -141,7 +145,7 @@ export async function generateClientBrief(
       .limit(5),
   ]);
 
-  if (!clientRes.data) return { ok: false, error: "Client not found" };
+  if (!clientRes.data) return { ok: false, error: t("errors.clientNotFound") };
   const client = clientRes.data;
 
   // ── Build context string for Claude ────────────────────────────────────────
@@ -157,7 +161,7 @@ export async function generateClientBrief(
   const clientName =
     [client.first_name, client.last_name].filter(Boolean).join(" ") ||
     client.company ||
-    "Client";
+    t("detail.fallbackName");
 
   const totalPaid = invoices
     .filter((i) => i.status === "paid")
@@ -170,7 +174,7 @@ export async function generateClientBrief(
   );
 
   const fmt = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+    new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
   const contextParts: string[] = [
     `## Client: ${clientName}`,
@@ -217,7 +221,7 @@ export async function generateClientBrief(
     `## Upcoming Events`,
     events.length
       ? events
-          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`)
+          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`)
           .join("\n")
       : "No upcoming appointments.",
     "",
@@ -241,9 +245,10 @@ export async function generateClientBrief(
 
   // ── Call Claude ─────────────────────────────────────────────────────────────
 
-  const systemPrompt = `You are an AI business advisor analyzing a client relationship for a small business owner.
+  const systemPrompt =
+    `You are an AI business advisor analyzing a client relationship for a small business owner.
 Be direct, concise, and actionable. Focus on what matters most right now.
-Today's date: ${today}`;
+Today's date: ${today}` + languageDirectiveForJson(locale);
 
   const userPrompt = `Analyze this client and produce a JSON brief. Be concise and business-focused.
 
@@ -275,7 +280,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
     rawText = (response.content[0] as { type: string; text: string }).text ?? "";
   } catch (e) {
     console.error("[client-brief] Claude error:", e);
-    return { ok: false, error: "Failed to generate brief" };
+    return { ok: false, error: t("errors.briefFailed") };
   }
 
   // ── Parse response ──────────────────────────────────────────────────────────
@@ -293,7 +298,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     parsed = JSON.parse(jsonMatch?.[0] ?? rawText);
   } catch {
-    return { ok: false, error: "Failed to parse AI response" };
+    return { ok: false, error: t("errors.briefParseFailed") };
   }
 
   // ── Persist ─────────────────────────────────────────────────────────────────
@@ -304,7 +309,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
     {
       organization_id: orgId,
       client_id:       clientId,
-      headline:        parsed.headline ?? "No headline generated",
+      headline:        parsed.headline ?? t("brief.noHeadline"),
       summary:         parsed.summary ?? "",
       next_action:     parsed.next_action ?? null,
       health_score:    parsed.health_score ?? null,
@@ -318,7 +323,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
 
   if (upsertErr) {
     console.error("[client-brief] upsert error:", upsertErr);
-    return { ok: false, error: upsertErr.message };
+    return { ok: false, error: t("errors.briefSaveFailed") };
   }
 
   revalidatePath(`/clients/${clientId}`);

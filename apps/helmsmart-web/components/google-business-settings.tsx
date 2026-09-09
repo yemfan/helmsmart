@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { toggleAutoRequestReviews } from "@/lib/actions/google-business";
 import { Settings, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function GoogleBusinessSettings({ autoRequestEnabled }: { autoRequestEnabled: boolean }) {
+  const { t } = useTranslation("marketing");
   const [enabled, setEnabled] = useState(autoRequestEnabled);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [error, setError] = useState("");
@@ -21,7 +23,7 @@ export function GoogleBusinessSettings({ autoRequestEnabled }: { autoRequestEnab
         setStatus("saved");
         setTimeout(() => setStatus("idle"), 2000);
       } else {
-        setError(result.error || "Failed to save");
+        setError(result.error || t("google.settings.saveFailed"));
         setStatus("error");
         setEnabled(!newValue); // Revert
       }
@@ -34,9 +36,9 @@ export function GoogleBusinessSettings({ autoRequestEnabled }: { autoRequestEnab
         <div className="flex items-start gap-3">
           <Settings className="w-5 h-5 text-slate-600 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="font-semibold text-slate-900">Auto-request reviews</h3>
+            <h3 className="font-semibold text-slate-900">{t("google.settings.title")}</h3>
             <p className="text-sm text-slate-500 mt-1">
-              Automatically send review requests to clients after their appointments are completed
+              {t("google.settings.desc")}
             </p>
           </div>
         </div>
@@ -63,13 +65,12 @@ export function GoogleBusinessSettings({ autoRequestEnabled }: { autoRequestEnab
       </div>
 
       {error && status === "error" && (
-        <p className="text-xs text-rose-600 mt-3">{error}</p>
+        <p className="text-xs text-rose-600 mt-3" role="alert">{error}</p>
       )}
 
       {enabled && (
         <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800">
-          ✓ When enabled, clients will receive an email asking them to review your business on Google.
-          You can also manually request reviews on individual client profiles.
+          {t("google.settings.enabledNote")}
         </div>
       )}
     </div>

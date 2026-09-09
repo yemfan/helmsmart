@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle, SkipForward, ChevronDown } from "lucide-react";
 import { approveTransaction, skipTransaction } from "@/lib/actions/transactions";
 import type { ApproveState } from "@/lib/actions/transactions";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 type CoaOption = {
   id: string;
@@ -32,9 +34,15 @@ type Transaction = {
 interface Props {
   transaction: Transaction;
   coa: CoaOption[];
+  /** ISO code from `organizations.currency`, passed down by the page. */
+  currency?: string;
 }
 
-export function TransactionReviewRow({ transaction: t, coa }: Props) {
+/** The sentinel `skipTransaction` writes into `memo`; a value, never copy. */
+const SKIPPED_MEMO = "[Skipped]";
+
+export function TransactionReviewRow({ transaction: txn, coa, currency = "USD" }: Props) {
+  const { t, i18n } = useTranslation("books");
   const [state, action, isPending] = useActionState<ApproveState, FormData>(
     approveTransaction,
     null
@@ -42,25 +50,23 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
   const [skipping, setSkipping] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  const isPosted = !!t.journal_entry_id;
-  const isMoneyOut = t.amount > 0;
-  const absAmount = Math.abs(t.amount);
+  const isPosted = !!txn.journal_entry_id;
+  const isMoneyOut = txn.amount > 0;
+  const absAmount = Math.abs(txn.amount);
 
-  const displayAmount = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(absAmount);
+  const displayAmount = moneyFormatter(i18n.language, currency)(absAmount);
+  const shortDate = dateFormatter(i18n.language, { month: "short", day: "numeric" })(txn.date);
 
-  const merchant = t.merchant_name ?? t.name;
-  const aiAccount = coa.find((a) => a.id === t.coa_account_id);
-  const aiConfidence = t.ai_category_confidence;
-  const confidenceLabel =
+  const merchant = txn.merchant_name ?? txn.name;
+  const aiAccount = coa.find((a) => a.id === txn.coa_account_id);
+  const aiConfidence = txn.ai_category_confidence;
+  const confidenceBand =
     aiConfidence !== null
       ? aiConfidence >= 0.9
-        ? "High"
+        ? "high"
         : aiConfidence >= 0.7
-        ? "Medium"
-        : "Low"
+        ? "medium"
+        : "low"
       : null;
 
   const confidenceColor =
@@ -81,34 +87,36 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
 
   const handleSkip = async () => {
     setSkipping(true);
-    await skipTransaction(t.id);
+    await skipTransaction(txn.id);
     setSkipping(false);
   };
 
-  if (t.reviewed && !expanded) {
+  if (txn.reviewed && !expanded) {
     return (
       <div
         className="grid grid-cols-[90px_1fr_160px_100px_90px] gap-4 px-4 py-3 items-center opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
         onClick={() => setExpanded(true)}
       >
-        <span className="text-xs text-slate-400 tabular-nums">
-          {new Date(t.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-        </span>
+        <span className="text-xs text-slate-400 tabular-nums">{shortDate}</span>
         <div className="min-w-0">
           <p className="text-sm text-slate-600 truncate">{merchant}</p>
-          {t.memo && <p className="text-xs text-slate-400 truncate">{t.memo}</p>}
+          {txn.memo && <p className="text-xs text-slate-400 truncate">{txn.memo}</p>}
         </div>
         <span className="text-xs text-slate-500 truncate">
-          {aiAccount ? `${aiAccount.code} · ${aiAccount.name}` : t.memo === "[Skipped]" ? "Skipped" : "—"}
+          {aiAccount
+            ? `${aiAccount.code} · ${aiAccount.name}`
+            : txn.memo === SKIPPED_MEMO
+            ? t("transactions.row.skipped")
+            : "—"}
         </span>
         <span className={`text-sm font-medium text-right tabular-nums ${isMoneyOut ? "text-rose-500" : "text-emerald-600"}`}>
           {isMoneyOut ? "-" : "+"}{displayAmount}
         </span>
         <span className="text-right">
           {isPosted ? (
-            <span className="text-xs text-emerald-600 font-medium">Posted</span>
+            <span className="text-xs text-emerald-600 font-medium">{t("transactions.row.posted")}</span>
           ) : (
-            <span className="text-xs text-slate-400">Reviewed</span>
+            <span className="text-xs text-slate-400">{t("transactions.row.reviewed")}</span>
           )}
         </span>
       </div>
@@ -120,21 +128,19 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
       {/* Main row */}
       <div className="grid grid-cols-[90px_1fr_160px_100px_90px] gap-4 items-start">
         {/* Date */}
-        <span className="text-xs text-slate-400 tabular-nums pt-0.5">
-          {new Date(t.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-        </span>
+        <span className="text-xs text-slate-400 tabular-nums pt-0.5">{shortDate}</span>
 
         {/* Description */}
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-800 truncate">{merchant}</p>
-          {t.personal_finance_category && (
+          {txn.personal_finance_category && (
             <p className="text-xs text-slate-400 truncate mt-0.5">
-              {t.personal_finance_category.replace(/_/g, " ").toLowerCase()}
+              {txn.personal_finance_category.replace(/_/g, " ").toLowerCase()}
             </p>
           )}
-          {t.ai_suggested_memo && (
+          {txn.ai_suggested_memo && (
             <p className="text-xs text-indigo-500 truncate mt-0.5 italic">
-              AI: {t.ai_suggested_memo}
+              {t("transactions.row.aiMemo", { memo: txn.ai_suggested_memo })}
             </p>
           )}
         </div>
@@ -144,14 +150,14 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
           {aiAccount ? (
             <div>
               <p className="text-xs text-slate-700 truncate font-medium">{aiAccount.name}</p>
-              {confidenceLabel && (
+              {confidenceBand && (
                 <p className={`text-[10px] font-medium ${confidenceColor}`}>
-                  {confidenceLabel} confidence
+                  {t(`transactions.row.confidence.${confidenceBand}`)}
                 </p>
               )}
             </div>
           ) : (
-            <span className="text-xs text-slate-400">Not categorized</span>
+            <span className="text-xs text-slate-400">{t("transactions.row.notCategorized")}</span>
           )}
         </div>
 
@@ -161,12 +167,12 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
         </span>
 
         {/* Actions */}
-        {!t.reviewed ? (
+        {!txn.reviewed ? (
           <div className="flex items-center justify-end gap-1.5">
             <button
               onClick={() => setExpanded((e) => !e)}
               className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-              title="Expand"
+              title={t("transactions.row.expand")}
             >
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
             </button>
@@ -174,13 +180,13 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
         ) : (
           <span className="text-right">
             {isPosted ? (
-              <span className="text-xs text-emerald-600 font-medium">Posted</span>
+              <span className="text-xs text-emerald-600 font-medium">{t("transactions.row.posted")}</span>
             ) : (
               <button
                 onClick={() => setExpanded((e) => !e)}
                 className="text-xs text-slate-400 hover:text-slate-600"
               >
-                Edit
+                {t("common:actions.edit")}
               </button>
             )}
           </span>
@@ -191,18 +197,18 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
       {expanded && (
         <div className="mt-3 pl-[118px]">
           <form action={action} className="flex items-end gap-3 flex-wrap">
-            <input type="hidden" name="transaction_id" value={t.id} />
+            <input type="hidden" name="transaction_id" value={txn.id} />
 
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Category
+                {t("transactions.row.category")}
               </label>
               <select
                 name="coa_account_id"
-                defaultValue={t.coa_account_id ?? ""}
+                defaultValue={txn.coa_account_id ?? ""}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="">— Select account —</option>
+                <option value="">{t("transactions.row.selectAccount")}</option>
                 {relevantCoa.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.code} · {a.name}
@@ -213,13 +219,13 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
 
             <div className="flex-1 min-w-[180px]">
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Memo (optional)
+                {t("transactions.row.memo")}
               </label>
               <input
                 type="text"
                 name="memo"
-                defaultValue={t.ai_suggested_memo ?? t.memo ?? ""}
-                placeholder="Brief note…"
+                defaultValue={txn.ai_suggested_memo ?? txn.memo ?? ""}
+                placeholder={t("transactions.row.memoPlaceholder")}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -232,7 +238,7 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
                            hover:bg-indigo-700 disabled:opacity-60 transition-colors"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
-                {isPending ? "Saving…" : "Approve"}
+                {isPending ? t("common:status.saving") : t("transactions.row.approve")}
               </button>
 
               <button
@@ -243,16 +249,16 @@ export function TransactionReviewRow({ transaction: t, coa }: Props) {
                            hover:bg-slate-50 disabled:opacity-60 transition-colors"
               >
                 <SkipForward className="w-3.5 h-3.5" />
-                Skip
+                {t("transactions.row.skip")}
               </button>
             </div>
           </form>
 
           {state?.error && (
-            <p className="mt-2 text-xs text-red-600">{state.error}</p>
+            <p className="mt-2 text-xs text-rose-600" role="alert">{state.error}</p>
           )}
           {state?.success && (
-            <p className="mt-2 text-xs text-emerald-600">Approved and posted to journal.</p>
+            <p className="mt-2 text-xs text-emerald-600">{t("transactions.row.approved")}</p>
           )}
         </div>
       )}

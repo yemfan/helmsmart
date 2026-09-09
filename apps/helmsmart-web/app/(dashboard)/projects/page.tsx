@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { listProjectsPnL } from "@/lib/actions/projects";
 import { ProjectsClient } from "./projects-client";
 
-export const metadata: Metadata = { title: "Projects" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("projects");
+  return { title: t("meta.projects") };
+}
 
 export default async function ProjectsPage() {
   const cookieStore = await cookies();

@@ -3,10 +3,15 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { InboxClient } from "@/components/inbox-client";
 import { inboundAddressFor } from "@/lib/inboundAddress";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Inbox" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("inbox");
+  return { title: t("meta.title") };
+}
 
 export default async function InboxPage() {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -76,8 +81,9 @@ export default async function InboxPage() {
     const isEmailAddr = !!contactAddress && contactAddress.includes("@");
 
     const clientName = clientRaw
-      ? [clientRaw.first_name, clientRaw.last_name].filter(Boolean).join(" ") || "Unknown"
-      : contactAddress ?? "Unknown";
+      ? [clientRaw.first_name, clientRaw.last_name].filter(Boolean).join(" ") ||
+        t("list.unknownSender")
+      : contactAddress ?? t("list.unknownSender");
 
     const m: MsgForThread = {
       id: msg.id,

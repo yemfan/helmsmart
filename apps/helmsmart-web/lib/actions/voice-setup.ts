@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { updateOrg } from "@/lib/actions/org-update";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { createRetellNumber, importRetellNumber, getRetellNumber } from "@/lib/retell";
+import { getServerT } from "@/lib/i18n/server";
 
 type ActionResult = { ok: boolean; number?: string; error?: string };
 
@@ -24,11 +25,12 @@ function inboundWebhookUrl(): string {
 }
 
 /** Validate the env this flow depends on; returns the shared agent id when ready. */
-function retellEnv(): { ok: true; agentId: string } | { ok: false; error: string } {
-  if (!process.env.RETELL_API_KEY) return { ok: false, error: "RETELL_API_KEY isn't set on the server." };
-  if (!process.env.RETELL_FUNCTION_SECRET) return { ok: false, error: "RETELL_FUNCTION_SECRET isn't set on the server." };
+async function retellEnv(): Promise<{ ok: true; agentId: string } | { ok: false; error: string }> {
+  const t = await getServerT("voice");
+  if (!process.env.RETELL_API_KEY) return { ok: false, error: t("errors.missingApiKey") };
+  if (!process.env.RETELL_FUNCTION_SECRET) return { ok: false, error: t("errors.missingFunctionSecret") };
   const agentId = process.env.RETELL_AGENT_ID;
-  if (!agentId) return { ok: false, error: "RETELL_AGENT_ID isn't set on the server — add the shared receptionist agent id." };
+  if (!agentId) return { ok: false, error: t("errors.missingAgentId") };
   return { ok: true, agentId };
 }
 
@@ -56,9 +58,8 @@ async function currentOrg(): Promise<{ id: string; name: string; twilio_number: 
 async function storeNumber(orgId: string, e164: string): Promise<void> {
   const saved = await updateOrg(orgId, { twilio_number: e164 }, "storeNumber");
   if (!saved.ok) {
-    throw new Error(
-      `Number ${e164} was provisioned but could not be saved to the organization: ${saved.error}`,
-    );
+    const t = await getServerT("voice");
+    throw new Error(t("errors.numberNotStored", { number: e164, reason: saved.error }));
   }
   revalidatePath("/voice");
   revalidatePath("/reception");
@@ -66,16 +67,17 @@ async function storeNumber(orgId: string, e164: string): Promise<void> {
 
 /** Buy a new number and auto-wire it to the agent + inbound webhook. */
 export async function provisionNumber(input: { areaCode: string; tollFree?: boolean }): Promise<ActionResult> {
-  const env = retellEnv();
+  const t = await getServerT("voice");
+  const env = await retellEnv();
   if (!env.ok) return { ok: false, error: env.error };
 
   const org = await currentOrg();
-  if (!org) return { ok: false, error: "No organization selected." };
-  if (org.twilio_number) return { ok: false, error: "This business already has a number connected." };
+  if (!org) return { ok: false, error: t("errors.noOrganization") };
+  if (org.twilio_number) return { ok: false, error: t("errors.alreadyHasNumber") };
 
   const areaCode = parseInt(String(input.areaCode).replace(/\D/g, ""), 10);
   if (!Number.isInteger(areaCode) || areaCode < 200 || areaCode > 999) {
-    return { ok: false, error: "Enter a valid 3-digit US area code (e.g. 626)." };
+    return { ok: false, error: t("errors.invalidAreaCode") };
   }
 
   try {
@@ -91,7 +93,7 @@ export async function provisionNumber(input: { areaCode: string; tollFree?: bool
     await storeNumber(org.id, e164);
     return { ok: true, number: e164 };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Couldn't buy a number right now." };
+    return { ok: false, error: e instanceof Error ? e.message : t("errors.buyFailed") };
   }
 }
 
@@ -102,18 +104,19 @@ export async function importExistingNumber(input: {
   sipUser?: string;
   sipPass?: string;
 }): Promise<ActionResult> {
-  const env = retellEnv();
+  const t = await getServerT("voice");
+  const env = await retellEnv();
   if (!env.ok) return { ok: false, error: env.error };
 
   const org = await currentOrg();
-  if (!org) return { ok: false, error: "No organization selected." };
-  if (org.twilio_number) return { ok: false, error: "This business already has a number connected." };
+  if (!org) return { ok: false, error: t("errors.noOrganization") };
+  if (org.twilio_number) return { ok: false, error: t("errors.alreadyHasNumber") };
 
   const norm = normalizePhoneE164(input.phoneNumber);
   if (!norm.ok) return { ok: false, error: norm.error };
 
   const terminationUri = input.terminationUri.trim();
-  if (!terminationUri) return { ok: false, error: "Enter your SIP termination URI (e.g. yourtrunk.pstn.twilio.com)." };
+  if (!terminationUri) return { ok: false, error: t("errors.terminationUriRequired") };
 
   try {
     const { phoneNumber } = await importRetellNumber({
@@ -130,7 +133,7 @@ export async function importExistingNumber(input: {
     await storeNumber(org.id, e164);
     return { ok: true, number: e164 };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Couldn't import that number." };
+    return { ok: false, error: e instanceof Error ? e.message : t("errors.importFailed") };
   }
 }
 
@@ -142,12 +145,13 @@ export async function verifyNumberWiring(): Promise<{
   agentOk: boolean;
   error?: string;
 }> {
-  const env = retellEnv();
+  const t = await getServerT("voice");
+  const env = await retellEnv();
   if (!env.ok) return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: env.error };
 
   const org = await currentOrg();
   if (!org?.twilio_number) {
-    return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: "No number connected yet." };
+    return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: t("errors.noNumberConnected") };
   }
 
   try {
@@ -156,6 +160,6 @@ export async function verifyNumberWiring(): Promise<{
     const agentOk = info.agentIds.includes(env.agentId);
     return { ok: info.found && webhookOk && agentOk, numberFound: info.found, webhookOk, agentOk };
   } catch (e) {
-    return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: e instanceof Error ? e.message : "Verification failed." };
+    return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: e instanceof Error ? e.message : t("errors.verifyFailed") };
   }
 }

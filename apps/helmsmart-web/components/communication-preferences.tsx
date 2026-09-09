@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bell, CheckCircle2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { updateClientPreferences } from "@/lib/actions/communication-logs";
 
 interface Preferences {
@@ -22,6 +23,7 @@ export function CommunicationPreferences({
   clientId,
   initialPreferences,
 }: Props) {
+  const { t } = useTranslation("clients");
   const [preferences, setPreferences] = useState<Preferences>(
     initialPreferences || {}
   );
@@ -47,7 +49,7 @@ export function CommunicationPreferences({
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } else {
-      setError(result.error || "Failed to save preferences");
+      setError(result.error || t("errors.preferencesFailed"));
     }
   };
 
@@ -56,7 +58,7 @@ export function CommunicationPreferences({
       <div className="flex items-center gap-2 mb-6">
         <Bell className="w-5 h-5 text-slate-700" />
         <h3 className="text-lg font-semibold text-slate-900">
-          Communication Preferences
+          {t("preferences.title")}
         </h3>
       </div>
 
@@ -64,24 +66,24 @@ export function CommunicationPreferences({
         {/* Opt-outs */}
         <div className="bg-slate-50 rounded-lg p-4">
           <p className="text-sm font-medium text-slate-700 mb-4">
-            Notification Opt-outs
+            {t("preferences.optOuts.title")}
           </p>
           <div className="space-y-3">
             {[
               {
                 key: "opted_out_sms",
-                label: "SMS Messages",
-                description: "Opt out from text messages",
+                label: t("preferences.optOuts.sms.label"),
+                description: t("preferences.optOuts.sms.description"),
               },
               {
                 key: "opted_out_email",
-                label: "Email",
-                description: "Opt out from email messages",
+                label: t("preferences.optOuts.email.label"),
+                description: t("preferences.optOuts.email.description"),
               },
               {
                 key: "opted_out_calls",
-                label: "Phone Calls",
-                description: "Opt out from phone calls",
+                label: t("preferences.optOuts.calls.label"),
+                description: t("preferences.optOuts.calls.description"),
               },
             ].map((item) => (
               <label
@@ -113,13 +115,13 @@ export function CommunicationPreferences({
         {/* Contact preferences */}
         <div className="bg-slate-50 rounded-lg p-4">
           <p className="text-sm font-medium text-slate-700 mb-4">
-            Contact Preferences
+            {t("preferences.contact.title")}
           </p>
           <div className="space-y-4">
             {/* Preferred contact method */}
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-2">
-                Preferred Contact Method
+                {t("preferences.contact.method")}
               </label>
               <select
                 value={preferences.preferred_contact_method || "any"}
@@ -129,17 +131,17 @@ export function CommunicationPreferences({
                 disabled={saving}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                <option value="any">Any method</option>
-                <option value="sms">SMS only</option>
-                <option value="email">Email only</option>
-                <option value="call">Phone call only</option>
+                <option value="any">{t("preferences.contact.methods.any")}</option>
+                <option value="sms">{t("preferences.contact.methods.sms")}</option>
+                <option value="email">{t("preferences.contact.methods.email")}</option>
+                <option value="call">{t("preferences.contact.methods.call")}</option>
               </select>
             </div>
 
             {/* Best time to contact */}
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-2">
-                Best Time to Contact
+                {t("preferences.contact.bestTime")}
               </label>
               <select
                 value={preferences.best_time_to_contact || ""}
@@ -149,25 +151,25 @@ export function CommunicationPreferences({
                 disabled={saving}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                <option value="">No preference</option>
-                <option value="morning">Morning (6am - 12pm)</option>
-                <option value="afternoon">Afternoon (12pm - 6pm)</option>
-                <option value="evening">Evening (6pm - 10pm)</option>
-                <option value="weekdays">Weekdays only</option>
-                <option value="weekends">Weekends only</option>
+                <option value="">{t("preferences.contact.times.none")}</option>
+                <option value="morning">{t("preferences.contact.times.morning")}</option>
+                <option value="afternoon">{t("preferences.contact.times.afternoon")}</option>
+                <option value="evening">{t("preferences.contact.times.evening")}</option>
+                <option value="weekdays">{t("preferences.contact.times.weekdays")}</option>
+                <option value="weekends">{t("preferences.contact.times.weekends")}</option>
               </select>
             </div>
 
             {/* Notes */}
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-2">
-                Additional Notes
+                {t("preferences.contact.notes")}
               </label>
               <textarea
                 value={preferences.notes || ""}
                 onChange={(e) => handleToggle("notes", e.target.value)}
                 disabled={saving}
-                placeholder='e.g., "prefers email after 5pm", "do not call on Mondays"'
+                placeholder={t("preferences.contact.notesPlaceholder")}
                 rows={3}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none disabled:opacity-50"
               />
@@ -180,7 +182,7 @@ export function CommunicationPreferences({
           {saved && (
             <div className="flex items-center gap-2 text-sm text-emerald-600">
               <CheckCircle2 className="w-4 h-4" />
-              Saved successfully
+              {t("preferences.saved")}
             </div>
           )}
           {error && (
@@ -190,7 +192,7 @@ export function CommunicationPreferences({
             </div>
           )}
           {saving && (
-            <div className="text-sm text-slate-500">Saving...</div>
+            <div className="text-sm text-slate-500">{t("common:status.saving")}</div>
           )}
         </div>
       </div>

@@ -1,1 +1,435 @@
-{}
+{
+  "dashboard": {
+    "metaTitle": "仪表盘",
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "clientSummary_one": "{{count}} 位活跃客户 · 共 {{total}} 位",
+    "clientSummary_other": "{{count}} 位活跃客户 · 共 {{total}} 位",
+    "actions": {
+      "newInvoice": "新建发票",
+      "clients": "客户"
+    },
+    "kpi": {
+      "bankBalance": "银行余额",
+      "bankBalanceLinked": "全部已连接账户",
+      "bankBalanceEmpty": "连接银行账户",
+      "revenueMtd": "本月收入",
+      "expensesMtd": "本月支出",
+      "outstanding": "未收款",
+      "outstandingInvoices_one": "{{count}} 张发票",
+      "outstandingInvoices_other": "{{count}} 张发票",
+      "outstandingWithOverdue": "{{invoices}} · {{overdue}} 张逾期"
+    },
+    "chart": {
+      "title": "收入与支出",
+      "subtitle": "最近 6 个月",
+      "fullReport": "完整报表"
+    },
+    "cashFlow": {
+      "title": "现金流展望",
+      "viewForecast": "查看预测",
+      "cashOnHand": "手头现金",
+      "linkedAccounts": "已连接账户",
+      "linkABank": "连接银行",
+      "expectedIn": "预计流入",
+      "overdueAmount": "逾期 {{amount}}",
+      "openInvoices": "未结发票",
+      "expectedOut": "预计流出",
+      "dueNow": "现应付 {{amount}}",
+      "openBills": "未结账单",
+      "projected90": "预测（90 天）",
+      "afterOpenItems": "扣除未结项目后",
+      "dipWarning": "90 天内预计现金将降至 {{amount}}。请优先催收逾期发票，或推迟不紧急的账单。"
+    },
+    "projects": {
+      "title": "进行中的项目",
+      "profit": "利润 {{amount}}",
+      "viewAll": "查看全部",
+      "empty": "暂无进行中的项目",
+      "create": "创建项目 →",
+      "budgetHours": "预算 {{hours}} 小时",
+      "noBudget": "无预算",
+      "overdueDays": "逾期 {{count}} 天",
+      "dueToday": "今天到期",
+      "daysLeft": "还剩 {{count}} 天"
+    },
+    "uninvoiced": {
+      "title": "未开票工时",
+      "allInvoiced": "所有工时已开票",
+      "allInvoicedHint": "没有等待开票的计费工时。",
+      "billable": "可计费 {{hours}}",
+      "notYetInvoiced": "尚未开票",
+      "goToTimesheets": "前往工时表",
+      "createInvoice": "创建发票"
+    },
+    "recentInvoices": {
+      "title": "最近的发票",
+      "viewAll": "查看全部",
+      "empty": "暂无发票"
+    },
+    "recentClients": {
+      "title": "最近的客户",
+      "viewAll": "查看全部",
+      "empty": "暂无客户",
+      "added": "添加于 {{date}}"
+    },
+    "approvals": {
+      "title": "待审批",
+      "viewAll": "查看全部",
+      "review": "去处理 →"
+    },
+    "formLeads": {
+      "title": "最近的表单线索",
+      "allForms": "全部表单",
+      "untitledForm": "表单",
+      "anonymous": "匿名"
+    },
+    "tasks": {
+      "title": "近期任务",
+      "viewAll": "查看全部",
+      "empty": "本周没有到期任务",
+      "overdue": "已逾期",
+      "today": "今天"
+    },
+    "events": {
+      "title": "近期日程",
+      "calendar": "日历",
+      "empty": "未来 7 天没有日程",
+      "allDay": "全天",
+      "today": "今天"
+    },
+    "duration": {
+      "minutes": "{{minutes}} 分钟",
+      "hours": "{{hours}} 小时",
+      "hoursMinutes": "{{hours}} 小时 {{minutes}} 分钟"
+    }
+  },
+  "invoiceStatus": {
+    "draft": "草稿",
+    "sent": "已发送",
+    "paid": "已付款",
+    "overdue": "已逾期",
+    "void": "已作废"
+  },
+  "clientStatus": {
+    "lead": "线索",
+    "prospect": "潜在客户",
+    "active": "活跃",
+    "inactive": "不活跃"
+  },
+  "estimateStatus": {
+    "draft": "草稿",
+    "sent": "已发送",
+    "accepted": "已接受",
+    "declined": "已拒绝",
+    "expired": "已过期"
+  },
+  "projectStatus": {
+    "active": "进行中",
+    "paused": "已暂停",
+    "completed": "已完成",
+    "cancelled": "已取消"
+  },
+  "taskStatus": {
+    "open": "待办",
+    "in_progress": "进行中",
+    "done": "已完成",
+    "cancelled": "已取消"
+  },
+  "metrics": {
+    "calls_answered": "已接来电",
+    "messages_sent": "已发消息",
+    "appointments_booked": "已预约",
+    "insights_delivered": "已交付洞察",
+    "tokens": "Token 用量",
+    "cost_cents": "成本",
+    "revenue_cents": "收入",
+    "conversion_rate": "转化率",
+    "funnel_sessions": "漏斗会话数"
+  },
+  "commandCenter": {
+    "metaTitle": "指挥中心",
+    "title": "指挥中心",
+    "subtitle": "一眼看清你的业务 —— 最近 30 天的 AI 团队活动与各部门健康度",
+    "workforceHeading": "AI 团队",
+    "nodes": {
+      "aiWorkforce": "AI 团队",
+      "finance": "财务",
+      "revenue": "营收",
+      "communication": "沟通",
+      "marketing": "营销",
+      "operations": "运营",
+      "service": "客户服务",
+      "intelligence": "经营洞察",
+      "people": "人力",
+      "knowledge": "知识库"
+    },
+    "kpi": {
+      "employees": "员工数",
+      "health": "健康度"
+    },
+    "briefing": {
+      "unconfigured": "先组建你的 AI 团队来启用指挥中心。员工上线后，他们的活动和部门指标都会汇总到这里。",
+      "active": "最近 30 天，你的 AI 团队共完成 {{actions}}，涉及 {{employees}}。部门健康度指标正在按模块陆续上线。",
+      "actions_one": "{{count}} 项操作",
+      "actions_other": "{{count}} 项操作",
+      "employees_one": "{{count}} 名员工",
+      "employees_other": "{{count}} 名员工"
+    },
+    "board": {
+      "emptyTitle": "还没有 AI 员工",
+      "emptyBody": "一键组建六人 AI 后台团队 —— 一位前台接待、一位销售拓展，外加四位部门总监。他们默认处于草稿状态，你可以逐个查看后再启用。",
+      "noActivity": "暂无活动"
+    },
+    "seed": {
+      "cta": "组建你的 AI 团队",
+      "pending": "组建中…",
+      "error": "组建 AI 团队失败"
+    },
+    "avatar": {
+      "change": "更换 {{name}} 的头像",
+      "choose": "为 {{name}} 选择一个头像"
+    },
+    "tim": {
+      "role": "Tim · AI 首席信息官",
+      "todaysBriefing": "今日简报",
+      "overdue_one": "{{count}} 张发票已逾期 —— {{amount}} 未收回",
+      "overdue_other": "{{count}} 张发票已逾期 —— {{amount}} 未收回",
+      "urgentTasks_one": "{{count}} 项紧急任务待处理",
+      "urgentTasks_other": "{{count}} 项紧急任务待处理",
+      "openTasks_one": "{{count}} 项待办任务 —— 均不紧急",
+      "openTasks_other": "{{count}} 项待办任务 —— 均不紧急",
+      "allClear": "没有紧急事项 —— 一切运转正常"
+    }
+  },
+  "grid": {
+    "status": {
+      "ok": "健康",
+      "attention": "需要关注",
+      "critical": "严重",
+      "unconfigured": "未配置"
+    },
+    "window": {
+      "today": "今天",
+      "mtd": "本月至今",
+      "qtd": "本季度至今",
+      "ytd": "本年至今"
+    },
+    "cooBriefing": "AI 首席运营官简报",
+    "alertView": "查看",
+    "dismissAlert": "忽略提醒"
+  },
+  "insights": {
+    "metaTitle": "经营洞察 · Tim",
+    "title": "经营洞察",
+    "subtitle": "来自你的 AI 首席信息官 Tim 的每周分析",
+    "pastDigests": "历史报告",
+    "dateRange": "{{start}} – {{end}}",
+    "insightCount_one": "{{count}} 条洞察",
+    "insightCount_other": "{{count}} 条洞察",
+    "tim": {
+      "role": "AI 首席信息官",
+      "weekOf": "本周 {{start}} – {{end}}",
+      "refreshRecommended": "· 建议刷新",
+      "intro": "我每周分析你的业务，挑出真正会影响决策的数字。现在就生成第一份报告吧。",
+      "analysing": "分析中…",
+      "refresh": "刷新",
+      "run": "开始分析",
+      "error": "生成洞察失败",
+      "footer": "生成于 {{date}} · Tim 每周一自动运行"
+    },
+    "errors": {
+      "notAuthenticated": "请重新登录后再运行 Tim 的分析。"
+    }
+  },
+  "weeklyInsights": {
+    "defaultHeadline": "本周经营小结",
+    "errors": {
+      "notConfigured": "AI 尚未配置",
+      "generateFailed": "生成洞察失败",
+      "parseFailed": "解析 AI 返回内容失败"
+    },
+    "notification": {
+      "title": "Tim 的每周经营洞察已生成",
+      "body": "你的每周报告已经可以查看了。"
+    }
+  },
+  "briefing": {
+    "headline": "今天需要你处理的事情如下。",
+    "allClear": "一切都已处理完毕 —— 今天没有紧急事项。",
+    "chaseOverdue_one": "催收 {{count}} 张逾期发票（{{amount}}）",
+    "chaseOverdue_other": "催收 {{count}} 张逾期发票（{{amount}}）",
+    "replyUrgent_one": "回复 {{count}} 条紧急消息",
+    "replyUrgent_other": "回复 {{count}} 条紧急消息",
+    "unread_one": "收件箱中有 {{count}} 条未读消息",
+    "unread_other": "收件箱中有 {{count}} 条未读消息",
+    "tasksDue_one": "今天有 {{count}} 项任务需要处理",
+    "tasksDue_other": "今天有 {{count}} 项任务需要处理"
+  },
+  "ask": {
+    "metaTitle": "问 AI",
+    "title": "问 AI",
+    "subtitle": "来自你业务的实时数据",
+    "newChat": "新对话",
+    "emptyTitle": "你的 AI 商业助理",
+    "emptyBody": "关于客户、发票、收入或支出，尽管问。我可以读取你的实时业务数据。",
+    "suggested": {
+      "outstandingRevenue": "本月还有多少未收款？",
+      "activeClients": "我有多少位活跃客户？",
+      "topExpenses": "我的主要支出类别有哪些？",
+      "overdueInvoices": "有逾期的发票吗？",
+      "netIncome": "本月净收入是多少？"
+    },
+    "placeholder": "问问你的业务…",
+    "error": "抱歉，出了点问题，请再试一次。",
+    "footer": "基于实时数据 · 回车发送 · Shift+回车换行",
+    "errors": {
+      "unauthorized": "请重新登录后再查询业务数据。",
+      "notConfigured": "AI 尚未配置 —— 请添加 Anthropic API 密钥。",
+      "invalidRequest": "无法读取该请求，请再试一次。",
+      "noMessages": "请先输入你的问题。",
+      "stream": "[错误：{{message}}]"
+    },
+    "yourBusiness": "你的公司",
+    "uncategorized": "未分类"
+  },
+  "aiPanel": {
+    "open": "打开 {{product}} AI",
+    "close": "关闭 {{product}} AI",
+    "expand": "展开 {{product}} AI",
+    "minimize": "最小化 {{product}} AI",
+    "expandShort": "展开",
+    "minimizeShort": "最小化",
+    "title": "{{product}} AI",
+    "subtitle": "业务问答 + 按客户起草短信",
+    "dragHint": "拖动可移动位置 · 双击可重置位置和尺寸",
+    "guideTab": "AI 助手",
+    "newContactTab": "新建联系人标签页",
+    "closeTab": "关闭标签页",
+    "tabNotFound": "找不到该标签页。",
+    "resizeWidth": "调整宽度",
+    "resizeWidthHint": "拖动可调整宽度",
+    "resizeHeight": "调整高度",
+    "resizeHeightHint": "拖动可调整高度",
+    "resizePanel": "调整面板大小",
+    "resizeHint": "拖动可调整大小",
+    "tryAsking": "试着问问：",
+    "quickPrompts": {
+      "overdue": "哪些发票已经逾期了？",
+      "cashFlow": "本月现金流怎么样？",
+      "topClients": "我最重要的客户有哪些？",
+      "focus": "今天我该优先做什么？"
+    },
+    "askPlaceholder": "问问 {{product}} AI…",
+    "send": "发送",
+    "noResponse": "没有收到回复 —— 请再试一次。",
+    "networkError": "网络错误，请再试一次。",
+    "requestFailed": "请求失败",
+    "threadLoadFailed": "无法加载会话。",
+    "threadNetworkError": "加载会话时出现网络错误。",
+    "draftFailed": "起草失败。",
+    "sendFailed": "发送失败。",
+    "toggleFailed": "切换失败。",
+    "sent": "已发送。",
+    "contact": {
+      "newTab": "新建联系人标签页",
+      "fallbackName": "联系人",
+      "noPhone": "（无电话）",
+      "change": "更换",
+      "changeTitle": "选择其他联系人",
+      "searchPlaceholder": "按姓名、邮箱或电话搜索联系人…",
+      "searching": "搜索中…",
+      "noMatch": "没有匹配的联系人。",
+      "pickFirst": "先在上方选择一位联系人，再开始起草短信。"
+    },
+    "prompt": {
+      "label": "你想说什么？",
+      "placeholder": "例如“确认明天下午 3 点”或“问问他们收到发票没有”",
+      "generate": "生成草稿",
+      "drafting": "起草中…"
+    },
+    "draft": {
+      "label": "草稿（可编辑）",
+      "send": "发送短信",
+      "sending": "发送中…",
+      "noPhone": "没有留存电话",
+      "autoPilotSending": "自动驾驶发送中…",
+      "autoPilotWill": "自动驾驶将发送这条草稿。"
+    },
+    "thread": {
+      "label": "短信会话",
+      "labelLoading": "短信会话（加载中…）",
+      "empty": "还没有消息。",
+      "statusTitle": "状态：{{status}}",
+      "statusUnknown": "未知"
+    },
+    "autoPilot": {
+      "label": "自动驾驶",
+      "title": "自动驾驶 —— 自动发送草稿，并自动回复该客户的来信短信。"
+    },
+    "smsStatus": {
+      "delivered": "已送达",
+      "received": "已收到",
+      "failed": "发送失败",
+      "undelivered": "未送达",
+      "blocked": "已拦截",
+      "rejected": "被拒收",
+      "queued": "排队中",
+      "accepted": "已受理",
+      "scheduled": "已排期",
+      "sending": "发送中",
+      "sent": "已发送"
+    }
+  },
+  "search": {
+    "openTitle": "搜索 (⌘K)",
+    "trigger": "搜索…",
+    "placeholder": "搜索客户、发票、交易…",
+    "noResults": "没有找到“{{query}}”的结果",
+    "typeMore": "至少输入 2 个字符开始搜索",
+    "unnamed": "未命名",
+    "sections": {
+      "clients": "客户",
+      "invoices": "发票",
+      "transactions": "交易",
+      "messages": "消息",
+      "estimates": "报价单",
+      "projects": "项目",
+      "tasks": "任务"
+    },
+    "navigateHint": "跳转",
+    "closeHint": "关闭"
+  },
+  "notifications": {
+    "title": "通知",
+    "allCaughtUp": "全部已读",
+    "empty": "还没有通知",
+    "ago": {
+      "justNow": "刚刚",
+      "minutes": "{{count}} 分钟前",
+      "hours": "{{count}} 小时前",
+      "days": "{{count}} 天前"
+    }
+  },
+  "comingSoon": {
+    "eta": "{{eta}} 上线"
+  },
+  "roi": {
+    "title": "未接来电挽回 —— 最近 7 天",
+    "autoTexted": "自动回短信",
+    "autoTextedSub": "已自动回短信的未接来电",
+    "booked": "通过短信成交预约",
+    "bookedSub": "挽回的预约",
+    "conversion": "转化率",
+    "noMissedCalls": "还没有未接来电",
+    "conversionSub": "{{total}} 条线索中有 {{booked}} 条成功预约"
+  },
+  "revenueChart": {
+    "empty": "还没有交易数据",
+    "revenue": "收入",
+    "expenses": "支出"
+  }
+}

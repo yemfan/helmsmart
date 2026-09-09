@@ -2,6 +2,7 @@ import { ResponsibleEmployee } from "@/components/responsible-employee";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { AddTaskModal } from "@/components/add-task-modal";
 import { TaskRow } from "@/components/task-row";
 import { PriorityFilter } from "./priority-filter";
@@ -9,12 +10,15 @@ import Link from "next/link";
 import { CheckSquare, Filter, Repeat } from "lucide-react";
 import { MarkTaskButton } from "@/components/mark-task-button";
 
-export const metadata: Metadata = { title: "Tasks" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("tasks");
+  return { title: t("meta.tasks") };
+}
 
 const STATUS_TABS = [
-  { value: "",            label: "Open" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "done",        label: "Done" },
+  { value: "",            key: "open" },
+  { value: "in_progress", key: "inProgress" },
+  { value: "done",        key: "done" },
 ] as const;
 
 export default async function TasksPage({
@@ -29,6 +33,7 @@ export default async function TasksPage({
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+  const t = await getServerT("tasks");
 
   const [tasksRes, clientsRes] = await Promise.all([
     (() => {
@@ -79,11 +84,11 @@ export default async function TasksPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <ResponsibleEmployee slug="mark" className="mb-3" />
-          <h1 className="text-2xl font-semibold text-slate-900">Tasks</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {tasks.length} task{tasks.length !== 1 ? "s" : ""}
+            {t("list.count", { count: tasks.length })}
             {overdueCount > 0 && (
-              <span className="text-rose-600 ml-1">· {overdueCount} overdue</span>
+              <span className="text-rose-600 ml-1">{t("list.overdue", { count: overdueCount })}</span>
             )}
           </p>
         </div>
@@ -94,7 +99,7 @@ export default async function TasksPage({
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
           >
             <Repeat className="w-4 h-4" />
-            Recurring
+            {t("list.recurringLink")}
           </Link>
           <AddTaskModal
             clients={clients as {
@@ -110,7 +115,7 @@ export default async function TasksPage({
       {/* Status tabs */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-          {STATUS_TABS.map(({ value, label }) => (
+          {STATUS_TABS.map(({ value, key }) => (
             <a
               key={value}
               href={
@@ -118,13 +123,13 @@ export default async function TasksPage({
                   ? `/tasks?status=${value}${priorityFilter ? `&priority=${priorityFilter}` : ""}`
                   : `/tasks${priorityFilter ? `?priority=${priorityFilter}` : ""}`
               }
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 statusFilter === value
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
               }`}
             >
-              {label}
+              {t(`list.tabs.${key}`)}
             </a>
           ))}
         </div>
@@ -145,14 +150,14 @@ export default async function TasksPage({
             </div>
             <p className="text-sm font-medium text-slate-600 mb-1">
               {statusFilter === "done"
-                ? "No completed tasks"
+                ? t("list.empty.done")
                 : statusFilter === "in_progress"
-                ? "No tasks in progress"
-                : "No open tasks 🎉"}
+                ? t("list.empty.inProgress")
+                : t("list.empty.open")}
             </p>
             {!statusFilter && (
               <p className="text-xs text-slate-400 max-w-xs mb-5">
-                Create tasks to track your work, follow-ups, and client commitments.
+                {t("list.empty.hint")}
               </p>
             )}
             {!statusFilter && (

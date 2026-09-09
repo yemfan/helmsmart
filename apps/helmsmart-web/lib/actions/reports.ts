@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { aggregatePnL, agingBucket, daysPastDue, type PnLJournalLine } from "@helm/dna-intelligence";
 
 export interface PnLRow {
@@ -27,7 +28,8 @@ export interface PnLReport {
 export async function getPnLReport(from: string, to: string): Promise<PnLReport> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("books");
+  if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -94,7 +96,8 @@ export interface CashFlowSummary {
 export async function getCashFlowSummary(from: string, to: string): Promise<CashFlowSummary> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("books");
+  if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -114,7 +117,7 @@ export async function getCashFlowSummary(from: string, to: string): Promise<Cash
 
   for (const tx of data ?? []) {
     const amt = Number(tx.amount);
-    const cat = tx.personal_finance_category ?? "Uncategorized";
+    const cat = tx.personal_finance_category ?? t("reports.business.fallbacks.uncategorized");
     const cur = catMap.get(cat) ?? { totalIn: 0, totalOut: 0 };
 
     if (amt < 0) {
@@ -167,7 +170,8 @@ export interface TimeReport {
 export async function getTimeReport(from: string, to: string): Promise<TimeReport> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("books");
+  if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -222,7 +226,7 @@ export async function getTimeReport(from: string, to: string): Promise<TimeRepor
     const proj = projRaw as { name?: string; color?: string } | null;
     const projId   = e.project_id as string | null;
     const projKey  = projId ?? ("legacy:" + (e.project ?? "none"));
-    const projName = proj?.name ?? (e.project as string | null) ?? "No project";
+    const projName = proj?.name ?? (e.project as string | null) ?? t("reports.business.fallbacks.noProject");
     const projColor = proj?.color ?? "slate";
 
     const pa = projectMap.get(projKey) ?? { project_id: projId, project_name: projName, color: projColor, totalMinutes: 0, billableMinutes: 0, billableAmount: 0 };
@@ -236,8 +240,8 @@ export async function getTimeReport(from: string, to: string): Promise<TimeRepor
     const clientId  = e.client_id as string | null;
     const clientKey = clientId ?? "none";
     const clientName = client
-      ? ([client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "Unknown")
-      : "No client";
+      ? ([client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || t("reports.business.fallbacks.unknownClient"))
+      : t("reports.business.fallbacks.noClient");
 
     const ca = clientMap.get(clientKey) ?? { client_id: clientId, client_name: clientName, totalMinutes: 0, billableMinutes: 0, billableAmount: 0 };
     ca.totalMinutes    += mins;
@@ -287,6 +291,7 @@ export interface ReceivablesAging {
 }
 
 export async function getReceivablesAging(): Promise<ReceivablesAging> {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const today = new Date().toISOString().slice(0, 10);
@@ -317,8 +322,8 @@ export async function getReceivablesAging(): Promise<ReceivablesAging> {
     const clientId = (inv.client_id as string | null) ?? null;
     const clientKey = clientId ?? "none";
     const clientName = client
-      ? ([client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "Unknown client")
-      : "No client";
+      ? ([client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || t("reports.business.fallbacks.unknownClient"))
+      : t("reports.business.fallbacks.noClient");
 
     const due = inv.due_date as string;
     const bucket = agingBucket(daysPastDue(due, today));
@@ -477,7 +482,8 @@ export interface SalesTaxReport {
 export async function getSalesTaxReport(from: string, to: string): Promise<SalesTaxReport> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  const t = await getServerT("books");
+  if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
   const supabase = await createClient();
   const { data, error } = await supabase

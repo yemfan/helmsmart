@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Clock, XCircle, User } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { intlLocale } from "@leadsmart/i18n";
 import { getApprovalRequest } from "@/lib/actions/approval-chains";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { ApprovalActionButtons } from "./approval-action-buttons";
 
-export const metadata: Metadata = { title: "Approval Request" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("workflows");
+  return { title: t("meta.request") };
+}
 
 const STATUS_COLOR = {
   pending:   "bg-amber-100 text-amber-700 border-amber-200",
@@ -20,6 +25,8 @@ export default async function ApprovalRequestDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getServerT("workflows");
+  const locale = await getServerLocale();
   const { id } = await params;
   const request = await getApprovalRequest(id);
   if (!request) notFound();
@@ -47,20 +54,23 @@ export default async function ApprovalRequestDetailPage({
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-semibold text-slate-900">{request.subject_label}</h1>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border capitalize ${STATUS_COLOR[request.status as keyof typeof STATUS_COLOR] ?? STATUS_COLOR.pending}`}>
-              {request.status}
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${STATUS_COLOR[request.status as keyof typeof STATUS_COLOR] ?? STATUS_COLOR.pending}`}>
+              {t(`status.${request.status}`, { defaultValue: request.status })}
             </span>
           </div>
           {workflow && (
             <p className="text-xs text-slate-500 mt-0.5">
-              Workflow: <Link href={`/workflows/${workflow.id}`} className="hover:text-indigo-600">{workflow.name}</Link>
+              {t("request.workflowLabel")}{" "}
+              <Link href={`/workflows/${workflow.id}`} className="hover:text-indigo-600">{workflow.name}</Link>
               {" · "}
-              Requested {new Date(request.requested_at).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
+              {t("request.requestedOn", {
+                date: new Date(request.requested_at).toLocaleDateString(intlLocale(locale), {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
               })}
             </p>
           )}
@@ -69,7 +79,7 @@ export default async function ApprovalRequestDetailPage({
 
       {/* Steps timeline */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-        <h2 className="text-sm font-semibold text-slate-800 mb-6">Approval Steps</h2>
+        <h2 className="text-sm font-semibold text-slate-800 mb-6">{t("request.stepsTitle")}</h2>
         <div className="space-y-4">
           {steps.map((step, idx) => {
             const isCurrent = step.step_order === request.current_step && isOpen;
@@ -113,21 +123,21 @@ export default async function ApprovalRequestDetailPage({
                       {step.step_name}
                     </p>
                     {isWaiting && (
-                      <span className="text-xs text-slate-400 font-medium">waiting</span>
+                      <span className="text-xs text-slate-400 font-medium">{t("request.waiting")}</span>
                     )}
                     {isCompleted && step.decided_at && (
                       <span className="text-xs text-slate-400">
-                        {new Date(step.decided_at).toLocaleDateString("en-US", {
+                        {new Date(step.decided_at).toLocaleDateString(intlLocale(locale), {
                           month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
                         })}
                       </span>
                     )}
                   </div>
                   {step.note && (
-                    <p className="text-xs text-slate-500 mt-1 italic">"{step.note}"</p>
+                    <p className="text-xs text-slate-500 mt-1 italic">&ldquo;{step.note}&rdquo;</p>
                   )}
                   {isCurrent && isOpen && (
-                    <p className="text-xs text-amber-700 mt-1 font-medium">⏳ Awaiting your decision</p>
+                    <p className="text-xs text-amber-700 mt-1 font-medium">⏳ {t("request.awaitingDecision")}</p>
                   )}
                 </div>
               </div>
@@ -144,7 +154,7 @@ export default async function ApprovalRequestDetailPage({
       {/* Rejection reason */}
       {request.status === "rejected" && request.rejection_reason && (
         <div className="bg-rose-50 border border-rose-200 rounded-xl p-5">
-          <p className="text-sm font-semibold text-rose-800 mb-1">Rejection reason</p>
+          <p className="text-sm font-semibold text-rose-800 mb-1">{t("request.rejectionTitle")}</p>
           <p className="text-sm text-rose-700">{request.rejection_reason}</p>
         </div>
       )}
@@ -152,7 +162,7 @@ export default async function ApprovalRequestDetailPage({
       {/* Subject data snapshot */}
       {request.subject_data && Object.keys(request.subject_data).length > 0 && (
         <div className="mt-6 bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="text-sm font-semibold text-slate-700 mb-3">Request Details</h2>
+          <h2 className="text-sm font-semibold text-slate-700 mb-3">{t("request.detailsTitle")}</h2>
           <dl className="space-y-2">
             {Object.entries(request.subject_data as Record<string, unknown>).map(([k, v]) => (
               <div key={k} className="flex gap-4">

@@ -1,10 +1,35 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 
-export type AuthState = { error: string } | null;
+/**
+ * `error` carries whatever the form should show below the control — including
+ * the two one-shot flows whose outcome is a durable instruction rather than a
+ * failure ("check your email"). `sent` is what tells the two apart: the page
+ * used to sniff the message for "check your email", which stops working the
+ * moment the message is Chinese.
+ */
+export type AuthState = { error: string; sent?: boolean } | null;
+
+/**
+ * Supabase writes its own English messages. The handful an owner actually hits
+ * get a translated equivalent; anything else passes through untouched, since a
+ * message we did not anticipate is still better than a generic one.
+ */
+async function authErrorMessage(message: string): Promise<string> {
+  const t = await getServerT("auth");
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) return t("errors.invalidCredentials");
+  if (m.includes("email not confirmed")) return t("errors.emailNotConfirmed");
+  if (m.includes("already registered")) return t("errors.userAlreadyRegistered");
+  if (m.includes("for security purposes") || m.includes("rate limit"))
+    return t("errors.rateLimited");
+  if (m.includes("password should be at least")) return t("errors.passwordMinLength");
+  return message;
+}
 
 /**
  * Origin of the CURRENT request (the vertical's own host), e.g.
@@ -32,7 +57,7 @@ export async function signIn(
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) return { error: error.message };
+  if (error) return { error: await authErrorMessage(error.message) };
 
   const next = formData.get("next") as string | null;
   redirect(next?.startsWith("/") ? next : "/home");
@@ -47,8 +72,10 @@ export async function signUp(
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
+  const t = await getServerT("auth");
+
   if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
+    return { error: t("errors.passwordMinLength") };
   }
 
   const supabase = await createClient();
@@ -60,14 +87,11 @@ export async function signUp(
     },
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: await authErrorMessage(error.message) };
 
   // Email confirmation required (Supabase default)
   if (data.user && !data.session) {
-    return {
-      error:
-        "Check your email for a confirmation link, then sign in to continue.",
-    };
+    return { error: t("errors.checkEmailConfirm"), sent: true };
   }
 
   redirect("/onboarding");
@@ -97,17 +121,18 @@ export async function requestPasswordReset(
   _: AuthState,
   formData: FormData
 ): Promise<AuthState> {
+  const t = await getServerT("auth");
   const email = formData.get("email") as string;
-  if (!email) return { error: "Please enter your email address." };
+  if (!email) return { error: t("errors.emailRequired") };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${await requestOrigin()}/api/auth/callback?next=/reset-password`,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: await authErrorMessage(error.message) };
 
-  return { error: "Check your email — we sent a password reset link." };
+  return { error: t("errors.checkEmailReset"), sent: true };
 }
 
 // ── Password reset (step 2 — set new password) ───────────────────────────────
@@ -119,17 +144,19 @@ export async function updatePassword(
   const password = formData.get("password") as string;
   const confirm  = formData.get("confirm")  as string;
 
+  const t = await getServerT("auth");
+
   if (!password || password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
+    return { error: t("errors.passwordMinLength") };
   }
   if (password !== confirm) {
-    return { error: "Passwords do not match." };
+    return { error: t("errors.passwordsDoNotMatch") };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
 
-  if (error) return { error: error.message };
+  if (error) return { error: await authErrorMessage(error.message) };
 
   redirect("/home");
 }
@@ -149,12 +176,14 @@ export async function changePassword(
   const password = formData.get("password") as string;
   const confirm  = formData.get("confirm")  as string;
 
-  if (!password || password.length < 8) return { error: "Password must be at least 8 characters." };
-  if (password !== confirm) return { error: "Passwords do not match." };
+  const t = await getServerT("auth");
+
+  if (!password || password.length < 8) return { error: t("errors.passwordMinLength") };
+  if (password !== confirm) return { error: t("errors.passwordsDoNotMatch") };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: error.message };
+  if (error) return { error: await authErrorMessage(error.message) };
 
   return { ok: true };
 }

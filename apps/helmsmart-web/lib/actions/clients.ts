@@ -11,6 +11,7 @@ import {
   patchClient as patchClientRevenue,
   deleteClient as deleteClientRevenue,
 } from "@helm/dna-revenue";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Recalculates and updates a client's lifetime_value from paid invoices.
@@ -41,19 +42,20 @@ export async function createClient_(
   _: ClientState,
   formData: FormData
 ): Promise<ClientState> {
+  const t = await getServerT("clients");
   const denied = await checkActionPermission("clients.write");
   if (denied) return { error: denied.error };
 
   const firstName = (formData.get("first_name") as string)?.trim();
-  if (!firstName) return { error: "First name is required." };
+  if (!firstName) return { error: t("errors.firstNameRequired") };
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { error: "No organization found." };
+  if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const tagsRaw = (formData.get("tags") as string)?.trim();
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
@@ -73,7 +75,7 @@ export async function createClient_(
 
   if (error) {
     console.error("[clients] create error:", error);
-    return { error: "Failed to create client." };
+    return { error: t("errors.createFailed") };
   }
 
   revalidatePath("/clients");
@@ -113,12 +115,13 @@ export async function updateClient(
   _: ClientState,
   formData: FormData
 ): Promise<ClientState> {
+  const t = await getServerT("clients");
   const clientId = formData.get("client_id") as string;
-  if (!clientId) return { error: "Missing client ID." };
+  if (!clientId) return { error: t("errors.missingClientId") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const tagsRaw = (formData.get("tags") as string)?.trim();
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
@@ -138,7 +141,7 @@ export async function updateClient(
     })
     .eq("id", clientId);
 
-  if (error) return { error: "Failed to update client." };
+  if (error) return { error: t("errors.updateFailed") };
 
   revalidatePath("/clients");
   revalidatePath(`/clients/${clientId}`);
@@ -159,9 +162,10 @@ export async function patchClient(
     stage_changed_at: string;
   }>
 ): Promise<void> {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("errors.noOrganization"));
 
   const supabase = await createClient();
   await patchClientRevenue(supabase, orgId, clientId, patch);
@@ -173,18 +177,19 @@ export async function patchClient(
 // ── Delete ────────────────────────────────────────────────────────────────────
 
 export async function deleteClient(clientId: string): Promise<{ error?: string }> {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { error: "Unauthorized." };
+  if (!orgId) return { error: t("errors.unauthorized") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   try {
     await deleteClientRevenue(supabase, orgId, clientId);
   } catch {
-    return { error: "Failed to delete client." };
+    return { error: t("errors.deleteFailed") };
   }
 
   revalidatePath("/clients");

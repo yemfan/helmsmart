@@ -1,21 +1,41 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { submitSalesForm } from "@/lib/actions/sales";
 import type { SalesState } from "@/lib/actions/sales";
 
+// The id is what the form posts and what the sales notification lists; the
+// label is a key into `site.sales.form.interest.options`.
 const interestOptions = [
-  { id: "voice", label: "AI Receptionist" },
-  { id: "outbound", label: "AI Concierge" },
-  { id: "ai-assistant", label: "HelmSmart AI Assistant" },
-  { id: "inbox", label: "Smart Inbox" },
-  { id: "invoicing", label: "Invoicing & Bookkeeping" },
-  { id: "calendar", label: "Calendar & Scheduling" },
-  { id: "crm", label: "Client CRM" },
-  { id: "all", label: "Full HelmSmart platform" },
+  "voice",
+  "outbound",
+  "ai-assistant",
+  "inbox",
+  "invoicing",
+  "calendar",
+  "crm",
+  "all",
+];
+
+// Option value (posted) → label key under `site.sales.form.<field>.options`.
+const teamSizes = [
+  { value: "1", key: "solo" },
+  { value: "2-5", key: "small" },
+  { value: "6-10", key: "medium" },
+  { value: "11-25", key: "large" },
+  { value: "25+", key: "xlarge" },
+];
+
+const timelines = [
+  { value: "asap", key: "asap" },
+  { value: "q2", key: "q2" },
+  { value: "q3", key: "q3" },
+  { value: "exploring", key: "exploring" },
 ];
 
 export default function SalesFormComponent() {
+  const { t } = useTranslation("site");
   const [state, action, isPending] = useActionState<SalesState, FormData>(
     submitSalesForm,
     {}
@@ -30,7 +50,7 @@ export default function SalesFormComponent() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Full name *
+            {t("sales.form.name.label")}
           </label>
           <input
             id="name"
@@ -38,7 +58,7 @@ export default function SalesFormComponent() {
             type="text"
             required
             disabled={isPending || isSuccess}
-            placeholder="Jane Smith"
+            placeholder={t("sales.form.name.placeholder")}
             className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
@@ -46,7 +66,7 @@ export default function SalesFormComponent() {
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Work email *
+            {t("sales.form.email.label")}
           </label>
           <input
             id="email"
@@ -54,7 +74,7 @@ export default function SalesFormComponent() {
             type="email"
             required
             disabled={isPending || isSuccess}
-            placeholder="jane@company.com"
+            placeholder={t("sales.form.email.placeholder")}
             className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
@@ -65,7 +85,7 @@ export default function SalesFormComponent() {
       {/* Company */}
       <div>
         <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-          Company name *
+          {t("sales.form.company.label")}
         </label>
         <input
           id="company"
@@ -73,7 +93,7 @@ export default function SalesFormComponent() {
           type="text"
           required
           disabled={isPending || isSuccess}
-          placeholder="Your business name"
+          placeholder={t("sales.form.company.placeholder")}
           className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                      disabled:bg-gray-50 disabled:text-gray-500"
@@ -83,21 +103,23 @@ export default function SalesFormComponent() {
       {/* What are you interested in? */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
-          What are you interested in? *
+          {t("sales.form.interest.label")}
         </label>
         <div className="space-y-2">
-          {interestOptions.map((option) => (
-            <label key={option.id} className="flex items-center gap-3 cursor-pointer">
+          {interestOptions.map((id) => (
+            <label key={id} className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="interested"
-                value={option.id}
+                value={id}
                 disabled={isPending || isSuccess}
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600
                            focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0
                            disabled:opacity-50"
               />
-              <span className="text-sm text-gray-700">{option.label}</span>
+              <span className="text-sm text-gray-700">
+                {t(`sales.form.interest.options.${id}`)}
+              </span>
             </label>
           ))}
         </div>
@@ -107,7 +129,7 @@ export default function SalesFormComponent() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="teamSize" className="block text-sm font-medium text-gray-700 mb-1">
-            Team size
+            {t("sales.form.teamSize.label")}
           </label>
           <select
             id="teamSize"
@@ -117,17 +139,17 @@ export default function SalesFormComponent() {
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
           >
-            <option value="">Select team size</option>
-            <option value="1">Solo / 1 person</option>
-            <option value="2-5">2–5 people</option>
-            <option value="6-10">6–10 people</option>
-            <option value="11-25">11–25 people</option>
-            <option value="25+">25+ people</option>
+            <option value="">{t("sales.form.teamSize.options.placeholder")}</option>
+            {teamSizes.map((option) => (
+              <option key={option.value} value={option.value}>
+                {t(`sales.form.teamSize.options.${option.key}`)}
+              </option>
+            ))}
           </select>
         </div>
         <div>
           <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-1">
-            Implementation timeline
+            {t("sales.form.timeline.label")}
           </label>
           <select
             id="timeline"
@@ -137,11 +159,12 @@ export default function SalesFormComponent() {
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-gray-50 disabled:text-gray-500"
           >
-            <option value="">Select timeline</option>
-            <option value="asap">ASAP (this month)</option>
-            <option value="q2">Next 1–2 months</option>
-            <option value="q3">2–3 months</option>
-            <option value="exploring">Just exploring</option>
+            <option value="">{t("sales.form.timeline.options.placeholder")}</option>
+            {timelines.map((option) => (
+              <option key={option.value} value={option.value}>
+                {t(`sales.form.timeline.options.${option.key}`)}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -149,14 +172,14 @@ export default function SalesFormComponent() {
       {/* Message */}
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-          Anything else we should know?
+          {t("sales.form.message.label")}
         </label>
         <textarea
           id="message"
           name="message"
           rows={4}
           disabled={isPending || isSuccess}
-          placeholder="Tell us about your biggest pain point or specific use case..."
+          placeholder={t("sales.form.message.placeholder")}
           className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                      disabled:bg-gray-50 disabled:text-gray-500 resize-none"
@@ -165,14 +188,14 @@ export default function SalesFormComponent() {
 
       {error && (
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3">
-          <p className="text-sm text-red-700">{error}</p>
+          <p className="text-sm text-red-700" role="alert">{error}</p>
         </div>
       )}
 
       {isSuccess && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3">
           <p className="text-sm text-emerald-700 font-medium">
-            ✓ Thanks! Our sales team will reach out within one business day.
+            {t("sales.form.success")}
           </p>
         </div>
       )}
@@ -184,11 +207,15 @@ export default function SalesFormComponent() {
                    hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/40
                    disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
       >
-        {isPending ? "Submitting…" : isSuccess ? "Inquiry submitted" : "Get a demo"}
+        {isPending
+          ? t("sales.form.submitting")
+          : isSuccess
+            ? t("sales.form.submitted")
+            : t("sales.form.submit")}
       </button>
 
       <p className="text-xs text-gray-500 text-center">
-        * Required fields. We'll follow up with a personalized proposal.
+        {t("sales.form.requiredNote")}
       </p>
     </form>
   );

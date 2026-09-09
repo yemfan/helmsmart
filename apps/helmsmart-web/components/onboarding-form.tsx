@@ -1,61 +1,44 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { createOrg } from "@/lib/actions/org";
 import type { OrgState } from "@/lib/actions/org";
 
+// The stored enum values. Their label and description live in
+// `auth.onboarding.entityTypes.<value>` — the radio submits the value, the
+// owner reads the translation.
 const ENTITY_TYPES = [
-  {
-    value: "sole_prop",
-    label: "Sole Proprietor",
-    description: "You run the business yourself with no formal structure.",
-  },
-  {
-    value: "llc",
-    label: "LLC",
-    description: "Limited liability company — the most common small business choice.",
-  },
-  {
-    value: "s_corp",
-    label: "S Corporation",
-    description: "Pass-through taxation with corporate liability protection.",
-  },
-  {
-    value: "c_corp",
-    label: "C Corporation",
-    description: "Separate legal entity — common for funded startups.",
-  },
-  {
-    value: "partnership",
-    label: "Partnership",
-    description: "Two or more owners sharing profits and liability.",
-  },
-  {
-    value: "nonprofit",
-    label: "Non-profit",
-    description: "501(c) or other tax-exempt organization funded by donations and grants.",
-  },
+  "sole_prop",
+  "llc",
+  "s_corp",
+  "c_corp",
+  "partnership",
+  "nonprofit",
 ] as const;
 
 // Suggestions for the category field. A datalist gives picklist convenience
-// while still allowing free text ("Other") — the value drives topic prompts.
-const CATEGORIES = [
-  "Real Estate",
-  "Home Services",
-  "Healthcare",
-  "Retail",
-  "Food & Beverage",
-  "Professional Services",
-  "Fitness & Wellness",
-  "Beauty & Personal Care",
-  "Automotive",
-  "Construction",
-  "Education",
-  "Technology",
-  "Non-profit",
+// while still allowing free text ("Other") — the value drives topic prompts,
+// which are written in the owner's own language, so the suggestion is
+// translated along with everything else the owner reads.
+const CATEGORY_KEYS = [
+  "realEstate",
+  "homeServices",
+  "healthcare",
+  "retail",
+  "foodBeverage",
+  "professionalServices",
+  "fitnessWellness",
+  "beautyPersonalCare",
+  "automotive",
+  "construction",
+  "education",
+  "technology",
+  "nonprofit",
 ] as const;
 
 export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }) {
+  const { t } = useTranslation("auth");
   const [state, action, isPending] = useActionState<OrgState, FormData>(
     createOrg,
     null
@@ -70,12 +53,12 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             1
           </span>
           <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-            Setup · Step 1 of 1
+            {t("onboarding.step")}
           </span>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Tell us about your business</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{t("onboarding.title")}</h1>
         <p className="mt-1 text-sm text-slate-500">
-          We&apos;ll set up your chart of accounts automatically based on your business type.
+          {t("onboarding.subtitle")}
         </p>
       </div>
 
@@ -86,7 +69,7 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             htmlFor="name"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            Business name
+            {t("onboarding.name.label")}
           </label>
           <input
             id="name"
@@ -99,7 +82,7 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder={namePlaceholder || "Acme Plumbing LLC"}
+            placeholder={namePlaceholder || t("onboarding.name.placeholder")}
           />
         </div>
 
@@ -109,8 +92,8 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             htmlFor="website"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            Company website{" "}
-            <span className="font-normal text-slate-400">(optional)</span>
+            {t("onboarding.website.label")}{" "}
+            <span className="font-normal text-slate-400">{t("onboarding.optional")}</span>
           </label>
           <input
             id="website"
@@ -123,10 +106,10 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="https://acme.com"
+            placeholder={t("onboarding.website.placeholder")}
           />
           <p className="mt-1 text-xs text-slate-400">
-            We&apos;ll use it to tailor your AI marketing and content.
+            {t("onboarding.website.hint")}
           </p>
         </div>
 
@@ -136,8 +119,8 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             htmlFor="business_category"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            What does your business do?{" "}
-            <span className="font-normal text-slate-400">(optional)</span>
+            {t("onboarding.category.label")}{" "}
+            <span className="font-normal text-slate-400">{t("onboarding.optional")}</span>
           </label>
           <input
             id="business_category"
@@ -150,11 +133,11 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="Pick one or type your own…"
+            placeholder={t("onboarding.category.placeholder")}
           />
           <datalist id="business-categories">
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c} />
+            {CATEGORY_KEYS.map((c) => (
+              <option key={c} value={t(`onboarding.categories.${c}`)} />
             ))}
           </datalist>
         </div>
@@ -165,8 +148,8 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             htmlFor="business_location"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            Where are you based?{" "}
-            <span className="font-normal text-slate-400">(optional)</span>
+            {t("onboarding.location.label")}{" "}
+            <span className="font-normal text-slate-400">{t("onboarding.optional")}</span>
           </label>
           <input
             id="business_location"
@@ -178,10 +161,10 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="City, State (e.g. Austin, TX)"
+            placeholder={t("onboarding.location.placeholder")}
           />
           <p className="mt-1 text-xs text-slate-400">
-            Lets your AI write local-market content for your area.
+            {t("onboarding.location.hint")}
           </p>
         </div>
 
@@ -191,8 +174,8 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             htmlFor="business_description"
             className="block text-sm font-medium text-slate-700 mb-1"
           >
-            Describe your business{" "}
-            <span className="font-normal text-slate-400">(optional)</span>
+            {t("onboarding.description.label")}{" "}
+            <span className="font-normal text-slate-400">{t("onboarding.optional")}</span>
           </label>
           <textarea
             id="business_description"
@@ -203,22 +186,22 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500 resize-none"
-            placeholder="What you offer, who you serve, and what makes you different — a couple of sentences is plenty."
+            placeholder={t("onboarding.description.placeholder")}
           />
           <p className="mt-1 text-xs text-slate-400">
-            The more you share, the better your AI-generated posts and topics.
+            {t("onboarding.description.hint")}
           </p>
         </div>
 
         {/* Entity type */}
         <fieldset>
           <legend className="block text-sm font-medium text-slate-700 mb-3">
-            Business structure
+            {t("onboarding.structure.legend")}
           </legend>
           <div className="space-y-2">
             {ENTITY_TYPES.map((et) => (
               <label
-                key={et.value}
+                key={et}
                 className="flex items-start gap-3 rounded-lg border border-slate-200 px-4 py-3 cursor-pointer
                            hover:border-indigo-300 hover:bg-indigo-50/50 has-[:checked]:border-indigo-500
                            has-[:checked]:bg-indigo-50 transition-colors"
@@ -226,17 +209,17 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
                 <input
                   type="radio"
                   name="entity_type"
-                  value={et.value}
+                  value={et}
                   disabled={isPending}
                   className="mt-0.5 accent-indigo-600"
                   required
                 />
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-medium text-slate-900">
-                    {et.label}
+                    {t(`onboarding.entityTypes.${et}.label`)}
                   </span>
                   <span className="block text-xs text-slate-500 mt-0.5">
-                    {et.description}
+                    {t(`onboarding.entityTypes.${et}.description`)}
                   </span>
                 </span>
               </label>
@@ -258,12 +241,12 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
                      hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                      disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-          {isPending ? "Setting up your workspace…" : "Create my workspace →"}
+          {isPending ? t("onboarding.submitting") : t("onboarding.submit")}
         </button>
       </form>
 
       <p className="mt-4 text-xs text-center text-slate-400">
-        Your chart of accounts will be pre-populated — you can customize it later.
+        {t("onboarding.footnote")}
       </p>
     </div>
   );

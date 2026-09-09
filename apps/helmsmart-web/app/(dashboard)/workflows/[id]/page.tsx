@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { WorkflowEditor } from "@/components/workflow-editor";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Edit Workflow" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("workflows");
+  return { title: t("meta.edit") };
+}
 
 export default async function EditWorkflowPage({
   params,

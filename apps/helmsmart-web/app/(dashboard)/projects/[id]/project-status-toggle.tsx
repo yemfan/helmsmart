@@ -2,14 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { updateProject, type ProjectStatus } from "@/lib/actions/projects";
 import { useRouter } from "next/navigation";
 
-const STATUSES: { key: ProjectStatus; label: string; color: string }[] = [
-  { key: "active",    label: "Active",    color: "text-emerald-700 bg-emerald-100" },
-  { key: "paused",    label: "Paused",    color: "text-amber-700 bg-amber-100" },
-  { key: "completed", label: "Completed", color: "text-indigo-700 bg-indigo-100" },
-  { key: "cancelled", label: "Cancelled", color: "text-slate-600 bg-slate-100" },
+const STATUSES: { key: ProjectStatus; color: string }[] = [
+  { key: "active",    color: "text-emerald-700 bg-emerald-100" },
+  { key: "paused",    color: "text-amber-700 bg-amber-100" },
+  { key: "completed", color: "text-indigo-700 bg-indigo-100" },
+  { key: "cancelled", color: "text-slate-600 bg-slate-100" },
 ];
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function ProjectStatusToggle({ projectId, currentStatus }: Props) {
+  const { t } = useTranslation("projects");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<ProjectStatus>(currentStatus);
@@ -42,7 +44,7 @@ export function ProjectStatusToggle({ projectId, currentStatus }: Props) {
         disabled={isPending}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${current.color} border-transparent hover:opacity-80 disabled:opacity-50`}
       >
-        {current.label}
+        {t(`status.${current.key}`)}
         <ChevronDown className="w-3 h-3" />
       </button>
 
@@ -56,7 +58,7 @@ export function ProjectStatusToggle({ projectId, currentStatus }: Props) {
                 onClick={() => select(s.key)}
                 className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-left hover:bg-slate-50 transition-colors"
               >
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.color}`}>{s.label}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.color}`}>{t(`status.${s.key}`)}</span>
                 {s.key === status && <Check className="w-3.5 h-3.5 text-indigo-600" />}
               </button>
             ))}

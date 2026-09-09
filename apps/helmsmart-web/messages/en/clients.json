@@ -1,1 +1,365 @@
-{}
+{
+  "meta": {
+    "listTitle": "Clients",
+    "detailTitle": "Client",
+    "importTitle": "Import clients",
+    "statementTitle": "Client statement"
+  },
+  "statuses": {
+    "all": "All",
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Active",
+    "inactive": "Inactive",
+    "archived": "Archived"
+  },
+  "invoiceStatus": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "void": "Void"
+  },
+  "estimateStatus": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "accepted": "Accepted",
+    "declined": "Declined",
+    "expired": "Expired"
+  },
+  "projectStatus": {
+    "active": "Active",
+    "paused": "Paused",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "messageDirection": {
+    "inbound": "Inbound",
+    "outbound": "Outbound"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{{n}}m ago",
+    "hoursAgo": "{{n}}h ago",
+    "daysAgo": "{{n}}d ago"
+  },
+  "list": {
+    "summary": "{{active}} active · {{leads}} leads · {{prospects}} prospects",
+    "import": "Import",
+    "export": "Export",
+    "searchPlaceholder": "Search clients…",
+    "tags": "Tags",
+    "clearTag": "Clear",
+    "columns": {
+      "name": "Name",
+      "contact": "Contact",
+      "status": "Status",
+      "lifetime": "Lifetime"
+    },
+    "empty": {
+      "titleFiltered": "No clients match your filters",
+      "hintFiltered": "Try broadening your search or filter.",
+      "title": "No clients yet",
+      "hint": "Add your first client to start tracking leads, contacts, and revenue."
+    }
+  },
+  "detail": {
+    "fallbackName": "Client",
+    "details": "Details",
+    "created": "Created {{date}}",
+    "source": "Source: {{source}}",
+    "actions": {
+      "sendEmail": "Send email",
+      "statement": "Statement",
+      "addExpense": "Add expense",
+      "newInvoice": "New invoice",
+      "portalLink": "Portal link",
+      "portalLinkTitle": "Copy client portal link",
+      "editTitle": "Edit client",
+      "new": "+ New",
+      "viewAllTasks": "View all →",
+      "openInbox": "Open inbox →",
+      "edit": "Edit",
+      "copied": "Copied!"
+    },
+    "stats": {
+      "lifetimeValue": "Lifetime value",
+      "outstanding": "Outstanding",
+      "invoices": "Invoices"
+    },
+    "profitability": {
+      "title": "Profitability",
+      "margin": "{{pct}}% margin",
+      "revenue": "Revenue",
+      "labor": "Labor",
+      "expenses": "Expenses",
+      "profit": "Profit",
+      "note": "Revenue = all invoiced to this client; cost = labor and expenses tracked on their projects."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "empty": "No invoices yet"
+    },
+    "estimates": {
+      "title": "Estimates",
+      "empty": "No estimates yet"
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects yet"
+    },
+    "tasks": {
+      "title": "Open tasks",
+      "empty": "No open tasks",
+      "overduePrefix": "Overdue · "
+    },
+    "messages": {
+      "title": "Messages",
+      "empty": "No messages yet"
+    }
+  },
+  "form": {
+    "addTitle": "Add client",
+    "editTitle": "Edit client",
+    "addButton": "Add client",
+    "openAddButton": "Add Client",
+    "saveChanges": "Save changes",
+    "saved": "Saved!",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "company": "Company",
+    "email": "Email",
+    "phone": "Phone",
+    "status": "Status",
+    "source": "Source",
+    "tags": "Tags",
+    "tagsHint": "(comma-separated)",
+    "tagsLabel": "Tags (comma-separated)",
+    "notes": "Notes",
+    "statusOptions": {
+      "lead": "Lead",
+      "prospect": "Prospect",
+      "active": "Active client",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+    "placeholders": {
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "company": "Acme Inc.",
+      "email": "jane@example.com",
+      "phone": "+1 (555) 000-0000",
+      "source": "Referral, website…",
+      "tags": "vip, contractor, repeat",
+      "tagsShort": "vip, contractor…",
+      "notes": "Any additional context…",
+      "notesShort": "Any context about this client…"
+    },
+    "cancel": "Cancel"
+  },
+  "notes": {
+    "title": "Notes & Activity",
+    "placeholder": "Log a call, note a follow-up… (⌘↵ to save)",
+    "add": "Add note",
+    "empty": "No notes yet",
+    "kinds": {
+      "note": "Note",
+      "call": "Call",
+      "meeting": "Meeting",
+      "email": "Email",
+      "follow_up": "Follow up"
+    },
+    "errors": {
+      "empty": "A note can't be empty.",
+      "saveFailed": "Couldn't save the note. Try again."
+    }
+  },
+  "timeline": {
+    "title": "Communication History",
+    "entries_one": "{{count}} entry",
+    "entries_other": "{{count}} entries",
+    "all": "All",
+    "addNote": "Add a note",
+    "notePlaceholder": "Type a note about this client…",
+    "saveNote": "Save note",
+    "empty": "No communications yet",
+    "emptyFiltered": "No {{type}} entries yet",
+    "received": "← received",
+    "sent": "→ sent",
+    "duration": "{{minutes}}m{{seconds}}s",
+    "aiBadge": "AI",
+    "types": {
+      "call": "Call",
+      "sms": "SMS",
+      "email": "Email",
+      "note": "Note",
+      "appointment": "Appointment",
+      "other": "Other"
+    },
+    "sentiment": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative"
+    }
+  },
+  "preferences": {
+    "title": "Communication Preferences",
+    "saved": "Saved!",
+    "optOuts": {
+      "title": "Notification Opt-outs",
+      "sms": {
+        "label": "SMS Messages",
+        "description": "Opt out from text messages"
+      },
+      "email": {
+        "label": "Email",
+        "description": "Opt out from email messages"
+      },
+      "calls": {
+        "label": "Phone Calls",
+        "description": "Opt out from phone calls"
+      }
+    },
+    "contact": {
+      "title": "Contact Preferences",
+      "method": "Preferred Contact Method",
+      "methods": {
+        "any": "Any method",
+        "sms": "SMS only",
+        "email": "Email only",
+        "call": "Phone call only"
+      },
+      "bestTime": "Best Time to Contact",
+      "times": {
+        "none": "No preference",
+        "morning": "Morning (6am - 12pm)",
+        "afternoon": "Afternoon (12pm - 6pm)",
+        "evening": "Evening (6pm - 10pm)",
+        "weekdays": "Weekdays only",
+        "weekends": "Weekends only"
+      },
+      "notes": "Additional Notes",
+      "notesPlaceholder": "e.g., \"prefers email after 5pm\", \"do not call on Mondays\""
+    }
+  },
+  "brief": {
+    "title": "AI Client Brief",
+    "stale": "Refresh recommended",
+    "refresh": "Refresh brief",
+    "generateTitle": "Generate brief",
+    "intro": "Generate an AI-powered summary of this client's relationship, history, and recommended next actions.",
+    "generate": "Generate brief",
+    "loading": "Analysing client data…",
+    "health": "{{label}} ({{score}}/10)",
+    "nextAction": "Recommended next action",
+    "generatedAt": "Generated {{date}}",
+    "noHeadline": "No headline generated"
+  },
+  "import": {
+    "title": "Import clients",
+    "subtitle": "Upload a CSV to add multiple clients at once",
+    "back": "Clients",
+    "ai": {
+      "title": "Add with AI",
+      "hint": "Paste a list, an email signature, or anything with names & emails — or snap a business card. We'll pull out the contacts for you to review before importing.",
+      "placeholder": "Paste contacts here…",
+      "uploadPhoto": "Upload a photo",
+      "extract": "Extract with AI",
+      "fileLabel_one": "AI · {{count}} contact",
+      "fileLabel_other": "AI · {{count}} contacts"
+    },
+    "csv": {
+      "title": "CSV format",
+      "required": "Required:",
+      "or": "or",
+      "optional": "Optional:",
+      "statusValues": "(lead/prospect/active/inactive)",
+      "tagsHint": "(comma-separated)",
+      "downloadTemplate": "Download template"
+    },
+    "drop": {
+      "hint": "Drop your CSV here, or click to browse",
+      "limits": "CSV files only · Up to 5,000 rows"
+    },
+    "preview": {
+      "title": "Preview",
+      "valid": "{{n}} valid",
+      "willSkip": "{{n}} will skip",
+      "showing": "Showing first 50 of {{n}} rows",
+      "rowError": "A first name or a company is required",
+      "columns": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "company": "Company",
+        "email": "Email",
+        "phone": "Phone",
+        "status": "Status",
+        "tags": "Tags"
+      }
+    },
+    "result": {
+      "imported_one": "Imported {{count}} client",
+      "imported_other": "Imported {{count}} clients",
+      "failedSuffix": " · {{n}} failed",
+      "redirecting": "Redirecting to Clients…"
+    },
+    "actions": {
+      "clear": "Clear",
+      "import_one": "Import {{count}} client",
+      "import_other": "Import {{count}} clients",
+      "importing_one": "Importing {{count}} client…",
+      "importing_other": "Importing {{count}} clients…"
+    },
+    "errors": {
+      "csvOnly": "Please upload a .csv file.",
+      "noValidRows": "There are no valid rows to import.",
+      "importFailed": "Import failed. Try again.",
+      "noContacts": "No contacts found in that input.",
+      "extractFailed": "Couldn't read contacts from that input."
+    }
+  },
+  "statement": {
+    "label": "Statement",
+    "title": "Account statement",
+    "documentTitle": "Statement — {{name}}",
+    "asOf": "As of {{date}}",
+    "back": "← Back to client",
+    "print": "Print / Save PDF",
+    "statementFor": "Statement for",
+    "balanceDue": "Balance due",
+    "totalBilled": "Total billed",
+    "totalPaid": "Total paid",
+    "empty": "No invoices on record for this client.",
+    "columns": {
+      "date": "Date",
+      "invoice": "Invoice",
+      "due": "Due",
+      "status": "Status",
+      "amount": "Amount"
+    },
+    "footer": "{{org}} · Statement for {{name}} · Generated {{date}}"
+  },
+  "errors": {
+    "unauthorized": "Please sign in again.",
+    "noOrganization": "No organization found.",
+    "firstNameRequired": "A first name is required.",
+    "missingClientId": "Missing client ID.",
+    "createFailed": "Couldn't create the client. Try again.",
+    "updateFailed": "Couldn't update the client. Try again.",
+    "deleteFailed": "Couldn't delete the client. Try again.",
+    "logFailed": "Couldn't log this communication. Try again.",
+    "preferencesFailed": "Couldn't save these preferences. Try again.",
+    "aiNotConfigured": "AI isn't configured yet.",
+    "clientNotFound": "That client no longer exists.",
+    "briefFailed": "Couldn't generate the brief. Try again.",
+    "briefParseFailed": "The AI response couldn't be read. Try again.",
+    "briefSaveFailed": "Couldn't save the brief. Try again.",
+    "importInvalidBody": "That import request wasn't readable.",
+    "extractUnsupportedImage": "Unsupported image type. Use JPEG, PNG, or WebP.",
+    "extractImageTooLarge": "The image must be under 10 MB.",
+    "extractNoInput": "Paste text or upload an image.",
+    "extractReadFailed": "Couldn't read that input.",
+    "extractParseFailed": "Couldn't read contacts from that input.",
+    "extractFailed": "Extraction failed. Try again."
+  }
+}
