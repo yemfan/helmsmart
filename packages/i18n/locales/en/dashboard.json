@@ -8206,6 +8206,8 @@
         "postsPublished": "Posts"
       },
       "rank": "Rank {{rank}} by closed volume",
+      "exportCsv": "Export CSV",
+      "previous": "previous",
       "teamTotal": "Team total",
       "empty": "No team members yet.",
       "loadFailed": "We could not load performance right now. Refresh to try again.",
@@ -8251,11 +8253,34 @@
         "lastPost": "Last post",
         "attention": "Attention"
       },
+      "exportCsv": "Export CSV",
       "hubNotLive": "Not live",
       "assistantOn": "Posting on its own",
       "assistantOff": "Asks first",
       "failedCount": "{{count}} failed",
       "note": "Posts count what went out in the window. Queued is what is scheduled from today on. Tracking is GA4 or a Meta Pixel on a live hub. Click a reason above to see only those agents."
+    },
+    "teamRetention": {
+      "title": "Retention signals",
+      "subtitle": "This quarter against the last: whose work is falling away, and who is coming up.",
+      "stepIn": "Step in ({{count}})",
+      "wellDone": "Well done ({{count}})",
+      "tooEarly": "Not enough history yet. Signals need a quarter of activity to compare against.",
+      "noneAtRisk": "Nobody is falling away this quarter.",
+      "noneRising": "Nobody stands out yet this quarter.",
+      "risk": {
+        "gone_quiet": "Gone quiet",
+        "slipping": "Activity halved",
+        "closings_down": "Closings stopped"
+      },
+      "rise": {
+        "rising": "Activity up",
+        "new_closer": "First closing"
+      },
+      "activity": "Activity",
+      "closings": "Closings",
+      "volume": "Closed volume",
+      "note": "Activity is new leads, messages, calls answered and appointments over 90 days, shown next to the 90 days before. The money lags the work by a quarter, which is why the work is what to watch."
     },
     "teamBrand": {
       "title": "Brokerage brand",
