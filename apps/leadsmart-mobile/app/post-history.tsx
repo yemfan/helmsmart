@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { platformLabel, triggerLabel } from "../lib/socialPlatform";
 import {
   ActivityIndicator,
   Image,
@@ -295,7 +296,9 @@ function PostCard({
   const refreshedAt = state?.metricsRefreshedAt ?? post.metricsRefreshedAt;
   const refreshError = state?.refreshError ?? null;
 
-  const platformLabel = labelFor(post.platform, t);
+  const platformName = labelFor(post.platform, t);
+  // null for a kind with no label, so an unknown slug never reaches the screen.
+  const triggerText = triggerLabel(post.triggerKind, t);
   const accountName =
     post.pageName ??
     post.igBusinessUsername ??
@@ -336,7 +339,7 @@ function PostCard({
                     : styles.platformLinkedIn,
               ]}
             >
-              <Text style={styles.platformBadgeText}>{platformLabel}</Text>
+              <Text style={styles.platformBadgeText}>{platformName}</Text>
             </View>
             <Text style={styles.accountText} numberOfLines={1}>
               {accountName}
@@ -344,7 +347,7 @@ function PostCard({
           </View>
           <Text style={styles.timeText}>
             {publishedAt.toLocaleString(locale, shortDateOpts)}
-            {post.triggerKind ? ` · ${triggerLabel(post.triggerKind, t)}` : ""}
+            {triggerText ? ` · ${triggerText}` : ""}
           </Text>
         </View>
       </View>
@@ -383,7 +386,7 @@ function PostCard({
           >
             <Ionicons name="open-outline" size={14} color={tokens.accent} />
             <Text style={styles.actionButtonText}>
-              {t("post_history.view_on", { platform: platformLabel })}
+              {t("post_history.view_on", { platform: platformName })}
             </Text>
           </Pressable>
         )}
@@ -529,14 +532,7 @@ function EmptyState({ tokens, t }: { tokens: ThemeTokens; t: PostHistoryT }) {
 }
 
 function labelFor(p: string, t: PostHistoryT): string {
-  if (p === "facebook" || p === "instagram" || p === "linkedin") {
-    return t(`platforms.${p}`);
-  }
-  return p;
-}
-
-function triggerLabel(kind: string, t: PostHistoryT): string {
-  return t(`post_history.triggers.${kind}`, { defaultValue: kind });
+  return platformLabel(p, t);
 }
 
 function createStyles(tokens: ThemeTokens) {

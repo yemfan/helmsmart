@@ -37,6 +37,7 @@ import type {
 } from "@leadsmart/shared";
 import { getLeadsmartAccessToken, getLeadsmartApiBaseUrl } from "./env";
 import { MOBILE_API_PATHS } from "./mobileEndpoints";
+import type { MobileSocialPlatform } from "./socialPlatform";
 import { createMobileSupabaseClient } from "./supabaseMobile";
 
 type MobileJsonError = {
@@ -2207,7 +2208,8 @@ export async function uploadMobileMedia(input: {
 
 export type MobileScheduledPost = {
   id: string;
-  platform: "facebook" | "instagram" | "linkedin";
+  /** Whatever the publisher wrote — threads and tiktok are both live. */
+  platform: MobileSocialPlatform;
   caption: string;
   hashtags: string[];
   mediaLibraryId: string | null;
@@ -2289,7 +2291,7 @@ export async function cancelMobileScheduledPost(
 
 export type MobileRecurrence = {
   id: string;
-  platform: "facebook" | "instagram" | "linkedin";
+  platform: MobileSocialPlatform;
   caption: string;
   cadence: "daily" | "weekly";
   weeklyDayOfWeek: number | null;

@@ -62,7 +62,15 @@
       "market_update": "Market update",
       "testimonial": "Testimonial",
       "custom": "Custom",
-      "by_address": "By address"
+      "by_address": "By address",
+      "manual": "Manual",
+      "weekly_schedule": "Weekly schedule",
+      "marketing_assistant_social": "Marketing assistant",
+      "marketing_assistant_reel": "Marketing assistant · reel",
+      "marketing_assistant_ad": "Marketing assistant · ad",
+      "marketing_assistant_carousel": "Marketing assistant · carousel",
+      "ai_team_announcement": "AI team announcement",
+      "transaction_listing": "Listing update"
     },
     "account_fallback": "—"
   },
@@ -163,7 +171,11 @@
   "platforms": {
     "facebook": "Facebook",
     "instagram": "Instagram",
-    "linkedin": "LinkedIn"
+    "linkedin": "LinkedIn",
+    "threads": "Threads",
+    "pinterest": "Pinterest",
+    "tiktok": "TikTok",
+    "youtube": "YouTube"
   },
   "tasks": {
     "loading": "Loading tasks…",
