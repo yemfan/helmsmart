@@ -44,5 +44,10 @@ export const namespaces = [
   "web_agent_coaching",
   "web_home_value_estimator",
   "web_free_tools",
+  // Copy for the public marketing, SEO and calculator pages. Split out of
+  // `dashboard` (#1679): it was 607 KB of the 796 KB every page downloaded,
+  // and 232 KB of that was article and calculator copy no signed-in screen
+  // ever reads.
+  "web_pages",
 ] as const;
 export type WebNamespace = (typeof namespaces)[number];

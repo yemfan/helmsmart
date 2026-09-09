@@ -33,6 +33,7 @@ import zhWebAgentCompare from "@leadsmart/i18n/locale/zh-Hans/web_agent_compare"
 import zhWebAgentCoaching from "@leadsmart/i18n/locale/zh-Hans/web_agent_coaching";
 import zhWebHomeValueEstimator from "@leadsmart/i18n/locale/zh-Hans/web_home_value_estimator";
 import zhWebFreeTools from "@leadsmart/i18n/locale/zh-Hans/web_free_tools";
+import zhWebPages from "@leadsmart/i18n/locale/zh-Hans/web_pages";
 
 import type { WebNamespace } from "../constants";
 
@@ -63,6 +64,7 @@ const bundle: Record<WebNamespace, Record<string, unknown>> = {
   web_agent_coaching: zhWebAgentCoaching,
   web_home_value_estimator: zhWebHomeValueEstimator,
   web_free_tools: zhWebFreeTools,
+  web_pages: zhWebPages,
 };
 
 export default bundle;

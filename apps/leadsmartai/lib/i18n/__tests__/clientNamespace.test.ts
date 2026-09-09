@@ -87,12 +87,18 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 /**
- * Keys with an interpolation, a template literal, or an explicit `ns:` prefix
- * are skipped: the first two are not knowable statically, and the third says
- * outright which namespace it means. A key with no dot is a namespace root and
- * is not the shape this check is about.
+ * Keys with an interpolation or a template literal are skipped: neither is
+ * knowable statically. A key with no dot is a namespace root and is not the
+ * shape this check is about.
+ *
+ * A call that names its own namespace — `t("x.y", { ns: "web_pages" })`, or the
+ * `"ns:key"` prefix form — is checked against THAT namespace rather than the
+ * hook's. Saying which namespace you mean is the documented way to reach a key
+ * outside the component's own, and the public pages that share chrome with the
+ * dashboard do it; what still matters is that the key is actually there.
  */
-const T_CALL = /\bt\(\s*"([^"${}:]+\.[^"${}:]+)"/g;
+const T_CALL = /\bt\(\s*"([^"${}:]+\.[^"${}:]+)"\s*(?:,\s*\{([^}]*)\})?/g;
+const NS_OPT = /\bns:\s*"([a-z0-9_]+)"/;
 const HOOK = /useTranslation\(\s*"([a-z_]+)"/;
 
 function findingsByFile(): Map<string, string[]> {
@@ -118,7 +124,8 @@ function findingsByFile(): Map<string, string[]> {
       }
       for (const m of src.matchAll(T_CALL)) {
         const line = src.slice(0, m.index ?? 0).split("\n").length;
-        const ns = boundAt[line - 1];
+        const explicit = m[2]?.match(NS_OPT)?.[1] ?? null;
+        const ns = explicit ?? boundAt[line - 1];
         if (!ns) continue; // call sits above every hook — not a component key
         if (resolves(bundles, ns, m[1])) continue;
         const rel = relative(ROOT, file).split(sep).join("/");

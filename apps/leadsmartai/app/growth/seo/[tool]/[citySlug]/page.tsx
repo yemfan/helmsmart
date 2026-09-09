@@ -1,83 +1,83 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { GROWTH_SEO_CITIES, GROWTH_SEO_TOOLS } from "@repo/growth";
-import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
-import { getServerT } from "@/lib/i18n/server";
-
-type Props = { params: Promise<{ tool: string; citySlug: string }> };
-
-export function generateStaticParams() {
-  const params: { tool: string; citySlug: string }[] = [];
-  for (const t of GROWTH_SEO_TOOLS) {
-    for (const c of GROWTH_SEO_CITIES) {
-      params.push({ tool: t.slug, citySlug: c.slug });
-    }
-  }
-  return params;
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { tool, citySlug } = await params;
-  const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
-  const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
-  const title = t && c ? `${t.name} in ${c.city}, ${c.state} | CloseBoss` : "Tools | CloseBoss";
-  const description =
-    t && c
-      ? `Use our free ${t.name.toLowerCase()} for ${c.city}, ${c.state}. Local context, fast answers, mobile-friendly.`
-      : "Free real estate calculators.";
-  return { title, description, openGraph: { title, description } };
-}
-
-export default async function GrowthSeoPage({ params }: Props) {
-  const tr = await getServerT();
-  const { tool, citySlug } = await params;
-  const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
-  const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
-  if (!t || !c) {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-10">
-        <p>{tr("pages.growthSeoTool.notFound", { ns: "dashboard" })}</p>
-        <Link href="/" className="text-blue-700 text-sm">{tr("pages.articleChrome.home", { ns: "dashboard" })}</Link>
-      </div>
-    );
-  }
-
-  const toolHref = `/${t.slug}`;
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <article className="max-w-lg mx-auto px-4 py-8 space-y-6">
-        <Link href="/" className="text-sm font-medium text-blue-700">
-          ← CloseBoss
-        </Link>
-        <header>
-          <p className="text-xs font-semibold uppercase text-slate-500">{t.category}</p>
-          <h1 className="text-2xl font-bold mt-1 leading-tight">
-            {t.name} in {c.city}, {c.state}
-          </h1>
-          <p className="text-slate-600 mt-3 text-sm leading-relaxed">{tr("pages.growthSeoTool.runNumbersFor", { ns: "dashboard" })} {c.city} {tr("pages.growthSeoTool.marketCompare", { ns: "dashboard" })}</p>
-        </header>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 text-sm text-slate-700">
-          <h2 className="font-bold text-slate-900">{tr("pages.growthSeoTool.whyUseIn", { ns: "dashboard" })} {c.city}?</h2>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>{tr("pages.growthSeoTool.localizedFor", { ns: "dashboard" })} {c.state} {tr("pages.growthSeoTool.buyersComparing", { ns: "dashboard" })}</li>
-            <li>{tr("pages.growthSeoTool.shareable", { ns: "dashboard" })}</li>
-            <li>{tr("pages.growthSeoTool.mobileFirst", { ns: "dashboard" })}</li>
-          </ul>
-        </section>
-
-        <Link
-          href={toolHref}
-          className="flex w-full items-center justify-center rounded-2xl bg-blue-600 text-white font-semibold py-3 text-sm"
-        >{tr("pages.growthSeoTool.open", { ns: "dashboard" })} {t.name} →
-        </Link>
-
-        <ProgressiveLeadCapture
-          headline="Get matched with local guidance"
-          source={`growth_seo:${tool}:${citySlug}`}
-        />
-      </article>
-    </div>
-  );
-}
+import type { Metadata } from "next";
+import Link from "next/link";
+import { GROWTH_SEO_CITIES, GROWTH_SEO_TOOLS } from "@repo/growth";
+import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
+import { getServerT } from "@/lib/i18n/server";
+
+type Props = { params: Promise<{ tool: string; citySlug: string }> };
+
+export function generateStaticParams() {
+  const params: { tool: string; citySlug: string }[] = [];
+  for (const t of GROWTH_SEO_TOOLS) {
+    for (const c of GROWTH_SEO_CITIES) {
+      params.push({ tool: t.slug, citySlug: c.slug });
+    }
+  }
+  return params;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { tool, citySlug } = await params;
+  const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
+  const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
+  const title = t && c ? `${t.name} in ${c.city}, ${c.state} | CloseBoss` : "Tools | CloseBoss";
+  const description =
+    t && c
+      ? `Use our free ${t.name.toLowerCase()} for ${c.city}, ${c.state}. Local context, fast answers, mobile-friendly.`
+      : "Free real estate calculators.";
+  return { title, description, openGraph: { title, description } };
+}
+
+export default async function GrowthSeoPage({ params }: Props) {
+  const tr = await getServerT();
+  const { tool, citySlug } = await params;
+  const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
+  const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
+  if (!t || !c) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-10">
+        <p>{tr("pages.growthSeoTool.notFound", { ns: "web_pages" })}</p>
+        <Link href="/" className="text-blue-700 text-sm">{tr("pages.articleChrome.home", { ns: "web_pages" })}</Link>
+      </div>
+    );
+  }
+
+  const toolHref = `/${t.slug}`;
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <article className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <Link href="/" className="text-sm font-medium text-blue-700">
+          ← CloseBoss
+        </Link>
+        <header>
+          <p className="text-xs font-semibold uppercase text-slate-500">{t.category}</p>
+          <h1 className="text-2xl font-bold mt-1 leading-tight">
+            {t.name} in {c.city}, {c.state}
+          </h1>
+          <p className="text-slate-600 mt-3 text-sm leading-relaxed">{tr("pages.growthSeoTool.runNumbersFor", { ns: "web_pages" })} {c.city} {tr("pages.growthSeoTool.marketCompare", { ns: "web_pages" })}</p>
+        </header>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 text-sm text-slate-700">
+          <h2 className="font-bold text-slate-900">{tr("pages.growthSeoTool.whyUseIn", { ns: "web_pages" })} {c.city}?</h2>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>{tr("pages.growthSeoTool.localizedFor", { ns: "web_pages" })} {c.state} {tr("pages.growthSeoTool.buyersComparing", { ns: "web_pages" })}</li>
+            <li>{tr("pages.growthSeoTool.shareable", { ns: "web_pages" })}</li>
+            <li>{tr("pages.growthSeoTool.mobileFirst", { ns: "web_pages" })}</li>
+          </ul>
+        </section>
+
+        <Link
+          href={toolHref}
+          className="flex w-full items-center justify-center rounded-2xl bg-blue-600 text-white font-semibold py-3 text-sm"
+        >{tr("pages.growthSeoTool.open", { ns: "web_pages" })} {t.name} →
+        </Link>
+
+        <ProgressiveLeadCapture
+          headline="Get matched with local guidance"
+          source={`growth_seo:${tool}:${citySlug}`}
+        />
+      </article>
+    </div>
+  );
+}

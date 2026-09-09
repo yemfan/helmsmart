@@ -33,6 +33,7 @@ import enWebAgentCompare from "@leadsmart/i18n/locale/en/web_agent_compare";
 import enWebAgentCoaching from "@leadsmart/i18n/locale/en/web_agent_coaching";
 import enWebHomeValueEstimator from "@leadsmart/i18n/locale/en/web_home_value_estimator";
 import enWebFreeTools from "@leadsmart/i18n/locale/en/web_free_tools";
+import enWebPages from "@leadsmart/i18n/locale/en/web_pages";
 
 import type { WebNamespace } from "../constants";
 
@@ -63,6 +64,7 @@ const bundle: Record<WebNamespace, Record<string, unknown>> = {
   web_agent_coaching: enWebAgentCoaching,
   web_home_value_estimator: enWebHomeValueEstimator,
   web_free_tools: enWebFreeTools,
+  web_pages: enWebPages,
 };
 
 export default bundle;
