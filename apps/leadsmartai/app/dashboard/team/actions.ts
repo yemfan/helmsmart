@@ -16,7 +16,6 @@ import { inviteMany, requeueInvite } from "@/lib/teams/onboarding.server";
 import { MAX_ROSTER_ROWS, parseRoster } from "@/lib/teams/roster";
 import { parseBrandInput } from "@/lib/teams/brand";
 import { canAdministerTeam, canManageTeam, isAssignableRole } from "@/lib/teams/roles";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { saveTeamBrand } from "@/lib/teams/brand.server";
 
 /**
@@ -200,18 +199,4 @@ export async function setRole(formData: FormData) {
   await svcSetMemberRole({ teamId, agentId, role });
   revalidatePath("/dashboard/team");
   return { ok: true as const };
-}
-
-/** Owner only: members spend from the owner's credit balance, or from their own. */
-export async function setPooledCredits(formData: FormData) {
-  const teamId = String(formData.get("teamId") ?? "");
-  const on = String(formData.get("pooled") ?? "") === "true";
-  if (!teamId) return { ok: false as const, error: "Missing team" };
-  const ctx = await getCurrentAgentContext();
-  const role = await getRole({ teamId, agentId: ctx.agentId });
-  if (!canAdministerTeam(role)) return { ok: false as const, error: "Owner only" };
-  const { error } = await supabaseAdmin.from("teams").update({ pooled_credits: on, updated_at: new Date().toISOString() } as never).eq("id", teamId);
-  if (error) return { ok: false as const, error: "Could not save. Try again." };
-  revalidatePath("/dashboard/team");
-  return { ok: true as const, pooled: on };
 }

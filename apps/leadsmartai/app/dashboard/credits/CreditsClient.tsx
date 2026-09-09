@@ -95,13 +95,11 @@ export default function CreditsClient({
   const annualFor = (tierId: CreditTierId): number | null =>
     cadence === "annual" && annualTierIds.includes(tierId) ? annualUsd(tierId) : null;
 
-  const [pooledTeam, setPooledTeam] = useState<string | null>(null);
   const loadBalance = useCallback(async () => {
     try {
       const r = await fetch("/api/dashboard/credits", { credentials: "include" });
-      const j = (await r.json().catch(() => ({}))) as { credits?: number; plan?: CurrentPlan | null; pooled?: boolean; teamName?: string | null };
+      const j = (await r.json().catch(() => ({}))) as { credits?: number; plan?: CurrentPlan | null };
       if (typeof j.credits === "number") setBalance(j.credits);
-      setPooledTeam(j.pooled ? (j.teamName ?? "") : null);
       if (j.plan) setPlan(j.plan);
     } catch {
       /* ignore */
@@ -190,9 +188,6 @@ export default function CreditsClient({
             <p className="text-3xl font-extrabold text-brand-text">
               {balance === null ? "…" : balance.toLocaleString()}
             </p>
-            {pooledTeam !== null ? (
-              <p className="mt-1 text-xs text-slate-500">{pooledTeam ? tr("pages.credits.pooledWith", { team: pooledTeam }) : tr("pages.credits.pooled")}</p>
-            ) : null}
           </div>
         </div>
 

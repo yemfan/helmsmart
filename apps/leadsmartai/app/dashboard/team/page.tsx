@@ -8,7 +8,6 @@ import { getOnboardingBoard, type OnboardingBoard } from "@/lib/teams/onboarding
 import { loadTeamBrand } from "@/lib/teams/brand.server";
 import { canManageTeam } from "@/lib/teams/roles";
 import { loadMemberDirectory, type MemberDirectory } from "@/lib/teams/directory.server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { TeamBrand } from "@/lib/teams/brand";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
@@ -45,7 +44,6 @@ export default async function TeamPage() {
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
-  let pooledCredits = false;
   let directory: MemberDirectory = {};
 
   if (teams.length > 0) {
@@ -54,14 +52,12 @@ export default async function TeamPage() {
     const r = await getRoster(team.id);
     const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
     canManage = canManageTeam(myRole);
-    const [seat, dir, b, br, pooledRow] = await Promise.all([
+    const [seat, dir, b, br] = await Promise.all([
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
       canManage ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
-      isOwner ? supabaseAdmin.from("teams").select("pooled_credits").eq("id", team.id).maybeSingle().then((r) => (r.data as { pooled_credits?: boolean } | null)?.pooled_credits ?? false) : Promise.resolve(false),
     ]);
-    pooledCredits = Boolean(pooledRow);
     directory = dir;
     roster = r;
     seatUsage = { used: seat.used, cap: seat.cap, full: seat.full };
@@ -79,7 +75,6 @@ export default async function TeamPage() {
       seatUsage={seatUsage}
       board={board}
       brand={brand}
-      pooledCredits={pooledCredits}
       directory={directory}
     />
   );

@@ -9,10 +9,8 @@ import {
   inviteMember,
   removeMember,
   revokeInvite,
-  setPooledCredits,
   setRole,
 } from "@/app/dashboard/team/actions";
-import { Toggle } from "@/components/ui/Toggle";
 import type { TeamAccessStatus } from "@/lib/teams/access.server";
 import { TeamBreakdownPanel } from "./TeamBreakdownPanel";
 import type { TeamInvite, TeamMembership, TeamRoster } from "@/lib/teams/types";
@@ -45,7 +43,6 @@ export function TeamDashboard({
   seatUsage,
   board,
   brand,
-  pooledCredits = false,
   directory = {},
 }: {
   currentAgentId: string;
@@ -59,8 +56,6 @@ export function TeamDashboard({
   board?: OnboardingBoard | null;
   /** Owner only: the brokerage brand shown on member hubs. */
   brand?: TeamBrand | null;
-  /** Owner only: whether members spend from the owner's credit balance. */
-  pooledCredits?: boolean;
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -107,8 +102,6 @@ export function TeamDashboard({
 
       <TeamBreakdownPanel teamId={roster.team.id} directory={directory} />
 
-      {isOwner ? <PooledCreditsCard teamId={roster.team.id} pooled={pooledCredits} /> : null}
-
       {canManage ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
 
       {canManage ? <RosterImportCard teamId={roster.team.id} /> : null}
@@ -117,47 +110,6 @@ export function TeamDashboard({
         <InviteCard teamId={roster.team.id} pendingInvites={roster.pendingInvites} />
       ) : null}
     </div>
-  );
-}
-
-// ── Pooled credits ──────────────────────────────────────────────
-
-function PooledCreditsCard({ teamId, pooled }: { teamId: string; pooled: boolean }) {
-  const { t } = useTranslation("dashboard");
-  const [on, setOn] = useState(pooled);
-  const [state, setState] = useState<"idle" | "saving" | "error">("idle");
-  const [pending, startTransition] = useTransition();
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.teamCredits.title")}</h2>
-      <div className="mt-3 flex items-center gap-3">
-        <Toggle
-          checked={on}
-          disabled={pending}
-          label={t("pages.teamCredits.toggle")}
-          onChange={(next) => {
-            setOn(next);
-            setState("saving");
-            startTransition(async () => {
-              const fd = new FormData();
-              fd.set("teamId", teamId);
-              fd.set("pooled", String(next));
-              const r = await setPooledCredits(fd);
-              if (!r.ok) {
-                setOn(!next);
-                setState("error");
-              } else {
-                setState("idle");
-              }
-            });
-          }}
-        />
-        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{t("pages.teamCredits.toggle")}</span>
-        {state === "saving" ? <span className="text-xs text-slate-500">{t("pages.hubEditor.saving")}</span> : null}
-        {state === "error" ? <span role="alert" className="text-xs text-red-700 dark:text-red-400">{t("pages.hubEditor.saveFailed")}</span> : null}
-      </div>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{on ? t("pages.teamCredits.onHint") : t("pages.teamCredits.offHint")}</p>
-    </section>
   );
 }
 
