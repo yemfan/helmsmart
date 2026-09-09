@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { importRoster, resendInvite } from "@/app/dashboard/team/actions";
@@ -112,7 +112,11 @@ export function OnboardingBoardCard({ teamId, board }: { teamId: string; board: 
   const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamOnboarding.${s}`, vars);
-  const date = (iso: string) => (iso ? new Date(iso).toLocaleDateString(locale, { dateStyle: "medium" }) : "");
+  // Dates are the browser's, not the server's: rendering them before mount
+  // showed one day on the server and another after hydration.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const date = (iso: string) => (iso && mounted ? new Date(iso).toLocaleDateString(locale, { dateStyle: "medium" }) : "");
   const th = "px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500";
   const td = "px-3 py-2 text-sm text-slate-800 dark:text-slate-200";
   const yes = <span className="text-emerald-700 dark:text-emerald-400">{k("yes")}</span>;

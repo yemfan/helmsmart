@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import {
@@ -339,6 +339,8 @@ function InviteCard({
   pendingInvites: TeamInvite[];
 }) {
   const { t, i18n } = useTranslation("dashboard");
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [lastInvite, setLastInvite] = useState<{
     email: string;
     rawToken: string;
@@ -406,7 +408,7 @@ function InviteCard({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-slate-800">{inv.invitedEmail}</p>
                   <p className="text-xs text-slate-500">
-                    {t("pages.team.expires", { date: new Date(inv.expiresAt).toLocaleDateString(intlLocale(i18n.language)) })}
+                    {mounted ? t("pages.team.expires", { date: new Date(inv.expiresAt).toLocaleDateString(intlLocale(i18n.language)) }) : null}
                   </p>
                 </div>
                 <RevokeInviteButton teamId={teamId} inviteId={inv.id} />
