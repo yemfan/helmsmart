@@ -8388,6 +8388,65 @@
       "emptyManager": "这里还是空的。把经纪人最常向你索要的文案和文件加进来吧。",
       "note": "每位经纪人都从自己的账号、按自己的套餐发布。素材库共享的是文字和文件，不是费用。"
     },
+    "teamReferrals": {
+      "title": "转介",
+      "subtitle": "把线索转介给同事并收取转介费。对方的联系人列表中会收到该客户；成交后，转介费会记录在双方名下。",
+      "openForm": "转介线索",
+      "closeForm": "收起",
+      "contactLabel": "线索",
+      "contactPlaceholder": "按姓名、邮箱或电话搜索你的联系人",
+      "change": "更换",
+      "toLabel": "转介给",
+      "toPlaceholder": "选择同事",
+      "feeLabel": "转介费（佣金百分比）",
+      "noteLabel": "备注",
+      "notePlaceholder": "对方需要了解的信息：区域、预算、时间",
+      "send": "发送转介",
+      "sending": "发送中…",
+      "sent": "已发送！",
+      "error": {
+        "toAgentId_required": "请选择同事。",
+        "toAgentId_self": "不能把线索转介给自己。",
+        "contactId_required": "请选择线索。",
+        "feePct_range": "转介费需在 0 到 50% 之间。",
+        "note_too_long": "备注太长了。"
+      },
+      "stat": {
+        "open": "待处理",
+        "closed": "已成交",
+        "closedVolume": "成交额",
+        "fees": "转介费"
+      },
+      "col": {
+        "contact": "线索",
+        "from": "来自",
+        "to": "转给",
+        "fee": "费率",
+        "status": "状态",
+        "closed": "成交价",
+        "date": "发送日期",
+        "action": "操作"
+      },
+      "status": {
+        "open": "待处理",
+        "accepted": "已接受",
+        "declined": "已拒绝",
+        "closed": "已成交"
+      },
+      "move": {
+        "accept": "接受",
+        "decline": "拒绝",
+        "withdraw": "撤回",
+        "close": "标记成交"
+      },
+      "moving": "保存中…",
+      "amountPlaceholder": "成交价",
+      "feeLine": "转介费 {{fee}}",
+      "empty": "还没有转介。把线索转介给同事，或等待同事转介给你，都会显示在这里。",
+      "alone": "转介需要团队里有同事。请先在上方邀请。",
+      "note": "联系人会复制给同事，你自己的记录保留不变。转介费由你们双方及经纪公司约定。",
+      "noteManager": "你可以看到全公司的所有转介。转介费按接收方记录的成交价计算。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",

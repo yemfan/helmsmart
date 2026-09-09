@@ -8388,6 +8388,65 @@
       "emptyManager": "Nothing here yet. Add the wording and files agents ask you for most.",
       "note": "Every agent posts from their own accounts on their own plan. The library shares words and files, not billing."
     },
+    "teamReferrals": {
+      "title": "Referrals",
+      "subtitle": "Hand a lead to a colleague for a fee. They get the contact in their list; when it closes, the fee is on record for both of you.",
+      "openForm": "Refer a lead",
+      "closeForm": "Close",
+      "contactLabel": "Lead",
+      "contactPlaceholder": "Search your contacts by name, email or phone",
+      "change": "Change",
+      "toLabel": "To",
+      "toPlaceholder": "Choose a colleague",
+      "feeLabel": "Referral fee (% of commission)",
+      "noteLabel": "Note",
+      "notePlaceholder": "What they should know: area, budget, timing",
+      "send": "Send referral",
+      "sending": "Sending…",
+      "sent": "Sent!",
+      "error": {
+        "toAgentId_required": "Choose a colleague.",
+        "toAgentId_self": "You cannot refer a lead to yourself.",
+        "contactId_required": "Pick a lead.",
+        "feePct_range": "The fee must be between 0 and 50 percent.",
+        "note_too_long": "That note is too long."
+      },
+      "stat": {
+        "open": "Waiting",
+        "closed": "Closed",
+        "closedVolume": "Closed volume",
+        "fees": "Referral fees"
+      },
+      "col": {
+        "contact": "Lead",
+        "from": "From",
+        "to": "To",
+        "fee": "Fee",
+        "status": "Status",
+        "closed": "Closed at",
+        "date": "Sent",
+        "action": "Action"
+      },
+      "status": {
+        "open": "Waiting",
+        "accepted": "Accepted",
+        "declined": "Declined",
+        "closed": "Closed"
+      },
+      "move": {
+        "accept": "Accept",
+        "decline": "Decline",
+        "withdraw": "Withdraw",
+        "close": "Mark closed"
+      },
+      "moving": "Saving…",
+      "amountPlaceholder": "Sale price",
+      "feeLine": "fee {{fee}}",
+      "empty": "No referrals yet. Refer a lead to a colleague, and the ones sent to you appear here.",
+      "alone": "Referrals need a colleague on the team. Invite one above.",
+      "note": "The contact is copied to the colleague; you keep your own record. The fee is between the two of you and your brokerage.",
+      "noteManager": "You see every referral in the office. Fees are computed from the closed amount the receiving agent records."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",

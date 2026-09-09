@@ -21,6 +21,8 @@ import { ATTENTION_KEYS, type Attention } from "@/lib/teams/marketing";
 import { nudgeAttention } from "@/lib/teams/nudges.server";
 import { parseLibraryInput } from "@/lib/teams/library";
 import { addLibraryItem as svcAddLibraryItem, removeLibraryItem as svcRemoveLibraryItem } from "@/lib/teams/library.server";
+import { parseReferralInput, type ReferralMove } from "@/lib/teams/referrals";
+import { createReferral as svcCreateReferral, moveReferral as svcMoveReferral, searchContacts } from "@/lib/teams/referrals.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -221,6 +223,61 @@ export async function removeLibraryItem(formData: FormData) {
   } catch (e) {
     console.error("[team.library.remove]", e instanceof Error ? e.message : e);
     return { ok: false as const, error: "We could not remove that right now." };
+  }
+}
+
+/** The caller's own contacts, for the referral picker. */
+export async function searchMyContacts(formData: FormData) {
+  const q = String(formData.get("q") ?? "");
+  try {
+    const ctx = await getCurrentAgentContext();
+    const hits = await searchContacts(ctx.agentId, q);
+    return { ok: true as const, hits };
+  } catch (e) {
+    console.error("[team.referrals.search]", e instanceof Error ? e.message : e);
+    return { ok: false as const, hits: [] };
+  }
+}
+
+/** Hand one of your leads to a colleague on the team for a fee. Any member. */
+export async function createReferral(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null, reason: null };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!role) return { ok: false as const, error: "You are not on this team.", field: null, reason: null };
+  const parsed = parseReferralInput({ toAgentId: formData.get("toAgentId"), contactId: formData.get("contactId"), feePct: formData.get("feePct"), note: formData.get("note") }, ctx.agentId);
+  if (!parsed.ok) return { ok: false as const, error: "Check the form.", field: parsed.field, reason: parsed.reason };
+  try {
+    const referral = await svcCreateReferral({ teamId, fromAgentId: ctx.agentId, input: parsed.input });
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, referral };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    console.error("[team.referrals.create]", msg);
+    const error = msg === "not_a_member" ? "That agent is not on this team." : msg === "not_your_contact" ? "That contact is not in your list." : "We could not send that referral right now.";
+    return { ok: false as const, error, field: null, reason: null };
+  }
+}
+
+/** Accept, decline, withdraw or close a referral you are part of. */
+export async function moveReferral(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  const move = String(formData.get("move") ?? "") as ReferralMove;
+  if (!teamId || !id || !["accept", "decline", "withdraw", "close"].includes(move)) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const amountRaw = String(formData.get("amount") ?? "").replace(/[$,\s]/g, "");
+  const amount = amountRaw === "" ? null : Number(amountRaw);
+  try {
+    const referral = await svcMoveReferral({ teamId, id, agentId: ctx.agentId, move, amount });
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, referral };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    console.error("[team.referrals.move]", msg);
+    const error = msg === "not_allowed" ? "That referral is not yours to change now." : msg === "amount_required" ? "Enter the closed amount." : "We could not update that referral right now.";
+    return { ok: false as const, error };
   }
 }
 
