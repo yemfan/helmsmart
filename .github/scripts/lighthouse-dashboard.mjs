@@ -34,14 +34,35 @@ const ROUTES = [
   "/dashboard/calendar",
   "/dashboard/settings",
 ];
-// A regression guard, not an aspiration. Set from the measured baseline
-// (run 34290097393, median of three per route): every route scores 0.80-0.84
-// with LCP 1.73-1.97 s, CLS <= 0.060 and TBT <= 25 ms. Even a median of three
-// still moves about five points run to run, so `performance` sits below the
-// worst observed route with that much headroom — a route that drops to 0.7 is
-// a real regression, and the job says so instead of failing every weekday.
-// 0.85 remains the target; raise this as routes clear it.
-const THRESHOLDS = { performance: 0.75, lcp: 2500, cls: 0.1, tbt: 200 };
+/**
+ * Gate on what this job can measure repeatably. Report the rest.
+ *
+ * Four runs of the SAME build, median of three each, spread per route:
+ *
+ *   performance   0.28      LCP   1754 ms
+ *   CLS           0.000     TBT     22 ms
+ *
+ * `performance` and `lcp` swing further than any regression worth catching,
+ * because they are dominated by the server's own response time — measured at
+ * 0.6-2.6 s for one page on one commit. Gating on them means a nightly job
+ * that fails on the infrastructure's mood, and a gate that cries wolf is one
+ * nobody reads. Loosening `performance` to ~0.60 to stop the flapping would
+ * let a route fall from 0.85 to 0.65 in silence, which is worse than not
+ * gating at all.
+ *
+ * CLS and TBT are the opposite: byte-identical across the three runs of a
+ * given build, on every route. They also measure what the code controls — a
+ * component that shifts layout, an import that blocks the main thread — so a
+ * breach is a real defect rather than a slow afternoon in us-east-1.
+ *
+ * Worst current values are CLS 0.060 and TBT 26 ms, so both thresholds keep
+ * real headroom. Every metric is still measured and written to
+ * lighthouse-results/dashboard.json; `performance` and `lcp` are simply
+ * reported rather than enforced.
+ */
+const THRESHOLDS = { cls: 0.1, tbt: 200 };
+/** Measured and printed, never gated — see above. */
+const REPORTED = { performance: 0.85, lcp: 2500 };
 const PORT = 9222;
 
 // A persistent context IS the browser's default context, so the tab
@@ -125,23 +146,31 @@ for (const route of ROUTES) {
   };
   results.push(m);
   const bad = [];
-  if (m.performance !== null && m.performance < THRESHOLDS.performance) bad.push(`perf ${Math.round(m.performance * 100)}`);
-  if (m.lcp !== null && m.lcp > THRESHOLDS.lcp) bad.push(`LCP ${Math.round(m.lcp)}ms`);
   if (m.cls !== null && m.cls > THRESHOLDS.cls) bad.push(`CLS ${m.cls.toFixed(3)}`);
   if (m.tbt !== null && m.tbt > THRESHOLDS.tbt) bad.push(`TBT ${Math.round(m.tbt)}ms`);
   if (bad.length) failing++;
+  // Noted, not counted: below the target but not a reason to fail a build.
+  const soft = [];
+  if (m.performance !== null && m.performance < REPORTED.performance) soft.push(`perf ${Math.round(m.performance * 100)}`);
+  if (m.lcp !== null && m.lcp > REPORTED.lcp) soft.push(`LCP ${Math.round(m.lcp)}ms`);
   if (landed !== route) {
     console.log(`✗ measured ${landed}, not ${route} — the session did not carry over; scores below are not the dashboard's`);
     failing++;
   }
   console.log(
-    `${bad.length ? "✗" : "✓"} perf ${m.performance === null ? "?" : Math.round(m.performance * 100)} · LCP ${Math.round(m.lcp ?? 0)}ms · CLS ${(m.cls ?? 0).toFixed(3)} · TBT ${Math.round(m.tbt ?? 0)}ms${bad.length ? `  ← ${bad.join(", ")}` : ""}`,
+    `${bad.length ? "✗" : "✓"} perf ${m.performance === null ? "?" : Math.round(m.performance * 100)} · LCP ${Math.round(m.lcp ?? 0)}ms · CLS ${(m.cls ?? 0).toFixed(3)} · TBT ${Math.round(m.tbt ?? 0)}ms${bad.length ? `  ← ${bad.join(", ")}` : ""}${soft.length ? `  (below target: ${soft.join(", ")})` : ""}`,
   );
   for (const o of m.opportunities) console.log(`      ~${o.savingsMs}ms  ${o.id}`);
   writeFileSync(`lighthouse-results/${route.replace(/[^a-z0-9]+/gi, "_").replace(/^_/, "") || "root"}.html`, run.report[0]);
 }
-writeFileSync("lighthouse-results/dashboard.json", JSON.stringify({ thresholds: THRESHOLDS, results }, null, 2));
+writeFileSync(
+  "lighthouse-results/dashboard.json",
+  JSON.stringify({ thresholds: THRESHOLDS, reported: REPORTED, results }, null, 2),
+);
 await context.close();
 
-console.log(`\n${results.length} routes, median of ${RUNS} runs each — ${failing} below threshold${GATE ? "" : " (GATE=off, reporting only)"}.`);
+console.log(
+  `\n${results.length} routes, median of ${RUNS} runs each — ${failing} over a gated threshold (CLS/TBT)${GATE ? "" : " (GATE=off, reporting only)"}.` +
+    `\nperformance and LCP are measured and reported, never gated: they swing further between runs of one build than any regression worth catching.`,
+);
 process.exit(GATE && failing > 0 ? 1 : 0);
