@@ -19,6 +19,8 @@ import { canAdministerTeam, canManageTeam, isAssignableRole } from "@/lib/teams/
 import { saveTeamBrand } from "@/lib/teams/brand.server";
 import { ATTENTION_KEYS, type Attention } from "@/lib/teams/marketing";
 import { nudgeAttention } from "@/lib/teams/nudges.server";
+import { parseLibraryInput } from "@/lib/teams/library";
+import { addLibraryItem as svcAddLibraryItem, removeLibraryItem as svcRemoveLibraryItem } from "@/lib/teams/library.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -182,6 +184,43 @@ export async function nudgeAgents(formData: FormData) {
   } catch (e) {
     console.error("[team.nudge]", e instanceof Error ? e.message : e);
     return { ok: false as const, error: "We could not send those emails right now. Try again in a minute." };
+  }
+}
+
+/** Add an approved caption, shared media or link to the brokerage library. Owner or manager. */
+export async function addLibraryItem(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null, reason: null };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can add to the library.", field: null, reason: null };
+  const parsed = parseLibraryInput({ kind: formData.get("kind"), title: formData.get("title"), body: formData.get("body"), mediaUrl: formData.get("mediaUrl") });
+  if (!parsed.ok) return { ok: false as const, error: "Check the form.", field: parsed.field, reason: parsed.reason };
+  try {
+    const item = await svcAddLibraryItem(teamId, ctx.agentId, parsed.item);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, item };
+  } catch (e) {
+    console.error("[team.library.add]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not save that right now.", field: null, reason: null };
+  }
+}
+
+/** Remove a library item. Owner or manager. */
+export async function removeLibraryItem(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  if (!teamId || !id) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can remove library items." };
+  try {
+    const removed = await svcRemoveLibraryItem(teamId, id);
+    revalidatePath("/dashboard/team");
+    return removed ? { ok: true as const } : { ok: false as const, error: "That item is already gone." };
+  } catch (e) {
+    console.error("[team.library.remove]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not remove that right now." };
   }
 }
 

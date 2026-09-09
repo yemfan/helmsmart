@@ -8338,6 +8338,56 @@
       "open": "打开",
       "note": "对时段内最新 5,000 条帖子做自动用语检查；每一条的处理由人来决定。公平住房词表遵循 HUD 广告指南，各州法律可能有更多要求。"
     },
+    "teamLibrary": {
+      "title": "经纪公司素材库",
+      "subtitle": "经纪公司提供的审定文案、共享素材和链接。可复制，或直接带入发帖编辑器，仍从你自己的账号发布。",
+      "subtitleManager": "每位经纪人都能取用的审定文案、共享素材和链接。可添加新盘文案模板、必备披露语、Logo、品牌视频、市场报告。",
+      "openForm": "添加素材",
+      "closeForm": "收起",
+      "kindLabel": "类型",
+      "kind": {
+        "caption": "文案",
+        "media": "素材",
+        "link": "链接"
+      },
+      "all": "全部",
+      "titleLabel": "标题",
+      "titlePlaceholder": {
+        "caption": "例如：新盘上市帖、开放日帖、必备披露语",
+        "media": "例如：公司 Logo、品牌视频、秋季传单",
+        "link": "例如：公司官网、第三季度市场报告"
+      },
+      "bodyLabel": "文案",
+      "bodyLabelOptional": "随素材一起发布的文案（可选）",
+      "bodyPlaceholder": "经纪人可直接发布或修改的文字。用 [地址] 或 [价格] 标出需要填写的地方。",
+      "mediaUrlLabel": "图片或视频链接",
+      "mediaUrlHint": "指向 PNG、JPG、MP4 等文件的直接链接。共享网盘中的文件需要公开链接。",
+      "linkUrlLabel": "网址",
+      "add": "加入素材库",
+      "adding": "添加中…",
+      "added": "已添加！",
+      "error": {
+        "kind_required": "请选择类型。",
+        "title_required": "请填写标题。",
+        "title_too_long": "标题太长了。",
+        "body_required": "请填写文案。",
+        "body_too_long": "超过了所有平台允许的长度（2,200 字符）。",
+        "mediaUrl_required": "请填写链接。",
+        "mediaUrl_bad_url": "这看起来不是有效的网址。",
+        "failed": "暂时无法保存。"
+      },
+      "copy": "复制文案",
+      "copied": "已复制！",
+      "useInPost": "用于发帖",
+      "openMedia": "打开文件",
+      "openLink": "打开链接",
+      "remove": "移除",
+      "removing": "移除中…",
+      "addedBy": "{{name}} 添加于 {{date}}",
+      "empty": "经纪公司还没有添加任何素材。",
+      "emptyManager": "这里还是空的。把经纪人最常向你索要的文案和文件加进来吧。",
+      "note": "每位经纪人都从自己的账号、按自己的套餐发布。素材库共享的是文字和文件，不是费用。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",
