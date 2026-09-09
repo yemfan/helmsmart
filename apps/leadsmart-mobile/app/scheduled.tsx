@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { platformLabel } from "../lib/socialPlatform";
 import {
   ActivityIndicator,
   Alert,
@@ -324,7 +325,7 @@ function Card({
 }
 
 function labelFor(p: MobileScheduledPost["platform"], t: ScheduledT): string {
-  return t(`platforms.${p}`);
+  return platformLabel(p, t);
 }
 
 function StatusBadge({

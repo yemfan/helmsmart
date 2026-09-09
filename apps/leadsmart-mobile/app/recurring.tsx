@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { platformLabel } from "../lib/socialPlatform";
 import {
   ActivityIndicator,
   Alert,
@@ -301,12 +302,9 @@ function Card({
 }) {
   const next = new Date(row.nextOccurrenceAt).toLocaleString(locale);
   const ends = row.endsAt ? new Date(row.endsAt).toLocaleDateString(locale) : null;
-  const platformLabel =
-    row.platform === "linkedin"
-      ? t("platforms.linkedin")
-      : row.platform === "instagram"
-        ? t("platforms.instagram")
-        : t("platforms.facebook");
+  // Was a three-way ternary ending in `t("platforms.facebook")`, so a Threads
+  // or TikTok schedule did not just miss a translation — it claimed Facebook.
+  const platformName = platformLabel(row.platform, t);
   const whenBase =
     row.status === "active"
       ? t("recurring.card.next_prefix", { when: next })
@@ -330,7 +328,7 @@ function Card({
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
           <View style={styles.platformBadge}>
-            <Text style={styles.platformBadgeText}>{platformLabel}</Text>
+            <Text style={styles.platformBadgeText}>{platformName}</Text>
           </View>
           {row.socialAccountDisplay && (
             <Text style={styles.cardDisplay} numberOfLines={1}>

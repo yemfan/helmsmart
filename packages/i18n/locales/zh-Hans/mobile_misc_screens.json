@@ -62,7 +62,15 @@
       "market_update": "市场动态",
       "testimonial": "客户好评",
       "custom": "自定义",
-      "by_address": "按地址"
+      "by_address": "按地址",
+      "manual": "手动发布",
+      "weekly_schedule": "每周排期",
+      "marketing_assistant_social": "营销助理",
+      "marketing_assistant_reel": "营销助理 · 短视频",
+      "marketing_assistant_ad": "营销助理 · 广告",
+      "marketing_assistant_carousel": "营销助理 · 多图",
+      "ai_team_announcement": "AI 团队公告",
+      "transaction_listing": "房源动态"
     },
     "account_fallback": "—"
   },
@@ -163,7 +171,11 @@
   "platforms": {
     "facebook": "Facebook",
     "instagram": "Instagram",
-    "linkedin": "LinkedIn"
+    "linkedin": "LinkedIn",
+    "threads": "Threads",
+    "pinterest": "Pinterest",
+    "tiktok": "TikTok",
+    "youtube": "YouTube"
   },
   "tasks": {
     "loading": "正在加载任务…",
