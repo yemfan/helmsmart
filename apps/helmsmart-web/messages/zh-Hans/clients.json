@@ -348,6 +348,7 @@
     "updateFailed": "更新客户失败，请重试。",
     "deleteFailed": "删除客户失败，请重试。",
     "logFailed": "记录这条沟通失败，请重试。",
+    "preferencesRefused": "保存失败——可能没有此客户的操作权限。",
     "preferencesFailed": "沟通偏好保存失败，请重试。",
     "aiNotConfigured": "尚未配置 AI。",
     "clientNotFound": "该客户已不存在。",

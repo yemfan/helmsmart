@@ -4,15 +4,12 @@ import { useState } from "react";
 import { Bell, CheckCircle2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { updateClientPreferences } from "@/lib/actions/communication-logs";
+import {
+  DEFAULT_CLIENT_COMMUNICATION_PREFERENCES,
+  type ClientCommunicationPreferences,
+} from "@/lib/communication-preferences";
 
-interface Preferences {
-  opted_out_sms?: boolean;
-  opted_out_email?: boolean;
-  opted_out_calls?: boolean;
-  preferred_contact_method?: string;
-  best_time_to_contact?: string;
-  notes?: string;
-}
+type Preferences = ClientCommunicationPreferences;
 
 interface Props {
   clientId: string;
@@ -25,7 +22,7 @@ export function CommunicationPreferences({
 }: Props) {
   const { t } = useTranslation("clients");
   const [preferences, setPreferences] = useState<Preferences>(
-    initialPreferences || {}
+    initialPreferences ?? DEFAULT_CLIENT_COMMUNICATION_PREFERENCES
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -35,6 +32,7 @@ export function CommunicationPreferences({
     key: keyof Preferences,
     value: boolean | string
   ) => {
+    const previous = preferences;
     const updated = { ...preferences, [key]: value };
     setPreferences(updated);
     setSaved(false);
@@ -49,6 +47,10 @@ export function CommunicationPreferences({
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } else {
+      // The row did not change, so the control must not keep showing the new
+      // value — a checkbox left flipped over a refused write tells the same lie
+      // the silent save did.
+      setPreferences(previous);
       setError(result.error || t("errors.preferencesFailed"));
     }
   };

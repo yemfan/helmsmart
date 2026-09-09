@@ -507,9 +507,9 @@ export default async function ClientDetailPage({
               opted_out_sms: commPrefs.opted_out_sms ?? false,
               opted_out_email: commPrefs.opted_out_email ?? false,
               opted_out_calls: commPrefs.opted_out_calls ?? false,
-              preferred_contact_method: commPrefs.preferred_contact_method ?? undefined,
-              best_time_to_contact: commPrefs.best_time_to_contact ?? undefined,
-              notes: commPrefs.notes ?? undefined,
+              preferred_contact_method: commPrefs.preferred_contact_method ?? "any",
+              best_time_to_contact: commPrefs.best_time_to_contact ?? "",
+              notes: commPrefs.notes ?? "",
             } : undefined}
           />
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
