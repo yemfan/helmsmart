@@ -25,6 +25,8 @@ import type { TeamBrand } from "@/lib/teams/brand";
 import type { MemberDirectory } from "@/lib/teams/directory.server";
 import type { LibraryItem } from "@/lib/teams/library";
 import { TeamLibraryPanel } from "./TeamLibraryPanel";
+import type { Referral } from "@/lib/teams/referrals";
+import { TeamReferralsPanel } from "./TeamReferralsPanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -50,6 +52,7 @@ export function TeamDashboard({
   brand,
   directory = {},
   library = [],
+  referrals = [],
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -64,6 +67,8 @@ export function TeamDashboard({
   brand?: TeamBrand | null;
   /** Everyone: the brokerage content library. */
   library?: LibraryItem[];
+  /** Everyone: referrals they are part of; managers: the whole office. */
+  referrals?: Referral[];
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -117,6 +122,8 @@ export function TeamDashboard({
       <TeamBreakdownPanel teamId={roster.team.id} directory={directory} />
 
       <TeamLibraryPanel teamId={roster.team.id} initial={library} canManage={canManage} directory={directory} />
+
+      <TeamReferralsPanel teamId={roster.team.id} currentAgentId={currentAgentId} canManage={canManage} members={roster.members} directory={directory} initial={referrals} />
 
       {canManage ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
 

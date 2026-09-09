@@ -11,6 +11,8 @@ import { loadMemberDirectory, type MemberDirectory } from "@/lib/teams/directory
 import type { TeamBrand } from "@/lib/teams/brand";
 import { listLibrary } from "@/lib/teams/library.server";
 import type { LibraryItem } from "@/lib/teams/library";
+import { listReferrals } from "@/lib/teams/referrals.server";
+import type { Referral } from "@/lib/teams/referrals";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -44,6 +46,7 @@ export default async function TeamPage() {
   let isOwner = false;
   let canManage = false;
   let library: LibraryItem[] = [];
+  let referrals: Referral[] = [];
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
@@ -55,12 +58,13 @@ export default async function TeamPage() {
     const r = await getRoster(team.id);
     const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
     canManage = canManageTeam(myRole);
-    const [seat, dir, b, br, lib] = await Promise.all([
+    const [seat, dir, b, br, lib, refs] = await Promise.all([
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
       canManage ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
       listLibrary(team.id),
+      listReferrals(team.id, ctx.agentId, canManage),
     ]);
     directory = dir;
     roster = r;
@@ -68,6 +72,7 @@ export default async function TeamPage() {
     board = b;
     brand = br;
     library = lib;
+    referrals = refs;
   }
 
   return (
@@ -81,6 +86,7 @@ export default async function TeamPage() {
       board={board}
       brand={brand}
       library={library}
+      referrals={referrals}
       directory={directory}
     />
   );
