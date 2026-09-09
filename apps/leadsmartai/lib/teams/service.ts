@@ -197,19 +197,26 @@ export async function acceptInvite(args: {
     return { ok: false, reason: "expired" };
   }
 
-  const { data: membership, error: memberErr } = await supabaseAdmin
+  // Someone already on the team (the owner opening a test invitation, a
+  // manager clicking a second link) keeps the role they have. The upsert this
+  // replaced wrote role = 'member' over whatever was there and demoted the
+  // team owner to a member of their own team.
+  const { data: existing } = await supabaseAdmin
     .from("team_memberships")
-    .upsert(
-      {
-        team_id: inviteRow.team_id,
-        agent_id: args.acceptingAgentId,
-        role: "member",
-      },
-      { onConflict: "team_id,agent_id" },
-    )
     .select("*")
-    .single();
-  if (memberErr) throw new Error(memberErr.message);
+    .eq("team_id", inviteRow.team_id as never)
+    .eq("agent_id", args.acceptingAgentId as never)
+    .maybeSingle();
+  let membership = existing as Record<string, unknown> | null;
+  if (!membership) {
+    const { data: created, error: memberErr } = await supabaseAdmin
+      .from("team_memberships")
+      .insert({ team_id: inviteRow.team_id, agent_id: args.acceptingAgentId, role: "member" })
+      .select("*")
+      .single();
+    if (memberErr) throw new Error(memberErr.message);
+    membership = created as Record<string, unknown>;
+  }
 
   await supabaseAdmin
     .from("team_invites")
@@ -221,7 +228,7 @@ export async function acceptInvite(args: {
 
   return {
     ok: true,
-    membership: mapMembership(membership as Record<string, unknown>),
+    membership: mapMembership(membership),
   };
 }
 
