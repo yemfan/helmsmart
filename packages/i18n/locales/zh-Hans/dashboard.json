@@ -4161,9 +4161,7 @@
       "billedYearly": "每年 ${{total}}，省 ${{saved}}",
       "switchingNote": "切换方案只按本计费周期剩余时间补差价。降级不会收回已经发放给您的额度。",
       "contactBrokerage": "咨询经纪公司方案",
-      "loadingCredits": "正在加载额度…",
-      "pooledWith": "与您的团队 {{team}} 合并使用。成员从此余额中扣除。",
-      "pooled": "与您的团队合并使用。成员从此余额中扣除。"
+      "loadingCredits": "正在加载额度…"
     },
     "buildOffer": {
       "offers": "报价",
@@ -6521,7 +6519,7 @@
       "toConvert": "去转化。",
       "ends": "结束于",
       "creditsPerMo": "点数／月",
-      "forMultipleAgents": "适合多位经纪人共享点数池。",
+      "forMultipleAgents": "，为多位经纪人提供席位，各自使用自己的套餐。",
       "results": "结果",
       "noStructuredFields": "没有结构化字段。",
       "wantYourOwn": "想做自己的分析？到首页试试我们的计算器。",
@@ -8227,12 +8225,6 @@
       "disclosure": "必要声明",
       "disclosureHint": "经纪公司要求在每个经纪人页面显示的文字。显示在页脚公平住房声明上方。",
       "invalid": "该内容有误。请检查后重新保存。"
-    },
-    "teamCredits": {
-      "title": "团队积分",
-      "toggle": "为团队合并使用积分",
-      "onHint": "成员的 AI 通话分钟、视频和图片将从您的余额中扣除，他们看到的是团队余额。充值和每月积分仍归购买者所有。",
-      "offHint": "每位成员使用自己的积分。开启后，整个团队将从您的余额中支付。"
     }
   },
   "disclaimers": {
