@@ -51,6 +51,37 @@ const FREE_PLAN: CurrentPlan = {
 /** Active-ish states we still present as "you have this plan". */
 const LIVE = new Set(["active", "trialing", "past_due"]);
 
+/**
+ * Our own record of the subscription, written by the Stripe webhooks. Used
+ * when Stripe cannot be asked (an error, a customer id from the other mode)
+ * so a paying agent is never shown "Free" because a lookup failed. The
+ * `crm_<tier>` names map straight onto the credit tiers.
+ */
+async function planFromBillingRow(userId: string): Promise<CurrentPlan | null> {
+  const { data } = await supabaseAdmin
+    .from("billing_subscriptions")
+    .select("plan, status, current_period_end, cancel_at_period_end, livemode")
+    .eq("user_id", userId)
+    .eq("livemode", true)
+    .in("status", [...LIVE])
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const row = data as { plan?: string | null; status?: string | null; current_period_end?: string | null; cancel_at_period_end?: boolean | null } | null;
+  if (!row?.plan) return null;
+  const tierId = String(row.plan).replace(/^crm_/, "");
+  const tier = CREDIT_TIERS.find((t) => t.id === tierId);
+  return {
+    planId: tier?.id ?? String(row.plan),
+    name: tier?.name ?? tierId.replace(/[_-]+/g, " ").replace(/\w/g, (c) => c.toUpperCase()),
+    priceUsd: tier?.priceUsd ?? null,
+    monthlyCredits: tier?.monthlyCredits ?? null,
+    renewsAt: row.current_period_end ?? null,
+    cancelAtPeriodEnd: row.cancel_at_period_end === true,
+    status: row.status ?? null,
+  };
+}
+
 export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
   const { data } = await supabaseAdmin
     .from("leadsmart_users")
@@ -58,7 +89,7 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
     .eq("user_id", userId)
     .maybeSingle();
   const customerId = (data as { stripe_customer_id?: string | null } | null)?.stripe_customer_id;
-  if (!customerId) return FREE_PLAN;
+  if (!customerId) return (await planFromBillingRow(userId)) ?? FREE_PLAN;
 
   let subs;
   try {
@@ -71,12 +102,21 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
       // "Subscribed" on the billing card.
       expand: ["data.items.data.price.product"],
     });
-  } catch {
-    return FREE_PLAN; // Stripe unreachable — don't invent a plan.
+  } catch (e) {
+    // This used to return "Free" silently. A paying agent saw "Free" on the
+    // Credits page for a lookup failure that nobody could see. Say what
+    // failed, try once more without the expansion, then trust our own record.
+    console.warn("[currentPlan] stripe list failed:", e instanceof Error ? e.message : e);
+    try {
+      subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+    } catch (e2) {
+      console.warn("[currentPlan] stripe list (plain) failed:", e2 instanceof Error ? e2.message : e2);
+      return (await planFromBillingRow(userId)) ?? FREE_PLAN;
+    }
   }
 
   const sub = subs.data.find((s) => LIVE.has(s.status));
-  if (!sub) return FREE_PLAN;
+  if (!sub) return (await planFromBillingRow(userId)) ?? FREE_PLAN;
 
   // Match the subscribed price back to our catalog. Prefer the plan recorded in
   // metadata at checkout; fall back to the price id.
