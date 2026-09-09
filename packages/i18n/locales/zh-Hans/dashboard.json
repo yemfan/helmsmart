@@ -8288,6 +8288,56 @@
       "volume": "成交额",
       "note": "活跃度指 90 天内的新线索、消息、已接来电和预约，并与之前 90 天并列显示。收入通常滞后于工作一个季度，所以要关注的是工作本身。"
     },
+    "teamCompliance": {
+      "title": "合规审计",
+      "subtitle": "检查团队在所选时段内发布的每一条帖子：公平住房用语、承诺保证、无依据宣称，以及是否缺少经纪公司标识。",
+      "run": "运行审计",
+      "runAgain": "再次运行",
+      "running": "正在检查帖子…",
+      "ranNow": "审计完成",
+      "runFailed": "暂时无法运行审计，请稍后再试。",
+      "never": "还没有运行过审计。选择时段并运行一次，结果会保留到下次访问。",
+      "lastRun": "上次运行：{{date}}，由 {{by}} 发起，覆盖 {{days}} 天。",
+      "stat": {
+        "postsReviewed": "已检查帖子",
+        "postsFlagged": "有问题的帖子",
+        "agentsFlagged": "有问题的经纪人",
+        "findings": "发现项"
+      },
+      "clean": "没有需要圈出的内容，所有检查的帖子均无问题。",
+      "byKind": "按类型",
+      "showAll": "显示全部",
+      "kind": {
+        "fair_housing": "公平住房",
+        "outcome_promise": "承诺保证",
+        "unsupported_claim": "无依据宣称",
+        "missing_brokerage": "未注明经纪公司",
+        "flagged_by_review": "发布前已被标记"
+      },
+      "why": {
+        "fair_housing": "HUD 广告指南警示的用语：排除或针对受保护群体。",
+        "outcome_promise": "承诺了结果。广告规则将保证视为必须兑现的宣称。",
+        "unsupported_claim": "没有依据的最高级表述。说明由谁衡量，否则删除。",
+        "missing_brokerage": "广告中既没有经纪公司名称，也没有其执照号。",
+        "flagged_by_review": "发布前的宣称审查已标记此帖，但仍然发布了。"
+      },
+      "severity": {
+        "high": "高",
+        "medium": "中",
+        "low": "低"
+      },
+      "col": {
+        "agent": "经纪人",
+        "kind": "类型",
+        "severity": "严重程度",
+        "quote": "问题用语",
+        "platform": "平台",
+        "date": "发布日期",
+        "link": "帖子"
+      },
+      "open": "打开",
+      "note": "对时段内最新 5,000 条帖子做自动用语检查；每一条的处理由人来决定。公平住房词表遵循 HUD 广告指南，各州法律可能有更多要求。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",

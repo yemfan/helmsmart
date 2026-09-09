@@ -19,6 +19,7 @@ import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
 import { TeamPerformancePanel } from "./TeamPerformancePanel";
 import { TeamMarketingPanel } from "./TeamMarketingPanel";
 import { TeamRetentionPanel } from "./TeamRetentionPanel";
+import { TeamCompliancePanel } from "./TeamCompliancePanel";
 import { BrokerageBrandCard } from "./BrokerageBrandCard";
 import type { TeamBrand } from "@/lib/teams/brand";
 import type { MemberDirectory } from "@/lib/teams/directory.server";
@@ -103,6 +104,8 @@ export function TeamDashboard({
       {canManage ? <TeamMarketingPanel teamId={roster.team.id} /> : null}
 
       {canManage ? <TeamRetentionPanel teamId={roster.team.id} /> : null}
+
+      {canManage ? <TeamCompliancePanel teamId={roster.team.id} /> : null}
 
       {canManage && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
 
