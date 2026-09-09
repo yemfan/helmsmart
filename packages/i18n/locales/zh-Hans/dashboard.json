@@ -8211,6 +8211,52 @@
       "loadFailed": "暂时无法加载业绩数据。请刷新重试。",
       "note": "线索指该时段内新建的联系人。消息统计双向短信和邮件，含 AI 发送的。成交额和佣金来自成交日期落在该时段内的交易。点击列标题可按该列排序。"
     },
+    "teamMarketing": {
+      "title": "团队营销概览",
+      "subtitle": "谁已做好营销准备，以及带来了什么成果。主页、社交账号、追踪、营销助理、帖子和主页流量，每位经纪人一行。",
+      "window": "时段",
+      "setup": {
+        "hubPublished": "主页已上线",
+        "withNetwork": "已连接社交账号",
+        "withTracking": "已开启追踪",
+        "autopilotOn": "助理自动发帖",
+        "posting": "本时段有发帖"
+      },
+      "output": {
+        "postsPublished": "已发布帖子",
+        "scheduledUpcoming": "排队中帖子",
+        "hubViews": "主页浏览",
+        "hubLeads": "主页线索"
+      },
+      "attentionTitle": "需要关注",
+      "attention": {
+        "no_hub": "尚无主页",
+        "no_network": "未连接社交账号",
+        "no_tracking": "主页未开追踪",
+        "failing": "发帖失败",
+        "silent": "已连接但无动静"
+      },
+      "showAll": "显示全部",
+      "allGood": "每位经纪人都已设置完成并在发帖。",
+      "noneMatch": "目前没有符合条件的经纪人。",
+      "col": {
+        "hub": "主页",
+        "networks": "社交账号",
+        "tracking": "追踪",
+        "assistant": "助理",
+        "posts": "帖子",
+        "queued": "排队",
+        "hubViews": "主页浏览",
+        "hubLeads": "主页线索",
+        "lastPost": "最近发帖",
+        "attention": "关注"
+      },
+      "hubNotLive": "未上线",
+      "assistantOn": "自动发帖",
+      "assistantOff": "先询问",
+      "failedCount": "{{count}} 条失败",
+      "note": "帖子统计该时段内已发出的内容。排队指从今天起已排期的帖子。追踪指已上线主页上的 GA4 或 Meta Pixel。点击上方的原因可只查看相应经纪人。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",
