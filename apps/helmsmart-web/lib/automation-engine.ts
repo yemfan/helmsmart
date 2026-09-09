@@ -5,6 +5,8 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 import { sendEmail } from "@/lib/email";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -53,8 +55,17 @@ async function executeRule(
 
   switch (rule.action) {
     case "create_task": {
+      /*
+       * The owner's own automation supplies the title; only the DEFAULT is
+       * ours, so only the default is translated. Written in the business's
+       * language because the task becomes their record and cannot be
+       * re-rendered later — see lib/i18n/userLocale.ts.
+       */
       const title = tpl(
-        (cfg.title as string | undefined) ?? "Follow up with {{client_name}}",
+        (cfg.title as string | undefined) ??
+          translatorFor(await orgWriteLocale(ctx.orgId, db), "tasks")(
+            "generated.followUpWithClient",
+          ),
         ctx
       );
       const offsetDays = Math.max(0, Number(cfg.due_offset_days ?? 1));

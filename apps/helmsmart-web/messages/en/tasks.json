@@ -180,9 +180,17 @@
     "ask": "Ask Alex to remind them"
   },
   "errors": {
-    "notAuthenticated": "Not authenticated",
-    "noOrg": "No org",
+    "notAuthenticated": "Your session has expired. Sign in again to continue.",
+    "noOrg": "No business is selected. Sign in again to continue.",
     "titleRequired": "Title is required",
     "firstRunDateRequired": "First run date is required"
+  },
+  "generated": {
+    "reviewOpenItems": "Review and prioritise open items — update this title",
+    "reviewOpenItemsNotes": "Mark created this task. Edit the title, assign it, and set a due date.",
+    "callBack": "Call back {{who}}",
+    "followUpAiCall": "Follow up: AI call from {{who}}",
+    "replyNeeded": "{{intent}} from {{sender}} — reply needed",
+    "followUpWithClient": "Follow up with {{client_name}}"
   }
 }

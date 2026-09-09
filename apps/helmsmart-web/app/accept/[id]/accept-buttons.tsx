@@ -29,9 +29,8 @@ export function AcceptButtons({ estimateId }: Props) {
         if (!resp.ok) throw new Error(await resp.text());
         setDone(status);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : t("common:errors.generic")
-        );
+        console.error("Estimate accept/decline", err);
+        setError(t("common:errors.generic"));
       } finally {
         setActiveAction(null);
       }

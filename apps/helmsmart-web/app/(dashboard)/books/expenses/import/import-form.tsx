@@ -168,7 +168,8 @@ export function ImportForm({ currency = "USD" }: { currency?: string }) {
           setTimeout(() => router.push("/books/expenses"), 1500);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("expenses.import.failed"));
+        console.error("import expenses from CSV", err);
+        setError(t("expenses.import.failed"));
       }
     });
   }

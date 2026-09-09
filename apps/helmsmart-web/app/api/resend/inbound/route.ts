@@ -15,6 +15,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 import { Resend } from "resend";
 import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -181,12 +183,22 @@ export async function POST(request: NextRequest) {
     sent_at: data.created_at ?? new Date().toISOString(),
   });
 
+  /*
+   * The task is the OWNER's record from here on, so it is written in their
+   * language now rather than stored as a key — see lib/i18n/userLocale.ts.
+   * The message body quoted into `notes` stays in the sender's own words.
+   */
+  const taskT = translatorFor(await orgWriteLocale(org.id, supabase), "tasks");
+
   // Triage: auto-create a task for messages that need the owner to act.
   if (analysis.priority === "high" || ["booking", "billing", "complaint"].includes(analysis.intent)) {
     await supabase.from("tasks").insert({
       organization_id: org.id,
       client_id: client?.id ?? null,
-      title: `${intentLabel(analysis.intent)} from ${senderEmail || "email"} — reply needed`,
+      title: taskT("generated.replyNeeded", {
+        intent: taskT(`badges.intent.${analysis.intent}`, { ns: "inbox" }),
+        sender: senderEmail || taskT("generated.emailFallback", { defaultValue: "email" }),
+      }),
       notes: (translationEn || body || "").slice(0, 500),
       due_date: new Date().toISOString().slice(0, 10),
       priority: analysis.priority === "high" ? "high" : "normal",
@@ -197,7 +209,10 @@ export async function POST(request: NextRequest) {
   await createNotificationService(org.id, {
     type: "new_message",
     title: "New email received",
+    // No body key: this is the sender's own words, in whatever language they
+    // wrote them. Translating them would be putting words in their mouth.
     body: (body || data.subject || "").slice(0, 80),
+    titleKey: "notifications.events.newEmail",
     link: "/inbox",
   });
 

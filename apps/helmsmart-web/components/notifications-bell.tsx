@@ -17,6 +17,36 @@ interface Notification {
   link: string | null;
   read: boolean;
   created_at: string;
+  /** Set on rows written after notifications carried keys; see lib/actions/notifications.ts. */
+  title_key?: string | null;
+  body_key?: string | null;
+  params?: Record<string, string | number> | null;
+}
+
+/**
+ * What this notification says, in the reader's language.
+ *
+ * A row written with a key is rendered from that key now, when we finally
+ * know who is reading. A row without one — every row written before keys
+ * existed — falls back to the English sentence stored with it, which is the
+ * whole reason `title` is still NOT NULL.
+ *
+ * `defaultValue` makes the fallback survive a third case too: a key that ships
+ * in one bundle and not another renders the stored English instead of a raw
+ * `notifications.events.invoicePaid` path.
+ *
+ * Keys live in the `home` namespace this component already binds, beside the
+ * bell's own chrome — `notifications.events.*`. A separate namespace would
+ * have split one small surface across two files for no reader's benefit.
+ */
+function line(
+  t: TFunction,
+  key: string | null | undefined,
+  stored: string | null,
+  params: Record<string, string | number> | null | undefined,
+): string | null {
+  if (key) return t(key, { defaultValue: stored ?? key, ...(params ?? {}) });
+  return stored;
 }
 
 interface Props {
@@ -150,10 +180,12 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-medium text-slate-800 leading-snug ${!n.read ? "font-semibold" : ""}`}>
-                          {n.title}
+                          {line(t, n.title_key, n.title, n.params)}
                         </p>
-                        {n.body && (
-                          <p className="text-xs text-slate-500 mt-0.5 truncate">{n.body}</p>
+                        {line(t, n.body_key, n.body, n.params) && (
+                          <p className="text-xs text-slate-500 mt-0.5 truncate">
+                            {line(t, n.body_key, n.body, n.params)}
+                          </p>
                         )}
                       </div>
                       <span className="text-[10px] text-slate-400 flex-shrink-0 mt-0.5">{timeAgo(n.created_at, t)}</span>

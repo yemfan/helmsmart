@@ -35,7 +35,8 @@ export function InvoiceActions({ invoiceId, status, clientEmail, bankAccounts }:
       try {
         await sendInvoice(invoiceId);
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : t("invoices.errors.sendFailed"));
+        console.error("send invoice", e);
+        setError(t("invoices.errors.sendFailed"));
       }
     });
   }
@@ -49,7 +50,8 @@ export function InvoiceActions({ invoiceId, status, clientEmail, bankAccounts }:
         setTimeout(() => setReminderSent(false), 2500);
         router.refresh();
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : t("invoices.errors.reminderFailed"));
+        console.error("send invoice reminder", e);
+        setError(t("invoices.errors.reminderFailed"));
       }
     });
   }
@@ -63,7 +65,8 @@ export function InvoiceActions({ invoiceId, status, clientEmail, bankAccounts }:
         setShowPaidModal(false);
         router.refresh();
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : t("invoices.errors.markPaidFailed"));
+        console.error("mark invoice paid", e);
+        setError(t("invoices.errors.markPaidFailed"));
       }
     });
   }

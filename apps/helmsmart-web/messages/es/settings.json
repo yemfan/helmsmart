@@ -152,7 +152,7 @@
       "blockText": "✅ *¡HelmSmart está conectado a Slack!*\nAquí recibirá notificaciones de nuevos clientes potenciales, llamadas perdidas, envíos de formularios y aprobaciones de la IA."
     },
     "errors": {
-      "notAuthenticated": "No autenticado",
+      "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
       "invalidUrl": "Debe ser una URL válida de incoming webhook de Slack (hooks.slack.com)",
       "saveFailed": "No se pudo guardar",
       "testFailed": "La prueba falló",
@@ -198,7 +198,7 @@
     "revoke": "Revocar",
     "revoking": "Revocando…",
     "errors": {
-      "notAuthenticated": "No autenticado",
+      "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
       "invitePending": "Ya hay una invitación activa pendiente para este correo",
       "inviteFailed": "No se pudo crear la invitación",
       "memberNotFound": "No se encontró al miembro"

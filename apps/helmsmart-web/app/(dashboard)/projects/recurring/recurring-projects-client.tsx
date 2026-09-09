@@ -84,7 +84,8 @@ function NewRecurringModal({
         });
         onCreated();
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("recurring.modal.createFailed"));
+        console.error("create recurring project", e);
+        setError(t("recurring.modal.createFailed"));
       }
     });
   }

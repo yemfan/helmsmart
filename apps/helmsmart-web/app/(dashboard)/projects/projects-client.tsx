@@ -88,7 +88,8 @@ function NewProjectModal({
         });
         onClose();
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("newProject.createFailed"));
+        console.error("create project", e);
+        setError(t("newProject.createFailed"));
       }
     });
   }

@@ -99,7 +99,8 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, 
         });
         router.push(`/books/invoices/${id}`);
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : t("invoices.builder.errors.saveFailed"));
+        console.error("save invoice", e);
+        setError(t("invoices.builder.errors.saveFailed"));
       }
     });
   }

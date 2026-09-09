@@ -286,13 +286,14 @@
     }
   },
   "errors": {
-    "noOrg": "No org",
-    "notAuthenticated": "Not authenticated",
+    "noOrg": "No business is selected. Sign in again to continue.",
+    "notAuthenticated": "Your session has expired. Sign in again to continue.",
     "nameRequired": "Name is required",
     "firstRunDateRequired": "First run date is required",
     "createTemplateFailed": "Failed to create template",
     "templateNotFound": "Template not found",
     "createProjectFailed": "Failed to create project",
-    "unnamedClient": "Unnamed client"
+    "unnamedClient": "Unnamed client",
+    "invoiceNotFound": "Invoice not found"
   }
 }

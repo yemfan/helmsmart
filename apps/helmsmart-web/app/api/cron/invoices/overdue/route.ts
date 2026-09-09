@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { runAutomations } from "@/lib/automation-engine";
+import { DEFAULT_CURRENCY, money } from "@/lib/books-format";
 
 export const dynamic = "force-dynamic";
 
@@ -52,22 +53,54 @@ export async function GET(request: NextRequest) {
       .update({ status: "overdue", updated_at: new Date().toISOString() })
       .in("id", ids);
 
+    /*
+     * The amount goes into the notification as a formatted STRING, because the
+     * reader's language decides the sentence and the org's ledger decides the
+     * currency — and only this side knows the second one. One query for the
+     * whole batch; a missing row means USD, the column's own default.
+     */
+    const { data: orgs } = await supabase
+      .from("organizations")
+      .select("id, currency")
+      .in("id", [...new Set(overdueInvoices.map((i) => i.organization_id))]);
+    const currencyOf = new Map(
+      (orgs ?? []).map((o) => [o.id as string, (o.currency as string | null) || DEFAULT_CURRENCY]),
+    );
+
     // Fire one notification per invoice
     for (const inv of overdueInvoices) {
       const clientRaw = inv.clients;
       const client = (Array.isArray(clientRaw) ? clientRaw[0] : clientRaw) as {
         first_name: string | null; last_name: string | null; company: string | null;
       } | null;
-      const clientName = client
-        ? [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "a client"
-        : "a client";
+      const clientLabel = client
+        ? [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || ""
+        : "";
+      const clientName = clientLabel || "a client";
+
+      // Grouping and symbol placement are English because nothing here knows
+      // who will open the bell; the CURRENCY is the org's, which is the half
+      // that was actually wrong before (every total was labelled in dollars).
+      const amount = money(
+        Number(inv.total),
+        "en",
+        currencyOf.get(inv.organization_id) ?? DEFAULT_CURRENCY,
+      );
 
       await createNotificationService(
         inv.organization_id,
         {
           type: "invoice_overdue",
-          title: `Invoice overdue: $${Number(inv.total).toFixed(2)}`,
+          title: `Invoice overdue: ${amount}`,
           body: `Invoice ${inv.invoice_number} from ${clientName} is past due`,
+          titleKey: "notifications.events.invoiceOverdue",
+          // "a client" is English copy, not data — an invoice with no client
+          // gets the sentence that does not name one rather than that phrase
+          // dropped into a Spanish slot.
+          bodyKey: clientLabel
+            ? "notifications.events.invoiceOverdueBody"
+            : "notifications.events.invoiceOverdueBodyNoClient",
+          params: { amount, number: inv.invoice_number, client: clientLabel },
           link: `/books/invoices/${inv.id}`,
         },
         supabase

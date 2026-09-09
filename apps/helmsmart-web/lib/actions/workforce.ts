@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import {
   seedCoreRoster,
   listEmployees,
@@ -16,7 +17,7 @@ import { rollUpWorkforce, type WorkforceSummary } from "@helm/dna-intelligence";
 async function orgScope() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) throw new Error((await getServerT("home"))("errors.notAuthenticated"));
   const supabase = await createClient();
   return { orgId, supabase };
 }
@@ -35,7 +36,7 @@ export async function getWorkforce(): Promise<AiEmployee[]> {
 
 /** Assign a persona avatar (one of the 20) to an AI employee. */
 export async function setEmployeeAvatarAction(employeeId: string, avatar: string): Promise<void> {
-  if (!/^persona-\d{2}$/.test(avatar)) throw new Error("Invalid avatar");
+  if (!/^persona-\d{2}$/.test(avatar)) throw new Error((await getServerT("home"))("errors.invalidAvatar"));
   const { orgId, supabase } = await orgScope();
   await setEmployeeAvatar(supabase, orgId, employeeId, avatar);
   revalidatePath("/command-center");

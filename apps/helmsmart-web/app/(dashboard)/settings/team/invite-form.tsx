@@ -31,7 +31,8 @@ export function InviteForm() {
         setEmail("");
         setDone(true);
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("team.invite.genericError"));
+        console.error("invite team member", err);
+        setError(t("team.invite.genericError"));
       }
     });
   }

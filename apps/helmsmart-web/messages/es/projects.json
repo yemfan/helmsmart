@@ -286,13 +286,14 @@
     }
   },
   "errors": {
-    "noOrg": "Sin organización",
-    "notAuthenticated": "Sin sesión iniciada",
+    "noOrg": "No hay ninguna empresa seleccionada. Vuelva a iniciar sesión para continuar.",
+    "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
     "nameRequired": "El nombre es obligatorio",
     "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria",
     "createTemplateFailed": "No se pudo crear la plantilla",
     "templateNotFound": "No se encontró la plantilla",
     "createProjectFailed": "No se pudo crear el proyecto",
-    "unnamedClient": "Cliente sin nombre"
+    "unnamedClient": "Cliente sin nombre",
+    "invoiceNotFound": "No se encontró la factura"
   }
 }

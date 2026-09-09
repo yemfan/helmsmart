@@ -11,6 +11,8 @@
  */
 
 import { createToolRegistry, type RegisteredTool, type ToolContext } from "@helm/ai-workforce";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 import { getAvailability, bookAppointment, matchOrCreateClient, type BookResult } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
 
@@ -109,7 +111,10 @@ export function createSmsReceptionistRegistry(fromNumber: string): ReturnType<ty
         await ctx.db.from("tasks").insert({
           organization_id: ctx.orgId,
           client_id: clientId,
-          title: `Call back ${caller_name || fromNumber}`,
+          title: translatorFor(await orgWriteLocale(ctx.orgId, ctx.db), "tasks")(
+            "generated.callBack",
+            { who: caller_name || fromNumber },
+          ),
           notes: `From ${fromNumber}: ${reason}`,
           due_date: new Date().toISOString().slice(0, 10),
           priority: "high",

@@ -9,10 +9,16 @@ import { intlLocale } from "@leadsmart/i18n";
 import { AcceptButtons } from "./accept-buttons";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 
-function fmt(n: number, locale: string) {
+/*
+ * The locale is the READER's; the currency is the BUSINESS's. Formatting the
+ * reader's locale against a hardcoded USD was half a fix — a Canadian firm's
+ * estimate was relabelled as US dollars for every client who opened it, which
+ * is worse than an untranslated page because the number reads as true.
+ */
+function fmt(n: number, locale: string, currency: string) {
   return new Intl.NumberFormat(intlLocale(locale), {
     style: "currency",
-    currency: "USD",
+    currency,
   }).format(n);
 }
 
@@ -42,7 +48,7 @@ export default async function AcceptEstimatePage({
       subtotal, tax_rate, tax_amount, total, notes,
       clients(first_name, last_name, company),
       estimate_lines(description, quantity, unit_price, amount, sort_order),
-      organizations(name)
+      organizations(name, currency)
     `)
     .eq("id", id)
     .single();
@@ -67,7 +73,10 @@ export default async function AcceptEstimatePage({
   const orgRaw = est.organizations;
   const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as {
     name: string;
+    currency: string | null;
   } | null;
+  // The org's own currency, defaulting to USD only when it has never set one.
+  const currency = org?.currency?.trim() || "USD";
 
   const lines = (
     Array.isArray(est.estimate_lines) ? est.estimate_lines : []
@@ -150,7 +159,7 @@ export default async function AcceptEstimatePage({
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {fmt(Number(est.total), locale)}
+                {fmt(Number(est.total), locale, currency)}
               </div>
               <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
                 {t("accept.header.validUntil", {
@@ -283,7 +292,7 @@ export default async function AcceptEstimatePage({
                       textAlign: "right",
                     }}
                   >
-                    {fmt(Number(line.unit_price), locale)}
+                    {fmt(Number(line.unit_price), locale, currency)}
                   </td>
                   <td
                     style={{
@@ -294,7 +303,7 @@ export default async function AcceptEstimatePage({
                       textAlign: "right",
                     }}
                   >
-                    {fmt(Number(line.amount), locale)}
+                    {fmt(Number(line.amount), locale, currency)}
                   </td>
                 </tr>
               ))}
@@ -320,7 +329,7 @@ export default async function AcceptEstimatePage({
                 }}
               >
                 <span>{t("accept.totals.subtotal")}</span>
-                <span>{fmt(Number(est.subtotal), locale)}</span>
+                <span>{fmt(Number(est.subtotal), locale, currency)}</span>
               </div>
               {Number(est.tax_rate) > 0 && (
                 <div
@@ -337,7 +346,7 @@ export default async function AcceptEstimatePage({
                       rate: (Number(est.tax_rate) * 100).toFixed(0),
                     })}
                   </span>
-                  <span>{fmt(Number(est.tax_amount), locale)}</span>
+                  <span>{fmt(Number(est.tax_amount), locale, currency)}</span>
                 </div>
               )}
               <div
@@ -353,7 +362,7 @@ export default async function AcceptEstimatePage({
                 }}
               >
                 <span>{t("accept.totals.total")}</span>
-                <span>{fmt(Number(est.total), locale)}</span>
+                <span>{fmt(Number(est.total), locale, currency)}</span>
               </div>
             </div>
           </div>

@@ -676,7 +676,7 @@
         "tax": "销售税"
       },
       "errors": {
-        "notAuthenticated": "未通过身份验证"
+        "notAuthenticated": "登录已过期，请重新登录后继续。"
       },
       "fallbacks": {
         "uncategorized": "未分类",
@@ -1178,5 +1178,8 @@
       "noChartOfAccounts": "未找到会计科目表。",
       "categorizeFailed": "AI 归类失败。"
     }
+  },
+  "errors": {
+    "notAuthenticated": "登录已过期，请重新登录后继续。"
   }
 }

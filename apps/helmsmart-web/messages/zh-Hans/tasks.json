@@ -180,9 +180,17 @@
     "ask": "请 Alex 去催收"
   },
   "errors": {
-    "notAuthenticated": "尚未登录",
-    "noOrg": "未选择组织",
+    "notAuthenticated": "登录已过期，请重新登录后继续。",
+    "noOrg": "尚未选择企业，请重新登录后继续。",
     "titleRequired": "请填写标题",
     "firstRunDateRequired": "请填写首次执行日期"
+  },
+  "generated": {
+    "reviewOpenItems": "查看并排列待办事项的优先级 —— 请修改此标题",
+    "reviewOpenItemsNotes": "此任务由 Mark 创建。请修改标题、指派负责人并设置截止日期。",
+    "callBack": "回拨 {{who}}",
+    "followUpAiCall": "跟进：来自 {{who}} 的 AI 通话",
+    "replyNeeded": "{{sender}} 的{{intent}} —— 需要回复",
+    "followUpWithClient": "跟进客户 {{client_name}}"
   }
 }

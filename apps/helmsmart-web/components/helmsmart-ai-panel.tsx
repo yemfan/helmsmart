@@ -412,9 +412,10 @@ export function HelmSmartAiPanel({
         if (!body.ok) throw new Error(body.error ?? t("aiPanel.draftFailed"));
         updateTab(tab.tabId, { draft: String(body.draft ?? ""), drafting: false });
       } catch (e) {
+        console.error("AI panel: draft SMS", e);
         updateTab(tab.tabId, {
           drafting: false,
-          errorMessage: e instanceof Error ? e.message : t("aiPanel.draftFailed"),
+          errorMessage: t("aiPanel.draftFailed"),
         });
       }
     },
@@ -446,9 +447,10 @@ export function HelmSmartAiPanel({
         updateTab(tab.tabId, { sending: false, draft: "", prompt: "", message: t("aiPanel.sent"), errorMoreInfo: null });
         await loadThread(tab.tabId, tab.contact.id);
       } catch (e) {
+        console.error("AI panel: send SMS", e);
         updateTab(tab.tabId, {
           sending: false,
-          errorMessage: e instanceof Error ? e.message : t("aiPanel.sendFailed"),
+          errorMessage: t("aiPanel.sendFailed"),
         });
       }
     },
@@ -468,9 +470,10 @@ export function HelmSmartAiPanel({
         const body = await res.json();
         if (!body.ok) throw new Error(body.error ?? t("aiPanel.toggleFailed"));
       } catch (e) {
+        console.error("AI panel: toggle auto-pilot", e);
         updateTab(tab.tabId, {
           autoPilot: !next,
-          errorMessage: e instanceof Error ? e.message : t("aiPanel.toggleFailed"),
+          errorMessage: t("aiPanel.toggleFailed"),
         });
       }
     },

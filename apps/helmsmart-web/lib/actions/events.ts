@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { syncEventToGoogle, deleteGoogleEvent, isGoogleCalendarConnected } from "@/lib/google-calendar";
 
@@ -18,7 +19,7 @@ export async function createEvent(data: {
 }) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
   const { data: insertedEvent, error } = await supabase.from("events").insert({
@@ -83,7 +84,7 @@ export async function updateEvent(
 ) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -126,7 +127,7 @@ export async function updateEvent(
 export async function deleteEvent(eventId: string) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -161,7 +162,7 @@ export async function deleteEvent(eventId: string) {
 export async function toggleEventComplete(eventId: string, completed: boolean) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
   await supabase

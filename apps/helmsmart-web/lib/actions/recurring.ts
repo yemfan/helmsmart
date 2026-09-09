@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -27,7 +28,7 @@ export interface CreateRecurringInput {
 export async function createRecurringInvoice(input: CreateRecurringInput) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) throw new Error((await getServerT("books"))("errors.notAuthenticated"));
 
   const supabase = await createClient();
 
@@ -55,7 +56,7 @@ export async function setRecurringStatus(
 ) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) throw new Error((await getServerT("books"))("errors.notAuthenticated"));
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -73,7 +74,7 @@ export async function setRecurringStatus(
 export async function deleteRecurringInvoice(id: string) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) throw new Error((await getServerT("books"))("errors.notAuthenticated"));
 
   const supabase = await createClient();
   const { error } = await supabase

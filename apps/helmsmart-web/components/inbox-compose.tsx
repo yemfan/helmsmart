@@ -46,7 +46,8 @@ export function InboxCompose({ clients, onClose, onSent }: Props) {
         onSent();
         onClose();
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : t("compose.errors.sendFailed"));
+        console.error("send message", e);
+        setError(t("compose.errors.sendFailed"));
       }
     });
   }

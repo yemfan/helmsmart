@@ -31,6 +31,11 @@
  *   books      Invoices, Quotes, Bills, Expenses, Reports, Journal, Aging, Vendors, 1099
  *   site       public marketing pages, metadata, footer
  *   emails     owner-facing email subjects and bodies
+ *   public     the pages a visitor reaches from a link without signing in
+ *              — join an invitation, pay an invoice, the client portal,
+ *              reschedule an appointment. Not `auth`: the reader is a
+ *              customer or a colleague who may have no HelmSmart account,
+ *              and `auth` is about authenticating one.
  *
  * There is deliberately no `errors` namespace. An error string belongs to the
  * screen that shows it, so each surface keeps its own `errors.*` group and a
@@ -63,6 +68,7 @@ import enMarketing from "@/messages/en/marketing.json";
 import enBooks from "@/messages/en/books.json";
 import enSite from "@/messages/en/site.json";
 import enEmails from "@/messages/en/emails.json";
+import enPublic from "@/messages/en/public.json";
 
 import zhCommon from "@/messages/zh-Hans/common.json";
 import zhNav from "@/messages/zh-Hans/nav.json";
@@ -80,6 +86,7 @@ import zhMarketing from "@/messages/zh-Hans/marketing.json";
 import zhBooks from "@/messages/zh-Hans/books.json";
 import zhSite from "@/messages/zh-Hans/site.json";
 import zhEmails from "@/messages/zh-Hans/emails.json";
+import zhPublic from "@/messages/zh-Hans/public.json";
 
 import esCommon from "@/messages/es/common.json";
 import esNav from "@/messages/es/nav.json";
@@ -97,6 +104,7 @@ import esMarketing from "@/messages/es/marketing.json";
 import esBooks from "@/messages/es/books.json";
 import esSite from "@/messages/es/site.json";
 import esEmails from "@/messages/es/emails.json";
+import esPublic from "@/messages/es/public.json";
 
 export const I18N_COOKIE_NAME = "helmsmart_locale";
 
@@ -125,6 +133,7 @@ export const namespaces = [
   "books",
   "site",
   "emails",
+  "public",
 ] as const;
 export type AppNamespace = (typeof namespaces)[number];
 
@@ -180,6 +189,7 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: enBooks,
     site: enSite,
     emails: enEmails,
+    public: enPublic,
   },
   "zh-Hans": {
     common: { ...overlay(pkgZhCommon, zhCommon), app_name: "HelmSmart" },
@@ -198,6 +208,7 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: zhBooks,
     site: zhSite,
     emails: zhEmails,
+    public: zhPublic,
   },
   es: {
     common: { ...overlay(pkgEsCommon, esCommon), app_name: "HelmSmart" },
@@ -216,5 +227,6 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: esBooks,
     site: esSite,
     emails: esEmails,
+    public: esPublic,
   },
 };

@@ -74,7 +74,8 @@ function NewRecurringTaskModal({
         });
         onSaved();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("recurring.modal.createFailed"));
+        console.error("create recurring task", err);
+        setError(t("recurring.modal.createFailed"));
       }
     });
   }

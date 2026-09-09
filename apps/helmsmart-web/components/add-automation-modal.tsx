@@ -114,7 +114,8 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
           created_at: new Date().toISOString(),
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("automations.modal.createFailed"));
+        console.error("create automation", err);
+        setError(t("automations.modal.createFailed"));
       }
     });
   }

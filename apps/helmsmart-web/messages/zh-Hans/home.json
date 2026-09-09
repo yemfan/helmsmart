@@ -412,6 +412,49 @@
       "minutes": "{{count}} 分钟前",
       "hours": "{{count}} 小时前",
       "days": "{{count}} 天前"
+    },
+    "events": {
+      "approvalNeeded": "需要审批：{{subject}}",
+      "approvalNeededBody": "第 1 步，共 {{total}} 步：{{step}}",
+      "approvalRejected": "审批已拒绝：{{subject}}",
+      "approvalRejectedBody": "原因：{{reason}}",
+      "approvalRejectedNoReason": "未说明原因",
+      "approvalApproved": "✅ 已批准：{{subject}}",
+      "approvalApprovedBody_other": "全部 {{count}} 个审批步骤已完成",
+      "approvalAdvanced": "审批第 {{step}} 步：{{subject}}",
+      "approvalAdvancedBody": "第 {{previous}} 步已批准，第 {{step}} 步需要你审核。",
+      "approvalExpired": "审批已过期：{{subject}}",
+      "approvalExpiredBody": "步骤“{{step}}”已超时，该申请已过期。",
+      "approvalEscalated": "审批已升级：{{subject}}",
+      "approvalEscalatedBody": "步骤“{{step}}”已超时，已转至第 {{next}} 步。",
+      "budgetNearing": "{{project}} 即将用完预算",
+      "budgetOver": "{{project}} 已超出预算",
+      "budgetBody": "该项目已使用预算的 {{percent}}%。",
+      "invoicePaid": "已收到付款：{{amount}}",
+      "invoicePaidBody": "发票 {{number}} 已标记为已付款",
+      "invoiceOverdue": "发票逾期：{{amount}}",
+      "invoiceOverdueBody": "来自 {{client}} 的发票 {{number}} 已逾期",
+      "invoiceOverdueBodyNoClient": "发票 {{number}} 已逾期",
+      "reminderSent": "已发送催款提醒：发票 {{number}}",
+      "reminderSentBody_other": "已发送第 {{reminder}} 次提醒 — 逾期 {{count}} 天，{{amount}}",
+      "estimateAccepted": "报价 {{number}} 已被接受 — 已生成发票草稿",
+      "estimateAcceptedBody": "客户已在线接受报价。发票草稿已准备好，可查看并发送。",
+      "callbackRequested": "客户要求回电",
+      "callbackRequestedBody": "{{caller}}：{{reason}}",
+      "bookingByReceptionist": "AI 前台已完成预约",
+      "appointmentCancelled": "客户已取消预约",
+      "appointmentCancelledBody": "{{caller}} — 原定 {{when}}",
+      "employeeCreatedTask": "{{employee}} 为你创建了一个任务",
+      "newGoogleReviews_other": "Google Business 上有 {{count}} 条新评价",
+      "newGoogleReviewsBody": "打开 Google Business 后台回复评价，提升口碑。",
+      "weeklyInsight": "Tim 的每周经营洞察已生成",
+      "weeklyInsightBody": "你的每周报告已经可以查看了。",
+      "newEmail": "收到新邮件",
+      "newSms": "收到新短信",
+      "missedCall": "未接来电",
+      "missedCallBody": "来自 {{number}}",
+      "missedCallAutoTexted": "未接来电 — 已自动回短信",
+      "missedCallAutoTextedBody": "已回短信给 {{number}}"
     }
   },
   "comingSoon": {
@@ -431,5 +474,10 @@
     "empty": "还没有交易数据",
     "revenue": "收入",
     "expenses": "支出"
+  },
+  "errors": {
+    "notAuthenticated": "登录已过期，请重新登录后继续。",
+    "clientNotFound": "找不到该客户",
+    "invalidAvatar": "该头像不在可选范围内。"
   }
 }

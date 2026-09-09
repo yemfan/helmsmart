@@ -412,6 +412,52 @@
       "minutes": "{{count}}m",
       "hours": "{{count}}h",
       "days": "{{count}}d"
+    },
+    "events": {
+      "approvalNeeded": "Approval needed: {{subject}}",
+      "approvalNeededBody": "Step 1 of {{total}}: {{step}}",
+      "approvalRejected": "Approval rejected: {{subject}}",
+      "approvalRejectedBody": "Reason: {{reason}}",
+      "approvalRejectedNoReason": "No reason given",
+      "approvalApproved": "✅ Approved: {{subject}}",
+      "approvalApprovedBody_one": "All {{count}} approval step completed",
+      "approvalApprovedBody_other": "All {{count}} approval steps completed",
+      "approvalAdvanced": "Approval step {{step}}: {{subject}}",
+      "approvalAdvancedBody": "Step {{previous}} approved. Step {{step}} needs your review.",
+      "approvalExpired": "Approval expired: {{subject}}",
+      "approvalExpiredBody": "Step “{{step}}” timed out. The request has expired.",
+      "approvalEscalated": "Approval escalated: {{subject}}",
+      "approvalEscalatedBody": "Step “{{step}}” timed out. Moved to step {{next}}.",
+      "budgetNearing": "{{project}} is nearing budget",
+      "budgetOver": "{{project}} is over budget",
+      "budgetBody": "This project has used {{percent}}% of its budget.",
+      "invoicePaid": "Payment received: {{amount}}",
+      "invoicePaidBody": "Invoice {{number}} marked as paid",
+      "invoiceOverdue": "Invoice overdue: {{amount}}",
+      "invoiceOverdueBody": "Invoice {{number}} from {{client}} is past due",
+      "invoiceOverdueBodyNoClient": "Invoice {{number}} is past due",
+      "reminderSent": "Reminder sent: Invoice {{number}}",
+      "reminderSentBody_one": "Reminder #{{reminder}} sent — {{count}} day overdue, {{amount}}",
+      "reminderSentBody_other": "Reminder #{{reminder}} sent — {{count}} days overdue, {{amount}}",
+      "estimateAccepted": "Quote {{number}} accepted — invoice drafted",
+      "estimateAcceptedBody": "The client accepted online. A draft invoice is ready to review and send.",
+      "callbackRequested": "Call-back requested",
+      "callbackRequestedBody": "{{caller}}: {{reason}}",
+      "bookingByReceptionist": "Appointment booked by the receptionist",
+      "appointmentCancelled": "Appointment cancelled by customer",
+      "appointmentCancelledBody": "{{caller}} — was {{when}}",
+      "employeeCreatedTask": "{{employee}} created a task for you",
+      "newGoogleReviews_one": "{{count}} new review on Google Business",
+      "newGoogleReviews_other": "{{count}} new reviews on Google Business",
+      "newGoogleReviewsBody": "Check your Google Business dashboard to respond and boost your reputation.",
+      "weeklyInsight": "Tim's weekly business insights are ready",
+      "weeklyInsightBody": "Your weekly digest is ready to review.",
+      "newEmail": "New email received",
+      "newSms": "New SMS received",
+      "missedCall": "Missed call",
+      "missedCallBody": "From {{number}}",
+      "missedCallAutoTexted": "Missed call — auto-texted",
+      "missedCallAutoTextedBody": "Texted {{number}} back"
     }
   },
   "comingSoon": {
@@ -431,5 +477,10 @@
     "empty": "No transaction data yet",
     "revenue": "Revenue",
     "expenses": "Expenses"
+  },
+  "errors": {
+    "notAuthenticated": "Your session has expired. Sign in again to continue.",
+    "clientNotFound": "Client not found",
+    "invalidAvatar": "That avatar isn't one of the available options."
   }
 }

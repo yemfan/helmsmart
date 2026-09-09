@@ -177,7 +177,8 @@ export function ImportForm() {
           setTimeout(() => router.push("/clients"), 1500);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("import.errors.importFailed"));
+        console.error("import clients", err);
+        setError(t("import.errors.importFailed"));
       }
     });
   }
@@ -200,7 +201,8 @@ export function ImportForm() {
       setAiImage(null);
       setFileName(t("import.ai.fileLabel", { count: mapped.length }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("import.errors.extractFailed"));
+      console.error("extract contacts with AI", err);
+      setError(t("import.errors.extractFailed"));
     } finally {
       setAiPending(false);
     }

@@ -17,6 +17,8 @@
  */
 
 import { NextRequest, NextResponse, after } from "next/server";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { translatorFor } from "@/lib/i18n/translator";
 import twilio from "twilio";
 import { createServiceClient } from "@/lib/supabase/server";
 import { findOrgIdByNumber } from "@/lib/receptionist-agent";
@@ -69,9 +71,11 @@ async function createInboundFollowUpTask(
   if (fn && fn.toLowerCase() !== "caller") who = ln ? `${fn} ${ln}` : fn;
 
   const dueDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  // No request behind a webhook, so the language comes from the business.
+  const t = translatorFor(await orgWriteLocale(args.orgId, db), "tasks");
   await db.from("tasks").insert({
     organization_id: args.orgId,
-    title: `Follow up: AI call from ${who}`,
+    title: t("generated.followUpAiCall", { who }),
     notes: `${args.summary}\n\n(Ref: ${args.callId})`,
     due_date: dueDate,
     client_id: args.clientId,
@@ -169,6 +173,9 @@ async function maybeTextBackMissedCall(
       type: "missed_call",
       title: "Missed call — auto-texted",
       body: `Texted ${caller.value} back`,
+      titleKey: "notifications.events.missedCallAutoTexted",
+      bodyKey: "notifications.events.missedCallAutoTextedBody",
+      params: { number: caller.value },
       link: "/voice",
     });
 

@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { checkProjectBudgetAlert } from "./budget-alerts";
 
@@ -40,7 +41,7 @@ function normalizeEntry(row: Record<string, unknown>): TimeEntry {
 async function getOrgId(): Promise<string> {
   const cookieStore = await cookies();
   const id = cookieStore.get("helmsmart-org-id")?.value;
-  if (!id) throw new Error("No org");
+  if (!id) throw new Error((await getServerT("projects"))("errors.noOrg"));
   return id;
 }
 
@@ -285,7 +286,7 @@ export async function importTimeEntriesToInvoice(
     .eq("id", invoiceId)
     .eq("organization_id", orgId)
     .single();
-  if (!inv) throw new Error("Invoice not found");
+  if (!inv) throw new Error((await getServerT("projects"))("errors.invoiceNotFound"));
 
   // Fetch entries with project join for label
   const { data: entries } = await db
@@ -313,6 +314,15 @@ export async function importTimeEntriesToInvoice(
     const rate = e.hourly_rate ?? 0;
     const projectsData = Array.isArray(e.projects) ? e.projects[0] : e.projects;
     const projectName = (projectsData as { name?: string } | null)?.name ?? e.project ?? null;
+    // Deliberately NOT translated. This string is persisted as
+    // `invoice_lines.description` and rendered on /pay/[id] — the page the
+    // CUSTOMER opens, not owner chrome. `getServerT` here would resolve the
+    // OWNER's cookie (the person clicking Import) and freeze their UI language
+    // onto a line their client reads, permanently, with no way for the pay page
+    // to re-render it. Same rule as reply drafts and reminders in
+    // docs/i18n-howto.md: customer-facing copy follows the customer, never the
+    // owner's locale. Every other label on this line is untranslated user data
+    // (project name + the owner's own description); this fallback matches.
     const label = [projectName, e.description].filter(Boolean).join(" — ") || "Billable time";
     return {
       invoice_id: invoiceId,

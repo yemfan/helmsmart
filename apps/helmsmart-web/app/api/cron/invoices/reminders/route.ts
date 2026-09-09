@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
+import { DEFAULT_CURRENCY, money } from "@/lib/books-format";
 import {
   sendReminderForInvoice,
   daysOverdue,
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
     const orgIds = [...new Set(invoices.map((i) => i.organization_id))];
     const { data: orgs } = await db
       .from("organizations")
-      .select("id, auto_send_reminders, reminder_days_intervals, reminder_max_count")
+      .select("id, auto_send_reminders, reminder_days_intervals, reminder_max_count, currency")
       .in("id", orgIds);
 
     const orgMap = new Map(
@@ -65,6 +66,9 @@ export async function GET(request: NextRequest) {
           autoSend:      o.auto_send_reminders ?? true,
           intervals:     (o.reminder_days_intervals as number[] | null) ?? [3, 7, 14, 30],
           maxCount:      o.reminder_max_count ?? 4,
+          // The ledger's currency, so the notification's amount is not
+          // relabelled as dollars for an org that bills in anything else.
+          currency:      (o.currency as string | null) || DEFAULT_CURRENCY,
         },
       ])
     );
@@ -74,6 +78,7 @@ export async function GET(request: NextRequest) {
         autoSend: true,
         intervals: [3, 7, 14, 30],
         maxCount: 4,
+        currency: DEFAULT_CURRENCY,
       };
 
       // Respect org-level toggle
@@ -143,12 +148,25 @@ export async function GET(request: NextRequest) {
       }
 
       sent++;
+      // Grouping is English because a cron has no reader to ask; the currency
+      // is the org's own.
+      const amount = money(Number(inv.total), "en", settings.currency);
       await createNotificationService(
         inv.organization_id,
         {
           type: "invoice_overdue",
           title: `Reminder sent: Invoice ${inv.invoice_number}`,
-          body: `Reminder #${reminderCount + 1} sent — ${overduedays} days overdue, $${Number(inv.total).toFixed(2)}`,
+          body: `Reminder #${reminderCount + 1} sent — ${overduedays} days overdue, ${amount}`,
+          titleKey: "notifications.events.reminderSent",
+          bodyKey: "notifications.events.reminderSentBody",
+          // `count` is the days overdue — that is the number the sentence has
+          // to agree with. The reminder's own ordinal rides along as data.
+          params: {
+            number: inv.invoice_number,
+            reminder: reminderCount + 1,
+            count: overduedays,
+            amount,
+          },
           link: `/books/invoices/${inv.id}`,
         },
         db

@@ -110,7 +110,8 @@ export function RecurringInvoiceModal({ clients, currency }: Props) {
       setOpen(false);
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common:errors.generic"));
+      console.error("save recurring invoice", err);
+      setError(t("common:errors.generic"));
     } finally {
       setLoading(false);
     }
