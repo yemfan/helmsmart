@@ -595,6 +595,18 @@
       "disconnect": "Disconnect",
       "connect": "Connect",
       "disconnectError": "Couldn't disconnect that channel."
+    },
+    "connectError": {
+      "notConfigured": "{{provider}} isn't set up on this site yet — its app credentials are missing. This needs an admin to configure; retrying won't help.",
+      "expired": "That {{provider}} connection attempt expired before it finished. Please start Connect {{provider}} again.",
+      "signInFailed": "{{provider}} sign-in didn't complete. Please try connecting again.",
+      "accessDenied": "You cancelled the {{provider}} connection, or didn't grant the permissions it needs. Reconnect and approve the requested permissions.",
+      "unknown": "Couldn't connect {{provider}} ({{code}}). Try reconnecting — if it keeps failing, the app may still need {{provider}} approval or your account must be added as a tester."
+    },
+    "channelNote": {
+      "manual": "manual",
+      "viaFacebook": "via Facebook",
+      "oneMetaGrant": "one Meta grant covers both"
     }
   },
   "forms": {
@@ -833,6 +845,20 @@
       "jpegOnly": "Use a JPG image — Instagram only accepts JPEG for photo posts.",
       "imageTooLarge": "Image must be under 8 MB.",
       "notSignedIn": "You're not signed in."
+    }
+  },
+  "recurrence": {
+    "time": "{{hour}}:00 {{meridiem}} UTC",
+    "weekly": "Every {{day}} at {{time}}",
+    "monthly": "Monthly on day {{day}} at {{time}}",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
     }
   }
 }

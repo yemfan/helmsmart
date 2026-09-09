@@ -595,6 +595,18 @@
       "disconnect": "断开连接",
       "connect": "连接",
       "disconnectError": "无法断开该渠道的连接。"
+    },
+    "connectError": {
+      "notConfigured": "{{provider}} 尚未在本站配置 —— 缺少应用凭据。这需要管理员配置，重试无法解决。",
+      "expired": "本次 {{provider}} 连接尝试在完成前已过期。请重新点击「连接 {{provider}}」。",
+      "signInFailed": "{{provider}} 登录未能完成。请重新尝试连接。",
+      "accessDenied": "您取消了 {{provider}} 连接，或未授予所需权限。请重新连接并同意所请求的权限。",
+      "unknown": "无法连接 {{provider}}（{{code}}）。请重新尝试连接 —— 如果持续失败，该应用可能仍需 {{provider}} 审核，或需要将您的账号添加为测试人员。"
+    },
+    "channelNote": {
+      "manual": "手动发布",
+      "viaFacebook": "通过 Facebook",
+      "oneMetaGrant": "一次 Meta 授权即可覆盖两者"
     }
   },
   "forms": {
@@ -833,6 +845,20 @@
       "jpegOnly": "请使用 JPG 图片——Instagram 的图文帖只接受 JPEG。",
       "imageTooLarge": "图片必须小于 8 MB。",
       "notSignedIn": "你尚未登录。"
+    }
+  },
+  "recurrence": {
+    "time": "UTC {{hour}}:00 {{meridiem}}",
+    "weekly": "每{{day}} {{time}}",
+    "monthly": "每月 {{day}} 日 {{time}}",
+    "days": {
+      "0": "周日",
+      "1": "周一",
+      "2": "周二",
+      "3": "周三",
+      "4": "周四",
+      "5": "周五",
+      "6": "周六"
     }
   }
 }

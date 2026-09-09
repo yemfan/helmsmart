@@ -595,6 +595,18 @@
       "disconnect": "Desconectar",
       "connect": "Conectar",
       "disconnectError": "No se pudo desconectar ese canal."
+    },
+    "connectError": {
+      "notConfigured": "{{provider}} todavía no está configurado en este sitio: faltan las credenciales de la aplicación. Debe configurarlo un administrador; reintentar no servirá.",
+      "expired": "Ese intento de conexión con {{provider}} expiró antes de completarse. Vuelva a empezar en Conectar {{provider}}.",
+      "signInFailed": "El inicio de sesión de {{provider}} no se completó. Intente conectar de nuevo.",
+      "accessDenied": "Canceló la conexión con {{provider}}, o no concedió los permisos necesarios. Vuelva a conectar y apruebe los permisos solicitados.",
+      "unknown": "No se pudo conectar {{provider}} ({{code}}). Intente conectar de nuevo: si sigue fallando, puede que la aplicación aún necesite la aprobación de {{provider}} o que su cuenta deba añadirse como probador."
+    },
+    "channelNote": {
+      "manual": "manual",
+      "viaFacebook": "vía Facebook",
+      "oneMetaGrant": "una sola autorización de Meta cubre ambos"
     }
   },
   "forms": {
@@ -833,6 +845,20 @@
       "jpegOnly": "Use una imagen JPG: Instagram solo acepta JPEG para las publicaciones de fotos.",
       "imageTooLarge": "La imagen debe pesar menos de 8 MB.",
       "notSignedIn": "No ha iniciado sesión."
+    }
+  },
+  "recurrence": {
+    "time": "{{hour}}:00 {{meridiem}} UTC",
+    "weekly": "Cada {{day}} a las {{time}}",
+    "monthly": "El día {{day}} de cada mes a las {{time}}",
+    "days": {
+      "0": "domingo",
+      "1": "lunes",
+      "2": "martes",
+      "3": "miércoles",
+      "4": "jueves",
+      "5": "viernes",
+      "6": "sábado"
     }
   }
 }

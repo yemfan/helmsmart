@@ -157,6 +157,37 @@
       "saveFailed": "Failed to save",
       "testFailed": "Test failed",
       "testSendFailed": "Failed to send test message. Check your webhook URL."
+    },
+    "notify": {
+      "formSubmission": {
+        "text": "📋 New form submission: {{form}} from {{who}}",
+        "heading": "*📋 New form submission*\n*Form:* {{form}}",
+        "name": "*Name:*\n{{value}}",
+        "contact": "*Contact:*\n{{value}}",
+        "viewSubmissions": "View submissions",
+        "viewInCrm": "View in CRM",
+        "someone": "Someone"
+      },
+      "newLead": {
+        "text": "🙋 New lead: {{name}}",
+        "heading": "*🙋 New lead added*\n*Name:* {{name}}",
+        "contact": "*Contact:*\n{{value}}",
+        "source": "*Source:*\n{{value}}",
+        "manual": "manual",
+        "viewInCrm": "View in CRM"
+      },
+      "missedCall": {
+        "text": "📞 Missed call from {{number}}{{note}}",
+        "heading": "*📞 Missed call*\nFrom *{{number}}*{{note}}",
+        "autoTexted": " · auto-texted ✅",
+        "noAutoText": " · no auto-text sent",
+        "viewInReception": "View in Reception"
+      },
+      "approval": {
+        "text": "🤖 {{employee}} needs approval: {{description}}",
+        "heading": "*🤖 AI approval needed*\n*{{employee}}* wants to: {{description}}",
+        "review": "Review & Approve"
+      }
     }
   },
   "team": {

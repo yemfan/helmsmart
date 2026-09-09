@@ -157,6 +157,37 @@
       "saveFailed": "保存失败",
       "testFailed": "测试失败",
       "testSendFailed": "测试消息发送失败，请检查 webhook 地址。"
+    },
+    "notify": {
+      "formSubmission": {
+        "text": "📋 新的表单提交：{{form}}，来自 {{who}}",
+        "heading": "*📋 新的表单提交*\n*表单：* {{form}}",
+        "name": "*姓名：*\n{{value}}",
+        "contact": "*联系方式：*\n{{value}}",
+        "viewSubmissions": "查看提交记录",
+        "viewInCrm": "在 CRM 中查看",
+        "someone": "某人"
+      },
+      "newLead": {
+        "text": "🙋 新线索：{{name}}",
+        "heading": "*🙋 新增线索*\n*姓名：* {{name}}",
+        "contact": "*联系方式：*\n{{value}}",
+        "source": "*来源：*\n{{value}}",
+        "manual": "手动添加",
+        "viewInCrm": "在 CRM 中查看"
+      },
+      "missedCall": {
+        "text": "📞 未接来电：{{number}}{{note}}",
+        "heading": "*📞 未接来电*\n来自 *{{number}}*{{note}}",
+        "autoTexted": " · 已自动回短信 ✅",
+        "noAutoText": " · 未发送自动短信",
+        "viewInReception": "在前台中查看"
+      },
+      "approval": {
+        "text": "🤖 {{employee}} 需要审批：{{description}}",
+        "heading": "*🤖 AI 需要审批*\n*{{employee}}* 想要：{{description}}",
+        "review": "查看并批准"
+      }
     }
   },
   "team": {

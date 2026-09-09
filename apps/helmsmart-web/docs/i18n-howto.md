@@ -237,6 +237,38 @@ And say something a person can act on. "No org" and "Not authenticated" are
 our vocabulary; they became "No business is selected. Sign in again to
 continue." in three languages for the same reason.
 
+## Helpers in lib/ compose sentences too
+
+`routeCoverage` walks `app/` only, and the guards skip any file that calls no
+translator — so a helper under `lib/` that RETURNS a display string is invisible
+to all of them. Three shipped that way and were found only by reading the code:
+the social connect errors, the recurring-schedule description, and two channel
+notes.
+
+The fix is the same shape every time, and it keeps the helper pure and
+testable: **take a translator, do not hold copy.**
+
+```ts
+export function connectErrorMessage(provider: string, code: string, t: Translate) {
+  return t("social.connectError.expired", { provider });   // mapping here, copy in the bundle
+}
+```
+
+The caller already has one — a page has `getServerT(ns)`, a client component
+has `useTranslation(ns)` — so passing it costs a parameter. `describeRecurrence`
+and `connectErrorMessage` are the worked examples.
+
+Data that is copy gets the same treatment: a module-scope array holds a KEY
+(`noteKey: "social.channelNote.manual"`) and the component translates it at
+render.
+
+**English in `lib/` is often correct**, so think about the reader before
+changing anything: an AI prompt is read by a model, `lib/booking.ts` returns
+tool results the receptionist speaks in the CALLER's language, and
+`lib/marketing-content.ts` holds campaign templates that become the org's own
+content. Slack messages are the opposite — they land in the owner's workspace,
+so they read in the business's language via `orgWriteLocale`.
+
 ## New routes are covered by default
 
 `lib/i18n/__tests__/routeCoverage.test.ts` fails when a file under `app/`

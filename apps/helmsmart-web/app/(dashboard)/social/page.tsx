@@ -102,7 +102,7 @@ export default async function SocialPage({
       )}
       {sp.linkedin_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          {connectErrorMessage("LinkedIn", sp.linkedin_error)}
+          {connectErrorMessage("LinkedIn", sp.linkedin_error, t)}
         </div>
       )}
       {sp.meta === "connected" && (
@@ -120,7 +120,7 @@ export default async function SocialPage({
           {sp.meta_error === "no_pages_granted" ? (
             <>{t("social.page.noPagesGranted")}</>
           ) : (
-            <>{connectErrorMessage("Facebook", sp.meta_error)}</>
+            <>{connectErrorMessage("Facebook", sp.meta_error, t)}</>
           )}
         </div>
       )}
@@ -131,7 +131,7 @@ export default async function SocialPage({
       )}
       {sp.threads_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          {connectErrorMessage("Threads", sp.threads_error)}
+          {connectErrorMessage("Threads", sp.threads_error, t)}
         </div>
       )}
       {sp.tiktok === "connected" && (
@@ -141,7 +141,7 @@ export default async function SocialPage({
       )}
       {sp.tiktok_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          {connectErrorMessage("TikTok", sp.tiktok_error)}
+          {connectErrorMessage("TikTok", sp.tiktok_error, t)}
         </div>
       )}
       {sp.youtube === "connected" && (
@@ -151,7 +151,7 @@ export default async function SocialPage({
       )}
       {sp.youtube_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          {connectErrorMessage("YouTube", sp.youtube_error)}
+          {connectErrorMessage("YouTube", sp.youtube_error, t)}
         </div>
       )}
       <SocialAutopilotPanel />
