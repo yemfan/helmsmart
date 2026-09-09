@@ -26,6 +26,21 @@ const nextConfig = {
     root: monorepoRoot,
   },
   experimental: {
+    /**
+     * Send the stylesheet inside the document instead of as a request.
+     *
+     * It is the last render-blocking hop on every page: the document lands at
+     * ~0.65 s and paint waits until ~1.7 s, almost all of it the 30 KB CSS
+     * (Lighthouse, 2026-09-09). Inlining removes the round trip.
+     *
+     * The trade is that the CSS stops being separately cached and rides along
+     * in each document, roughly doubling it. That favours first visits, which
+     * is what marketing and SEO traffic mostly is — and it costs the dashboard
+     * less than it looks, because navigation there is client-side, so a
+     * signed-in user fetches the document about once a session rather than
+     * once a page.
+     */
+    inlineCss: true,
     // ~1500+ prerendered routes — lower peak RSS on Vercel CI
     staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 1,
