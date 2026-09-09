@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
 type Status = "lead" | "prospect" | "active" | "inactive" | "archived";
 const VALID_STATUSES: Status[] = ["lead", "prospect", "active", "inactive", "archived"];
@@ -17,13 +18,14 @@ interface ClientRow {
 }
 
 export async function POST(req: NextRequest) {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!orgId) return NextResponse.json({ error: t("errors.unauthorized") }, { status: 401 });
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: t("errors.unauthorized") }, { status: 401 });
 
   let rows: ClientRow[];
   try {
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest) {
     rows = body.rows;
     if (!Array.isArray(rows) || rows.length === 0) throw new Error("No rows");
   } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json({ error: t("errors.importInvalidBody") }, { status: 400 });
   }
 
   const inserts = rows.map((r) => ({

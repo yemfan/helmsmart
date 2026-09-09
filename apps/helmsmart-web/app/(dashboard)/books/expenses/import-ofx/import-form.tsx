@@ -2,7 +2,9 @@
 
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Upload, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { moneyFormatter } from "@/lib/books-format";
 
 interface ParsedTransaction {
   date: string;
@@ -11,7 +13,8 @@ interface ParsedTransaction {
   memo: string;
   type: "debit" | "credit";
   _valid: boolean;
-  _error?: string;
+  /** Set when the row failed validation; the table translates it at render. */
+  _invalid?: boolean;
 }
 
 // ─── OFX/QFX parser ──────────────────────────────────────────────────────────
@@ -51,7 +54,8 @@ function parseOFX(text: string): ParsedTransaction[] {
     // Only import debits as expenses; skip credits (deposits, refunds, etc.)
     if (amount > 0 && type !== "DEBIT") continue;
 
-    // Description: prefer NAME, fallback to MEMO
+    // Description: prefer NAME, fallback to MEMO. The last fallback is written
+    // to the ledger as the expense description — stored data, not screen copy.
     const description = name || memo || "Bank transaction";
 
     // Validate
@@ -64,17 +68,23 @@ function parseOFX(text: string): ParsedTransaction[] {
       memo: memo.slice(0, 200),
       type: amount < 0 ? "debit" : "credit",
       _valid: isValid && amount < 0,
-      _error: !isValid ? "Invalid date or amount" : undefined,
+      _invalid: !isValid,
     });
   }
 
   return transactions;
 }
 
-// ─── Template / example download ──────────────────────────────────────────────
+// ─── Format example ───────────────────────────────────────────────────────────
 
-function showOFXExample() {
-  const example = `OFXHEADER:100
+/**
+ * An OFX file header, quoted verbatim — a file format, not copy, so it is the
+ * same bytes in every language.
+ *
+ * These are exactly the lines the dialog showed: the body of the document used
+ * to sit here too and was sliced off before it ever reached the reader.
+ */
+const OFX_EXAMPLE = `OFXHEADER:100
 SECURITY:NONE
 ENCODING:USASCII
 CHARSET:1252
@@ -82,67 +92,31 @@ COMPRESSION:NONE
 OLDFILEFORMAT:NO
 NEWFILEFORMAT:YES
 DATA:OFSGML
-VERSION:102
-
-<OFX>
-<SIGNONSIGNON>
-<STATUS>
-<CODE>0
-<SEVERITY>INFO
-</STATUS>
-<DTSERVER>20250630
-<LANGUAGE>ENG
-</SIGNON>
-<BANKMSGSRSV1>
-<STMTTRS>
-<STATUS>
-<CODE>0
-<SEVERITY>INFO
-</STATUS>
-<CURDEF>USD
-<STMTRS>
-<BANKACC_FROM>
-<BANKID>123456789
-<ACCTID>0987654321
-<ACCTTYPE>CHECKING
-</BANKACC_FROM>
-<BANKTRANLIST>
-<DTSTART>20250601
-<DTEND>20250630
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20250601
-<TRNAMT>-42.50
-<FITID>1234567890
-<NAME>STARBUCKS
-</STMTTRN>
-<STMTTRN>
-<TRNTYPE>DEBIT
-<DTPOSTED>20250602
-<TRNAMT>-85.00
-<FITID>1234567891
-<NAME>OFFICE DEPOT
-<MEMO>Office supplies
-</STMTTRN>
-</BANKTRANLIST>
-</STMTRS>
-</STMTTRS>
-</BANKMSGSRSV1>
-</OFX>`;
-
-  alert("OFX format example:\n\n" + example.split("\n").slice(0, 10).join("\n") + "\n\n(Full example shown — export from your bank or Quicken)");
-}
+VERSION:102`;
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function ImportOFXForm() {
+const PREVIEW_LIMIT = 50;
+const COLUMNS = ["date", "amount", "description", "memo"] as const;
+
+export function ImportOFXForm({ currency = "USD" }: { currency?: string }) {
   const router = useRouter();
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows]         = useState<ParsedTransaction[]>([]);
   const [fileName, setFileName] = useState("");
   const [result, setResult]     = useState<{ inserted: number; failed: number; skipped: number } | null>(null);
   const [error, setError]       = useState("");
   const [pending, start]        = useTransition();
+
+  function showOFXExample() {
+    alert(
+      `${t("expenses.import.ofx.exampleTitle")}\n\n` +
+        OFX_EXAMPLE +
+        `\n\n${t("expenses.import.ofx.exampleFooter")}`
+    );
+  }
 
   function handleFile(file: File) {
     setFileName(file.name);
@@ -153,7 +127,7 @@ export function ImportOFXForm() {
       const text = e.target?.result as string;
       const parsed = parseOFX(text);
       if (parsed.length === 0) {
-        setError("No transactions found in this OFX file. Ensure it contains STMTTRN blocks.");
+        setError(t("expenses.import.ofx.noTransactions"));
       } else {
         setRows(parsed);
       }
@@ -167,13 +141,13 @@ export function ImportOFXForm() {
     if (file && (file.name.endsWith(".ofx") || file.name.endsWith(".qfx") || file.type === "application/vnd.intu.qbo" || file.type === "text/plain")) {
       handleFile(file);
     } else {
-      setError("Please upload an .ofx or .qfx file");
+      setError(t("expenses.import.ofx.notOfx"));
     }
   }
 
   function handleImport() {
     const valid = rows.filter((r) => r._valid);
-    if (valid.length === 0) { setError("No valid transactions to import"); return; }
+    if (valid.length === 0) { setError(t("expenses.import.ofx.noValidRows")); return; }
     setError("");
     start(async () => {
       try {
@@ -183,13 +157,13 @@ export function ImportOFXForm() {
           body: JSON.stringify({ rows: valid }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Import failed");
+        if (!res.ok) throw new Error(data.error ?? t("expenses.import.failed"));
         setResult({ inserted: data.inserted, failed: data.failed, skipped: data.skipped ?? 0 });
         if (data.inserted > 0) {
           setTimeout(() => router.push("/books/expenses"), 1500);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Import failed");
+        setError(err instanceof Error ? err.message : t("expenses.import.failed"));
       }
     });
   }
@@ -197,22 +171,31 @@ export function ImportOFXForm() {
   const validCount   = rows.filter((r) => r._valid).length;
   const invalidCount = rows.filter((r) => !r._valid).length;
 
+  // Each clause is a whole sentence of its own, joined by a separator — never
+  // a sentence assembled out of halves.
+  const resultLine = result
+    ? [
+        t("expenses.import.ofx.imported", { count: result.inserted }),
+        ...(result.skipped > 0 ? [t("expenses.import.ofx.creditsSkipped", { count: result.skipped })] : []),
+        ...(result.failed > 0 ? [t("expenses.import.failedCount", { count: result.failed })] : []),
+      ].join(" · ")
+    : "";
+
   return (
     <div className="space-y-6">
       {/* Instructions */}
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 flex items-start gap-4">
         <div className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5 font-bold">ⓘ</div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-blue-800 mb-1">OFX/QFX Format</p>
+          <p className="text-sm font-medium text-blue-800 mb-1">{t("expenses.import.ofx.formatTitle")}</p>
           <p className="text-xs text-blue-700 leading-relaxed">
-            Upload a bank statement export from Quicken, QuickBooks, your bank's website, or any financial software that supports OFX format.
-            Debits (expenses) will be imported as expense transactions; credits (deposits) are skipped.
+            {t("expenses.import.ofx.formatBody")}
           </p>
           <button
             onClick={showOFXExample}
             className="text-xs font-medium text-blue-600 underline mt-2 hover:text-blue-800"
           >
-            View OFX format example
+            {t("expenses.import.ofx.viewExample")}
           </button>
         </div>
       </div>
@@ -236,8 +219,8 @@ export function ImportOFXForm() {
           <p className="text-sm font-medium text-slate-700">{fileName}</p>
         ) : (
           <>
-            <p className="text-sm font-medium text-slate-600">Drop your OFX/QFX file here, or click to browse</p>
-            <p className="text-xs text-slate-400 mt-1">Supports .ofx and .qfx file formats</p>
+            <p className="text-sm font-medium text-slate-600">{t("expenses.import.ofx.dropZone")}</p>
+            <p className="text-xs text-slate-400 mt-1">{t("expenses.import.ofx.dropZoneHint")}</p>
           </>
         )}
       </div>
@@ -247,17 +230,21 @@ export function ImportOFXForm() {
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold text-slate-800">Transactions</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("expenses.import.ofx.preview")}</h2>
               <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                {validCount} to import
+                {t("expenses.import.ofx.toImport", { count: validCount })}
               </span>
               {invalidCount > 0 && (
                 <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
-                  {invalidCount} skipped
+                  {t("expenses.import.ofx.skippedCount", { count: invalidCount })}
                 </span>
               )}
             </div>
-            <button onClick={() => { setRows([]); setFileName(""); }} className="text-slate-400 hover:text-slate-600">
+            <button
+              onClick={() => { setRows([]); setFileName(""); }}
+              className="text-slate-400 hover:text-slate-600"
+              aria-label={t("expenses.import.clear")}
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -266,23 +253,30 @@ export function ImportOFXForm() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
-                  {["", "Date", "Amount", "Description", "Memo"].map((h) => (
-                    <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap" />
+                  {COLUMNS.map((c) => (
+                    <th key={c} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
+                      {t(`expenses.import.ofx.columns.${c}`)}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {rows.slice(0, 50).map((row, i) => (
+                {rows.slice(0, PREVIEW_LIMIT).map((row, i) => (
                   <tr key={i} className={row._valid ? "" : "bg-slate-50"}>
                     <td className="px-3 py-2">
                       {row._valid
                         ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        : <span title={row._error}><AlertCircle className="w-3.5 h-3.5 text-slate-300" /></span>
+                        : (
+                          <span title={row._invalid ? t("expenses.import.ofx.invalidRow") : undefined}>
+                            <AlertCircle className="w-3.5 h-3.5 text-slate-300" />
+                          </span>
+                        )
                       }
                     </td>
                     <td className="px-3 py-2 text-slate-800 font-medium">{row.date}</td>
                     <td className="px-3 py-2 text-slate-800 font-medium">
-                      ${parseFloat(row.amount).toFixed(2)}
+                      {fmt(parseFloat(row.amount))}
                     </td>
                     <td className="px-3 py-2 text-slate-600 truncate">{row.description}</td>
                     <td className="px-3 py-2 text-slate-500 text-[11px] max-w-[100px] truncate">{row.memo || "—"}</td>
@@ -290,9 +284,9 @@ export function ImportOFXForm() {
                 ))}
               </tbody>
             </table>
-            {rows.length > 50 && (
+            {rows.length > PREVIEW_LIMIT && (
               <p className="text-xs text-slate-400 text-center py-3">
-                Showing first 50 of {rows.length} transactions
+                {t("expenses.import.ofx.showingFirst", { shown: PREVIEW_LIMIT, total: rows.length })}
               </p>
             )}
           </div>
@@ -305,17 +299,15 @@ export function ImportOFXForm() {
           <CheckCircle2 className={`w-5 h-5 flex-shrink-0 ${result.failed === 0 ? "text-emerald-500" : "text-amber-500"}`} />
           <div>
             <p className={`text-sm font-semibold ${result.failed === 0 ? "text-emerald-800" : "text-amber-800"}`}>
-              Imported {result.inserted} transaction{result.inserted !== 1 ? "s" : ""}
-              {result.skipped > 0 && ` · ${result.skipped} credits skipped`}
-              {result.failed > 0 && ` · ${result.failed} failed`}
+              {resultLine}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">Redirecting to Expenses…</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t("expenses.import.redirecting")}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3">{error}</p>
+        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3" role="alert">{error}</p>
       )}
 
       {/* Actions */}
@@ -326,14 +318,16 @@ export function ImportOFXForm() {
             disabled={pending}
             className="flex-1 py-3 text-sm font-medium border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-60 transition-colors"
           >
-            Clear
+            {t("expenses.import.clear")}
           </button>
           <button
             onClick={handleImport}
             disabled={pending || validCount === 0}
             className="flex-1 py-3 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
           >
-            {pending ? `Importing ${validCount} transactions…` : `Import ${validCount} transaction${validCount !== 1 ? "s" : ""}`}
+            {pending
+              ? t("expenses.import.ofx.importing", { count: validCount })
+              : t("expenses.import.ofx.importAction", { count: validCount })}
           </button>
         </div>
       )}

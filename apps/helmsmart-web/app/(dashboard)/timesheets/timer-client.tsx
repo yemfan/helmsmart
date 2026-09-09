@@ -5,6 +5,8 @@ import {
   Play, Square, Plus, Trash2, Clock, DollarSign,
   ChevronDown, Check, AlertCircle, FileText, FolderOpen,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import {
   startTimer, stopTimer, createTimeEntry, deleteTimeEntry,
   type TimeEntry,
@@ -14,6 +16,7 @@ import { useRouter } from "next/navigation";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ProjectOption = { id: string; name: string; color: string };
+type TFunc = (key: string, opts?: Record<string, unknown>) => string;
 
 // ─── Color dot map ────────────────────────────────────────────────────────────
 
@@ -28,26 +31,26 @@ const COLOR_DOTS: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtDuration(minutes: number | null): string {
+function fmtDuration(minutes: number | null, t: TFunc): string {
   const total = minutes ?? 0;
   const h = Math.floor(total / 60);
   const m = total % 60;
-  if (h === 0) return `${m}m`;
-  return `${h}h ${m}m`;
+  if (h === 0) return t("timesheets.durationMinutes", { minutes: m });
+  return t("timesheets.durationHoursMinutes", { hours: h, minutes: m });
 }
 
-function fmtMoney(n: number): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+function money(n: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "USD" }).format(n);
 }
 
-function dayLabel(iso: string): string {
+function dayLabel(iso: string, t: TFunc, locale: string): string {
   const d = new Date(iso);
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Today";
-  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-  return d.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+  if (d.toDateString() === today.toDateString()) return t("timesheets.today");
+  if (d.toDateString() === yesterday.toDateString()) return t("timesheets.yesterday");
+  return d.toLocaleDateString(locale, { weekday: "long", month: "short", day: "numeric" });
 }
 
 function groupByDay(entries: TimeEntry[]): { day: string; entries: TimeEntry[] }[] {
@@ -62,13 +65,14 @@ function groupByDay(entries: TimeEntry[]): { day: string; entries: TimeEntry[] }
 
 function clientLabel(
   entry: TimeEntry,
-  clients: { id: string; first_name: string | null; last_name: string | null; company: string | null }[]
+  clients: { id: string; first_name: string | null; last_name: string | null; company: string | null }[],
+  t: TFunc
 ): string {
   const c = entry.clients
     ? entry.clients
     : clients.find((cl) => cl.id === entry.client_id);
-  if (!c) return "No client";
-  return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "Client";
+  if (!c) return t("timesheets.noClient");
+  return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || t("timesheets.clientFallback");
 }
 
 function projectLabel(entry: TimeEntry): string | null {
@@ -91,6 +95,7 @@ function AddEntryModal({
   onClose: () => void;
   onCreated: (entry: Partial<TimeEntry>) => void;
 }) {
+  const { t } = useTranslation("projects");
   const [description, setDescription] = useState("");
   const [clientId, setClientId]       = useState("");
   const [projectId, setProjectId]     = useState("");
@@ -105,8 +110,8 @@ function AddEntryModal({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const totalMins = parseInt(hours || "0") * 60 + parseInt(minutes || "0");
-    if (totalMins <= 0) { setError("Duration must be > 0"); return; }
-    if (!description.trim()) { setError("Description is required"); return; }
+    if (totalMins <= 0) { setError(t("timesheets.modal.durationRequired")); return; }
+    if (!description.trim()) { setError(t("timesheets.modal.descriptionRequired")); return; }
 
     startTransition(async () => {
       try {
@@ -134,7 +139,7 @@ function AddEntryModal({
         });
         onClose();
       } catch {
-        setError("Failed to save entry");
+        setError(t("timesheets.modal.saveFailed"));
       }
     });
   }
@@ -146,33 +151,33 @@ function AddEntryModal({
         onSubmit={submit}
         className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4"
       >
-        <h2 className="text-base font-semibold text-slate-800">Add time entry</h2>
+        <h2 className="text-base font-semibold text-slate-800">{t("timesheets.modal.title")}</h2>
 
         {error && (
-          <p className="text-xs text-rose-600 flex items-center gap-1">
+          <p className="text-xs text-rose-600 flex items-center gap-1" role="alert">
             <AlertCircle className="w-3.5 h-3.5" />{error}
           </p>
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Description *</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.description")}</label>
           <input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="What did you work on?"
+            placeholder={t("timesheets.modal.descriptionPlaceholder")}
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Client</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.client")}</label>
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
-              <option value="">No client</option>
+              <option value="">{t("timesheets.modal.noClient")}</option>
               {clients.map((c) => (
                 <option key={c.id} value={c.id}>
                   {[c.first_name, c.last_name].filter(Boolean).join(" ") || c.company}
@@ -181,13 +186,13 @@ function AddEntryModal({
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Project</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.project")}</label>
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
             >
-              <option value="">No project</option>
+              <option value="">{t("timesheets.modal.noProject")}</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
@@ -197,7 +202,7 @@ function AddEntryModal({
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.date")}</label>
             <input
               type="date"
               value={date}
@@ -206,7 +211,7 @@ function AddEntryModal({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Hours</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.hours")}</label>
             <input
               type="number"
               min="0"
@@ -217,7 +222,7 @@ function AddEntryModal({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Minutes</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("timesheets.modal.minutes")}</label>
             <input
               type="number"
               min="0"
@@ -237,7 +242,7 @@ function AddEntryModal({
               onChange={(e) => setBillable(e.target.checked)}
               className="rounded accent-indigo-600"
             />
-            <span className="text-sm text-slate-700">Billable</span>
+            <span className="text-sm text-slate-700">{t("timesheets.modal.billable")}</span>
           </label>
           {billable && (
             <div className="flex-1">
@@ -249,7 +254,7 @@ function AddEntryModal({
                   step="0.01"
                   value={hourlyRate}
                   onChange={(e) => setHourlyRate(e.target.value)}
-                  placeholder="Hourly rate"
+                  placeholder={t("timesheets.modal.hourlyRatePlaceholder")}
                   className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -263,14 +268,14 @@ function AddEntryModal({
             onClick={onClose}
             className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
           >
-            Cancel
+            {t("common:actions.cancel")}
           </button>
           <button
             type="submit"
             disabled={isPending}
             className="flex-1 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
           >
-            {isPending ? "Saving…" : "Add entry"}
+            {isPending ? t("common:status.saving") : t("timesheets.modal.submit")}
           </button>
         </div>
       </form>
@@ -295,6 +300,7 @@ function TimerBar({
   onTimerStopped: () => void;
   onTimerStarted: (id: string) => void;
 }) {
+  const { t } = useTranslation("projects");
   const [description, setDescription] = useState(activeTimer?.description ?? "");
   const [clientId, setClientId]       = useState(activeTimer?.client_id ?? "");
   const [projectId, setProjectId]     = useState(activeTimer?.project_id ?? "");
@@ -326,7 +332,7 @@ function TimerBar({
   function handleStart() {
     startTransition(async () => {
       const id = await startTimer({
-        description: description.trim() || "Working…",
+        description: description.trim() || t("timesheets.timerDefaultDescription"),
         clientId: clientId || null,
         projectId: projectId || null,
         billable: true,
@@ -363,7 +369,7 @@ function TimerBar({
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && !activeTimer) handleStart(); }}
-        placeholder="What are you working on?"
+        placeholder={t("timesheets.timerPlaceholder")}
         disabled={!!activeTimer}
         className="flex-1 text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none disabled:cursor-default"
       />
@@ -374,9 +380,10 @@ function TimerBar({
           value={projectId}
           onChange={(e) => setProjectId(e.target.value)}
           disabled={!!activeTimer}
+          aria-label={t("timesheets.modal.project")}
           className="appearance-none text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-7 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-default max-w-[120px]"
         >
-          <option value="">No project</option>
+          <option value="">{t("timesheets.noProject")}</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
@@ -390,9 +397,10 @@ function TimerBar({
           value={clientId}
           onChange={(e) => setClientId(e.target.value)}
           disabled={!!activeTimer}
+          aria-label={t("timesheets.modal.client")}
           className="appearance-none text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-7 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-default"
         >
-          <option value="">No client</option>
+          <option value="">{t("timesheets.noClient")}</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>
               {[c.first_name, c.last_name].filter(Boolean).join(" ") || c.company}
@@ -415,7 +423,7 @@ function TimerBar({
           onClick={handleStop}
           disabled={isPending}
           className="w-9 h-9 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-600 flex items-center justify-center transition-colors disabled:opacity-50"
-          title="Stop timer"
+          title={t("timesheets.stopTimer")}
         >
           <Square className="w-4 h-4 fill-rose-600" />
         </button>
@@ -424,7 +432,7 @@ function TimerBar({
           onClick={handleStart}
           disabled={isPending}
           className="w-9 h-9 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center transition-colors disabled:opacity-50"
-          title="Start timer"
+          title={t("timesheets.startTimer")}
         >
           <Play className="w-4 h-4 fill-white ml-0.5" />
         </button>
@@ -461,6 +469,8 @@ export function TimerClient({
   weekFrom,
   weekTo,
 }: Props) {
+  const { t, i18n } = useTranslation("projects");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [entries, setEntries] = useState<TimeEntry[]>(initialEntries);
   const [activeTimer, setActiveTimer] = useState<TimeEntry | null>(initialActiveTimer);
@@ -521,8 +531,11 @@ export function TimerClient({
 
   const weekLabel = (() => {
     const f = new Date(weekFrom + "T00:00:00");
-    const t = new Date(weekTo   + "T00:00:00");
-    return `${f.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${t.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+    const to = new Date(weekTo   + "T00:00:00");
+    return t("timesheets.weekRange", {
+      from: f.toLocaleDateString(locale, { month: "short", day: "numeric" }),
+      to: to.toLocaleDateString(locale, { month: "short", day: "numeric" }),
+    });
   })();
 
   return (
@@ -530,15 +543,15 @@ export function TimerClient({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Timesheets</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Track billable time and import to invoices</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("timesheets.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("timesheets.subtitle")}</p>
         </div>
         <button
           onClick={() => setShowAdd(true)}
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add entry
+          {t("timesheets.addEntry")}
         </button>
       </div>
 
@@ -558,31 +571,35 @@ export function TimerClient({
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
           {
-            label: "This week",
+            key: "week",
+            label: t("timesheets.thisWeek"),
             value: weekLabel,
             sub: "",
             icon: <Clock className="w-4 h-4 text-slate-400" />,
           },
           {
-            label: "Total hours",
-            value: fmtDuration(stats.totalMinutes),
-            sub: `${fmtDuration(stats.billableMinutes)} billable`,
+            key: "hours",
+            label: t("timesheets.totalHours"),
+            value: fmtDuration(stats.totalMinutes, t),
+            sub: t("timesheets.billableSub", { duration: fmtDuration(stats.billableMinutes, t) }),
             icon: <Clock className="w-4 h-4 text-indigo-400" />,
           },
           {
-            label: "Billable amount",
-            value: fmtMoney(stats.billableAmount),
-            sub: "at tracked rates",
+            key: "billable",
+            label: t("timesheets.billableAmount"),
+            value: money(stats.billableAmount, locale),
+            sub: t("timesheets.atTrackedRates"),
             icon: <DollarSign className="w-4 h-4 text-emerald-400" />,
           },
           {
-            label: "Uninvoiced",
-            value: fmtMoney(stats.uninvoicedAmount),
-            sub: stats.uninvoicedAmount > 0 ? "ready to invoice" : "all invoiced",
+            key: "uninvoiced",
+            label: t("timesheets.uninvoiced"),
+            value: money(stats.uninvoicedAmount, locale),
+            sub: stats.uninvoicedAmount > 0 ? t("timesheets.readyToInvoice") : t("timesheets.allInvoiced"),
             icon: <FileText className="w-4 h-4 text-amber-400" />,
           },
-        ].map(({ label, value, sub, icon }) => (
-          <div key={label} className="bg-white rounded-xl border border-slate-200 p-4">
+        ].map(({ key, label, value, sub, icon }) => (
+          <div key={key} className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
               {icon}
@@ -597,9 +614,9 @@ export function TimerClient({
       {grouped.length === 0 ? (
         <div className="bg-white rounded-xl border border-dashed border-slate-300 flex flex-col items-center justify-center py-16 text-center">
           <Clock className="w-10 h-10 text-slate-300 mb-3" />
-          <p className="text-sm font-medium text-slate-500 mb-1">No time entries this week</p>
+          <p className="text-sm font-medium text-slate-500 mb-1">{t("timesheets.empty")}</p>
           <p className="text-xs text-slate-400">
-            Hit the play button to start a timer, or add a manual entry.
+            {t("timesheets.emptyHint")}
           </p>
         </div>
       ) : (
@@ -611,10 +628,10 @@ export function TimerClient({
                 {/* Day header */}
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    {dayLabel(dayEntries[0].started_at)}
+                    {dayLabel(dayEntries[0].started_at, t, locale)}
                   </span>
                   <span className="text-xs text-slate-400 tabular-nums font-mono">
-                    {fmtDuration(dayMins)}
+                    {fmtDuration(dayMins, t)}
                   </span>
                 </div>
 
@@ -637,17 +654,17 @@ export function TimerClient({
                           className={`w-2 h-2 rounded-full flex-shrink-0 ${
                             entry.billable ? "bg-emerald-400" : "bg-slate-300"
                           }`}
-                          title={entry.billable ? "Billable" : "Non-billable"}
+                          title={entry.billable ? t("timesheets.billable") : t("timesheets.nonBillable")}
                         />
 
                         {/* Description + meta */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-slate-800 truncate">
-                            {entry.description || <span className="italic text-slate-400">No description</span>}
+                            {entry.description || <span className="italic text-slate-400">{t("timesheets.noDescription")}</span>}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <p className="text-xs text-slate-400 truncate">
-                              {entry.client_id ? clientLabel(entry, clients) : "No client"}
+                              {entry.client_id ? clientLabel(entry, clients, t) : t("timesheets.noClient")}
                             </p>
                             {projName && (
                               <>
@@ -664,20 +681,20 @@ export function TimerClient({
                         {/* Amount */}
                         {billableAmt !== null && (
                           <span className="text-xs font-medium text-emerald-700 tabular-nums flex-shrink-0">
-                            {fmtMoney(billableAmt)}
+                            {money(billableAmt, locale)}
                           </span>
                         )}
 
                         {/* Duration */}
                         <span className="text-sm font-mono text-slate-600 tabular-nums flex-shrink-0 w-14 text-right">
-                          {fmtDuration(entry.duration_minutes)}
+                          {fmtDuration(entry.duration_minutes, t)}
                         </span>
 
                         {/* Invoiced badge */}
                         {entry.invoiced && (
                           <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-0.5">
                             <Check className="w-2.5 h-2.5" />
-                            Invoiced
+                            {t("timesheets.invoiced")}
                           </span>
                         )}
 
@@ -686,7 +703,7 @@ export function TimerClient({
                           onClick={() => handleDelete(entry.id)}
                           disabled={deletingId === entry.id}
                           className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-rose-500 transition-all rounded-lg hover:bg-rose-50 flex-shrink-0 disabled:opacity-30"
-                          title="Delete entry"
+                          title={t("timesheets.deleteEntry")}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

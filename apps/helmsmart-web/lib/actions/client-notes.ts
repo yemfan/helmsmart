@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import {
   insertClientNote,
@@ -22,7 +23,10 @@ export async function addClientNote(
 ) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  // The notes panel renders `err.message` verbatim, so this string is copy the
+  // owner reads — not an internal code. Server actions run inside a request,
+  // so `getServerT` resolves their language here the same way a page does.
+  if (!orgId) throw new Error((await getServerT("clients"))("errors.unauthorized"));
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -34,7 +38,10 @@ export async function addClientNote(
 export async function deleteClientNote(noteId: string, clientId: string) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error("Not authenticated");
+  // The notes panel renders `err.message` verbatim, so this string is copy the
+  // owner reads — not an internal code. Server actions run inside a request,
+  // so `getServerT` resolves their language here the same way a page does.
+  if (!orgId) throw new Error((await getServerT("clients"))("errors.unauthorized"));
 
   const supabase = await createClient();
   await deleteClientNoteKnowledge(supabase, orgId, noteId);

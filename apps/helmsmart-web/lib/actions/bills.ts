@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { insertBill, recordBillPayment } from "@helm/dna-finance";
 import { checkActionPermission } from "@/components/role-guard";
+import { getServerT } from "@/lib/i18n/server";
 
 export type BillStatus = "open" | "paid";
 
@@ -60,10 +61,11 @@ export async function createBill(input: {
   dueDate: string;
   amount: number;
 }): Promise<void> {
+  const t = await getServerT("books");
   const denied = await checkActionPermission("books.write");
   if (denied) throw new Error(denied.error);
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
   const supabase = await createClient();
   await insertBill(supabase, orgId, input);
   revalidatePath("/books/bills");
@@ -78,8 +80,9 @@ export async function payBill(input: {
   bankAccountId: string;
   paymentDate: string;
 }): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
 
   const supabase = await createClient();
   await recordBillPayment(supabase, orgId, input);
@@ -93,8 +96,9 @@ export async function payBill(input: {
 }
 
 export async function deleteBill(id: string): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
   const supabase = await createClient();
 
   // Paid bills have a posted journal entry — don't allow silent deletion.
@@ -104,8 +108,8 @@ export async function deleteBill(id: string): Promise<void> {
     .eq("id", id)
     .eq("organization_id", orgId)
     .single();
-  if (!bill) throw new Error("Bill not found");
-  if (bill.status === "paid") throw new Error("Can't delete a paid bill — it has a posted journal entry");
+  if (!bill) throw new Error(t("bills.errors.notFound"));
+  if (bill.status === "paid") throw new Error(t("bills.errors.cantDeletePaid"));
 
   await supabase.from("bills").delete().eq("id", id).eq("organization_id", orgId);
   revalidatePath("/books/bills");

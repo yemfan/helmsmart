@@ -6,12 +6,20 @@ import { BooksNav } from "@/components/books-nav";
 import { PeriodSelect } from "@/components/period-select";
 import { TrendingUp, TrendingDown, Scale, DollarSign, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { moneyFormatter, dateFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Reports · Books" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("reports.financial.metaTitle") };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type AccountType = "asset" | "liability" | "equity" | "revenue" | "expense";
+
+type T = Awaited<ReturnType<typeof getServerT>>;
 
 interface AccountBalance {
   code: string;
@@ -68,24 +76,24 @@ async function getBalances(
   return Array.from(map.values()).filter((a) => a.balance !== 0);
 }
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(Math.abs(n));
-}
-
 // ─── Period helpers ───────────────────────────────────────────────────────────
 
-function getPeriod(period: string): { label: string; start: string; end: string } {
+/**
+ * `period` is a URL value the code reads; the label beside it is copy, so it
+ * comes out of the bundle (or out of a locale-aware month formatter).
+ */
+function getPeriod(
+  period: string,
+  t: T,
+  fmtMonth: (value: Date | string) => string,
+): { label: string; start: string; end: string } {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
 
   if (period === "ytd") {
     return {
-      label: `YTD ${y}`,
+      label: t("reports.financial.periodLabels.ytd", { year: y }),
       start: `${y}-01-01`,
       end: now.toISOString().slice(0, 10),
     };
@@ -94,21 +102,27 @@ function getPeriod(period: string): { label: string; start: string; end: string 
     const d = new Date(y, m - 1, 1);
     const last = new Date(y, m, 0);
     return {
-      label: d.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      label: fmtMonth(d),
       start: d.toISOString().slice(0, 10),
       end: last.toISOString().slice(0, 10),
     };
   }
-  if (period === "q1") return { label: `Q1 ${y}`, start: `${y}-01-01`, end: `${y}-03-31` };
-  if (period === "q2") return { label: `Q2 ${y}`, start: `${y}-04-01`, end: `${y}-06-30` };
-  if (period === "q3") return { label: `Q3 ${y}`, start: `${y}-07-01`, end: `${y}-09-30` };
-  if (period === "q4") return { label: `Q4 ${y}`, start: `${y}-10-01`, end: `${y}-12-31` };
+  if (period === "q1" || period === "q2" || period === "q3" || period === "q4") {
+    const spans: Record<string, [string, string]> = {
+      q1: [`${y}-01-01`, `${y}-03-31`],
+      q2: [`${y}-04-01`, `${y}-06-30`],
+      q3: [`${y}-07-01`, `${y}-09-30`],
+      q4: [`${y}-10-01`, `${y}-12-31`],
+    };
+    const [start, end] = spans[period];
+    return { label: t(`reports.financial.periodLabels.${period}`, { year: y }), start, end };
+  }
 
   // Default: current month
   const first = new Date(y, m, 1);
   const last  = new Date(y, m + 1, 0);
   return {
-    label: first.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+    label: fmtMonth(first),
     start: first.toISOString().slice(0, 10),
     end:   last.toISOString().slice(0, 10),
   };
@@ -122,18 +136,22 @@ function SectionTable({
   total,
   totalLabel,
   positive,
+  t,
+  fmt,
 }: {
   title: string;
   rows: AccountBalance[];
   total: number;
   totalLabel: string;
   positive: boolean;
+  t: T;
+  fmt: (value: number) => string;
 }) {
   if (!rows.length) {
     return (
       <div className="mb-4">
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{title}</h3>
-        <p className="text-xs text-slate-400 italic pl-2">No activity this period</p>
+        <p className="text-xs text-slate-400 italic pl-2">{t("reports.financial.noActivity")}</p>
       </div>
     );
   }
@@ -175,13 +193,21 @@ export default async function ReportsPage({
 }: {
   searchParams: Promise<{ period?: string }>;
 }) {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
   const params = await searchParams;
   const period = params.period ?? "current_month";
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const currency = await orgCurrency(orgId);
 
-  const { label, start, end } = getPeriod(period);
+  const fmtRaw = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
+  const fmt = (n: number) => fmtRaw(Math.abs(n));
+  const fmtMonth = dateFormatter(locale, { month: "long", year: "numeric" });
+  const fmtDay = dateFormatter(locale, { year: "numeric", month: "short", day: "numeric" });
+
+  const { label, start, end } = getPeriod(period, t, fmtMonth);
   const balances = await getBalances(orgId, start, end);
 
   const byType = (type: AccountType) => balances.filter((b) => b.type === type);
@@ -202,29 +228,31 @@ export default async function ReportsPage({
   const totalEquity = equity.reduce((s, b) => s + b.balance, 0) + netIncome; // retained earnings
   const balanced    = Math.abs(totalAssets - (totalLiab + totalEquity)) < 0.01;
 
-  const PERIODS = [
-    { value: "current_month", label: "This month" },
-    { value: "last_month",    label: "Last month" },
-    { value: "ytd",           label: "Year-to-date" },
-    { value: "q1",            label: "Q1" },
-    { value: "q2",            label: "Q2" },
-    { value: "q3",            label: "Q3" },
-    { value: "q4",            label: "Q4" },
-  ];
+  // `value` is the URL query value the page reads back; only the label is copy.
+  const PERIODS = ["current_month", "last_month", "ytd", "q1", "q2", "q3", "q4"].map((value) => ({
+    value,
+    label: t(`reports.financial.periods.${value}`),
+  }));
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <PageTitle base="Books" />
-          <p className="text-sm text-slate-500 mt-0.5">AI-powered bookkeeping — cash basis, double-entry</p>
+          <p className="text-sm text-slate-500 mt-0.5">{t("reports.financial.subtitle")}</p>
         </div>
         <PeriodSelect options={PERIODS} value={period} />
       </div>
 
       <BooksNav />
 
-      <p className="text-xs text-slate-400 mb-6">Period: {label} &nbsp;·&nbsp; {start} → {end}</p>
+      <p className="text-xs text-slate-400 mb-6">
+        {t("reports.financial.periodLine", {
+          label,
+          start: fmtDay(start),
+          end: fmtDay(end),
+        })}
+      </p>
 
       {/* Quick links to aging */}
       <div className="flex gap-3 mb-6">
@@ -233,7 +261,7 @@ export default async function ReportsPage({
           className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-indigo-300 transition-colors"
         >
           <Clock className="w-4 h-4 text-rose-500" />
-          AR / AP Aging Report
+          {t("reports.financial.agingLink")}
           <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
         </Link>
       </div>
@@ -242,31 +270,41 @@ export default async function ReportsPage({
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Revenue</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              {t("reports.financial.cards.revenue")}
+            </span>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-2xl font-semibold text-emerald-700 font-mono">{fmt(totalRev)}</div>
-          <div className="text-xs text-slate-400 mt-0.5">{revenues.length} account{revenues.length !== 1 ? "s" : ""}</div>
+          <div className="text-xs text-slate-400 mt-0.5">
+            {t("reports.financial.cards.accounts", { count: revenues.length })}
+          </div>
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Expenses</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              {t("reports.financial.cards.expenses")}
+            </span>
             <TrendingDown className="w-4 h-4 text-rose-500" />
           </div>
           <div className="text-2xl font-semibold text-rose-700 font-mono">{fmt(totalExp)}</div>
-          <div className="text-xs text-slate-400 mt-0.5">{expenses.length} account{expenses.length !== 1 ? "s" : ""}</div>
+          <div className="text-xs text-slate-400 mt-0.5">
+            {t("reports.financial.cards.accounts", { count: expenses.length })}
+          </div>
         </div>
 
         <div className={`rounded-xl border p-5 ${netIncome >= 0 ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Net Income</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              {t("reports.financial.cards.netIncome")}
+            </span>
             <DollarSign className={`w-4 h-4 ${netIncome >= 0 ? "text-emerald-500" : "text-rose-500"}`} />
           </div>
           <div className={`text-2xl font-semibold font-mono ${netIncome >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
             {netIncome < 0 ? "–" : ""}{fmt(netIncome)}
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">Revenue − Expenses</div>
+          <div className="text-xs text-slate-400 mt-0.5">{t("reports.financial.cards.netIncomeFormula")}</div>
         </div>
       </div>
 
@@ -277,28 +315,34 @@ export default async function ReportsPage({
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <div className="flex items-center gap-2 mb-5">
             <TrendingUp className="w-4 h-4 text-indigo-500" />
-            <h2 className="text-sm font-semibold text-slate-800">Profit & Loss</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("reports.financial.pnl.title")}</h2>
           </div>
 
           <SectionTable
-            title="Revenue"
+            title={t("reports.financial.pnl.revenue")}
             rows={revenues}
             total={totalRev}
-            totalLabel="Total Revenue"
+            totalLabel={t("reports.financial.pnl.totalRevenue")}
             positive={true}
+            t={t}
+            fmt={fmt}
           />
           <SectionTable
-            title="Expenses"
+            title={t("reports.financial.pnl.expenses")}
             rows={expenses}
             total={totalExp}
-            totalLabel="Total Expenses"
+            totalLabel={t("reports.financial.pnl.totalExpenses")}
             positive={false}
+            t={t}
+            fmt={fmt}
           />
 
           <div className={`flex items-center gap-4 px-3 py-3 rounded-lg mt-2 ${
             netIncome >= 0 ? "bg-emerald-50" : "bg-rose-50"
           }`}>
-            <span className="flex-1 text-sm font-bold text-slate-700">Net Income</span>
+            <span className="flex-1 text-sm font-bold text-slate-700">
+              {t("reports.financial.pnl.netIncome")}
+            </span>
             <span className={`text-sm font-bold tabular-nums ${netIncome >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
               {netIncome < 0 ? "–" : ""}{fmt(netIncome)}
             </span>
@@ -309,43 +353,57 @@ export default async function ReportsPage({
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <div className="flex items-center gap-2 mb-5">
             <Scale className="w-4 h-4 text-indigo-500" />
-            <h2 className="text-sm font-semibold text-slate-800">Balance Sheet</h2>
+            <h2 className="text-sm font-semibold text-slate-800">
+              {t("reports.financial.balanceSheet.title")}
+            </h2>
             {!balanced && balances.length > 0 && (
               <span className="ml-auto text-xs text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
-                ⚠ Out of balance
+                {t("reports.financial.balanceSheet.outOfBalance")}
               </span>
             )}
           </div>
 
           <SectionTable
-            title="Assets"
+            title={t("reports.financial.balanceSheet.assets")}
             rows={assets}
             total={totalAssets}
-            totalLabel="Total Assets"
+            totalLabel={t("reports.financial.balanceSheet.totalAssets")}
             positive={true}
+            t={t}
+            fmt={fmt}
           />
           <SectionTable
-            title="Liabilities"
+            title={t("reports.financial.balanceSheet.liabilities")}
             rows={liabilities}
             total={totalLiab}
-            totalLabel="Total Liabilities"
+            totalLabel={t("reports.financial.balanceSheet.totalLiabilities")}
             positive={false}
+            t={t}
+            fmt={fmt}
           />
           <SectionTable
-            title="Equity"
+            title={t("reports.financial.balanceSheet.equity")}
             rows={equity}
             total={totalEquity}
-            totalLabel="Total Equity (incl. Net Income)"
+            totalLabel={t("reports.financial.balanceSheet.totalEquity")}
             positive={true}
+            t={t}
+            fmt={fmt}
           />
 
           {balances.length > 0 && (
             <div className={`flex items-center gap-4 px-3 py-3 rounded-lg mt-2 ${
               balanced ? "bg-slate-50" : "bg-amber-50"
             }`}>
-              <span className="flex-1 text-xs font-semibold text-slate-500">Assets = Liabilities + Equity</span>
+              <span className="flex-1 text-xs font-semibold text-slate-500">
+                {t("reports.financial.balanceSheet.equation")}
+              </span>
               <span className={`text-xs font-bold ${balanced ? "text-slate-600" : "text-amber-700"}`}>
-                {balanced ? "✓ Balanced" : `Δ ${fmt(Math.abs(totalAssets - totalLiab - totalEquity))}`}
+                {balanced
+                  ? t("reports.financial.balanceSheet.balanced")
+                  : t("reports.financial.balanceSheet.outBy", {
+                      amount: fmt(Math.abs(totalAssets - totalLiab - totalEquity)),
+                    })}
               </span>
             </div>
           )}
@@ -353,7 +411,7 @@ export default async function ReportsPage({
           {!balances.length && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Scale className="w-8 h-8 text-slate-200 mb-2" />
-              <p className="text-xs text-slate-400">No journal entries for this period</p>
+              <p className="text-xs text-slate-400">{t("reports.financial.balanceSheet.empty")}</p>
             </div>
           )}
         </div>

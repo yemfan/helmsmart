@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarPicker } from "@helm/ui";
 import { setEmployeeAvatarAction } from "@/lib/actions/workforce";
 
@@ -18,6 +19,7 @@ export function EmployeeAvatarPicker({
   name: string;
   value: string;
 }) {
+  const { t } = useTranslation("home");
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(value);
   const [pending, start] = useTransition();
@@ -38,7 +40,7 @@ export function EmployeeAvatarPicker({
         type="button"
         onClick={() => setOpen((o) => !o)}
         disabled={pending}
-        title={`Change ${name}'s avatar`}
+        title={t("commandCenter.avatar.change", { name })}
         className="rounded-full ring-2 ring-transparent hover:ring-slate-200 transition disabled:opacity-60"
       >
         <Avatar id={current} size={40} alt={name} />
@@ -49,7 +51,7 @@ export function EmployeeAvatarPicker({
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute z-50 mt-2 left-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
             <p className="text-xs font-semibold text-slate-700 mb-3">
-              Choose an avatar for {name}
+              {t("commandCenter.avatar.choose", { name })}
             </p>
             <AvatarPicker value={current} onSelect={choose} size={48} disabled={pending} />
           </div>

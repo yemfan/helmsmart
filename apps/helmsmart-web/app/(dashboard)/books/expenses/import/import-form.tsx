@@ -2,7 +2,22 @@
 
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { moneyFormatter } from "@/lib/books-format";
+
+/**
+ * Why the row error is a KEY, not a sentence.
+ *
+ * `parseRows` runs at module scope, outside any component, so it has no `t`.
+ * It records WHICH rule the row broke; the table translates that at render.
+ */
+type RowErrorKey =
+  | "dateRequired"
+  | "amountRequired"
+  | "amountNotNumber"
+  | "amountNotPositive"
+  | "descriptionRequired";
 
 interface ParsedRow {
   date: string;
@@ -10,7 +25,7 @@ interface ParsedRow {
   description: string;
   category: string;
   _valid: boolean;
-  _error?: string;
+  _errorKey?: RowErrorKey;
 }
 
 // ─── CSV parser (no external deps) ───────────────────────────────────────────
@@ -46,7 +61,8 @@ function parseRows(text: string): ParsedRow[] {
   const lines = parseCsv(text);
   if (lines.length < 2) return [];
 
-  // Normalise header names
+  // Normalise header names. These are COLUMN NAMES the parser matches on —
+  // spreadsheet input, never copy, so they stay in the source in English.
   const headers = lines[0].map((h) => h.toLowerCase().trim().replace(/\s+/g, "_"));
 
   const col = (row: string[], name: string) => {
@@ -67,18 +83,23 @@ function parseRows(text: string): ParsedRow[] {
       description,
       category,
       _valid: valid,
-      _error: valid ? undefined :
-        !date ? "date is required (YYYY-MM-DD)" :
-        !amount ? "amount is required" :
-        isNaN(parseFloat(amount)) ? "amount must be a number" :
-        parseFloat(amount) <= 0 ? "amount must be positive" :
-        "description is required",
+      _errorKey: valid ? undefined :
+        !date ? "dateRequired" as const :
+        !amount ? "amountRequired" as const :
+        isNaN(parseFloat(amount)) ? "amountNotNumber" as const :
+        parseFloat(amount) <= 0 ? "amountNotPositive" as const :
+        "descriptionRequired" as const,
     };
   });
 }
 
 // ─── Template download ────────────────────────────────────────────────────────
 
+/**
+ * The template is PARSER INPUT, not copy: the header row is what `parseRows`
+ * matches on and the `category` column has to hold the English account hints
+ * `findBestAccount` looks up, so the file stays English in every locale.
+ */
 function downloadTemplate() {
   const csv = `date,amount,description,category
 2025-06-01,85.50,Office supplies at Staples,Office Supplies
@@ -96,8 +117,13 @@ function downloadTemplate() {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function ImportForm() {
+const PREVIEW_LIMIT = 50;
+const COLUMNS = ["date", "amount", "description", "category"] as const;
+
+export function ImportForm({ currency = "USD" }: { currency?: string }) {
   const router = useRouter();
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows]         = useState<ParsedRow[]>([]);
   const [fileName, setFileName] = useState("");
@@ -121,12 +147,12 @@ export function ImportForm() {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && (file.name.endsWith(".csv") || file.type === "text/csv")) handleFile(file);
-    else setError("Please upload a .csv file");
+    else setError(t("expenses.import.csv.notCsv"));
   }
 
   function handleImport() {
     const valid = rows.filter((r) => r._valid);
-    if (valid.length === 0) { setError("No valid rows to import"); return; }
+    if (valid.length === 0) { setError(t("expenses.import.csv.noValidRows")); return; }
     setError("");
     start(async () => {
       try {
@@ -136,13 +162,13 @@ export function ImportForm() {
           body: JSON.stringify({ rows: valid }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Import failed");
+        if (!res.ok) throw new Error(data.error ?? t("expenses.import.failed"));
         setResult({ inserted: data.inserted, failed: data.failed });
         if (data.inserted > 0) {
           setTimeout(() => router.push("/books/expenses"), 1500);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Import failed");
+        setError(err instanceof Error ? err.message : t("expenses.import.failed"));
       }
     });
   }
@@ -150,23 +176,34 @@ export function ImportForm() {
   const validCount   = rows.filter((r) => r._valid).length;
   const invalidCount = rows.filter((r) => !r._valid).length;
 
+  // Each clause is a whole sentence of its own, joined by a separator — never
+  // a sentence assembled out of halves.
+  const resultLine = result
+    ? [
+        t("expenses.import.csv.imported", { count: result.inserted }),
+        ...(result.failed > 0 ? [t("expenses.import.failedCount", { count: result.failed })] : []),
+      ].join(" · ")
+    : "";
+
   return (
     <div className="space-y-6">
       {/* Instructions + template */}
       <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 flex items-start gap-4">
         <FileSpreadsheet className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-indigo-800 mb-1">CSV format</p>
+          <p className="text-sm font-medium text-indigo-800 mb-1">{t("expenses.import.csv.formatTitle")}</p>
           <p className="text-xs text-indigo-700 leading-relaxed">
-            Required: <code className="bg-indigo-100 px-1 rounded">date</code> (YYYY-MM-DD), <code className="bg-indigo-100 px-1 rounded">amount</code>, <code className="bg-indigo-100 px-1 rounded">description</code>.
-            Optional: <code className="bg-indigo-100 px-1 rounded">category</code> (e.g., "Meals & Entertainment" — auto-matched to your Chart of Accounts).
+            {t("expenses.import.csv.formatRequired")}
+          </p>
+          <p className="text-xs text-indigo-700 leading-relaxed">
+            {t("expenses.import.csv.formatOptional")}
           </p>
         </div>
         <button
           onClick={downloadTemplate}
           className="text-xs font-medium text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap"
         >
-          Download template
+          {t("expenses.import.csv.downloadTemplate")}
         </button>
       </div>
 
@@ -189,8 +226,8 @@ export function ImportForm() {
           <p className="text-sm font-medium text-slate-700">{fileName}</p>
         ) : (
           <>
-            <p className="text-sm font-medium text-slate-600">Drop your CSV here, or click to browse</p>
-            <p className="text-xs text-slate-400 mt-1">CSV files only · Supports exports from Quicken, QuickBooks, and bank statements</p>
+            <p className="text-sm font-medium text-slate-600">{t("expenses.import.csv.dropZone")}</p>
+            <p className="text-xs text-slate-400 mt-1">{t("expenses.import.csv.dropZoneHint")}</p>
           </>
         )}
       </div>
@@ -200,17 +237,21 @@ export function ImportForm() {
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold text-slate-800">Preview</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("expenses.import.csv.preview")}</h2>
               <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                {validCount} valid
+                {t("expenses.import.csv.validCount", { count: validCount })}
               </span>
               {invalidCount > 0 && (
                 <span className="text-xs text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full font-medium">
-                  {invalidCount} will skip
+                  {t("expenses.import.csv.skipCount", { count: invalidCount })}
                 </span>
               )}
             </div>
-            <button onClick={() => { setRows([]); setFileName(""); }} className="text-slate-400 hover:text-slate-600">
+            <button
+              onClick={() => { setRows([]); setFileName(""); }}
+              className="text-slate-400 hover:text-slate-600"
+              aria-label={t("expenses.import.clear")}
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -219,23 +260,30 @@ export function ImportForm() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
-                  {["", "Date", "Amount", "Description", "Category"].map((h) => (
-                    <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap" />
+                  {COLUMNS.map((c) => (
+                    <th key={c} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
+                      {t(`expenses.import.csv.columns.${c}`)}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {rows.slice(0, 50).map((row, i) => (
+                {rows.slice(0, PREVIEW_LIMIT).map((row, i) => (
                   <tr key={i} className={row._valid ? "" : "bg-rose-50/40"}>
                     <td className="px-3 py-2">
                       {row._valid
                         ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        : <span title={row._error}><AlertCircle className="w-3.5 h-3.5 text-rose-500" /></span>
+                        : (
+                          <span title={row._errorKey ? t(`expenses.import.csv.rowErrors.${row._errorKey}`) : undefined}>
+                            <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                          </span>
+                        )
                       }
                     </td>
                     <td className="px-3 py-2 text-slate-800 font-medium">{row.date || <span className="text-slate-300">—</span>}</td>
                     <td className="px-3 py-2 text-slate-800 font-medium">
-                      ${parseFloat(row.amount || "0").toFixed(2)}
+                      {fmt(parseFloat(row.amount || "0"))}
                     </td>
                     <td className="px-3 py-2 text-slate-600">{row.description || <span className="text-slate-300">—</span>}</td>
                     <td className="px-3 py-2 text-slate-600">{row.category || <span className="text-slate-300">—</span>}</td>
@@ -243,9 +291,9 @@ export function ImportForm() {
                 ))}
               </tbody>
             </table>
-            {rows.length > 50 && (
+            {rows.length > PREVIEW_LIMIT && (
               <p className="text-xs text-slate-400 text-center py-3">
-                Showing first 50 of {rows.length} rows
+                {t("expenses.import.csv.showingFirst", { shown: PREVIEW_LIMIT, total: rows.length })}
               </p>
             )}
           </div>
@@ -258,16 +306,15 @@ export function ImportForm() {
           <CheckCircle2 className={`w-5 h-5 flex-shrink-0 ${result.failed === 0 ? "text-emerald-500" : "text-amber-500"}`} />
           <div>
             <p className={`text-sm font-semibold ${result.failed === 0 ? "text-emerald-800" : "text-amber-800"}`}>
-              Imported {result.inserted} expense{result.inserted !== 1 ? "s" : ""}
-              {result.failed > 0 && ` · ${result.failed} failed`}
+              {resultLine}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">Redirecting to Expenses…</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t("expenses.import.redirecting")}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3">{error}</p>
+        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-3" role="alert">{error}</p>
       )}
 
       {/* Actions */}
@@ -278,14 +325,16 @@ export function ImportForm() {
             disabled={pending}
             className="flex-1 py-3 text-sm font-medium border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-60 transition-colors"
           >
-            Clear
+            {t("expenses.import.clear")}
           </button>
           <button
             onClick={handleImport}
             disabled={pending || validCount === 0}
             className="flex-1 py-3 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
           >
-            {pending ? `Importing ${validCount} expenses…` : `Import ${validCount} expense${validCount !== 1 ? "s" : ""}`}
+            {pending
+              ? t("expenses.import.csv.importing", { count: validCount })
+              : t("expenses.import.csv.importAction", { count: validCount })}
           </button>
         </div>
       )}

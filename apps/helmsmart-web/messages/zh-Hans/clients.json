@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "listTitle": "客户",
+    "detailTitle": "客户",
+    "importTitle": "导入客户",
+    "statementTitle": "客户对账单"
+  },
+  "statuses": {
+    "all": "全部",
+    "lead": "线索",
+    "prospect": "意向客户",
+    "active": "活跃",
+    "inactive": "不活跃",
+    "archived": "已归档"
+  },
+  "invoiceStatus": {
+    "draft": "草稿",
+    "sent": "已发送",
+    "paid": "已付款",
+    "overdue": "已逾期",
+    "void": "已作废"
+  },
+  "estimateStatus": {
+    "draft": "草稿",
+    "sent": "已发送",
+    "accepted": "已接受",
+    "declined": "已谢绝",
+    "expired": "已过期"
+  },
+  "projectStatus": {
+    "active": "进行中",
+    "paused": "已暂停",
+    "completed": "已完成",
+    "cancelled": "已取消"
+  },
+  "messageDirection": {
+    "inbound": "收到",
+    "outbound": "发出"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minutesAgo": "{{n}} 分钟前",
+    "hoursAgo": "{{n}} 小时前",
+    "daysAgo": "{{n}} 天前"
+  },
+  "list": {
+    "summary": "活跃 {{active}} 位 · 线索 {{leads}} 位 · 意向客户 {{prospects}} 位",
+    "import": "导入",
+    "export": "导出",
+    "searchPlaceholder": "搜索客户…",
+    "tags": "标签",
+    "clearTag": "清除",
+    "columns": {
+      "name": "姓名",
+      "contact": "联系方式",
+      "status": "状态",
+      "lifetime": "累计消费"
+    },
+    "empty": {
+      "titleFiltered": "没有符合筛选条件的客户",
+      "hintFiltered": "试试放宽搜索或筛选条件。",
+      "title": "还没有客户",
+      "hint": "添加第一位客户，开始记录线索、联系人和收入。"
+    }
+  },
+  "detail": {
+    "fallbackName": "客户",
+    "details": "资料",
+    "created": "创建于 {{date}}",
+    "source": "来源：{{source}}",
+    "actions": {
+      "sendEmail": "发送邮件",
+      "statement": "对账单",
+      "addExpense": "添加支出",
+      "newInvoice": "新建发票",
+      "portalLink": "客户门户链接",
+      "portalLinkTitle": "复制客户门户链接",
+      "editTitle": "编辑客户",
+      "new": "+ 新建",
+      "viewAllTasks": "查看全部 →",
+      "openInbox": "打开收件箱 →",
+      "edit": "编辑",
+      "copied": "已复制！"
+    },
+    "stats": {
+      "lifetimeValue": "累计消费",
+      "outstanding": "未结款项",
+      "invoices": "发票数"
+    },
+    "profitability": {
+      "title": "盈利情况",
+      "margin": "利润率 {{pct}}%",
+      "revenue": "收入",
+      "labor": "人工成本",
+      "expenses": "支出",
+      "profit": "利润",
+      "note": "收入 = 向该客户开出的全部发票；成本 = 该客户项目上记录的人工与支出。"
+    },
+    "invoices": {
+      "title": "发票",
+      "empty": "还没有发票"
+    },
+    "estimates": {
+      "title": "报价单",
+      "empty": "还没有报价单"
+    },
+    "projects": {
+      "title": "项目",
+      "empty": "还没有项目"
+    },
+    "tasks": {
+      "title": "待办任务",
+      "empty": "没有待办任务",
+      "overduePrefix": "已逾期 · "
+    },
+    "messages": {
+      "title": "消息",
+      "empty": "还没有消息"
+    }
+  },
+  "form": {
+    "addTitle": "添加客户",
+    "editTitle": "编辑客户",
+    "addButton": "添加客户",
+    "openAddButton": "添加客户",
+    "saveChanges": "保存更改",
+    "saved": "已保存！",
+    "firstName": "名",
+    "lastName": "姓",
+    "company": "公司",
+    "email": "邮箱",
+    "phone": "电话",
+    "status": "状态",
+    "source": "来源",
+    "tags": "标签",
+    "tagsHint": "（用逗号分隔）",
+    "tagsLabel": "标签（用逗号分隔）",
+    "notes": "备注",
+    "statusOptions": {
+      "lead": "线索",
+      "prospect": "意向客户",
+      "active": "活跃客户",
+      "inactive": "不活跃",
+      "archived": "已归档"
+    },
+    "placeholders": {
+      "firstName": "小明",
+      "lastName": "张",
+      "company": "示例公司",
+      "email": "xiaoming@example.com",
+      "phone": "+1 (555) 000-0000",
+      "source": "转介绍、网站…",
+      "tags": "vip、长期合作、回头客",
+      "tagsShort": "vip、长期合作…",
+      "notes": "补充说明…",
+      "notesShort": "关于该客户的任何背景…"
+    },
+    "cancel": "取消"
+  },
+  "notes": {
+    "title": "备注与动态",
+    "placeholder": "记录一通电话、写下一个跟进事项…（⌘↵ 保存）",
+    "add": "添加备注",
+    "empty": "还没有备注",
+    "kinds": {
+      "note": "备注",
+      "call": "电话",
+      "meeting": "会面",
+      "email": "邮件",
+      "follow_up": "跟进"
+    },
+    "errors": {
+      "empty": "备注内容不能为空。",
+      "saveFailed": "备注保存失败，请重试。"
+    }
+  },
+  "timeline": {
+    "title": "沟通记录",
+    "entries_one": "{{count}} 条记录",
+    "entries_other": "{{count}} 条记录",
+    "all": "全部",
+    "addNote": "添加备注",
+    "notePlaceholder": "写一条关于该客户的备注…",
+    "saveNote": "保存备注",
+    "empty": "还没有沟通记录",
+    "emptyFiltered": "还没有{{type}}记录",
+    "received": "← 收到",
+    "sent": "→ 发出",
+    "duration": "{{minutes}} 分 {{seconds}} 秒",
+    "aiBadge": "AI",
+    "types": {
+      "call": "电话",
+      "sms": "短信",
+      "email": "邮件",
+      "note": "备注",
+      "appointment": "预约",
+      "other": "其他"
+    },
+    "sentiment": {
+      "positive": "正面",
+      "neutral": "中性",
+      "negative": "负面"
+    }
+  },
+  "preferences": {
+    "title": "沟通偏好",
+    "saved": "已保存！",
+    "optOuts": {
+      "title": "退订设置",
+      "sms": {
+        "label": "短信",
+        "description": "不再接收短信"
+      },
+      "email": {
+        "label": "邮件",
+        "description": "不再接收邮件"
+      },
+      "calls": {
+        "label": "电话",
+        "description": "不再接听来电"
+      }
+    },
+    "contact": {
+      "title": "联系偏好",
+      "method": "首选联系方式",
+      "methods": {
+        "any": "不限方式",
+        "sms": "仅短信",
+        "email": "仅邮件",
+        "call": "仅电话"
+      },
+      "bestTime": "方便联系的时间",
+      "times": {
+        "none": "没有特别要求",
+        "morning": "上午（6:00 - 12:00）",
+        "afternoon": "下午（12:00 - 18:00）",
+        "evening": "晚上（18:00 - 22:00）",
+        "weekdays": "仅工作日",
+        "weekends": "仅周末"
+      },
+      "notes": "补充说明",
+      "notesPlaceholder": "例如：“下午 5 点后发邮件”“周一不要来电”"
+    }
+  },
+  "brief": {
+    "title": "AI 客户简报",
+    "stale": "建议刷新",
+    "refresh": "刷新简报",
+    "generateTitle": "生成简报",
+    "intro": "用 AI 生成一份该客户的关系、往来记录与建议下一步的摘要。",
+    "generate": "生成简报",
+    "loading": "正在分析客户数据…",
+    "health": "{{label}}（{{score}}/10）",
+    "nextAction": "建议的下一步",
+    "generatedAt": "生成于 {{date}}",
+    "noHeadline": "未生成结论"
+  },
+  "import": {
+    "title": "导入客户",
+    "subtitle": "上传 CSV 文件，一次添加多位客户",
+    "back": "客户",
+    "ai": {
+      "title": "用 AI 添加",
+      "hint": "粘贴一份名单、一段邮件签名，或任何带姓名和邮箱的内容，也可以拍一张名片。我们会把联系人整理出来，导入前由您复核。",
+      "placeholder": "在这里粘贴联系人…",
+      "uploadPhoto": "上传照片",
+      "extract": "用 AI 提取",
+      "fileLabel_one": "AI · {{count}} 位联系人",
+      "fileLabel_other": "AI · {{count}} 位联系人"
+    },
+    "csv": {
+      "title": "CSV 格式",
+      "required": "必填：",
+      "or": "或",
+      "optional": "选填：",
+      "statusValues": "（lead/prospect/active/inactive）",
+      "tagsHint": "（用逗号分隔）",
+      "downloadTemplate": "下载模板"
+    },
+    "drop": {
+      "hint": "把 CSV 文件拖到这里，或点击选择文件",
+      "limits": "仅支持 CSV 文件 · 最多 5,000 行"
+    },
+    "preview": {
+      "title": "预览",
+      "valid": "{{n}} 行有效",
+      "willSkip": "{{n}} 行将跳过",
+      "showing": "共 {{n}} 行，显示前 50 行",
+      "rowError": "必须填写名或公司",
+      "columns": {
+        "firstName": "名",
+        "lastName": "姓",
+        "company": "公司",
+        "email": "邮箱",
+        "phone": "电话",
+        "status": "状态",
+        "tags": "标签"
+      }
+    },
+    "result": {
+      "imported_one": "已导入 {{count}} 位客户",
+      "imported_other": "已导入 {{count}} 位客户",
+      "failedSuffix": " · {{n}} 条失败",
+      "redirecting": "正在返回客户列表…"
+    },
+    "actions": {
+      "clear": "清空",
+      "import_one": "导入 {{count}} 位客户",
+      "import_other": "导入 {{count}} 位客户",
+      "importing_one": "正在导入 {{count}} 位客户…",
+      "importing_other": "正在导入 {{count}} 位客户…"
+    },
+    "errors": {
+      "csvOnly": "请上传 .csv 文件。",
+      "noValidRows": "没有可导入的有效行。",
+      "importFailed": "导入失败，请重试。",
+      "noContacts": "没有从这段内容中找到联系人。",
+      "extractFailed": "无法从这段内容中读取联系人。"
+    }
+  },
+  "statement": {
+    "label": "对账单",
+    "title": "客户对账单",
+    "documentTitle": "对账单 — {{name}}",
+    "asOf": "截至 {{date}}",
+    "back": "← 返回客户",
+    "print": "打印 / 存为 PDF",
+    "statementFor": "对账客户",
+    "balanceDue": "应付余额",
+    "totalBilled": "开票合计",
+    "totalPaid": "已付合计",
+    "empty": "该客户名下没有发票记录。",
+    "columns": {
+      "date": "日期",
+      "invoice": "发票号",
+      "due": "到期日",
+      "status": "状态",
+      "amount": "金额"
+    },
+    "footer": "{{org}} · {{name}} 的对账单 · 生成于 {{date}}"
+  },
+  "errors": {
+    "unauthorized": "登录已失效，请重新登录。",
+    "noOrganization": "未找到所属组织。",
+    "firstNameRequired": "请填写名字。",
+    "missingClientId": "缺少客户 ID。",
+    "createFailed": "创建客户失败，请重试。",
+    "updateFailed": "更新客户失败，请重试。",
+    "deleteFailed": "删除客户失败，请重试。",
+    "logFailed": "记录这条沟通失败，请重试。",
+    "preferencesFailed": "沟通偏好保存失败，请重试。",
+    "aiNotConfigured": "尚未配置 AI。",
+    "clientNotFound": "该客户已不存在。",
+    "briefFailed": "生成简报失败，请重试。",
+    "briefParseFailed": "无法解析 AI 返回的内容，请重试。",
+    "briefSaveFailed": "简报保存失败，请重试。",
+    "importInvalidBody": "无法读取这次导入的请求内容。",
+    "extractUnsupportedImage": "不支持的图片格式，请使用 JPEG、PNG 或 WebP。",
+    "extractImageTooLarge": "图片需小于 10 MB。",
+    "extractNoInput": "请粘贴文字或上传图片。",
+    "extractReadFailed": "无法读取输入内容。",
+    "extractParseFailed": "无法从这段内容中读取联系人。",
+    "extractFailed": "提取失败，请重试。"
+  }
+}

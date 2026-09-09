@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, X, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Status = "lead" | "prospect" | "active" | "inactive";
 
@@ -16,7 +17,6 @@ interface ParsedRow {
   tags: string;
   notes: string;
   _valid: boolean;
-  _error?: string;
 }
 
 // ─── CSV parser (no external deps) ───────────────────────────────────────────
@@ -77,7 +77,6 @@ function parseRows(text: string): ParsedRow[] {
       tags:       col(row, "tags"),
       notes:      col(row, "notes"),
       _valid:     valid,
-      _error:     valid ? undefined : "first_name or company required",
     };
   });
 }
@@ -105,7 +104,6 @@ function toRow(c: ExtractedContact): ParsedRow {
     tags: "",
     notes: c.notes,
     _valid: valid,
-    _error: valid ? undefined : "first_name or company required",
   };
 }
 
@@ -130,6 +128,7 @@ Bob,Jones,,bob@example.com,,lead,,Met at conference
 
 export function ImportForm() {
   const router = useRouter();
+  const { t } = useTranslation("clients");
   const fileRef = useRef<HTMLInputElement>(null);
   const imgRef  = useRef<HTMLInputElement>(null);
   const [rows, setRows]         = useState<ParsedRow[]>([]);
@@ -157,12 +156,12 @@ export function ImportForm() {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && (file.name.endsWith(".csv") || file.type === "text/csv")) handleFile(file);
-    else setError("Please upload a .csv file");
+    else setError(t("import.errors.csvOnly"));
   }
 
   function handleImport() {
     const valid = rows.filter((r) => r._valid);
-    if (valid.length === 0) { setError("No valid rows to import"); return; }
+    if (valid.length === 0) { setError(t("import.errors.noValidRows")); return; }
     setError("");
     start(async () => {
       try {
@@ -172,13 +171,13 @@ export function ImportForm() {
           body: JSON.stringify({ rows: valid }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Import failed");
+        if (!res.ok) throw new Error(data.error ?? t("import.errors.importFailed"));
         setResult({ inserted: data.inserted, failed: data.failed });
         if (data.inserted > 0) {
           setTimeout(() => router.push("/clients"), 1500);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Import failed");
+        setError(err instanceof Error ? err.message : t("import.errors.importFailed"));
       }
     });
   }
@@ -193,15 +192,15 @@ export function ImportForm() {
       if (aiImage) fd.append("image", aiImage);
       const res = await fetch("/api/clients/extract", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Extraction failed");
+      if (!res.ok) throw new Error(data.error ?? t("import.errors.extractFailed"));
       const mapped = ((data.contacts ?? []) as ExtractedContact[]).map(toRow);
-      if (mapped.length === 0) { setError("No contacts found in that input."); return; }
+      if (mapped.length === 0) { setError(t("import.errors.noContacts")); return; }
       setRows(mapped);
       setAiText("");
       setAiImage(null);
-      setFileName(`AI · ${mapped.length} contact${mapped.length !== 1 ? "s" : ""}`);
+      setFileName(t("import.ai.fileLabel", { count: mapped.length }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Extraction failed");
+      setError(err instanceof Error ? err.message : t("import.errors.extractFailed"));
     } finally {
       setAiPending(false);
     }
@@ -216,17 +215,14 @@ export function ImportForm() {
       <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-500" />
-          <p className="text-sm font-semibold text-slate-800">Add with AI</p>
+          <p className="text-sm font-semibold text-slate-800">{t("import.ai.title")}</p>
         </div>
-        <p className="text-xs text-slate-500">
-          Paste a list, an email signature, or anything with names &amp; emails — or snap a business card.
-          We&apos;ll pull out the contacts for you to review before importing.
-        </p>
+        <p className="text-xs text-slate-500">{t("import.ai.hint")}</p>
         <textarea
           value={aiText}
           onChange={(e) => setAiText(e.target.value)}
           rows={4}
-          placeholder="Paste contacts here…"
+          placeholder={t("import.ai.placeholder")}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
         />
         <div className="flex items-center gap-3">
@@ -242,7 +238,7 @@ export function ImportForm() {
             onClick={() => imgRef.current?.click()}
             className="text-xs font-medium text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors max-w-[200px] truncate"
           >
-            {aiImage ? aiImage.name : "Upload a photo"}
+            {aiImage ? aiImage.name : t("import.ai.uploadPhoto")}
           </button>
           <button
             type="button"
@@ -251,7 +247,7 @@ export function ImportForm() {
             className="ml-auto flex items-center gap-1.5 text-sm font-medium bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            {aiPending ? "Extracting…" : "Extract with AI"}
+            {aiPending ? t("common:status.analyzing") : t("import.ai.extract")}
           </button>
         </div>
       </div>
@@ -260,17 +256,17 @@ export function ImportForm() {
       <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 flex items-start gap-4">
         <FileSpreadsheet className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-indigo-800 mb-1">CSV format</p>
+          <p className="text-sm font-medium text-indigo-800 mb-1">{t("import.csv.title")}</p>
           <p className="text-xs text-indigo-700 leading-relaxed">
-            Required: <code className="bg-indigo-100 px-1 rounded">first_name</code> or <code className="bg-indigo-100 px-1 rounded">company</code>.
-            Optional: <code className="bg-indigo-100 px-1 rounded">last_name</code>, <code className="bg-indigo-100 px-1 rounded">email</code>, <code className="bg-indigo-100 px-1 rounded">phone</code>, <code className="bg-indigo-100 px-1 rounded">status</code> (lead/prospect/active/inactive), <code className="bg-indigo-100 px-1 rounded">tags</code> (comma-separated), <code className="bg-indigo-100 px-1 rounded">notes</code>.
+            {t("import.csv.required")} <code className="bg-indigo-100 px-1 rounded">first_name</code> {t("import.csv.or")} <code className="bg-indigo-100 px-1 rounded">company</code>.
+            {" "}{t("import.csv.optional")} <code className="bg-indigo-100 px-1 rounded">last_name</code>, <code className="bg-indigo-100 px-1 rounded">email</code>, <code className="bg-indigo-100 px-1 rounded">phone</code>, <code className="bg-indigo-100 px-1 rounded">status</code> {t("import.csv.statusValues")}, <code className="bg-indigo-100 px-1 rounded">tags</code> {t("import.csv.tagsHint")}, <code className="bg-indigo-100 px-1 rounded">notes</code>.
           </p>
         </div>
         <button
           onClick={downloadTemplate}
           className="text-xs font-medium text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap"
         >
-          Download template
+          {t("import.csv.downloadTemplate")}
         </button>
       </div>
 
@@ -293,8 +289,8 @@ export function ImportForm() {
           <p className="text-sm font-medium text-slate-700">{fileName}</p>
         ) : (
           <>
-            <p className="text-sm font-medium text-slate-600">Drop your CSV here, or click to browse</p>
-            <p className="text-xs text-slate-400 mt-1">CSV files only · Up to 5,000 rows</p>
+            <p className="text-sm font-medium text-slate-600">{t("import.drop.hint")}</p>
+            <p className="text-xs text-slate-400 mt-1">{t("import.drop.limits")}</p>
           </>
         )}
       </div>
@@ -304,13 +300,13 @@ export function ImportForm() {
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold text-slate-800">Preview</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("import.preview.title")}</h2>
               <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                {validCount} valid
+                {t("import.preview.valid", { n: validCount })}
               </span>
               {invalidCount > 0 && (
                 <span className="text-xs text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full font-medium">
-                  {invalidCount} will skip
+                  {t("import.preview.willSkip", { n: invalidCount })}
                 </span>
               )}
             </div>
@@ -323,8 +319,10 @@ export function ImportForm() {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
-                  {["", "First name", "Last name", "Company", "Email", "Phone", "Status", "Tags"].map((h) => (
-                    <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  {["", "firstName", "lastName", "company", "email", "phone", "status", "tags"].map((h) => (
+                    <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
+                      {h ? t(`import.preview.columns.${h}`) : ""}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -334,7 +332,7 @@ export function ImportForm() {
                     <td className="px-3 py-2">
                       {row._valid
                         ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        : <span title={row._error}><AlertCircle className="w-3.5 h-3.5 text-rose-500" /></span>
+                        : <span title={t("import.preview.rowError")}><AlertCircle className="w-3.5 h-3.5 text-rose-500" /></span>
                       }
                     </td>
                     <td className="px-3 py-2 text-slate-800">{row.first_name || <span className="text-slate-300">—</span>}</td>
@@ -342,7 +340,7 @@ export function ImportForm() {
                     <td className="px-3 py-2 text-slate-600">{row.company || <span className="text-slate-300">—</span>}</td>
                     <td className="px-3 py-2 text-slate-600">{row.email || <span className="text-slate-300">—</span>}</td>
                     <td className="px-3 py-2 text-slate-600">{row.phone || <span className="text-slate-300">—</span>}</td>
-                    <td className="px-3 py-2 capitalize text-slate-600">{row.status}</td>
+                    <td className="px-3 py-2 text-slate-600">{t(`statuses.${row.status}`)}</td>
                     <td className="px-3 py-2 text-slate-500 max-w-[120px] truncate">{row.tags || <span className="text-slate-300">—</span>}</td>
                   </tr>
                 ))}
@@ -350,7 +348,7 @@ export function ImportForm() {
             </table>
             {rows.length > 50 && (
               <p className="text-xs text-slate-400 text-center py-3">
-                Showing first 50 of {rows.length} rows
+                {t("import.preview.showing", { n: rows.length })}
               </p>
             )}
           </div>
@@ -363,10 +361,10 @@ export function ImportForm() {
           <CheckCircle2 className={`w-5 h-5 flex-shrink-0 ${result.failed === 0 ? "text-emerald-500" : "text-amber-500"}`} />
           <div>
             <p className={`text-sm font-semibold ${result.failed === 0 ? "text-emerald-800" : "text-amber-800"}`}>
-              Imported {result.inserted} client{result.inserted !== 1 ? "s" : ""}
-              {result.failed > 0 && ` · ${result.failed} failed`}
+              {t("import.result.imported", { count: result.inserted })}
+              {result.failed > 0 && t("import.result.failedSuffix", { n: result.failed })}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">Redirecting to Clients…</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t("import.result.redirecting")}</p>
           </div>
         </div>
       )}
@@ -383,14 +381,16 @@ export function ImportForm() {
             disabled={pending}
             className="flex-1 py-3 text-sm font-medium border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-60 transition-colors"
           >
-            Clear
+            {t("import.actions.clear")}
           </button>
           <button
             onClick={handleImport}
             disabled={pending || validCount === 0}
             className="flex-1 py-3 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
           >
-            {pending ? `Importing ${validCount} clients…` : `Import ${validCount} client${validCount !== 1 ? "s" : ""}`}
+            {pending
+              ? t("import.actions.importing", { count: validCount })
+              : t("import.actions.import", { count: validCount })}
           </button>
         </div>
       )}

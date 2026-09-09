@@ -1,0 +1,25 @@
+{
+  "actions": {
+    "saved_bang": "Saved!"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "bookkeeper": "Bookkeeper",
+    "viewer": "Viewer",
+    "unknown": "unknown"
+  },
+  "permission": {
+    "readOnlyTitle": "Read-only access",
+    "readOnlyBody": "Your role ({{role}}) does not have permission to make changes here. Contact an admin to request access.",
+    "denied": "You don't have permission to do that. Ask an owner or admin for access."
+  },
+  "aiRoles": {
+    "AI Chief Operating Officer": "AI Chief Operating Officer",
+    "AI Chief Information Officer": "AI Chief Information Officer",
+    "AI Marketing Director": "AI Marketing Director",
+    "AI Finance Director": "AI Finance Director",
+    "AI Sales Development Rep": "AI Sales Development Rep",
+    "AI Receptionist": "AI Receptionist"
+  }
+}

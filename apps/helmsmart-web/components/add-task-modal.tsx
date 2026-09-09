@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { createTask } from "@/lib/actions/tasks";
 
 interface Client {
@@ -26,6 +27,7 @@ function defaultDue(): string {
 }
 
 export function AddTaskModal({ clients = [], preselectedClientId, label }: Props) {
+  const { t } = useTranslation("tasks");
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
@@ -46,7 +48,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) { setError("Title is required"); return; }
+    if (!title.trim()) { setError(t("add.titleRequired")); return; }
     setLoading(true);
     setError("");
     try {
@@ -60,7 +62,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
       setOpen(false);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("common:errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -73,14 +75,14 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
         className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
       >
         <Plus className="w-4 h-4" />
-        {label ?? "Add task"}
+        {label ?? t("add.trigger")}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-base font-semibold text-slate-900">New Task</h2>
+              <h2 className="text-base font-semibold text-slate-900">{t("add.title")}</h2>
               <button
                 onClick={() => { setOpen(false); reset(); }}
                 className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"
@@ -93,7 +95,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
               {/* Title */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Task
+                  {t("add.taskLabel")}
                 </label>
                 <input
                   type="text"
@@ -101,7 +103,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
                   autoFocus
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="What needs to be done?"
+                  placeholder={t("add.taskPlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -110,7 +112,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Due date
+                    {t("add.dueDate")}
                   </label>
                   <input
                     type="date"
@@ -121,17 +123,17 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Priority
+                    {t("add.priority")}
                   </label>
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as Priority)}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="low">Low</option>
-                    <option value="normal">Normal</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="low">{t("priority.low")}</option>
+                    <option value="normal">{t("priority.normal")}</option>
+                    <option value="high">{t("priority.high")}</option>
+                    <option value="urgent">{t("priority.urgent")}</option>
                   </select>
                 </div>
               </div>
@@ -140,15 +142,15 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
               {clients.length > 0 && (
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Client{" "}
-                    <span className="text-slate-400 font-normal">(optional)</span>
+                    {t("add.client")}{" "}
+                    <span className="text-slate-400 font-normal">{t("add.optional")}</span>
                   </label>
                   <select
                     value={clientId}
                     onChange={(e) => setClientId(e.target.value)}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="">No client</option>
+                    <option value="">{t("add.noClient")}</option>
                     {clients.map((c) => {
                       const name =
                         [c.first_name, c.last_name].filter(Boolean).join(" ") ||
@@ -167,20 +169,20 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
               {/* Notes */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Notes{" "}
-                  <span className="text-slate-400 font-normal">(optional)</span>
+                  {t("add.notes")}{" "}
+                  <span className="text-slate-400 font-normal">{t("add.optional")}</span>
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  placeholder="Any additional context…"
+                  placeholder={t("add.notesPlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
               </div>
 
               {error && (
-                <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2">
+                <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2" role="alert">
                   {error}
                 </p>
               )}
@@ -191,14 +193,14 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
                   onClick={() => { setOpen(false); reset(); }}
                   className="flex-1 py-2.5 text-sm font-medium border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t("common:actions.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="flex-1 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
                 >
-                  {loading ? "Saving…" : "Create task"}
+                  {loading ? t("common:status.saving") : t("add.submit")}
                 </button>
               </div>
             </form>

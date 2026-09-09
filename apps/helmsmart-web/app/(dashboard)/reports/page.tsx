@@ -3,21 +3,27 @@ import type { Metadata } from "next";
 import { getPnLReport, getCashFlowSummary, getTimeReport, getReceivablesAging, getCashFlowForecast, getSalesTaxReport } from "@/lib/actions/reports";
 import { listProjectsPnL, listClientsPnL } from "@/lib/actions/projects";
 import { ReportsClient } from "./reports-client";
+import { getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
 
-export const metadata: Metadata = { title: "Reports" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("reports.business.metaTitle") };
+}
 
 export default async function ReportsPage({
   searchParams,
 }: {
   searchParams: Promise<{ tab?: string }>;
 }) {
+  const t = await getServerT("books");
   const { tab } = await searchParams;
   // Default: current calendar year
   const y = new Date().getFullYear();
   const from = `${y}-01-01`;
   const to   = `${y}-12-31`;
 
-  const [pnl, cashFlow, timeReport, projects, clients, receivables, forecast, salesTax] = await Promise.all([
+  const [pnl, cashFlow, timeReport, projects, clients, receivables, forecast, salesTax, currency] = await Promise.all([
     getPnLReport(from, to),
     getCashFlowSummary(from, to),
     getTimeReport(from, to),
@@ -26,6 +32,7 @@ export default async function ReportsPage({
     getReceivablesAging(),
     getCashFlowForecast(),
     getSalesTaxReport(from, to),
+    orgCurrency(),
   ]);
 
   return (
@@ -33,14 +40,13 @@ export default async function ReportsPage({
       {/* Header */}
       <div className="mb-8">
         <ResponsibleEmployee slug="tim" className="mb-3" />
-        <h1 className="text-2xl font-semibold text-slate-900">Reports</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Profit & loss, cash flow, time tracking, and receivables aging
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("reports.business.title")}</h1>
+        <p className="text-sm text-slate-500 mt-0.5">{t("reports.business.subtitle")}</p>
       </div>
 
       <ReportsClient
         initialTab={tab}
+        currency={currency}
         initialPnL={pnl}
         initialCashFlow={cashFlow}
         initialTimeReport={timeReport}

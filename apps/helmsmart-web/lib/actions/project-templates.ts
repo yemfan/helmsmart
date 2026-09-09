@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 import { createProject } from "./projects";
 
 export interface TemplateTask {
@@ -56,7 +57,7 @@ export async function createProjectTemplate(input: {
 }): Promise<{ ok: boolean; templateId?: string; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 
@@ -77,7 +78,7 @@ export async function createProjectTemplate(input: {
 
   if (error || !tpl) {
     console.error("[project-templates] create error:", error);
-    return { ok: false, error: error?.message || "Failed to create template" };
+    return { ok: false, error: error?.message || (await getServerT("projects"))("errors.createTemplateFailed") };
   }
 
   revalidatePath("/projects/templates");
@@ -101,7 +102,7 @@ export async function updateProjectTemplate(
 ): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
   const updates: Record<string, unknown> = {};
@@ -133,7 +134,7 @@ export async function deleteProjectTemplate(
 ): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
   const { error } = await db
@@ -161,7 +162,7 @@ export async function createProjectFromTemplate(
 ): Promise<{ ok: boolean; projectId?: string; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const supabase = await createClient();
 
@@ -173,7 +174,7 @@ export async function createProjectFromTemplate(
     .eq("organization_id", orgId)
     .single();
 
-  if (!tpl) return { ok: false, error: "Template not found" };
+  if (!tpl) return { ok: false, error: (await getServerT("projects"))("errors.templateNotFound") };
 
   // Create the project
   let projectId: string;
@@ -196,7 +197,7 @@ export async function createProjectFromTemplate(
       endDate,
     });
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed to create project" };
+    return { ok: false, error: e instanceof Error ? e.message : (await getServerT("projects"))("errors.createProjectFailed") };
   }
 
   // Create default tasks

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { recordExpense } from "@helm/dna-finance";
 import { checkProjectBudgetAlert } from "./budget-alerts";
 import { checkActionPermission } from "@/components/role-guard";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface ExpenseInput {
   date: string;              // YYYY-MM-DD
@@ -23,7 +24,10 @@ export async function createExpense(input: ExpenseInput) {
   if (denied) throw new Error(denied.error);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) {
+    const t = await getServerT("books");
+    throw new Error(t("expenses.errors.noOrg"));
+  }
 
   const supabase = await createClient();
 

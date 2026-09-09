@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Sparkles, Send, User, RotateCcw } from "lucide-react";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+/** Keys under `ask.suggested` — the question the owner sees, translated at render. */
 const SUGGESTED = [
-  "What's my outstanding revenue this month?",
-  "How many active clients do I have?",
-  "What are my top expense categories?",
-  "Do I have any overdue invoices?",
-  "What was my net income this month?",
+  "outstandingRevenue",
+  "activeClients",
+  "topExpenses",
+  "overdueInvoices",
+  "netIncome",
 ];
 
 // ─── Typing dots ──────────────────────────────────────────────────────────────
@@ -74,6 +76,7 @@ function MessageBubble({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function AskClient() {
+  const { t } = useTranslation("home");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -134,7 +137,7 @@ export function AskClient() {
           ...prev.slice(0, -1),
           {
             ...last,
-            content: "Sorry, something went wrong. Please try again.",
+            content: t("ask.error"),
           },
         ];
       });
@@ -178,8 +181,8 @@ export function AskClient() {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-slate-900">Ask AI</h1>
-            <p className="text-xs text-slate-500">Live data from your business</p>
+            <h1 className="text-base font-semibold text-slate-900">{t("ask.title")}</h1>
+            <p className="text-xs text-slate-500">{t("ask.subtitle")}</p>
           </div>
         </div>
         {messages.length > 0 && (
@@ -188,7 +191,7 @@ export function AskClient() {
             className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <RotateCcw className="w-3 h-3" />
-            New chat
+            {t("ask.newChat")}
           </button>
         )}
       </div>
@@ -202,23 +205,25 @@ export function AskClient() {
               <Sparkles className="w-8 h-8 text-indigo-400" />
             </div>
             <h2 className="text-xl font-semibold text-slate-800 mb-2">
-              Your AI Business Assistant
+              {t("ask.emptyTitle")}
             </h2>
             <p className="text-sm text-slate-500 max-w-md mb-8 leading-relaxed">
-              Ask anything about your clients, invoices, revenue, or expenses.
-              I have access to your live business data.
+              {t("ask.emptyBody")}
             </p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg">
-              {SUGGESTED.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  disabled={streaming}
-                  className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-colors disabled:opacity-40"
-                >
-                  {q}
-                </button>
-              ))}
+              {SUGGESTED.map((key) => {
+                const q = t(`ask.suggested.${key}`);
+                return (
+                  <button
+                    key={key}
+                    onClick={() => send(q)}
+                    disabled={streaming}
+                    className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-colors disabled:opacity-40"
+                  >
+                    {q}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ) : (
@@ -245,7 +250,7 @@ export function AskClient() {
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             rows={1}
-            placeholder="Ask about your business…"
+            placeholder={t("ask.placeholder")}
             disabled={streaming}
             className="flex-1 resize-none rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white overflow-y-auto disabled:opacity-60 transition-opacity"
             style={{ lineHeight: "1.5", minHeight: "42px", maxHeight: "128px" }}
@@ -258,9 +263,7 @@ export function AskClient() {
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-center text-xs text-slate-400 mt-2">
-          Based on live data · Enter to send · Shift+Enter for new line
-        </p>
+        <p className="text-center text-xs text-slate-400 mt-2">{t("ask.footer")}</p>
       </div>
     </div>
   );

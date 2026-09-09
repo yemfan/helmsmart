@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { changePassword } from "@/lib/actions/auth";
 
 /**
@@ -8,6 +9,7 @@ import { changePassword } from "@/lib/actions/auth";
  * action (Supabase updateUser) and closes itself shortly after success.
  */
 export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation("auth");
   const [state, action, pending] = useActionState(changePassword, null);
   const ok = state !== null && "ok" in state;
 
@@ -26,12 +28,12 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
         className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-base font-semibold text-slate-900 mb-1">Change password</h2>
-        <p className="text-xs text-slate-500 mb-4">Enter a new password — at least 8 characters.</p>
+        <h2 className="text-base font-semibold text-slate-900 mb-1">{t("changePassword.title")}</h2>
+        <p className="text-xs text-slate-500 mb-4">{t("changePassword.subtitle")}</p>
 
         {ok ? (
           <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">
-            ✓ Password updated.
+            {t("changePassword.updated")}
           </p>
         ) : (
           <form action={action} className="space-y-3">
@@ -41,7 +43,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
               required
               minLength={8}
               autoComplete="new-password"
-              placeholder="New password"
+              placeholder={t("changePassword.newPasswordPlaceholder")}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <input
@@ -50,7 +52,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
               required
               minLength={8}
               autoComplete="new-password"
-              placeholder="Confirm new password"
+              placeholder={t("changePassword.confirmPlaceholder")}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {state !== null && "error" in state && (
@@ -62,14 +64,14 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
                 onClick={onClose}
                 className="px-3 py-2 text-sm text-slate-600 hover:text-slate-900"
               >
-                Cancel
+                {t("common:actions.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={pending}
                 className="px-3 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg transition-colors"
               >
-                {pending ? "Saving…" : "Update password"}
+                {pending ? t("common:status.saving") : t("changePassword.submit")}
               </button>
             </div>
           </form>

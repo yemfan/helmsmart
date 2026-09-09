@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Clock, CalendarClock, BookOpen, Plus, Trash2, Check, CalendarCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   saveBusinessHours,
   upsertAppointmentType,
@@ -12,7 +13,6 @@ import {
 } from "@/lib/actions/receptionist";
 import {
   DAY_KEYS,
-  DAY_LABELS,
   type BusinessHours,
   type AppointmentType,
   type KnowledgeEntry,
@@ -41,6 +41,7 @@ export function ReceptionistConfig({ hours, appointmentTypes, knowledge, googleC
 // ─── Google Calendar connect ────────────────────────────────────────────────────
 
 function CalendarConnectCard({ configured, connected, email }: { configured: boolean; connected: boolean; email: string | null }) {
+  const { t } = useTranslation("voice");
   const [isConnected, setConnected] = useState(connected);
   const [pending, start] = useTransition();
 
@@ -48,26 +49,27 @@ function CalendarConnectCard({ configured, connected, email }: { configured: boo
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-1">
         <CalendarCheck className="w-4 h-4 text-indigo-500" />
-        <h2 className="text-sm font-semibold text-slate-800">Calendar</h2>
+        <h2 className="text-sm font-semibold text-slate-800">{t("config.calendar.title")}</h2>
       </div>
       <p className="text-xs text-slate-500 mb-4">
-        Connect Google Calendar so the receptionist books into your real calendar and only offers times you&apos;re actually free.
+        {t("config.calendar.description")}
       </p>
       {!configured ? (
         <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-          Google Calendar isn&apos;t configured on the server yet. Until it is, bookings use HelmSmart's built-in calendar.
+          {t("config.calendar.notConfigured")}
         </p>
       ) : isConnected ? (
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5">
-            <CalendarCheck className="w-3.5 h-3.5" /> Connected{email ? ` · ${email}` : ""}
+            <CalendarCheck className="w-3.5 h-3.5" />{" "}
+            {email ? t("config.calendar.connectedWithEmail", { email }) : t("config.calendar.connected")}
           </span>
           <button
             onClick={() => start(async () => { const r = await disconnectGoogleCalendar(); if (!r.error) setConnected(false); })}
             disabled={pending}
             className="text-xs font-medium text-slate-500 hover:text-rose-600 disabled:opacity-50"
           >
-            {pending ? "Disconnecting…" : "Disconnect"}
+            {pending ? t("config.calendar.disconnecting") : t("config.calendar.disconnect")}
           </button>
         </div>
       ) : (
@@ -75,7 +77,7 @@ function CalendarConnectCard({ configured, connected, email }: { configured: boo
           href="/api/auth/google-calendar"
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
-          <CalendarCheck className="w-4 h-4" /> Connect Google Calendar
+          <CalendarCheck className="w-4 h-4" /> {t("config.calendar.connect")}
         </a>
       )}
     </div>
@@ -85,6 +87,7 @@ function CalendarConnectCard({ configured, connected, email }: { configured: boo
 // ─── Business hours ─────────────────────────────────────────────────────────────
 
 function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
+  const { t } = useTranslation("voice");
   const [hours, setHours] = useState<BusinessHours>(initial);
   const [saved, setSaved] = useState(false);
   const [pending, start] = useTransition();
@@ -93,16 +96,16 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-4 h-4 text-indigo-500" />
-        <h2 className="text-sm font-semibold text-slate-800">Business hours</h2>
+        <h2 className="text-sm font-semibold text-slate-800">{t("config.hours.title")}</h2>
       </div>
-      <p className="text-xs text-slate-500 mb-4">The receptionist only books inside these hours.</p>
+      <p className="text-xs text-slate-500 mb-4">{t("config.hours.description")}</p>
       <div className="space-y-2">
         {DAY_KEYS.map((day) => {
           const h = hours[day];
           const closed = h === null;
           return (
             <div key={day} className="flex items-center gap-3">
-              <span className="w-24 text-sm text-slate-600">{DAY_LABELS[day]}</span>
+              <span className="w-24 text-sm text-slate-600">{t(`config.hours.days.${day}`)}</span>
               <label className="flex items-center gap-1.5 text-xs text-slate-500 w-16">
                 <input
                   type="checkbox"
@@ -112,7 +115,7 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
                   }
                   className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                {closed ? "Closed" : "Open"}
+                {closed ? t("config.hours.closed") : t("config.hours.open")}
               </label>
               {!closed && (
                 <>
@@ -124,7 +127,7 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
                     }
                     className="border border-slate-200 rounded-lg px-2 py-1 text-sm"
                   />
-                  <span className="text-slate-400 text-sm">to</span>
+                  <span className="text-slate-400 text-sm">{t("config.hours.to")}</span>
                   <input
                     type="time"
                     value={h.close}
@@ -140,12 +143,12 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
         })}
       </div>
       <button
-        onClick={() => start(async () => { await saveBusinessHours(hours); setSaved(true); setTimeout(() => setSaved(false), 2000); })}
+        onClick={() => start(async () => { await saveBusinessHours(hours); setSaved(true); setTimeout(() => setSaved(false), 2500); })}
         disabled={pending}
         className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
       >
         {saved && <Check className="w-4 h-4" />}
-        {pending ? "Saving…" : saved ? "Saved" : "Save hours"}
+        {pending ? t("config.hours.saving") : saved ? t("config.hours.saved") : t("config.hours.save")}
       </button>
     </div>
   );
@@ -154,6 +157,7 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
 // ─── Appointment types ──────────────────────────────────────────────────────────
 
 function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
+  const { t } = useTranslation("voice");
   const [types, setTypes] = useState(initial);
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
@@ -182,16 +186,21 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-1">
         <CalendarClock className="w-4 h-4 text-indigo-500" />
-        <h2 className="text-sm font-semibold text-slate-800">Appointment types</h2>
+        <h2 className="text-sm font-semibold text-slate-800">{t("config.appointmentTypes.title")}</h2>
       </div>
-      <p className="text-xs text-slate-500 mb-4">What the receptionist can book — each with a duration so the calendar slot is right.</p>
+      <p className="text-xs text-slate-500 mb-4">{t("config.appointmentTypes.description")}</p>
       <div className="space-y-2 mb-4">
-        {types.length === 0 && <p className="text-xs text-slate-400">No appointment types yet.</p>}
-        {types.map((t) => (
-          <div key={t.id} className="flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2">
-            <span className="flex-1 text-sm text-slate-700">{t.name}</span>
-            <span className="text-xs text-slate-500">{t.duration_minutes} min</span>
-            <button onClick={() => remove(t.id)} disabled={pending} className="text-slate-400 hover:text-rose-600 disabled:opacity-50">
+        {types.length === 0 && <p className="text-xs text-slate-400">{t("config.appointmentTypes.empty")}</p>}
+        {types.map((type) => (
+          <div key={type.id} className="flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2">
+            <span className="flex-1 text-sm text-slate-700">{type.name}</span>
+            <span className="text-xs text-slate-500">{t("config.appointmentTypes.minutes", { count: type.duration_minutes })}</span>
+            <button
+              onClick={() => remove(type.id)}
+              disabled={pending}
+              aria-label={t("common:actions.delete")}
+              className="text-slate-400 hover:text-rose-600 disabled:opacity-50"
+            >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -201,7 +210,7 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Consultation"
+          placeholder={t("config.appointmentTypes.namePlaceholder")}
           className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <input
@@ -213,13 +222,13 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
           onChange={(e) => setDuration(Number(e.target.value))}
           className="w-20 border border-slate-200 rounded-lg px-2 py-2 text-sm"
         />
-        <span className="text-xs text-slate-400">min</span>
+        <span className="text-xs text-slate-400">{t("config.appointmentTypes.minUnit")}</span>
         <button
           onClick={add}
           disabled={pending || !name.trim()}
           className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg"
         >
-          <Plus className="w-3.5 h-3.5" /> Add
+          <Plus className="w-3.5 h-3.5" /> {t("config.appointmentTypes.add")}
         </button>
       </div>
     </div>
@@ -229,6 +238,7 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
 // ─── Knowledge base ─────────────────────────────────────────────────────────────
 
 function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
+  const { t } = useTranslation("voice");
   const [entries, setEntries] = useState(initial);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -257,20 +267,25 @@ function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-1">
         <BookOpen className="w-4 h-4 text-indigo-500" />
-        <h2 className="text-sm font-semibold text-slate-800">Knowledge base</h2>
+        <h2 className="text-sm font-semibold text-slate-800">{t("config.knowledge.title")}</h2>
       </div>
       <p className="text-xs text-slate-500 mb-4">
-        Products, services, pricing, policies, FAQs — what the receptionist answers from. If it isn&apos;t here, the agent takes a message instead of guessing.
+        {t("config.knowledge.description")}
       </p>
       <div className="space-y-2 mb-4">
-        {entries.length === 0 && <p className="text-xs text-slate-400">No knowledge entries yet.</p>}
+        {entries.length === 0 && <p className="text-xs text-slate-400">{t("config.knowledge.empty")}</p>}
         {entries.map((e) => (
           <div key={e.id} className="bg-slate-50 rounded-lg px-3 py-2 flex items-start gap-3">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-700">{e.title}</p>
               <p className="text-xs text-slate-500 mt-0.5 line-clamp-2 whitespace-pre-wrap">{e.content}</p>
             </div>
-            <button onClick={() => remove(e.id)} disabled={pending} className="text-slate-400 hover:text-rose-600 disabled:opacity-50 flex-shrink-0">
+            <button
+              onClick={() => remove(e.id)}
+              disabled={pending}
+              aria-label={t("common:actions.delete")}
+              className="text-slate-400 hover:text-rose-600 disabled:opacity-50 flex-shrink-0"
+            >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -280,14 +295,14 @@ function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Topic (e.g. Pricing, Services, Parking)"
+          placeholder={t("config.knowledge.titlePlaceholder")}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={3}
-          placeholder="What should the receptionist know about this?"
+          placeholder={t("config.knowledge.contentPlaceholder")}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
         />
         <button
@@ -295,7 +310,7 @@ function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
           disabled={pending || !title.trim() || !content.trim()}
           className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg"
         >
-          <Plus className="w-3.5 h-3.5" /> Add entry
+          <Plus className="w-3.5 h-3.5" /> {t("config.knowledge.add")}
         </button>
       </div>
     </div>

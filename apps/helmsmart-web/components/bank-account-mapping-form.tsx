@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { linkBankAccountToCoa } from "@/lib/actions/settings";
 import type { SettingsState } from "@/lib/actions/settings";
 import { Building2, CheckCircle2 } from "lucide-react";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function BankAccountMappingForm({ bankAccount: ba, coaAccounts }: Props) {
+  const { t } = useTranslation("books");
   const [state, action, isPending] = useActionState<SettingsState, FormData>(
     linkBankAccountToCoa,
     null
@@ -67,7 +69,7 @@ export function BankAccountMappingForm({ bankAccount: ba, coaAccounts }: Props) 
           disabled={isPending}
           className="text-sm border border-slate-300 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100 min-w-[220px]"
         >
-          <option value="">— Not linked —</option>
+          <option value="">{t("transactions.mapping.notLinked")}</option>
           {coaAccounts.map((a) => (
             <option key={a.id} value={a.id}>
               {a.code} · {a.name}
@@ -80,7 +82,7 @@ export function BankAccountMappingForm({ bankAccount: ba, coaAccounts }: Props) 
           disabled={isPending}
           className="px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors flex-shrink-0"
         >
-          {isPending ? "…" : "Link"}
+          {isPending ? t("transactions.mapping.linking") : t("transactions.mapping.link")}
         </button>
 
         {isMapped && !isPending && (

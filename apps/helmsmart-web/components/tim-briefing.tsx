@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { defaultAvatarForSeed } from "@helm/ui";
 import { getBlueprint } from "@helm/ai-workforce";
 
 type TimData = {
   overdueInvoices: number;
+  /** Already formatted for the org's currency and the reader's locale. */
   overdueTotal: string;
   openTasks: number;
   urgentTasks: number;
@@ -16,13 +18,16 @@ type TimData = {
  * the data says so the owner can decide what to act on.
  */
 export function TimBriefing({ data }: { data: TimData }) {
+  const { t } = useTranslation("home");
   const { overdueInvoices, overdueTotal, openTasks, urgentTasks } = data;
 
   const insights: string[] = [];
-  if (overdueInvoices > 0) insights.push(`${overdueInvoices} invoice${overdueInvoices > 1 ? "s" : ""} overdue — ${overdueTotal} uncollected`);
-  if (urgentTasks > 0) insights.push(`${urgentTasks} urgent task${urgentTasks > 1 ? "s" : ""} open`);
-  else if (openTasks > 0) insights.push(`${openTasks} open task${openTasks > 1 ? "s" : ""} — none urgent`);
-  if (insights.length === 0) insights.push("No urgent items — everything looks healthy");
+  if (overdueInvoices > 0) {
+    insights.push(t("commandCenter.tim.overdue", { count: overdueInvoices, amount: overdueTotal }));
+  }
+  if (urgentTasks > 0) insights.push(t("commandCenter.tim.urgentTasks", { count: urgentTasks }));
+  else if (openTasks > 0) insights.push(t("commandCenter.tim.openTasks", { count: openTasks }));
+  if (insights.length === 0) insights.push(t("commandCenter.tim.allClear"));
 
   const avatar = getBlueprint("tim")?.avatar ?? defaultAvatarForSeed("tim");
 
@@ -36,8 +41,8 @@ export function TimBriefing({ data }: { data: TimData }) {
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
         />
         <div>
-          <p className="text-sm font-semibold text-slate-800">Tim · AI CIO</p>
-          <p className="text-xs text-slate-400">Today&apos;s briefing</p>
+          <p className="text-sm font-semibold text-slate-800">{t("commandCenter.tim.role")}</p>
+          <p className="text-xs text-slate-400">{t("commandCenter.tim.todaysBriefing")}</p>
         </div>
       </div>
       <ul className="space-y-2">

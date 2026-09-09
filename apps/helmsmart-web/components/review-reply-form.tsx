@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import { replyToReview } from "@/lib/actions/google-business";
 import { Send, Loader2, CheckCircle2 } from "lucide-react";
 
@@ -11,6 +12,7 @@ export function ReviewReplyForm({
   reviewId: string;
   businessLocationId: string;
 }) {
+  const { t } = useTranslation("marketing");
   const [text, setText] = useState("");
   const [status, setStatus] = useState<"idle" | "replying" | "sent" | "error">("idle");
   const [error, setError] = useState("");
@@ -32,7 +34,7 @@ export function ReviewReplyForm({
           window.location.reload();
         }, 1500);
       } else {
-        setError(result.error || "Failed to send reply");
+        setError(result.error || t("google.reply.sendFailed"));
         setStatus("error");
       }
     });
@@ -43,8 +45,8 @@ export function ReviewReplyForm({
       <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4 flex items-start gap-3">
         <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-medium text-emerald-900">Reply sent!</p>
-          <p className="text-sm text-emerald-700 mt-0.5">Your response has been posted to Google.</p>
+          <p className="font-medium text-emerald-900">{t("google.reply.sentTitle")}</p>
+          <p className="text-sm text-emerald-700 mt-0.5">{t("google.reply.sentBody")}</p>
         </div>
       </div>
     );
@@ -52,7 +54,7 @@ export function ReviewReplyForm({
 
   return (
     <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
-      <p className="text-xs font-medium text-slate-600 mb-3">Write a response</p>
+      <p className="text-xs font-medium text-slate-600 mb-3">{t("google.reply.label")}</p>
 
       <textarea
         value={text}
@@ -60,7 +62,7 @@ export function ReviewReplyForm({
         disabled={status === "replying"}
         rows={3}
         maxLength={1000}
-        placeholder="Thank you for your review! We appreciate your feedback..."
+        placeholder={t("google.reply.placeholder")}
         className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none disabled:opacity-50"
       />
 
@@ -75,12 +77,12 @@ export function ReviewReplyForm({
         >
           {status === "replying" && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           <Send className="w-3.5 h-3.5" />
-          {status === "replying" ? "Sending..." : "Send reply"}
+          {status === "replying" ? t("common:status.sending") : t("google.reply.send")}
         </button>
       </div>
 
       {error && status === "error" && (
-        <p className="text-xs text-rose-600 mt-2">{error}</p>
+        <p className="text-xs text-rose-600 mt-2" role="alert">{error}</p>
       )}
     </div>
   );

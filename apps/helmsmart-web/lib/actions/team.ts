@@ -6,8 +6,23 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/email";
 import { assertCanManageTeam, assertCanModifyMember } from "@helm/dna-people";
+import { intlLocale } from "@leadsmart/i18n";
+import { getServerLocale } from "@/lib/i18n/server";
+import { translatorFor } from "@/lib/i18n/translator";
 
 type Role = "admin" | "bookkeeper" | "viewer";
+
+/**
+ * Translator for the errors the Settings → Team screen shows.
+ *
+ * Bound with `translatorFor` — the same way the invite email below binds
+ * `emails` — so this file has ONE way of naming a namespace. Mixing that with
+ * the request-scoped server translator would leave every unqualified `t("…")`
+ * here ambiguous about which namespace it belongs to.
+ */
+async function settingsT() {
+  return translatorFor(await getServerLocale(), "settings");
+}
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,7 +31,10 @@ async function getOrgAndUser() {
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!orgId || !user) throw new Error("Not authenticated");
+  if (!orgId || !user) {
+    const st = await settingsT();
+    throw new Error(st("team.errors.notAuthenticated"));
+  }
   return { orgId, userId: user.id, supabase };
 }
 
@@ -77,7 +95,10 @@ export async function inviteMember(email: string, role: Role) {
     .gt("expires_at", new Date().toISOString())
     .maybeSingle();
 
-  if (existing) throw new Error("An active invitation is already pending for this email");
+  if (existing) {
+    const st = await settingsT();
+    throw new Error(st("team.errors.invitePending"));
+  }
 
   // Create invitation
   const { data: invite, error } = await supabase
@@ -91,17 +112,30 @@ export async function inviteMember(email: string, role: Role) {
     .select("token")
     .single();
 
-  if (error || !invite) throw new Error(error?.message ?? "Failed to create invitation");
+  if (error || !invite) {
+    const st = await settingsT();
+    throw new Error(error?.message ?? st("team.errors.inviteFailed"));
+  }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://helmsmart.ai";
   const acceptUrl = `${appUrl}/join/${invite.token}`;
+
+  // LANGUAGE OF THE INVITE. The person being invited has no account yet, so
+  // there is no `user_preferences.ui_locale` to read — the only stored
+  // preference in play is the admin's, who is sending this from a screen they
+  // chose the language of. An owner working in Chinese is inviting a colleague
+  // who reads Chinese, so their locale is the best answer available.
+  const locale = await getServerLocale();
+  const t = translatorFor(locale, "emails");
+  const roleLabel = t(`invite.roles.${role}`);
+
   // Send invitation email
   await sendEmail({
-    fromName: `${orgName} via HelmSmart`,
+    fromName: t("invite.fromName", { org: orgName }),
     to: email,
-    subject: `You've been invited to join ${orgName} on HelmSmart`,
+    subject: t("invite.subject", { org: orgName }),
     html: `<!DOCTYPE html>
-<html><head><meta charset="utf-8"></head>
+<html lang="${intlLocale(locale)}"><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 0">
     <tr><td align="center">
@@ -110,25 +144,31 @@ export async function inviteMember(email: string, role: Role) {
           <span style="font-size:16px;font-weight:700;color:#fff">HelmSmart</span>
         </td></tr>
         <tr><td style="padding:32px 40px">
-          <p style="margin:0 0 16px;font-size:18px;font-weight:600;color:#1e293b">You're invited!</p>
+          <p style="margin:0 0 16px;font-size:18px;font-weight:600;color:#1e293b">${t("invite.heading")}</p>
           <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.6">
-            <strong>${orgName}</strong> has invited you to join their workspace on HelmSmart as a <strong>${role}</strong>.
+            ${t("invite.body", { org: orgName, role: roleLabel })}
           </p>
           <a href="${acceptUrl}" style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px">
-            Accept invitation
+            ${t("invite.accept")}
           </a>
           <p style="margin:24px 0 0;font-size:12px;color:#94a3b8">
-            This invitation expires in 7 days. If you weren't expecting this, you can ignore this email.
+            ${t("invite.expiry")}
           </p>
         </td></tr>
         <tr><td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 40px;text-align:center">
-          <p style="margin:0;font-size:12px;color:#94a3b8">Powered by HelmSmart</p>
+          <p style="margin:0;font-size:12px;color:#94a3b8">${t("invite.footer")}</p>
         </td></tr>
       </table>
     </td></tr>
   </table>
 </body></html>`,
-    text: `You've been invited to join ${orgName} on HelmSmart as a ${role}.\n\nAccept here: ${acceptUrl}\n\nThis link expires in 7 days.`,
+    text: [
+      t("invite.text.body", { org: orgName, role: roleLabel }),
+      "",
+      t("invite.text.accept", { url: acceptUrl }),
+      "",
+      t("invite.text.expiry"),
+    ].join("\n"),
   });
 
   revalidatePath("/settings/team");
@@ -164,7 +204,10 @@ export async function updateMemberRole(memberId: string, role: Role) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!target) throw new Error("Member not found");
+  if (!target) {
+    const st = await settingsT();
+    throw new Error(st("team.errors.memberNotFound"));
+  }
   assertCanModifyMember({
     targetRole: target.role,
     targetUserId: target.user_id,
@@ -195,7 +238,10 @@ export async function removeMember(memberId: string) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!target) throw new Error("Member not found");
+  if (!target) {
+    const st = await settingsT();
+    throw new Error(st("team.errors.memberNotFound"));
+  }
   assertCanModifyMember({
     targetRole: target.role,
     targetUserId: target.user_id,

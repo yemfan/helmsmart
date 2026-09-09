@@ -19,8 +19,13 @@ import { ClientAIBrief } from "@/components/client-ai-brief";
 import { getActivePack } from "@/lib/packs";
 import { getClientCommunications, getClientPreferences } from "@/lib/actions/communication-logs";
 import { getClientBrief } from "@/lib/actions/client-brief";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Client · CRM" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("clients");
+  return { title: t("meta.detailTitle") };
+}
 
 const STATUS_COLORS: Record<string, string> = {
   lead:     "bg-slate-100 text-slate-600",
@@ -55,20 +60,22 @@ const TASK_PRIORITY_DOTS: Record<string, string> = {
   urgent: "bg-rose-500", high: "bg-amber-500", normal: "bg-slate-300", low: "bg-slate-200",
 };
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+function fmt(n: number, locale: string) {
+  return new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD" }).format(n);
 }
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string, t: Translate, locale: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m ago`;
+  if (m < 1) return t("time.justNow");
+  if (m < 60) return t("time.minutesAgo", { n: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  if (h < 24) return t("time.hoursAgo", { n: h });
   const d = Math.floor(h / 24);
-  if (d < 30) return `${d}d ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (d < 30) return t("time.daysAgo", { n: d });
+  return new Date(iso).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric" });
 }
 
 export default async function ClientDetailPage({
@@ -77,6 +84,7 @@ export default async function ClientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const [t, locale] = await Promise.all([getServerT("clients"), getServerLocale()]);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -163,7 +171,7 @@ export default async function ClientDetailPage({
 
   const today = new Date().toISOString().slice(0, 10);
   const fullName = [client.first_name, client.last_name].filter(Boolean).join(" ");
-  const displayName = fullName || client.company || "Client";
+  const displayName = fullName || client.company || t("detail.fallbackName");
 
   const totalPaid = invoices
     .filter((i) => i.status === "paid")
@@ -185,8 +193,8 @@ export default async function ClientDetailPage({
         <div className="flex-1">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl font-semibold text-slate-900">{displayName}</h1>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_COLORS[client.status] ?? STATUS_COLORS.lead}`}>
-              {client.status}
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLORS[client.status] ?? STATUS_COLORS.lead}`}>
+              {t(`statuses.${client.status}`, { defaultValue: client.status })}
             </span>
           </div>
           {client.company && fullName && (
@@ -217,7 +225,7 @@ export default async function ClientDetailPage({
               href={`/inbox?compose=${encodeURIComponent(client.email)}`}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
             >
-              <Mail className="w-3.5 h-3.5" /> Send email
+              <Mail className="w-3.5 h-3.5" /> {t("detail.actions.sendEmail")}
             </Link>
           )}
           {client.portal_token && (
@@ -228,19 +236,19 @@ export default async function ClientDetailPage({
             target="_blank"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
           >
-            <Printer className="w-3.5 h-3.5" /> Statement
+            <Printer className="w-3.5 h-3.5" /> {t("detail.actions.statement")}
           </Link>
           <Link
             href={`/books/expenses/new`}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
           >
-            <Receipt className="w-3.5 h-3.5" /> Add expense
+            <Receipt className="w-3.5 h-3.5" /> {t("detail.actions.addExpense")}
           </Link>
           <Link
             href={`/books/invoices/new?client=${id}`}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
           >
-            <FileText className="w-3.5 h-3.5" /> New invoice
+            <FileText className="w-3.5 h-3.5" /> {t("detail.actions.newInvoice")}
           </Link>
         </div>
       </div>
@@ -251,9 +259,9 @@ export default async function ClientDetailPage({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "Lifetime value", value: fmt(totalPaid), icon: DollarSign, color: "text-emerald-500" },
-              { label: "Outstanding",    value: fmt(totalOutstanding), icon: FileText,  color: "text-blue-500" },
-              { label: "Invoices",       value: String(invoices.length), icon: FileText, color: "text-slate-400" },
+              { label: t("detail.stats.lifetimeValue"), value: fmt(totalPaid, locale), icon: DollarSign, color: "text-emerald-500" },
+              { label: t("detail.stats.outstanding"),   value: fmt(totalOutstanding, locale), icon: FileText,  color: "text-blue-500" },
+              { label: t("detail.stats.invoices"),      value: String(invoices.length), icon: FileText, color: "text-slate-400" },
             ].map(({ label, value, icon: Icon, color }) => (
               <div key={label} className="bg-white rounded-xl border border-slate-200 p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -269,33 +277,33 @@ export default async function ClientDetailPage({
           {pnl && (pnl.revenue > 0 || pnl.laborCost > 0 || pnl.expensesTotal > 0) && (
             <div className="bg-white rounded-xl border border-slate-200 p-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-slate-700">Profitability</h2>
+                <h2 className="text-sm font-semibold text-slate-700">{t("detail.profitability.title")}</h2>
                 {pnl.margin !== null && (
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${pnl.profit >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
-                    {(pnl.margin * 100).toFixed(0)}% margin
+                    {t("detail.profitability.margin", { pct: (pnl.margin * 100).toFixed(0) })}
                   </span>
                 )}
               </div>
               <div className="grid grid-cols-4 gap-4">
                 <div>
-                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Revenue</p>
-                  <p className="text-lg font-semibold text-slate-800 mt-1 tabular-nums">{fmt(pnl.revenue)}</p>
+                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("detail.profitability.revenue")}</p>
+                  <p className="text-lg font-semibold text-slate-800 mt-1 tabular-nums">{fmt(pnl.revenue, locale)}</p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Labor</p>
-                  <p className="text-lg font-semibold text-slate-600 mt-1 tabular-nums">−{fmt(pnl.laborCost)}</p>
+                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("detail.profitability.labor")}</p>
+                  <p className="text-lg font-semibold text-slate-600 mt-1 tabular-nums">−{fmt(pnl.laborCost, locale)}</p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Expenses</p>
-                  <p className="text-lg font-semibold text-slate-600 mt-1 tabular-nums">−{fmt(pnl.expensesTotal)}</p>
+                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("detail.profitability.expenses")}</p>
+                  <p className="text-lg font-semibold text-slate-600 mt-1 tabular-nums">−{fmt(pnl.expensesTotal, locale)}</p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Profit</p>
-                  <p className={`text-lg font-semibold mt-1 tabular-nums ${pnl.profit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>{fmt(pnl.profit)}</p>
+                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("detail.profitability.profit")}</p>
+                  <p className={`text-lg font-semibold mt-1 tabular-nums ${pnl.profit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>{fmt(pnl.profit, locale)}</p>
                 </div>
               </div>
               <p className="text-[11px] text-slate-400 mt-3">
-                Revenue = all invoiced to this client; cost = labor and expenses tracked on their projects.
+                {t("detail.profitability.note")}
               </p>
             </div>
           )}
@@ -303,17 +311,17 @@ export default async function ClientDetailPage({
           {/* Invoices */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Invoices</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.invoices.title")}</h2>
               <Link
                 href={`/books/invoices/new?client=${id}`}
                 className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
               >
-                + New
+                {t("detail.actions.new")}
               </Link>
             </div>
 
             {invoices.length === 0 ? (
-              <div className="py-10 text-center text-xs text-slate-400">No invoices yet</div>
+              <div className="py-10 text-center text-xs text-slate-400">{t("detail.invoices.empty")}</div>
             ) : (
               <div className="divide-y divide-slate-50">
                 {invoices.map((inv) => {
@@ -327,13 +335,13 @@ export default async function ClientDetailPage({
                     >
                       <span className="font-mono text-xs text-slate-500 w-24 flex-shrink-0">{inv.invoice_number}</span>
                       <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${INV_STATUS_COLORS[effectiveStatus] ?? ""}`}>
-                        {effectiveStatus}
+                        {t(`invoiceStatus.${effectiveStatus}`, { defaultValue: effectiveStatus })}
                       </span>
                       <span className="flex-1 text-xs text-slate-400">
-                        {new Date(inv.issue_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {new Date(inv.issue_date + "T00:00:00").toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric", year: "numeric" })}
                       </span>
                       <span className="text-sm font-semibold text-slate-700 tabular-nums flex-shrink-0">
-                        {fmt(Number(inv.total))}
+                        {fmt(Number(inv.total), locale)}
                       </span>
                     </Link>
                   );
@@ -345,13 +353,13 @@ export default async function ClientDetailPage({
           {/* Estimates */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Estimates</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.estimates.title")}</h2>
               <Link href="/books/estimates/new" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-                + New
+                {t("detail.actions.new")}
               </Link>
             </div>
             {estimates.length === 0 ? (
-              <div className="py-10 text-center text-xs text-slate-400">No estimates yet</div>
+              <div className="py-10 text-center text-xs text-slate-400">{t("detail.estimates.empty")}</div>
             ) : (
               <div className="divide-y divide-slate-50">
                 {estimates.map((est) => (
@@ -361,14 +369,14 @@ export default async function ClientDetailPage({
                     className="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition-colors"
                   >
                     <span className="font-mono text-xs text-slate-500 w-24 flex-shrink-0">{est.estimate_number}</span>
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 capitalize ${EST_STATUS_COLORS[est.status] ?? ""}`}>
-                      {est.status}
+                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${EST_STATUS_COLORS[est.status] ?? ""}`}>
+                      {t(`estimateStatus.${est.status}`, { defaultValue: est.status })}
                     </span>
                     <span className="flex-1 text-xs text-slate-400">
-                      {new Date(est.issue_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {new Date(est.issue_date + "T00:00:00").toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric", year: "numeric" })}
                     </span>
                     <span className="text-sm font-semibold text-slate-700 tabular-nums flex-shrink-0">
-                      {fmt(Number(est.total))}
+                      {fmt(Number(est.total), locale)}
                     </span>
                   </Link>
                 ))}
@@ -379,10 +387,10 @@ export default async function ClientDetailPage({
           {/* Projects */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Projects</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.projects.title")}</h2>
             </div>
             {projects.length === 0 ? (
-              <div className="py-10 text-center text-xs text-slate-400">No projects yet</div>
+              <div className="py-10 text-center text-xs text-slate-400">{t("detail.projects.empty")}</div>
             ) : (
               <div className="divide-y divide-slate-50">
                 {projects.map((proj) => (
@@ -393,7 +401,7 @@ export default async function ClientDetailPage({
                   >
                     <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${PROJECT_COLOR_DOTS[proj.color as string] ?? "bg-slate-400"}`} />
                     <span className="flex-1 text-sm text-slate-700 truncate">{proj.name}</span>
-                    <span className="text-[11px] text-slate-400 capitalize flex-shrink-0">{proj.status}</span>
+                    <span className="text-[11px] text-slate-400 flex-shrink-0">{t(`projectStatus.${proj.status}`, { defaultValue: proj.status })}</span>
                   </Link>
                 ))}
               </div>
@@ -403,13 +411,13 @@ export default async function ClientDetailPage({
           {/* Open tasks */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Open tasks</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.tasks.title")}</h2>
               <Link href="/tasks" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-                View all →
+                {t("detail.actions.viewAllTasks")}
               </Link>
             </div>
             {tasks.length === 0 ? (
-              <div className="py-10 text-center text-xs text-slate-400">No open tasks</div>
+              <div className="py-10 text-center text-xs text-slate-400">{t("detail.tasks.empty")}</div>
             ) : (
               <div className="divide-y divide-slate-50">
                 {tasks.map((task) => {
@@ -420,8 +428,8 @@ export default async function ClientDetailPage({
                       <span className="flex-1 text-sm text-slate-700 truncate">{task.title}</span>
                       {task.due_date && (
                         <span className={`text-[11px] flex-shrink-0 ${overdue ? "text-rose-600 font-medium" : "text-slate-400"}`}>
-                          {overdue ? "Overdue · " : ""}
-                          {new Date(task.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          {overdue ? t("detail.tasks.overduePrefix") : ""}
+                          {new Date(task.due_date + "T00:00:00").toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric" })}
                         </span>
                       )}
                     </div>
@@ -434,14 +442,14 @@ export default async function ClientDetailPage({
           {/* Messages */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Messages</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.messages.title")}</h2>
               <Link href="/inbox" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-                Open inbox →
+                {t("detail.actions.openInbox")}
               </Link>
             </div>
 
             {messages.length === 0 ? (
-              <div className="py-10 text-center text-xs text-slate-400">No messages yet</div>
+              <div className="py-10 text-center text-xs text-slate-400">{t("detail.messages.empty")}</div>
             ) : (
               <div className="divide-y divide-slate-50">
                 {messages.map((msg) => (
@@ -461,9 +469,9 @@ export default async function ClientDetailPage({
                       <p className="text-xs text-slate-500 truncate">{msg.body}</p>
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <p className="text-[10px] text-slate-400">{timeAgo(msg.sent_at)}</p>
-                      <p className={`text-[10px] capitalize ${msg.direction === "inbound" ? "text-indigo-500" : "text-slate-400"}`}>
-                        {msg.direction}
+                      <p className="text-[10px] text-slate-400">{timeAgo(msg.sent_at, t, locale)}</p>
+                      <p className={`text-[10px] ${msg.direction === "inbound" ? "text-indigo-500" : "text-slate-400"}`}>
+                        {t(`messageDirection.${msg.direction}`, { defaultValue: msg.direction })}
                       </p>
                     </div>
                   </div>
@@ -506,7 +514,7 @@ export default async function ClientDetailPage({
           />
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="px-5 py-3.5 border-b border-slate-100">
-              <h2 className="text-sm font-semibold text-slate-700">Details</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t("detail.details")}</h2>
             </div>
             <div className="p-5">
               <ClientEditForm
@@ -530,12 +538,16 @@ export default async function ClientDetailPage({
           <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-2">
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span>Created {new Date(client.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+              <span>
+                {t("detail.created", {
+                  date: new Date(client.created_at).toLocaleDateString(intlLocale(locale), { month: "long", day: "numeric", year: "numeric" }),
+                })}
+              </span>
             </div>
             {client.source && (
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <Tag className="w-3.5 h-3.5 text-slate-400" />
-                <span>Source: {client.source}</span>
+                <span>{t("detail.source", { source: client.source })}</span>
               </div>
             )}
             {(client.tags as string[] | null)?.length ? (

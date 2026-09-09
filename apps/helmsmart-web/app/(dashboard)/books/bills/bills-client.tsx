@@ -3,14 +3,14 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Plus, X, AlertCircle, Receipt, Trash2, CheckCircle2, Banknote, Repeat } from "lucide-react";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { createBill, payBill, deleteBill, type Bill } from "@/lib/actions/bills";
 
 type ExpenseAccount = { id: string; code: string; name: string };
 type BankAccount = { id: string; name: string; mask: string | null; coa_account_id: string | null };
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
@@ -25,13 +25,18 @@ function daysUntil(due: string): number {
   today.setHours(0, 0, 0, 0);
   return Math.round((new Date(due + "T00:00:00").getTime() - today.getTime()) / 86_400_000);
 }
-function dueBadge(due: string): { label: string; cls: string } {
+/** The badge text is a whole phrase per case — never a stem plus a suffix. */
+function dueBadge(
+  due: string,
+  t: TFunction<"books">,
+  fmtDate: (value: Date | string) => string,
+): { label: string; cls: string } {
   const n = daysUntil(due);
-  if (n < 0) return { label: `${Math.abs(n)}d overdue`, cls: "bg-rose-50 text-rose-700" };
-  if (n === 0) return { label: "Due today", cls: "bg-amber-50 text-amber-700" };
-  if (n <= 7) return { label: `Due in ${n}d`, cls: "bg-amber-50 text-amber-700" };
+  if (n < 0) return { label: t("bills.due.overdue", { count: Math.abs(n) }), cls: "bg-rose-50 text-rose-700" };
+  if (n === 0) return { label: t("bills.due.today"), cls: "bg-amber-50 text-amber-700" };
+  if (n <= 7) return { label: t("bills.due.inDays", { count: n }), cls: "bg-amber-50 text-amber-700" };
   return {
-    label: `Due ${new Date(due + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
+    label: t("bills.due.onDate", { date: fmtDate(due) }),
     cls: "bg-slate-100 text-slate-500",
   };
 }
@@ -41,14 +46,17 @@ function dueBadge(due: string): { label: string; cls: string } {
 function NewBillModal({
   expenseAccounts,
   vendorNames,
+  currency,
   onClose,
   onSaved,
 }: {
   expenseAccounts: ExpenseAccount[];
   vendorNames: string[];
+  currency: string;
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation("books");
   const [vendor, setVendor]               = useState("");
   const [billNumber, setBillNumber]       = useState("");
   const [description, setDescription]     = useState("");
@@ -62,9 +70,9 @@ function NewBillModal({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const amt = parseFloat(amount);
-    if (!vendor.trim()) { setError("Vendor is required"); return; }
-    if (!amt || amt <= 0) { setError("Enter a valid amount"); return; }
-    if (!dueDate) { setError("Due date is required"); return; }
+    if (!vendor.trim()) { setError(t("bills.errors.vendorRequired")); return; }
+    if (!amt || amt <= 0) { setError(t("bills.errors.invalidAmount")); return; }
+    if (!dueDate) { setError(t("bills.errors.dueDateRequired")); return; }
     setError("");
     start(async () => {
       try {
@@ -79,7 +87,7 @@ function NewBillModal({
         });
         onSaved();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save bill");
+        setError(err instanceof Error ? err.message : t("bills.errors.saveFailed"));
       }
     });
   }
@@ -90,19 +98,19 @@ function NewBillModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Receipt className="w-4 h-4 text-slate-500" />
-            <h2 className="text-base font-semibold text-slate-800">New bill</h2>
+            <h2 className="text-base font-semibold text-slate-800">{t("bills.form.title")}</h2>
           </div>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {error && <p className="text-xs text-rose-600 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
+        {error && <p className="text-xs text-rose-600 flex items-center gap-1" role="alert"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Vendor *</label>
-            <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Acme Supplies" list="bill-vendor-names" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.vendor")}</label>
+            <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder={t("bills.form.vendorPlaceholder")} list="bill-vendor-names" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             {vendorNames.length > 0 && (
               <datalist id="bill-vendor-names">
                 {vendorNames.map((n) => <option key={n} value={n} />)}
@@ -110,21 +118,21 @@ function NewBillModal({
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Bill # <span className="text-slate-400 font-normal">(optional)</span></label>
-            <input value={billNumber} onChange={(e) => setBillNumber(e.target.value)} placeholder="INV-1042" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.billNumber")} <span className="text-slate-400 font-normal">{t("bills.form.optional")}</span></label>
+            <input value={billNumber} onChange={(e) => setBillNumber(e.target.value)} placeholder={t("bills.form.billNumberPlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Description</label>
-          <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this bill for?" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.description")}</label>
+          <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("bills.form.descriptionPlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Category (expense account)</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.category")}</label>
             {expenseAccounts.length === 0 ? (
-              <p className="text-xs text-slate-400 py-2">No expense accounts — complete onboarding to seed your CoA.</p>
+              <p className="text-xs text-slate-400 py-2">{t("bills.form.noExpenseAccounts")}</p>
             ) : (
               <select value={expenseAccountId} onChange={(e) => setExpenseAcc(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 {expenseAccounts.map((a) => <option key={a.id} value={a.id}>{a.code} · {a.name}</option>)}
@@ -132,30 +140,28 @@ function NewBillModal({
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Amount ($) *</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.amount", { currency })}</label>
             <input type="number" min="0" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Bill date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.billDate")}</label>
             <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Due date *</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.form.dueDate")}</label>
             <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-400">
-          Recording a bill just tracks the obligation. The expense posts to your books when you mark it paid.
-        </p>
+        <p className="text-[11px] text-slate-400">{t("bills.form.note")}</p>
 
         <div className="flex gap-3 pt-1">
-          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">{t("common:actions.cancel")}</button>
           <button type="submit" disabled={isPending} className="flex-1 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
-            {isPending ? "Saving…" : "Save bill"}
+            {isPending ? t("common:status.saving") : t("bills.form.save")}
           </button>
         </div>
       </form>
@@ -168,14 +174,18 @@ function NewBillModal({
 function PayBillModal({
   bill,
   banks,
+  currency,
   onClose,
   onPaid,
 }: {
   bill: Bill;
   banks: BankAccount[];
+  currency: string;
   onClose: () => void;
   onPaid: () => void;
 }) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const [bankAccountId, setBankAccountId] = useState(banks[0]?.id ?? "");
   const [paymentDate, setPaymentDate]     = useState(todayStr());
   const [error, setError]                 = useState("");
@@ -183,19 +193,19 @@ function PayBillModal({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!bankAccountId) { setError("Select a bank account"); return; }
+    if (!bankAccountId) { setError(t("bills.errors.selectBank")); return; }
     setError("");
     start(async () => {
       try {
         await payBill({ billId: bill.id, bankAccountId, paymentDate });
         onPaid();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to record payment");
+        setError(err instanceof Error ? err.message : t("bills.errors.paymentFailed"));
       }
     });
   }
 
-  const bankName = banks.find((b) => b.id === bankAccountId)?.name ?? "Bank";
+  const bankName = banks.find((b) => b.id === bankAccountId)?.name ?? t("bills.pay.bankFallback");
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -203,7 +213,7 @@ function PayBillModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Banknote className="w-4 h-4 text-emerald-600" />
-            <h2 className="text-base font-semibold text-slate-800">Pay bill</h2>
+            <h2 className="text-base font-semibold text-slate-800">{t("bills.pay.title")}</h2>
           </div>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
             <X className="w-4 h-4" />
@@ -218,34 +228,37 @@ function PayBillModal({
           {bill.description && <p className="text-xs text-slate-400 mt-0.5">{bill.description}</p>}
         </div>
 
-        {error && <p className="text-xs text-rose-600 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
+        {error && <p className="text-xs text-rose-600 flex items-center gap-1" role="alert"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
 
         {banks.length === 0 ? (
           <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
-            No bank account is mapped to your Chart of Accounts. Link a bank or set its CoA mapping in Settings first.
+            {t("bills.pay.noBankAccount")}
           </p>
         ) : (
           <>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Pay from</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.pay.payFrom")}</label>
               <select value={bankAccountId} onChange={(e) => setBankAccountId(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 {banks.map((b) => <option key={b.id} value={b.id}>{b.name}{b.mask ? ` ···${b.mask}` : ""}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Payment date</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t("bills.pay.paymentDate")}</label>
               <input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
             <p className="text-[11px] text-slate-400">
-              Journal: DR {bill.expense_account?.name ?? "Expense"} / CR {bankName}
+              {t("bills.pay.journal", {
+                expense: bill.expense_account?.name ?? t("bills.pay.expenseFallback"),
+                bank: bankName,
+              })}
             </p>
           </>
         )}
 
         <div className="flex gap-3 pt-1">
-          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">{t("common:actions.cancel")}</button>
           <button type="submit" disabled={isPending || banks.length === 0} className="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50">
-            {isPending ? "Posting…" : "Record payment"}
+            {isPending ? t("common:status.posting") : t("bills.pay.submit")}
           </button>
         </div>
       </form>
@@ -258,18 +271,23 @@ function PayBillModal({
 function BillRow({
   bill,
   canPay,
+  currency,
   onPay,
   onChanged,
 }: {
   bill: Bill;
   canPay: boolean;
+  currency: string;
   onPay: (b: Bill) => void;
   onChanged: () => void;
 }) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
+  const fmtDate = dateFormatter(i18n.language, { month: "short", day: "numeric" });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isPending, start] = useTransition();
   const paid = bill.status === "paid";
-  const badge = dueBadge(bill.due_date);
+  const badge = dueBadge(bill.due_date, t, fmtDate);
 
   function del() {
     if (!confirmDelete) { setConfirmDelete(true); return; }
@@ -277,6 +295,13 @@ function BillRow({
       await deleteBill(bill.id);
       onChanged();
     });
+  }
+
+  // Each fact is a whole phrase; the separator is punctuation, not grammar.
+  const facts = [bill.expense_account?.name ?? t("bills.row.uncategorized")];
+  if (bill.description) facts.push(bill.description);
+  if (paid && bill.paid_at) {
+    facts.push(t("bills.row.paidOn", { date: fmtDate(new Date(bill.paid_at)) }));
   }
 
   return (
@@ -287,17 +312,13 @@ function BillRow({
           {bill.bill_number && <span className="text-xs text-slate-400">#{bill.bill_number}</span>}
           {paid ? (
             <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" /> Paid
+              <CheckCircle2 className="w-3 h-3" /> {t("bills.status.paid")}
             </span>
           ) : (
             <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>{badge.label}</span>
           )}
         </div>
-        <p className="text-xs text-slate-400 mt-0.5 truncate">
-          {bill.expense_account?.name ?? "Uncategorized"}
-          {bill.description ? ` · ${bill.description}` : ""}
-          {paid && bill.paid_at ? ` · Paid ${new Date(bill.paid_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : ""}
-        </p>
+        <p className="text-xs text-slate-400 mt-0.5 truncate">{facts.join(" · ")}</p>
       </div>
 
       <span className="text-sm font-semibold text-slate-800 tabular-nums flex-shrink-0">{fmt(bill.amount)}</span>
@@ -307,10 +328,10 @@ function BillRow({
           <button
             onClick={() => onPay(bill)}
             disabled={isPending || !canPay}
-            title={canPay ? "Record payment" : "Link a bank account first"}
+            title={canPay ? t("bills.row.recordPayment") : t("bills.row.linkBankFirst")}
             className="text-xs font-medium px-2.5 py-1 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40 transition-colors"
           >
-            Mark paid
+            {t("bills.row.markPaid")}
           </button>
           <button
             onClick={del}
@@ -321,7 +342,7 @@ function BillRow({
                 : "text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100"
             }`}
           >
-            {confirmDelete ? "Confirm" : <Trash2 className="w-3.5 h-3.5" />}
+            {confirmDelete ? t("common:actions.confirm") : <Trash2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       )}
@@ -331,12 +352,12 @@ function BillRow({
 
 // ─── KPI card ─────────────────────────────────────────────────────────────────────
 
-function Kpi({ label, value, tone = "slate", sub }: { label: string; value: number; tone?: "slate" | "rose" | "amber"; sub?: string }) {
+function Kpi({ label, value, tone = "slate", sub }: { label: string; value: string; tone?: "slate" | "rose" | "amber"; sub?: string }) {
   const color = tone === "rose" ? "text-rose-600" : tone === "amber" ? "text-amber-600" : "text-slate-800";
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{label}</p>
-      <p className={`text-2xl font-semibold tabular-nums ${color}`}>{fmt(value)}</p>
+      <p className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</p>
       {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
     </div>
   );
@@ -349,9 +370,12 @@ interface Props {
   expenseAccounts: ExpenseAccount[];
   bankAccounts: BankAccount[];
   vendorNames: string[];
+  currency: string;
 }
 
-export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendorNames }: Props) {
+export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendorNames, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const router = useRouter();
   const [filter, setFilter]       = useState<"open" | "paid" | "all">("open");
   const [showNew, setShowNew]     = useState(false);
@@ -381,10 +405,8 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
       {/* Header row */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-base font-semibold text-slate-800">Bills</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Track what you owe vendors. Expenses post to your books when paid.
-          </p>
+          <h2 className="text-base font-semibold text-slate-800">{t("bills.list.title")}</h2>
+          <p className="text-sm text-slate-500 mt-0.5">{t("bills.list.subtitle")}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -392,23 +414,37 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
           >
             <Repeat className="w-4 h-4" />
-            Recurring
+            {t("bills.list.recurring")}
           </Link>
           <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            New bill
+            {t("bills.list.newBill")}
           </button>
         </div>
       </div>
 
       {/* A/P KPIs */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <Kpi label="Total owed" value={totalOwed} sub={`${openBills.length} open bill${openBills.length === 1 ? "" : "s"}`} />
-        <Kpi label="Overdue" value={overdueAmount} tone={overdueAmount > 0 ? "rose" : "slate"} sub={`${overdue.length} past due`} />
-        <Kpi label="Due in 7 days" value={dueSoonAmount} tone={dueSoonAmount > 0 ? "amber" : "slate"} sub={`${dueSoon.length} coming up`} />
+        <Kpi
+          label={t("bills.list.kpi.totalOwed")}
+          value={fmt(totalOwed)}
+          sub={t("bills.list.kpi.openBills", { count: openBills.length })}
+        />
+        <Kpi
+          label={t("bills.list.kpi.overdue")}
+          value={fmt(overdueAmount)}
+          tone={overdueAmount > 0 ? "rose" : "slate"}
+          sub={t("bills.list.kpi.pastDue", { count: overdue.length })}
+        />
+        <Kpi
+          label={t("bills.list.kpi.dueInSevenDays")}
+          value={fmt(dueSoonAmount)}
+          tone={dueSoonAmount > 0 ? "amber" : "slate"}
+          sub={t("bills.list.kpi.comingUp", { count: dueSoon.length })}
+        />
       </div>
 
       {/* Filter tabs */}
@@ -417,11 +453,15 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === s ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {s === "open" ? `Open (${openBills.length})` : s === "paid" ? `Paid (${paidCount})` : "All"}
+            {s === "open"
+              ? t("bills.list.filter.open", { count: openBills.length })
+              : s === "paid"
+                ? t("bills.list.filter.paid", { count: paidCount })
+                : t("bills.list.filter.all")}
           </button>
         ))}
       </div>
@@ -431,27 +471,27 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
         <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-200 rounded-2xl">
           <Receipt className="w-10 h-10 text-slate-300 mb-3" />
           <p className="text-sm font-medium text-slate-500 mb-1">
-            {filter === "open" ? "No open bills" : filter === "paid" ? "No paid bills yet" : "No bills yet"}
+            {t(`bills.list.empty.${filter}`)}
           </p>
-          <p className="text-xs text-slate-400 mb-4">Record a vendor bill to track what you owe and when it&rsquo;s due.</p>
+          <p className="text-xs text-slate-400 mb-4">{t("bills.list.empty.body")}</p>
           <button onClick={() => setShowNew(true)} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
             <Plus className="w-4 h-4" />
-            New bill
+            {t("bills.list.newBill")}
           </button>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-50">
           {shown.map((b) => (
-            <BillRow key={b.id} bill={b} canPay={canPay} onPay={setPayTarget} onChanged={refresh} />
+            <BillRow key={b.id} bill={b} canPay={canPay} currency={currency} onPay={setPayTarget} onChanged={refresh} />
           ))}
         </div>
       )}
 
       {showNew && (
-        <NewBillModal expenseAccounts={expenseAccounts} vendorNames={vendorNames} onClose={() => setShowNew(false)} onSaved={refresh} />
+        <NewBillModal expenseAccounts={expenseAccounts} vendorNames={vendorNames} currency={currency} onClose={() => setShowNew(false)} onSaved={refresh} />
       )}
       {payTarget && (
-        <PayBillModal bill={payTarget} banks={mappedBanks} onClose={() => setPayTarget(null)} onPaid={refresh} />
+        <PayBillModal bill={payTarget} banks={mappedBanks} currency={currency} onClose={() => setPayTarget(null)} onPaid={refresh} />
       )}
     </div>
   );

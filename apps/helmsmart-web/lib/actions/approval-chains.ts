@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { getServerT } from "@/lib/i18n/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
@@ -57,7 +58,7 @@ export async function createApprovalWorkflow(input: {
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
 
@@ -113,7 +114,7 @@ export async function updateApprovalWorkflow(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
 
@@ -166,7 +167,7 @@ export async function deleteApprovalWorkflow(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
   const { error } = await db
@@ -191,11 +192,11 @@ export async function submitApprovalRequest(input: {
 }): Promise<{ ok: boolean; requestId?: string; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "No session" };
+  if (!user) return { ok: false, error: (await getServerT("workflows"))("errors.noSession") };
 
   const db = await createServiceClient();
 
@@ -207,13 +208,13 @@ export async function submitApprovalRequest(input: {
     .eq("organization_id", orgId)
     .single();
 
-  if (!workflow) return { ok: false, error: "Workflow not found" };
-  if (!workflow.is_active) return { ok: false, error: "Workflow is inactive" };
+  if (!workflow) return { ok: false, error: (await getServerT("workflows"))("errors.workflowNotFound") };
+  if (!workflow.is_active) return { ok: false, error: (await getServerT("workflows"))("errors.workflowInactive") };
 
   const steps = (workflow.steps ?? []).sort(
     (a: { step_order: number }, b: { step_order: number }) => a.step_order - b.step_order
   );
-  if (steps.length === 0) return { ok: false, error: "Workflow has no steps" };
+  if (steps.length === 0) return { ok: false, error: (await getServerT("workflows"))("errors.workflowNoSteps") };
 
   // Create the approval request
   const { data: request, error: reqErr } = await db
@@ -280,11 +281,11 @@ export async function respondToApprovalStep(
 ): Promise<{ ok: boolean; error?: string; requestStatus?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "No session" };
+  if (!user) return { ok: false, error: (await getServerT("workflows"))("errors.noSession") };
 
   const db = await createServiceClient();
 
@@ -296,13 +297,13 @@ export async function respondToApprovalStep(
     .eq("organization_id", orgId)
     .single();
 
-  if (!request) return { ok: false, error: "Request not found" };
-  if (request.status !== "pending") return { ok: false, error: "Request is no longer pending" };
+  if (!request) return { ok: false, error: (await getServerT("workflows"))("errors.requestNotFound") };
+  if (request.status !== "pending") return { ok: false, error: (await getServerT("workflows"))("errors.requestNotPending") };
 
   const steps = request.steps as Array<{ id: string; step_order: number; status: string }>;
   const currentStepRecord = findCurrentPendingStep(steps, request.current_step);
 
-  if (!currentStepRecord) return { ok: false, error: "No pending step found" };
+  if (!currentStepRecord) return { ok: false, error: (await getServerT("workflows"))("errors.noPendingStep") };
 
   const now = new Date().toISOString();
 

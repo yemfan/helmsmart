@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Bell, BellOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { createServiceClient } from "@/lib/supabase/server";
 
 // server action is defined below; component is client-side
@@ -14,13 +15,15 @@ interface Props {
   maxCount: number;
 }
 
+/** `key` names the label in the bundle; `value` is the schedule itself. */
 const PRESET_SCHEDULES = [
-  { label: "Gentle (7, 21 days)", value: [7, 21] },
-  { label: "Standard (3, 7, 14, 30 days)", value: [3, 7, 14, 30] },
-  { label: "Aggressive (1, 3, 7, 14, 21, 30 days)", value: [1, 3, 7, 14, 21, 30] },
+  { key: "gentle", value: [7, 21] },
+  { key: "standard", value: [3, 7, 14, 30] },
+  { key: "aggressive", value: [1, 3, 7, 14, 21, 30] },
 ] as const;
 
 export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCount }: Props) {
+  const { t } = useTranslation("settings");
   const [enabled, setEnabled]     = useState(autoSend);
   const [intervals, setIntervals] = useState(daysIntervals.join(", "));
   const [max, setMax]             = useState(String(maxCount));
@@ -36,7 +39,7 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
       .sort((a, b) => a - b);
 
     if (parsed.length === 0) {
-      setError("Enter at least one reminder day (e.g. 3, 7, 14)");
+      setError(t("financial.reminders.errors.noDays"));
       return;
     }
 
@@ -48,7 +51,7 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
         maxCount: Math.max(1, parseInt(max, 10) || 4),
       });
       if (!result.ok) {
-        setError(result.error ?? "Failed to save");
+        setError(result.error ?? t("financial.reminders.errors.saveFailed"));
       } else {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -63,10 +66,8 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
           ? <Bell className="w-5 h-5 text-indigo-600 flex-shrink-0" />
           : <BellOff className="w-5 h-5 text-slate-400 flex-shrink-0" />}
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-slate-900">Automatic payment reminders</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Automatically email clients about overdue invoices on a schedule
-          </p>
+          <h3 className="text-sm font-semibold text-slate-900">{t("financial.reminders.title")}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">{t("financial.reminders.description")}</p>
         </div>
         <div
           onClick={() => setEnabled((v) => !v)}
@@ -80,17 +81,17 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
         <>
           {/* Preset schedules */}
           <div>
-            <p className="text-xs font-medium text-slate-600 mb-2">Quick presets:</p>
+            <p className="text-xs font-medium text-slate-600 mb-2">{t("financial.reminders.presetsLabel")}</p>
             <div className="flex gap-2 flex-wrap">
               {PRESET_SCHEDULES.map((p) => (
                 <button
-                  key={p.label}
+                  key={p.key}
                   type="button"
                   onClick={() => setIntervals(p.value.join(", "))}
                   disabled={isPending}
                   className="text-xs px-3 py-1.5 border border-slate-200 rounded-full text-slate-600 hover:bg-slate-50 hover:border-indigo-200 transition-colors disabled:opacity-50"
                 >
-                  {p.label}
+                  {t(`financial.reminders.presets.${p.key}`)}
                 </button>
               ))}
             </div>
@@ -99,7 +100,7 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
           {/* Custom intervals */}
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">
-              Send reminders when overdue by (days, comma-separated)
+              {t("financial.reminders.intervalsLabel")}
             </label>
             <input
               type="text"
@@ -109,15 +110,13 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
               placeholder="3, 7, 14, 30"
               className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60 font-mono"
             />
-            <p className="text-xs text-slate-400 mt-1">
-              Example: <code className="bg-slate-100 px-1 rounded">3, 7, 14, 30</code> sends reminders at 3, 7, 14, and 30 days overdue
-            </p>
+            <p className="text-xs text-slate-400 mt-1">{t("financial.reminders.intervalsHelp")}</p>
           </div>
 
           {/* Max reminders */}
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">
-              Stop after this many reminders per invoice
+              {t("financial.reminders.maxLabel")}
             </label>
             <input
               type="number"
@@ -145,12 +144,12 @@ export function InvoiceReminderSettings({ orgId, autoSend, daysIntervals, maxCou
           disabled={isPending}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
         >
-          {saved ? "Saved ✓" : isPending ? "Saving…" : "Save settings"}
+          {isPending ? t("actions.saving") : saved ? t("actions.saved") : t("financial.reminders.save")}
         </button>
         {saved && (
           <div className="flex items-center gap-1.5 text-sm text-emerald-600">
             <CheckCircle2 className="w-4 h-4" />
-            Saved
+            {t("financial.reminders.savedNote")}
           </div>
         )}
       </div>

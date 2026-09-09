@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RefreshCcw, X, Plus, Trash2 } from "lucide-react";
+import { moneyFormatter } from "@/lib/books-format";
 import { createRecurringInvoice } from "@/lib/actions/recurring";
 import type { RecurringLineItem } from "@/lib/actions/recurring";
 
@@ -16,6 +18,8 @@ interface Client {
 
 interface Props {
   clients: Client[];
+  /** `organizations.currency` — the ledger's currency, not the reader's country. */
+  currency: string;
 }
 
 type Frequency = "weekly" | "monthly" | "quarterly" | "annually";
@@ -32,16 +36,11 @@ function emptyLine(): RecurringLineItem {
   return { description: "", quantity: 1, unit_price: 0 };
 }
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(n);
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function RecurringInvoiceModal({ clients }: Props) {
+export function RecurringInvoiceModal({ clients, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency);
   const [open, setOpen] = useState(false);
 
   // Form state
@@ -96,13 +95,13 @@ export function RecurringInvoiceModal({ clients }: Props) {
 
     try {
       const validItems = items.filter((i) => i.description.trim());
-      if (!validItems.length) throw new Error("Add at least one line item.");
+      if (!validItems.length) throw new Error(t("invoices.recurringModal.errors.noLineItems"));
 
       await createRecurringInvoice({
         client_id: clientId,
         frequency,
         next_invoice_date: startDate,
-        title: title.trim() || "Recurring Invoice",
+        title: title.trim() || t("invoices.recurringModal.defaultTitle"),
         notes: notes.trim() || undefined,
         tax_rate: Number(taxRatePct) / 100,
         line_items: validItems,
@@ -111,7 +110,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
       setOpen(false);
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("common:errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -134,7 +133,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
         className="flex items-center gap-2 px-3 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
       >
         <RefreshCcw className="w-4 h-4" />
-        Recurring
+        {t("invoices.recurringModal.trigger")}
       </button>
 
       {/* Modal */}
@@ -144,7 +143,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
               <h2 className="text-base font-semibold text-slate-900">
-                New Recurring Invoice
+                {t("invoices.recurringModal.title")}
               </h2>
               <button
                 onClick={() => { setOpen(false); resetForm(); }}
@@ -162,14 +161,14 @@ export function RecurringInvoiceModal({ clients }: Props) {
               {/* Client */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Client
+                  {t("invoices.recurringModal.client")}
                 </label>
                 <select
                   value={clientId}
                   onChange={(e) => setClientId(e.target.value)}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 >
-                  <option value="">No specific client</option>
+                  <option value="">{t("invoices.recurringModal.noSpecificClient")}</option>
                   {clients.map((c) => {
                     const name =
                       [c.first_name, c.last_name].filter(Boolean).join(" ") ||
@@ -188,22 +187,21 @@ export function RecurringInvoiceModal({ clients }: Props) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Frequency
+                    {t("invoices.recurringModal.frequency")}
                   </label>
                   <select
                     value={frequency}
                     onChange={(e) => setFrequency(e.target.value as Frequency)}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                   >
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                    <option value="annually">Annually</option>
+                    {(["weekly", "monthly", "quarterly", "annually"] as const).map((f) => (
+                      <option key={f} value={f}>{t(`invoices.frequency.${f}`)}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    First invoice date
+                    {t("invoices.recurringModal.firstInvoiceDate")}
                   </label>
                   <input
                     type="date"
@@ -218,14 +216,14 @@ export function RecurringInvoiceModal({ clients }: Props) {
               {/* Title */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Invoice title{" "}
-                  <span className="text-slate-400 font-normal">(optional)</span>
+                  {t("invoices.recurringModal.invoiceTitle")}{" "}
+                  <span className="text-slate-400 font-normal">{t("invoices.recurringModal.optional")}</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Monthly retainer, Website maintenance…"
+                  placeholder={t("invoices.recurringModal.titlePlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -234,7 +232,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium text-slate-600">
-                    Line items
+                    {t("invoices.recurringModal.lineItems")}
                   </label>
                   <button
                     type="button"
@@ -242,20 +240,20 @@ export function RecurringInvoiceModal({ clients }: Props) {
                     className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
                   >
                     <Plus className="w-3 h-3" />
-                    Add item
+                    {t("invoices.recurringModal.addItem")}
                   </button>
                 </div>
 
                 {/* Column headers */}
                 <div className="grid grid-cols-[1fr_72px_96px_32px] gap-2 mb-1 px-1">
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-                    Description
+                    {t("invoices.recurringModal.columns.description")}
                   </span>
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-                    Qty
+                    {t("invoices.recurringModal.columns.qty")}
                   </span>
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-                    Price
+                    {t("invoices.recurringModal.columns.price")}
                   </span>
                 </div>
 
@@ -271,7 +269,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
                         onChange={(e) =>
                           updateItem(i, "description", e.target.value)
                         }
-                        placeholder="Service description"
+                        placeholder={t("invoices.recurringModal.itemPlaceholder")}
                         className="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
                       <input
@@ -312,7 +310,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
               <div className="grid grid-cols-2 gap-4 items-start">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Tax rate (%)
+                    {t("invoices.recurringModal.taxRate")}
                   </label>
                   <input
                     type="number"
@@ -327,17 +325,17 @@ export function RecurringInvoiceModal({ clients }: Props) {
 
                 <div className="bg-slate-50 rounded-xl p-4 text-xs space-y-1.5">
                   <div className="flex justify-between text-slate-600">
-                    <span>Subtotal</span>
+                    <span>{t("invoices.recurringModal.subtotal")}</span>
                     <span className="tabular-nums font-mono">{fmt(subtotal)}</span>
                   </div>
                   {taxRate > 0 && (
                     <div className="flex justify-between text-slate-600">
-                      <span>Tax ({taxRatePct}%)</span>
+                      <span>{t("invoices.recurringModal.taxAt", { rate: taxRatePct })}</span>
                       <span className="tabular-nums font-mono">{fmt(tax)}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-semibold text-slate-800 border-t border-slate-200 pt-1.5">
-                    <span>Per invoice</span>
+                    <span>{t("invoices.recurringModal.perInvoice")}</span>
                     <span className="tabular-nums font-mono">{fmt(total)}</span>
                   </div>
                 </div>
@@ -346,14 +344,14 @@ export function RecurringInvoiceModal({ clients }: Props) {
               {/* Notes */}
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Notes{" "}
-                  <span className="text-slate-400 font-normal">(optional)</span>
+                  {t("invoices.recurringModal.notes")}{" "}
+                  <span className="text-slate-400 font-normal">{t("invoices.recurringModal.optional")}</span>
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  placeholder="Payment terms, delivery instructions…"
+                  placeholder={t("invoices.recurringModal.notesPlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
               </div>
@@ -372,7 +370,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
                 onClick={() => { setOpen(false); resetForm(); }}
                 className="flex-1 py-2.5 text-sm font-medium border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
               >
-                Cancel
+                {t("common:actions.cancel")}
               </button>
               <button
                 type="submit"
@@ -381,7 +379,7 @@ export function RecurringInvoiceModal({ clients }: Props) {
                 onClick={handleSubmit}
                 className="flex-1 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
               >
-                {loading ? "Creating…" : "Create recurring invoice"}
+                {loading ? t("common:status.creating") : t("invoices.recurringModal.create")}
               </button>
             </div>
           </div>

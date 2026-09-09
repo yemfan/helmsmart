@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendSMSCampaign } from "@/lib/integrations/sms-campaign-sender";
 import { checkActionPermission } from "@/components/role-guard";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface CreateCampaignInput {
   name: string;
@@ -28,19 +29,20 @@ export async function createSMSCampaign(
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "No user session" };
+  if (!user) return { ok: false, error: t("errors.noUserSession") };
 
   const db = await createServiceClient();
 
   // Validate message length (SMS is ~160 chars, but allow more for proper splitting)
   if (input.messageText.length > 1000) {
-    return { ok: false, error: "Message too long (max 1000 characters)" };
+    return { ok: false, error: t("errors.campaigns.messageTooLong") };
   }
 
   const { data: campaign, error } = await db
@@ -63,7 +65,7 @@ export async function createSMSCampaign(
 
   if (error || !campaign) {
     console.error("[sms-campaigns] create error:", error);
-    return { ok: false, error: error?.message || "Failed to create campaign" };
+    return { ok: false, error: error?.message || t("errors.campaigns.createFailed") };
   }
 
   revalidatePath("/marketing/sms");
@@ -124,7 +126,8 @@ export async function getSMSCampaign(campaignId: string) {
 export async function sendSMSCampaignNow(campaignId: string): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
 
@@ -136,9 +139,9 @@ export async function sendSMSCampaignNow(campaignId: string): Promise<{ ok: bool
     .eq("id", campaignId)
     .single();
 
-  if (!campaign) return { ok: false, error: "Campaign not found" };
+  if (!campaign) return { ok: false, error: t("errors.campaigns.notFound") };
   if (campaign.status !== "draft" && campaign.status !== "scheduled") {
-    return { ok: false, error: `Cannot send campaign with status: ${campaign.status}` };
+    return { ok: false, error: t("errors.campaigns.cannotSendStatus", { status: campaign.status }) };
   }
 
   // Send campaign
@@ -157,7 +160,8 @@ export async function sendSMSCampaignNow(campaignId: string): Promise<{ ok: bool
 export async function deleteSMSCampaign(campaignId: string): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
 
@@ -169,9 +173,9 @@ export async function deleteSMSCampaign(campaignId: string): Promise<{ ok: boole
     .eq("id", campaignId)
     .single();
 
-  if (!campaign) return { ok: false, error: "Campaign not found" };
+  if (!campaign) return { ok: false, error: t("errors.campaigns.notFound") };
   if (campaign.status !== "draft") {
-    return { ok: false, error: "Can only delete draft campaigns" };
+    return { ok: false, error: t("errors.campaigns.onlyDraftsDeletable") };
   }
 
   const db = await createServiceClient();
@@ -199,7 +203,8 @@ export async function updateSMSCampaign(
 ): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const db = await createServiceClient();
 
@@ -212,9 +217,9 @@ export async function updateSMSCampaign(
     .eq("organization_id", orgId)
     .single();
 
-  if (!existing) return { ok: false, error: "Campaign not found" };
+  if (!existing) return { ok: false, error: t("errors.campaigns.notFound") };
   if (existing.status !== "draft" && existing.status !== "scheduled") {
-    return { ok: false, error: "Cannot edit a sent campaign" };
+    return { ok: false, error: t("errors.campaigns.cannotEditSent") };
   }
 
   const updates: Record<string, unknown> = {};

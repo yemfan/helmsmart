@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { signIn } from "@/lib/actions/auth";
 import type { AuthState } from "@/lib/actions/auth";
 
@@ -25,6 +26,7 @@ function AppleIcon() {
 }
 
 export default function LoginPage() {
+  const { t } = useTranslation("auth");
   const [state, action, isPending] = useActionState<AuthState, FormData>(
     signIn,
     null
@@ -38,12 +40,12 @@ export default function LoginPage() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-      <h1 className="text-xl font-semibold text-slate-900 mb-1">Welcome back</h1>
-      <p className="text-sm text-slate-500 mb-6">Sign in to your account</p>
+      <h1 className="text-xl font-semibold text-slate-900 mb-1">{t("login.title")}</h1>
+      <p className="text-sm text-slate-500 mb-6">{t("login.subtitle")}</p>
 
       {oauthError && (
         <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-          Sign-in failed. Please try again.
+          {t("login.oauthError")}
         </p>
       )}
 
@@ -51,7 +53,7 @@ export default function LoginPage() {
         {next && <input type="hidden" name="next" value={next} />}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-            Email
+            {t("login.email")}
           </label>
           <input
             id="email"
@@ -63,20 +65,20 @@ export default function LoginPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="you@example.com"
+            placeholder={t("login.emailPlaceholder")}
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1">
             <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-              Password
+              {t("login.password")}
             </label>
             <Link
               href="/forgot-password"
               className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
             >
-              Forgot password?
+              {t("login.forgotPassword")}
             </Link>
           </div>
           <input
@@ -89,7 +91,7 @@ export default function LoginPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="••••••••"
+            placeholder={t("login.passwordPlaceholder")}
           />
         </div>
 
@@ -106,7 +108,7 @@ export default function LoginPage() {
                      hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                      disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-          {isPending ? "Signing in…" : "Sign in"}
+          {isPending ? t("login.submitting") : t("login.submit")}
         </button>
       </form>
 
@@ -116,7 +118,7 @@ export default function LoginPage() {
           <div className="w-full border-t border-slate-200" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-400 tracking-wide">or</span>
+          <span className="bg-white px-2 text-slate-400 tracking-wide">{t("oauth.or")}</span>
         </div>
       </div>
 
@@ -127,21 +129,21 @@ export default function LoginPage() {
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
         >
           <GoogleIcon />
-          Continue with Google
+          {t("oauth.google")}
         </a>
         <a
           href="/api/auth/apple"
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
         >
           <AppleIcon />
-          Continue with Apple
+          {t("oauth.apple")}
         </a>
       </div>
 
       <p className="mt-6 text-center text-sm text-slate-500">
-        Don&apos;t have an account?{" "}
+        {t("login.noAccount")}{" "}
         <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-700">
-          Sign up
+          {t("login.signUp")}
         </Link>
       </p>
     </div>

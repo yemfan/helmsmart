@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   Send, CheckCircle2, XCircle, FileText, FolderOpen, Loader2,
 } from "lucide-react";
@@ -27,6 +28,7 @@ export function EstimateActions({
   convertedInvoiceId,
   convertedProjectId,
 }: Props) {
+  const { t } = useTranslation("books");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [activeAction, setActiveAction] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export function EstimateActions({
           router.push(redirectTo(result));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        setError(err instanceof Error ? err.message : t("common:errors.generic"));
       } finally {
         setActiveAction(null);
       }
@@ -72,7 +74,7 @@ export function EstimateActions({
             })
           }
           disabled={loading || !hasClientEmail}
-          title={!hasClientEmail ? "Client has no email address" : undefined}
+          title={!hasClientEmail ? t("estimates.actions.noClientEmail") : undefined}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {loading && activeAction === "send" ? (
@@ -80,7 +82,7 @@ export function EstimateActions({
           ) : (
             <Send className="w-4 h-4" />
           )}
-          {status === "sent" ? "Resend estimate" : "Send estimate"}
+          {status === "sent" ? t("estimates.actions.resend") : t("estimates.actions.send")}
         </button>
       )}
 
@@ -100,7 +102,7 @@ export function EstimateActions({
           ) : (
             <CheckCircle2 className="w-4 h-4" />
           )}
-          Mark accepted
+          {t("estimates.actions.markAccepted")}
         </button>
       )}
 
@@ -120,7 +122,7 @@ export function EstimateActions({
           ) : (
             <XCircle className="w-3.5 h-3.5" />
           )}
-          Mark declined
+          {t("estimates.actions.markDeclined")}
         </button>
       )}
 
@@ -136,7 +138,7 @@ export function EstimateActions({
           ) : (
             <FileText className="w-4 h-4" />
           )}
-          Convert to invoice
+          {t("estimates.actions.convertToInvoice")}
         </button>
       )}
 
@@ -152,7 +154,7 @@ export function EstimateActions({
           ) : (
             <FolderOpen className="w-4 h-4" />
           )}
-          Create project
+          {t("estimates.actions.createProject")}
         </button>
       )}
     </div>

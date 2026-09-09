@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "tasks": "任务",
+    "recurringTasks": "周期任务",
+    "calendar": "日历"
+  },
+  "priority": {
+    "low": "低",
+    "normal": "普通",
+    "high": "高",
+    "urgent": "紧急"
+  },
+  "frequency": {
+    "weekly": "每周",
+    "monthly": "每月",
+    "quarterly": "每季度",
+    "annually": "每年"
+  },
+  "responsibleEmployee": {
+    "handledBy": "负责人"
+  },
+  "list": {
+    "title": "任务",
+    "count_one": "{{count}} 项任务",
+    "count_other": "{{count}} 项任务",
+    "overdue": "· {{count}} 项逾期",
+    "recurringLink": "周期任务",
+    "allPriorities": "全部优先级",
+    "tabs": {
+      "open": "待办",
+      "inProgress": "进行中",
+      "done": "已完成"
+    },
+    "empty": {
+      "done": "暂无已完成的任务",
+      "inProgress": "暂无进行中的任务",
+      "open": "没有待办任务 🎉",
+      "hint": "创建任务来跟踪你的工作、跟进事项和对客户的承诺。"
+    }
+  },
+  "row": {
+    "priorityTitle": "优先级：{{priority}}",
+    "confirmDelete": "确定删除这项任务吗？",
+    "overdueDays": "逾期 {{count}} 天",
+    "today": "今天",
+    "tomorrow": "明天",
+    "inDays": "{{count}} 天后"
+  },
+  "add": {
+    "trigger": "添加任务",
+    "title": "新建任务",
+    "taskLabel": "任务",
+    "taskPlaceholder": "需要完成什么？",
+    "dueDate": "截止日期",
+    "priority": "优先级",
+    "client": "客户",
+    "optional": "（可选）",
+    "noClient": "不关联客户",
+    "notes": "备注",
+    "notesPlaceholder": "补充说明…",
+    "submit": "创建任务",
+    "titleRequired": "请填写标题"
+  },
+  "mark": {
+    "ask": "请 Mark 创建一项任务",
+    "created": "任务已创建",
+    "viewIt": "查看"
+  },
+  "recurring": {
+    "title": "周期任务",
+    "subtitle": "{{count}} 个进行中 · 按计划自动创建待办",
+    "backToTasks": "任务",
+    "new": "新建周期任务",
+    "emptyTitle": "还没有周期任务",
+    "emptyBody": "把重复的例行事务设置一次——发薪、季度申报、执照续期——之后每个周期我们都会自动生成一条新的待办，不会遗漏。",
+    "createFirst": "创建第一个模板",
+    "footnote": "系统每天检查一次进行中的模板。到达模板的下一个日期时，会创建一项新的待办任务（当天到期），并按频率推进日期。暂停即可跳过后续周期。",
+    "paused": "已暂停",
+    "resume": "恢复",
+    "pause": "暂停",
+    "confirm": "确认",
+    "next": "下次 {{date}}",
+    "last": "上次 {{date}}",
+    "modal": {
+      "title": "新建周期任务",
+      "titleLabel": "标题 *",
+      "titlePlaceholder": "例如：发放工资",
+      "notes": "备注",
+      "notesPlaceholder": "细节、清单、链接…",
+      "client": "客户",
+      "noClient": "不关联客户",
+      "priority": "优先级",
+      "frequency": "频率",
+      "firstDate": "首次日期",
+      "hint": "每个周期都会创建一项新的待办任务，到期日为其执行日期，之后按频率推进日期。",
+      "submit": "保存模板",
+      "titleRequired": "请填写标题",
+      "firstDateRequired": "请填写首次日期",
+      "createFailed": "创建周期任务失败"
+    }
+  },
+  "calendar": {
+    "newEvent": "新建日程",
+    "today": "今天",
+    "monthView": "月视图",
+    "listView": "列表视图",
+    "filters": {
+      "all": "全部",
+      "appointment": "预约",
+      "task": "任务",
+      "meeting": "会议",
+      "reminder": "提醒"
+    },
+    "types": {
+      "appointment": "预约",
+      "task": "任务",
+      "meeting": "会议",
+      "reminder": "提醒"
+    },
+    "more": "还有 {{count}} 项",
+    "allDay": "全天",
+    "durationHoursMinutes": "{{hours}} 小时 {{minutes}} 分钟",
+    "durationMinutes": "{{minutes}} 分钟",
+    "empty": {
+      "all": "本月没有日程",
+      "appointment": "本月没有预约",
+      "task": "本月没有任务",
+      "meeting": "本月没有会议",
+      "reminder": "本月没有提醒"
+    },
+    "modal": {
+      "title": "新建日程",
+      "titlePlaceholder": "日程标题",
+      "date": "日期",
+      "type": "类型",
+      "color": "颜色",
+      "allDay": "全天",
+      "client": "客户（可选）",
+      "noClient": "不关联客户",
+      "unnamed": "未命名",
+      "descriptionPlaceholder": "说明（可选）",
+      "submit": "创建日程",
+      "durationMinutes": "{{count}} 分钟",
+      "durationHours": "{{count}} 小时"
+    },
+    "detail": {
+      "reopen": "重新打开",
+      "complete": "标记完成",
+      "confirmDelete": "确定删除这个日程吗？"
+    }
+  },
+  "reminders": {
+    "title": "自动预约提醒",
+    "subtitle": "AI 会自动致电确认即将到来的预约。",
+    "leadBefore": "在预约开始前",
+    "leadAfter": "致电客户。",
+    "unitHours": "小时",
+    "unitDays": "天",
+    "save": "保存",
+    "saved": "已保存！",
+    "noNumber": "请在<link>设置 → AI 语音助手</link>中连接一个电话号码，才能拨打提醒电话。",
+    "upcoming": "即将发出的提醒",
+    "empty": "没有留有电话号码的近期预约。",
+    "unnamed": "未命名",
+    "when": "预约 {{start}} · 提醒 {{reminder}}",
+    "off": "提醒已关闭——打开上方的开关并保存，即可开始自动致电。",
+    "status": {
+      "pending": "已排期",
+      "queued": "即将拨出",
+      "calling": "拨打中…",
+      "done": "已致电",
+      "failed": "失败"
+    }
+  },
+  "alexReminder": {
+    "queued": "Alex 已为你创建一项任务",
+    "seeTasks": "查看任务",
+    "summary_one": "<b>{{count}} 张逾期发票</b>，共计 <b>{{total}}</b>，尚未发送任何催款提醒。",
+    "summary_other": "<b>{{count}} 张逾期发票</b>，共计 <b>{{total}}</b>，尚未发送任何催款提醒。",
+    "ask": "请 Alex 去催收"
+  },
+  "errors": {
+    "notAuthenticated": "尚未登录",
+    "noOrg": "未选择组织",
+    "titleRequired": "请填写标题",
+    "firstRunDateRequired": "请填写首次执行日期"
+  }
+}

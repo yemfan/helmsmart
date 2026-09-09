@@ -112,6 +112,18 @@ export type Priority = "low" | "normal" | "high";
 const INTENTS: Intent[] = ["question", "booking", "billing", "complaint", "other"];
 const PRIORITIES: Priority[] = ["low", "normal", "high"];
 
+/*
+ * The owner reads an intent in two places, and they resolve differently.
+ *
+ * On screen — the Inbox badge — it is UI copy, so it is translated at RENDER
+ * time from the `inbox` bundle (`badges.intent.<intent>`) against whatever
+ * language that reader has picked. `Intent` itself stays the stored value.
+ *
+ * The English below is only for text this module WRITES rather than renders:
+ * the task titles the SMS and email webhooks compose. A webhook has no reader
+ * and no request locale, so it stores one canonical string rather than
+ * guessing whose language to freeze into the row.
+ */
 const INTENT_LABEL: Record<Intent, string> = {
   question: "Question",
   booking: "Scheduling request",

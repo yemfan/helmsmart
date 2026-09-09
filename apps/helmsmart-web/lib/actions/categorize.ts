@@ -3,6 +3,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/server";
 import { normalizePayee } from "@/lib/payee";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -53,6 +55,10 @@ export async function categorizeTransactions(
   orgId: string,
   limit = 50
 ): Promise<{ categorized: number; error?: string }> {
+  // Read the locale FIRST: the Plaid sync route fires this off without
+  // awaiting it, so the cookie has to be read while the request is still up.
+  const locale = await getServerLocale();
+  const t = await getServerT("books");
   const service = await createServiceClient();
 
   // 1. Fetch org metadata for context
@@ -62,7 +68,7 @@ export async function categorizeTransactions(
     .eq("id", orgId)
     .single();
 
-  if (!org) return { categorized: 0, error: "Organization not found." };
+  if (!org) return { categorized: 0, error: t("transactions.errors.orgNotFound") };
 
   // 2. Fetch chart of accounts (expense + revenue only — those are the targets)
   const { data: coa } = await service
@@ -73,7 +79,7 @@ export async function categorizeTransactions(
     .in("type", ["expense", "revenue", "asset", "liability"])
     .order("code");
 
-  if (!coa?.length) return { categorized: 0, error: "No chart of accounts found." };
+  if (!coa?.length) return { categorized: 0, error: t("transactions.errors.noChartOfAccounts") };
 
   // 3. Fetch uncategorized transactions
   const { data: txns } = await service
@@ -99,18 +105,18 @@ export async function categorizeTransactions(
 
   let memoryMatched = 0;
   const toAi: RawTxn[] = [];
-  for (const t of txns as RawTxn[]) {
-    const key = normalizePayee(t.merchant_name ?? t.name);
+  for (const txn of txns as RawTxn[]) {
+    const key = normalizePayee(txn.merchant_name ?? txn.name);
     const remembered = key ? payeeMap.get(key) : undefined;
     if (remembered) {
       const { error } = await service
         .from("bank_transactions")
         .update({ coa_account_id: remembered, ai_category_confidence: 1, ai_suggested_memo: null })
-        .eq("id", t.id)
+        .eq("id", txn.id)
         .eq("organization_id", orgId);
       if (!error) memoryMatched++;
     } else {
-      toAi.push(t);
+      toAi.push(txn);
     }
   }
 
@@ -124,11 +130,11 @@ export async function categorizeTransactions(
 
   // 5. Build transaction list (only the payees memory didn't already handle)
   const txnText = toAi
-    .map((t) => {
-      const direction = t.amount > 0 ? "DEBIT (money out)" : "CREDIT (money in)";
-      const merchant = t.merchant_name ?? t.name;
-      const cat = t.personal_finance_category ?? t.category_legacy?.join(" > ") ?? "";
-      return `ID:${t.id} | ${t.date} | ${direction} $${Math.abs(t.amount).toFixed(2)} | ${merchant} | ${cat}`;
+    .map((txn) => {
+      const direction = txn.amount > 0 ? "DEBIT (money out)" : "CREDIT (money in)";
+      const merchant = txn.merchant_name ?? txn.name;
+      const cat = txn.personal_finance_category ?? txn.category_legacy?.join(" > ") ?? "";
+      return `ID:${txn.id} | ${txn.date} | ${direction} $${Math.abs(txn.amount).toFixed(2)} | ${merchant} | ${cat}`;
     })
     .join("\n");
 
@@ -142,7 +148,7 @@ Rules:
 - Match as specifically as possible (e.g. "UBER" → Auto & Truck Expenses, not Other Expenses)
 - For transfers between own accounts, use the most appropriate asset account
 - confidence: 0.95+ very sure, 0.80-0.94 reasonably sure, 0.60-0.79 uncertain, below 0.60 = use Other
-- memo: 3-8 word plain-English description of what the charge is for
+- memo: 3-8 word plain-language description of what the charge is for
 
 Respond ONLY with valid JSON matching this schema exactly:
 {
@@ -150,6 +156,17 @@ Respond ONLY with valid JSON matching this schema exactly:
     { "transaction_id": "uuid", "account_code": "code", "confidence": 0.0, "memo": "string" }
   ]
 }`;
+
+  // The owner reads `memo`, so it comes back in their language. Everything
+  // else in the response is a wire value: `transaction_id` and
+  // `account_code` are looked up by exact match, and a translated code is
+  // silently dropped. Appended only for a non-English reader, so the
+  // English prompt stays one stable cache prefix.
+  const directive = languageDirectiveForJson(locale);
+  const system = directive
+    ? `${systemPrompt}${directive}
+"transaction_id" and "account_code" are identifiers copied from the input above. Reproduce them character for character; never translate or reformat them. Only "memo" is prose.`
+    : systemPrompt;
 
   const userPrompt = `Chart of accounts (code | name | type):
 ${coaText}
@@ -162,7 +179,7 @@ ${txnText}`;
     const message = await anthropic.messages.create({
       model: "claude-opus-4-5",
       max_tokens: 4096,
-      system: systemPrompt,
+      system,
       messages: [{ role: "user", content: userPrompt }],
     });
 
@@ -176,7 +193,7 @@ ${txnText}`;
     result = JSON.parse(json) as ClaudeResult;
   } catch (err) {
     console.error("[categorize] Claude call failed:", err);
-    return { categorized: 0, error: "AI categorization failed." };
+    return { categorized: 0, error: t("transactions.errors.categorizeFailed") };
   }
 
   if (!result.categorizations?.length) return { categorized: 0 };

@@ -10,6 +10,9 @@ import { createNotification } from "@/lib/actions/notifications";
 import { refreshClientLifetimeValue } from "@/lib/actions/clients";
 import { runAutomations } from "@/lib/automation-engine";
 import { sendReminderForInvoice, type ReminderInvoice } from "@/lib/invoice-reminders";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { money } from "@/lib/books-format";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,11 +36,12 @@ export async function createInvoice(data: {
   notes: string;
   lines: InvoiceLine[];
 }) {
+  const t = await getServerT("books");
   const denied = await checkActionPermission("invoices.write");
   if (denied) throw new Error(denied.error);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
   const id = await insertInvoiceWithLines(supabase, orgId, data);
@@ -49,9 +53,10 @@ export async function createInvoice(data: {
 // ─── Send invoice ─────────────────────────────────────────────────────────────
 
 export async function sendInvoice(invoiceId: string) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -66,11 +71,11 @@ export async function sendInvoice(invoiceId: string) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!inv) throw new Error("Invoice not found");
+  if (!inv) throw new Error(t("invoices.errors.notFound"));
 
   const clientRaw = inv.clients as { first_name: string | null; last_name: string | null; email: string | null } | null;
   const clientArr = Array.isArray(clientRaw) ? clientRaw[0] : clientRaw;
-  if (!clientArr?.email) throw new Error("Client has no email address");
+  if (!clientArr?.email) throw new Error(t("invoices.errors.clientNoEmail"));
 
   const clientName = [clientArr.first_name, clientArr.last_name].filter(Boolean).join(" ") || "there";
   const lines = (Array.isArray(inv.invoice_lines) ? inv.invoice_lines : []) as {
@@ -236,9 +241,10 @@ export async function sendInvoice(invoiceId: string) {
 // ─── Send payment reminder (manual) ───────────────────────────────────────────
 
 export async function sendInvoiceReminder(invoiceId: string) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
   const { data: inv } = await supabase
@@ -250,10 +256,10 @@ export async function sendInvoiceReminder(invoiceId: string) {
     .eq("organization_id", orgId)
     .single();
 
-  if (!inv) throw new Error("Invoice not found");
+  if (!inv) throw new Error(t("invoices.errors.notFound"));
 
   const res = await sendReminderForInvoice(supabase, inv as ReminderInvoice);
-  if (!res.sent) throw new Error(res.reason ?? "Could not send reminder");
+  if (!res.sent) throw new Error(res.reason ?? t("invoices.errors.reminderFailed"));
 
   revalidatePath("/books/invoices");
   revalidatePath(`/books/invoices/${invoiceId}`);
@@ -262,9 +268,10 @@ export async function sendInvoiceReminder(invoiceId: string) {
 // ─── Mark paid → post journal entry ──────────────────────────────────────────
 
 export async function markInvoicePaid(invoiceId: string, bankAccountId: string) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
 
@@ -287,9 +294,9 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
   const inv  = invRes.data;
   const bank = bankRes.data;
 
-  if (!inv)  throw new Error("Invoice not found");
-  if (!bank) throw new Error("Bank account not found");
-  if (!bank.coa_account_id) throw new Error("Bank account has no CoA mapping — set it in Settings first");
+  if (!inv)  throw new Error(t("invoices.errors.notFound"));
+  if (!bank) throw new Error(t("invoices.errors.bankNotFound"));
+  if (!bank.coa_account_id) throw new Error(t("invoices.errors.bankNoCoaMapping"));
 
   const lines = (Array.isArray(inv.invoice_lines) ? inv.invoice_lines : []) as {
     description: string; amount: number; coa_account_id: string | null;
@@ -325,7 +332,7 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
     .select("id")
     .single();
 
-  if (jeErr || !je) throw new Error(jeErr?.message ?? "Failed to create journal entry");
+  if (jeErr || !je) throw new Error(jeErr?.message ?? t("invoices.errors.journalEntryFailed"));
 
   // One DR line for the bank (full total)
   const journalLines = [
@@ -386,11 +393,14 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
     revalidatePath(`/clients/${inv.client_id}`);
   }
 
-  // Fire notification
+  // Fire notification — the owner reads this one, so it speaks their language
+  // and their organization's currency.
   await createNotification({
     type: "invoice_paid",
-    title: `Payment received: $${total.toFixed(2)}`,
-    body: `Invoice ${inv.invoice_number} marked as paid`,
+    title: t("invoices.notifications.paymentReceived", {
+      amount: money(total, await getServerLocale(), await orgCurrency(orgId)),
+    }),
+    body: t("invoices.notifications.markedPaid", { number: inv.invoice_number }),
     link: `/books/invoices/${invoiceId}`,
   });
 
@@ -407,9 +417,10 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
 // ─── Void invoice ─────────────────────────────────────────────────────────────
 
 export async function voidInvoice(invoiceId: string) {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
   await supabase

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { BusinessHours } from "@/lib/receptionist";
+import { getServerT } from "@/lib/i18n/server";
 
 async function ctx() {
   const cookieStore = await cookies();
@@ -18,14 +19,15 @@ async function ctx() {
 // ─── Business hours ─────────────────────────────────────────────────────────────
 
 export async function saveBusinessHours(hours: BusinessHours): Promise<{ error?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const { error } = await supabase
     .from("organizations")
     .update({ business_hours: hours })
     .eq("id", orgId);
-  if (error) return { error: "Couldn't save business hours." };
+  if (error) return { error: t("errors.saveHours") };
 
   revalidatePath("/voice");
   return {};
@@ -40,11 +42,12 @@ export async function upsertAppointmentType(input: {
   description?: string | null;
   active?: boolean;
 }): Promise<{ error?: string; id?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const name = input.name.trim();
-  if (!name) return { error: "Name is required." };
+  if (!name) return { error: t("errors.nameRequired") };
 
   const row = {
     organization_id: orgId,
@@ -60,7 +63,7 @@ export async function upsertAppointmentType(input: {
       .update(row)
       .eq("id", input.id)
       .eq("organization_id", orgId);
-    if (error) return { error: "Couldn't save appointment type." };
+    if (error) return { error: t("errors.saveApptType") };
     revalidatePath("/voice");
     return { id: input.id };
   }
@@ -70,21 +73,22 @@ export async function upsertAppointmentType(input: {
     .insert(row)
     .select("id")
     .single();
-  if (error || !data) return { error: "Couldn't create appointment type." };
+  if (error || !data) return { error: t("errors.createApptType") };
   revalidatePath("/voice");
   return { id: data.id };
 }
 
 export async function deleteAppointmentType(id: string): Promise<{ error?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const { error } = await supabase
     .from("appointment_types")
     .delete()
     .eq("id", id)
     .eq("organization_id", orgId);
-  if (error) return { error: "Couldn't delete appointment type." };
+  if (error) return { error: t("errors.deleteApptType") };
   revalidatePath("/voice");
   return {};
 }
@@ -97,12 +101,13 @@ export async function upsertKnowledgeEntry(input: {
   content: string;
   active?: boolean;
 }): Promise<{ error?: string; id?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const title = input.title.trim();
   const content = input.content.trim();
-  if (!title || !content) return { error: "Title and content are required." };
+  if (!title || !content) return { error: t("errors.titleContentRequired") };
 
   const row = { organization_id: orgId, title, content, active: input.active ?? true };
 
@@ -112,7 +117,7 @@ export async function upsertKnowledgeEntry(input: {
       .update(row)
       .eq("id", input.id)
       .eq("organization_id", orgId);
-    if (error) return { error: "Couldn't save knowledge entry." };
+    if (error) return { error: t("errors.saveKnowledge") };
     revalidatePath("/voice");
     return { id: input.id };
   }
@@ -122,21 +127,22 @@ export async function upsertKnowledgeEntry(input: {
     .insert(row)
     .select("id")
     .single();
-  if (error || !data) return { error: "Couldn't create knowledge entry." };
+  if (error || !data) return { error: t("errors.createKnowledge") };
   revalidatePath("/voice");
   return { id: data.id };
 }
 
 export async function deleteKnowledgeEntry(id: string): Promise<{ error?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const { error } = await supabase
     .from("knowledge_base")
     .delete()
     .eq("id", id)
     .eq("organization_id", orgId);
-  if (error) return { error: "Couldn't delete knowledge entry." };
+  if (error) return { error: t("errors.deleteKnowledge") };
   revalidatePath("/voice");
   return {};
 }
@@ -144,15 +150,16 @@ export async function deleteKnowledgeEntry(id: string): Promise<{ error?: string
 // ─── Google Calendar ────────────────────────────────────────────────────────────
 
 export async function disconnectGoogleCalendar(): Promise<{ error?: string }> {
+  const t = await getServerT("voice");
   const { orgId, supabase, user } = await ctx();
-  if (!orgId || !user) return { error: "Unauthorized." };
+  if (!orgId || !user) return { error: t("errors.unauthorized") };
 
   const { error } = await supabase
     .from("org_oauth_tokens")
     .delete()
     .eq("organization_id", orgId)
     .eq("provider", "google");
-  if (error) return { error: "Couldn't disconnect Google Calendar." };
+  if (error) return { error: t("errors.disconnectCalendar") };
   revalidatePath("/voice");
   return {};
 }

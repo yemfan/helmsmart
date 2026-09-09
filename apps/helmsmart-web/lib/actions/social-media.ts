@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Upload an image for a social post to the public "social-media" bucket (under the
@@ -15,19 +16,20 @@ export async function uploadSocialImage(
   formData: FormData,
 ): Promise<{ url: string } | { error: string }> {
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image first." };
-  if (!file.type.startsWith("image/")) return { error: "That file isn't an image." };
+  const t = await getServerT("marketing");
+  if (!(file instanceof File) || file.size === 0) return { error: t("errors.social.chooseImage") };
+  if (!file.type.startsWith("image/")) return { error: t("errors.social.notAnImage") };
   // Instagram rejects PNG/WebP/HEIC for feed images — only JPEG publishes reliably.
   if (!/^image\/(jpe?g)$/i.test(file.type)) {
-    return { error: "Use a JPG image — Instagram only accepts JPEG for photo posts." };
+    return { error: t("errors.social.jpegOnly") };
   }
-  if (file.size > 8 * 1024 * 1024) return { error: "Image must be under 8 MB." };
+  if (file.size > 8 * 1024 * 1024) return { error: t("errors.social.imageTooLarge") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "You're not signed in." };
+  if (!user) return { error: t("errors.social.notSignedIn") };
 
   const path = `${user.id}/${Date.now()}.jpg`;
   const { error: upErr } = await supabase.storage

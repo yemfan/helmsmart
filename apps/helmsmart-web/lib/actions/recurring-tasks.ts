@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 export type RecurringFrequency = "weekly" | "monthly" | "quarterly" | "annually";
 export type TaskPriority = "low" | "normal" | "high" | "urgent";
@@ -51,9 +52,9 @@ export async function createRecurringTask(data: {
   nextRunDate: string;
 }): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
-  if (!data.title.trim()) throw new Error("Title is required");
-  if (!data.nextRunDate) throw new Error("First run date is required");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
+  if (!data.title.trim()) throw new Error((await getServerT("tasks"))("errors.titleRequired"));
+  if (!data.nextRunDate) throw new Error((await getServerT("tasks"))("errors.firstRunDateRequired"));
 
   const supabase = await createClient();
   const { error } = await supabase.from("recurring_tasks").insert({
@@ -75,7 +76,7 @@ export async function setRecurringTaskStatus(
   status: "active" | "paused"
 ): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_tasks")
@@ -87,7 +88,7 @@ export async function setRecurringTaskStatus(
 
 export async function deleteRecurringTask(id: string): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_tasks")

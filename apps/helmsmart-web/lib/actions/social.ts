@@ -12,6 +12,7 @@ import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-pla
 // It becomes a runtime value export and throws ReferenceError on every action
 // in the module.
 import type { Platform } from "@/lib/social-platforms";
+import { getServerT } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
@@ -265,7 +266,7 @@ export async function createSocialPost(data: {
   // Instagram has no text-only post — refuse here rather than let it sit queued and
   // fail later in the cron, which is the silent-stall trap this whole feature avoids.
   if (data.platform === "instagram" && !data.mediaUrl) {
-    throw new Error("Instagram posts need an image.");
+    throw new Error((await getServerT("marketing"))("errors.social.instagramNeedsImage"));
   }
 
   const supabase = await createClient();
@@ -335,7 +336,7 @@ export async function publishSocialPost(
     .eq("id", postId)
     .eq("organization_id", orgId)
     .single();
-  if (!post) return { ok: false, error: "Post not found" };
+  if (!post) return { ok: false, error: (await getServerT("marketing"))("errors.social.postNotFound") };
 
   const nowIso = new Date().toISOString();
 
@@ -369,7 +370,7 @@ export async function publishSocialPost(
         }
       : {
           status: "failed",
-          last_error: res.error ?? "Publishing failed.",
+          last_error: res.error ?? (await getServerT("marketing"))("errors.social.publishFailed"),
           updated_at: nowIso,
         },
   );

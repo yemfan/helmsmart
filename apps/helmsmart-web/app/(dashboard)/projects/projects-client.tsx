@@ -2,8 +2,10 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Plus, Folder, X, ChevronRight, Clock, DollarSign, CheckSquare, AlertCircle, Repeat, LayoutTemplate } from "lucide-react";
-import { createProject, deleteProject, type Project, type ProjectColor, type ProjectWithPnL } from "@/lib/actions/projects";
+import { Plus, Folder, X, ChevronRight, Clock, DollarSign, AlertCircle, Repeat, LayoutTemplate } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
+import { createProject, deleteProject, type ProjectColor, type ProjectWithPnL } from "@/lib/actions/projects";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,22 +18,15 @@ const COLOR_CLASSES: Record<ProjectColor, { dot: string; bg: string; text: strin
   slate:   { dot: "bg-slate-400",   bg: "bg-slate-100",  text: "text-slate-600" },
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  active: "Active", paused: "Paused", completed: "Completed", cancelled: "Cancelled",
-};
+const STATUS_FILTERS = ["active", "paused", "completed", "all"] as const;
 
 function clientName(c: { first_name: string | null; last_name: string | null; company: string | null } | null | undefined): string {
   if (!c) return "";
   return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "";
 }
 
-function fmtMoney(n: number | null) {
-  if (!n) return null;
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
-}
-
-function fmtSigned(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+function money(n: number, locale: string) {
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 }
 
 // ─── New project modal ────────────────────────────────────────────────────────
@@ -45,6 +40,7 @@ function NewProjectModal({
   onClose: () => void;
   onCreated: (p: ProjectWithPnL) => void;
 }) {
+  const { t } = useTranslation("projects");
   const [name, setName]           = useState("");
   const [description, setDesc]    = useState("");
   const [clientId, setClientId]   = useState("");
@@ -60,7 +56,7 @@ function NewProjectModal({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) { setError("Project name is required"); return; }
+    if (!name.trim()) { setError(t("newProject.nameRequired")); return; }
     setError("");
     start(async () => {
       try {
@@ -92,7 +88,7 @@ function NewProjectModal({
         });
         onClose();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to create project");
+        setError(e instanceof Error ? e.message : t("newProject.createFailed"));
       }
     });
   }
@@ -101,34 +97,34 @@ function NewProjectModal({
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-800">New project</h2>
+          <h2 className="text-base font-semibold text-slate-800">{t("newProject.title")}</h2>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {error && <p className="text-xs text-rose-600 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
+        {error && <p className="text-xs text-rose-600 flex items-center gap-1" role="alert"><AlertCircle className="w-3.5 h-3.5" />{error}</p>}
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Name *</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Website redesign" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.nameLabel")}</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("newProject.namePlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">Description</label>
-          <textarea value={description} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Project scope and goals…" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.description")}</label>
+          <textarea value={description} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder={t("newProject.descriptionPlaceholder")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Client</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.client")}</label>
             <select value={clientId} onChange={(e) => setClientId(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="">No client</option>
+              <option value="">{t("newProject.noClient")}</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{clientName(c)}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Color</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.color")}</label>
             <div className="flex items-center gap-2 mt-1">
               {COLORS.map((c) => (
                 <button key={c} type="button" onClick={() => setColor(c)} className={`w-6 h-6 rounded-full ${COLOR_CLASSES[c].dot} transition-transform ${color === c ? "scale-125 ring-2 ring-offset-1 ring-slate-400" : ""}`} />
@@ -139,11 +135,11 @@ function NewProjectModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Budget hours</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.budgetHours")}</label>
             <input type="number" min="0" step="0.5" value={budgetHours} onChange={(e) => setBudH(e.target.value)} placeholder="0" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Hourly rate</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.hourlyRate")}</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
               <input type="number" min="0" step="0.01" value={hourlyRate} onChange={(e) => setRate(e.target.value)} placeholder="0" className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -153,19 +149,19 @@ function NewProjectModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Start date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.startDate")}</label>
             <input type="date" value={startDate} onChange={(e) => setStart(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">End date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t("newProject.endDate")}</label>
             <input type="date" value={endDate} onChange={(e) => setEnd(e.target.value)} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
         <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onClick={onClose} className="flex-1 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">{t("common:actions.cancel")}</button>
           <button type="submit" disabled={isPending} className="flex-1 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
-            {isPending ? "Creating…" : "Create project"}
+            {isPending ? t("common:status.creating") : t("newProject.submit")}
           </button>
         </div>
       </form>
@@ -182,6 +178,8 @@ function ProjectCard({
   project: ProjectWithPnL;
   onDelete: (id: string) => void;
 }) {
+  const { t, i18n } = useTranslation("projects");
+  const locale = intlLocale(i18n.language);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isPending, start] = useTransition();
   const c = COLOR_CLASSES[project.color as ProjectColor] ?? COLOR_CLASSES.indigo;
@@ -209,7 +207,7 @@ function ProjectCard({
           </div>
         </div>
         <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${c.bg} ${c.text}`}>
-          {STATUS_LABELS[project.status]}
+          {t(`status.${project.status}`)}
         </span>
       </div>
 
@@ -221,18 +219,20 @@ function ProjectCard({
         {project.budget_hours && (
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
-            {project.budget_hours}h budget
+            {t("card.budgetHours", { hours: project.budget_hours })}
           </span>
         )}
         {project.hourly_rate && (
           <span className="flex items-center gap-1">
             <DollarSign className="w-3 h-3" />
-            ${project.hourly_rate}/hr
+            {t("card.rate", { rate: project.hourly_rate })}
           </span>
         )}
         {project.end_date && (
           <span>
-            Due {new Date(project.end_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+            {t("card.due", {
+              date: new Date(project.end_date + "T00:00:00").toLocaleDateString(locale, { month: "short", day: "numeric" }),
+            })}
           </span>
         )}
       </div>
@@ -241,11 +241,11 @@ function ProjectCard({
       {(project.pnl.revenue > 0 || project.pnl.profit !== 0) && (
         <div className="flex items-center justify-between mb-3 pt-2 border-t border-slate-50">
           <span className="text-xs text-slate-500">
-            {project.pnl.revenue > 0 ? "Profit" : "Cost so far"}
+            {project.pnl.revenue > 0 ? t("card.profit") : t("card.costSoFar")}
           </span>
           <div className="flex items-center gap-2">
             <span className={`text-xs font-semibold ${project.pnl.profit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-              {fmtSigned(project.pnl.profit)}
+              {money(project.pnl.profit, locale)}
             </span>
             {project.pnl.margin !== null && (
               <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
@@ -263,7 +263,7 @@ function ProjectCard({
           href={`/projects/${project.id}`}
           className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
         >
-          View project <ChevronRight className="w-3 h-3" />
+          {t("card.view")} <ChevronRight className="w-3 h-3" />
         </Link>
         <button
           onClick={handleDelete}
@@ -274,7 +274,7 @@ function ProjectCard({
               : "text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100"
           }`}
         >
-          {confirmDelete ? "Confirm delete" : "Delete"}
+          {confirmDelete ? t("card.confirmDelete") : t("common:actions.delete")}
         </button>
       </div>
     </div>
@@ -289,6 +289,8 @@ interface Props {
 }
 
 export function ProjectsClient({ initialProjects, clients }: Props) {
+  const { t, i18n } = useTranslation("projects");
+  const locale = intlLocale(i18n.language);
   const [projects, setProjects] = useState<ProjectWithPnL[]>(initialProjects);
   const [showNew, setShowNew]   = useState(false);
   const [filter, setFilter]     = useState<string>("active");
@@ -304,14 +306,16 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
   const blendedMargin = totalRevenue > 0 ? totalProfit / totalRevenue : null;
   const hasPnL        = filtered.some((p) => p.pnl.revenue > 0 || p.pnl.profit !== 0);
 
+  const statusLabel = filter === "all" ? "" : t(`status.${filter}`);
+
   return (
     <div className="p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Projects</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {activeCount} active · {completedCount} completed
+            {t("list.subtitle", { active: activeCount, completed: completedCount })}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -320,36 +324,36 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
           >
             <LayoutTemplate className="w-4 h-4" />
-            Templates
+            {t("list.templatesLink")}
           </Link>
           <Link
             href="/projects/recurring"
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
           >
             <Repeat className="w-4 h-4" />
-            Recurring
+            {t("list.recurringLink")}
           </Link>
           <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            New project
+            {t("list.new")}
           </button>
         </div>
       </div>
 
       {/* Status filter tabs */}
       <div className="flex items-center gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit">
-        {["active", "paused", "completed", "all"].map((s) => (
+        {STATUS_FILTERS.map((s) => (
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === s ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {s === "all" ? "All" : STATUS_LABELS[s]}
+            {s === "all" ? t("list.filterAll") : t(`status.${s}`)}
           </button>
         ))}
       </div>
@@ -358,25 +362,27 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
       {hasPnL && (
         <div className="flex flex-wrap items-center gap-6 mb-6 bg-white border border-slate-200 rounded-xl px-5 py-4">
           <div>
-            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Revenue</p>
-            <p className="text-lg font-semibold text-slate-800">{fmtSigned(totalRevenue)}</p>
+            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("list.revenue")}</p>
+            <p className="text-lg font-semibold text-slate-800">{money(totalRevenue, locale)}</p>
           </div>
           <div>
-            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Profit</p>
+            <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("list.profit")}</p>
             <p className={`text-lg font-semibold ${totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-              {fmtSigned(totalProfit)}
+              {money(totalProfit, locale)}
             </p>
           </div>
           {blendedMargin !== null && (
             <div>
-              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Blended margin</p>
+              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("list.blendedMargin")}</p>
               <p className={`text-lg font-semibold ${totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
                 {(blendedMargin * 100).toFixed(0)}%
               </p>
             </div>
           )}
           <p className="text-xs text-slate-400 ml-auto">
-            Across {filtered.length} {filter !== "all" ? filter : ""} project{filtered.length === 1 ? "" : "s"}
+            {filter === "all"
+              ? t("list.acrossAll", { count: filtered.length })
+              : t("list.acrossFiltered", { count: filtered.length, status: statusLabel })}
           </p>
         </div>
       )}
@@ -386,17 +392,17 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
         <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-200 rounded-2xl">
           <Folder className="w-10 h-10 text-slate-300 mb-3" />
           <p className="text-sm font-medium text-slate-500 mb-1">
-            No {filter !== "all" ? filter : ""} projects yet
+            {filter === "all" ? t("list.emptyAll") : t("list.emptyFiltered", { status: statusLabel })}
           </p>
           <p className="text-xs text-slate-400 mb-4">
-            Create a project to group time entries, tasks, and invoices.
+            {t("list.emptyHint")}
           </p>
           <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Create first project
+            {t("list.createFirst")}
           </button>
         </div>
       ) : (

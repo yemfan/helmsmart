@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerLocale } from "@/lib/i18n/server";
+import { languageDirectiveForJson } from "@/lib/i18n/directives";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -15,6 +17,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 export async function suggestExpenseAccount(
   text: string
 ): Promise<{ accountId: string; accountName: string; reason: string } | null> {
+  const locale = await getServerLocale();
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
   if (!orgId) return null;
@@ -48,11 +51,22 @@ Rules:
 - "id" MUST be one of the [id:...] values above, copied exactly.
 - Pick the most specific reasonable match. If unsure, choose the closest general account.`;
 
+  // The owner reads "reason", so it comes back in their language. "id" is a
+  // database identifier matched by exact equality, so it must survive the
+  // trip untouched — the directive says so explicitly, and the sentence
+  // below says it again in the terms this prompt uses.
+  const directive = languageDirectiveForJson(locale);
+  const system = directive
+    ? `You are a bookkeeping assistant.${directive}
+"id" is one of the [id:...] identifiers in the prompt, copied character for character — never translated, transliterated or reformatted. Only "reason" is prose for the reader.`
+    : undefined;
+
   let raw = "";
   try {
     const resp = await anthropic.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 200,
+      ...(system ? { system } : {}),
       messages: [{ role: "user", content: prompt }],
     });
     raw = (resp.content[0] as { type: string; text: string }).text ?? "";

@@ -3,37 +3,34 @@
 import { useState, useTransition, useRef } from "react";
 import Link from "next/link";
 import {
-  X, DollarSign, Mail, Phone, ChevronRight,
-  TrendingUp, Users, Edit2, Check, Sparkles,
+  X, Mail, Phone, ChevronRight,
+  Users, Edit2, Check, Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import type { PipelineStage, PipelineClient } from "./page";
 import { patchClient } from "@/lib/actions/clients";
 import { letSarahFollowUp } from "@/lib/actions/approvals";
 
 // ─── Stage config ─────────────────────────────────────────────────────────────
 
-const STAGES: { key: PipelineStage; label: string; color: string; bg: string; border: string }[] = [
-  { key: "lead",        label: "Lead",        color: "text-slate-600",  bg: "bg-slate-100",   border: "border-slate-200" },
-  { key: "qualified",   label: "Qualified",   color: "text-blue-700",   bg: "bg-blue-50",     border: "border-blue-200" },
-  { key: "proposal",    label: "Proposal",    color: "text-violet-700", bg: "bg-violet-50",   border: "border-violet-200" },
-  { key: "negotiation", label: "Negotiation", color: "text-amber-700",  bg: "bg-amber-50",    border: "border-amber-200" },
-  { key: "won",         label: "Won",         color: "text-emerald-700",bg: "bg-emerald-50",  border: "border-emerald-200" },
-  { key: "lost",        label: "Lost",        color: "text-rose-600",   bg: "bg-rose-50",     border: "border-rose-200" },
+const STAGES: { key: PipelineStage; color: string; bg: string; border: string }[] = [
+  { key: "lead",        color: "text-slate-600",  bg: "bg-slate-100",   border: "border-slate-200" },
+  { key: "qualified",   color: "text-blue-700",   bg: "bg-blue-50",     border: "border-blue-200" },
+  { key: "proposal",    color: "text-violet-700", bg: "bg-violet-50",   border: "border-violet-200" },
+  { key: "negotiation", color: "text-amber-700",  bg: "bg-amber-50",    border: "border-amber-200" },
+  { key: "won",         color: "text-emerald-700",bg: "bg-emerald-50",  border: "border-emerald-200" },
+  { key: "lost",        color: "text-rose-600",   bg: "bg-rose-50",     border: "border-rose-200" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmt(n: number | null) {
-  if (!n) return null;
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+function money(n: number, locale: string) {
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 }
 
 function daysInStage(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-}
-
-function clientName(c: PipelineClient): string {
-  return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "Unnamed";
 }
 
 // ─── Client card ──────────────────────────────────────────────────────────────
@@ -49,8 +46,11 @@ function ClientCard({
   onDragStart: (e: React.DragEvent, clientId: string) => void;
   onDragEnd: () => void;
 }) {
+  const { t, i18n } = useTranslation("pipeline");
+  const locale = intlLocale(i18n.language);
   const days = daysInStage(client.stage_changed_at);
   const value = client.expected_value ?? client.lifetime_value;
+  const name = [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || t("card.unnamed");
 
   return (
     <div
@@ -64,17 +64,17 @@ function ClientCard({
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-700 transition-colors">
-            {clientName(client)}
+            {name}
           </p>
           {client.company && [client.first_name, client.last_name].some(Boolean) && (
             <p className="text-xs text-slate-400 truncate">{client.company}</p>
           )}
         </div>
-        {value && (
+        {value ? (
           <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full flex-shrink-0">
-            {fmt(value)}
+            {money(value, locale)}
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Contact row */}
@@ -96,7 +96,7 @@ function ClientCard({
       {/* Days in stage */}
       <div className="flex items-center justify-between mt-2">
         <span className="text-[11px] text-slate-400">
-          {days === 0 ? "Today" : `${days}d`}
+          {days === 0 ? t("card.today") : t("card.daysInStage", { count: days })}
         </span>
         {client.pipeline_note && (
           <span className="text-[11px] text-slate-400 truncate max-w-[120px]">
@@ -119,11 +119,14 @@ function DetailPanel({
   onClose: () => void;
   onUpdate: (id: string, patch: Partial<PipelineClient>) => void;
 }) {
+  const { t } = useTranslation("pipeline");
   const [note, setNote] = useState(client.pipeline_note ?? "");
   const [value, setValue] = useState(client.expected_value?.toString() ?? "");
   const [editNote, setEditNote] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [sarahStatus, setSarahStatus] = useState<"idle" | "queued" | "no_phone" | "error">("idle");
+
+  const name = [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || t("card.unnamed");
 
   function askSarah() {
     startTransition(async () => {
@@ -168,7 +171,7 @@ function DetailPanel({
         {/* Header */}
         <div className="flex items-start justify-between px-6 py-5 border-b border-slate-100 flex-shrink-0">
           <div>
-            <h2 className="text-base font-semibold text-slate-800">{clientName(client)}</h2>
+            <h2 className="text-base font-semibold text-slate-800">{name}</h2>
             {client.company && [client.first_name, client.last_name].some(Boolean) && (
               <p className="text-xs text-slate-500 mt-0.5">{client.company}</p>
             )}
@@ -182,16 +185,16 @@ function DetailPanel({
           {/* Stage badge + days */}
           <div className="flex items-center gap-3">
             <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${stage.bg} ${stage.color}`}>
-              {stage.label}
+              {t(`stages.${stage.key}`)}
             </span>
             <span className="text-xs text-slate-400">
-              {days === 0 ? "Since today" : `${days} day${days !== 1 ? "s" : ""} in stage`}
+              {days === 0 ? t("detail.sinceToday") : t("detail.daysInStage", { count: days })}
             </span>
           </div>
 
           {/* Expected value */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">Expected value</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("detail.expectedValue")}</label>
             <div className="relative flex items-center gap-2">
               <span className="absolute left-3 text-slate-400 text-sm">$</span>
               <input
@@ -210,10 +213,10 @@ function DetailPanel({
           {/* Note */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-medium text-slate-500">Note</label>
+              <label className="text-xs font-medium text-slate-500">{t("detail.note")}</label>
               {!editNote && (
                 <button onClick={() => setEditNote(true)} className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                  <Edit2 className="w-3 h-3" /> Edit
+                  <Edit2 className="w-3 h-3" /> {t("common:actions.edit")}
                 </button>
               )}
             </div>
@@ -223,7 +226,7 @@ function DetailPanel({
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   rows={3}
-                  placeholder="Deal notes, next steps…"
+                  placeholder={t("detail.notePlaceholder")}
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
                 <div className="flex gap-2">
@@ -232,23 +235,23 @@ function DetailPanel({
                     disabled={isPending}
                     className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50"
                   >
-                    <Check className="w-3 h-3" /> Save
+                    <Check className="w-3 h-3" /> {t("common:actions.save")}
                   </button>
                   <button onClick={() => { setNote(client.pipeline_note ?? ""); setEditNote(false); }} className="px-3 py-1.5 border border-slate-200 text-xs font-medium text-slate-600 rounded-lg hover:bg-slate-50">
-                    Cancel
+                    {t("common:actions.cancel")}
                   </button>
                 </div>
               </div>
             ) : (
               <p className="text-sm text-slate-600 whitespace-pre-wrap">
-                {note || <span className="text-slate-400 italic">No note</span>}
+                {note || <span className="text-slate-400 italic">{t("detail.noNote")}</span>}
               </p>
             )}
           </div>
 
           {/* Contact info */}
           <div className="space-y-2">
-            <p className="text-xs font-medium text-slate-500">Contact</p>
+            <p className="text-xs font-medium text-slate-500">{t("detail.contact")}</p>
             {client.email && (
               <a href={`mailto:${client.email}`} className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700">
                 <Mail className="w-3.5 h-3.5" />
@@ -265,7 +268,7 @@ function DetailPanel({
 
           {/* Move to stage */}
           <div>
-            <p className="text-xs font-medium text-slate-500 mb-2">Move to stage</p>
+            <p className="text-xs font-medium text-slate-500 mb-2">{t("detail.moveToStage")}</p>
             <div className="grid grid-cols-3 gap-2">
               {STAGES.filter((s) => s.key !== client.pipeline_stage).map((s) => (
                 <button
@@ -274,7 +277,7 @@ function DetailPanel({
                   disabled={isPending}
                   className={`py-2 rounded-lg text-xs font-medium transition-colors ${s.bg} ${s.color} border ${s.border} hover:opacity-80 disabled:opacity-40`}
                 >
-                  {s.label}
+                  {t(`stages.${s.key}`)}
                 </button>
               ))}
             </div>
@@ -288,12 +291,12 @@ function DetailPanel({
             <div>
               {sarahStatus === "queued" ? (
                 <p className="text-xs text-emerald-700 flex items-center gap-1.5 font-medium">
-                  <Check className="w-3.5 h-3.5" /> Sarah created a task for you — <a href="/tasks" className="underline">see Tasks</a>
+                  <Check className="w-3.5 h-3.5" /> {t("detail.sarah.queued")} — <a href="/tasks" className="underline">{t("detail.sarah.seeTasks")}</a>
                 </p>
               ) : sarahStatus === "no_phone" ? (
-                <p className="text-xs text-slate-400">No phone number on file.</p>
+                <p className="text-xs text-slate-400">{t("detail.sarah.noPhone")}</p>
               ) : sarahStatus === "error" ? (
-                <p className="text-xs text-rose-500">Something went wrong — try again.</p>
+                <p className="text-xs text-rose-500" role="alert">{t("common:errors.generic")}</p>
               ) : (
                 <button
                   onClick={askSarah}
@@ -301,7 +304,7 @@ function DetailPanel({
                   className="flex items-center gap-1.5 w-full text-left px-3 py-2 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 disabled:opacity-50 transition-colors"
                 >
                   <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-                  {isPending ? "Drafting…" : "Ask Sarah to follow up"}
+                  {isPending ? t("detail.sarah.drafting") : t("detail.sarah.ask")}
                 </button>
               )}
             </div>
@@ -310,7 +313,7 @@ function DetailPanel({
             href={`/clients/${client.id}`}
             className="flex items-center justify-between text-sm font-medium text-slate-700 hover:text-indigo-700 transition-colors group"
           >
-            View full profile
+            {t("detail.viewProfile")}
             <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
@@ -336,6 +339,8 @@ function BoardColumn({
   onDragEnd: () => void;
   onDrop: (stage: PipelineStage) => void;
 }) {
+  const { t, i18n } = useTranslation("pipeline");
+  const locale = intlLocale(i18n.language);
   const [dragOver, setDragOver] = useState(false);
   const total = clients.reduce((s, c) => s + (c.expected_value ?? 0), 0);
 
@@ -350,7 +355,7 @@ function BoardColumn({
       <div className={`mb-3 px-3 py-2 rounded-xl ${stage.bg} border ${stage.border}`}>
         <div className="flex items-center justify-between">
           <span className={`text-xs font-semibold uppercase tracking-wide ${stage.color}`}>
-            {stage.label}
+            {t(`stages.${stage.key}`)}
           </span>
           <span className={`text-xs font-bold ${stage.color} opacity-60`}>
             {clients.length}
@@ -358,7 +363,7 @@ function BoardColumn({
         </div>
         {total > 0 && (
           <p className={`text-xs mt-0.5 font-medium ${stage.color} opacity-70`}>
-            {fmt(total)}
+            {money(total, locale)}
           </p>
         )}
       </div>
@@ -382,7 +387,7 @@ function BoardColumn({
           <div className={`rounded-xl border-2 border-dashed h-20 flex items-center justify-center transition-colors ${
             dragOver ? "border-indigo-300 bg-indigo-50" : "border-slate-200"
           }`}>
-            <span className="text-xs text-slate-400">Drop here</span>
+            <span className="text-xs text-slate-400">{t("board.dropHere")}</span>
           </div>
         )}
       </div>
@@ -392,7 +397,9 @@ function BoardColumn({
 
 // ─── Main board ───────────────────────────────────────────────────────────────
 
-export function PipelineBoard({ initialClients, title = "Pipeline", owner }: { initialClients: PipelineClient[]; title?: string; owner?: React.ReactNode }) {
+export function PipelineBoard({ initialClients, title, owner }: { initialClients: PipelineClient[]; title?: string; owner?: React.ReactNode }) {
+  const { t, i18n } = useTranslation("pipeline");
+  const locale = intlLocale(i18n.language);
   const [clients, setClients] = useState<PipelineClient[]>(initialClients);
   const [selected, setSelected] = useState<PipelineClient | null>(null);
   const [, startTransition] = useTransition();
@@ -439,22 +446,22 @@ export function PipelineBoard({ initialClients, title = "Pipeline", owner }: { i
         <div className="flex items-center justify-between">
           <div>
             {owner ? <div className="mb-3">{owner}</div> : null}
-            <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
+            <h1 className="text-2xl font-semibold text-slate-900">{title ?? t("board.title")}</h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              Drag clients between stages · {activeClients.length} active deal{activeClients.length !== 1 ? "s" : ""}
+              {t("board.subtitle", { count: activeClients.length })}
             </p>
           </div>
           <div className="flex items-center gap-6">
             {pipelineValue > 0 && (
               <div className="text-right">
-                <p className="text-xs text-slate-500">Pipeline value</p>
-                <p className="text-lg font-bold text-slate-800 tabular-nums">{fmt(pipelineValue)}</p>
+                <p className="text-xs text-slate-500">{t("board.pipelineValue")}</p>
+                <p className="text-lg font-bold text-slate-800 tabular-nums">{money(pipelineValue, locale)}</p>
               </div>
             )}
             {wonValue > 0 && (
               <div className="text-right">
-                <p className="text-xs text-slate-500">Won</p>
-                <p className="text-lg font-bold text-emerald-700 tabular-nums">{fmt(wonValue)}</p>
+                <p className="text-xs text-slate-500">{t("board.won")}</p>
+                <p className="text-lg font-bold text-emerald-700 tabular-nums">{money(wonValue, locale)}</p>
               </div>
             )}
             <Link
@@ -462,7 +469,7 @@ export function PipelineBoard({ initialClients, title = "Pipeline", owner }: { i
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               <Users className="w-4 h-4" />
-              Manage clients
+              {t("board.manageClients")}
             </Link>
           </div>
         </div>

@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import { createClient } from "@/lib/supabase/server";
 import { encrypt } from "@/lib/crypto";
+import { getServerT } from "@/lib/i18n/server";
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -40,13 +41,19 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: (await getServerT("books"))("transactions.plaid.unauthorized") },
+        { status: 401 },
+      );
     }
 
     // Resolve org from cookie
     const orgId = request.cookies.get("helmsmart-org-id")?.value;
     if (!orgId) {
-      return NextResponse.json({ error: "No organization found." }, { status: 400 });
+      return NextResponse.json(
+        { error: (await getServerT("books"))("transactions.plaid.noOrganization") },
+        { status: 400 },
+      );
     }
 
     const body = await request.json() as {
@@ -65,7 +72,10 @@ export async function POST(request: NextRequest) {
     const { public_token, institution, accounts = [] } = body;
 
     if (!public_token) {
-      return NextResponse.json({ error: "public_token is required." }, { status: 400 });
+      return NextResponse.json(
+        { error: (await getServerT("books"))("transactions.plaid.missingPublicToken") },
+        { status: 400 },
+      );
     }
 
     // Exchange public token for access token
@@ -93,7 +103,7 @@ export async function POST(request: NextRequest) {
     if (connError || !connection) {
       console.error("[plaid] insert bank_connection error:", connError);
       return NextResponse.json(
-        { error: "Failed to save bank connection." },
+        { error: (await getServerT("books"))("transactions.plaid.saveConnectionFailed") },
         { status: 500 }
       );
     }
@@ -130,7 +140,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("[plaid] exchange-token error:", err);
     return NextResponse.json(
-      { error: "Failed to exchange Plaid token." },
+      { error: (await getServerT("books"))("transactions.plaid.exchangeFailed") },
       { status: 500 }
     );
   }

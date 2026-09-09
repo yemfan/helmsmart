@@ -2,17 +2,15 @@
 
 import { useActionState, useState } from "react";
 import { X, UserPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { createClient_ } from "@/lib/actions/clients";
 import type { ClientState } from "@/lib/actions/clients";
 
-const STATUS_OPTIONS = [
-  { value: "lead",     label: "Lead" },
-  { value: "prospect", label: "Prospect" },
-  { value: "active",   label: "Active Client" },
-  { value: "inactive", label: "Inactive" },
-];
+// The values are what the database stores; only the labels are copy.
+const STATUS_VALUES = ["lead", "prospect", "active", "inactive"] as const;
 
 export function AddClientModal() {
+  const { t } = useTranslation("clients");
   const [open, setOpen] = useState(false);
   const [state, action, isPending] = useActionState<ClientState, FormData>(
     createClient_,
@@ -29,7 +27,7 @@ export function AddClientModal() {
         className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
       >
         <UserPlus className="w-4 h-4" />
-        Add Client
+        {t("form.openAddButton")}
       </button>
 
       {open && (
@@ -43,7 +41,7 @@ export function AddClientModal() {
           {/* Modal */}
           <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 z-10">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-slate-900">Add client</h2>
+              <h2 className="text-lg font-semibold text-slate-900">{t("form.addTitle")}</h2>
               <button
                 onClick={() => setOpen(false)}
                 className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"
@@ -56,7 +54,7 @@ export function AddClientModal() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">
-                    First name <span className="text-rose-500">*</span>
+                    {t("form.firstName")} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     name="first_name"
@@ -64,102 +62,102 @@ export function AddClientModal() {
                     required
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                    placeholder="Jane"
+                    placeholder={t("form.placeholders.firstName")}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Last name</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.lastName")}</label>
                   <input
                     name="last_name"
                     type="text"
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                    placeholder="Smith"
+                    placeholder={t("form.placeholders.lastName")}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Company</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.company")}</label>
                 <input
                   name="company"
                   type="text"
                   disabled={isPending}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                  placeholder="Acme Inc."
+                  placeholder={t("form.placeholders.company")}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Email</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.email")}</label>
                   <input
                     name="email"
                     type="email"
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                    placeholder="jane@example.com"
+                    placeholder={t("form.placeholders.email")}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.phone")}</label>
                   <input
                     name="phone"
                     type="tel"
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                    placeholder="+1 (555) 000-0000"
+                    placeholder={t("form.placeholders.phone")}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.status")}</label>
                   <select
                     name="status"
                     defaultValue="lead"
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
                   >
-                    {STATUS_OPTIONS.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
+                    {STATUS_VALUES.map((s) => (
+                      <option key={s} value={s}>{t(`form.statusOptions.${s}`)}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">Source</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.source")}</label>
                   <input
                     name="source"
                     type="text"
                     disabled={isPending}
                     className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                    placeholder="Referral, website…"
+                    placeholder={t("form.placeholders.source")}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Tags <span className="text-slate-400 font-normal">(comma-separated)</span>
+                  {t("form.tags")} <span className="text-slate-400 font-normal">{t("form.tagsHint")}</span>
                 </label>
                 <input
                   name="tags"
                   type="text"
                   disabled={isPending}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
-                  placeholder="vip, contractor, repeat"
+                  placeholder={t("form.placeholders.tags")}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">Notes</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.notes")}</label>
                 <textarea
                   name="notes"
                   rows={2}
                   disabled={isPending}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 resize-none"
-                  placeholder="Any additional context…"
+                  placeholder={t("form.placeholders.notes")}
                 />
               </div>
 
@@ -176,14 +174,14 @@ export function AddClientModal() {
                   disabled={isPending}
                   className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-60"
                 >
-                  Cancel
+                  {t("form.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
                 >
-                  {isPending ? "Saving…" : "Add client"}
+                  {isPending ? t("common:status.saving") : t("form.addButton")}
                 </button>
               </div>
             </form>

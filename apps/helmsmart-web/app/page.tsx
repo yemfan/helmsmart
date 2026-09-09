@@ -7,8 +7,27 @@ import Link from "next/link";
 import { Phone, PhoneOutgoing, Inbox, Receipt, Calendar, Users, Sunrise, Sparkles, CheckCircle, Star } from "lucide-react";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { getServerT } from "@/lib/i18n/server";
+import { rich } from "./(marketing)/_rich";
 
-export default function RootPage() {
+// Copy lives in `site.landing.*`; these arrays hold only the key and the styling.
+const STEPS = ["call", "invoice", "briefing"];
+
+const FEATURES = [
+  { key: "receptionist", icon: Phone, color: "text-indigo-600 bg-indigo-50" },
+  { key: "concierge", icon: PhoneOutgoing, color: "text-teal-600 bg-teal-50" },
+  { key: "assistant", icon: Sparkles, color: "text-blue-600 bg-blue-50" },
+  { key: "inbox", icon: Inbox, color: "text-emerald-600 bg-emerald-50" },
+  { key: "invoicing", icon: Receipt, color: "text-amber-600 bg-amber-50" },
+  { key: "calendar", icon: Calendar, color: "text-violet-600 bg-violet-50" },
+  { key: "crm", icon: Users, color: "text-rose-600 bg-rose-50" },
+  { key: "briefing", icon: Sunrise, color: "text-sky-600 bg-sky-50" },
+];
+
+const STATS = ["alwaysOn", "booking", "saved"];
+
+export default async function RootPage() {
+  const t = await getServerT("site");
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -23,24 +42,23 @@ export default function RootPage() {
           <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:py-32">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700">
               <Star className="h-4 w-4 fill-indigo-400 text-indigo-400" />
-              Trusted by 500+ small businesses
+              {t("landing.badge")}
             </div>
             <h1 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              Your business answers every call, sends every invoice, and never misses a beat&nbsp;—{" "}
-              <span className="text-indigo-600">automatically.</span>
+              {rich(t("landing.hero.title"), { emClassName: "text-indigo-600" })}
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-500 sm:text-xl">
-              HelmSmart gives small businesses a 24/7 AI front office. More control, less effort.
+              {t("landing.hero.subtitle")}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/signup" className="inline-flex items-center rounded-xl bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
-                Start free trial
+                {t("landing.hero.startTrial")}
               </Link>
               <Link href="/login?next=/calendar/book" className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-7 py-3.5 text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-                Schedule Appointment
+                {t("landing.hero.schedule")}
               </Link>
               <a href="#features" className="inline-flex items-center rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-                See how it works
+                {t("landing.hero.seeHow")}
               </a>
             </div>
           </div>
@@ -50,19 +68,15 @@ export default function RootPage() {
         <section className="bg-gray-50 py-20 sm:py-28">
           <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">How it works</h2>
-              <p className="mt-3 text-lg text-gray-500">HelmSmart runs your front office so you can focus on the work you love.</p>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{t("landing.how.title")}</h2>
+              <p className="mt-3 text-lg text-gray-500">{t("landing.how.subtitle")}</p>
             </div>
             <div className="mt-14 grid gap-6 sm:grid-cols-3">
-              {[
-                { step: "01", title: "A customer calls", description: "Your AI receptionist answers every call 24/7, collects details, and books the appointment directly into your calendar — no hold music, no voicemail." },
-                { step: "02", title: "Invoice is sent", description: "The moment a job is marked complete, HelmSmart auto-generates the invoice, emails it to your client, and tracks payment status in real time." },
-                { step: "03", title: "You wake up informed", description: "Each morning your AI briefing surfaces today's appointments, overdue invoices, and any urgent messages — so you always know what matters most." },
-              ].map((item) => (
-                <div key={item.step} className="relative rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-                  <span className="text-5xl font-black text-indigo-50 select-none">{item.step}</span>
-                  <h3 className="mt-2 text-lg font-semibold text-gray-900">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.description}</p>
+              {STEPS.map((key, i) => (
+                <div key={key} className="relative rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+                  <span className="text-5xl font-black text-indigo-50 select-none">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-2 text-lg font-semibold text-gray-900">{t(`landing.how.steps.${key}.title`)}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">{t(`landing.how.steps.${key}.description`)}</p>
                 </div>
               ))}
             </div>
@@ -73,28 +87,19 @@ export default function RootPage() {
         <section id="features" className="py-20 sm:py-28">
           <div className="mx-auto max-w-5xl px-6">
             <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Everything you need to run your business</h2>
-              <p className="mt-3 text-lg text-gray-500">Powerful tools, one simple platform.</p>
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{t("landing.features.title")}</h2>
+              <p className="mt-3 text-lg text-gray-500">{t("landing.features.subtitle")}</p>
             </div>
             <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { icon: Phone,         color: "text-indigo-600 bg-indigo-50", title: "AI Receptionist",      description: "Answers every inbound call around the clock. Books appointments, captures leads, and routes urgent calls — no human operator needed." },
-                { icon: PhoneOutgoing, color: "text-teal-600 bg-teal-50",     title: "AI Concierge",  description: "Your AI makes the calls you don't have time for — appointment confirmations & reminders, lead and past-client follow-ups, surveys, and promos. Every call logged." },
-                { icon: Sparkles, color: "text-blue-600 bg-blue-50",     title: "HelmSmart AI Assistant", description: "A co-pilot on every screen: ask plain-English questions about your business and get answers from your live data, or have it draft and send the perfect text to any client." },
-                { icon: Inbox,   color: "text-emerald-600 bg-emerald-50", title: "Smart Inbox",         description: "Email and SMS in one place. AI triage surfaces urgent messages, drafts replies, and missed-call text-back turns a missed call into a lead instead of a lost one." },
-                { icon: Receipt, color: "text-amber-600 bg-amber-50",   title: "Invoicing & Bookkeeping", description: "Create and send invoices in seconds. Track expenses, flag overdue payments, and get a real-time view of your cash flow." },
-                { icon: Calendar,color: "text-violet-600 bg-violet-50", title: "Calendar & Scheduling", description: "Syncs with Google Calendar so bookings land where you already live. Avoid double-bookings and automated reminders handle no-shows." },
-                { icon: Users,   color: "text-rose-600 bg-rose-50",     title: "Client CRM",            description: "Track every client, deal, and follow-up in a simple pipeline. Know exactly where each relationship stands without digging through notes." },
-                { icon: Sunrise, color: "text-sky-600 bg-sky-50",       title: "AI Daily Briefing",     description: "Start each morning with a plain-English summary of your day — top priorities, upcoming appointments, and anything that needs your attention." },
-              ].map((feature) => {
+              {FEATURES.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm">
+                  <div key={feature.key} className="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm">
                     <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${feature.color}`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="mt-4 text-base font-semibold text-gray-900">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-gray-500">{feature.description}</p>
+                    <h3 className="mt-4 text-base font-semibold text-gray-900">{t(`landing.features.items.${feature.key}.title`)}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-500">{t(`landing.features.items.${feature.key}.description`)}</p>
                   </div>
                 );
               })}
@@ -106,14 +111,10 @@ export default function RootPage() {
         <section className="border-y border-gray-100 bg-gray-50 py-14">
           <div className="mx-auto max-w-4xl px-6">
             <dl className="grid gap-10 sm:grid-cols-3 sm:gap-0 text-center">
-              {[
-                { stat: "24/7",      label: "Always-on AI receptionist" },
-                { stat: "< 2 min",   label: "Average time to book an appointment" },
-                { stat: "10+ hours", label: "Admin time saved per week" },
-              ].map((item) => (
-                <div key={item.stat} className="sm:border-r sm:border-gray-200 last:border-0 px-4">
-                  <dt className="text-4xl font-extrabold text-indigo-600">{item.stat}</dt>
-                  <dd className="mt-2 text-sm text-gray-500">{item.label}</dd>
+              {STATS.map((key) => (
+                <div key={key} className="sm:border-r sm:border-gray-200 last:border-0 px-4">
+                  <dt className="text-4xl font-extrabold text-indigo-600">{t(`landing.stats.${key}.value`)}</dt>
+                  <dd className="mt-2 text-sm text-gray-500">{t(`landing.stats.${key}.label`)}</dd>
                 </div>
               ))}
             </dl>
@@ -123,19 +124,19 @@ export default function RootPage() {
         {/* TESTIMONIAL */}
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-3xl px-6 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Real businesses. Real results.</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{t("landing.testimonial.title")}</h2>
             <div className="mt-12 rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
               <div className="flex justify-center gap-1 mb-6">
                 {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />)}
               </div>
               <blockquote className="text-lg leading-relaxed text-gray-700 italic">
-                &ldquo;Before HelmSmart I was losing jobs every week because I couldn&rsquo;t answer the phone while on-site. Now the AI picks up every call, books the job, and sends me a summary. I haven&rsquo;t missed a lead in months — and my invoices actually go out the same day.&rdquo;
+                &ldquo;{t("landing.testimonial.quote")}&rdquo;
               </blockquote>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">SK</div>
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-900">Sarah K.</p>
-                  <p className="text-xs text-gray-500">Owner, Bright &amp; Clean Services</p>
+                  <p className="text-sm font-semibold text-gray-900">{t("landing.testimonial.author")}</p>
+                  <p className="text-xs text-gray-500">{t("landing.testimonial.role")}</p>
                 </div>
               </div>
             </div>
@@ -151,13 +152,13 @@ export default function RootPage() {
               <div className="relative">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
                   <CheckCircle className="h-4 w-4" />
-                  14-day free trial · No credit card required
+                  {t("landing.finalCta.badge")}
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Ready to take the helm?</h2>
-                <p className="mt-4 text-lg text-indigo-100">Start your 14-day free trial — no credit card required.</p>
+                <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">{t("landing.finalCta.title")}</h2>
+                <p className="mt-4 text-lg text-indigo-100">{t("landing.finalCta.subtitle")}</p>
                 <div className="mt-10">
                   <Link href="/signup" className="inline-flex items-center rounded-xl bg-white px-8 py-4 text-base font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50 transition-colors">
-                    Start free trial
+                    {t("landing.finalCta.cta")}
                   </Link>
                 </div>
               </div>

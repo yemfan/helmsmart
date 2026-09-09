@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { Zap } from "lucide-react";
 import { listAutomationRules } from "@/lib/actions/automations";
+import { getServerT } from "@/lib/i18n/server";
 import { AutomationsList } from "./automations-list";
 
-export const metadata: Metadata = { title: "Automations · HelmSmart" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("workflows");
+  return { title: `${t("meta.automations")} · HelmSmart` };
+}
 
 export default async function AutomationsPage() {
+  const t = await getServerT("workflows");
   const rules = await listAutomationRules();
 
   return (
@@ -17,10 +22,8 @@ export default async function AutomationsPage() {
             <Zap className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-slate-900">Automations</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Trigger automatic actions when business events occur
-            </p>
+            <h1 className="text-xl font-semibold text-slate-900">{t("automations.title")}</h1>
+            <p className="text-xs text-slate-500 mt-0.5">{t("automations.subtitle")}</p>
           </div>
         </div>
       </div>

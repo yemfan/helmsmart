@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus, GitBranch, CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
+import { intlLocale } from "@leadsmart/i18n";
 import { listApprovalWorkflows, listApprovalRequests } from "@/lib/actions/approval-chains";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Approval Workflows" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("workflows");
+  return { title: t("meta.list") };
+}
 
+/** Colour + icon per request status. The label comes from the bundle. */
 const STATUS_CONFIG = {
-  pending:   { label: "Pending",  color: "bg-amber-100 text-amber-700",   icon: Clock },
-  approved:  { label: "Approved", color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  rejected:  { label: "Rejected", color: "bg-rose-100 text-rose-700",     icon: XCircle },
-  cancelled: { label: "Cancelled",color: "bg-slate-100 text-slate-500",   icon: AlertCircle },
-  expired:   { label: "Expired",  color: "bg-slate-100 text-slate-500",   icon: AlertCircle },
+  pending:   { color: "bg-amber-100 text-amber-700",     icon: Clock },
+  approved:  { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  rejected:  { color: "bg-rose-100 text-rose-700",       icon: XCircle },
+  cancelled: { color: "bg-slate-100 text-slate-500",     icon: AlertCircle },
+  expired:   { color: "bg-slate-100 text-slate-500",     icon: AlertCircle },
 } as const;
 
-const TRIGGER_LABELS: Record<string, string> = {
-  estimate_over_amount: "Estimate over threshold",
-  expense_over_amount:  "Expense over threshold",
-  manual:               "Manual trigger",
-  custom:               "Custom",
-};
-
 export default async function WorkflowsPage() {
+  const t = await getServerT("workflows");
+  const locale = await getServerLocale();
   const [workflows, recentRequests] = await Promise.all([
     listApprovalWorkflows(),
     listApprovalRequests(),
@@ -34,17 +35,15 @@ export default async function WorkflowsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Approval Workflows</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Multi-step sequential approvals for estimates, expenses, and more
-          </p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("list.subtitle")}</p>
         </div>
         <Link
           href="/workflows/new"
           className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
-          New Workflow
+          {t("list.newWorkflow")}
         </Link>
       </div>
 
@@ -54,7 +53,7 @@ export default async function WorkflowsPage() {
           <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-semibold text-amber-900">
-              {pending.length} pending approval{pending.length !== 1 ? "s" : ""} waiting for your review
+              {t("list.pendingBanner", { count: pending.length })}
             </p>
             <div className="mt-2 space-y-1">
               {pending.slice(0, 3).map((r) => (
@@ -68,7 +67,7 @@ export default async function WorkflowsPage() {
               ))}
               {pending.length > 3 && (
                 <Link href="/workflows/requests" className="text-xs text-amber-700 font-medium hover:underline">
-                  +{pending.length - 3} more →
+                  {t("list.morePending", { count: pending.length - 3 })} →
                 </Link>
               )}
             </div>
@@ -79,20 +78,20 @@ export default async function WorkflowsPage() {
       <div className="grid grid-cols-[1fr_360px] gap-6">
         {/* Workflows list */}
         <div>
-          <h2 className="text-sm font-semibold text-slate-700 mb-3">Configured Workflows</h2>
+          <h2 className="text-sm font-semibold text-slate-700 mb-3">{t("list.configured")}</h2>
           {workflows.length === 0 ? (
             <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
               <GitBranch className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-slate-700">No workflows yet</p>
+              <p className="text-sm font-semibold text-slate-700">{t("list.emptyTitle")}</p>
               <p className="text-xs text-slate-400 mt-1 mb-5 max-w-xs mx-auto">
-                Create an approval workflow to require sign-offs before acting on estimates, expenses, or other items.
+                {t("list.emptyBody")}
               </p>
               <Link
                 href="/workflows/new"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Create first workflow
+                {t("list.createFirst")}
               </Link>
             </div>
           ) : (
@@ -113,17 +112,22 @@ export default async function WorkflowsPage() {
                         <p className="font-semibold text-slate-900">{wf.name}</p>
                         {!wf.is_active && (
                           <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full">
-                            Inactive
+                            {t("list.inactive")}
                           </span>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        {TRIGGER_LABELS[wf.trigger_type] ?? wf.trigger_type}
+                        {t(`triggers.${wf.trigger_type}`, { defaultValue: wf.trigger_type })}
                         {wf.trigger_config?.amount_threshold != null && (
-                          <> · over ${Number(wf.trigger_config.amount_threshold).toLocaleString()}</>
+                          <>
+                            {" · "}
+                            {t("list.overThreshold", {
+                              amount: Number(wf.trigger_config.amount_threshold).toLocaleString(intlLocale(locale)),
+                            })}
+                          </>
                         )}
                         {" · "}
-                        {stepCount} step{stepCount !== 1 ? "s" : ""}
+                        {t("list.stepCount", { count: stepCount })}
                       </p>
                     </div>
                   </Link>
@@ -136,15 +140,15 @@ export default async function WorkflowsPage() {
         {/* Recent requests */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-slate-700">Recent Requests</h2>
+            <h2 className="text-sm font-semibold text-slate-700">{t("list.recentRequests")}</h2>
             <Link href="/workflows/requests" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-              View all →
+              {t("list.viewAll")} →
             </Link>
           </div>
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             {recent.length === 0 ? (
               <div className="py-10 text-center text-xs text-slate-400">
-                No approval requests yet
+                {t("list.noRequests")}
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
@@ -167,14 +171,14 @@ export default async function WorkflowsPage() {
                           {req.subject_label}
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                          {new Date(req.requested_at).toLocaleDateString("en-US", {
+                          {new Date(req.requested_at).toLocaleDateString(intlLocale(locale), {
                             month: "short",
                             day: "numeric",
                           })}
                         </p>
                       </div>
                       <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${cfg.color}`}>
-                        {cfg.label}
+                        {t(`status.${req.status}`, { defaultValue: req.status })}
                       </span>
                     </Link>
                   );

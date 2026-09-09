@@ -4,30 +4,31 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
 import { BookOpen } from "lucide-react";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { moneyFormatter, dateFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Journal · Books" };
-
-const SOURCE_LABELS: Record<string, string> = {
-  bank_import:     "Bank import",
-  invoice:         "Invoice",
-  expense:         "Expense",
-  adjustment:      "Adjustment",
-  opening_balance: "Opening balance",
-  period_close:    "Period close",
-  reversal:        "Reversal",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("journal.metaTitle") };
+}
 
 export default async function JournalPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
   const params = await searchParams;
   const page = Math.max(1, Number(params.page ?? 1));
   const pageSize = 40;
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const currency = await orgCurrency(orgId);
+  const fmt = moneyFormatter(locale, currency);
+  const fmtDate = dateFormatter(locale, { month: "short", day: "numeric", year: "numeric" });
   const supabase = await createClient();
 
   const { data: entries, count } = await supabase
@@ -62,15 +63,15 @@ export default async function JournalPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <PageTitle base="Books" />
-          <p className="text-sm text-slate-500 mt-0.5">AI-powered bookkeeping — cash basis, double-entry</p>
+          <p className="text-sm text-slate-500 mt-0.5">{t("journal.subtitle")}</p>
         </div>
       </div>
 
       <BooksNav />
 
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-slate-700">General Ledger</h2>
-        <span className="text-xs text-slate-400">{count ?? 0} entries</span>
+        <h2 className="text-sm font-semibold text-slate-700">{t("journal.title")}</h2>
+        <span className="text-xs text-slate-400">{t("journal.entryCount", { count: count ?? 0 })}</span>
       </div>
 
       {!entries?.length ? (
@@ -78,10 +79,8 @@ export default async function JournalPage({
           <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
             <BookOpen className="w-6 h-6 text-slate-400" />
           </div>
-          <p className="text-sm font-medium text-slate-600 mb-1">No journal entries yet</p>
-          <p className="text-xs text-slate-400 max-w-xs">
-            Approve transactions in the Transactions tab to post double-entry journal entries here.
-          </p>
+          <p className="text-sm font-medium text-slate-600 mb-1">{t("journal.empty.title")}</p>
+          <p className="text-xs text-slate-400 max-w-xs">{t("journal.empty.body")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -95,27 +94,23 @@ export default async function JournalPage({
                 <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-slate-400 tabular-nums w-20">
-                      {new Date(entry.date + "T00:00:00").toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {fmtDate(entry.date)}
                     </span>
                     <span className="text-sm font-medium text-slate-700 truncate max-w-xs">
                       {entry.memo ?? "—"}
                     </span>
                     {entry.is_reversal && (
                       <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
-                        Reversal
+                        {t("journal.reversal")}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-400">
-                      {SOURCE_LABELS[entry.source_type] ?? entry.source_type}
+                      {t(`journal.sourceTypes.${entry.source_type}`, { defaultValue: entry.source_type })}
                     </span>
                     <span className="text-sm font-semibold text-slate-700 tabular-nums">
-                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalDebit)}
+                      {fmt(totalDebit)}
                     </span>
                   </div>
                 </div>
@@ -140,14 +135,10 @@ export default async function JournalPage({
                           )}
                         </span>
                         <span className="text-right tabular-nums text-slate-800">
-                          {isDebit
-                            ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
-                            : ""}
+                          {isDebit ? fmt(amount) : ""}
                         </span>
                         <span className="text-right tabular-nums text-slate-500">
-                          {!isDebit
-                            ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount)
-                            : ""}
+                          {!isDebit ? fmt(amount) : ""}
                         </span>
                       </div>
                     );
@@ -165,14 +156,16 @@ export default async function JournalPage({
           {page > 1 && (
             <a href={`/books/journal?page=${page - 1}`}
                className="px-3 py-1.5 text-sm rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600">
-              ← Previous
+              {t("journal.pagination.previous")}
             </a>
           )}
-          <span className="text-sm text-slate-500">Page {page} of {totalPages}</span>
+          <span className="text-sm text-slate-500">
+            {t("journal.pagination.pageOf", { page, total: totalPages })}
+          </span>
           {page < totalPages && (
             <a href={`/books/journal?page=${page + 1}`}
                className="px-3 py-1.5 text-sm rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600">
-              Next →
+              {t("journal.pagination.next")}
             </a>
           )}
         </div>

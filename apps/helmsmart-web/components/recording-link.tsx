@@ -1,6 +1,7 @@
 "use client";
 
 import { Mic } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Call-recording link shown inside a transcript's <summary>. It lives in its own
@@ -9,6 +10,7 @@ import { Mic } from "lucide-react";
  * Server Component, and Server Components cannot pass event handlers.
  */
 export function RecordingLink({ href }: { href: string }) {
+  const { t } = useTranslation("voice");
   return (
     <a
       href={href}
@@ -18,7 +20,7 @@ export function RecordingLink({ href }: { href: string }) {
       className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700"
     >
       <Mic className="w-3 h-3" />
-      Recording
+      {t("recording.label")}
     </a>
   );
 }

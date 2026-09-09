@@ -7,8 +7,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { intlLocale } from "@leadsmart/i18n";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email";
+import { translatorFor } from "@/lib/i18n/translator";
+import { userUiLocale } from "@/lib/i18n/userLocale";
+import { orgOwnerRecipients } from "@/lib/org-recipients";
 import twilio from "twilio";
 import { notifySlackFormSubmission, notifySlackNewLead } from "@/lib/integrations/slack";
 
@@ -171,24 +175,41 @@ export async function POST(
     }
 
     // Notify via email
+    //
+    // This alert is the OWNER's half of a form submission — the visitor's half
+    // is `form.success_message` below, which stays in whatever language the
+    // owner wrote the form in. There is no request behind this one either: the
+    // visitor's browser is what called us, and their language is not the
+    // owner's. So the copy comes from the recipient's stored preference.
     const notifyEmail = form.notify_email;
     if (notifyEmail && emailEnabled) {
+      // `notify_email` is a free-text address. When it belongs to an owner or
+      // admin of the org we know their language; when it is a shared inbox or
+      // an outside bookkeeper, nobody has a stored preference and it is
+      // English — the same answer as before, reached honestly.
+      const owners = await orgOwnerRecipients(db, form.organization_id);
+      const match = owners.find(
+        (r) => r.email.toLowerCase() === String(notifyEmail).toLowerCase(),
+      );
+      const locale = match ? await userUiLocale(match.userId) : null;
+      const t = translatorFor(locale, "emails");
+
       const fieldLines = fields
         .map((f: { id: string; label: string }) => `<tr><td style="padding:4px 0;font-weight:bold;">${f.label}:</td><td style="padding:4px 8px;">${body[f.id] ?? "—"}</td></tr>`)
         .join("\n");
 
       await sendEmail({
-        fromName: "HelmSmart Forms",
+        fromName: t("formAlert.fromName"),
         to: notifyEmail,
-        subject: `New form submission: ${form.title}`,
+        subject: t("formAlert.subject", { form: form.title }),
         html: `
-          <h2 style="margin:0 0 16px">New submission: ${form.title}</h2>
+          <h2 style="margin:0 0 16px">${t("formAlert.heading", { form: form.title })}</h2>
           <table style="border-collapse:collapse;font-size:14px;">
             ${fieldLines}
           </table>
           <p style="margin-top:16px;color:#64748b;font-size:12px;">
-            Submitted ${new Date().toLocaleString()} ·
-            <a href="${process.env.NEXT_PUBLIC_APP_URL ?? ""}/forms/${form.id}/submissions">View in HelmSmart →</a>
+            ${t("formAlert.submitted", { date: new Date().toLocaleString(intlLocale(locale)) })} ·
+            <a href="${process.env.NEXT_PUBLIC_APP_URL ?? ""}/forms/${form.id}/submissions">${t("formAlert.view")}</a>
           </p>
         `,
       }).catch((e) => console.error("[forms] email notify error:", e));

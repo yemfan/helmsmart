@@ -9,12 +9,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { moneyFormatter } from "@/lib/books-format";
+import { languageDirective } from "@/lib/i18n/directives";
 
 type Message = { role: "user" | "assistant"; content: string };
 
 // ─── Business context builder ──────────────────────────────────────────────────
 
-async function buildContext(orgId: string): Promise<string> {
+async function buildContext(
+  orgId: string,
+  tr: (key: string, opts?: Record<string, unknown>) => string,
+  money: (value: number) => string,
+): Promise<string> {
   const supabase = await createClient();
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -39,7 +47,7 @@ async function buildContext(orgId: string): Promise<string> {
       .lte("date", todayStr),
   ]);
 
-  const orgName = orgRes.data?.name ?? "your business";
+  const orgName = orgRes.data?.name ?? tr("ask.yourBusiness");
   const clients = clientsRes.data ?? [];
   const invoices = invoicesRes.data ?? [];
   const txns = txnsRes.data ?? [];
@@ -66,6 +74,7 @@ async function buildContext(orgId: string): Promise<string> {
   // Summarise bank transactions (MTD)
   let mtdRevenue = 0;
   let mtdExpenses = 0;
+  const uncategorized = tr("ask.uncategorized");
   const catMap = new Map<string, number>();
   for (const t of txns) {
     // Plaid sign convention: negative = inflow (revenue), positive = outflow (expense)
@@ -73,14 +82,14 @@ async function buildContext(orgId: string): Promise<string> {
       mtdRevenue += Math.abs(t.amount);
     } else {
       mtdExpenses += t.amount;
-      const cat = t.personal_finance_category ?? "Uncategorized";
+      const cat = t.personal_finance_category ?? uncategorized;
       catMap.set(cat, (catMap.get(cat) ?? 0) + t.amount);
     }
   }
   const topCats = Array.from(catMap.entries())
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
-    .map(([cat, amt]) => `  • ${cat.replace(/_/g, " ").toLowerCase()}: $${amt.toFixed(2)}`)
+    .map(([cat, amt]) => `  • ${cat.replace(/_/g, " ").toLowerCase()}: ${money(amt)}`)
     .join("\n");
 
   return `Organization: ${orgName}
@@ -90,27 +99,35 @@ CLIENTS (${clients.length} total)
   Active: ${clientCounts["active"] ?? 0}  |  Leads: ${clientCounts["lead"] ?? 0}  |  Prospects: ${clientCounts["prospect"] ?? 0}  |  Inactive: ${clientCounts["inactive"] ?? 0}
 
 INVOICES
-  Outstanding (unpaid): ${outstanding.length} invoices · $${totalOutstanding.toFixed(2)}
+  Outstanding (unpaid): ${outstanding.length} invoices · ${money(totalOutstanding)}
   Overdue:              ${overdue.length} invoices
-  Paid (all-time):      ${paid.length} invoices · $${totalPaid.toFixed(2)}
+  Paid (all-time):      ${paid.length} invoices · ${money(totalPaid)}
 
 BANK TRANSACTIONS (month-to-date)
-  Revenue:  $${mtdRevenue.toFixed(2)}
-  Expenses: $${mtdExpenses.toFixed(2)}
-  Net:      $${(mtdRevenue - mtdExpenses).toFixed(2)}
+  Revenue:  ${money(mtdRevenue)}
+  Expenses: ${money(mtdExpenses)}
+  Net:      ${money(mtdRevenue - mtdExpenses)}
 ${topCats ? `\n  Top expense categories:\n${topCats}` : ""}`;
 }
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  /*
+   * Every string below is rendered straight into the assistant panel, so the
+   * owner reads it: the failures are translated here rather than at the two
+   * call sites that show whatever text came back.
+   */
+  const t = await getServerT("home");
+  const locale = await getServerLocale();
+
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) return new NextResponse("Unauthorized", { status: 401 });
+  if (!orgId) return new NextResponse(t("ask.errors.unauthorized"), { status: 401 });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return new NextResponse("AI not configured — set ANTHROPIC_API_KEY", { status: 503 });
+    return new NextResponse(t("ask.errors.notConfigured"), { status: 503 });
   }
 
   let messages: Message[] = [];
@@ -118,11 +135,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     messages = (body.messages ?? []) as Message[];
   } catch {
-    return new NextResponse("Invalid JSON", { status: 400 });
+    return new NextResponse(t("ask.errors.invalidRequest"), { status: 400 });
   }
-  if (!messages.length) return new NextResponse("No messages provided", { status: 400 });
+  if (!messages.length) return new NextResponse(t("ask.errors.noMessages"), { status: 400 });
 
-  const context = await buildContext(orgId);
+  const currency = await orgCurrency(orgId);
+  const money = moneyFormatter(locale, currency);
+  const context = await buildContext(orgId, t, money);
   const anthropic = new Anthropic({ apiKey });
 
   const encoder = new TextEncoder();
@@ -132,7 +151,10 @@ export async function POST(request: NextRequest) {
         const stream = anthropic.messages.stream({
           model: "claude-3-5-haiku-20241022",
           max_tokens: 1024,
-          system: `You are an AI business assistant with access to real-time data from the user's business. Answer concisely and specifically. Format currency as USD. Use bullet points for lists. Today's live business snapshot:\n\n${context}`,
+          // The owner reads this answer, so it comes back in their language.
+          system: `You are an AI business assistant with access to real-time data from the user's business. Answer concisely and specifically. Format currency as ${currency}. Use bullet points for lists.${languageDirective(
+            locale,
+          )}\n\nToday's live business snapshot:\n\n${context}`,
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
         });
 
@@ -145,9 +167,10 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch (err) {
-        const msg =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        controller.enqueue(encoder.encode(`\n\n[Error: ${msg}]`));
+        const msg = err instanceof Error ? err.message : "";
+        controller.enqueue(
+          encoder.encode(`\n\n${t("ask.errors.stream", { message: msg || t("ask.error") })}`),
+        );
       } finally {
         controller.close();
       }

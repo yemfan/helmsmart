@@ -7,6 +7,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import {
   generateSocialTopics,
   setTopicStatus,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/actions/topics";
 
 export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopic[] }) {
+  const { t } = useTranslation("marketing");
   const [topics, setTopics] = useState<SocialTopic[]>(initialTopics);
   const [error, setError] = useState<string | null>(null);
   const [manual, setManual] = useState("");
@@ -23,8 +25,8 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
   const [sched, setSched] = useState<{ scheduled: number; enabled: boolean } | null>(null);
   const [pending, start] = useTransition();
 
-  const suggested = topics.filter((t) => t.status === "suggested");
-  const approved = topics.filter((t) => t.status === "approved");
+  const suggested = topics.filter((topic) => topic.status === "suggested");
+  const approved = topics.filter((topic) => topic.status === "approved");
 
   function schedule() {
     setError(null);
@@ -32,7 +34,7 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
     start(async () => {
       const res = await applyApprovedTopicsToSchedule();
       if (!res.ok) {
-        setError(res.error ?? "Couldn't update the schedule.");
+        setError(res.error ?? t("social.topics.scheduleError"));
         return;
       }
       setSched({ scheduled: res.scheduled ?? 0, enabled: res.enabled ?? false });
@@ -44,7 +46,7 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
     start(async () => {
       const res = await generateSocialTopics(8);
       if (!res.ok) {
-        setError(res.error ?? "Something went wrong.");
+        setError(res.error ?? t("social.topics.genericError"));
         return;
       }
       setOpen(true);
@@ -56,8 +58,8 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
     // Optimistic: archived drops off the list; approve/re-suggest flips status.
     setTopics((prev) =>
       status === "archived"
-        ? prev.filter((t) => t.id !== id)
-        : prev.map((t) => (t.id === id ? { ...t, status } : t)),
+        ? prev.filter((topic) => topic.id !== id)
+        : prev.map((topic) => (topic.id === id ? { ...topic, status } : topic)),
     );
     start(async () => {
       await setTopicStatus(id, status);
@@ -100,9 +102,9 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
           >
             ▶
           </span>
-          <span className="text-sm font-semibold text-slate-900">Post topics</span>
+          <span className="text-sm font-semibold text-slate-900">{t("social.topics.title")}</span>
           <span className="text-xs text-slate-500">
-            AI ideas from your business — approve the ones to schedule
+            {t("social.topics.subtitle")}
           </span>
         </button>
         <button
@@ -112,14 +114,14 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
           className="shrink-0 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white
                      hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-          {pending ? "Generating…" : "✨ Generate topics"}
+          {pending ? t("common:status.generating") : t("social.topics.generate")}
         </button>
       </div>
 
       {open && (
         <div className="border-t border-slate-100 px-5 py-4 space-y-4">
           {error && (
-            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" role="alert">
               {error}
             </p>
           )}
@@ -128,31 +130,31 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
           {suggested.length > 0 && (
             <div>
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
-                Suggested · review these
+                {t("social.topics.suggestedHeading")}
               </p>
               <ul className="space-y-1.5">
-                {suggested.map((t) => (
+                {suggested.map((topic) => (
                   <li
-                    key={t.id}
+                    key={topic.id}
                     className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2"
                   >
-                    <span className="text-sm text-slate-800">{t.topic}</span>
+                    <span className="text-sm text-slate-800">{topic.topic}</span>
                     <span className="flex shrink-0 gap-1.5">
                       <button
                         type="button"
-                        onClick={() => update(t.id, "approved")}
+                        onClick={() => update(topic.id, "approved")}
                         disabled={pending}
                         className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-60"
                       >
-                        Approve
+                        {t("social.topics.approve")}
                       </button>
                       <button
                         type="button"
-                        onClick={() => update(t.id, "archived")}
+                        onClick={() => update(topic.id, "archived")}
                         disabled={pending}
                         className="rounded-md bg-slate-50 px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 disabled:opacity-60"
                       >
-                        Dismiss
+                        {t("social.topics.dismiss")}
                       </button>
                     </span>
                   </li>
@@ -165,7 +167,7 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-                Approved · ready to schedule
+                {t("social.topics.approvedHeading")}
               </p>
               {approved.length > 0 && (
                 <button
@@ -174,44 +176,40 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
                   disabled={pending}
                   className="shrink-0 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-60"
                 >
-                  📅 Add to weekly schedule
+                  {t("social.topics.addToSchedule")}
                 </button>
               )}
             </div>
             {sched && (
               <p className="mb-2 text-xs text-emerald-700">
-                Added {sched.scheduled} topic{sched.scheduled === 1 ? "" : "s"} to your weekly
-                schedule.
+                {t("social.topics.added", { count: sched.scheduled })}
                 {!sched.enabled && (
                   <>
                     {" "}
-                    Turn on{" "}
                     <Link href="/settings?tab=marketing" className="underline">
-                      Social autopilot
-                    </Link>{" "}
-                    to start posting them.
+                      {t("social.topics.turnOnAutopilot")}
+                    </Link>
                   </>
                 )}
               </p>
             )}
             {approved.length === 0 ? (
               <p className="text-xs text-slate-400">
-                No approved topics yet. Generate ideas above and approve the ones you like, or add
-                your own below.
+                {t("social.topics.empty")}
               </p>
             ) : (
               <ul className="flex flex-wrap gap-2">
-                {approved.map((t) => (
+                {approved.map((topic) => (
                   <li
-                    key={t.id}
+                    key={topic.id}
                     className="group inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs text-emerald-800"
                   >
-                    {t.topic}
+                    {topic.topic}
                     <button
                       type="button"
-                      onClick={() => update(t.id, "archived")}
+                      onClick={() => update(topic.id, "archived")}
                       disabled={pending}
-                      title="Remove"
+                      title={t("social.topics.remove")}
                       className="text-emerald-400 hover:text-emerald-700 disabled:opacity-60"
                     >
                       ×
@@ -235,7 +233,7 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
                 }
               }}
               maxLength={160}
-              placeholder="Add your own topic…"
+              placeholder={t("social.topics.addPlaceholder")}
               className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                          focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
@@ -245,7 +243,7 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
               disabled={pending || !manual.trim()}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Add
+              {t("social.topics.add")}
             </button>
           </div>
         </div>

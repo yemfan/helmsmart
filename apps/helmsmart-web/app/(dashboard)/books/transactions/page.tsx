@@ -6,14 +6,23 @@ import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
 import { TransactionReviewRow } from "@/components/transaction-review-row";
 import { Download } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
 
-export const metadata: Metadata = { title: "Transactions · Books" };
+/** The three states the filter tabs offer; also the `?filter=` values. */
+const FILTERS = ["pending", "all", "reviewed"] as const;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("transactions.list.metaTitle") };
+}
 
 export default async function TransactionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
+  const t = await getServerT("books");
   const params = await searchParams;
   const filter = params.filter ?? "pending"; // pending | all | reviewed
   const page = Math.max(1, Number(params.page ?? 1));
@@ -21,6 +30,7 @@ export default async function TransactionsPage({
 
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const currency = await orgCurrency(orgId);
 
   const supabase = await createClient();
 
@@ -67,7 +77,7 @@ export default async function TransactionsPage({
         <div>
           <PageTitle base="Books" />
           <p className="text-sm text-slate-500 mt-0.5">
-            AI-powered bookkeeping — cash basis, double-entry
+            {t("transactions.list.subtitle")}
           </p>
         </div>
       </div>
@@ -77,11 +87,11 @@ export default async function TransactionsPage({
       {/* Filter tabs */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-          {(["pending", "all", "reviewed"] as const).map((f) => (
+          {FILTERS.map((f) => (
             <a
               key={f}
               href={`/books/transactions?filter=${f}`}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 filter === f
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
@@ -89,28 +99,28 @@ export default async function TransactionsPage({
             >
               {f === "pending" ? (
                 <span className="flex items-center gap-1.5">
-                  Needs review
+                  {t("transactions.filters.pending")}
                   {pendingCount > 0 && (
                     <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-indigo-600 text-white text-[10px] font-bold">
                       {pendingCount > 99 ? "99+" : pendingCount}
                     </span>
                   )}
                 </span>
-              ) : f}
+              ) : t(`transactions.filters.${f}`)}
             </a>
           ))}
         </div>
 
         <div className="flex items-center gap-3">
           <span className="text-xs text-slate-400">
-            {count ?? 0} transaction{count !== 1 ? "s" : ""}
+            {t("transactions.list.count", { count: count ?? 0 })}
           </span>
           <Link
             href="/api/export/transactions"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
-            Export CSV
+            {t("transactions.list.exportCsv")}
           </Link>
         </div>
       </div>
@@ -119,23 +129,23 @@ export default async function TransactionsPage({
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {/* Header */}
         <div className="grid grid-cols-[90px_1fr_160px_100px_90px] gap-4 px-4 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-          <span>Date</span>
-          <span>Description</span>
-          <span>Category</span>
-          <span className="text-right">Amount</span>
-          <span className="text-right">Action</span>
+          <span>{t("transactions.list.columns.date")}</span>
+          <span>{t("transactions.list.columns.description")}</span>
+          <span>{t("transactions.list.columns.category")}</span>
+          <span className="text-right">{t("transactions.list.columns.amount")}</span>
+          <span className="text-right">{t("transactions.list.columns.action")}</span>
         </div>
 
         {!txns?.length ? (
           <div className="py-16 text-center text-sm text-slate-400">
             {filter === "pending"
-              ? "No transactions need review 🎉"
-              : "No transactions found."}
+              ? t("transactions.list.emptyPending")
+              : t("transactions.list.empty")}
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {txns.map((t) => (
-              <TransactionReviewRow key={t.id} transaction={t} coa={coa} />
+            {txns.map((tx) => (
+              <TransactionReviewRow key={tx.id} transaction={tx} coa={coa} currency={currency} />
             ))}
           </div>
         )}
@@ -149,18 +159,18 @@ export default async function TransactionsPage({
               href={`/books/transactions?filter=${filter}&page=${page - 1}`}
               className="px-3 py-1.5 text-sm rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
             >
-              ← Previous
+              {t("transactions.list.previous")}
             </a>
           )}
           <span className="text-sm text-slate-500">
-            Page {page} of {totalPages}
+            {t("transactions.list.page", { page, total: totalPages })}
           </span>
           {page < totalPages && (
             <a
               href={`/books/transactions?filter=${filter}&page=${page + 1}`}
               className="px-3 py-1.5 text-sm rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
             >
-              Next →
+              {t("transactions.list.next")}
             </a>
           )}
         </div>

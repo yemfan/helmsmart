@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { createProjectTemplate, type TemplateTask } from "@/lib/actions/project-templates";
 
 interface StarterTemplate {
@@ -15,6 +16,7 @@ interface StarterTemplate {
 }
 
 export function ImportStarterButton({ template }: { template: StarterTemplate }) {
+  const { t } = useTranslation("projects");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -26,10 +28,10 @@ export function ImportStarterButton({ template }: { template: StarterTemplate })
         color: template.color,
         budgetHours: template.budget_hours,
         defaultDurationDays: template.default_duration_days,
-        defaultTasks: template.default_tasks.map((t) => ({
-          title: t.title,
-          priority: t.priority as TemplateTask["priority"],
-          offset_days: t.offset_days,
+        defaultTasks: template.default_tasks.map((task) => ({
+          title: task.title,
+          priority: task.priority as TemplateTask["priority"],
+          offset_days: task.offset_days,
         })),
       });
       router.refresh();
@@ -43,7 +45,7 @@ export function ImportStarterButton({ template }: { template: StarterTemplate })
       className="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded-lg py-1.5 hover:bg-indigo-50 transition-colors disabled:opacity-50"
     >
       <Plus className="w-3.5 h-3.5" />
-      {isPending ? "Adding…" : "Add to my templates"}
+      {isPending ? t("common:status.adding") : t("templates.import")}
     </button>
   );
 }

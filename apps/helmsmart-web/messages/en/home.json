@@ -1,0 +1,435 @@
+{
+  "dashboard": {
+    "metaTitle": "Dashboard",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "clientSummary_one": "{{count}} active client · {{total}} total",
+    "clientSummary_other": "{{count}} active clients · {{total}} total",
+    "actions": {
+      "newInvoice": "New invoice",
+      "clients": "Clients"
+    },
+    "kpi": {
+      "bankBalance": "Bank Balance",
+      "bankBalanceLinked": "All connected accounts",
+      "bankBalanceEmpty": "Link a bank account",
+      "revenueMtd": "Revenue (MTD)",
+      "expensesMtd": "Expenses (MTD)",
+      "outstanding": "Outstanding",
+      "outstandingInvoices_one": "{{count}} invoice",
+      "outstandingInvoices_other": "{{count}} invoices",
+      "outstandingWithOverdue": "{{invoices}} · {{overdue}} overdue"
+    },
+    "chart": {
+      "title": "Revenue vs Expenses",
+      "subtitle": "Last 6 months",
+      "fullReport": "Full report"
+    },
+    "cashFlow": {
+      "title": "Cash Flow Outlook",
+      "viewForecast": "View forecast",
+      "cashOnHand": "Cash on hand",
+      "linkedAccounts": "Linked accounts",
+      "linkABank": "Link a bank",
+      "expectedIn": "Expected in",
+      "overdueAmount": "{{amount}} overdue",
+      "openInvoices": "Open invoices",
+      "expectedOut": "Expected out",
+      "dueNow": "{{amount}} due now",
+      "openBills": "Open bills",
+      "projected90": "Projected (90d)",
+      "afterOpenItems": "After open items",
+      "dipWarning": "Projected cash dips to {{amount}} within 90 days. Prioritize collections on overdue invoices or delay non-urgent bills."
+    },
+    "projects": {
+      "title": "Active Projects",
+      "profit": "{{amount}} profit",
+      "viewAll": "View all",
+      "empty": "No active projects",
+      "create": "Create a project →",
+      "budgetHours": "{{hours}}h budget",
+      "noBudget": "No budget",
+      "overdueDays": "{{count}}d overdue",
+      "dueToday": "Due today",
+      "daysLeft": "{{count}}d left"
+    },
+    "uninvoiced": {
+      "title": "Uninvoiced Time",
+      "allInvoiced": "All time invoiced",
+      "allInvoicedHint": "No billable hours waiting to be billed.",
+      "billable": "{{hours}} billable",
+      "notYetInvoiced": "not yet invoiced",
+      "goToTimesheets": "Go to Timesheets",
+      "createInvoice": "Create invoice"
+    },
+    "recentInvoices": {
+      "title": "Recent Invoices",
+      "viewAll": "View all",
+      "empty": "No invoices yet"
+    },
+    "recentClients": {
+      "title": "Recent Clients",
+      "viewAll": "View all",
+      "empty": "No clients yet",
+      "added": "Added {{date}}"
+    },
+    "approvals": {
+      "title": "Pending Approvals",
+      "viewAll": "View all",
+      "review": "Review →"
+    },
+    "formLeads": {
+      "title": "Recent Form Leads",
+      "allForms": "All forms",
+      "untitledForm": "Form",
+      "anonymous": "Anonymous"
+    },
+    "tasks": {
+      "title": "Upcoming Tasks",
+      "viewAll": "View all",
+      "empty": "No tasks due this week",
+      "overdue": "Overdue",
+      "today": "Today"
+    },
+    "events": {
+      "title": "Upcoming Events",
+      "calendar": "Calendar",
+      "empty": "No events in the next 7 days",
+      "allDay": "All day",
+      "today": "Today"
+    },
+    "duration": {
+      "minutes": "{{minutes}}m",
+      "hours": "{{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    }
+  },
+  "invoiceStatus": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "void": "Void"
+  },
+  "clientStatus": {
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "estimateStatus": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "accepted": "Accepted",
+    "declined": "Declined",
+    "expired": "Expired"
+  },
+  "projectStatus": {
+    "active": "Active",
+    "paused": "Paused",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "taskStatus": {
+    "open": "Open",
+    "in_progress": "In progress",
+    "done": "Done",
+    "cancelled": "Cancelled"
+  },
+  "metrics": {
+    "calls_answered": "Calls Answered",
+    "messages_sent": "Messages Sent",
+    "appointments_booked": "Appointments Booked",
+    "insights_delivered": "Insights Delivered",
+    "tokens": "Tokens",
+    "cost_cents": "Cost",
+    "revenue_cents": "Revenue",
+    "conversion_rate": "Conversion Rate",
+    "funnel_sessions": "Funnel Sessions"
+  },
+  "commandCenter": {
+    "metaTitle": "Command Center",
+    "title": "Command Center",
+    "subtitle": "Your business at a glance — AI workforce activity and department health over the last 30 days",
+    "workforceHeading": "AI Workforce",
+    "nodes": {
+      "aiWorkforce": "AI Workforce",
+      "finance": "Finance",
+      "revenue": "Revenue",
+      "communication": "Communication",
+      "marketing": "Marketing",
+      "operations": "Operations",
+      "service": "Service",
+      "intelligence": "Intelligence",
+      "people": "People",
+      "knowledge": "Knowledge"
+    },
+    "kpi": {
+      "employees": "Employees",
+      "health": "Health"
+    },
+    "briefing": {
+      "unconfigured": "Hire your AI workforce to activate the Command Center. Once your employees are on, their activity and department KPIs roll up here.",
+      "active": "Your AI workforce completed {{actions}} over the last 30 days across {{employees}}. Department health metrics are rolling out module by module.",
+      "actions_one": "{{count}} action",
+      "actions_other": "{{count}} actions",
+      "employees_one": "{{count}} employee",
+      "employees_other": "{{count}} employees"
+    },
+    "board": {
+      "emptyTitle": "No AI employees yet",
+      "emptyBody": "Hire your six-person AI back office — a receptionist, an SDR, and four department directors — in one click. They start in draft so you can review each before switching them on.",
+      "noActivity": "No activity yet"
+    },
+    "seed": {
+      "cta": "Set up your AI workforce",
+      "pending": "Setting up…",
+      "error": "Failed to set up workforce"
+    },
+    "avatar": {
+      "change": "Change {{name}}'s avatar",
+      "choose": "Choose an avatar for {{name}}"
+    },
+    "tim": {
+      "role": "Tim · AI CIO",
+      "todaysBriefing": "Today's briefing",
+      "overdue_one": "{{count}} invoice overdue — {{amount}} uncollected",
+      "overdue_other": "{{count}} invoices overdue — {{amount}} uncollected",
+      "urgentTasks_one": "{{count}} urgent task open",
+      "urgentTasks_other": "{{count}} urgent tasks open",
+      "openTasks_one": "{{count}} open task — none urgent",
+      "openTasks_other": "{{count}} open tasks — none urgent",
+      "allClear": "No urgent items — everything looks healthy"
+    }
+  },
+  "grid": {
+    "status": {
+      "ok": "Healthy",
+      "attention": "Needs Attention",
+      "critical": "Critical",
+      "unconfigured": "Not Configured"
+    },
+    "window": {
+      "today": "Today",
+      "mtd": "Month to Date",
+      "qtd": "Quarter to Date",
+      "ytd": "Year to Date"
+    },
+    "cooBriefing": "AI COO Briefing",
+    "alertView": "View",
+    "dismissAlert": "Dismiss alert"
+  },
+  "insights": {
+    "metaTitle": "Business Insights · Tim",
+    "title": "Business Insights",
+    "subtitle": "Weekly intelligence from Tim, your AI Chief Information Officer",
+    "pastDigests": "Past digests",
+    "dateRange": "{{start}} – {{end}}",
+    "insightCount_one": "{{count}} insight",
+    "insightCount_other": "{{count}} insights",
+    "tim": {
+      "role": "AI Chief Information Officer",
+      "weekOf": "Week of {{start}} – {{end}}",
+      "refreshRecommended": "· refresh recommended",
+      "intro": "I analyze your business each week and surface the numbers that change a decision. Run your first digest now.",
+      "analysing": "Analysing…",
+      "refresh": "Refresh",
+      "run": "Run analysis",
+      "error": "Failed to generate insights",
+      "footer": "Generated {{date}} · Tim runs automatically every Monday"
+    },
+    "errors": {
+      "notAuthenticated": "Sign in again to run Tim's analysis."
+    }
+  },
+  "weeklyInsights": {
+    "defaultHeadline": "Weekly business summary",
+    "errors": {
+      "notConfigured": "AI not configured",
+      "generateFailed": "Failed to generate insights",
+      "parseFailed": "Failed to parse AI response"
+    },
+    "notification": {
+      "title": "Tim's weekly business insights are ready",
+      "body": "Your weekly digest is ready to review."
+    }
+  },
+  "briefing": {
+    "headline": "Here's what needs you today.",
+    "allClear": "You're all caught up — nothing pressing today.",
+    "chaseOverdue_one": "Chase {{count}} overdue invoice ({{amount}})",
+    "chaseOverdue_other": "Chase {{count}} overdue invoices ({{amount}})",
+    "replyUrgent_one": "Reply to {{count}} urgent message",
+    "replyUrgent_other": "Reply to {{count}} urgent messages",
+    "unread_one": "{{count}} unread message waiting in the inbox",
+    "unread_other": "{{count}} unread messages waiting in the inbox",
+    "tasksDue_one": "{{count}} task needs attention today",
+    "tasksDue_other": "{{count}} tasks need attention today"
+  },
+  "ask": {
+    "metaTitle": "Ask AI",
+    "title": "Ask AI",
+    "subtitle": "Live data from your business",
+    "newChat": "New chat",
+    "emptyTitle": "Your AI Business Assistant",
+    "emptyBody": "Ask anything about your clients, invoices, revenue, or expenses. I have access to your live business data.",
+    "suggested": {
+      "outstandingRevenue": "What's my outstanding revenue this month?",
+      "activeClients": "How many active clients do I have?",
+      "topExpenses": "What are my top expense categories?",
+      "overdueInvoices": "Do I have any overdue invoices?",
+      "netIncome": "What was my net income this month?"
+    },
+    "placeholder": "Ask about your business…",
+    "error": "Sorry, something went wrong. Please try again.",
+    "footer": "Based on live data · Enter to send · Shift+Enter for new line",
+    "errors": {
+      "unauthorized": "Sign in again to ask about your business.",
+      "notConfigured": "AI is not configured yet — add an Anthropic API key.",
+      "invalidRequest": "That request could not be read. Please try again.",
+      "noMessages": "Type a question first.",
+      "stream": "[Error: {{message}}]"
+    },
+    "yourBusiness": "your business",
+    "uncategorized": "Uncategorized"
+  },
+  "aiPanel": {
+    "open": "Open {{product}} AI",
+    "close": "Close {{product}} AI",
+    "expand": "Expand {{product}} AI",
+    "minimize": "Minimize {{product}} AI",
+    "expandShort": "Expand",
+    "minimizeShort": "Minimize",
+    "title": "{{product}} AI",
+    "subtitle": "Guide + per-client SMS drafting",
+    "dragHint": "Drag to reposition · Double-click to reset position + size",
+    "guideTab": "AI Guide",
+    "newContactTab": "New contact tab",
+    "closeTab": "Close tab",
+    "tabNotFound": "Tab not found.",
+    "resizeWidth": "Resize width",
+    "resizeWidthHint": "Drag to resize width",
+    "resizeHeight": "Resize height",
+    "resizeHeightHint": "Drag to resize height",
+    "resizePanel": "Resize panel",
+    "resizeHint": "Drag to resize",
+    "tryAsking": "Try asking:",
+    "quickPrompts": {
+      "overdue": "What invoices are overdue?",
+      "cashFlow": "How's my cash flow this month?",
+      "topClients": "Who are my top clients?",
+      "focus": "What should I focus on today?"
+    },
+    "askPlaceholder": "Ask {{product}} AI…",
+    "send": "Send",
+    "noResponse": "No response — please try again.",
+    "networkError": "Network error. Please try again.",
+    "requestFailed": "Request failed",
+    "threadLoadFailed": "Could not load thread.",
+    "threadNetworkError": "Network error loading thread.",
+    "draftFailed": "Draft failed.",
+    "sendFailed": "Send failed.",
+    "toggleFailed": "Toggle failed.",
+    "sent": "Sent.",
+    "contact": {
+      "newTab": "New contact tab",
+      "fallbackName": "Contact",
+      "noPhone": "(no phone)",
+      "change": "change",
+      "changeTitle": "Pick a different contact",
+      "searchPlaceholder": "Search a contact by name, email, phone…",
+      "searching": "Searching…",
+      "noMatch": "No contacts match.",
+      "pickFirst": "Pick a contact above to start drafting an SMS."
+    },
+    "prompt": {
+      "label": "What do you want to say?",
+      "placeholder": "e.g. \"Confirm tomorrow at 3pm\" or \"Ask if they got the invoice\"",
+      "generate": "Generate draft",
+      "drafting": "Drafting…"
+    },
+    "draft": {
+      "label": "Draft (editable)",
+      "send": "Send SMS",
+      "sending": "Sending…",
+      "noPhone": "No phone on file",
+      "autoPilotSending": "Auto Pilot sending…",
+      "autoPilotWill": "Auto Pilot will send this draft."
+    },
+    "thread": {
+      "label": "SMS thread",
+      "labelLoading": "SMS thread (loading…)",
+      "empty": "No messages yet.",
+      "statusTitle": "Status: {{status}}",
+      "statusUnknown": "unknown"
+    },
+    "autoPilot": {
+      "label": "Auto Pilot",
+      "title": "Auto Pilot — auto-send drafts and auto-reply to this client's inbound SMS."
+    },
+    "smsStatus": {
+      "delivered": "Delivered",
+      "received": "Received",
+      "failed": "Failed",
+      "undelivered": "Undelivered",
+      "blocked": "Blocked",
+      "rejected": "Rejected",
+      "queued": "Queued",
+      "accepted": "Accepted",
+      "scheduled": "Scheduled",
+      "sending": "Sending",
+      "sent": "Sent"
+    }
+  },
+  "search": {
+    "openTitle": "Search (⌘K)",
+    "trigger": "Search…",
+    "placeholder": "Search clients, invoices, transactions…",
+    "noResults": "No results for “{{query}}”",
+    "typeMore": "Type at least 2 characters to search",
+    "unnamed": "Unnamed",
+    "sections": {
+      "clients": "Clients",
+      "invoices": "Invoices",
+      "transactions": "Transactions",
+      "messages": "Messages",
+      "estimates": "Estimates",
+      "projects": "Projects",
+      "tasks": "Tasks"
+    },
+    "navigateHint": "to navigate",
+    "closeHint": "to close"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "allCaughtUp": "All caught up",
+    "empty": "No notifications yet",
+    "ago": {
+      "justNow": "just now",
+      "minutes": "{{count}}m",
+      "hours": "{{count}}h",
+      "days": "{{count}}d"
+    }
+  },
+  "comingSoon": {
+    "eta": "Coming {{eta}}"
+  },
+  "roi": {
+    "title": "Missed-call recovery — last 7 days",
+    "autoTexted": "Auto-texted",
+    "autoTextedSub": "Missed calls texted back",
+    "booked": "Booked via SMS",
+    "bookedSub": "Appointments recovered",
+    "conversion": "Conversion",
+    "noMissedCalls": "No missed calls yet",
+    "conversionSub": "{{booked}} of {{total}} leads booked"
+  },
+  "revenueChart": {
+    "empty": "No transaction data yet",
+    "revenue": "Revenue",
+    "expenses": "Expenses"
+  }
+}

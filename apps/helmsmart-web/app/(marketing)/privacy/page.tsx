@@ -1,22 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
+import { rich } from "../_rich";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy — HelmSmart",
-  description: "HelmSmart's privacy policy and data handling practices.",
+const LEADSMART_URL = "https://leadsmart-ai.com";
+const LEADSMART_LINK = {
+  href: LEADSMART_URL,
+  external: true,
+  className: "text-indigo-600 hover:text-indigo-700 font-medium",
 };
 
-export default function PrivacyPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return {
+    title: t("privacy.meta.title"),
+    description: t("privacy.meta.description"),
+  };
+}
+
+export default async function PrivacyPage() {
+  const t = await getServerT("site");
+
   return (
     <div className="bg-white">
       {/* Hero */}
       <section className="border-b border-gray-100 bg-gradient-to-b from-slate-50 to-white">
         <div className="mx-auto max-w-3xl px-6 py-20 sm:py-28">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Privacy Policy
+            {t("privacy.title")}
           </h1>
           <p className="mt-4 text-lg text-gray-500">
-            Last updated: June 8, 2026
+            {t("privacy.lastUpdated")}
           </p>
         </div>
       </section>
@@ -25,100 +39,81 @@ export default function PrivacyPage() {
       <section className="mx-auto max-w-3xl px-6 py-20">
         <div className="prose prose-sm max-w-none space-y-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
-            <p className="text-gray-600 leading-relaxed">
-              HelmSmart, a DBA of MAXY Investment Inc ("we," "us," "our," or "Company"), is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.intro.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">{t("privacy.sections.intro.p")}</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Information We Collect</h2>
-            <p className="text-gray-600 leading-relaxed mb-3">We collect information you provide directly:</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.collect.title")}</h2>
+            <p className="text-gray-600 leading-relaxed mb-3">{t("privacy.sections.collect.intro")}</p>
             <ul className="list-disc list-inside space-y-2 text-gray-600">
-              <li>Account information (name, email, company)</li>
-              <li>Contact preferences and communication history</li>
-              <li>Business information and usage data</li>
-              <li>Payment information (processed securely through third parties)</li>
-              <li>Customer support inquiries and feedback</li>
+              {["i1", "i2", "i3", "i4", "i5"].map((i) => (
+                <li key={i}>{t(`privacy.sections.collect.items.${i}`)}</li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. How We Use Your Information</h2>
-            <p className="text-gray-600 leading-relaxed mb-3">We use collected information to:</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.use.title")}</h2>
+            <p className="text-gray-600 leading-relaxed mb-3">{t("privacy.sections.use.intro")}</p>
             <ul className="list-disc list-inside space-y-2 text-gray-600">
-              <li>Provide, maintain, and improve HelmSmart services</li>
-              <li>Process transactions and send related confirmations</li>
-              <li>Send transactional emails and account notifications</li>
-              <li>Respond to your inquiries and customer support requests</li>
-              <li>Monitor and analyze service usage and trends</li>
-              <li>Detect and prevent fraud or security issues</li>
+              {["i1", "i2", "i3", "i4", "i5", "i6"].map((i) => (
+                <li key={i}>{t(`privacy.sections.use.items.${i}`)}</li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Data Security</h2>
-            <p className="text-gray-600 leading-relaxed">
-              We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.security.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">{t("privacy.sections.security.p")}</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Third-Party Services</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.thirdParty.title")}</h2>
             <p className="text-gray-600 leading-relaxed mb-3">
-              HelmSmart is built by the same team behind <Link href="https://leadsmart-ai.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700 font-medium">LeadSmart AI</Link>, and both products share similar privacy standards and infrastructure. We use third-party service providers for:
+              {rich(t("privacy.sections.thirdParty.intro"), { links: [LEADSMART_LINK] })}
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-600">
-              <li>Email delivery (Resend)</li>
-              <li>Authentication (Supabase)</li>
-              <li>Payment processing (PCI-compliant providers)</li>
-              <li>Analytics and monitoring</li>
+              {["i1", "i2", "i3", "i4"].map((i) => (
+                <li key={i}>{t(`privacy.sections.thirdParty.items.${i}`)}</li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Mobile Information &amp; Text Messaging</h2>
-            <p className="text-gray-600 leading-relaxed mb-3">
-              If you opt in to receive text messages, we collect your mobile phone number and your consent. We use them only to send the messages you requested — such as appointment reminders and confirmations, follow-ups, account and document notifications, and replies to your inquiries. Message frequency varies, and message and data rates may apply. You can opt out at any time by replying STOP, or get help by replying HELP.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.sms.title")}</h2>
+            <p className="text-gray-600 leading-relaxed mb-3">{t("privacy.sections.sms.p1")}</p>
             <p className="text-gray-600 leading-relaxed">
-              <strong>No mobile information (including your phone number and SMS opt-in or consent) is shared with or sold to third parties or affiliates for their marketing or promotional purposes.</strong> Phone numbers are shared only with our SMS delivery provider (Twilio) strictly to transmit the messages you requested, and never for any other purpose.
+              <strong>{t("privacy.sections.sms.p2")}</strong>
             </p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. User Rights</h2>
-            <p className="text-gray-600 leading-relaxed">
-              Depending on your location, you may have rights to access, correct, or delete your personal information. Contact us at privacy@helmsmart.ai to exercise these rights.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.rights.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">{t("privacy.sections.rights.p")}</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Changes to This Policy</h2>
-            <p className="text-gray-600 leading-relaxed">
-              We may update this Privacy Policy from time to time. We will notify you of any material changes by updating the date at the top of this policy.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.changes.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">{t("privacy.sections.changes.p")}</p>
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Contact Us</h2>
-            <p className="text-gray-600 leading-relaxed">
-              If you have questions about this Privacy Policy or our privacy practices, please contact us at:
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.contact.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">{t("privacy.sections.contact.p")}</p>
             <p className="text-gray-600 mt-3">
-              <strong>Email:</strong> privacy@helmsmart.ai<br />
-              <strong>Web:</strong> <Link href="/contact" className="text-indigo-600 hover:text-indigo-700">helmsmart.ai/contact</Link>
+              <strong>{t("privacy.sections.contact.emailLabel")}</strong> privacy@helmsmart.ai<br />
+              <strong>{t("privacy.sections.contact.webLabel")}</strong>{" "}
+              <Link href="/contact" className="text-indigo-600 hover:text-indigo-700">helmsmart.ai/contact</Link>
             </p>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            HelmSmart is committed to the same privacy standards as our sibling product,{" "}
-            <Link href="https://leadsmart-ai.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700">
-              LeadSmart AI
-            </Link>
-            . Both products prioritize user privacy and data security.
+            {rich(t("privacy.footerNote"), {
+              links: [{ ...LEADSMART_LINK, className: "text-indigo-600 hover:text-indigo-700" }],
+            })}
           </p>
         </div>
       </section>

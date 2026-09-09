@@ -8,8 +8,14 @@ import { PlaidLink } from "@/components/plaid-link";
 import { BooksNav } from "@/components/books-nav";
 import { ExpenseModal } from "@/components/expense-modal";
 import { PeriodSelect } from "@/components/period-select";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
-export const metadata: Metadata = { title: "Books" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("overview.metaTitle") };
+}
 
 /** Fetch live bank account balances for the org. */
 async function getBankSummary(orgId: string) {
@@ -61,25 +67,17 @@ async function getMonthTotals(orgId: string, yearMonth: string) {
   return { revenue, expenses };
 }
 
-function buildMonthOptions(): { value: string; label: string }[] {
+/** The last 12 months, labelled in the reader's locale. */
+function buildMonthOptions(locale: string): { value: string; label: string }[] {
+  const monthYear = dateFormatter(locale, { month: "long", year: "numeric" });
   const opts: { value: string; label: string }[] = [];
   const now = new Date();
   for (let i = 0; i < 12; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-    opts.push({ value, label });
+    opts.push({ value, label: monthYear(d) });
   }
   return opts;
-}
-
-function fmt(value: number | null) {
-  if (value === null) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
 }
 
 export default async function BooksPage({
@@ -91,13 +89,25 @@ export default async function BooksPage({
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
 
+  const t = await getServerT("books");
+  const locale = await getServerLocale();
+  const currency = await orgCurrency(orgId);
+  const money = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
+  const txnMoney = moneyFormatter(locale, currency);
+  const monthDay = dateFormatter(locale, { month: "short", day: "numeric" });
+
+  /** A balance the org has no data for reads as an em dash, never as a confident zero. */
+  const fmt = (value: number | null) => (value === null ? "—" : money(value));
+
   const now = new Date();
   const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const selectedMonth = monthParam ?? currentYearMonth;
   // Append a time component so the YYYY-MM-01 string is parsed as LOCAL midnight, not UTC.
   // Without it, behind-UTC timezones roll back to the previous month in the rendered label.
-  const monthLabel = new Date(selectedMonth + "-01T00:00:00").toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  const monthOptions = buildMonthOptions();
+  const monthLabel = dateFormatter(locale, { month: "long", year: "numeric" })(
+    new Date(selectedMonth + "-01T00:00:00"),
+  );
+  const monthOptions = buildMonthOptions(locale);
 
   const supabase = await createClient();
 
@@ -132,31 +142,31 @@ export default async function BooksPage({
 
   const stats = [
     {
-      label: "Bank Balance",
+      label: t("overview.stats.bankBalance"),
       value: fmt(totalBalance),
       icon: DollarSign,
-      sub: hasBank ? "All linked accounts" : "Link your bank to sync",
+      sub: hasBank ? t("overview.stats.allLinkedAccounts") : t("overview.stats.linkBankToSync"),
       color: "text-slate-400",
     },
     {
-      label: "Revenue",
+      label: t("overview.stats.revenue"),
       value: fmt(revenue),
       icon: TrendingUp,
-      sub: revenue !== null ? monthLabel : "No transactions yet",
+      sub: revenue !== null ? monthLabel : t("overview.stats.noTransactionsYet"),
       color: "text-emerald-500",
     },
     {
-      label: "Expenses",
+      label: t("overview.stats.expenses"),
       value: fmt(expenses),
       icon: TrendingDown,
-      sub: expenses !== null ? monthLabel : "No transactions yet",
+      sub: expenses !== null ? monthLabel : t("overview.stats.noTransactionsYet"),
       color: "text-rose-500",
     },
     {
-      label: "Net Profit",
+      label: t("overview.stats.netProfit"),
       value: fmt(netProfit),
       icon: DollarSign,
-      sub: netProfit !== null ? monthLabel : "No transactions yet",
+      sub: netProfit !== null ? monthLabel : t("overview.stats.noTransactionsYet"),
       color: netProfit !== null && netProfit >= 0 ? "text-indigo-500" : "text-rose-500",
     },
   ];
@@ -168,9 +178,7 @@ export default async function BooksPage({
         <div>
           <ResponsibleEmployee slug="alex" className="mb-3" />
           <PageTitle base="Books" />
-          <p className="text-sm text-slate-500 mt-0.5">
-            AI-powered bookkeeping — cash basis, double-entry
-          </p>
+          <p className="text-sm text-slate-500 mt-0.5">{t("overview.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <PeriodSelect
@@ -205,7 +213,7 @@ export default async function BooksPage({
       {/* Quick actions */}
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
         <h2 className="text-sm font-semibold text-slate-700 mb-4">
-          {hasBank ? "Actions" : "Get started"}
+          {hasBank ? t("overview.actions.title") : t("overview.actions.getStarted")}
         </h2>
         <div className="flex flex-wrap gap-3">
           {/* Live Plaid link button */}
@@ -222,22 +230,29 @@ export default async function BooksPage({
       {/* Transactions */}
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-700">Transactions</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{t("overview.transactions.title")}</h2>
           {!hasBank && (
-            <span className="text-xs text-slate-400">Link a bank to start syncing</span>
+            <span className="text-xs text-slate-400">{t("overview.transactions.linkToSync")}</span>
           )}
         </div>
 
         {hasBank ? (
-          <TransactionList orgId={orgId} />
+          <TransactionList
+            orgId={orgId}
+            emptyLabel={t("overview.transactions.syncing")}
+            pendingLabel={t("overview.transactions.pending")}
+            reviewLabel={t("overview.transactions.needsReview")}
+            money={txnMoney}
+            monthDay={monthDay}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
               <Link2 className="w-5 h-5 text-slate-400" />
             </div>
-            <p className="text-sm font-medium text-slate-600 mb-1">No bank connected yet</p>
+            <p className="text-sm font-medium text-slate-600 mb-1">{t("overview.transactions.noBankTitle")}</p>
             <p className="text-xs text-slate-400 max-w-xs">
-              Link your bank via Plaid and we&apos;ll import the last 90 days, categorized by AI.
+              {t("overview.transactions.noBankBody")}
             </p>
             <div className="mt-4">
               <PlaidLink />
@@ -250,7 +265,21 @@ export default async function BooksPage({
 }
 
 /** Recent transactions table (rendered only when a bank is connected). */
-async function TransactionList({ orgId }: { orgId: string }) {
+async function TransactionList({
+  orgId,
+  emptyLabel,
+  pendingLabel,
+  reviewLabel,
+  money,
+  monthDay,
+}: {
+  orgId: string;
+  emptyLabel: string;
+  pendingLabel: string;
+  reviewLabel: string;
+  money: (n: number) => string;
+  monthDay: (d: Date | string) => string;
+}) {
   const supabase = await createClient();
   const { data: txns } = await supabase
     .from("bank_transactions")
@@ -266,7 +295,7 @@ async function TransactionList({ orgId }: { orgId: string }) {
   if (!txns?.length) {
     return (
       <div className="py-12 text-center text-sm text-slate-400">
-        Syncing transactions… check back in a moment.
+        {emptyLabel}
       </div>
     );
   }
@@ -276,10 +305,7 @@ async function TransactionList({ orgId }: { orgId: string }) {
       {txns.map((t) => {
         // Plaid: positive = spend (debit), negative = income (credit)
         const isDebit = t.amount > 0;
-        const displayAmount = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(Math.abs(t.amount));
+        const displayAmount = money(Math.abs(t.amount));
 
         return (
           <div
@@ -288,10 +314,7 @@ async function TransactionList({ orgId }: { orgId: string }) {
           >
             {/* Date */}
             <span className="w-20 flex-shrink-0 text-xs text-slate-400 tabular-nums">
-              {new Date(t.date + "T00:00:00").toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
+              {monthDay(t.date)}
             </span>
 
             {/* Description */}
@@ -299,7 +322,7 @@ async function TransactionList({ orgId }: { orgId: string }) {
               <p className="text-sm text-slate-800 truncate">
                 {t.merchant_name ?? t.name}
                 {t.pending && (
-                  <span className="ml-2 text-xs text-amber-600 font-medium">Pending</span>
+                  <span className="ml-2 text-xs text-amber-600 font-medium">{pendingLabel}</span>
                 )}
               </p>
               {t.personal_finance_category && (
@@ -311,7 +334,7 @@ async function TransactionList({ orgId }: { orgId: string }) {
 
             {/* Review indicator */}
             {!t.reviewed && (
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" title="Needs review" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" title={reviewLabel} />
             )}
 
             {/* Amount */}

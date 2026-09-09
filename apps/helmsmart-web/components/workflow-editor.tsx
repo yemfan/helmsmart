@@ -4,21 +4,19 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { createApprovalWorkflow, updateApprovalWorkflow, deleteApprovalWorkflow } from "@/lib/actions/approval-chains";
 
-const TRIGGER_TYPES = [
-  { value: "manual", label: "Manual trigger", description: "Started manually from a record" },
-  { value: "estimate_over_amount", label: "Estimate over amount", description: "Auto-triggers when estimate total exceeds threshold" },
-  { value: "expense_over_amount", label: "Expense over amount", description: "Auto-triggers when expense amount exceeds threshold" },
-  { value: "custom", label: "Custom", description: "For any other purpose" },
-];
+/** Trigger values are stored in `approval_workflows.trigger_type`; labels come from the bundle. */
+const TRIGGER_TYPES = ["manual", "estimate_over_amount", "expense_over_amount", "custom"] as const;
 
+/** Approver roles as stored; "" means any admin or owner. */
 const ROLE_OPTIONS = [
-  { value: "", label: "Any admin or owner" },
-  { value: "owner", label: "Owner only" },
-  { value: "admin", label: "Admin or owner" },
-  { value: "bookkeeper", label: "Bookkeeper, admin, or owner" },
-];
+  { value: "", key: "any" },
+  { value: "owner", key: "owner" },
+  { value: "admin", key: "admin" },
+  { value: "bookkeeper", key: "bookkeeper" },
+] as const;
 
 interface StepInput {
   step_name: string;
@@ -39,6 +37,7 @@ interface Props {
 }
 
 export function WorkflowEditor({ workflowId, initialValues }: Props) {
+  const { t } = useTranslation("workflows");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -48,13 +47,16 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
   const [amountThreshold, setAmountThreshold] = useState(initialValues?.amountThreshold ?? "");
   const [isActive, setIsActive] = useState(initialValues?.isActive ?? true);
   const [steps, setSteps] = useState<StepInput[]>(
-    initialValues?.steps ?? [{ step_name: "Manager approval", approver_role: "admin", timeout_hours: "" }]
+    initialValues?.steps ?? [{ step_name: t("editor.firstStepName"), approver_role: "admin", timeout_hours: "" }]
   );
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const addStep = () => {
-    setSteps((prev) => [...prev, { step_name: `Step ${prev.length + 1}`, approver_role: "admin", timeout_hours: "" }]);
+    setSteps((prev) => [
+      ...prev,
+      { step_name: t("editor.nextStepName", { number: prev.length + 1 }), approver_role: "admin", timeout_hours: "" },
+    ]);
   };
 
   const removeStep = (index: number) => {
@@ -68,9 +70,9 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
   const needsAmount = triggerType === "estimate_over_amount" || triggerType === "expense_over_amount";
 
   const handleSave = () => {
-    if (!name.trim()) { setError("Workflow name is required"); return; }
-    if (steps.length === 0) { setError("Add at least one approval step"); return; }
-    if (needsAmount && !amountThreshold) { setError("Enter an amount threshold"); return; }
+    if (!name.trim()) { setError(t("editor.errors.nameRequired")); return; }
+    if (steps.length === 0) { setError(t("editor.errors.stepRequired")); return; }
+    if (needsAmount && !amountThreshold) { setError(t("editor.errors.amountRequired")); return; }
     setError(null);
     setSaved(false);
 
@@ -91,9 +93,9 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
           isActive,
           steps: mappedSteps,
         });
-        if (!result.ok) { setError(result.error ?? "Failed to save"); return; }
+        if (!result.ok) { setError(result.error ?? t("editor.errors.saveFailed")); return; }
         setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        setTimeout(() => setSaved(false), 2500);
       } else {
         const result = await createApprovalWorkflow({
           name: name.trim(),
@@ -102,14 +104,14 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
           triggerConfig,
           steps: mappedSteps,
         });
-        if (!result.ok) { setError(result.error ?? "Failed to create"); return; }
+        if (!result.ok) { setError(result.error ?? t("editor.errors.createFailed")); return; }
         router.push(`/workflows/${result.workflowId}`);
       }
     });
   };
 
   const handleDelete = () => {
-    if (!workflowId || !confirm("Delete this workflow?")) return;
+    if (!workflowId || !confirm(t("editor.deleteConfirm"))) return;
     startTransition(async () => {
       await deleteApprovalWorkflow(workflowId);
       router.push("/workflows");
@@ -123,43 +125,43 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <h1 className="text-xl font-semibold text-slate-900 flex-1">
-          {workflowId ? "Edit Workflow" : "New Approval Workflow"}
+          {workflowId ? t("editor.editTitle") : t("editor.newTitle")}
         </h1>
         <button
           onClick={handleSave}
           disabled={isPending}
           className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
         >
-          {saved ? <><CheckCircle2 className="w-3.5 h-3.5" /> Saved</> : isPending ? "Saving…" : "Save Workflow"}
+          {saved ? <><CheckCircle2 className="w-3.5 h-3.5" /> {t("editor.saved")}</> : isPending ? t("editor.saving") : t("editor.save")}
         </button>
       </div>
 
       <div className="space-y-5">
         {/* Basic info */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-4">Workflow Details</h2>
+          <h2 className="text-sm font-semibold text-slate-800 mb-4">{t("editor.detailsTitle")}</h2>
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Name <span className="text-rose-500">*</span>
+                {t("editor.nameLabel")} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isPending}
-                placeholder="e.g. Large Purchase Approval"
+                placeholder={t("editor.namePlaceholder")}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Description (optional)</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">{t("editor.descriptionLabel")}</label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={isPending}
-                placeholder="When this workflow applies"
+                placeholder={t("editor.descriptionPlaceholder")}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
               />
             </div>
@@ -168,22 +170,22 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
 
         {/* Trigger */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-4">Trigger</h2>
+          <h2 className="text-sm font-semibold text-slate-800 mb-4">{t("editor.triggerTitle")}</h2>
           <div className="space-y-2">
-            {TRIGGER_TYPES.map((t) => (
-              <label key={t.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${triggerType === t.value ? "bg-indigo-50 border-indigo-200" : "border-slate-100 hover:bg-slate-50"}`}>
+            {TRIGGER_TYPES.map((value) => (
+              <label key={value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${triggerType === value ? "bg-indigo-50 border-indigo-200" : "border-slate-100 hover:bg-slate-50"}`}>
                 <input
                   type="radio"
                   name="trigger"
-                  value={t.value}
-                  checked={triggerType === t.value}
-                  onChange={() => setTriggerType(t.value)}
+                  value={value}
+                  checked={triggerType === value}
+                  onChange={() => setTriggerType(value)}
                   disabled={!!workflowId || isPending}
                   className="mt-0.5 text-indigo-600"
                 />
                 <div>
-                  <p className="text-sm font-medium text-slate-800">{t.label}</p>
-                  <p className="text-xs text-slate-500">{t.description}</p>
+                  <p className="text-sm font-medium text-slate-800">{t(`editor.triggerTypes.${value}.label`)}</p>
+                  <p className="text-xs text-slate-500">{t(`editor.triggerTypes.${value}.description`)}</p>
                 </div>
               </label>
             ))}
@@ -191,14 +193,14 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
           {needsAmount && (
             <div className="mt-4">
               <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Amount threshold ($) <span className="text-rose-500">*</span>
+                {t("editor.amountLabel")} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
                 value={amountThreshold}
                 onChange={(e) => setAmountThreshold(e.target.value)}
                 disabled={!!workflowId || isPending}
-                placeholder="e.g. 5000"
+                placeholder={t("editor.amountPlaceholder")}
                 min="0"
                 className="w-40 text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
               />
@@ -209,7 +211,7 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
         {/* Approval steps */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800">Approval Steps</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("editor.stepsTitle")}</h2>
             <button
               type="button"
               onClick={addStep}
@@ -217,7 +219,7 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
               className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add step
+              {t("editor.addStep")}
             </button>
           </div>
           <div className="space-y-3">
@@ -228,18 +230,18 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Step name</label>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">{t("editor.stepNameLabel")}</label>
                     <input
                       type="text"
                       value={step.step_name}
                       onChange={(e) => updateStep(index, { step_name: e.target.value })}
                       disabled={isPending}
-                      placeholder="e.g. Manager review"
+                      placeholder={t("editor.stepNamePlaceholder")}
                       className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white disabled:opacity-60"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Approver role</label>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">{t("editor.approverRoleLabel")}</label>
                     <select
                       value={step.approver_role}
                       onChange={(e) => updateStep(index, { approver_role: e.target.value })}
@@ -247,18 +249,18 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
                       className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white disabled:opacity-60"
                     >
                       {ROLE_OPTIONS.map((r) => (
-                        <option key={r.value} value={r.value}>{r.label}</option>
+                        <option key={r.value} value={r.value}>{t(`editor.roles.${r.key}`)}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">Auto-escalate after (hours)</label>
+                    <label className="block text-xs font-medium text-slate-500 mb-1">{t("editor.timeoutLabel")}</label>
                     <input
                       type="number"
                       value={step.timeout_hours}
                       onChange={(e) => updateStep(index, { timeout_hours: e.target.value })}
                       disabled={isPending}
-                      placeholder="Leave blank to disable"
+                      placeholder={t("editor.timeoutPlaceholder")}
                       min="1"
                       className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white disabled:opacity-60"
                     />
@@ -289,15 +291,15 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
                 className="w-4 h-4 rounded border-slate-300 text-indigo-600"
               />
               <div>
-                <p className="text-sm font-medium text-slate-800">Workflow is active</p>
-                <p className="text-xs text-slate-500">Inactive workflows cannot accept new requests</p>
+                <p className="text-sm font-medium text-slate-800">{t("editor.activeTitle")}</p>
+                <p className="text-xs text-slate-500">{t("editor.activeHint")}</p>
               </div>
             </label>
           </div>
         )}
 
         {error && (
-          <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3" role="alert">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
           </div>
@@ -310,7 +312,7 @@ export function WorkflowEditor({ workflowId, initialValues }: Props) {
             disabled={isPending}
             className="text-xs text-rose-600 hover:text-rose-700 font-medium disabled:opacity-50"
           >
-            Delete this workflow
+            {t("editor.deleteWorkflow")}
           </button>
         )}
       </div>

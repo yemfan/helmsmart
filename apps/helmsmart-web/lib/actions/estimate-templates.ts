@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { EstimateLine } from "@/lib/actions/estimates";
+import { getServerT } from "@/lib/i18n/server";
 
 export type EstimateTemplate = {
   id: string;
@@ -36,10 +37,11 @@ export async function createEstimateTemplate(data: {
   notes: string | null;
   lines: EstimateLine[];
 }): Promise<string> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
-  if (!data.name.trim()) throw new Error("Template name is required");
-  if (!data.lines.length) throw new Error("Add at least one line item");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
+  if (!data.name.trim()) throw new Error(t("estimates.errors.templateNameRequired"));
+  if (!data.lines.length) throw new Error(t("estimates.errors.lineRequired"));
 
   const supabase = await createClient();
   const { data: tpl, error } = await supabase
@@ -54,7 +56,8 @@ export async function createEstimateTemplate(data: {
     .select("id")
     .single();
 
-  if (error || !tpl) throw new Error(error?.message ?? "Failed to save template");
+  if (error || !tpl)
+    throw new Error(error?.message ?? t("estimates.errors.templateSaveFailed"));
 
   revalidatePath("/books/estimates/templates");
   revalidatePath("/books/estimates/new");
@@ -62,8 +65,9 @@ export async function createEstimateTemplate(data: {
 }
 
 export async function deleteEstimateTemplate(id: string): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("estimates.errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("estimate_templates")

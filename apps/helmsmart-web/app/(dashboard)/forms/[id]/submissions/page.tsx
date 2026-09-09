@@ -3,8 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Users, ExternalLink } from "lucide-react";
 import { getForm, getFormSubmissions } from "@/lib/actions/forms";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Submissions · Lead Capture" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.submissions") };
+}
 
 export default async function FormSubmissionsPage({
   params,
@@ -12,9 +17,11 @@ export default async function FormSubmissionsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [form, submissions] = await Promise.all([
+  const [form, submissions, t, locale] = await Promise.all([
     getForm(id),
     getFormSubmissions(id),
+    getServerT("marketing"),
+    getServerLocale(),
   ]);
 
   if (!form) notFound();
@@ -34,7 +41,7 @@ export default async function FormSubmissionsPage({
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{form.title}</h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            {submissions.length} submission{submissions.length !== 1 ? "s" : ""}
+            {t("forms.submissions.count", { count: submissions.length })}
           </p>
         </div>
         <a
@@ -44,16 +51,16 @@ export default async function FormSubmissionsPage({
           className="ml-auto flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-indigo-600 transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5" />
-          View form
+          {t("forms.submissions.viewForm")}
         </a>
       </div>
 
       {submissions.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-16 text-center">
           <Users className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-slate-700">No submissions yet</p>
+          <p className="text-sm font-semibold text-slate-700">{t("forms.submissions.emptyTitle")}</p>
           <p className="text-xs text-slate-400 mt-1">
-            Share the form link to start collecting leads
+            {t("forms.submissions.emptyBody")}
           </p>
         </div>
       ) : (
@@ -63,16 +70,16 @@ export default async function FormSubmissionsPage({
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Date
+                    {t("forms.submissions.date")}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Name
+                    {t("forms.submissions.name")}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Email
+                    {t("forms.submissions.email")}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Phone
+                    {t("forms.submissions.phone")}
                   </th>
                   {/* Dynamic field columns (up to 3 extra) */}
                   {fields
@@ -91,7 +98,7 @@ export default async function FormSubmissionsPage({
                       </th>
                     ))}
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Lead
+                    {t("forms.submissions.lead")}
                   </th>
                 </tr>
               </thead>
@@ -101,7 +108,7 @@ export default async function FormSubmissionsPage({
                   return (
                     <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">
-                        {new Date(sub.created_at).toLocaleDateString("en-US", {
+                        {new Date(sub.created_at).toLocaleDateString(intlLocale(locale), {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
@@ -133,7 +140,7 @@ export default async function FormSubmissionsPage({
                             href={`/clients/${sub.client_id}`}
                             className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
                           >
-                            View →
+                            {t("forms.submissions.view")}
                           </Link>
                         ) : (
                           <span className="text-xs text-slate-300">—</span>

@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
 import { PublicFormRenderer } from "@/components/public-form-renderer";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,10 @@ export async function generateMetadata({
     .eq("is_active", true)
     .maybeSingle();
 
-  if (!form) return { title: "Form" };
+  if (!form) {
+    const t = await getServerT("marketing");
+    return { title: t("publicForm.metaFallback") };
+  }
   return {
     title: form.title,
     description: form.description ?? undefined,

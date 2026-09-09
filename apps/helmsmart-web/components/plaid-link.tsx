@@ -5,6 +5,7 @@ import { usePlaidLink } from "react-plaid-link";
 import type { PlaidLinkOnSuccess, PlaidLinkOnExit } from "react-plaid-link";
 import { Link2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   /** Optional: render a custom trigger instead of the default button. */
@@ -27,6 +28,7 @@ interface Props {
  */
 export function PlaidLink({ children, className = "" }: Props) {
   const router = useRouter();
+  const { t } = useTranslation("books");
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [fetchingToken, setFetchingToken] = useState(false);
   const [exchanging, setExchanging] = useState(false);
@@ -40,14 +42,14 @@ export function PlaidLink({ children, className = "" }: Props) {
     try {
       const res = await fetch("/api/plaid/create-link-token", { method: "POST" });
       const data = await res.json() as { link_token?: string; error?: string };
-      if (!res.ok || !data.link_token) throw new Error(data.error ?? "Failed to get link token");
+      if (!res.ok || !data.link_token) throw new Error(data.error ?? t("transactions.plaid.tokenFailed"));
       setLinkToken(data.link_token);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to initialize bank link.");
+      setError(e instanceof Error ? e.message : t("transactions.plaid.initFailed"));
     } finally {
       setFetchingToken(false);
     }
-  }, [linkToken, fetchingToken]);
+  }, [linkToken, fetchingToken, t]);
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
     async (publicToken, metadata) => {
@@ -71,17 +73,17 @@ export function PlaidLink({ children, className = "" }: Props) {
           }),
         });
         const data = await res.json() as { connection_id?: string; error?: string };
-        if (!res.ok) throw new Error(data.error ?? "Failed to link bank account.");
+        if (!res.ok) throw new Error(data.error ?? t("transactions.plaid.linkFailed"));
         // Refresh the page to show the newly linked accounts
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Bank link failed. Please try again.");
+        setError(e instanceof Error ? e.message : t("transactions.plaid.linkRetry"));
       } finally {
         setExchanging(false);
         setLinkToken(null); // invalidate token after use
       }
     },
-    [router]
+    [router, t]
   );
 
   const onExit = useCallback<PlaidLinkOnExit>((err) => {
@@ -121,7 +123,7 @@ export function PlaidLink({ children, className = "" }: Props) {
     return (
       <>
         {children({ open: handleClick, isReady: !!linkToken && ready, isLoading })}
-        {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+        {error && <p className="mt-2 text-xs text-rose-600" role="alert">{error}</p>}
       </>
     );
   }
@@ -140,11 +142,11 @@ export function PlaidLink({ children, className = "" }: Props) {
         ) : (
           <Link2 className="w-4 h-4" />
         )}
-        {exchanging ? "Linking account…" : fetchingToken ? "Preparing…" : "Link Bank"}
-        <span className="text-xs text-indigo-200">Connect via Plaid</span>
+        {exchanging ? t("transactions.plaid.linking") : fetchingToken ? t("transactions.plaid.preparing") : t("transactions.plaid.linkBank")}
+        <span className="text-xs text-indigo-200">{t("transactions.plaid.connectVia")}</span>
       </button>
       {error && (
-        <p className="mt-2 text-xs text-red-600">{error}</p>
+        <p className="mt-2 text-xs text-rose-600" role="alert">{error}</p>
       )}
     </div>
   );

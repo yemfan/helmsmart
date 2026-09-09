@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { Search, Users, FileText, ArrowRight, MessageSquare, CreditCard, X, FolderOpen, CheckSquare } from "lucide-react";
 
 interface SearchResults {
@@ -25,6 +27,11 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 export function GlobalSearch() {
+  const { t, i18n } = useTranslation("home");
+  const money = new Intl.NumberFormat(intlLocale(i18n.language), {
+    style: "currency",
+    currency: "USD",
+  });
   const router = useRouter();
   const [open, setOpen]       = useState(false);
   const [query, setQuery]     = useState("");
@@ -87,10 +94,10 @@ export function GlobalSearch() {
       <button
         onClick={() => setOpen(true)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors w-full"
-        title="Search (⌘K)"
+        title={t("search.openTitle")}
       >
         <Search className="w-3.5 h-3.5 flex-shrink-0" />
-        <span className="flex-1 text-left">Search…</span>
+        <span className="flex-1 text-left">{t("search.trigger")}</span>
         <kbd className="text-[10px] bg-slate-700 text-slate-500 px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
       </button>
     );
@@ -107,7 +114,7 @@ export function GlobalSearch() {
             type="text"
             value={query}
             onChange={(e) => handleInput(e.target.value)}
-            placeholder="Search clients, invoices, transactions…"
+            placeholder={t("search.placeholder")}
             className="flex-1 text-sm text-slate-800 placeholder-slate-400 outline-none"
           />
           {loading && (
@@ -121,12 +128,12 @@ export function GlobalSearch() {
         {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {!hasResults && query.length >= 2 && !loading && (
-            <div className="py-10 text-center text-sm text-slate-400">No results for "{query}"</div>
+            <div className="py-10 text-center text-sm text-slate-400">{t("search.noResults", { query })}</div>
           )}
 
           {!hasResults && query.length < 2 && (
             <div className="py-8 text-center text-xs text-slate-400">
-              Type at least 2 characters to search
+              {t("search.typeMore")}
             </div>
           )}
 
@@ -135,10 +142,10 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <Users className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Clients</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.clients")}</span>
               </div>
               {results.clients.map((c) => {
-                const name = [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "Unnamed";
+                const name = [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || t("search.unnamed");
                 return (
                   <button
                     key={c.id}
@@ -164,7 +171,7 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Invoices</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.invoices")}</span>
               </div>
               {results.invoices.map((inv) => (
                 <button
@@ -179,13 +186,13 @@ export function GlobalSearch() {
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-slate-800 font-mono">{inv.invoice_number}</p>
                       <span className={`text-xs font-medium ${STATUS_COLOR[inv.status] ?? ""}`}>
-                        {inv.status}
+                        {t(`invoiceStatus.${inv.status}`, { defaultValue: inv.status })}
                       </span>
                     </div>
                     {inv.client_name && <p className="text-xs text-slate-400">{inv.client_name}</p>}
                   </div>
                   <span className="text-sm font-semibold text-slate-700 tabular-nums flex-shrink-0">
-                    ${Number(inv.total).toFixed(2)}
+                    {money.format(Number(inv.total))}
                   </span>
                 </button>
               ))}
@@ -197,20 +204,20 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Transactions</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.transactions")}</span>
               </div>
-              {results.transactions.map((t) => (
+              {results.transactions.map((tx) => (
                 <button
-                  key={t.id}
+                  key={tx.id}
                   onClick={() => navigate("/books/transactions")}
                   className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{t.merchant_name ?? t.name}</p>
-                    <p className="text-xs text-slate-400">{t.date}</p>
+                    <p className="text-sm font-medium text-slate-800 truncate">{tx.merchant_name ?? tx.name}</p>
+                    <p className="text-xs text-slate-400">{tx.date}</p>
                   </div>
-                  <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${t.amount > 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                    {t.amount > 0 ? "-" : "+"}${Math.abs(t.amount).toFixed(2)}
+                  <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${tx.amount > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                    {tx.amount > 0 ? "-" : "+"}{money.format(Math.abs(tx.amount))}
                   </span>
                 </button>
               ))}
@@ -222,7 +229,7 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Messages</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.messages")}</span>
               </div>
               {results.messages.map((m) => (
                 <button
@@ -247,7 +254,7 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Estimates</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.estimates")}</span>
               </div>
               {results.estimates.map((e) => (
                 <button
@@ -261,10 +268,10 @@ export function GlobalSearch() {
                   <div className="flex-1 text-left min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-medium text-slate-800 font-mono">{e.estimate_number}</p>
-                      <span className={`text-xs font-medium ${STATUS_COLOR[e.status] ?? "text-slate-500"}`}>{e.status}</span>
+                      <span className={`text-xs font-medium ${STATUS_COLOR[e.status] ?? "text-slate-500"}`}>{t(`estimateStatus.${e.status}`, { defaultValue: e.status })}</span>
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-slate-700 tabular-nums flex-shrink-0">${Number(e.total).toFixed(2)}</span>
+                  <span className="text-sm font-semibold text-slate-700 tabular-nums flex-shrink-0">{money.format(Number(e.total))}</span>
                 </button>
               ))}
             </div>
@@ -275,7 +282,7 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <FolderOpen className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Projects</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.projects")}</span>
               </div>
               {results.projects.map((p) => (
                 <button
@@ -288,7 +295,7 @@ export function GlobalSearch() {
                   </div>
                   <div className="flex-1 text-left min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{p.name}</p>
-                    <p className="text-xs text-slate-400 capitalize">{p.status}</p>
+                    <p className="text-xs text-slate-400">{t(`projectStatus.${p.status}`, { defaultValue: p.status })}</p>
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
                 </button>
@@ -301,17 +308,17 @@ export function GlobalSearch() {
             <div>
               <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
                 <CheckSquare className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tasks</span>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t("search.sections.tasks")}</span>
               </div>
-              {results.tasks.map((t) => (
+              {results.tasks.map((task) => (
                 <button
-                  key={t.id}
+                  key={task.id}
                   onClick={() => navigate("/tasks")}
                   className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm text-slate-700 truncate">{t.title}</p>
-                    <p className="text-xs text-slate-400 capitalize">{t.status.replace("_", " ")}</p>
+                    <p className="text-sm text-slate-700 truncate">{task.title}</p>
+                    <p className="text-xs text-slate-400">{t(`taskStatus.${task.status}`, { defaultValue: task.status })}</p>
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
                 </button>
@@ -322,7 +329,11 @@ export function GlobalSearch() {
 
         {/* Footer hint */}
         <div className="px-4 py-2 border-t border-slate-100 flex items-center gap-3 bg-slate-50/60">
-          <span className="text-[10px] text-slate-400">Press <kbd className="bg-slate-200 px-1 py-0.5 rounded text-[10px] font-mono">↵</kbd> to navigate · <kbd className="bg-slate-200 px-1 py-0.5 rounded text-[10px] font-mono">Esc</kbd> to close</span>
+          <span className="text-[10px] text-slate-400">
+            <kbd className="bg-slate-200 px-1 py-0.5 rounded text-[10px] font-mono">↵</kbd> {t("search.navigateHint")}
+            {" · "}
+            <kbd className="bg-slate-200 px-1 py-0.5 rounded text-[10px] font-mono">Esc</kbd> {t("search.closeHint")}
+          </span>
         </div>
       </div>
     </div>

@@ -3,9 +3,13 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { PipelineBoard } from "./pipeline-board";
 import { term } from "@/lib/packs";
+import { getServerT } from "@/lib/i18n/server";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
 
-export const metadata: Metadata = { title: "Pipeline" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("pipeline");
+  return { title: t("meta.title") };
+}
 
 export type PipelineStage = "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
 
@@ -38,7 +42,10 @@ export default async function PipelinePage() {
     .eq("organization_id", orgId)
     .order("stage_changed_at", { ascending: false });
 
-  const title = await term("Pipeline");
+  // A vertical pack may rename the board ("Deals", "Matters"); when it doesn't,
+  // `term` echoes the English label back and the translated title wins.
+  const [packTerm, t] = await Promise.all([term("Pipeline"), getServerT("pipeline")]);
+  const title = packTerm === "Pipeline" ? t("board.title") : packTerm;
 
   return (
     <PipelineBoard

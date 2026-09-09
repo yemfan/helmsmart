@@ -14,6 +14,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -97,13 +98,13 @@ export async function generateSocialTopics(
 ): Promise<{ ok: boolean; error?: string; topics?: SocialTopic[] }> {
   const orgId = await requireOrgId();
   const db = await createClient();
+  const t = await getServerT("marketing");
 
   const context = await buildOrgContext(db, orgId);
   if (!context) {
     return {
       ok: false,
-      error:
-        "Tell us about your business first (category, description, location) so topics can be tailored.",
+      error: t("errors.topics.describeBusiness"),
     };
   }
 
@@ -134,7 +135,7 @@ Respond with ONLY a JSON array of ${count} strings.`;
     }
   } catch (e) {
     console.error("generateSocialTopics AI error:", e);
-    return { ok: false, error: "Couldn't generate topics right now. Please try again." };
+    return { ok: false, error: t("errors.topics.generateFailed") };
   }
 
   const clean = raw
@@ -144,7 +145,7 @@ Respond with ONLY a JSON array of ${count} strings.`;
     .slice(0, count);
 
   if (clean.length === 0) {
-    return { ok: false, error: "No topics came back — please try again." };
+    return { ok: false, error: t("errors.topics.noTopics") };
   }
 
   const { data, error } = await db
@@ -163,7 +164,7 @@ Respond with ONLY a JSON array of ${count} strings.`;
     console.error("generateSocialTopics insert error:", error.message);
     return {
       ok: false,
-      error: "Topics were generated but couldn't be saved. (Is migration 00086 applied?)",
+      error: t("errors.topics.saveFailed"),
     };
   }
 
@@ -198,6 +199,7 @@ export async function applyApprovedTopicsToSchedule(): Promise<{
 }> {
   const orgId = await requireOrgId();
   const db = await createClient();
+  const t = await getServerT("marketing");
 
   const { data: approved } = await db
     .from("social_topics")
@@ -208,14 +210,14 @@ export async function applyApprovedTopicsToSchedule(): Promise<{
     .limit(7);
   const list = (approved as { id: string; topic: string }[]) ?? [];
   if (list.length === 0) {
-    return { ok: false, error: "Approve some topics first, then add them to the schedule." };
+    return { ok: false, error: t("errors.topics.approveFirst") };
   }
 
   // Mon, Tue, … Sun — fill as many days as there are topics (max 7).
   const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
   const dayTopics: Record<string, string> = {};
-  list.forEach((t, i) => {
-    dayTopics[String(WEEKDAY_ORDER[i])] = t.topic.trim().slice(0, 120);
+  list.forEach((row, i) => {
+    dayTopics[String(WEEKDAY_ORDER[i])] = row.topic.trim().slice(0, 120);
   });
 
   const { data: cur } = await db
@@ -231,7 +233,7 @@ export async function applyApprovedTopicsToSchedule(): Promise<{
   );
   if (error) {
     console.error("applyApprovedTopicsToSchedule error:", error.message);
-    return { ok: false, error: "Couldn't update the schedule. Please try again." };
+    return { ok: false, error: t("errors.topics.scheduleFailed") };
   }
 
   revalidatePath("/social");

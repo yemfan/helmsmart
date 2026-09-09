@@ -1,0 +1,77 @@
+{
+  "digest": {
+    "fromName": "{{org}}（通过 HelmSmart）",
+    "subject": "{{org}} 本周概览：未收款 {{outstanding}}",
+    "headerNote": "本周展望",
+    "title": "周一快照",
+    "intro": "以下是本周开始时的经营情况。",
+    "cash": {
+      "label": "可用现金",
+      "linked": "已关联账户",
+      "none": "关联银行账户"
+    },
+    "outstanding": {
+      "label": "未收款",
+      "overdue": "其中 {{amount}} 已逾期",
+      "open": "{{count}} 张未结"
+    },
+    "bills": {
+      "label": "待付账单",
+      "dueThisWeek": "其中 {{amount}} 本周到期",
+      "open": "{{count}} 张未结"
+    },
+    "tasks": {
+      "label": "待办任务",
+      "overdue": "{{count}} 项已逾期",
+      "onTrack": "进展正常"
+    },
+    "openDashboard": "打开仪表板 →",
+    "viewForecast": "查看现金流预测",
+    "footer": "每周简报 · 由 HelmSmart 提供",
+    "text": {
+      "heading": "{{org}} — 本周展望",
+      "cash": "可用现金：{{amount}}",
+      "outstanding": "未收款：{{amount}}",
+      "outstandingOverdue": "未收款：{{amount}}（其中 {{overdue}} 已逾期）",
+      "bills": "待付账单：{{amount}}",
+      "billsDueSoon": "待付账单：{{amount}}（其中 {{dueSoon}} 本周到期）",
+      "tasks": "待办任务：{{count}}",
+      "tasksOverdue": "待办任务：{{count}}（其中 {{overdue}} 项已逾期）",
+      "dashboard": "仪表板：{{url}}"
+    }
+  },
+  "invite": {
+    "fromName": "{{org}}（通过 HelmSmart）",
+    "subject": "邀请你加入 HelmSmart 上的 {{org}}",
+    "heading": "你收到一份邀请",
+    "body": "<strong>{{org}}</strong> 邀请你以<strong>{{role}}</strong>的身份加入他们在 HelmSmart 的工作区。",
+    "accept": "接受邀请",
+    "expiry": "此邀请将在 7 天后失效。如果你并未预期收到这封邮件，可以忽略它。",
+    "footer": "由 HelmSmart 提供",
+    "roles": {
+      "admin": "管理员",
+      "bookkeeper": "记账员",
+      "viewer": "查看者"
+    },
+    "text": {
+      "body": "{{org}} 邀请你以{{role}}的身份加入 HelmSmart。",
+      "accept": "点此接受：{{url}}",
+      "expiry": "此链接将在 7 天后失效。"
+    }
+  },
+  "formAlert": {
+    "fromName": "HelmSmart 表单",
+    "subject": "新的表单提交：{{form}}",
+    "heading": "新提交：{{form}}",
+    "submitted": "提交于 {{date}}",
+    "view": "在 HelmSmart 中查看 →"
+  },
+  "bookingAlert": {
+    "subject": "新预约：{{when}}",
+    "intro": "您的 AI 前台接待已为您安排了一个预约。",
+    "when": "时间：{{when}}",
+    "caller": "来电号码：{{caller}}",
+    "unknownCaller": "未知号码",
+    "onCalendar": "该预约已加入您的日历：{{url}}"
+  }
+}

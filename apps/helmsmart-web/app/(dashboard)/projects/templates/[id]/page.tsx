@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { ProjectTemplateEditor } from "@/components/project-template-editor";
 
-export const metadata: Metadata = { title: "Edit Project Template" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("projects");
+  return { title: t("meta.editTemplate") };
+}
 
 export default async function EditProjectTemplatePage({
   params,

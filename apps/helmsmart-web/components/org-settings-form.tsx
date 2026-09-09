@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { updateOrg } from "@/lib/actions/settings";
 import type { SettingsState } from "@/lib/actions/settings";
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEnglishAssist }: Props) {
+  const { t } = useTranslation("settings");
   const [state, action, isPending] = useActionState<SettingsState, FormData>(
     updateOrg,
     null
@@ -43,7 +45,7 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Business name</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">{t("general.businessName")}</label>
         <input
           name="name"
           type="text"
@@ -61,7 +63,7 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
         to make a decision that changed nothing.
       */}
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Timezone</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">{t("general.timezone")}</label>
         <select
           name="timezone"
           defaultValue={org?.timezone ?? "America/New_York"}
@@ -69,20 +71,26 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
           className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
         >
           {timezones.map((tz) => (
-            <option key={tz} value={tz}>{tz.replace("America/", "").replace("Pacific/", "Pacific/").replace(/_/g, " ")}</option>
+            <option key={tz} value={tz}>
+              {t(`general.timezones.${tz}`, { defaultValue: tz.replace(/^[^/]+\//, "").replace(/_/g, " ") })}
+            </option>
           ))}
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Entity type</label>
+        <label className="block text-xs font-medium text-slate-600 mb-1">{t("general.entityType")}</label>
         <input
           type="text"
           disabled
-          value={org?.entity_type?.replace("_", " ").toUpperCase() ?? "—"}
+          value={
+            org?.entity_type
+              ? t(`general.entityTypes.${org.entity_type}`, { defaultValue: org.entity_type })
+              : "—"
+          }
           className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 text-slate-500 cursor-not-allowed"
         />
-        <p className="text-[10px] text-slate-400 mt-1">Contact support to change entity type. Billing rates are under the <strong>Financial</strong> tab.</p>
+        <p className="text-[10px] text-slate-400 mt-1">{t("general.entityTypeHelp")}</p>
       </div>
 
       <div className="border-t border-slate-100 pt-4">
@@ -94,11 +102,9 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
             disabled={isPending}
             className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <span className="text-sm text-slate-700">Weekly digest email</span>
+          <span className="text-sm text-slate-700">{t("general.weeklyDigest.label")}</span>
         </label>
-        <p className="text-[10px] text-slate-400 mt-1 ml-6">
-          A Monday summary of cash, receivables, bills, and tasks — emailed to owners &amp; admins.
-        </p>
+        <p className="text-[10px] text-slate-400 mt-1 ml-6">{t("general.weeklyDigest.help")}</p>
       </div>
 
       <div className="border-t border-slate-100 pt-4">
@@ -110,11 +116,9 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
             disabled={isPending}
             className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <span className="text-sm text-slate-700">Show me English (multi-language assist)</span>
+          <span className="text-sm text-slate-700">{t("general.englishAssist.label")}</span>
         </label>
-        <p className="text-[10px] text-slate-400 mt-1 ml-6">
-          Translate non-English customer messages to English in your inbox, and send replies &amp; reminders bilingually (their language + English) so you can read what went out.
-        </p>
+        <p className="text-[10px] text-slate-400 mt-1 ml-6">{t("general.englishAssist.help")}</p>
       </div>
 
       <div className="flex justify-end">
@@ -123,7 +127,7 @@ export function OrgSettingsForm({ org, timezones, weeklyDigestEnabled, ownerEngl
           disabled={isPending}
           className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
         >
-          {isPending ? "Saving…" : saved ? "Saved!" : "Save changes"}
+          {isPending ? t("actions.saving") : saved ? t("actions.saved") : t("general.save")}
         </button>
       </div>
 

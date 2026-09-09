@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Trash2, Plus, Play, Pause, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   toggleAutomationRule,
   deleteAutomationRule,
@@ -11,28 +12,34 @@ import { AddAutomationModal } from "@/components/add-automation-modal";
 
 // ─── Display helpers ──────────────────────────────────────────────────────────
 
-const TRIGGER_LABELS: Record<string, { label: string; color: string }> = {
-  invoice_overdue: { label: "Invoice overdue",  color: "bg-rose-100 text-rose-700" },
-  invoice_paid:    { label: "Invoice paid",     color: "bg-emerald-100 text-emerald-700" },
-  new_lead:        { label: "New lead",         color: "bg-blue-100 text-blue-700" },
-  campaign_sent:   { label: "Campaign sent",    color: "bg-indigo-100 text-indigo-700" },
+/** Badge colour per trigger / action. Labels live in the bundle, keyed by the same enum. */
+const TRIGGER_COLORS: Record<string, string> = {
+  invoice_overdue: "bg-rose-100 text-rose-700",
+  invoice_paid:    "bg-emerald-100 text-emerald-700",
+  new_lead:        "bg-blue-100 text-blue-700",
+  campaign_sent:   "bg-indigo-100 text-indigo-700",
 };
 
-const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  create_task: { label: "Create task",  color: "bg-amber-100 text-amber-700" },
-  send_email:  { label: "Send email",  color: "bg-sky-100 text-sky-700" },
-  add_note:    { label: "Add note",    color: "bg-slate-100 text-slate-600" },
+const ACTION_COLORS: Record<string, string> = {
+  create_task: "bg-amber-100 text-amber-700",
+  send_email:  "bg-sky-100 text-sky-700",
+  add_note:    "bg-slate-100 text-slate-600",
 };
 
-function timeAgo(iso: string) {
+/** Template variables an automation config may use. The token is data; only the description is copy. */
+const TEMPLATE_VARS = ["client_name", "invoice_number", "amount", "campaign_name"] as const;
+
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+function timeAgo(iso: string, t: Translate) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m ago`;
+  if (m < 1) return t("automations.time.justNow");
+  if (m < 60) return t("automations.time.minutesAgo", { count: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  if (h < 24) return t("automations.time.hoursAgo", { count: h });
   const d = Math.floor(h / 24);
-  return `${d}d ago`;
+  return t("automations.time.daysAgo", { count: d });
 }
 
 // ─── Rule row ─────────────────────────────────────────────────────────────────
@@ -44,12 +51,15 @@ function RuleRow({
   rule: AutomationRule;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation("workflows");
   const [enabled, setEnabled] = useState(rule.enabled);
   const [toggling, startToggle] = useTransition();
   const [deleting, startDelete] = useTransition();
 
-  const trigger = TRIGGER_LABELS[rule.trigger] ?? { label: rule.trigger, color: "bg-slate-100 text-slate-500" };
-  const action  = ACTION_LABELS[rule.action]   ?? { label: rule.action,   color: "bg-slate-100 text-slate-500" };
+  const triggerLabel = t(`automations.triggerLabels.${rule.trigger}`, { defaultValue: rule.trigger });
+  const triggerColor = TRIGGER_COLORS[rule.trigger] ?? "bg-slate-100 text-slate-500";
+  const actionLabel = t(`automations.actionLabels.${rule.action}`, { defaultValue: rule.action });
+  const actionColor = ACTION_COLORS[rule.action] ?? "bg-slate-100 text-slate-500";
 
   function handleToggle() {
     const next = !enabled;
@@ -64,7 +74,7 @@ function RuleRow({
   }
 
   function handleDelete() {
-    if (!window.confirm(`Delete automation "${rule.name}"?`)) return;
+    if (!window.confirm(t("automations.deleteConfirm", { name: rule.name }))) return;
     onDelete(rule.id);
     startDelete(async () => {
       try {
@@ -81,7 +91,7 @@ function RuleRow({
       <button
         onClick={handleToggle}
         disabled={toggling}
-        title={enabled ? "Disable" : "Enable"}
+        title={enabled ? t("automations.disable") : t("automations.enable")}
         className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
           enabled
             ? "bg-indigo-600 text-white hover:bg-indigo-700"
@@ -97,12 +107,12 @@ function RuleRow({
           {rule.name}
         </p>
         <div className="flex items-center gap-2 mt-1">
-          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${trigger.color}`}>
-            {trigger.label}
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${triggerColor}`}>
+            {triggerLabel}
           </span>
           <span className="text-slate-300 text-xs">→</span>
-          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${action.color}`}>
-            {action.label}
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${actionColor}`}>
+            {actionLabel}
           </span>
         </div>
       </div>
@@ -110,10 +120,10 @@ function RuleRow({
       {/* Stats */}
       <div className="flex-shrink-0 text-right hidden sm:block">
         <p className="text-xs font-medium text-slate-700 tabular-nums">
-          {rule.run_count} run{rule.run_count !== 1 ? "s" : ""}
+          {t("automations.runs", { count: rule.run_count })}
         </p>
         <p className="text-[11px] text-slate-400 mt-0.5">
-          {rule.last_run_at ? timeAgo(rule.last_run_at) : "never run"}
+          {rule.last_run_at ? timeAgo(rule.last_run_at, t) : t("automations.neverRun")}
         </p>
       </div>
 
@@ -121,6 +131,7 @@ function RuleRow({
       <button
         onClick={handleDelete}
         disabled={deleting}
+        aria-label={t("common:actions.delete")}
         className="flex-shrink-0 opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-rose-500 transition-all rounded-lg"
       >
         <Trash2 className="w-4 h-4" />
@@ -132,6 +143,7 @@ function RuleRow({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function AutomationsList({ initialRules }: { initialRules: AutomationRule[] }) {
+  const { t } = useTranslation("workflows");
   const [rules, setRules] = useState(initialRules);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -151,7 +163,7 @@ export function AutomationsList({ initialRules }: { initialRules: AutomationRule
         {/* Toolbar */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
           <h2 className="text-sm font-semibold text-slate-700">
-            Rules
+            {t("automations.rules")}
             {rules.length > 0 && (
               <span className="ml-2 text-xs font-normal text-slate-400">{rules.length}</span>
             )}
@@ -161,7 +173,7 @@ export function AutomationsList({ initialRules }: { initialRules: AutomationRule
             className="flex items-center gap-1.5 text-xs font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            New automation
+            {t("automations.newAutomation")}
           </button>
         </div>
 
@@ -170,17 +182,16 @@ export function AutomationsList({ initialRules }: { initialRules: AutomationRule
             <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-4">
               <Zap className="w-6 h-6 text-indigo-500" />
             </div>
-            <p className="text-sm font-medium text-slate-600 mb-1">No automations yet</p>
-            <p className="text-xs text-slate-400 mb-5">
-              Create rules to automatically create tasks, send emails, or log notes
-              <br />when business events happen.
+            <p className="text-sm font-medium text-slate-600 mb-1">{t("automations.emptyTitle")}</p>
+            <p className="text-xs text-slate-400 mb-5 max-w-sm mx-auto">
+              {t("automations.emptyBody")}
             </p>
             <button
               onClick={() => setModalOpen(true)}
               className="inline-flex items-center gap-1.5 text-xs font-medium bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
-              Create first automation
+              {t("automations.createFirst")}
             </button>
           </div>
         ) : (
@@ -194,19 +205,14 @@ export function AutomationsList({ initialRules }: { initialRules: AutomationRule
 
       {/* Template variable reference */}
       <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-5 py-4">
-        <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Template variables</p>
+        <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">{t("automations.variables.title")}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-1">
-          {[
-            ["{{client_name}}", "Client's full name"],
-            ["{{invoice_number}}", "Invoice number (e.g. INV-0012)"],
-            ["{{amount}}", "Invoice total (e.g. $1,200.00)"],
-            ["{{campaign_name}}", "Campaign name"],
-          ].map(([v, desc]) => (
+          {TEMPLATE_VARS.map((v) => (
             <div key={v} className="flex items-center gap-2">
               <code className="text-[11px] bg-white border border-slate-200 px-1.5 py-0.5 rounded text-indigo-600 font-mono">
-                {v}
+                {`{{${v}}}`}
               </code>
-              <span className="text-[11px] text-slate-400">{desc}</span>
+              <span className="text-[11px] text-slate-400">{t(`automations.variables.${v}`)}</span>
             </div>
           ))}
         </div>

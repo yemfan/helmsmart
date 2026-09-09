@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 export type RecurringFrequency = "weekly" | "monthly" | "quarterly" | "annually";
 
@@ -54,11 +55,12 @@ export async function createRecurringBill(data: {
   frequency: RecurringFrequency;
   nextRunDate: string;
 }): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
-  if (!data.vendor.trim()) throw new Error("Vendor is required");
-  if (!data.amount || data.amount <= 0) throw new Error("Enter a valid amount");
-  if (!data.nextRunDate) throw new Error("First run date is required");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
+  if (!data.vendor.trim()) throw new Error(t("bills.errors.vendorRequired"));
+  if (!data.amount || data.amount <= 0) throw new Error(t("bills.errors.invalidAmount"));
+  if (!data.nextRunDate) throw new Error(t("bills.errors.firstRunDateRequired"));
 
   const supabase = await createClient();
   const { error } = await supabase.from("recurring_bills").insert({
@@ -80,8 +82,9 @@ export async function setRecurringBillStatus(
   id: string,
   status: "active" | "paused"
 ): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_bills")
@@ -92,8 +95,9 @@ export async function setRecurringBillStatus(
 }
 
 export async function deleteRecurringBill(id: string): Promise<void> {
+  const t = await getServerT("books");
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("bills.errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_bills")

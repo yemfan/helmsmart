@@ -13,38 +13,52 @@ import {
 import { RevenueChart, type ChartMonth } from "@/components/revenue-chart";
 import { getReceivablesAging, getCashFlowForecast } from "@/lib/actions/reports";
 import { getOrCreateDailyBriefing } from "@/lib/briefing";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("home");
+  return { title: t("dashboard.metaTitle") };
+}
 
 // ─── Formatting ───────────────────────────────────────────────────────────────
+//
+// Built per render from the reader's locale and the organization's currency,
+// rather than the `en-US` / `USD` pair that used to be hardcoded here. The two
+// are independent: a Canadian owner reading Chinese sees 简体中文 labels over
+// CAD totals.
 
-function fmt(n: number | null): string {
-  if (n === null) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
+type Fmt = {
+  money: (n: number | null) => string;
+  date: (ymd: string) => string;
+  hours: (mins: number) => string;
+};
 
-function fmtDate(d: string): string {
-  return new Date(d + "T00:00:00").toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function fmtHours(mins: number): string {
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
+function formatters(
+  locale: string,
+  currency: string,
+  t: Awaited<ReturnType<typeof getServerT>>,
+): Fmt {
+  const nf = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
+  const df = dateFormatter(locale, { month: "short", day: "numeric" });
+  return {
+    money: (n) => (n === null ? "—" : nf(n)),
+    date: (ymd) => df(ymd),
+    hours: (mins) => {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (h === 0) return t("dashboard.duration.minutes", { minutes: m });
+      if (m === 0) return t("dashboard.duration.hours", { hours: h });
+      return t("dashboard.duration.hoursMinutes", { hours: h, minutes: m });
+    },
+  };
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-async function getDashboardData(orgId: string) {
+async function getDashboardData(orgId: string, locale: string) {
   const supabase = await createClient();
 
   const today = new Date();
@@ -245,7 +259,7 @@ async function getDashboardData(orgId: string) {
   for (let i = 5; i >= 0; i--) {
     const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const label = d.toLocaleDateString(intlLocale(locale), { month: "short" });
     const { revenue = 0, expenses = 0 } = monthMap.get(key) ?? {};
     chartData.push({ month: label, revenue, expenses });
   }
@@ -328,8 +342,13 @@ const COLOR_DOTS: Record<string, string> = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
+  const t = await getServerT("home");
+  const locale = await getServerLocale();
+
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const currency = await orgCurrency(orgId);
+  const { money: fmt, date: fmtDate, hours: fmtHours } = formatters(locale, currency, t);
 
   const {
     bankBalance,
@@ -357,7 +376,7 @@ export default async function HomePage() {
     todayStr,
     pendingApprovals,
     recentSubmissions,
-  } = await getDashboardData(orgId);
+  } = await getDashboardData(orgId, locale);
 
   const cashOnHand      = forecast.startingBalance;
   const expectedIn      = forecast.totalInflow;
@@ -370,52 +389,75 @@ export default async function HomePage() {
 
   const tasksOverdue  = openTasks.filter((t) => t.due_date && t.due_date < todayStr).length;
   const tasksDueToday = openTasks.filter((t) => t.due_date === todayStr).length;
-  const briefing = await getOrCreateDailyBriefing(orgId, {
-    overdueCount,
-    overdueAmount: overdueAR,
-    unreadMessages,
-    urgentMessages,
-    tasksOverdue,
-    tasksDueToday,
-    lowestProjectedCash: showCashFlow ? lowestProjected : null,
-    uninvoicedAmount,
-  });
+  const briefing = await getOrCreateDailyBriefing(
+    orgId,
+    {
+      overdueCount,
+      overdueAmount: overdueAR,
+      unreadMessages,
+      urgentMessages,
+      tasksOverdue,
+      tasksDueToday,
+      lowestProjectedCash: showCashFlow ? lowestProjected : null,
+      uninvoicedAmount,
+    },
+    { locale, currency },
+  );
 
   const today = new Date();
   const hour = today.getHours();
-  const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = t(
+    hour < 12
+      ? "dashboard.greeting.morning"
+      : hour < 17
+      ? "dashboard.greeting.afternoon"
+      : "dashboard.greeting.evening",
+  );
+  const monthYear = today.toLocaleDateString(intlLocale(locale), {
+    month: "long",
+    year: "numeric",
+  });
+  const outstandingInvoices = t("dashboard.kpi.outstandingInvoices", { count: outstandingCount });
 
   const kpis = [
     {
-      label: "Bank Balance",
+      label: t("dashboard.kpi.bankBalance"),
       value: fmt(bankBalance),
       icon: DollarSign,
-      sub: bankBalance === null ? "Link a bank account" : "All connected accounts",
+      sub:
+        bankBalance === null
+          ? t("dashboard.kpi.bankBalanceEmpty")
+          : t("dashboard.kpi.bankBalanceLinked"),
       color: "text-slate-400",
       href: "/books",
     },
     {
-      label: "Revenue (MTD)",
+      label: t("dashboard.kpi.revenueMtd"),
       value: fmt(mtdRevenue),
       icon: TrendingUp,
-      sub: today.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      sub: monthYear,
       color: "text-emerald-500",
       href: "/books",
     },
     {
-      label: "Expenses (MTD)",
+      label: t("dashboard.kpi.expensesMtd"),
       value: fmt(mtdExpenses),
       icon: TrendingDown,
-      sub: today.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      sub: monthYear,
       color: "text-rose-500",
       href: "/books",
     },
     {
-      label: "Outstanding",
+      label: t("dashboard.kpi.outstanding"),
       value: fmt(totalOutstanding),
       icon: FileText,
-      sub: `${outstandingCount} invoice${outstandingCount !== 1 ? "s" : ""}${overdueCount > 0 ? ` · ${overdueCount} overdue` : ""}`,
+      sub:
+        overdueCount > 0
+          ? t("dashboard.kpi.outstandingWithOverdue", {
+              invoices: outstandingInvoices,
+              overdue: overdueCount,
+            })
+          : outstandingInvoices,
       color: overdueCount > 0 ? "text-rose-500" : "text-amber-500",
       href: "/books/invoices",
     },
@@ -428,7 +470,7 @@ export default async function HomePage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{greeting} 👋</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {activeClients} active client{activeClients !== 1 ? "s" : ""} · {totalClients} total
+            {t("dashboard.clientSummary", { count: activeClients, total: totalClients })}
           </p>
 
           {/*
@@ -461,14 +503,14 @@ export default async function HomePage() {
             className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            New invoice
+            {t("dashboard.actions.newInvoice")}
           </Link>
           <Link
             href="/clients"
             className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
           >
             <Users className="w-4 h-4" />
-            Clients
+            {t("dashboard.actions.clients")}
           </Link>
         </div>
       </div>
@@ -499,14 +541,14 @@ export default async function HomePage() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-800">Revenue vs Expenses</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Last 6 months</p>
+            <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.chart.title")}</h2>
+            <p className="text-xs text-slate-400 mt-0.5">{t("dashboard.chart.subtitle")}</p>
           </div>
           <Link
             href="/reports"
             className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
           >
-            Full report
+            {t("dashboard.chart.fullReport")}
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -521,49 +563,53 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <Wallet className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-sm font-semibold text-slate-800">Cash Flow Outlook</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.cashFlow.title")}</h2>
             </div>
             <Link
               href="/reports?tab=forecast"
               className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
             >
-              View forecast <ArrowRight className="w-3 h-3" />
+              {t("dashboard.cashFlow.viewForecast")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           <div className="grid grid-cols-4 gap-4">
             {/* Cash on hand */}
             <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Cash on hand</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{t("dashboard.cashFlow.cashOnHand")}</p>
               <p className="text-xl font-semibold text-slate-800 tabular-nums">{fmt(cashOnHand)}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{forecast.hasBank ? "Linked accounts" : "Link a bank"}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{forecast.hasBank ? t("dashboard.cashFlow.linkedAccounts") : t("dashboard.cashFlow.linkABank")}</p>
             </div>
 
             {/* Expected in (A/R) */}
             <Link href="/reports?tab=receivables" className="block hover:opacity-80 transition-opacity">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Expected in</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{t("dashboard.cashFlow.expectedIn")}</p>
               <p className="text-xl font-semibold text-emerald-600 tabular-nums">{fmt(expectedIn)}</p>
               <p className={`text-xs mt-0.5 ${overdueAR > 0 ? "text-rose-500" : "text-slate-400"}`}>
-                {overdueAR > 0 ? `${fmt(overdueAR)} overdue` : "Open invoices"}
+                {overdueAR > 0
+                  ? t("dashboard.cashFlow.overdueAmount", { amount: fmt(overdueAR) })
+                  : t("dashboard.cashFlow.openInvoices")}
               </p>
             </Link>
 
             {/* Expected out (A/P) */}
             <Link href="/books/bills" className="block hover:opacity-80 transition-opacity">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Expected out</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{t("dashboard.cashFlow.expectedOut")}</p>
               <p className="text-xl font-semibold text-rose-600 tabular-nums">{fmt(expectedOut)}</p>
               <p className={`text-xs mt-0.5 ${dueNowAP > 0 ? "text-amber-600" : "text-slate-400"}`}>
-                {dueNowAP > 0 ? `${fmt(dueNowAP)} due now` : "Open bills"}
+                {dueNowAP > 0
+                  ? t("dashboard.cashFlow.dueNow", { amount: fmt(dueNowAP) })
+                  : t("dashboard.cashFlow.openBills")}
               </p>
             </Link>
 
             {/* Projected 90-day */}
             <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Projected (90d)</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{t("dashboard.cashFlow.projected90")}</p>
               <p className={`text-xl font-semibold tabular-nums ${projected90 >= 0 ? "text-slate-800" : "text-rose-600"}`}>
                 {fmt(projected90)}
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">After open items</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("dashboard.cashFlow.afterOpenItems")}</p>
             </div>
           </div>
 
@@ -571,9 +617,7 @@ export default async function HomePage() {
             <div className="flex items-start gap-2 mt-4 px-3 py-2 rounded-lg border border-rose-200 bg-rose-50">
               <AlertTriangle className="w-3.5 h-3.5 text-rose-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-rose-700">
-                Projected cash dips to{" "}
-                <span className="font-semibold tabular-nums">{fmt(lowestProjected)}</span>{" "}
-                within 90 days. Prioritize collections on overdue invoices or delay non-urgent bills.
+                {t("dashboard.cashFlow.dipWarning", { amount: fmt(lowestProjected) })}
               </p>
             </div>
           )}
@@ -588,10 +632,10 @@ export default async function HomePage() {
             <div className="flex items-center gap-2">
               <FolderOpen className="w-4 h-4 text-indigo-500" />
               <div>
-                <h2 className="text-sm font-semibold text-slate-800">Active Projects</h2>
+                <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.projects.title")}</h2>
                 {activeProjectsHasPnL && (
                   <p className={`text-xs font-medium ${activeProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                    {fmt(activeProfit)} profit
+                    {t("dashboard.projects.profit", { amount: fmt(activeProfit) })}
                   </p>
                 )}
               </div>
@@ -600,19 +644,19 @@ export default async function HomePage() {
               href="/projects"
               className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
             >
-              View all <ArrowRight className="w-3 h-3" />
+              {t("dashboard.projects.viewAll")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {activeProjects.length === 0 ? (
             <div className="py-10 text-center">
               <FolderOpen className="w-7 h-7 text-slate-200 mx-auto mb-2" />
-              <p className="text-xs text-slate-400 mb-3">No active projects</p>
+              <p className="text-xs text-slate-400 mb-3">{t("dashboard.projects.empty")}</p>
               <Link
                 href="/projects"
                 className="text-xs text-indigo-600 font-medium hover:text-indigo-800"
               >
-                Create a project →
+                {t("dashboard.projects.create")}
               </Link>
             </div>
           ) : (
@@ -634,10 +678,12 @@ export default async function HomePage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-800 truncate">{proj.name}</p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        {proj.budget_hours ? `${proj.budget_hours}h budget` : "No budget"}
+                        {proj.budget_hours
+                          ? t("dashboard.projects.budgetHours", { hours: proj.budget_hours })
+                          : t("dashboard.projects.noBudget")}
                         {proj.pnl.profit !== 0 && (
                           <span className={proj.pnl.profit >= 0 ? "text-emerald-600" : "text-rose-600"}>
-                            {" · "}{fmt(proj.pnl.profit)} profit
+                            {" · "}{t("dashboard.projects.profit", { amount: fmt(proj.pnl.profit) })}
                           </span>
                         )}
                       </p>
@@ -653,10 +699,10 @@ export default async function HomePage() {
                           isOverdue ? "text-rose-600" : isDueSoon ? "text-amber-600" : "text-slate-400"
                         }`}>
                           {isOverdue
-                            ? `${Math.abs(daysLeft)}d overdue`
+                            ? t("dashboard.projects.overdueDays", { count: Math.abs(daysLeft) })
                             : daysLeft === 0
-                            ? "Due today"
-                            : `${daysLeft}d left`
+                            ? t("dashboard.projects.dueToday")
+                            : t("dashboard.projects.daysLeft", { count: daysLeft })
                           }
                         </span>
                       )}
@@ -672,7 +718,7 @@ export default async function HomePage() {
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col">
           <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
             <Timer className="w-4 h-4 text-indigo-500" />
-            <h2 className="text-sm font-semibold text-slate-800">Uninvoiced Time</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.uninvoiced.title")}</h2>
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center px-5 py-6 text-center">
@@ -681,8 +727,8 @@ export default async function HomePage() {
                 <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
                   <CheckSquare className="w-5 h-5 text-emerald-500" />
                 </div>
-                <p className="text-sm font-medium text-slate-700">All time invoiced</p>
-                <p className="text-xs text-slate-400 mt-1">No billable hours waiting to be billed.</p>
+                <p className="text-sm font-medium text-slate-700">{t("dashboard.uninvoiced.allInvoiced")}</p>
+                <p className="text-xs text-slate-400 mt-1">{t("dashboard.uninvoiced.allInvoicedHint")}</p>
               </>
             ) : (
               <>
@@ -690,14 +736,14 @@ export default async function HomePage() {
                   {fmt(uninvoicedAmount)}
                 </p>
                 <p className="text-sm text-slate-500 mb-1">
-                  {fmtHours(uninvoicedMinutes)} billable
+                  {t("dashboard.uninvoiced.billable", { hours: fmtHours(uninvoicedMinutes) })}
                 </p>
-                <p className="text-xs text-slate-400 mb-4">not yet invoiced</p>
+                <p className="text-xs text-slate-400 mb-4">{t("dashboard.uninvoiced.notYetInvoiced")}</p>
                 <Link
                   href="/timesheets"
                   className="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
                 >
-                  Go to Timesheets <ArrowRight className="w-3 h-3" />
+                  {t("dashboard.uninvoiced.goToTimesheets")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </>
             )}
@@ -710,7 +756,7 @@ export default async function HomePage() {
                 className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Create invoice
+                {t("dashboard.uninvoiced.createInvoice")}
               </Link>
             </div>
           )}
@@ -722,19 +768,19 @@ export default async function HomePage() {
         {/* Recent invoices */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="text-sm font-semibold text-slate-800">Recent Invoices</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.recentInvoices.title")}</h2>
             <Link
               href="/books/invoices"
               className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
             >
-              View all <ArrowRight className="w-3 h-3" />
+              {t("dashboard.recentInvoices.viewAll")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {!recentInvoices.length ? (
             <div className="py-10 text-center">
               <FileText className="w-7 h-7 text-slate-200 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">No invoices yet</p>
+              <p className="text-xs text-slate-400">{t("dashboard.recentInvoices.empty")}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-50">
@@ -777,11 +823,11 @@ export default async function HomePage() {
                         {fmt(Number(inv.total))}
                       </span>
                       <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                           INV_STATUS[effectiveStatus] ?? INV_STATUS.draft
                         }`}
                       >
-                        {effectiveStatus}
+                        {t(`invoiceStatus.${effectiveStatus}`, { defaultValue: effectiveStatus })}
                       </span>
                     </div>
                   </Link>
@@ -794,19 +840,19 @@ export default async function HomePage() {
         {/* Recent clients */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="text-sm font-semibold text-slate-800">Recent Clients</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.recentClients.title")}</h2>
             <Link
               href="/clients"
               className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
             >
-              View all <ArrowRight className="w-3 h-3" />
+              {t("dashboard.recentClients.viewAll")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {!recentClients.length ? (
             <div className="py-10 text-center">
               <Users className="w-7 h-7 text-slate-200 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">No clients yet</p>
+              <p className="text-xs text-slate-400">{t("dashboard.recentClients.empty")}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-50">
@@ -829,15 +875,15 @@ export default async function HomePage() {
                         {name}
                       </p>
                       <p className="text-xs text-slate-400">
-                        Added {fmtDate(client.created_at.slice(0, 10))}
+                        {t("dashboard.recentClients.added", { date: fmtDate(client.created_at.slice(0, 10)) })}
                       </p>
                     </div>
                     <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize flex-shrink-0 ${
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
                         CLIENT_STATUS[client.status] ?? CLIENT_STATUS.lead
                       }`}
                     >
-                      {client.status}
+                      {t(`clientStatus.${client.status}`, { defaultValue: client.status })}
                     </span>
                   </Link>
                 );
@@ -857,7 +903,7 @@ export default async function HomePage() {
                 <div className="flex items-center gap-2">
                   <GitBranch className="w-4 h-4 text-amber-600" />
                   <h2 className="text-sm font-semibold text-amber-900">
-                    Pending Approvals
+                    {t("dashboard.approvals.title")}
                     <span className="ml-1.5 text-xs font-bold bg-amber-600 text-white px-1.5 py-0.5 rounded-full">
                       {pendingApprovals.length}
                     </span>
@@ -867,7 +913,7 @@ export default async function HomePage() {
                   href="/workflows/requests?status=pending"
                   className="text-xs text-amber-700 hover:text-amber-900 font-medium flex items-center gap-1"
                 >
-                  View all <ArrowRight className="w-3 h-3" />
+                  {t("dashboard.approvals.viewAll")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
               <div className="divide-y divide-amber-100">
@@ -881,12 +927,12 @@ export default async function HomePage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-amber-900 truncate">{req.subject_label}</p>
                       <p className="text-xs text-amber-600 mt-0.5">
-                        {new Date(req.requested_at).toLocaleDateString("en-US", {
+                        {new Date(req.requested_at).toLocaleDateString(intlLocale(locale), {
                           month: "short", day: "numeric",
                         })}
                       </p>
                     </div>
-                    <span className="text-xs font-semibold text-amber-700 flex-shrink-0">Review →</span>
+                    <span className="text-xs font-semibold text-amber-700 flex-shrink-0">{t("dashboard.approvals.review")}</span>
                   </Link>
                 ))}
               </div>
@@ -899,19 +945,19 @@ export default async function HomePage() {
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <FileInput className="w-4 h-4 text-indigo-500" />
-                  <h2 className="text-sm font-semibold text-slate-800">Recent Form Leads</h2>
+                  <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.formLeads.title")}</h2>
                 </div>
                 <Link
                   href="/forms"
                   className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
                 >
-                  All forms <ArrowRight className="w-3 h-3" />
+                  {t("dashboard.formLeads.allForms")} <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
               <div className="divide-y divide-slate-50">
                 {recentSubmissions.map((sub) => {
                   const formRaw = sub.form_definitions;
-                  const formTitle = (Array.isArray(formRaw) ? formRaw[0] : formRaw)?.title ?? "Form";
+                  const formTitle = (Array.isArray(formRaw) ? formRaw[0] : formRaw)?.title ?? t("dashboard.formLeads.untitledForm");
                   return (
                     <Link
                       key={sub.id}
@@ -923,12 +969,12 @@ export default async function HomePage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-800 truncate">
-                          {sub.name || sub.email || "Anonymous"}
+                          {sub.name || sub.email || t("dashboard.formLeads.anonymous")}
                         </p>
                         <p className="text-xs text-slate-400 truncate">{formTitle}</p>
                       </div>
                       <p className="text-[11px] text-slate-400 flex-shrink-0">
-                        {new Date(sub.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {new Date(sub.created_at).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric" })}
                       </p>
                     </Link>
                   );
@@ -946,20 +992,20 @@ export default async function HomePage() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <CheckSquare className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-sm font-semibold text-slate-800">Upcoming Tasks</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.tasks.title")}</h2>
             </div>
             <Link
               href="/tasks"
               className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
             >
-              View all <ArrowRight className="w-3 h-3" />
+              {t("dashboard.tasks.viewAll")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {openTasks.length === 0 ? (
             <div className="py-10 text-center">
               <CheckSquare className="w-7 h-7 text-slate-200 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">No tasks due this week</p>
+              <p className="text-xs text-slate-400">{t("dashboard.tasks.empty")}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-50">
@@ -1000,7 +1046,7 @@ export default async function HomePage() {
                           ? <AlertCircle className="w-3 h-3" />
                           : <Clock className="w-3 h-3" />
                         }
-                        {isOverdue ? "Overdue" : isToday ? "Today" : fmtDate(task.due_date)}
+                        {isOverdue ? t("dashboard.tasks.overdue") : isToday ? t("dashboard.tasks.today") : fmtDate(task.due_date)}
                       </div>
                     )}
                   </Link>
@@ -1015,20 +1061,20 @@ export default async function HomePage() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-sm font-semibold text-slate-800">Upcoming Events</h2>
+              <h2 className="text-sm font-semibold text-slate-800">{t("dashboard.events.title")}</h2>
             </div>
             <Link
               href="/calendar"
               className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
             >
-              Calendar <ArrowRight className="w-3 h-3" />
+              {t("dashboard.events.calendar")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
           {upcomingEvents.length === 0 ? (
             <div className="py-10 text-center">
               <CalendarDays className="w-7 h-7 text-slate-200 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">No events in the next 7 days</p>
+              <p className="text-xs text-slate-400">{t("dashboard.events.empty")}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-50">
@@ -1045,8 +1091,8 @@ export default async function HomePage() {
                 const evtDateStr = evtDate.toISOString().slice(0, 10);
                 const isEvtToday = evtDateStr === todayStr;
                 const timeStr = evt.all_day
-                  ? "All day"
-                  : evtDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+                  ? t("dashboard.events.allDay")
+                  : evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit" });
 
                 return (
                   <Link
@@ -1063,7 +1109,7 @@ export default async function HomePage() {
                     </div>
                     <div className="flex-shrink-0 text-right">
                       <p className={`text-xs font-medium ${isEvtToday ? "text-amber-600" : "text-slate-500"}`}>
-                        {isEvtToday ? "Today" : fmtDate(evtDateStr)}
+                        {isEvtToday ? t("dashboard.events.today") : fmtDate(evtDateStr)}
                       </p>
                       <p className="text-[10px] text-slate-400">{timeStr}</p>
                     </div>

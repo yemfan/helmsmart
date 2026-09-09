@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { replyToGoogleReview } from "@/lib/google-business";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Reply to a Google review
@@ -14,7 +15,8 @@ export async function replyToReview(
 ): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
 
@@ -26,7 +28,7 @@ export async function replyToReview(
     .eq("id", reviewId)
     .single();
 
-  if (!review) return { ok: false, error: "Review not found" };
+  if (!review) return { ok: false, error: t("errors.google.reviewNotFound") };
 
   // Get business profile location ID
   const { data: profile } = await supabase
@@ -35,7 +37,7 @@ export async function replyToReview(
     .eq("id", review.business_profile_id)
     .single();
 
-  if (!profile) return { ok: false, error: "Business profile not found" };
+  if (!profile) return { ok: false, error: t("errors.google.profileNotFound") };
 
   // Call Google API to post reply
   const result = await replyToGoogleReview(
@@ -59,7 +61,8 @@ export async function replyToReview(
 export async function syncGoogleReviews(): Promise<{ ok: boolean; synced: number; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, synced: 0, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, synced: 0, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
 
@@ -70,7 +73,7 @@ export async function syncGoogleReviews(): Promise<{ ok: boolean; synced: number
     .eq("organization_id", orgId)
     .single();
 
-  if (!profile) return { ok: false, synced: 0, error: "No business profile connected" };
+  if (!profile) return { ok: false, synced: 0, error: t("errors.google.noProfileConnected") };
 
   // Sync reviews
   const { syncGoogleBusinessReviews } = await import("@/lib/google-business");
@@ -91,7 +94,8 @@ export async function syncGoogleReviews(): Promise<{ ok: boolean; synced: number
 export async function toggleAutoRequestReviews(enabled: boolean): Promise<{ ok: boolean; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("marketing");
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
 

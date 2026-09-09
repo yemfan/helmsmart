@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, KpiCard, LogoMark } from '@helm/ui';
 import type { KpiCardProps } from '@helm/ui';
 import { AlertTriangle, Info, XCircle, X, ChevronRight } from 'lucide-react';
@@ -21,7 +22,7 @@ export type NodeStatus = 'ok' | 'attention' | 'critical' | 'unconfigured';
 export interface DnaNode {
   /** Unique identifier for this node. */
   id: string;
-  /** Module display name, e.g. "Revenue", "Finance". */
+  /** Module display name, already in the reader's language. */
   label: string;
   /** Health / configuration status of this module. */
   status: NodeStatus;
@@ -36,9 +37,9 @@ export interface Alert {
   id: string;
   /** Alert severity level. */
   severity: 'info' | 'warn' | 'critical';
-  /** Source module name. */
+  /** Source module name, already in the reader's language. */
   module: string;
-  /** Short alert title. */
+  /** Short alert title, already in the reader's language. */
   title: string;
   /** Optional deeplink for full detail. */
   href?: string;
@@ -49,7 +50,7 @@ export interface CommandCenterGridProps {
   nodes: DnaNode[];
   /** Top-of-page alert rail entries. Displayed in severity order. */
   topAlerts?: Alert[];
-  /** AI COO's daily briefing text displayed in the briefing panel. */
+  /** AI COO's daily briefing text, already in the reader's language. */
   briefing?: string;
   /** Active time window for KPI data. */
   window?: 'today' | 'mtd' | 'qtd' | 'ytd';
@@ -71,24 +72,10 @@ const STATUS_BG: Record<NodeStatus, string> = {
   unconfigured: 'var(--color-background-secondary)',
 };
 
-const STATUS_LABEL: Record<NodeStatus, string> = {
-  ok: 'Healthy',
-  attention: 'Needs Attention',
-  critical: 'Critical',
-  unconfigured: 'Not Configured',
-};
-
 const ALERT_COLORS = {
   info: { bg: '#f0f9ff', border: '#bae6fd', text: '#0369a1', icon: Info },
   warn: { bg: '#fffbeb', border: '#fde68a', text: '#92400e', icon: AlertTriangle },
   critical: { bg: '#fef2f2', border: '#fecaca', text: '#991b1b', icon: XCircle },
-};
-
-const WINDOW_LABELS = {
-  today: 'Today',
-  mtd: 'Month to Date',
-  qtd: 'Quarter to Date',
-  ytd: 'Year to Date',
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -100,6 +87,7 @@ function AlertRail({
   alerts: Alert[];
   onDismiss: (id: string) => void;
 }) {
+  const { t } = useTranslation('home');
   if (alerts.length === 0) return null;
 
   return (
@@ -156,12 +144,12 @@ function AlertRail({
                   flexShrink: 0,
                 }}
               >
-                View <ChevronRight size={12} />
+                {t('grid.alertView')} <ChevronRight size={12} />
               </a>
             )}
             <button
               onClick={() => onDismiss(alert.id)}
-              aria-label="Dismiss alert"
+              aria-label={t('grid.dismissAlert')}
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -184,9 +172,10 @@ function AlertRail({
 }
 
 function StatusDot({ status }: { status: NodeStatus }) {
+  const { t } = useTranslation('home');
   return (
     <span
-      title={STATUS_LABEL[status]}
+      title={t(`grid.status.${status}`)}
       style={{
         display: 'inline-block',
         width: 8,
@@ -317,6 +306,7 @@ function BriefingPanel({
   briefing?: string;
   window?: CommandCenterGridProps['window'];
 }) {
+  const { t } = useTranslation('home');
   if (!briefing) return null;
 
   return (
@@ -344,7 +334,7 @@ function BriefingPanel({
             textTransform: 'uppercase',
           } as React.CSSProperties}
         >
-          AI COO Briefing
+          {t('grid.cooBriefing')}
         </span>
         {win && (
           <span
@@ -356,7 +346,7 @@ function BriefingPanel({
               fontFamily: 'Inter, system-ui, sans-serif',
             } as React.CSSProperties}
           >
-            {WINDOW_LABELS[win]}
+            {t(`grid.window.${win}`)}
           </span>
         )}
       </div>

@@ -5,8 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { InvoiceBuilder } from "@/components/invoice-builder";
 import { RoleGuard } from "@/components/role-guard";
 import { ArrowLeft } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
 
-export const metadata: Metadata = { title: "New Invoice · Books" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("invoices.new.metaTitle") };
+}
 
 export default async function NewInvoicePage({
   searchParams,
@@ -17,6 +22,9 @@ export default async function NewInvoicePage({
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+
+  const t = await getServerT("books");
+  const currency = await orgCurrency(orgId);
 
   const [{ data: clients }, { data: revenueAccounts }] = await Promise.all([
     supabase
@@ -42,8 +50,8 @@ export default async function NewInvoicePage({
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">New Invoice</h1>
-          <p className="text-sm text-slate-500">Create and send a professional invoice to your client</p>
+          <h1 className="text-xl font-semibold text-slate-900">{t("invoices.new.title")}</h1>
+          <p className="text-sm text-slate-500">{t("invoices.new.subtitle")}</p>
         </div>
       </div>
 
@@ -52,6 +60,7 @@ export default async function NewInvoicePage({
         clients={(clients ?? []) as { id: string; first_name: string | null; last_name: string | null; company: string | null; email: string | null }[]}
         revenueAccounts={(revenueAccounts ?? []) as { id: string; code: string; name: string }[]}
         preselectedClientId={preselectedClientId}
+        currency={currency}
       />
     </div>
   );

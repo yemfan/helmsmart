@@ -3,22 +3,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { Plus, Mail, Send, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Plus, Mail, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { MarketingOverview } from "@/components/marketing-overview";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
 
-export const metadata: Metadata = { title: "Marketing" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.marketing") };
+}
 
+// Enum → chip styling + icon. The label comes from the bundle
+// (`campaigns.status.<status>`), so the status keys stay the data vocabulary.
 const STATUS_CONFIG = {
-  draft:   { label: "Draft",   color: "bg-slate-100 text-slate-600",     icon: Mail },
-  sending: { label: "Sending", color: "bg-blue-100 text-blue-700",       icon: Clock },
-  sent:    { label: "Sent",    color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  failed:  { label: "Failed",  color: "bg-rose-100 text-rose-700",       icon: XCircle },
+  draft:   { color: "bg-slate-100 text-slate-600",     icon: Mail },
+  sending: { color: "bg-blue-100 text-blue-700",       icon: Clock },
+  sent:    { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  failed:  { color: "bg-rose-100 text-rose-700",       icon: XCircle },
 } as const;
 
 export default async function MarketingPage() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+  const [t, locale] = await Promise.all([getServerT("marketing"), getServerLocale()]);
 
   const [{ data: campaigns }, { data: org }, { count: callsHandled }] = await Promise.all([
     supabase
@@ -43,9 +51,9 @@ export default async function MarketingPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <ResponsibleEmployee slug="emily" className="mb-3" />
-          <h1 className="text-2xl font-semibold text-slate-900">Marketing</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("campaigns.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Reach your customers by voice, text, and email
+            {t("campaigns.subtitle")}
           </p>
         </div>
       </div>
@@ -56,16 +64,18 @@ export default async function MarketingPage() {
         email={{ sent: sentCampaigns.length, reached: totalReached }}
       />
 
-      <h2 id="email-campaigns" className="text-sm font-semibold text-slate-700 mb-3 scroll-mt-8">Email campaigns</h2>
+      <h2 id="email-campaigns" className="text-sm font-semibold text-slate-700 mb-3 scroll-mt-8">
+        {t("campaigns.emailSection")}
+      </h2>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         {[
-          { label: "Campaigns sent", value: String(sentCampaigns.length), sub: `${all.length} total` },
-          { label: "Clients reached", value: String(totalReached), sub: "across all campaigns" },
-          { label: "Drafts", value: String(all.filter((c) => c.status === "draft").length), sub: "ready to send" },
-        ].map(({ label, value, sub }) => (
-          <div key={label} className="bg-white rounded-xl border border-slate-200 p-5">
+          { key: "sent", label: t("campaigns.stats.sentLabel"), value: String(sentCampaigns.length), sub: t("campaigns.stats.sentSub", { count: all.length }) },
+          { key: "reached", label: t("campaigns.stats.reachedLabel"), value: String(totalReached), sub: t("campaigns.stats.reachedSub") },
+          { key: "drafts", label: t("campaigns.stats.draftsLabel"), value: String(all.filter((c) => c.status === "draft").length), sub: t("campaigns.stats.draftsSub") },
+        ].map(({ key, label, value, sub }) => (
+          <div key={key} className="bg-white rounded-xl border border-slate-200 p-5">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
               {label}
             </p>
@@ -82,41 +92,39 @@ export default async function MarketingPage() {
             <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
               <Mail className="w-6 h-6 text-slate-400" />
             </div>
-            <p className="text-sm font-medium text-slate-600 mb-1">No campaigns yet</p>
+            <p className="text-sm font-medium text-slate-600 mb-1">{t("campaigns.empty.title")}</p>
             <p className="text-xs text-slate-400 max-w-xs mb-5">
-              Send email campaigns to your active clients, leads, or prospects. Personalized and delivered via Resend.
+              {t("campaigns.empty.body")}
             </p>
             <Link
               href="/marketing/new"
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              <Plus className="w-4 h-4" /> Create campaign
+              <Plus className="w-4 h-4" /> {t("campaigns.empty.cta")}
             </Link>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-[1fr_120px_100px_120px_100px] gap-4 px-6 py-3 bg-slate-50 border-b border-slate-100 text-xs font-medium text-slate-500 uppercase tracking-wide">
-              <span>Campaign</span>
-              <span>Segment</span>
-              <span className="text-center">Reached</span>
-              <span>Sent</span>
-              <span className="text-right">Status</span>
+              <span>{t("campaigns.table.campaign")}</span>
+              <span>{t("campaigns.table.segment")}</span>
+              <span className="text-center">{t("campaigns.table.reached")}</span>
+              <span>{t("campaigns.table.sent")}</span>
+              <span className="text-right">{t("campaigns.table.status")}</span>
             </div>
 
             <div className="divide-y divide-slate-50">
               {all.map((campaign) => {
-                const cfg =
-                  STATUS_CONFIG[campaign.status as keyof typeof STATUS_CONFIG] ??
-                  STATUS_CONFIG.draft;
+                const statusKey =
+                  campaign.status in STATUS_CONFIG
+                    ? (campaign.status as keyof typeof STATUS_CONFIG)
+                    : "draft";
+                const cfg = STATUS_CONFIG[statusKey];
                 const StatusIcon = cfg.icon;
 
-                const segmentLabel: Record<string, string> = {
-                  all: "All clients",
-                  active: "Active",
-                  leads: "Leads",
-                  prospects: "Prospects",
-                  inactive: "Inactive",
-                };
+                const segmentLabel = t(`campaigns.segments.${campaign.recipient_filter}`, {
+                  defaultValue: campaign.recipient_filter,
+                });
 
                 return (
                   <Link
@@ -132,16 +140,13 @@ export default async function MarketingPage() {
                         {campaign.subject}
                       </p>
                     </div>
-                    <span className="text-sm text-slate-600">
-                      {segmentLabel[campaign.recipient_filter] ??
-                        campaign.recipient_filter}
-                    </span>
+                    <span className="text-sm text-slate-600">{segmentLabel}</span>
                     <span className="text-sm text-slate-700 font-medium text-center tabular-nums">
                       {campaign.recipient_count ?? "—"}
                     </span>
                     <span className="text-sm text-slate-500">
                       {campaign.sent_at
-                        ? new Date(campaign.sent_at).toLocaleDateString("en-US", {
+                        ? new Date(campaign.sent_at).toLocaleDateString(intlLocale(locale), {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -153,7 +158,7 @@ export default async function MarketingPage() {
                         className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${cfg.color}`}
                       >
                         <StatusIcon className="w-3 h-3" />
-                        {cfg.label}
+                        {t(`campaigns.status.${statusKey}`)}
                       </span>
                     </div>
                   </Link>

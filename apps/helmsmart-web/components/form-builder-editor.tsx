@@ -3,27 +3,25 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Plus, Trash2, GripVertical, CheckCircle2, AlertCircle,
-  ExternalLink, Copy, Eye,
+  Copy, Eye,
 } from "lucide-react";
 import { createForm, updateForm, deleteForm, type FormField } from "@/lib/actions/forms";
+// Seed content that becomes the org's OWN public form — see the module
+// header for why it follows their visitors' language, not the owner's UI.
+import {
+  DEFAULT_FORM_FIELDS,
+  DEFAULT_FORM_SLUG,
+  DEFAULT_FORM_TITLE,
+  DEFAULT_SUCCESS_MESSAGE,
+  NEW_FIELD_LABEL,
+} from "@/lib/marketing-content";
 
-const FIELD_TYPES = [
-  { value: "text", label: "Short text" },
-  { value: "email", label: "Email" },
-  { value: "phone", label: "Phone" },
-  { value: "textarea", label: "Long text" },
-  { value: "select", label: "Dropdown" },
-  { value: "checkbox", label: "Checkbox" },
-] as const;
-
-const DEFAULT_FIELDS: FormField[] = [
-  { id: "name", type: "text", label: "Full Name", placeholder: "Your name", required: true },
-  { id: "email", type: "email", label: "Email Address", placeholder: "you@example.com", required: true },
-  { id: "phone", type: "phone", label: "Phone Number", placeholder: "(555) 000-0000", required: false },
-  { id: "message", type: "textarea", label: "Message", placeholder: "How can we help?", required: false },
-];
+// Values are the stored field-type vocabulary the public renderer reads; the
+// labels come from `forms.builder.fieldTypes.<value>`.
+const FIELD_TYPES = ["text", "email", "phone", "textarea", "select", "checkbox"] as const;
 
 function generateSlug(title: string): string {
   return title
@@ -56,16 +54,17 @@ interface Props {
 
 export function FormBuilderEditor({ formId, initialValues }: Props) {
   const router = useRouter();
+  const { t } = useTranslation("marketing");
   const [isPending, startTransition] = useTransition();
 
-  const [title, setTitle] = useState(initialValues?.title ?? "Contact Us");
+  const [title, setTitle] = useState(initialValues?.title ?? DEFAULT_FORM_TITLE);
   const [description, setDescription] = useState(initialValues?.description ?? "");
-  const [slug, setSlug] = useState(initialValues?.slug ?? "contact");
+  const [slug, setSlug] = useState(initialValues?.slug ?? DEFAULT_FORM_SLUG);
   const [fields, setFields] = useState<FormField[]>(
-    initialValues?.fields ?? DEFAULT_FIELDS
+    initialValues?.fields ?? DEFAULT_FORM_FIELDS
   );
   const [successMessage, setSuccessMessage] = useState(
-    initialValues?.successMessage ?? "Thanks! We'll be in touch shortly."
+    initialValues?.successMessage ?? DEFAULT_SUCCESS_MESSAGE
   );
   const [autoCreateClient, setAutoCreateClient] = useState(
     initialValues?.autoCreateClient ?? true
@@ -90,7 +89,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
       {
         id: generateFieldId(),
         type: "text",
-        label: "New Field",
+        label: NEW_FIELD_LABEL,
         placeholder: "",
         required: false,
       },
@@ -107,11 +106,11 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
 
   const handleSave = () => {
     if (!title.trim() || !slug.trim()) {
-      setError("Title and URL slug are required.");
+      setError(t("forms.builder.errors.required"));
       return;
     }
     if (fields.length === 0) {
-      setError("Add at least one field.");
+      setError(t("forms.builder.errors.noFields"));
       return;
     }
     setError(null);
@@ -131,7 +130,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
           isActive,
         });
         if (!result.ok) {
-          setError(result.error ?? "Failed to save");
+          setError(result.error ?? t("forms.builder.errors.saveFailed"));
         } else {
           setSaved(true);
           setTimeout(() => setSaved(false), 2000);
@@ -148,7 +147,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
           redirectUrl: redirectUrl.trim(),
         });
         if (!result.ok) {
-          setError(result.error ?? "Failed to create");
+          setError(result.error ?? t("forms.builder.errors.createFailed"));
         } else {
           router.push(`/forms/${result.formId}`);
         }
@@ -157,7 +156,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
   };
 
   const handleDelete = () => {
-    if (!formId || !confirm("Delete this form? This cannot be undone.")) return;
+    if (!formId || !confirm(t("forms.builder.confirmDelete"))) return;
     startTransition(async () => {
       await deleteForm(formId);
       router.push("/forms");
@@ -185,7 +184,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
         </Link>
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-slate-900">
-            {formId ? "Edit Form" : "New Form"}
+            {formId ? t("forms.builder.titleEdit") : t("forms.builder.titleNew")}
           </h1>
         </div>
         <div className="flex gap-2">
@@ -197,7 +196,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
             >
               <Eye className="w-3.5 h-3.5" />
-              Preview
+              {t("forms.builder.preview")}
             </a>
           )}
           <button
@@ -208,12 +207,12 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
             {saved ? (
               <>
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Saved
+                {t("forms.builder.saved")}
               </>
             ) : isPending ? (
-              "Saving…"
+              t("common:status.saving")
             ) : (
-              "Save Form"
+              t("forms.builder.save")
             )}
           </button>
         </div>
@@ -224,20 +223,20 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">
-              Form Title <span className="text-rose-500">*</span>
+              {t("forms.builder.titleLabel")} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               disabled={isPending}
-              placeholder="e.g. Contact Us, Get a Quote"
+              placeholder={t("forms.builder.titlePlaceholder")}
               className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">
-              URL Slug <span className="text-rose-500">*</span>
+              {t("forms.builder.slugLabel")} <span className="text-rose-500">*</span>
             </label>
             <div className="flex gap-2">
               <div className="flex-1 flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
@@ -254,7 +253,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                 type="button"
                 onClick={copyUrl}
                 disabled={!formId}
-                title="Copy public URL"
+                title={t("forms.builder.copyUrl")}
                 className="p-2.5 border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-500 disabled:opacity-30 transition-colors"
               >
                 {slugCopied ? (
@@ -268,14 +267,14 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
         </div>
         <div className="mt-4">
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
-            Description (optional)
+            {t("forms.builder.descriptionLabel")}
           </label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             disabled={isPending}
-            placeholder="Shown above the form"
+            placeholder={t("forms.builder.descriptionPlaceholder")}
             className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
           />
         </div>
@@ -287,13 +286,13 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors capitalize ${
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
               activeTab === tab
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {tab}
+            {tab === "fields" ? t("forms.builder.tabFields") : t("forms.builder.tabSettings")}
           </button>
         ))}
       </div>
@@ -301,14 +300,14 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
       {activeTab === "fields" && (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-800">Form Fields</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("forms.builder.fieldsTitle")}</h2>
             <button
               type="button"
               onClick={addField}
               className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add field
+              {t("forms.builder.addField")}
             </button>
           </div>
 
@@ -323,7 +322,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                     {/* Label */}
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">
-                        Label
+                        {t("forms.builder.fieldLabel")}
                       </label>
                       <input
                         type="text"
@@ -336,7 +335,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                     {/* Type */}
                     <div>
                       <label className="block text-xs font-medium text-slate-500 mb-1">
-                        Type
+                        {t("forms.builder.fieldType")}
                       </label>
                       <select
                         value={field.type}
@@ -344,9 +343,9 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                         disabled={isPending}
                         className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-60"
                       >
-                        {FIELD_TYPES.map((t) => (
-                          <option key={t.value} value={t.value}>
-                            {t.label}
+                        {FIELD_TYPES.map((value) => (
+                          <option key={value} value={value}>
+                            {t(`forms.builder.fieldTypes.${value}`)}
                           </option>
                         ))}
                       </select>
@@ -355,7 +354,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                     {field.type !== "checkbox" && (
                       <div>
                         <label className="block text-xs font-medium text-slate-500 mb-1">
-                          Placeholder
+                          {t("forms.builder.fieldPlaceholder")}
                         </label>
                         <input
                           type="text"
@@ -370,7 +369,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                     {field.type === "select" && (
                       <div>
                         <label className="block text-xs font-medium text-slate-500 mb-1">
-                          Options (comma-separated)
+                          {t("forms.builder.fieldOptions")}
                         </label>
                         <input
                           type="text"
@@ -381,7 +380,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                             })
                           }
                           disabled={isPending}
-                          placeholder="Option 1, Option 2, Option 3"
+                          placeholder={t("forms.builder.fieldOptionsPlaceholder")}
                           className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-60"
                         />
                       </div>
@@ -400,7 +399,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                         htmlFor={`required-${field.id}`}
                         className="text-xs font-medium text-slate-600 cursor-pointer"
                       >
-                        Required field
+                        {t("forms.builder.fieldRequired")}
                       </label>
                     </div>
                   </div>
@@ -423,11 +422,11 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
         <div className="space-y-5">
           {/* Success message */}
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-800 mb-4">After submission</h3>
+            <h3 className="text-sm font-semibold text-slate-800 mb-4">{t("forms.builder.afterSubmission")}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Success message
+                  {t("forms.builder.successMessage")}
                 </label>
                 <input
                   type="text"
@@ -439,14 +438,14 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Redirect URL (optional)
+                  {t("forms.builder.redirectUrl")}
                 </label>
                 <input
                   type="url"
                   value={redirectUrl}
                   onChange={(e) => setRedirectUrl(e.target.value)}
                   disabled={isPending}
-                  placeholder="https://your-site.com/thank-you"
+                  placeholder={t("forms.builder.redirectPlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
                 />
               </div>
@@ -455,7 +454,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
 
           {/* CRM & notifications */}
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-sm font-semibold text-slate-800 mb-4">CRM & Notifications</h3>
+            <h3 className="text-sm font-semibold text-slate-800 mb-4">{t("forms.builder.crmTitle")}</h3>
             <div className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -466,23 +465,23 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                   className="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-600"
                 />
                 <div>
-                  <p className="text-sm font-medium text-slate-800">Auto-create lead in CRM</p>
+                  <p className="text-sm font-medium text-slate-800">{t("forms.builder.autoCreate")}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Every submission automatically creates or matches a contact
+                    {t("forms.builder.autoCreateHint")}
                   </p>
                 </div>
               </label>
 
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                  Notify email on submission
+                  {t("forms.builder.notifyEmail")}
                 </label>
                 <input
                   type="email"
                   value={notifyEmail}
                   onChange={(e) => setNotifyEmail(e.target.value)}
                   disabled={isPending}
-                  placeholder="you@business.com"
+                  placeholder={t("forms.builder.notifyPlaceholder")}
                   className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
                 />
               </div>
@@ -492,7 +491,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
           {/* Active toggle */}
           {formId && (
             <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="text-sm font-semibold text-slate-800 mb-4">Status</h3>
+              <h3 className="text-sm font-semibold text-slate-800 mb-4">{t("forms.builder.statusTitle")}</h3>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -502,9 +501,9 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                   className="w-4 h-4 rounded border-slate-300 text-indigo-600"
                 />
                 <div>
-                  <p className="text-sm font-medium text-slate-800">Form is active</p>
+                  <p className="text-sm font-medium text-slate-800">{t("forms.builder.activeLabel")}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Inactive forms show a "form not found" page
+                    {t("forms.builder.activeHint")}
                   </p>
                 </div>
               </label>
@@ -514,10 +513,9 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
           {/* Delete */}
           {formId && (
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-rose-800 mb-1">Danger zone</h3>
+              <h3 className="text-sm font-semibold text-rose-800 mb-1">{t("forms.builder.dangerTitle")}</h3>
               <p className="text-xs text-rose-600 mb-4">
-                Deleting this form is permanent and cannot be undone.
-                All submissions will also be deleted.
+                {t("forms.builder.dangerHint")}
               </p>
               <button
                 type="button"
@@ -525,7 +523,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
                 disabled={isPending}
                 className="text-xs font-medium text-rose-600 border border-rose-300 rounded-lg px-3 py-1.5 hover:bg-rose-100 transition-colors disabled:opacity-50"
               >
-                Delete form
+                {t("forms.builder.delete")}
               </button>
             </div>
           )}
@@ -533,7 +531,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
       )}
 
       {error && (
-        <div className="mt-5 flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">
+        <div className="mt-5 flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3" role="alert">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           {error}
         </div>

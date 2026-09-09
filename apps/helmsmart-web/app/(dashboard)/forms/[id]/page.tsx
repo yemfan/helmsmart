@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getForm } from "@/lib/actions/forms";
 import { FormBuilderEditor } from "@/components/form-builder-editor";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Edit Form · Lead Capture" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.editForm") };
+}
 
 export default async function EditFormPage({
   params,

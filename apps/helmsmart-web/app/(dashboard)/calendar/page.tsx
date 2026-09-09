@@ -2,8 +2,12 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { CalendarGrid } from "@/components/calendar-grid";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Calendar" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("tasks");
+  return { title: t("meta.calendar") };
+}
 
 export default async function CalendarPage() {
   const cookieStore = await cookies();

@@ -1,0 +1,1182 @@
+{
+  "overview": {
+    "metaTitle": "账务",
+    "subtitle": "AI 驱动的记账 — 收付实现制、复式记账",
+    "stats": {
+      "bankBalance": "银行余额",
+      "revenue": "收入",
+      "expenses": "支出",
+      "netProfit": "净利润",
+      "allLinkedAccounts": "全部已关联账户",
+      "linkBankToSync": "关联银行以同步数据",
+      "noTransactionsYet": "暂无交易"
+    },
+    "actions": {
+      "title": "操作",
+      "getStarted": "开始使用"
+    },
+    "transactions": {
+      "title": "交易",
+      "linkToSync": "关联银行后开始同步",
+      "noBankTitle": "尚未关联银行",
+      "noBankBody": "通过 Plaid 关联银行，我们会导入最近 90 天的交易，并由 AI 自动归类。",
+      "syncing": "正在同步交易…请稍后再查看。",
+      "pending": "待处理",
+      "needsReview": "需要审核"
+    }
+  },
+  "status": {
+    "invoice": {
+      "draft": "草稿",
+      "sent": "已发送",
+      "paid": "已付款",
+      "overdue": "已逾期",
+      "void": "已作废"
+    },
+    "recurring": {
+      "active": "启用中",
+      "paused": "已暂停"
+    }
+  },
+  "invoices": {
+    "frequency": {
+      "weekly": "每周",
+      "monthly": "每月",
+      "quarterly": "每季度",
+      "annually": "每年"
+    },
+    "list": {
+      "metaTitle": "发票 · 账务",
+      "export": "导出",
+      "newInvoice": "新建发票",
+      "outstanding": "未收款",
+      "overdue": "已逾期",
+      "collected30d": "近 30 天已收",
+      "invoiceCount_one": "{{count}} 张发票",
+      "invoiceCount_other": "{{count}} 张发票",
+      "pastDueCount_one": "{{count}} 张逾期",
+      "pastDueCount_other": "{{count}} 张逾期",
+      "paidCount_one": "{{count}} 张已付款",
+      "paidCount_other": "{{count}} 张已付款",
+      "emptyTitle": "还没有发票",
+      "emptyBody": "创建第一张发票，并通过电子邮件直接发送给客户。",
+      "createInvoice": "创建发票",
+      "columns": {
+        "client": "客户 / 编号",
+        "issued": "开具日期",
+        "due": "到期日",
+        "amount": "金额",
+        "status": "状态"
+      }
+    },
+    "new": {
+      "metaTitle": "新建发票 · 账务",
+      "title": "新建发票",
+      "subtitle": "创建一张专业发票并发送给客户"
+    },
+    "detail": {
+      "metaTitle": "发票 · 账务",
+      "print": "打印",
+      "documentLabel": "发票",
+      "issued": "开具日期：",
+      "due": "到期日：",
+      "paid": "付款日期：",
+      "billTo": "开票给",
+      "columns": {
+        "description": "说明",
+        "qty": "数量",
+        "unitPrice": "单价",
+        "amount": "金额"
+      },
+      "subtotal": "小计",
+      "taxAt": "税费（{{rate}}%）",
+      "total": "合计",
+      "notes": "备注"
+    },
+    "actions": {
+      "selectBankAccount": "请选择一个银行账户",
+      "confirmVoid": "作废这张发票？此操作无法撤销。",
+      "markPaidTitle": "标记发票为已付款",
+      "noMappedBanks": "没有已映射会计科目的银行账户。请先在设置中完成银行 → 科目的映射。",
+      "depositInto": "存入账户",
+      "journalHint": "系统将记一笔日记账：借记银行账户，贷记收入科目。",
+      "posting": "过账中…",
+      "confirmPayment": "确认收款",
+      "sendInvoice": "发送发票",
+      "resend": "重新发送",
+      "payOnline": "在线支付",
+      "markPaid": "标记为已付款",
+      "reminderSent": "催款提醒已发送",
+      "sendReminder": "发送催款提醒",
+      "void": "作废"
+    },
+    "errors": {
+      "noOrg": "尚未选择组织，请选择后重试。",
+      "notAuthenticated": "你尚未登录，请登录后重试。",
+      "notFound": "找不到该发票。",
+      "clientNoEmail": "该客户没有电子邮件地址。",
+      "sendFailed": "发票发送失败，请重试。",
+      "reminderFailed": "催款提醒发送失败，请重试。",
+      "markPaidFailed": "标记为已付款失败，请重试。",
+      "bankNotFound": "找不到该银行账户。",
+      "bankNoCoaMapping": "该银行账户尚未映射会计科目 — 请先在设置中完成映射。",
+      "journalEntryFailed": "创建日记账分录失败。"
+    },
+    "notifications": {
+      "paymentReceived": "已收到付款：{{amount}}",
+      "markedPaid": "发票 {{number}} 已标记为已付款"
+    },
+    "builder": {
+      "title": "发票信息",
+      "billTo": "开票给",
+      "noClient": "不指定客户",
+      "unnamedClient": "未命名",
+      "issueDate": "开具日期",
+      "dueDate": "到期日",
+      "columns": {
+        "description": "说明",
+        "qty": "数量",
+        "unitPrice": "单价",
+        "amount": "金额"
+      },
+      "descriptionPlaceholder": "服务或商品说明",
+      "revenueAccountOptional": "收入科目（可选）",
+      "addLineItem": "添加明细行",
+      "subtotal": "小计",
+      "tax": "税费",
+      "total": "合计",
+      "notesOptional": "备注（可选）",
+      "notesPlaceholder": "付款条款、银行信息、致谢语…",
+      "saveAsDraft": "存为草稿",
+      "createInvoice": "创建发票",
+      "errors": {
+        "dueDateRequired": "请填写到期日。",
+        "noLineItems": "请至少添加一条明细。",
+        "saveFailed": "发票保存失败，请重试。"
+      }
+    },
+    "timesheetImport": {
+      "trigger_one": "导入 {{count}} 条工时记录",
+      "trigger_other": "导入 {{count}} 条工时记录",
+      "title": "导入工时记录",
+      "subtitle": "所选记录会成为这张发票的明细行",
+      "selectedOf": "已选 {{selected}} / {{total}}",
+      "selectAll": "全选",
+      "clear": "清空",
+      "noDescription": "无说明",
+      "hours_one": "{{count}} 小时",
+      "hours_other": "{{count}} 小时",
+      "minutes_one": "{{count}} 分钟",
+      "minutes_other": "{{count}} 分钟",
+      "selectAtLeastOne": "请至少选择一条记录。",
+      "importFailed": "工时记录导入失败，请重试。",
+      "import": "导入",
+      "importCount_one": "导入 {{count}} 条",
+      "importCount_other": "导入 {{count}} 条"
+    },
+    "recurring": {
+      "metaTitle": "周期性发票 · 账务",
+      "noClient": "无客户",
+      "confirmDelete": "删除这条周期性发票？以后将不再自动生成发票。此操作无法撤销。",
+      "lastGenerated": "上次生成：{{date}}",
+      "pause": "暂停",
+      "resume": "恢复",
+      "activeCount_one": "{{count}} 条启用中",
+      "activeCount_other": "{{count}} 条启用中",
+      "pausedCount_one": "{{count}} 条已暂停",
+      "pausedCount_other": "{{count}} 条已暂停",
+      "autoGeneratedHint": "发票每天在 UTC 时间 9:00 自动生成",
+      "emptyTitle": "还没有周期性发票",
+      "emptyBody": "为聘用费、订阅或任何重复性服务设置自动开票。",
+      "columns": {
+        "client": "客户 / 计划",
+        "frequency": "频率",
+        "amount": "金额",
+        "nextInvoice": "下次开票",
+        "status": "状态"
+      }
+    },
+    "recurringModal": {
+      "trigger": "周期开票",
+      "title": "新建周期性发票",
+      "defaultTitle": "周期性发票",
+      "client": "客户",
+      "noSpecificClient": "不指定客户",
+      "frequency": "频率",
+      "firstInvoiceDate": "首次开票日期",
+      "invoiceTitle": "发票标题",
+      "optional": "（可选）",
+      "titlePlaceholder": "月度聘用费、网站维护…",
+      "lineItems": "明细行",
+      "addItem": "添加明细",
+      "columns": {
+        "description": "说明",
+        "qty": "数量",
+        "price": "单价"
+      },
+      "itemPlaceholder": "服务说明",
+      "taxRate": "税率（%）",
+      "subtotal": "小计",
+      "taxAt": "税费（{{rate}}%）",
+      "perInvoice": "每张发票",
+      "notes": "备注",
+      "notesPlaceholder": "付款条款、交付说明…",
+      "create": "创建周期性发票",
+      "errors": {
+        "noLineItems": "请至少添加一条明细。"
+      }
+    },
+    "stripe": {
+      "success": "支付已完成 — 这张发票稍后会被标记为已付款。",
+      "cancelled": "支付已取消，这张发票尚未扣款。"
+    }
+  },
+  "estimates": {
+    "subtitle": "AI 驱动的记账 — 收付实现制、复式记账",
+    "workflowTitle": "报价单 — {{amount}}",
+    "projectNameFallback": "项目 {{number}}",
+    "meta": {
+      "list": "报价单 · 账务",
+      "new": "新建报价单 · 账务",
+      "detail": "报价单 · 账务",
+      "templates": "报价单模板 · 账务"
+    },
+    "status": {
+      "draft": "草稿",
+      "sent": "已发送",
+      "accepted": "已接受",
+      "declined": "已拒绝",
+      "expired": "已过期"
+    },
+    "list": {
+      "newEstimate": "新建报价单",
+      "kpi": {
+        "pending": "待回复",
+        "accepted": "已接受",
+        "totalSent": "已发送总数",
+        "sentCount_other": "已发送 {{count}} 份",
+        "estimateCount_other": "{{count}} 份报价单",
+        "totalCount_other": "共 {{count}} 份报价单"
+      },
+      "columns": {
+        "client": "客户 / 编号",
+        "issued": "开具日期",
+        "expires": "到期日期",
+        "amount": "金额",
+        "status": "状态"
+      },
+      "empty": {
+        "title": "暂无报价单",
+        "body": "为客户创建并发送专业的报价单。客户接受后，一键即可转为发票。",
+        "cta": "创建报价单"
+      }
+    },
+    "new": {
+      "back": "返回报价单",
+      "title": "新建报价单",
+      "manageTemplates": "管理模板 →"
+    },
+    "detail": {
+      "back": "报价单",
+      "orgFallback": "报价单",
+      "unknownClient": "未知客户",
+      "noClient": "无客户",
+      "issueDate": "开具日期",
+      "validUntil": "有效期至",
+      "client": "客户",
+      "columns": {
+        "description": "说明",
+        "qty": "数量",
+        "price": "单价",
+        "amount": "金额"
+      },
+      "subtotal": "小计",
+      "taxWithRate": "税费（{{rate}}%）",
+      "total": "合计",
+      "notes": "备注",
+      "convertedToInvoice": "已转为发票",
+      "viewInvoice": "查看发票 →",
+      "convertedToProject": "已根据此报价单创建项目",
+      "viewProject": "查看项目 →",
+      "actionsHeading": "操作",
+      "detailsHeading": "详情",
+      "number": "编号",
+      "statusLabel": "状态",
+      "issued": "开具日期",
+      "expires": "到期日期"
+    },
+    "actions": {
+      "noClientEmail": "该客户没有电子邮箱地址",
+      "send": "发送报价单",
+      "resend": "重新发送报价单",
+      "markAccepted": "标记为已接受",
+      "markDeclined": "标记为已拒绝",
+      "convertToInvoice": "转为发票",
+      "createProject": "创建项目"
+    },
+    "templates": {
+      "back": "返回报价单",
+      "title": "报价单模板",
+      "newEstimate": "新建报价单",
+      "lineCount_other": "{{count}} 行明细",
+      "subtotalAmount": "小计 {{amount}}",
+      "taxRate": "税率 {{rate}}%",
+      "footnote": "创建新报价单时，模板会出现在“从模板开始”选择器中。",
+      "confirmDelete": "删除模板“{{name}}”？此操作无法撤销。",
+      "deleteTitle": "删除模板",
+      "empty": {
+        "title": "暂无模板",
+        "body": "创建报价单后点击“保存为模板”，即可重复使用其中的明细行。",
+        "cta": "创建报价单 →"
+      }
+    },
+    "builder": {
+      "aiLabel": "用 AI 起草",
+      "aiPlaceholder": "描述这项工作 — 例如：6 人机场接送，往返并等待 1 小时",
+      "aiDraft": "起草",
+      "aiHint": "AI 会填写明细行和工作范围说明 — 发送前请检查并修改。",
+      "startFromTemplate": "从模板开始",
+      "blankEstimate": "— 空白报价单 —",
+      "client": "客户",
+      "noClient": "无客户",
+      "validUntil": "有效期至（到期日期）",
+      "lineItems": "明细行",
+      "addLine": "添加明细行",
+      "columns": {
+        "description": "说明",
+        "qty": "数量",
+        "unitPrice": "单价",
+        "amount": "金额"
+      },
+      "descriptionPlaceholder": "服务或产品",
+      "taxRate": "税率（%）",
+      "subtotal": "小计",
+      "taxWithRate": "税费（{{rate}}%）",
+      "total": "合计",
+      "notes": "备注",
+      "optional": "（可选）",
+      "notesPlaceholder": "工作范围、条款、前提假设…",
+      "saveAsTemplate": "保存为模板",
+      "templateSaved": "模板已保存",
+      "create": "创建报价单",
+      "templateNamePrompt": "将这些明细行保存为模板。模板名称：",
+      "errors": {
+        "expiryRequired": "请填写到期日期",
+        "lineRequired": "请至少添加一行明细",
+        "linesBeforeTemplate": "保存模板前请先添加明细行",
+        "templateSaveFailed": "模板保存失败",
+        "draftFailed": "报价单起草失败"
+      }
+    },
+    "errors": {
+      "noOrg": "未选择组织",
+      "notFound": "未找到该报价单",
+      "clientNoEmail": "该客户没有电子邮箱地址",
+      "projectCreateFailed": "项目创建失败",
+      "describeJob": "请描述需要报价的工作",
+      "draftFailed": "无法生成报价单 — 请补充更多细节",
+      "templateNameRequired": "请填写模板名称",
+      "lineRequired": "请至少添加一行明细",
+      "templateSaveFailed": "模板保存失败"
+    }
+  },
+  "bills": {
+    "subtitle": "AI 驱动的记账 — 收付实现制、复式记账",
+    "meta": {
+      "list": "账单 · 账务",
+      "recurring": "周期性账单 · 账务"
+    },
+    "status": {
+      "paid": "已支付"
+    },
+    "due": {
+      "overdue_other": "逾期 {{count}} 天",
+      "today": "今天到期",
+      "inDays_other": "{{count}} 天后到期",
+      "onDate": "{{date}} 到期"
+    },
+    "list": {
+      "title": "账单",
+      "subtitle": "跟踪应付供应商的款项。标记为已支付后，支出才会记入账簿。",
+      "recurring": "周期性账单",
+      "newBill": "新建账单",
+      "kpi": {
+        "totalOwed": "应付总额",
+        "overdue": "已逾期",
+        "dueInSevenDays": "7 天内到期",
+        "openBills_other": "{{count}} 张未结账单",
+        "pastDue_other": "{{count}} 张已逾期",
+        "comingUp_other": "{{count}} 张即将到期"
+      },
+      "filter": {
+        "open_other": "未结（{{count}}）",
+        "paid_other": "已支付（{{count}}）",
+        "all": "全部"
+      },
+      "empty": {
+        "open": "暂无未结账单",
+        "paid": "暂无已支付账单",
+        "all": "暂无账单",
+        "body": "记录一张供应商账单，跟踪应付金额和到期时间。"
+      }
+    },
+    "row": {
+      "uncategorized": "未分类",
+      "paidOn": "{{date}} 已支付",
+      "markPaid": "标记为已支付",
+      "recordPayment": "记录付款",
+      "linkBankFirst": "请先关联银行账户"
+    },
+    "form": {
+      "title": "新建账单",
+      "vendor": "供应商 *",
+      "vendorPlaceholder": "供应商名称",
+      "billNumber": "账单编号",
+      "optional": "（可选）",
+      "description": "说明",
+      "descriptionPlaceholder": "这张账单用于什么？",
+      "category": "类别（支出科目）",
+      "noExpenseAccounts": "没有支出科目 — 请完成引导流程以生成会计科目表。",
+      "amount": "金额（{{currency}}）*",
+      "billDate": "账单日期",
+      "dueDate": "到期日期 *",
+      "note": "记录账单只是登记这笔应付款。标记为已支付时，支出才会记入账簿。",
+      "save": "保存账单",
+      "billNumberPlaceholder": "例如 INV-1042"
+    },
+    "pay": {
+      "title": "支付账单",
+      "noBankAccount": "还没有银行账户映射到会计科目表。请先关联银行，或在设置中配置其科目映射。",
+      "payFrom": "付款账户",
+      "paymentDate": "付款日期",
+      "journal": "记账：借 {{expense}} / 贷 {{bank}}",
+      "expenseFallback": "支出",
+      "bankFallback": "银行",
+      "submit": "记录付款"
+    },
+    "recurring": {
+      "title": "周期性账单",
+      "frequency": {
+        "weekly": "每周",
+        "monthly": "每月",
+        "quarterly": "每季度",
+        "annually": "每年"
+      },
+      "activeCount_other": "{{count}} 项启用中",
+      "monthlyEstimate": "约 {{amount}}/月",
+      "autoGenerate": "按计划自动生成未结账单",
+      "backToBills": "账单",
+      "newRecurring": "新建周期性账单",
+      "paused": "已暂停",
+      "next": "下次 {{date}}",
+      "net": "账期 {{days}} 天",
+      "last": "上次 {{date}}",
+      "resume": "恢复",
+      "pause": "暂停",
+      "footnote": "启用中的模板每天检查一次。到达模板的下次日期时，系统会创建一张新的未结账单（按账期天数计算到期日），并按其频率推进日期。暂停可跳过后续周期。",
+      "empty": {
+        "title": "暂无周期性账单",
+        "body": "房租、软件订阅或保险只需设置一次 — 每个周期我们都会生成一张新的未结账单，不会漏掉任何一笔。",
+        "cta": "创建第一个模板"
+      },
+      "form": {
+        "title": "新建周期性账单",
+        "vendorPlaceholder": "房东公司",
+        "descriptionPlaceholder": "例如：办公室租金、SaaS 订阅…",
+        "frequency": "频率",
+        "firstDate": "首次日期",
+        "netDays": "账期（天）",
+        "note_other": "每个周期都会生成一张未结账单，在生成后 {{count}} 天到期。标记为已支付时，支出才会记入账簿。",
+        "save": "保存模板"
+      }
+    },
+    "errors": {
+      "noOrg": "未选择组织",
+      "vendorRequired": "请填写供应商",
+      "invalidAmount": "请输入有效金额",
+      "dueDateRequired": "请填写到期日期",
+      "firstRunDateRequired": "请填写首次生成日期",
+      "saveFailed": "账单保存失败",
+      "selectBank": "请选择银行账户",
+      "paymentFailed": "付款记录失败",
+      "createRecurringFailed": "周期性账单创建失败",
+      "notFound": "未找到该账单",
+      "cantDeletePaid": "无法删除已支付的账单 — 它已生成日记账分录"
+    }
+  },
+  "vendors": {
+    "subtitle": "AI 驱动的记账 — 收付实现制、复式记账",
+    "meta": {
+      "list": "供应商 · 账务",
+      "report1099": "1099 报表 · 账务"
+    },
+    "list": {
+      "title": "供应商",
+      "vendorCount_other": "{{count}} 家供应商",
+      "paidAmount": "已付 {{amount}}",
+      "openAmount": "未结 {{amount}}",
+      "report1099": "1099 报表",
+      "newVendor": "新建供应商",
+      "footnote": "支出按供应商名称从账单中匹配。请保持名称一致（在账单表单中使用自动补全），以确保金额准确。",
+      "columns": {
+        "vendor": "供应商",
+        "bills": "账单数",
+        "billed": "已开票",
+        "paid": "已支付",
+        "open": "未结"
+      },
+      "empty": {
+        "title": "暂无供应商",
+        "body": "添加你付款的个人和公司。系统会按名称匹配账单，自动汇总他们的支出。",
+        "cta": "添加第一家供应商"
+      }
+    },
+    "row": {
+      "confirmDelete": "确定"
+    },
+    "form": {
+      "newTitle": "新建供应商",
+      "editTitle": "编辑供应商",
+      "name": "名称 *",
+      "namePlaceholder": "供应商名称",
+      "nameHint": "请与账单上的供应商名称完全一致，以便统计支出。",
+      "email": "电子邮箱",
+      "phone": "电话",
+      "notes": "备注",
+      "notesPlaceholder": "账号、付款条件、联系人…",
+      "is1099": "1099 承包商",
+      "is1099Hint": "— 纳入年终 1099 报表",
+      "add": "添加供应商"
+    },
+    "report1099": {
+      "title": "1099 承包商报表",
+      "reportableCount_other": "{{count}} 位承包商达到或超过 $600",
+      "paidInYear": "{{year}} 年已支付 {{amount}}",
+      "backToVendors": "供应商",
+      "taxYear": "纳税年度",
+      "paidHeading": "{{year}} 年已支付",
+      "exportCsv": "导出 CSV",
+      "total": "合计",
+      "footnote": "收付实现制：金额取自 {{year}} 年内标记为已支付的账单，并按名称匹配到每位已标记的承包商。支付达到或超过 $600 的承包商通常需要申报 1099-NEC。请与你的会计确认。",
+      "columns": {
+        "contractor": "承包商",
+        "paid": "已支付",
+        "status": "状态"
+      },
+      "badge": {
+        "reportable": "1099-NEC",
+        "underThreshold": "低于 $600"
+      },
+      "empty": {
+        "title": "暂无 1099 承包商",
+        "body": "在供应商目录中将某个供应商标记为“1099 承包商”，其已支付金额就会汇总到这里，供年终申报使用。",
+        "cta": "前往供应商 →"
+      },
+      "csv": {
+        "contractor": "承包商",
+        "email": "电子邮箱",
+        "paid": "{{year}} 年已支付",
+        "reportable": "需申报（≥ $600）",
+        "yes": "是",
+        "no": "否"
+      }
+    },
+    "errors": {
+      "noOrg": "未选择组织",
+      "nameRequired": "请填写供应商名称",
+      "saveFailed": "供应商保存失败"
+    }
+  },
+  "reports": {
+    "financial": {
+      "metaTitle": "报表 · 账务",
+      "subtitle": "AI 智能记账 — 收付实现制、复式记账",
+      "periodLine": "期间：{{label}} · {{start}} → {{end}}",
+      "agingLink": "应收 / 应付账龄报表",
+      "noActivity": "本期无发生额",
+      "periods": {
+        "current_month": "本月",
+        "last_month": "上月",
+        "ytd": "年初至今",
+        "q1": "第一季度",
+        "q2": "第二季度",
+        "q3": "第三季度",
+        "q4": "第四季度"
+      },
+      "periodLabels": {
+        "ytd": "{{year}} 年年初至今",
+        "q1": "{{year}} 年第一季度",
+        "q2": "{{year}} 年第二季度",
+        "q3": "{{year}} 年第三季度",
+        "q4": "{{year}} 年第四季度"
+      },
+      "cards": {
+        "revenue": "收入",
+        "expenses": "支出",
+        "netIncome": "净利润",
+        "netIncomeFormula": "收入 − 支出",
+        "accounts_other": "{{count}} 个科目"
+      },
+      "pnl": {
+        "title": "利润表",
+        "revenue": "收入",
+        "totalRevenue": "收入合计",
+        "expenses": "支出",
+        "totalExpenses": "支出合计",
+        "netIncome": "净利润"
+      },
+      "balanceSheet": {
+        "title": "资产负债表",
+        "outOfBalance": "⚠ 借贷不平",
+        "assets": "资产",
+        "totalAssets": "资产合计",
+        "liabilities": "负债",
+        "totalLiabilities": "负债合计",
+        "equity": "所有者权益",
+        "totalEquity": "所有者权益合计（含净利润）",
+        "equation": "资产 = 负债 + 所有者权益",
+        "balanced": "✓ 已平衡",
+        "outBy": "相差 {{amount}}",
+        "empty": "本期没有日记账分录"
+      }
+    },
+    "business": {
+      "metaTitle": "报表",
+      "title": "报表",
+      "subtitle": "利润表、现金流量、工时统计与应收账龄",
+      "exportCsv": "导出 CSV",
+      "lifetimeToDate": "· 累计至今",
+      "asOf": "· 截至 {{date}}",
+      "dateRange": "{{from}} – {{to}}",
+      "blendedMargin": "综合毛利率 {{percent}}%",
+      "hours": {
+        "hours": "{{hours}} 小时",
+        "minutes": "{{minutes}} 分钟",
+        "hoursMinutes": "{{hours}} 小时 {{minutes}} 分钟"
+      },
+      "range": {
+        "from": "起始",
+        "to": "截止",
+        "apply": "应用"
+      },
+      "presets": {
+        "thisMonth": "本月",
+        "lastQuarter": "上季度",
+        "thisYear": "今年",
+        "lastYear": "去年"
+      },
+      "tabs": {
+        "pnl": "利润表",
+        "cash": "现金流量",
+        "time": "工时统计",
+        "projects": "项目",
+        "clients": "客户",
+        "receivables": "应收账款",
+        "forecast": "预测",
+        "tax": "销售税"
+      },
+      "errors": {
+        "notAuthenticated": "未通过身份验证"
+      },
+      "fallbacks": {
+        "uncategorized": "未分类",
+        "noProject": "无项目",
+        "noClient": "无客户",
+        "unknownClient": "未知客户"
+      },
+      "pnl": {
+        "totalRevenue": "收入合计",
+        "totalExpenses": "支出合计",
+        "netIncome": "净利润",
+        "profitablePeriod": "本期盈利",
+        "netLoss": "本期亏损",
+        "revenue": "收入",
+        "expenses": "支出",
+        "noRevenue": "本期没有收入分录",
+        "noExpenses": "本期没有支出分录"
+      },
+      "cash": {
+        "moneyIn": "现金流入",
+        "moneyInSub": "存入与贷记",
+        "moneyOut": "现金流出",
+        "moneyOutSub": "支取与借记",
+        "net": "净现金流",
+        "positiveFlow": "净流入",
+        "negativeFlow": "净流出",
+        "byCategory": "按类别",
+        "noTransactions": "本期没有交易",
+        "columns": {
+          "category": "类别",
+          "in": "流入",
+          "out": "流出"
+        }
+      },
+      "time": {
+        "totalHours": "总工时",
+        "billableHours": "可计费工时",
+        "billableAmount": "可计费金额",
+        "uninvoiced": "未开票",
+        "readyToInvoice": "待开票",
+        "fullyInvoiced": "已全部开票",
+        "hoursByProject": "按项目统计工时",
+        "noEntries": "本期没有工时记录",
+        "total": "合计",
+        "byClient": "按客户统计可计费收入",
+        "periodSummary": "期间汇总",
+        "billableHoursLabel": "可计费工时",
+        "earned": "已赚取"
+      },
+      "projects": {
+        "revenue": "收入",
+        "laborCost": "人工成本",
+        "expenses": "支出",
+        "profit": "利润",
+        "profitByProject": "按项目统计利润",
+        "empty": "尚无项目",
+        "total": "合计",
+        "columns": {
+          "project": "项目",
+          "revenue": "收入",
+          "labor": "人工",
+          "expenses": "支出",
+          "profit": "利润",
+          "margin": "毛利率"
+        },
+        "note": "收入为已开票的可计费工时。利润已扣除人工成本（按默认人工费率计算）和归集到该项目的支出。数据为各项目的累计值，不受上方日期范围影响。"
+      },
+      "clients": {
+        "revenue": "收入",
+        "laborCost": "人工成本",
+        "expenses": "支出",
+        "profit": "利润",
+        "profitByClient": "按客户统计利润",
+        "empty": "尚无客户",
+        "total": "合计",
+        "columns": {
+          "client": "客户",
+          "revenue": "收入",
+          "labor": "人工",
+          "expenses": "支出",
+          "profit": "利润",
+          "margin": "毛利率"
+        },
+        "note": "收入为向该客户开具的全部发票金额。成本为其项目下记录的人工与支出 — 按固定总价计费且未做项目跟踪的客户，毛利率会显得偏高。"
+      },
+      "receivables": {
+        "outstanding": "未收款",
+        "current": "未到期",
+        "notYetDue": "尚未到期",
+        "overdue": "逾期",
+        "pastDueDate": "已过到期日",
+        "d90Plus": "90 天以上",
+        "atRisk": "风险较高",
+        "byClient": "按客户统计应收账款",
+        "empty": "没有未收款的发票 — 款项已全部收讫。",
+        "invoiceCount_other": "{{count}} 张发票",
+        "total": "合计",
+        "columns": {
+          "client": "客户",
+          "current": "未到期",
+          "d1_30": "1–30 天",
+          "d31_60": "31–60 天",
+          "d61_90": "61–90 天",
+          "d90_plus": "90 天以上",
+          "total": "合计"
+        },
+        "note": "按逾期天数归集的未付发票（已发送或已逾期），截至今日。不受上方日期范围影响。"
+      },
+      "forecast": {
+        "dipWarning": "预计 90 天内现金将降至 {{amount}}。建议优先催收逾期发票，或延后支付非紧急账单。",
+        "cashOnHand": "现有现金",
+        "linkedAccounts": "已关联账户",
+        "linkABank": "关联银行账户可提高准确度",
+        "expectedIn": "预计流入",
+        "openInvoices": "未结发票",
+        "expectedOut": "预计流出",
+        "openBills": "未结账单",
+        "projected90": "预计（90 天）",
+        "afterOpenItems": "计入全部未结项目后",
+        "title": "现金流预测",
+        "startingBalance": "期初余额",
+        "total": "合计",
+        "columns": {
+          "period": "期间",
+          "expectedIn": "预计流入",
+          "expectedOut": "预计流出",
+          "net": "净额",
+          "projectedBalance": "预计余额"
+        },
+        "buckets": {
+          "now": "已逾期 / 当前",
+          "d1_30": "1–30 天",
+          "d31_60": "31–60 天",
+          "d61_90": "61–90 天",
+          "later": "90 天以上"
+        },
+        "note": "预测以当前银行余额为基础，结合未结发票（流入）与未结账单（流出），按到期日分段计算，截至今日。不包含尚未开票或立账的周期性项目、工资和税费。"
+      },
+      "tax": {
+        "collected": "已收税额",
+        "toRemit": "待申报缴纳",
+        "taxableSales": "应税销售额",
+        "nonTaxableSales": "免税销售额",
+        "totalSales": "销售额合计",
+        "preTax": "不含税",
+        "byRate": "按税率统计已收税额",
+        "empty": "本期没有已付款的含税发票",
+        "total": "合计",
+        "columns": {
+          "rate": "税率",
+          "taxableSales": "应税销售额",
+          "taxCollected": "已收税额",
+          "invoices": "发票数"
+        },
+        "note": "收付实现制：{{from}} 至 {{to}} 期间已付款发票的销售税，按税率分组。免税销售额指未计税的已付款发票。请使用上方的日期范围与您的申报期保持一致。"
+      }
+    }
+  },
+  "journal": {
+    "metaTitle": "日记账 · 账务",
+    "subtitle": "AI 智能记账 — 收付实现制、复式记账",
+    "title": "总账",
+    "entryCount_other": "{{count}} 条分录",
+    "reversal": "红冲",
+    "empty": {
+      "title": "尚无日记账分录",
+      "body": "在“交易”标签页中审核通过交易后，系统会在此生成复式记账分录。"
+    },
+    "sourceTypes": {
+      "bank_import": "银行导入",
+      "invoice": "发票",
+      "expense": "支出",
+      "adjustment": "调整分录",
+      "opening_balance": "期初余额",
+      "period_close": "期末结转",
+      "reversal": "红冲"
+    },
+    "pagination": {
+      "previous": "← 上一页",
+      "next": "下一页 →",
+      "pageOf": "第 {{page}} 页，共 {{total}} 页"
+    }
+  },
+  "accounts": {
+    "metaTitle": "会计科目 · 账务",
+    "subtitle": "AI 智能记账 — 收付实现制、复式记账",
+    "activeCount": "{{total}} 个科目中已启用 {{active}} 个",
+    "title": "会计科目表",
+    "autoGenerated": "根据您的企业主体类型自动生成。",
+    "taxReviewWarning": "⚠ 税务申报行代码需经注册会计师复核后方可使用。",
+    "countInType_other": "{{count}} 个科目",
+    "empty": "未找到会计科目。完成初始设置即可生成会计科目表。",
+    "types": {
+      "asset": "资产",
+      "liability": "负债",
+      "equity": "所有者权益",
+      "revenue": "收入",
+      "expense": "支出"
+    },
+    "normalBalance": {
+      "debit": "借方",
+      "credit": "贷方"
+    },
+    "columns": {
+      "code": "代码",
+      "name": "名称",
+      "normalBalance": "余额方向",
+      "taxCode": "税务代码"
+    }
+  },
+  "aging": {
+    "metaTitle": "账龄报表 · 账务",
+    "title": "账龄报表",
+    "subtitle": "应收账款与应付账款 — 截至 {{date}}",
+    "viewAll": "查看全部",
+    "unnamedClient": "客户",
+    "buckets": {
+      "current": "未到期",
+      "1-30": "1–30 天",
+      "31-60": "31–60 天",
+      "61-90": "61–90 天",
+      "90+": "90 天以上"
+    },
+    "tables": {
+      "ar": "应收账款（AR）",
+      "ap": "应付账款（AP）"
+    },
+    "summary": {
+      "open": "{{count}} 笔未结",
+      "total": "合计 {{amount}}",
+      "pastDue": "逾期 {{amount}}",
+      "nothingPastDue": "无逾期",
+      "open_other": "{{count}} 笔未结"
+    },
+    "empty": {
+      "invoices": "没有未结发票",
+      "bills": "没有未结账单"
+    },
+    "columns": {
+      "client": "客户",
+      "vendor": "供应商",
+      "reference": "单据编号",
+      "dueDate": "到期日",
+      "amount": "金额",
+      "status": "状态"
+    },
+    "status": {
+      "current": "未到期",
+      "daysOverdue": "逾期 {{days}} 天"
+    },
+    "cards": {
+      "totalReceivable": "应收账款合计",
+      "arOverdue": "应收逾期",
+      "totalPayable": "应付账款合计",
+      "apOverdue": "应付逾期",
+      "openInvoices_other": "{{count}} 笔未结发票",
+      "invoices_other": "{{count}} 张发票",
+      "openBills_other": "{{count}} 笔未结账单",
+      "bills_other": "{{count}} 笔账单"
+    }
+  },
+  "expenses": {
+    "list": {
+      "metaTitle": "支出 · 账务",
+      "title": "支出",
+      "subtitle_one": "{{count}} 条记录 · 合计 {{total}}",
+      "subtitle_other": "{{count}} 条记录 · 合计 {{total}}",
+      "import": "导入",
+      "importCsv": "CSV / 电子表格",
+      "importOfx": "银行对账单（OFX/QFX）",
+      "record": "记录支出",
+      "emptyTitle": "暂无支出",
+      "emptyBody": "在此手动记录支出。从银行导入的交易会在交易页面自动归类。",
+      "emptyCta": "记录第一笔支出",
+      "columns": {
+        "date": "日期",
+        "description": "说明",
+        "account": "科目",
+        "amount": "金额"
+      },
+      "total": "合计"
+    },
+    "new": {
+      "metaTitle": "新建支出 · 账务",
+      "title": "记录支出",
+      "subtitle": "将一笔手动支出过账到日记账",
+      "back": "支出"
+    },
+    "modal": {
+      "trigger": "添加支出",
+      "triggerHint": "手动录入",
+      "title": "添加支出",
+      "close": "关闭"
+    },
+    "form": {
+      "details": "支出明细",
+      "date": "日期",
+      "amount": "金额",
+      "description": "说明",
+      "descriptionPlaceholder": "例如：在 Staples 采购办公用品",
+      "expenseAccount": "支出科目",
+      "suggest": "推荐",
+      "suggestHint": "让 AI 挑选最合适的科目",
+      "suggestHintDisabled": "请先填写说明",
+      "suggestReason": "{{account}} — {{reason}}",
+      "suggestNoMatch": "没有把握足够的匹配，请手动选择。",
+      "suggestFailed": "无法推荐类别。",
+      "noExpenseAccounts": "会计科目表中没有支出科目",
+      "debitedHint": "借记（支出增加）",
+      "paidFrom": "付款来源",
+      "accountsPayable": "应付账款（尚未付款）",
+      "creditedHint": "贷记（现金或负债增加）",
+      "project": "项目",
+      "optionalSuffix": "（可选）",
+      "noProject": "不关联项目（一般支出）",
+      "projectHint": "计入该项目的利润核算",
+      "required": "日期、金额、说明和支出科目为必填项。",
+      "saveFailed": "保存支出失败",
+      "save": "记录支出"
+    },
+    "scan": {
+      "title": "扫描收据",
+      "subtitle": "上传收据图片，AI 会自动填写各项内容。",
+      "extracting": "正在提取收据信息…",
+      "upload": "上传收据",
+      "takePhoto": "拍照",
+      "clear": "清除扫描结果",
+      "confidence": {
+        "high": "置信度高",
+        "medium": "置信度中等",
+        "low": "置信度低"
+      },
+      "notConfigured": "AI 尚未配置",
+      "noImage": "未提供图片",
+      "unsupportedType": "不支持的图片格式。请上传 JPEG、PNG 或 WebP 文件。",
+      "tooLarge": "图片必须小于 10 MB",
+      "readFailed": "读取图片失败",
+      "parseFailed": "无法解析 AI 返回的内容",
+      "failed": "扫描收据失败"
+    },
+    "import": {
+      "back": "支出",
+      "clear": "清空",
+      "redirecting": "正在返回支出页面…",
+      "failed": "导入失败",
+      "noRows": "未提供任何数据行",
+      "failedCount_one": "{{count}} 条失败",
+      "failedCount_other": "{{count}} 条失败",
+      "csv": {
+        "metaTitle": "导入支出",
+        "title": "导入支出",
+        "subtitle": "上传 CSV 一次性添加多笔支出——可从电子表格、银行导出文件或财务软件导入",
+        "formatTitle": "CSV 格式",
+        "formatRequired": "必填列：date（YYYY-MM-DD）、amount、description。",
+        "formatOptional": "可选列：category——例如“Meals & Entertainment”，系统会自动与会计科目表匹配。",
+        "downloadTemplate": "下载模板",
+        "dropZone": "将 CSV 文件拖到此处，或点击选择文件",
+        "dropZoneHint": "仅支持 CSV 文件 · 可导入 Quicken、QuickBooks 及银行对账单的导出文件",
+        "notCsv": "请上传 .csv 文件",
+        "noValidRows": "没有可导入的有效数据行",
+        "preview": "预览",
+        "validCount_one": "{{count}} 条有效",
+        "validCount_other": "{{count}} 条有效",
+        "skipCount_one": "将跳过 {{count}} 条",
+        "skipCount_other": "将跳过 {{count}} 条",
+        "columns": {
+          "date": "日期",
+          "amount": "金额",
+          "description": "说明",
+          "category": "类别"
+        },
+        "rowErrors": {
+          "dateRequired": "date 为必填项（YYYY-MM-DD）",
+          "amountRequired": "amount 为必填项",
+          "amountNotNumber": "amount 必须是数字",
+          "amountNotPositive": "amount 必须为正数",
+          "descriptionRequired": "description 为必填项"
+        },
+        "showingFirst": "共 {{total}} 行，显示前 {{shown}} 行",
+        "imported_one": "已导入 {{count}} 笔支出",
+        "imported_other": "已导入 {{count}} 笔支出",
+        "importing_one": "正在导入 {{count}} 笔支出…",
+        "importing_other": "正在导入 {{count}} 笔支出…",
+        "importAction_one": "导入 {{count}} 笔支出",
+        "importAction_other": "导入 {{count}} 笔支出"
+      },
+      "ofx": {
+        "metaTitle": "导入 OFX/QFX 对账单",
+        "title": "导入银行对账单",
+        "subtitle": "上传来自银行、Quicken 或 QuickBooks 的 OFX 或 QFX 文件以导入交易",
+        "formatTitle": "OFX/QFX 格式",
+        "formatBody": "上传由 Quicken、QuickBooks、银行网站或任何支持 OFX 格式的财务软件导出的对账单。借记（支出）会作为支出交易导入；贷记（存入）会被跳过。",
+        "viewExample": "查看 OFX 格式示例",
+        "exampleTitle": "OFX 格式示例：",
+        "exampleFooter": "（以上为文件头。请从银行或 Quicken 导出完整文件。）",
+        "dropZone": "将 OFX/QFX 文件拖到此处，或点击选择文件",
+        "dropZoneHint": "支持 .ofx 和 .qfx 文件格式",
+        "notOfx": "请上传 .ofx 或 .qfx 文件",
+        "noTransactions": "在该 OFX 文件中未找到交易。请确认文件包含 STMTTRN 区块。",
+        "noValidRows": "没有可导入的有效交易",
+        "invalidRow": "日期或金额无效",
+        "preview": "交易",
+        "toImport_one": "待导入 {{count}} 笔",
+        "toImport_other": "待导入 {{count}} 笔",
+        "skippedCount_one": "已跳过 {{count}} 笔",
+        "skippedCount_other": "已跳过 {{count}} 笔",
+        "columns": {
+          "date": "日期",
+          "amount": "金额",
+          "description": "说明",
+          "memo": "备注"
+        },
+        "showingFirst": "共 {{total}} 笔交易，显示前 {{shown}} 笔",
+        "imported_one": "已导入 {{count}} 笔交易",
+        "imported_other": "已导入 {{count}} 笔交易",
+        "creditsSkipped_one": "已跳过 {{count}} 笔贷记",
+        "creditsSkipped_other": "已跳过 {{count}} 笔贷记",
+        "importing_one": "正在导入 {{count}} 笔交易…",
+        "importing_other": "正在导入 {{count}} 笔交易…",
+        "importAction_one": "导入 {{count}} 笔交易",
+        "importAction_other": "导入 {{count}} 笔交易"
+      }
+    },
+    "errors": {
+      "noOrg": "尚未选择组织。"
+    }
+  },
+  "transactions": {
+    "list": {
+      "metaTitle": "交易 · 账务",
+      "subtitle": "AI 驱动的记账——收付实现制，复式记账",
+      "count_one": "{{count}} 笔交易",
+      "count_other": "{{count}} 笔交易",
+      "exportCsv": "导出 CSV",
+      "columns": {
+        "date": "日期",
+        "description": "说明",
+        "category": "类别",
+        "amount": "金额",
+        "action": "操作"
+      },
+      "emptyPending": "没有需要审核的交易 🎉",
+      "empty": "未找到交易。",
+      "previous": "← 上一页",
+      "next": "下一页 →",
+      "page": "第 {{page}} 页，共 {{total}} 页"
+    },
+    "filters": {
+      "pending": "待审核",
+      "all": "全部",
+      "reviewed": "已审核"
+    },
+    "row": {
+      "skipped": "已跳过",
+      "posted": "已过账",
+      "reviewed": "已审核",
+      "aiMemo": "AI：{{memo}}",
+      "confidence": {
+        "high": "置信度高",
+        "medium": "置信度中等",
+        "low": "置信度低"
+      },
+      "notCategorized": "未归类",
+      "expand": "展开",
+      "category": "类别",
+      "selectAccount": "— 选择科目 —",
+      "memo": "备注（可选）",
+      "memoPlaceholder": "简要备注…",
+      "approve": "批准",
+      "skip": "跳过",
+      "approved": "已批准并过账到日记账。"
+    },
+    "mapping": {
+      "notLinked": "— 未关联 —",
+      "link": "关联",
+      "linking": "…"
+    },
+    "plaid": {
+      "linkBank": "关联银行",
+      "connectVia": "通过 Plaid 连接",
+      "linking": "正在关联账户…",
+      "preparing": "准备中…",
+      "tokenFailed": "获取连接令牌失败",
+      "initFailed": "初始化银行连接失败。",
+      "linkFailed": "关联银行账户失败。",
+      "linkRetry": "银行连接失败，请重试。",
+      "unauthorized": "登录已失效，请重新登录。",
+      "noOrganization": "未找到所属企业。",
+      "missingPublicToken": "本次银行关联未完成，请重新连接。",
+      "linkTokenFailed": "无法开始关联银行，请重试。",
+      "saveConnectionFailed": "保存银行连接失败，请重试。",
+      "exchangeFailed": "完成银行关联失败，请重试。"
+    },
+    "errors": {
+      "missingId": "缺少交易 ID。",
+      "approveFailed": "批准交易失败。",
+      "skipFailed": "跳过交易失败。",
+      "orgNotFound": "未找到组织。",
+      "noChartOfAccounts": "未找到会计科目表。",
+      "categorizeFailed": "AI 归类失败。"
+    }
+  }
+}

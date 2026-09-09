@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Update the current organization and PROVE something changed.
@@ -45,10 +46,8 @@ export async function updateOrg(
     // the org id in the cookie does not resolve. Both are permission problems
     // from the user's point of view and neither should look like success.
     console.error(`[${context}] organizations update changed no rows`, { orgId });
-    return {
-      ok: false,
-      error: "Couldn't save — you may not have permission for this organization.",
-    };
+    const t = await getServerT("settings");
+    return { ok: false, error: t("errors.orgUpdateRefused") };
   }
 
   return { ok: true };

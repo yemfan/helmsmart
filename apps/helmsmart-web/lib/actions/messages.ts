@@ -11,6 +11,7 @@ import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import Anthropic from "@anthropic-ai/sdk";
 import { detectLanguage, languageName, type Lang } from "@/lib/language";
 import { normalizePhoneE164 } from "@/lib/phone";
+import { getServerT } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -29,9 +30,10 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("errors.noOrganization"));
 
   const supabase = await createClient();
 
@@ -63,9 +65,10 @@ export async function sendEmail(
 // ─── Send SMS ─────────────────────────────────────────────────────────────────
 
 export async function sendSms(clientId: string | null, toNumber: string, body: string) {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("errors.noOrganization"));
 
   const supabase = await createClient();
 
@@ -93,7 +96,7 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
    * a future one-number-per-tenant setup.
    */
   const sender = twilioSender(org?.twilio_number ?? null);
-  if (!sender) throw new Error("No Twilio number configured");
+  if (!sender) throw new Error(t("errors.noSendingNumber"));
 
   // Twilio only reliably delivers to E.164 numbers. A bare "6066255055" gets a
   // SID back (so the UI says "Sent") but never actually arrives — normalize first
@@ -153,17 +156,19 @@ export async function markThreadRead(clientId: string | null, address?: string |
 // ─── Toggle auto-reply ────────────────────────────────────────────────────────
 
 export async function toggleAutoReply(enabled: boolean): Promise<OrgUpdateResult> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization selected." };
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   return updateOrg(orgId, { auto_reply: enabled }, "toggleAutoReply");
 }
 
 export async function saveAutoReplyMsg(msg: string): Promise<OrgUpdateResult> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization selected." };
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   return updateOrg(orgId, { auto_reply_msg: msg }, "saveAutoReplyMsg");
 }
@@ -171,9 +176,10 @@ export async function saveAutoReplyMsg(msg: string): Promise<OrgUpdateResult> {
 export async function saveTwilioNumber(
   number: string
 ): Promise<{ ok: boolean; value?: string; error?: string }> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "No organization selected." };
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   // Blank clears the number (lets a user save other settings without one).
   if (!number.trim()) {
@@ -198,9 +204,10 @@ export async function draftReply(
   channel: "email" | "sms",
   address?: string | null
 ): Promise<string> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error(t("errors.noOrganization"));
 
   const supabase = await createClient();
 
@@ -236,7 +243,7 @@ export async function draftReply(
   const assist = !!org?.owner_english_assist;
 
   const recent = (msgs ?? []).slice().reverse(); // chronological
-  if (!recent.length) throw new Error("No conversation to reply to");
+  if (!recent.length) throw new Error(t("errors.nothingToReplyTo"));
 
   // Unmatched threads have no stored client language — detect from their last inbound.
   if (!clientId) {
@@ -282,7 +289,7 @@ Write the next reply FROM ${orgName}.
   text = text.trim();
   const fence = text.match(/```(?:\w+)?\s*([\s\S]*?)```/);
   if (fence) text = fence[1].trim();
-  if (!text) throw new Error("Couldn't draft a reply — try again");
+  if (!text) throw new Error(t("errors.draftFailed"));
   return text;
 }
 
@@ -294,16 +301,17 @@ export async function createClientFromConversation(opts: {
   firstName: string;
   lastName?: string | null;
 }): Promise<{ error?: string; clientId?: string }> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { error: "No organization." };
+  if (!orgId) return { error: t("errors.noOrganization") };
 
   const firstName = opts.firstName.trim();
-  if (!firstName) return { error: "Name is required." };
+  if (!firstName) return { error: t("errors.nameRequired") };
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const email = opts.channel === "email" ? opts.address.toLowerCase() : null;
   const phone = opts.channel === "sms" ? opts.address : null;
@@ -324,7 +332,7 @@ export async function createClientFromConversation(opts: {
 
   if (error || !created) {
     console.error("[messages] create client from conversation failed:", error);
-    return { error: "Failed to create client." };
+    return { error: t("errors.createClientFailed") };
   }
 
   // Link this address's existing messages (both directions) to the new client.

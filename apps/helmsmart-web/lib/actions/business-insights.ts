@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { generateBusinessInsight, type BusinessInsight, type InsightItem } from "@/lib/business-insights";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgCurrency } from "@/lib/books-currency";
 
 /**
  * Get the most recent business insight for the current org.
@@ -43,10 +45,14 @@ export async function getLatestInsight(): Promise<(BusinessInsight & { isStale: 
 export async function refreshInsight(): Promise<{ ok: boolean; insight?: BusinessInsight; error?: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  const t = await getServerT("home");
+  if (!orgId) return { ok: false, error: t("insights.errors.notAuthenticated") };
 
   const db = await createServiceClient();
-  const result = await generateBusinessInsight(db, orgId, new Date());
+  const result = await generateBusinessInsight(db, orgId, new Date(), {
+    locale: await getServerLocale(),
+    currency: await orgCurrency(orgId),
+  });
 
   if (result.ok) {
     revalidatePath("/command-center");

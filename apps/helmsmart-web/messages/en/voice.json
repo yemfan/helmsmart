@@ -1,0 +1,357 @@
+{
+  "meta": {
+    "receptionist": "AI Receptionist",
+    "clientAssistant": "AI Client Assistant"
+  },
+  "receptionist": {
+    "subtitle": "Claude answers your calls 24/7 and texts back the ones you miss — books appointments, takes messages, handles FAQs",
+    "settings": "Settings",
+    "stats": {
+      "callsHandled": "Calls Handled",
+      "allTime": "All time",
+      "appointmentsBooked": "Appointments Booked",
+      "viaVoiceAgent": "Via voice agent",
+      "messagesTaken": "Messages Taken",
+      "savedToInbox": "Saved to Inbox",
+      "minutesUsed": "Minutes Used",
+      "talkTime": "Talk time",
+      "estCost": "Est. AI Cost",
+      "costRate": "@ {{rate}}/min",
+      "hours": "{{value}}h",
+      "minutes": "{{value}}m"
+    },
+    "transcripts": {
+      "title": "Call transcripts",
+      "emptyTitle": "No calls yet",
+      "emptyBody": "Enable the voice agent and configure your Twilio webhook to start handling calls.",
+      "turns_one": "{{count}} turn",
+      "turns_other": "{{count}} turns",
+      "appointmentBooked": "Appointment booked",
+      "caller": "Caller",
+      "agent": "AI Agent"
+    },
+    "duration": {
+      "none": "—",
+      "minutesSeconds": "{{minutes}}m {{seconds}}s",
+      "seconds": "{{seconds}}s"
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago"
+    }
+  },
+  "clientAssistant": {
+    "subtitle": "Your AI calls your contacts on your behalf — follow-ups, appointment reminders, surveys, and announcements"
+  },
+  "recording": {
+    "label": "Recording"
+  },
+  "missedCall": {
+    "title": "Missed-call text-back",
+    "settingsLink": "Auto-reply settings",
+    "autoReply": "Auto-reply",
+    "active": "Active",
+    "off": "Off",
+    "noNumber": "No number configured",
+    "missedToday": "Missed Today",
+    "noneToday": "None today",
+    "unanswered_one": "{{count}} unanswered call",
+    "unanswered_other": "{{count}} unanswered calls",
+    "repliesSent": "Replies Sent",
+    "thisWeek": "This week",
+    "recentCalls": "Recent Calls",
+    "emptyTitle": "No calls recorded yet",
+    "emptyBody": "Missed calls will appear here once your Twilio number is configured.",
+    "autoReplied": "Auto-replied",
+    "unknownStatus": "—",
+    "status": {
+      "missed": "Missed",
+      "voicemail": "Voicemail",
+      "completed": "Completed",
+      "answered": "Answered",
+      "active": "In progress",
+      "busy": "Busy",
+      "failed": "Failed",
+      "no-answer": "No answer",
+      "canceled": "Canceled",
+      "queued": "Queued",
+      "ringing": "Ringing"
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago"
+    }
+  },
+  "outbound": {
+    "title": "Place AI calls",
+    "subtitle": "Pick a purpose, then call one contact or the whole list.",
+    "noNumber": "Connect a phone number to place outbound calls.",
+    "noNumberLink": "Settings → AI Voice agent",
+    "purposes": {
+      "follow_up": {
+        "label": "Follow-up",
+        "hint": "Re-engage leads & clients"
+      },
+      "appointment_reminder": {
+        "label": "Appointment reminder",
+        "hint": "Confirm upcoming bookings"
+      },
+      "survey": {
+        "label": "Survey / review",
+        "hint": "Ask for feedback or a review"
+      },
+      "promo": {
+        "label": "Promo / announcement",
+        "hint": "Share news or an offer"
+      }
+    },
+    "surveyLabel": "What should the AI ask?",
+    "promoLabel": "What's the announcement?",
+    "detailHint": "The AI works this into a short, friendly call and adapts to each contact.",
+    "contacts_one": "{{count}} contact",
+    "contacts_other": "{{count}} contacts",
+    "callAll": "Call all ({{count}})",
+    "callAllCapped": "Call all (first {{count}})",
+    "emptyAppointments": "No upcoming appointments with a phone number.",
+    "emptyContacts": "No contacts with a phone number yet.",
+    "unnamed": "Unnamed",
+    "noPhone": "no phone",
+    "thisContact": "this contact",
+    "aiCall": "AI Call",
+    "disclosure": "Calls disclose they're AI and only dial 8am–9pm local time.",
+    "surveyDetailRequired": "Add the survey questions first.",
+    "promoDetailRequired": "Add the announcement message first.",
+    "confirmOne": "Place an AI call to {{name}} at {{phone}}?\n\nThe AI agent will call them now on your behalf.",
+    "confirmAll_one": "Place an AI call to {{count}} contact?\n\nThey'll be dialed in the background — staggered and only within calling hours.",
+    "confirmAll_other": "Place AI calls to {{count}} contacts?\n\nThey'll be dialed in the background — staggered and only within calling hours.",
+    "calling": "Calling {{name}} now — the AI agent is dialing.",
+    "queued_one": "Queued {{count}} call — dialing now, staggered and within calling hours.",
+    "queued_other": "Queued {{count}} calls — dialing now, staggered and within calling hours.",
+    "surveyPlaceholder": "e.g. “How was your recent service, 1–5? Would you leave us a Google review?”",
+    "promoPlaceholder": "e.g. “We’re running 15% off new bookings through Friday — want me to book you in?”",
+    "errors": {
+      "noOrganization": "No organization found.",
+      "contactNotFound": "That contact no longer exists.",
+      "contactNoPhone": "This contact has no phone number.",
+      "noNumber": "Connect a phone number first, in Settings → AI Voice agent.",
+      "outsideHours": "Outside calling hours (8am–9pm local). Try again later.",
+      "noAgent": "No voice agent is connected to your number yet.",
+      "noneSelected": "No contacts selected.",
+      "noneReachable": "No reachable contacts — they need a phone number.",
+      "alreadyQueued": "Those contacts are already queued or being called."
+    }
+  },
+  "settings": {
+    "title": "AI Voice Agent",
+    "subtitle": "Answers your calls with Claude when you're unavailable",
+    "toggleNeedsNumber": "Add a phone number first — the agent has nothing to answer on.",
+    "needsNumber": "The voice agent needs a phone number before it can answer calls.",
+    "connected": "Connected to {{number}}",
+    "notAnswered": "Calls to {{number}} are not answered by your receptionist",
+    "sharedWarning_one": "This number is shared with another account, and that account answers it — so callers hear that business, not yours. Your settings below are saved, but they will not be used until this number is yours alone.",
+    "sharedWarning_other": "This number is shared with {{count}} other accounts, and one of those answers it — so callers hear that business, not yours. Your settings below are saved, but they will not be used until this number is yours alone.",
+    "sharedNotice_one": "Heads up: this number is also used by another account. Calls are answered as your business today, but that can change if their settings change.",
+    "sharedNotice_other": "Heads up: this number is also used by {{count}} other accounts. Calls are answered as your business today, but that can change if their settings change.",
+    "agentName": {
+      "label": "Agent name",
+      "hint": "(what the receptionist calls itself)",
+      "placeholder": "e.g. Maria",
+      "help": "Used when the agent introduces itself. Leave blank to stay unnamed."
+    },
+    "dba": {
+      "label": "DBA name",
+      "hint": "(Doing Business As — optional)",
+      "placeholder": "Your business name",
+      "help": "The trade name the receptionist announces. Leave blank to use your account name — billing and invoices always keep the account name.",
+      "helpWithName": "The trade name the receptionist announces. Leave blank to use your account name ({{name}}) — billing and invoices always keep the account name."
+    },
+    "greeting": {
+      "label": "Opening greeting",
+      "help": "First thing callers hear. Use {{agentToken}} and {{businessToken}} as placeholders.",
+      "placeholder": "Hello! Thank you for calling. How can I help you today?"
+    },
+    "context": {
+      "label": "Business context",
+      "hint": "(what Claude knows about you)",
+      "help": "Plain text is fine. The more detail, the better the agent performs.",
+      "useTemplate": "Use this template"
+    },
+    "bookingAlert": {
+      "label": "Text me when an appointment is booked",
+      "hint": "(optional)",
+      "help": "Your own mobile. The receptionist texts you the appointment as soon as it books, so you don't have to be watching the app. Leave blank for no text."
+    },
+    "save": "Save settings",
+    "saved": "Saved!",
+    "saveFailed": "Couldn't save those settings."
+  },
+  "config": {
+    "calendar": {
+      "title": "Calendar",
+      "description": "Connect Google Calendar so the receptionist books into your real calendar and only offers times you're actually free.",
+      "notConfigured": "Google Calendar isn't configured on the server yet. Until it is, bookings use HelmSmart's built-in calendar.",
+      "connected": "Connected",
+      "connectedWithEmail": "Connected · {{email}}",
+      "disconnect": "Disconnect",
+      "disconnecting": "Disconnecting…",
+      "connect": "Connect Google Calendar"
+    },
+    "hours": {
+      "title": "Business hours",
+      "description": "The receptionist only books inside these hours.",
+      "days": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      },
+      "closed": "Closed",
+      "open": "Open",
+      "to": "to",
+      "save": "Save hours",
+      "saving": "Saving…",
+      "saved": "Saved!"
+    },
+    "appointmentTypes": {
+      "title": "Appointment types",
+      "description": "What the receptionist can book — each with a duration so the calendar slot is right.",
+      "empty": "No appointment types yet.",
+      "minutes": "{{count}} min",
+      "namePlaceholder": "e.g. Consultation",
+      "minUnit": "min",
+      "add": "Add"
+    },
+    "knowledge": {
+      "title": "Knowledge base",
+      "description": "Products, services, pricing, policies, FAQs — what the receptionist answers from. If it isn't here, the agent takes a message instead of guessing.",
+      "empty": "No knowledge entries yet.",
+      "titlePlaceholder": "Topic (e.g. Pricing, Services, Parking)",
+      "contentPlaceholder": "What should the receptionist know about this?",
+      "add": "Add entry"
+    }
+  },
+  "setup": {
+    "title": "Receptionist setup",
+    "description": "Everything below must be set for the agent to answer and book.",
+    "badge": {
+      "needsSetup": "Needs setup",
+      "notVerified": "Not verified",
+      "ready": "Ready",
+      "notAnswering": "Not answering",
+      "checking": "Checking…"
+    },
+    "items": {
+      "numberOk": "Phone number connected — {{number}}",
+      "numberMissing": "Phone number not set",
+      "numberFix": "Enter the number callers dial in the box above, then point that number at us in your carrier console.",
+      "hours": "Business hours set",
+      "hoursFix": "Set open days and times in the Business hours section below.",
+      "typesOk": "Appointment types added ({{count}})",
+      "typesMissing": "No appointment types",
+      "typesFix": "Add at least one service (with a duration) in Appointment types below.",
+      "agent": "Voice agent enabled",
+      "agentFix": "Turn on the AI Voice Agent toggle above.",
+      "calendarOk": "Google Calendar connected",
+      "calendarOptional": "Google Calendar (optional)",
+      "calendarFix": "Connect Google Calendar below to only offer times you're actually free.",
+      "calendarFixUnconfigured": "Optional — connect a calendar to avoid double-booking."
+    },
+    "verify": "Verify wiring",
+    "verifying": "Checking Retell…",
+    "verifyHint": "Confirms Retell has your number bound to the agent with the inbound webhook.",
+    "verifyOk": "Wired correctly — agent and inbound webhook confirmed in Retell.",
+    "verifyUnknownNumber": "Retell doesn't recognize this number.",
+    "verifyMissing": "Number found, but {{missing}} isn't set right in Retell.",
+    "missingWebhook": "inbound webhook",
+    "missingAgent": "agent binding",
+    "manual": {
+      "summary": "Prefer to wire Retell manually?",
+      "step1": "On your Retell number, under Inbound Call Agent, set the shared agent.",
+      "step2": "Check “Add an inbound webhook” and paste the URL below, replacing the key with your RETELL_FUNCTION_SECRET.",
+      "step3": "Point each custom function at the function URL.",
+      "inboundLabel": "Inbound webhook (on the phone number)",
+      "functionLabel": "Custom functions endpoint",
+      "note": "Use the www URLs exactly as shown — the bare domain redirects and Retell won't follow it on a POST.",
+      "copy": "Copy"
+    }
+  },
+  "number": {
+    "label": "Your phone number",
+    "help": "The number callers dial. Point it at the platform in your carrier console, then enter it here.",
+    "save": "Save number",
+    "saving": "Saving…",
+    "saveFailed": "Couldn't save that number.",
+    "wiredOk": "Saved and wired — the agent will answer this number.",
+    "savedNotAnswering": "Saved, but not answering calls yet",
+    "notInProvider": "This number isn't in the voice provider yet.",
+    "notAttached": "It isn't attached to the receptionist agent.",
+    "webhookWrong": "Its inbound webhook doesn't point here."
+  },
+  "wizard": {
+    "connectedTitle": "Number connected — {{number}}",
+    "connectedBody": "It's wired to your agent automatically. Finish the checklist below, then call it to test.",
+    "buyTab": "Buy a number",
+    "importTab": "Connect existing",
+    "buyHint": "We'll buy a number and wire it to your receptionist automatically. Billed at about $2/month.",
+    "areaCode": "Area code",
+    "tollFree": "Toll-free",
+    "getNumber": "Get my number",
+    "gettingNumber": "Getting your number…",
+    "importHint": "Already have a number? Connect it via its Twilio SIP trunk — we'll wire the agent for you.",
+    "phoneNumber": "Phone number",
+    "terminationUri": "SIP termination URI",
+    "sipUser": "SIP username (optional)",
+    "sipPass": "SIP password (optional)",
+    "connectNumber": "Connect number",
+    "connecting": "Connecting…",
+    "genericError": "Something went wrong."
+  },
+  "autoReply": {
+    "title": "Auto-reply settings",
+    "numberLabel": "Twilio phone number",
+    "numberHelp": "Saved in E.164 format (for example {{example}}). Must match the Twilio number routing to the agent.",
+    "numberInvalid": "Invalid phone number.",
+    "toggleTitle": "Auto-reply to missed calls",
+    "toggleHint": "Send an SMS automatically when you don't answer",
+    "messageLabel": "Auto-reply message",
+    "messageHint": "Sent via SMS to the caller's number",
+    "save": "Save changes",
+    "saved": "Saved!"
+  },
+  "channels": {
+    "title": "Channels",
+    "manage": "Manage in Settings",
+    "manual": "manual",
+    "notConnected": "not connected"
+  },
+  "errors": {
+    "unauthorized": "You're signed out. Sign in again to change these settings.",
+    "saveHours": "Couldn't save business hours.",
+    "nameRequired": "Name is required.",
+    "saveApptType": "Couldn't save that appointment type.",
+    "createApptType": "Couldn't create that appointment type.",
+    "deleteApptType": "Couldn't delete that appointment type.",
+    "titleContentRequired": "Title and content are required.",
+    "saveKnowledge": "Couldn't save that knowledge entry.",
+    "createKnowledge": "Couldn't create that knowledge entry.",
+    "deleteKnowledge": "Couldn't delete that knowledge entry.",
+    "disconnectCalendar": "Couldn't disconnect Google Calendar.",
+    "missingApiKey": "RETELL_API_KEY isn't set on the server.",
+    "missingFunctionSecret": "RETELL_FUNCTION_SECRET isn't set on the server.",
+    "missingAgentId": "RETELL_AGENT_ID isn't set on the server — add the shared receptionist agent id.",
+    "noOrganization": "No organization selected.",
+    "alreadyHasNumber": "This business already has a number connected.",
+    "invalidAreaCode": "Enter a valid 3-digit US area code (for example 626).",
+    "buyFailed": "Couldn't buy a number right now.",
+    "terminationUriRequired": "Enter your SIP termination URI (for example yourtrunk.pstn.twilio.com).",
+    "importFailed": "Couldn't import that number.",
+    "noNumberConnected": "No number connected yet.",
+    "verifyFailed": "Couldn't check the number with Retell.",
+    "numberNotStored": "Number {{number}} was provisioned but could not be saved to the organization: {{reason}}"
+  }
+}

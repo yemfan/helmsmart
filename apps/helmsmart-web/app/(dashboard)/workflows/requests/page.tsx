@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
+import { intlLocale } from "@leadsmart/i18n";
 import { listApprovalRequests } from "@/lib/actions/approval-chains";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Approval Requests" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("workflows");
+  return { title: t("meta.requests") };
+}
 
+/** Colour + icon per request status. The label comes from the bundle. */
 const STATUS_CONFIG = {
-  pending:   { label: "Pending",   color: "bg-amber-100 text-amber-700",    icon: Clock },
-  approved:  { label: "Approved",  color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
-  rejected:  { label: "Rejected",  color: "bg-rose-100 text-rose-700",      icon: XCircle },
-  cancelled: { label: "Cancelled", color: "bg-slate-100 text-slate-500",    icon: AlertCircle },
-  expired:   { label: "Expired",   color: "bg-slate-100 text-slate-500",    icon: AlertCircle },
+  pending:   { color: "bg-amber-100 text-amber-700",     icon: Clock },
+  approved:  { color: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+  rejected:  { color: "bg-rose-100 text-rose-700",       icon: XCircle },
+  cancelled: { color: "bg-slate-100 text-slate-500",     icon: AlertCircle },
+  expired:   { color: "bg-slate-100 text-slate-500",     icon: AlertCircle },
 } as const;
 
 export default async function ApprovalRequestsPage({
@@ -18,6 +24,8 @@ export default async function ApprovalRequestsPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  const t = await getServerT("workflows");
+  const locale = await getServerLocale();
   const { status } = await searchParams;
   const requests = await listApprovalRequests(status);
 
@@ -27,7 +35,7 @@ export default async function ApprovalRequestsPage({
         <Link href="/workflows" className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400">
           <ArrowLeft className="w-4 h-4" />
         </Link>
-        <h1 className="text-xl font-semibold text-slate-900">Approval Requests</h1>
+        <h1 className="text-xl font-semibold text-slate-900">{t("requests.title")}</h1>
       </div>
 
       {/* Filter tabs */}
@@ -36,13 +44,13 @@ export default async function ApprovalRequestsPage({
           <Link
             key={s}
             href={s ? `/workflows/requests?status=${s}` : "/workflows/requests"}
-            className={`text-xs px-3 py-1.5 rounded-full font-medium capitalize transition-colors ${
+            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
               status === s || (!status && !s)
                 ? "bg-slate-900 text-white"
                 : "border border-slate-200 text-slate-600 hover:bg-slate-50"
             }`}
           >
-            {s || "All"}
+            {s ? t(`status.${s}`) : t("requests.filterAll")}
           </Link>
         ))}
       </div>
@@ -50,7 +58,7 @@ export default async function ApprovalRequestsPage({
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {requests.length === 0 ? (
           <div className="py-12 text-center text-sm text-slate-400">
-            No {status ?? ""} requests
+            {t("requests.empty")}
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -70,9 +78,9 @@ export default async function ApprovalRequestsPage({
                   }`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-800 truncate">{req.subject_label}</p>
-                    <p className="text-xs text-slate-500 mt-0.5 capitalize">
-                      {req.subject_type} ·{" "}
-                      {new Date(req.requested_at).toLocaleDateString("en-US", {
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {t(`subjectType.${req.subject_type}`, { defaultValue: req.subject_type })} ·{" "}
+                      {new Date(req.requested_at).toLocaleDateString(intlLocale(locale), {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
@@ -81,10 +89,10 @@ export default async function ApprovalRequestsPage({
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${cfg.color}`}>
-                      {cfg.label}
+                      {t(`status.${req.status}`, { defaultValue: req.status })}
                     </span>
                     {req.status === "pending" && (
-                      <p className="text-xs text-slate-400 mt-1">Step {req.current_step}</p>
+                      <p className="text-xs text-slate-400 mt-1">{t("requests.step", { number: req.current_step })}</p>
                     )}
                   </div>
                 </Link>

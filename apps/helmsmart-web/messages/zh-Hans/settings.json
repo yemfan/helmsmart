@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "title": "设置",
+    "team": "团队 · 设置"
+  },
+  "page": {
+    "title": "设置",
+    "subtitle": "管理您的企业信息与集成。"
+  },
+  "actions": {
+    "saving": "保存中…",
+    "saved": "已保存！"
+  },
+  "sections": {
+    "businessInfo": "企业信息",
+    "teamAndPlan": "团队与套餐",
+    "bankAccounts": "银行账户",
+    "billingRates": "计费费率",
+    "invoiceReminders": "发票付款提醒",
+    "socialChannels": "社交渠道",
+    "socialAutopilot": "社交自动驾驶",
+    "voiceAgent": "AI 语音助理",
+    "slackNotifications": "Slack 通知",
+    "insuranceEligibility": "保险资格核验"
+  },
+  "language": {
+    "title": "语言",
+    "description": "您阅读 HelmSmart 所使用的语言。这是您个人的选择，不会改变客户收到的内容。"
+  },
+  "general": {
+    "businessName": "企业名称",
+    "timezone": "时区",
+    "timezones": {
+      "America/New_York": "纽约",
+      "America/Chicago": "芝加哥",
+      "America/Denver": "丹佛",
+      "America/Los_Angeles": "洛杉矶",
+      "America/Anchorage": "安克雷奇",
+      "Pacific/Honolulu": "檀香山"
+    },
+    "entityType": "企业类型",
+    "entityTypes": {
+      "sole_prop": "个体经营",
+      "llc": "有限责任公司（LLC）",
+      "s_corp": "S 型公司",
+      "c_corp": "C 型公司",
+      "partnership": "合伙企业",
+      "nonprofit": "非营利组织"
+    },
+    "entityTypeHelp": "如需变更企业类型，请联系客服。计费费率位于「财务」标签页。",
+    "weeklyDigest": {
+      "label": "每周摘要邮件",
+      "help": "每周一汇总现金、应收账款、账单和任务，发送给所有者与管理员。"
+    },
+    "englishAssist": {
+      "label": "同时显示英文（多语言辅助）",
+      "help": "把收件箱里非英文的客户消息翻译成英文，并以双语（客户语言 + 英文）发送回复和提醒，方便您看懂发出去的内容。"
+    },
+    "save": "保存更改"
+  },
+  "teamPlan": {
+    "membersTitle": "团队成员",
+    "membersSubtitle": "邀请、角色、权限",
+    "planName": "{{plan}}套餐",
+    "plans": {
+      "starter": "入门版",
+      "growth": "成长版",
+      "pro": "专业版"
+    },
+    "status": {
+      "trialing": "试用中",
+      "active": "生效中",
+      "past_due": "已逾期",
+      "canceled": "已取消",
+      "cancelled": "已取消",
+      "unpaid": "未付款",
+      "incomplete": "未完成",
+      "incomplete_expired": "已过期",
+      "paused": "已暂停"
+    },
+    "trialEnds": "{{date}} 到期",
+    "freeDuringBeta": "公测期间免费"
+  },
+  "financial": {
+    "bank": {
+      "description": "通过 Plaid 关联银行账户，导入最近 90 天的交易记录（由 AI 自动归类），再把每个账户映射到会计科目表中的科目，交易即可入复式记账日记账。",
+      "empty": "尚未关联任何银行账户 —— 点击上方的「关联银行」按钮即可连接。"
+    },
+    "rates": {
+      "hourly": "默认小时费率",
+      "hourlyPlaceholder": "例如 125",
+      "hourlyHelp": "您对外收费的费率 —— 开始计时时自动套用。",
+      "laborCost": "默认人工成本费率",
+      "laborCostPlaceholder": "例如 45",
+      "laborCostHelp": "每工时的实际成本（工资／外包报酬），用于计算项目利润。",
+      "save": "保存费率"
+    },
+    "reminders": {
+      "title": "自动付款提醒",
+      "description": "按设定的节奏自动向客户发送逾期发票提醒邮件",
+      "presetsLabel": "快捷预设：",
+      "presets": {
+        "gentle": "温和（7、21 天）",
+        "standard": "标准（3、7、14、30 天）",
+        "aggressive": "密集（1、3、7、14、21、30 天）"
+      },
+      "intervalsLabel": "逾期多少天后发送提醒（天数，用逗号分隔）",
+      "intervalsHelp": "示例：填写 3, 7, 14, 30 表示在逾期 3、7、14 和 30 天时各发一次提醒",
+      "maxLabel": "每张发票最多发送多少次提醒",
+      "save": "保存设置",
+      "savedNote": "已保存",
+      "errors": {
+        "noDays": "请至少填写一个提醒天数（例如 3, 7, 14）",
+        "saveFailed": "保存失败"
+      }
+    }
+  },
+  "marketing": {
+    "socialChannelsDescription": "连接 AI 营销要发布内容的账号。点击连接会打开服务商的安全登录页；断开连接会移除这里保存的授权。",
+    "socialAutopilotDescription": "开启后，Emily 会按您选定的节奏为您的业务撰写并排期发布内容。"
+  },
+  "slack": {
+    "connected": "已连接",
+    "description": "新线索、来电和待审批事项都会在 Slack 中通知您",
+    "createApp": "创建应用",
+    "webhookLabel": "Incoming Webhook 地址",
+    "webhookHelp": "在您的 Slack 应用中依次打开：Features → Incoming Webhooks → Add New Webhook to Workspace，然后把地址复制到这里。",
+    "save": "保存",
+    "sendTest": "发送测试消息",
+    "testSent": "测试消息已发送 ✓",
+    "notifyHeading": "以下情况通知我",
+    "toggles": {
+      "slack_notify_new_lead": {
+        "label": "新增线索",
+        "description": "手动创建客户或通过表单创建客户时"
+      },
+      "slack_notify_form_submission": {
+        "label": "表单提交",
+        "description": "有人提交线索收集表单时"
+      },
+      "slack_notify_missed_call": {
+        "label": "未接来电",
+        "description": "AI 前台接待记录到一通未接来电时"
+      },
+      "slack_notify_approval": {
+        "label": "需要审批",
+        "description": "AI 员工的某项操作需要您批准时"
+      }
+    },
+    "test": {
+      "text": "✅ HelmSmart 与 Slack 的集成已正常工作！",
+      "blockText": "✅ *HelmSmart 已连接到 Slack！*\n新线索、未接来电、表单提交和 AI 审批请求都会发送到这里。"
+    },
+    "errors": {
+      "notAuthenticated": "登录已失效",
+      "invalidUrl": "请填写有效的 Slack incoming webhook 地址（hooks.slack.com）",
+      "saveFailed": "保存失败",
+      "testFailed": "测试失败",
+      "testSendFailed": "测试消息发送失败，请检查 webhook 地址。"
+    }
+  },
+  "team": {
+    "title": "团队",
+    "subtitle": "管理谁可以访问您的工作区",
+    "backToSettings": "设置",
+    "membersTitle": "团队成员",
+    "pendingTitle": "待接受的邀请",
+    "unknownUser": "未知用户",
+    "you": "本人",
+    "invitedAs": "以{{role}}身份受邀 · {{days}} 天后过期",
+    "roles": {
+      "owner": "所有者",
+      "admin": "管理员",
+      "bookkeeper": "记账员",
+      "viewer": "只读成员"
+    },
+    "roleDescriptions": {
+      "admin": "完整权限，可管理成员",
+      "bookkeeper": "可访问账务与报表",
+      "viewer": "只读权限"
+    },
+    "invite": {
+      "title": "邀请团队成员",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "同事@example.com",
+      "roleLabel": "角色",
+      "roleOption": "{{label}} —— {{description}}",
+      "send": "发送邀请",
+      "sending": "发送中…",
+      "sent": "邀请已发送给 {{email}}，对方需在 7 天内接受。",
+      "sentFallbackRecipient": "对方",
+      "invalidEmail": "请输入有效的邮箱地址。",
+      "genericError": "出错了"
+    },
+    "removeConfirm": "确定移除这位团队成员吗？对方将立即失去访问权限。",
+    "removeTitle": "移除成员",
+    "revokeConfirm": "确定撤销这条邀请吗？",
+    "revoke": "撤销",
+    "revoking": "撤销中…",
+    "errors": {
+      "notAuthenticated": "登录已失效",
+      "invitePending": "该邮箱已有一条待接受的邀请",
+      "inviteFailed": "创建邀请失败",
+      "memberNotFound": "未找到该成员"
+    }
+  },
+  "errors": {
+    "noOrganization": "未找到所属企业。",
+    "unauthorized": "无访问权限。",
+    "businessNameRequired": "请填写企业名称。",
+    "missingBankAccount": "缺少银行账户。",
+    "bankLinkFailed": "更新账户映射失败。",
+    "orgUpdateRefused": "保存失败 —— 您可能没有该企业的操作权限。"
+  },
+  "org": {
+    "errors": {
+      "structureRequired": "请选择企业类型。",
+      "createFailed": "创建企业失败，请重试。",
+      "membershipFailed": "企业已创建，但成员关系创建失败，请联系客服。"
+    }
+  }
+}

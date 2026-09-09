@@ -11,12 +11,15 @@ import {
   Sparkles,
   CheckCircle2,
 } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Features — HelmSmart",
-  description:
-    "One platform that handles calls, messages, books, and clients — while you focus on the work.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return {
+    title: t("features.meta.title"),
+    description: t("features.meta.description"),
+  };
+}
 
 interface Feature {
   id: string;
@@ -24,11 +27,12 @@ interface Feature {
   color: string;
   bgColor: string;
   placeholderColor: string;
-  headline: string;
-  subheadline: string;
+  /** Bullet key suffixes under `site.features.items.<id>.bullets`. */
   bullets: string[];
 }
 
+// Headline, subheadline and every bullet live in `site.features.items.<id>`;
+// this array holds the id, the artwork and how many bullets to render.
 const features: Feature[] = [
   {
     id: "ai-receptionist",
@@ -36,16 +40,7 @@ const features: Feature[] = [
     color: "text-indigo-600",
     bgColor: "bg-indigo-50",
     placeholderColor: "bg-indigo-200",
-    headline: "AI Receptionist",
-    subheadline: "Never miss a call again",
-    bullets: [
-      "Answers calls 24/7 — even when you're on the job",
-      "Cuts the cost of after-hours answering services and on-call staff",
-      "Books appointments directly to your Google Calendar",
-      "Takes messages and routes them to the right person",
-      "Handles FAQs so you don't have to repeat yourself",
-      "Sends a post-call summary straight to your inbox",
-    ],
+    bullets: ["b1", "b2", "b3", "b4", "b5", "b6"],
   },
   {
     id: "outbound-calling",
@@ -53,15 +48,7 @@ const features: Feature[] = [
     color: "text-teal-600",
     bgColor: "bg-teal-50",
     placeholderColor: "bg-teal-200",
-    headline: "AI Concierge",
-    subheadline: "Your AI makes the outbound calls you don't have time for",
-    bullets: [
-      "Appointment confirmations & reminders — cut no-shows automatically",
-      "Lead and past-client follow-ups, on time every time",
-      "Surveys and review requests once the job's done",
-      "Promos and announcements to the right group of clients",
-      "Every call logged with a summary and the outcome",
-    ],
+    bullets: ["b1", "b2", "b3", "b4", "b5"],
   },
   {
     id: "ai-assistant",
@@ -69,15 +56,7 @@ const features: Feature[] = [
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     placeholderColor: "bg-blue-200",
-    headline: "HelmSmart AI Assistant",
-    subheadline: "Your business co-pilot, one tap away",
-    bullets: [
-      "Ask plain-English questions — \"what's overdue?\", \"how's cash flow?\", \"who should I follow up with?\"",
-      "Answers come from your live business data, not generic advice",
-      "Drafts the perfect text to any client in seconds — then sends it for you",
-      "Auto Pilot can reply to a client's incoming texts automatically, in their language",
-      "Floats on every screen, so help is always within reach",
-    ],
+    bullets: ["b1", "b2", "b3", "b4", "b5"],
   },
   {
     id: "smart-inbox",
@@ -85,15 +64,7 @@ const features: Feature[] = [
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
     placeholderColor: "bg-emerald-200",
-    headline: "Smart Inbox",
-    subheadline: "Every message, handled intelligently",
-    bullets: [
-      "Email and SMS unified in one clean inbox",
-      "AI triage flags urgent messages vs. routine ones",
-      "Auto-replies acknowledge clients instantly",
-      "Missed-call text-back — a missed call becomes a friendly text, so the lead doesn't slip away",
-      "Detects language and responds accordingly",
-    ],
+    bullets: ["b1", "b2", "b3", "b4", "b5"],
   },
   {
     id: "invoicing",
@@ -101,14 +72,7 @@ const features: Feature[] = [
     color: "text-amber-600",
     bgColor: "bg-amber-50",
     placeholderColor: "bg-amber-200",
-    headline: "Invoicing & Bookkeeping",
-    subheadline: "Get paid faster, stay on top of your books",
-    bullets: [
-      "Create and send professional invoices in seconds",
-      "Track expenses and categorize automatically",
-      "Bank reconciliation without the spreadsheet headache",
-      "Profit & loss reports ready when you need them",
-    ],
+    bullets: ["b1", "b2", "b3", "b4"],
   },
   {
     id: "calendar",
@@ -116,14 +80,7 @@ const features: Feature[] = [
     color: "text-violet-600",
     bgColor: "bg-violet-50",
     placeholderColor: "bg-violet-200",
-    headline: "Calendar & Scheduling",
-    subheadline: "Your calendar, always current",
-    bullets: [
-      "Two-way Google Calendar sync keeps everything aligned",
-      "Clients can book open slots without back-and-forth",
-      "Automated reminders reduce no-shows",
-      "Manage availability across multiple team members",
-    ],
+    bullets: ["b1", "b2", "b3", "b4"],
   },
   {
     id: "crm",
@@ -131,14 +88,7 @@ const features: Feature[] = [
     color: "text-rose-600",
     bgColor: "bg-rose-50",
     placeholderColor: "bg-rose-200",
-    headline: "Client CRM & Pipeline",
-    subheadline: "Know every client, close every deal",
-    bullets: [
-      "Full client profiles with contact history",
-      "Visual deal pipeline from lead to closed",
-      "Notes and follow-up reminders in one place",
-      "Import existing contacts in minutes",
-    ],
+    bullets: ["b1", "b2", "b3", "b4"],
   },
   {
     id: "daily-briefing",
@@ -146,28 +96,22 @@ const features: Feature[] = [
     color: "text-sky-600",
     bgColor: "bg-sky-50",
     placeholderColor: "bg-sky-200",
-    headline: "AI Daily Briefing",
-    subheadline: "Start every day knowing what matters",
-    bullets: [
-      "Morning summary of overdue invoices that need attention",
-      "Today's calls and appointments at a glance",
-      "Unread messages ranked by urgency",
-      "Tasks due so nothing slips through the cracks",
-    ],
+    bullets: ["b1", "b2", "b3", "b4"],
   },
 ];
 
-export default function FeaturesPage() {
+export default async function FeaturesPage() {
+  const t = await getServerT("site");
+
   return (
     <div className="bg-white">
       {/* Hero */}
       <section className="px-6 py-20 text-center max-w-3xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-          Everything your front office needs
+          {t("features.hero.title")}
         </h1>
         <p className="mt-5 text-xl text-gray-500 leading-relaxed">
-          One platform that handles calls, messages, books, and clients — while
-          you focus on the work.
+          {t("features.hero.subtitle")}
         </p>
       </section>
 
@@ -175,6 +119,7 @@ export default function FeaturesPage() {
       <section className="max-w-6xl mx-auto px-6 pb-24 space-y-28">
         {features.map((feature, index) => {
           const isImageLeft = index % 2 === 0;
+          const headline = t(`features.items.${feature.id}.headline`);
 
           return (
             <div
@@ -195,7 +140,7 @@ export default function FeaturesPage() {
                       {feature.icon}
                     </span>
                     <span className={`text-sm font-medium ${feature.color}`}>
-                      {feature.headline}
+                      {headline}
                     </span>
                   </div>
                 </div>
@@ -207,10 +152,10 @@ export default function FeaturesPage() {
                   className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${feature.bgColor} ${feature.color} mb-4`}
                 >
                   {feature.icon}
-                  {feature.headline}
+                  {headline}
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">
-                  {feature.subheadline}
+                  {t(`features.items.${feature.id}.subheadline`)}
                 </h2>
                 <ul className="mt-6 space-y-3">
                   {feature.bullets.map((bullet) => (
@@ -219,7 +164,7 @@ export default function FeaturesPage() {
                         className={`h-5 w-5 mt-0.5 flex-shrink-0 ${feature.color}`}
                       />
                       <span className="text-gray-600 text-base leading-relaxed">
-                        {bullet}
+                        {t(`features.items.${feature.id}.bullets.${bullet}`)}
                       </span>
                     </li>
                   ))}
@@ -233,17 +178,17 @@ export default function FeaturesPage() {
       {/* Bottom CTA */}
       <section className="bg-gray-900 px-6 py-20 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-white">
-          Start your free trial today
+          {t("features.cta.title")}
         </h2>
         <p className="mt-4 text-lg text-gray-400 max-w-xl mx-auto">
-          No credit card required. Set up in minutes. Cancel any time.
+          {t("features.cta.subtitle")}
         </p>
         <div className="mt-8">
           <Link
             href="/signup"
             className="inline-block bg-white text-gray-900 font-semibold text-base px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            Get started for free
+            {t("features.cta.button")}
           </Link>
         </div>
       </section>

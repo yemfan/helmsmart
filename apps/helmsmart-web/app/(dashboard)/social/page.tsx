@@ -9,8 +9,12 @@ import { SocialTopicsPanel } from "@/components/social-topics-panel";
 import { ChannelStatusList } from "@/components/channel-status-list";
 import type { SocialTopic } from "@/lib/actions/topics";
 import { connectErrorMessage } from "@/lib/connect-error";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Social" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.social") };
+}
 
 export default async function SocialPage({
   searchParams,
@@ -84,14 +88,16 @@ export default async function SocialPage({
   const topics = (topicsRes.error ? [] : (topicsRes.data as SocialTopic[])) ?? [];
 
   const connected = new Set(
-    ((tokens ?? []) as { provider: string }[]).map((t) => t.provider),
+    ((tokens ?? []) as { provider: string }[]).map((row) => row.provider),
   );
+
+  const t = await getServerT("marketing");
 
   return (
     <div className="flex flex-col h-full">
       {sp.linkedin === "connected" && (
         <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-          LinkedIn connected. Scheduled LinkedIn posts will now publish automatically.
+          {t("social.page.linkedinConnected")}
         </div>
       )}
       {sp.linkedin_error && (
@@ -103,24 +109,16 @@ export default async function SocialPage({
         <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
           {/* Naming the Page matters: connecting the wrong one and finding out
               when a post appears on it is a genuinely bad surprise. */}
-          Connected to <strong>{sp.page || "your Facebook Page"}</strong>. Scheduled
-          Facebook posts will now publish automatically.
-          {sp.ig === "unlinked" && (
-            <>
-              {" "}
-              Instagram isn&apos;t available yet — no Instagram Business account is
-              linked to that Page. Link one in Meta Business Suite, then reconnect.
-            </>
-          )}
+          {t("social.page.metaConnected", {
+            page: sp.page || t("social.page.defaultFacebookPage"),
+          })}
+          {sp.ig === "unlinked" && <> {t("social.page.igUnlinked")}</>}
         </div>
       )}
       {sp.meta_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
           {sp.meta_error === "no_pages_granted" ? (
-            <>
-              No Facebook Page was shared with the app. Reconnect and tick the Page
-              you want to post to on Meta&apos;s permissions screen.
-            </>
+            <>{t("social.page.noPagesGranted")}</>
           ) : (
             <>{connectErrorMessage("Facebook", sp.meta_error)}</>
           )}
@@ -128,7 +126,7 @@ export default async function SocialPage({
       )}
       {sp.threads === "connected" && (
         <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-          Threads connected. Scheduled Threads posts will now publish automatically.
+          {t("social.page.threadsConnected")}
         </div>
       )}
       {sp.threads_error && (
@@ -138,7 +136,7 @@ export default async function SocialPage({
       )}
       {sp.tiktok === "connected" && (
         <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-          TikTok connected. Video posting to TikTok is coming soon.
+          {t("social.page.tiktokConnected")}
         </div>
       )}
       {sp.tiktok_error && (
@@ -148,7 +146,7 @@ export default async function SocialPage({
       )}
       {sp.youtube === "connected" && (
         <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-          YouTube connected. Video uploads to YouTube are coming soon.
+          {t("social.page.youtubeConnected")}
         </div>
       )}
       {sp.youtube_error && (
@@ -161,7 +159,7 @@ export default async function SocialPage({
       <SocialTopicsPanel initialTopics={topics} />
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
-        orgName={org?.name ?? "My Business"}
+        orgName={org?.name ?? t("social.page.defaultOrgName")}
         owner={
           <div className="flex items-center gap-4">
             <ResponsibleEmployee slug="emily" />

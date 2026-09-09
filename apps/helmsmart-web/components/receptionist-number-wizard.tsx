@@ -3,11 +3,13 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Link2, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { provisionNumber, importExistingNumber } from "@/lib/actions/voice-setup";
 
 type Tab = "buy" | "import";
 
 export function ReceptionistNumberWizard() {
+  const { t } = useTranslation("voice");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("buy");
   const [isPending, start] = useTransition();
@@ -29,7 +31,7 @@ export function ReceptionistNumberWizard() {
     start(async () => {
       const res = await fn();
       if (!res.ok) {
-        setError(res.error ?? "Something went wrong.");
+        setError(res.error ?? t("wizard.genericError"));
         return;
       }
       setDone(res.number ?? "");
@@ -42,9 +44,9 @@ export function ReceptionistNumberWizard() {
       <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-4 mb-5 flex items-start gap-2.5">
         <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-medium text-emerald-800">Number connected — {done}</p>
+          <p className="text-sm font-medium text-emerald-800">{t("wizard.connectedTitle", { number: done })}</p>
           <p className="text-xs text-emerald-700 mt-0.5">
-            It&apos;s wired to your agent automatically. Finish the checklist below, then call it to test.
+            {t("wizard.connectedBody")}
           </p>
         </div>
       </div>
@@ -55,21 +57,21 @@ export function ReceptionistNumberWizard() {
     <div className="border border-slate-200 rounded-lg p-4 mb-5">
       <div className="flex items-center gap-1 mb-3">
         <TabButton active={tab === "buy"} onClick={() => { setTab("buy"); setError(null); }} icon={<ShoppingCart className="w-3.5 h-3.5" />}>
-          Buy a number
+          {t("wizard.buyTab")}
         </TabButton>
         <TabButton active={tab === "import"} onClick={() => { setTab("import"); setError(null); }} icon={<Link2 className="w-3.5 h-3.5" />}>
-          Connect existing
+          {t("wizard.importTab")}
         </TabButton>
       </div>
 
       {tab === "buy" ? (
         <div className="space-y-3">
           <p className="text-xs text-slate-500">
-            We&apos;ll buy a number and wire it to your receptionist automatically. Billed at ~$2/mo.
+            {t("wizard.buyHint")}
           </p>
           <div className="flex items-end gap-2">
             <label className="flex-1">
-              <span className="block text-xs font-medium text-slate-500 mb-1">Area code</span>
+              <span className="block text-xs font-medium text-slate-500 mb-1">{t("wizard.areaCode")}</span>
               <input
                 value={areaCode}
                 onChange={(e) => { setAreaCode(e.target.value.replace(/\D/g, "").slice(0, 3)); setError(null); }}
@@ -80,7 +82,7 @@ export function ReceptionistNumberWizard() {
             </label>
             <label className="flex items-center gap-1.5 pb-3 text-xs text-slate-600">
               <input type="checkbox" checked={tollFree} onChange={(e) => setTollFree(e.target.checked)} className="rounded border-slate-300" />
-              Toll-free
+              {t("wizard.tollFree")}
             </label>
           </div>
           <button
@@ -89,19 +91,19 @@ export function ReceptionistNumberWizard() {
             className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
           >
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
-            {isPending ? "Getting your number…" : "Get my number"}
+            {isPending ? t("wizard.gettingNumber") : t("wizard.getNumber")}
           </button>
         </div>
       ) : (
         <div className="space-y-3">
           <p className="text-xs text-slate-500">
-            Already have a number? Connect it via its Twilio SIP trunk — we&apos;ll wire the agent for you.
+            {t("wizard.importHint")}
           </p>
-          <Field label="Phone number" value={number} onChange={setNumber} placeholder="+16265551234" />
-          <Field label="SIP termination URI" value={terminationUri} onChange={setTerminationUri} placeholder="yourtrunk.pstn.twilio.com" />
+          <Field label={t("wizard.phoneNumber")} value={number} onChange={setNumber} placeholder="+16265551234" />
+          <Field label={t("wizard.terminationUri")} value={terminationUri} onChange={setTerminationUri} placeholder="yourtrunk.pstn.twilio.com" />
           <div className="grid grid-cols-2 gap-2">
-            <Field label="SIP username (optional)" value={sipUser} onChange={setSipUser} placeholder="" />
-            <Field label="SIP password (optional)" value={sipPass} onChange={setSipPass} placeholder="" type="password" />
+            <Field label={t("wizard.sipUser")} value={sipUser} onChange={setSipUser} placeholder="" />
+            <Field label={t("wizard.sipPass")} value={sipPass} onChange={setSipPass} placeholder="" type="password" />
           </div>
           <button
             onClick={() => run(() => importExistingNumber({ phoneNumber: number, terminationUri, sipUser, sipPass }))}
@@ -109,13 +111,13 @@ export function ReceptionistNumberWizard() {
             className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
           >
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
-            {isPending ? "Connecting…" : "Connect number"}
+            {isPending ? t("wizard.connecting") : t("wizard.connectNumber")}
           </button>
         </div>
       )}
 
       {error && (
-        <div className="mt-3 flex items-start gap-2 text-xs text-rose-600">
+        <div className="mt-3 flex items-start gap-2 text-xs text-rose-600" role="alert">
           <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
           <span>{error}</span>
         </div>

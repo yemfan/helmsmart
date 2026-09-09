@@ -4,29 +4,38 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { Phone, MessageSquare, Calendar, Bot, Clock, DollarSign, Settings } from "lucide-react";
+import { intlLocale } from "@leadsmart/i18n";
 import { MissedCallTextBack } from "@/components/missed-call-text-back";
 import { RecordingLink } from "@/components/recording-link";
 import { RoiCounter } from "@/components/roi-counter";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "AI Receptionist" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("voice");
+  return { title: t("meta.receptionist") };
+}
 
 const RETELL_COST_PER_MINUTE = 0.10; // USD — billed to customers at $0.10/min (Retell cost ~$0.07)
 
-function formatDuration(seconds: number | null | undefined): string {
-  if (!seconds) return "—";
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+function formatDuration(seconds: number | null | undefined, t: Translate): string {
+  if (!seconds) return t("receptionist.duration.none");
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
-  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+  return m > 0
+    ? t("receptionist.duration.minutesSeconds", { minutes: m, seconds: s })
+    : t("receptionist.duration.seconds", { seconds: s });
 }
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string, t: Translate, locale: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m ago`;
+  if (m < 1) return t("receptionist.time.justNow");
+  if (m < 60) return t("receptionist.time.minutesAgo", { count: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (h < 24) return t("receptionist.time.hoursAgo", { count: h });
+  return new Date(iso).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric" });
 }
 
 /**
@@ -35,6 +44,8 @@ function timeAgo(iso: string) {
  * Outbound calling lives on its own page (AI Client Assistant).
  */
 export default async function AiReceptionistPage() {
+  const t = await getServerT("voice");
+  const locale = await getServerLocale();
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -87,6 +98,12 @@ export default async function AiReceptionistPage() {
   const totalMinutes = totalSeconds / 60;
   const estCost = totalMinutes * RETELL_COST_PER_MINUTE;
 
+  const oneDecimal = new Intl.NumberFormat(intlLocale(locale), {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  const money = new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD" });
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-8 flex items-start justify-between gap-4">
@@ -94,7 +111,7 @@ export default async function AiReceptionistPage() {
           <ResponsibleEmployee slug="emma" className="mb-3" />
           <PageTitle base="AI Receptionist" />
           <p className="text-sm text-slate-500 mt-0.5">
-            Claude answers your calls 24/7 and texts back the ones you miss — books appointments, takes messages, handles FAQs
+            {t("receptionist.subtitle")}
           </p>
         </div>
         <a
@@ -102,7 +119,7 @@ export default async function AiReceptionistPage() {
           className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 py-2 hover:bg-slate-50 transition-colors shrink-0"
         >
           <Settings className="w-4 h-4" />
-          Settings
+          {t("receptionist.settings")}
         </a>
       </div>
 
@@ -110,49 +127,51 @@ export default async function AiReceptionistPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Calls Handled</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.callsHandled")}</span>
             <Phone className="w-4 h-4 text-indigo-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-800 font-mono">{totalSessions}</p>
-          <p className="text-xs text-slate-400 mt-0.5">All time</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.allTime")}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Appointments Booked</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.appointmentsBooked")}</span>
             <Calendar className="w-4 h-4 text-emerald-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-800 font-mono">{booked}</p>
-          <p className="text-xs text-slate-400 mt-0.5">Via voice agent</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.viaVoiceAgent")}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Messages Taken</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.messagesTaken")}</span>
             <MessageSquare className="w-4 h-4 text-amber-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-800 font-mono">{msgLeft}</p>
-          <p className="text-xs text-slate-400 mt-0.5">Saved to Inbox</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.savedToInbox")}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Minutes Used</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.minutesUsed")}</span>
             <Clock className="w-4 h-4 text-violet-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-800 font-mono">
             {totalMinutes >= 60
-              ? `${(totalMinutes / 60).toFixed(1)}h`
-              : `${totalMinutes.toFixed(1)}m`}
+              ? t("receptionist.stats.hours", { value: oneDecimal.format(totalMinutes / 60) })
+              : t("receptionist.stats.minutes", { value: oneDecimal.format(totalMinutes) })}
           </p>
-          <p className="text-xs text-slate-400 mt-0.5">Talk time</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.talkTime")}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Est. AI Cost</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.estCost")}</span>
             <DollarSign className="w-4 h-4 text-rose-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-800 font-mono">
-            ${estCost.toFixed(2)}
+            {money.format(estCost)}
           </p>
-          <p className="text-xs text-slate-400 mt-0.5">@ $0.10/min</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {t("receptionist.stats.costRate", { rate: money.format(RETELL_COST_PER_MINUTE) })}
+          </p>
         </div>
       </div>
 
@@ -170,15 +189,15 @@ export default async function AiReceptionistPage() {
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
           <Bot className="w-4 h-4 text-indigo-500" />
-          <h2 className="text-sm font-semibold text-slate-700">Call transcripts</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{t("receptionist.transcripts.title")}</h2>
         </div>
 
         {!sessions?.length ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Phone className="w-8 h-8 text-slate-300 mb-2" />
-            <p className="text-xs font-medium text-slate-500 mb-1">No calls yet</p>
+            <p className="text-xs font-medium text-slate-500 mb-1">{t("receptionist.transcripts.emptyTitle")}</p>
             <p className="text-xs text-slate-400">
-              Enable the voice agent and configure your Twilio webhook to start handling calls.
+              {t("receptionist.transcripts.emptyBody")}
             </p>
           </div>
         ) : (
@@ -197,22 +216,22 @@ export default async function AiReceptionistPage() {
                       {session.summary ? (
                         <p className="text-xs text-slate-500 truncate">{session.summary}</p>
                       ) : (
-                        <p className="text-xs text-slate-400">{turns} turn{turns !== 1 ? "s" : ""}</p>
+                        <p className="text-xs text-slate-400">{t("receptionist.transcripts.turns", { count: turns })}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       {session.booked_event_id && (
-                        <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">Appointment booked</span>
+                        <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">{t("receptionist.transcripts.appointmentBooked")}</span>
                       )}
                       {session.duration_seconds ? (
                         <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-mono">
-                          {formatDuration(session.duration_seconds)}
+                          {formatDuration(session.duration_seconds, t)}
                         </span>
                       ) : null}
                       {session.recording_url ? (
                         <RecordingLink href={session.recording_url} />
                       ) : null}
-                      <span className="text-xs text-slate-400">{timeAgo(session.created_at)}</span>
+                      <span className="text-xs text-slate-400">{timeAgo(session.created_at, t, locale)}</span>
                       <span className="text-slate-300 group-open:rotate-90 transition-transform">›</span>
                     </div>
                   </summary>
@@ -225,7 +244,7 @@ export default async function AiReceptionistPage() {
                             : "bg-indigo-600 text-white"
                         }`}>
                           <p className="text-xs font-semibold mb-0.5 opacity-60">
-                            {msg.role === "user" ? "Caller" : "AI Agent"}
+                            {msg.role === "user" ? t("receptionist.transcripts.caller") : t("receptionist.transcripts.agent")}
                           </p>
                           {msg.content}
                         </div>

@@ -2,10 +2,12 @@
 
 import { useTransition } from "react";
 import { Pause, Play, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   setRecurringStatus,
   deleteRecurringInvoice,
 } from "@/lib/actions/recurring";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,16 +36,11 @@ interface RecurringInvoice {
 
 interface Props {
   recurring: RecurringInvoice;
+  /** `organizations.currency` — the ledger's currency, not the reader's country. */
+  currency: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const FREQ_LABELS: Record<string, string> = {
-  weekly: "Weekly",
-  monthly: "Monthly",
-  quarterly: "Quarterly",
-  annually: "Annually",
-};
 
 function calcTotal(items: LineItem[], taxRate: number): number {
   const subtotal = items.reduce(
@@ -53,25 +50,12 @@ function calcTotal(items: LineItem[], taxRate: number): number {
   return subtotal * (1 + Number(taxRate));
 }
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
-function fmtDate(d: string) {
-  return new Date(d + "T00:00:00").toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function RecurringRow({ recurring }: Props) {
+export function RecurringRow({ recurring, currency }: Props) {
+  const { t, i18n } = useTranslation("books");
+  const fmt = moneyFormatter(i18n.language, currency, { maximumFractionDigits: 0 });
+  const fmtDate = dateFormatter(i18n.language, { month: "short", day: "numeric", year: "numeric" });
   const [isPending, startTransition] = useTransition();
 
   // Resolve client name
@@ -81,7 +65,7 @@ export function RecurringRow({ recurring }: Props) {
     ? [client.first_name, client.last_name].filter(Boolean).join(" ") ||
       client.company ||
       "—"
-    : "No client";
+    : t("invoices.recurring.noClient");
 
   const total = calcTotal(
     (recurring.line_items as LineItem[]) ?? [],
@@ -97,12 +81,7 @@ export function RecurringRow({ recurring }: Props) {
   }
 
   function handleDelete() {
-    if (
-      !window.confirm(
-        "Delete this recurring invoice? Future invoices will not be generated. This cannot be undone."
-      )
-    )
-      return;
+    if (!window.confirm(t("invoices.recurring.confirmDelete"))) return;
     startTransition(() => {
       deleteRecurringInvoice(recurring.id);
     });
@@ -125,7 +104,7 @@ export function RecurringRow({ recurring }: Props) {
       {/* Frequency */}
       <div>
         <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
-          {FREQ_LABELS[recurring.frequency] ?? recurring.frequency}
+          {t(`invoices.frequency.${recurring.frequency}`, { defaultValue: recurring.frequency })}
         </span>
       </div>
 
@@ -143,7 +122,7 @@ export function RecurringRow({ recurring }: Props) {
         </span>
         {recurring.last_generated_at && (
           <p className="text-[10px] text-slate-400 mt-0.5">
-            Last: {fmtDate(recurring.last_generated_at.slice(0, 10))}
+            {t("invoices.recurring.lastGenerated", { date: fmtDate(recurring.last_generated_at.slice(0, 10)) })}
           </p>
         )}
       </div>
@@ -157,13 +136,13 @@ export function RecurringRow({ recurring }: Props) {
               : "bg-amber-50 text-amber-700"
           }`}
         >
-          {isActive ? "Active" : "Paused"}
+          {isActive ? t("status.recurring.active") : t("status.recurring.paused")}
         </span>
 
         <button
           onClick={handleToggle}
           disabled={isPending}
-          title={isActive ? "Pause" : "Resume"}
+          title={isActive ? t("invoices.recurring.pause") : t("invoices.recurring.resume")}
           className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-40"
         >
           {isActive ? (
@@ -176,7 +155,7 @@ export function RecurringRow({ recurring }: Props) {
         <button
           onClick={handleDelete}
           disabled={isPending}
-          title="Delete"
+          title={t("common:actions.delete")}
           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-40"
         >
           <Trash2 className="w-3.5 h-3.5" />

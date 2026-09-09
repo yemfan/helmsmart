@@ -5,10 +5,15 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
 import { ExpenseForm } from "@/components/expense-form";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "New Expense · Books" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("books");
+  return { title: t("expenses.new.metaTitle") };
+}
 
 export default async function NewExpensePage() {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -41,15 +46,15 @@ export default async function NewExpensePage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Record Expense</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Post a manual expense to the journal</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("expenses.new.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("expenses.new.subtitle")}</p>
         </div>
         <Link
           href="/books/expenses"
           className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Expenses
+          {t("expenses.new.back")}
         </Link>
       </div>
 

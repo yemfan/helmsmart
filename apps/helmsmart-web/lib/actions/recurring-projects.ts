@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 export type RecurringFrequency = "weekly" | "monthly" | "quarterly" | "annually";
 
@@ -55,9 +56,9 @@ export async function createRecurringProject(data: {
   nextRunDate: string;
 }): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
-  if (!data.name.trim()) throw new Error("Name is required");
-  if (!data.nextRunDate) throw new Error("First run date is required");
+  if (!orgId) throw new Error((await getServerT("projects"))("errors.noOrg"));
+  if (!data.name.trim()) throw new Error((await getServerT("projects"))("errors.nameRequired"));
+  if (!data.nextRunDate) throw new Error((await getServerT("projects"))("errors.firstRunDateRequired"));
 
   const supabase = await createClient();
   const { error } = await supabase.from("recurring_projects").insert({
@@ -81,7 +82,7 @@ export async function setRecurringProjectStatus(
   status: "active" | "paused"
 ): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("projects"))("errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_projects")
@@ -93,7 +94,7 @@ export async function setRecurringProjectStatus(
 
 export async function deleteRecurringProject(id: string): Promise<void> {
   const orgId = await getOrgId();
-  if (!orgId) throw new Error("No org");
+  if (!orgId) throw new Error((await getServerT("projects"))("errors.noOrg"));
   const supabase = await createClient();
   await supabase
     .from("recurring_projects")

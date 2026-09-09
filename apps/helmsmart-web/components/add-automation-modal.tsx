@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { X, Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   createAutomationRule,
   type AutomationTrigger,
@@ -11,27 +12,38 @@ import {
 } from "@/lib/actions/automations";
 
 // ─── Option definitions ───────────────────────────────────────────────────────
+//
+// The values are what the automation engine stores and parses; the label and
+// hint for each one live in the bundle under the same key.
 
-const TRIGGERS: { value: AutomationTrigger; label: string; hint: string }[] = [
-  { value: "invoice_overdue", label: "Invoice becomes overdue", hint: "Fires daily when a sent invoice passes its due date" },
-  { value: "invoice_paid",    label: "Invoice is paid",        hint: "Fires when an invoice is marked as paid" },
-  { value: "new_lead",        label: "New lead created",       hint: "Fires when a client with status 'lead' is created" },
-  { value: "campaign_sent",   label: "Campaign is sent",       hint: "Fires after a marketing campaign is dispatched" },
-];
+const TRIGGERS: AutomationTrigger[] = ["invoice_overdue", "invoice_paid", "new_lead", "campaign_sent"];
 
-const ACTIONS: { value: AutomationAction; label: string; hint: string }[] = [
-  { value: "create_task", label: "Create a task",  hint: "Adds a task to the task list, optionally linked to the client" },
-  { value: "send_email",  label: "Send an email",  hint: "Sends a transactional email to the client" },
-  { value: "add_note",    label: "Add a note",     hint: "Logs an activity note on the client record" },
-];
+const ACTIONS: AutomationAction[] = ["create_task", "send_email", "add_note"];
 
-// Available template variables per trigger
+// Available template variables per trigger. These are tokens the engine
+// substitutes at run time, not copy — they stay in source in every language.
 const TRIGGER_VARS: Record<AutomationTrigger, string[]> = {
   invoice_overdue: ["{{client_name}}", "{{invoice_number}}", "{{amount}}"],
   invoice_paid:    ["{{client_name}}", "{{invoice_number}}", "{{amount}}"],
   new_lead:        ["{{client_name}}"],
   campaign_sent:   ["{{campaign_name}}"],
 };
+
+/**
+ * Passed to `t()` for every default task/note body, so the `{{client_name}}`
+ * style tokens survive interpolation instead of being blanked out by it.
+ */
+const KEEP_TOKENS = {
+  client_name: "{{client_name}}",
+  invoice_number: "{{invoice_number}}",
+  amount: "{{amount}}",
+  campaign_name: "{{campaign_name}}",
+};
+
+// The email an automation sends reaches the CLIENT, so its default subject and
+// body stay in English here and follow the recipient's language at send time.
+const DEFAULT_EMAIL_SUBJECT = "An update from us";
+const DEFAULT_EMAIL_BODY = "Hi {{client_name}},\n\n";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -41,11 +53,12 @@ interface Props {
 }
 
 export function AddAutomationModal({ onClose, onCreated }: Props) {
+  const { t } = useTranslation("workflows");
   const [name,    setName]   = useState("");
   const [trigger, setTrigger] = useState<AutomationTrigger>("invoice_overdue");
   const [action,  setAction]  = useState<AutomationAction>("create_task");
   const [config,  setConfig]  = useState<AutomationConfig>({
-    title: "Follow up: overdue invoice {{invoice_number}} for {{client_name}}",
+    title: t("automations.modal.defaults.taskInvoiceOverdue", KEEP_TOKENS),
     due_offset_days: 1,
   });
   const [error,   setError]   = useState("");
@@ -55,11 +68,11 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
   function handleActionChange(next: AutomationAction) {
     setAction(next);
     if (next === "create_task") {
-      setConfig({ title: "Follow up with {{client_name}}", due_offset_days: 1 });
+      setConfig({ title: t("automations.modal.defaults.taskGeneric", KEEP_TOKENS), due_offset_days: 1 });
     } else if (next === "send_email") {
-      setConfig({ email_subject: "An update from us", email_body: "Hi {{client_name}},\n\n" });
+      setConfig({ email_subject: DEFAULT_EMAIL_SUBJECT, email_body: DEFAULT_EMAIL_BODY });
     } else {
-      setConfig({ note_body: "Automated activity note" });
+      setConfig({ note_body: t("automations.modal.defaults.note") });
     }
   }
 
@@ -67,18 +80,17 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
     setTrigger(next);
     // Keep config but update task title default
     if (action === "create_task") {
-      if (next === "invoice_overdue" || next === "invoice_paid") {
-        setConfig((c) => ({ ...c, title: `Follow up: ${next === "invoice_overdue" ? "overdue" : "paid"} invoice {{invoice_number}} for {{client_name}}` }));
-      } else if (next === "new_lead") {
-        setConfig((c) => ({ ...c, title: "Follow up with new lead {{client_name}}" }));
-      } else {
-        setConfig((c) => ({ ...c, title: "Follow up after campaign {{campaign_name}}" }));
-      }
+      const key =
+        next === "invoice_overdue" ? "taskInvoiceOverdue"
+        : next === "invoice_paid"  ? "taskInvoicePaid"
+        : next === "new_lead"      ? "taskNewLead"
+        : "taskCampaignSent";
+      setConfig((c) => ({ ...c, title: t(`automations.modal.defaults.${key}`, KEEP_TOKENS) }));
     }
   }
 
   function handleSubmit() {
-    if (!name.trim()) { setError("Name is required"); return; }
+    if (!name.trim()) { setError(t("automations.modal.nameRequired")); return; }
     setError("");
 
     start(async () => {
@@ -102,7 +114,7 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
           created_at: new Date().toISOString(),
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create automation");
+        setError(err instanceof Error ? err.message : t("automations.modal.createFailed"));
       }
     });
   }
@@ -116,10 +128,11 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
             <Zap className="w-4 h-4 text-indigo-600" />
-            <h2 className="text-sm font-semibold text-slate-800">New automation</h2>
+            <h2 className="text-sm font-semibold text-slate-800">{t("automations.modal.title")}</h2>
           </div>
           <button
             onClick={onClose}
+            aria-label={t("automations.modal.close")}
             className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -130,24 +143,24 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
         <div className="px-6 py-5 space-y-5 max-h-[calc(100vh-160px)] overflow-y-auto">
           {/* Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Name</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">{t("automations.modal.nameLabel")}</label>
             <input
               value={name}
               onChange={(e) => { setName(e.target.value); setError(""); }}
-              placeholder="e.g. Create follow-up task when invoice overdue"
+              placeholder={t("automations.modal.namePlaceholder")}
               className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* Trigger */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">When this happens…</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">{t("automations.modal.whenLabel")}</label>
             <div className="space-y-1.5">
-              {TRIGGERS.map((t) => (
+              {TRIGGERS.map((value) => (
                 <label
-                  key={t.value}
+                  key={value}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                    trigger === t.value
+                    trigger === value
                       ? "border-indigo-300 bg-indigo-50"
                       : "border-slate-200 hover:bg-slate-50"
                   }`}
@@ -155,16 +168,16 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
                   <input
                     type="radio"
                     name="trigger"
-                    value={t.value}
-                    checked={trigger === t.value}
-                    onChange={() => handleTriggerChange(t.value)}
+                    value={value}
+                    checked={trigger === value}
+                    onChange={() => handleTriggerChange(value)}
                     className="mt-0.5 accent-indigo-600"
                   />
                   <div>
-                    <p className={`text-xs font-medium ${trigger === t.value ? "text-indigo-800" : "text-slate-700"}`}>
-                      {t.label}
+                    <p className={`text-xs font-medium ${trigger === value ? "text-indigo-800" : "text-slate-700"}`}>
+                      {t(`automations.modal.triggers.${value}.label`)}
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{t.hint}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{t(`automations.modal.triggers.${value}.hint`)}</p>
                   </div>
                 </label>
               ))}
@@ -173,13 +186,13 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
 
           {/* Action */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Do this…</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">{t("automations.modal.doLabel")}</label>
             <div className="space-y-1.5">
-              {ACTIONS.map((a) => (
+              {ACTIONS.map((value) => (
                 <label
-                  key={a.value}
+                  key={value}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                    action === a.value
+                    action === value
                       ? "border-indigo-300 bg-indigo-50"
                       : "border-slate-200 hover:bg-slate-50"
                   }`}
@@ -187,16 +200,16 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
                   <input
                     type="radio"
                     name="action"
-                    value={a.value}
-                    checked={action === a.value}
-                    onChange={() => handleActionChange(a.value)}
+                    value={value}
+                    checked={action === value}
+                    onChange={() => handleActionChange(value)}
                     className="mt-0.5 accent-indigo-600"
                   />
                   <div>
-                    <p className={`text-xs font-medium ${action === a.value ? "text-indigo-800" : "text-slate-700"}`}>
-                      {a.label}
+                    <p className={`text-xs font-medium ${action === value ? "text-indigo-800" : "text-slate-700"}`}>
+                      {t(`automations.modal.actions.${value}.label`)}
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{a.hint}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{t(`automations.modal.actions.${value}.hint`)}</p>
                   </div>
                 </label>
               ))}
@@ -206,7 +219,7 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
           {/* Dynamic config fields */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <p className="text-xs font-semibold text-slate-600">Configure action</p>
+              <p className="text-xs font-semibold text-slate-600">{t("automations.modal.configureAction")}</p>
               {vars.length > 0 && (
                 <div className="flex items-center gap-1 flex-wrap">
                   {vars.map((v) => (
@@ -221,16 +234,16 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
             {action === "create_task" && (
               <>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1">Task title</label>
+                  <label className="block text-xs text-slate-500 mb-1">{t("automations.modal.taskTitleLabel")}</label>
                   <input
                     value={config.title ?? ""}
                     onChange={(e) => setConfig((c) => ({ ...c, title: e.target.value }))}
-                    placeholder="Follow up with {{client_name}}"
+                    placeholder={t("automations.modal.taskTitlePlaceholder", KEEP_TOKENS)}
                     className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1">Due in (days)</label>
+                  <label className="block text-xs text-slate-500 mb-1">{t("automations.modal.dueInDaysLabel")}</label>
                   <input
                     type="number"
                     min="0"
@@ -246,7 +259,7 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
             {action === "send_email" && (
               <>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1">Email subject</label>
+                  <label className="block text-xs text-slate-500 mb-1">{t("automations.modal.emailSubjectLabel")}</label>
                   <input
                     value={config.email_subject ?? ""}
                     onChange={(e) => setConfig((c) => ({ ...c, email_subject: e.target.value }))}
@@ -255,7 +268,7 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-500 mb-1">Email body</label>
+                  <label className="block text-xs text-slate-500 mb-1">{t("automations.modal.emailBodyLabel")}</label>
                   <textarea
                     rows={5}
                     value={config.email_body ?? ""}
@@ -269,12 +282,12 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
 
             {action === "add_note" && (
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Note body</label>
+                <label className="block text-xs text-slate-500 mb-1">{t("automations.modal.noteBodyLabel")}</label>
                 <textarea
                   rows={3}
                   value={config.note_body ?? ""}
                   onChange={(e) => setConfig((c) => ({ ...c, note_body: e.target.value }))}
-                  placeholder="Auto-logged: invoice {{invoice_number}} is overdue"
+                  placeholder={t("automations.modal.notePlaceholder", KEEP_TOKENS)}
                   className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
               </div>
@@ -282,7 +295,7 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
           </div>
 
           {error && (
-            <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2">{error}</p>
+            <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2" role="alert">{error}</p>
           )}
         </div>
 
@@ -293,14 +306,14 @@ export function AddAutomationModal({ onClose, onCreated }: Props) {
             disabled={pending}
             className="flex-1 py-2.5 text-sm font-medium border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-60 transition-colors"
           >
-            Cancel
+            {t("automations.modal.cancel")}
           </button>
           <button
             onClick={handleSubmit}
             disabled={pending || !name.trim()}
             className="flex-1 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
           >
-            {pending ? "Creating…" : "Create automation"}
+            {pending ? t("automations.modal.creating") : t("automations.modal.create")}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { Trans, useTranslation } from "react-i18next";
 import { signUp } from "@/lib/actions/auth";
 import type { AuthState } from "@/lib/actions/auth";
 
@@ -25,22 +26,25 @@ function AppleIcon() {
 }
 
 export default function SignUpPage() {
+  const { t } = useTranslation("auth");
   const [state, action, isPending] = useActionState<AuthState, FormData>(
     signUp,
     null
   );
 
-  const isConfirmationMessage = state?.error?.toLowerCase().includes("check your email");
+  // The action flags the "check your email" outcome explicitly — sniffing the
+  // message text stops working the moment the message is translated.
+  const isConfirmationMessage = state?.sent === true;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-      <h1 className="text-xl font-semibold text-slate-900 mb-1">Create your account</h1>
-      <p className="text-sm text-slate-500 mb-6">Start your free trial — no credit card required</p>
+      <h1 className="text-xl font-semibold text-slate-900 mb-1">{t("signup.title")}</h1>
+      <p className="text-sm text-slate-500 mb-6">{t("signup.subtitle")}</p>
 
       <form action={action} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-            Email
+            {t("signup.email")}
           </label>
           <input
             id="email"
@@ -52,13 +56,13 @@ export default function SignUpPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="you@example.com"
+            placeholder={t("signup.emailPlaceholder")}
           />
         </div>
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-            Password
+            {t("signup.password")}
           </label>
           <input
             id="password"
@@ -70,9 +74,9 @@ export default function SignUpPage() {
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400
                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                        disabled:bg-slate-50 disabled:text-slate-500"
-            placeholder="Min. 8 characters"
+            placeholder={t("signup.passwordPlaceholder")}
           />
-          <p className="mt-1 text-xs text-slate-400">At least 8 characters</p>
+          <p className="mt-1 text-xs text-slate-400">{t("signup.passwordHint")}</p>
         </div>
 
         {state?.error && (
@@ -93,7 +97,7 @@ export default function SignUpPage() {
                        hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                        disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
-            {isPending ? "Creating account…" : "Create account"}
+            {isPending ? t("signup.submitting") : t("signup.submit")}
           </button>
         )}
       </form>
@@ -104,7 +108,7 @@ export default function SignUpPage() {
           <div className="w-full border-t border-slate-200" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-400 tracking-wide">or</span>
+          <span className="bg-white px-2 text-slate-400 tracking-wide">{t("oauth.or")}</span>
         </div>
       </div>
 
@@ -115,29 +119,35 @@ export default function SignUpPage() {
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
         >
           <GoogleIcon />
-          Continue with Google
+          {t("oauth.google")}
         </a>
         <a
           href="/api/auth/apple"
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
         >
           <AppleIcon />
-          Continue with Apple
+          {t("oauth.apple")}
         </a>
       </div>
 
       <p className="mt-6 text-center text-sm text-slate-500">
-        Already have an account?{" "}
+        {t("signup.haveAccount")}{" "}
         <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-700">
-          Sign in
+          {t("signup.signIn")}
         </Link>
       </p>
 
+      {/* One sentence with two links inside it — <Trans> keeps it one key, so
+          Chinese can put the links where its own word order wants them. */}
       <p className="mt-4 text-center text-xs text-slate-400">
-        By creating an account you agree to our{" "}
-        <a href="/terms" className="underline hover:text-slate-600">Terms</a>
-        {" "}and{" "}
-        <a href="/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
+        <Trans
+          t={t}
+          i18nKey="signup.legal"
+          components={{
+            terms: <a href="/terms" className="underline hover:text-slate-600" />,
+            privacy: <a href="/privacy" className="underline hover:text-slate-600" />,
+          }}
+        />
       </p>
     </div>
   );

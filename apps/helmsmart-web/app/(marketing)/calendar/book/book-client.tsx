@@ -2,9 +2,12 @@
 
 import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import { ChevronLeft, Check, Calendar, Clock, User } from "lucide-react";
 import { createEvent } from "@/lib/actions/events";
 import type { BusinessHours, AppointmentType } from "@/lib/receptionist";
+import { rich } from "../../_rich";
 
 type DayKey = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 
@@ -68,12 +71,15 @@ function computeSlots(
   return slots;
 }
 
-function fmtTime(iso: string) {
-  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+function fmtTime(iso: string, locale: string) {
+  return new Date(iso).toLocaleTimeString(intlLocale(locale), {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
-function fmtDate(dateStr: string) {
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
+function fmtDate(dateStr: string, locale: string) {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString(intlLocale(locale), {
     weekday: "short", month: "short", day: "numeric",
   });
 }
@@ -89,6 +95,8 @@ export function BookClient({
   businessHours: BusinessHours;
   existingEvents: ExistingEvent[];
 }) {
+  const { t, i18n } = useTranslation("site");
+  const locale = i18n.language;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -122,12 +130,14 @@ export function BookClient({
     return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "—";
   }
 
+  const duration = (minutes: number) => t("book.duration", { minutes });
+
   function handleBook() {
     if (!selectedSlot || !selectedClientId) return;
-    const clientName = getClientName(selectedClientId);
+    const client = getClientName(selectedClientId);
     const title = selectedType
-      ? `${selectedType.name} — ${clientName}`
-      : `Appointment — ${clientName}`;
+      ? t("book.eventTitle", { type: selectedType.name, client })
+      : t("book.eventTitleDefault", { client });
 
     startTransition(async () => {
       await createEvent({
@@ -150,18 +160,20 @@ export function BookClient({
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Appointment booked!</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t("book.done.title")}</h2>
           <p className="text-gray-600 text-sm mb-6">
-            {selectedSlot && fmtDate(selectedSlot.date)} at{" "}
-            {selectedSlot && fmtTime(selectedSlot.startAt)} with{" "}
-            {getClientName(selectedClientId)}
+            {t("book.done.summary", {
+              date: selectedSlot ? fmtDate(selectedSlot.date, locale) : "",
+              time: selectedSlot ? fmtTime(selectedSlot.startAt, locale) : "",
+              client: getClientName(selectedClientId),
+            })}
           </p>
           <button
             onClick={() => router.push("/calendar")}
             className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
           >
             <Calendar className="w-4 h-4" />
-            View calendar
+            {t("book.done.viewCalendar")}
           </button>
         </div>
       </div>
@@ -174,26 +186,26 @@ export function BookClient({
       {step === "type" && (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">What type of appointment?</h2>
-            <p className="text-gray-600">Select the service you need</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">{t("book.type.title")}</h2>
+            <p className="text-gray-600">{t("book.type.subtitle")}</p>
           </div>
           <div className="grid gap-3">
-            {appointmentTypes.map((t) => (
+            {appointmentTypes.map((type) => (
               <button
-                key={t.id}
+                key={type.id}
                 onClick={() => {
-                  setSelectedType(t);
+                  setSelectedType(type);
                   setSelectedSlot(null);
                   setStep("client");
                 }}
                 className="p-4 rounded-xl border-2 text-left transition-all border-gray-200 bg-white hover:border-indigo-300 hover:bg-indigo-50"
               >
-                <p className="font-semibold text-gray-900">{t.name}</p>
-                {t.description && (
-                  <p className="text-sm text-gray-500 mt-1">{t.description}</p>
+                <p className="font-semibold text-gray-900">{type.name}</p>
+                {type.description && (
+                  <p className="text-sm text-gray-500 mt-1">{type.description}</p>
                 )}
                 <p className="text-xs text-indigo-600 mt-1 font-medium">
-                  {t.duration_minutes} min
+                  {duration(type.duration_minutes)}
                 </p>
               </button>
             ))}
@@ -209,20 +221,18 @@ export function BookClient({
               onClick={() => setStep("type")}
               className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 font-medium text-sm"
             >
-              <ChevronLeft className="w-4 h-4" /> Back
+              <ChevronLeft className="w-4 h-4" /> {t("common:actions.back")}
             </button>
           )}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Who is this for?</h2>
-            <p className="text-gray-600">Select a client to schedule with</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">{t("book.client.title")}</h2>
+            <p className="text-gray-600">{t("book.client.subtitle")}</p>
           </div>
           {clients.length === 0 ? (
             <div className="text-center py-10 text-gray-500 text-sm rounded-xl border border-dashed border-gray-300">
-              No active clients yet.{" "}
-              <a href="/clients" className="text-indigo-600 hover:underline">
-                Add a client
-              </a>{" "}
-              first.
+              {rich(t("book.client.empty"), {
+                links: [{ href: "/clients", className: "text-indigo-600 hover:underline" }],
+              })}
             </div>
           ) : (
             <div className="grid gap-3">
@@ -264,36 +274,37 @@ export function BookClient({
             }}
             className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 font-medium text-sm"
           >
-            <ChevronLeft className="w-4 h-4" /> Back
+            <ChevronLeft className="w-4 h-4" /> {t("common:actions.back")}
           </button>
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Pick a time</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">{t("book.time.title")}</h2>
             <p className="text-gray-600">
-              {selectedType && (
-                <span className="font-medium text-indigo-600">
-                  {selectedType.name} · {selectedType.duration_minutes} min
-                </span>
-              )}
-              {selectedType && " for "}
-              {getClientName(selectedClientId)}
+              {selectedType
+                ? rich(
+                    t("book.time.subtitle", {
+                      type: selectedType.name,
+                      duration: duration(selectedType.duration_minutes),
+                      client: getClientName(selectedClientId),
+                    }),
+                    { emClassName: "font-medium text-indigo-600" },
+                  )
+                : getClientName(selectedClientId)}
             </p>
           </div>
 
           {Object.keys(slotsByDate).length === 0 ? (
             <div className="text-center py-10 text-gray-500 text-sm rounded-xl border border-dashed border-gray-300">
-              No available slots in the next 14 days.{" "}
-              <a href="/voice" className="text-indigo-600 hover:underline">
-                Update your business hours
-              </a>
-              .
+              {rich(t("book.time.empty"), {
+                links: [{ href: "/voice", className: "text-indigo-600 hover:underline" }],
+              })}
             </div>
           ) : (
             <div className="space-y-5">
               {Object.entries(slotsByDate).map(([date, dateSlots]) => (
                 <div key={date}>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                    {fmtDate(date)}
+                    {fmtDate(date, locale)}
                   </p>
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                     {dateSlots.map((s) => (
@@ -306,7 +317,7 @@ export function BookClient({
                             : "border-gray-200 bg-white text-gray-900 hover:border-indigo-300"
                         }`}
                       >
-                        {fmtTime(s.startAt)}
+                        {fmtTime(s.startAt, locale)}
                       </button>
                     ))}
                   </div>
@@ -317,7 +328,7 @@ export function BookClient({
 
           {selectedSlot && (
             <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-gray-900 mb-2">Appointment summary</p>
+              <p className="text-sm font-semibold text-gray-900 mb-2">{t("book.summary.title")}</p>
               <div className="space-y-1 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -325,8 +336,16 @@ export function BookClient({
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                  {fmtDate(selectedSlot.date)} at {fmtTime(selectedSlot.startAt)}
-                  {selectedType && ` · ${selectedType.duration_minutes} min`}
+                  {selectedType
+                    ? t("book.summary.whenWithDuration", {
+                        date: fmtDate(selectedSlot.date, locale),
+                        time: fmtTime(selectedSlot.startAt, locale),
+                        duration: duration(selectedType.duration_minutes),
+                      })
+                    : t("book.summary.when", {
+                        date: fmtDate(selectedSlot.date, locale),
+                        time: fmtTime(selectedSlot.startAt, locale),
+                      })}
                 </div>
               </div>
             </div>
@@ -340,14 +359,14 @@ export function BookClient({
               }}
               className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t("common:actions.cancel")}
             </button>
             <button
               onClick={handleBook}
               disabled={!selectedSlot || isPending}
               className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isPending ? "Booking…" : "Confirm Appointment"}
+              {isPending ? t("book.booking") : t("book.confirm")}
             </button>
           </div>
         </div>

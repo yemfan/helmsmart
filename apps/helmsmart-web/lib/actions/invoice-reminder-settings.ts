@@ -3,15 +3,17 @@
 import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getServerT } from "@/lib/i18n/server";
 
 export async function saveReminderSettings(input: {
   autoSend: boolean;
   daysIntervals: number[];
   maxCount: number;
 }): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false, error: "Not authenticated" };
+  if (!orgId) return { ok: false, error: t("invoices.errors.notAuthenticated") };
 
   const db = await createServiceClient();
   const { error } = await db

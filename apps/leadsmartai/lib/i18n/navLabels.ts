@@ -1,5 +1,7 @@
 import type { NavSection } from "@repo/ui";
 
+import { translateNavSections as translateTree } from "@leadsmart/i18n";
+
 /**
  * Translate an authored nav tree.
  *
@@ -10,21 +12,12 @@ import type { NavSection } from "@repo/ui";
  * lands, rather than showing a raw `nav.foo.bar` key.
  *
  * Only labels change; hrefs, icons, roles and match rules pass through
- * untouched, so nothing about routing or role filtering depends on locale.
+ * untouched. The walk itself is the package's, shared with HelmSmart; this
+ * wrapper pins CloseBoss's `NavSection` union onto it.
  */
 export function translateNavSections(
   sections: NavSection[],
   translate: (label: string) => string,
 ): NavSection[] {
-  return sections.map((section) => {
-    if (!("label" in section)) return section; // dividers carry no copy
-    const next = { ...section, label: translate(section.label) };
-    if ("items" in section && Array.isArray(section.items)) {
-      return {
-        ...next,
-        items: section.items.map((item) => ({ ...item, label: translate(item.label) })),
-      } as NavSection;
-    }
-    return next as NavSection;
-  });
+  return translateTree(sections, translate);
 }

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toggleAutoReply, saveAutoReplyMsg, saveTwilioNumber } from "@/lib/actions/messages";
 import { Phone, Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   orgId: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Props) {
+  const { t } = useTranslation("voice");
   const [number, setNumber]  = useState(twilioNumber ?? "");
   const [enabled, setEnabled] = useState(autoReply);
   const [msg, setMsg]         = useState(autoReplyMsg);
@@ -42,7 +44,7 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
       setSaveError(null);
       const res = await saveTwilioNumber(number);
       if (!res.ok) {
-        setNumberError(res.error ?? "Invalid phone number.");
+        setNumberError(res.error ?? t("autoReply.numberInvalid"));
         return; // fix the number before saving the rest
       }
       if (res.value !== undefined) setNumber(res.value); // reflect the normalized form
@@ -58,12 +60,12 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
-      <h2 className="text-sm font-semibold text-slate-800">Auto-reply settings</h2>
+      <h2 className="text-sm font-semibold text-slate-800">{t("autoReply.title")}</h2>
 
       {/* Twilio number */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          Twilio phone number
+          {t("autoReply.numberLabel")}
         </label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -86,7 +88,7 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
           <p className="text-xs text-rose-600 mt-1">{numberError}</p>
         ) : (
           <p className="text-xs text-slate-400 mt-1">
-            Saved in E.164 format (e.g. <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-600">+16265551234</code>). Must match the Twilio number routing to the agent.
+            {t("autoReply.numberHelp", { example: "+16265551234" })}
           </p>
         )}
       </div>
@@ -94,11 +96,12 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
       {/* Toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-700">Auto-reply to missed calls</p>
-          <p className="text-xs text-slate-400 mt-0.5">Send an SMS automatically when you don&apos;t answer</p>
+          <p className="text-sm font-medium text-slate-700">{t("autoReply.toggleTitle")}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("autoReply.toggleHint")}</p>
         </div>
         <button
           onClick={handleToggle}
+          aria-label={t("autoReply.toggleTitle")}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
             enabled ? "bg-indigo-600" : "bg-slate-200"
           }`}
@@ -114,7 +117,7 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
       {/* Message */}
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1.5">
-          Auto-reply message
+          {t("autoReply.messageLabel")}
         </label>
         <textarea
           value={msg}
@@ -124,7 +127,7 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
           className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
         />
         <div className="flex items-center justify-between mt-1">
-          <p className="text-xs text-slate-400">Sent via SMS to the caller&apos;s number</p>
+          <p className="text-xs text-slate-400">{t("autoReply.messageHint")}</p>
           <p className="text-xs text-slate-400">{msg.length}/160</p>
         </div>
       </div>
@@ -135,7 +138,7 @@ export function ReceptionSettings({ twilioNumber, autoReply, autoReplyMsg }: Pro
         className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
       >
         <Save className="w-4 h-4" />
-        {saved ? "Saved!" : "Save changes"}
+        {isPending ? t("common:status.saving") : saved ? t("autoReply.saved") : t("autoReply.save")}
       </button>
 
       {/*

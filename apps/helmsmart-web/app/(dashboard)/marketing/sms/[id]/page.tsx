@@ -4,8 +4,12 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { SMSCampaignEditor } from "@/components/sms-campaign-editor";
 import { SMSCampaignAnalytics } from "@/components/sms-campaign-analytics";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "SMS Campaign · Marketing" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("marketing");
+  return { title: t("meta.smsCampaign") };
+}
 
 export default async function SMSCampaignDetailPage({
   params,

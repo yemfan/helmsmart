@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
 import {
   BarChart,
   Bar,
@@ -28,6 +30,7 @@ function fmtTick(value: number) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomTooltip({ active, payload, label }: any) {
+  const { i18n } = useTranslation("home");
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-xs">
@@ -40,9 +43,9 @@ function CustomTooltip({ active, payload, label }: any) {
               className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
               style={{ background: p.fill }}
             />
-            <span className="text-slate-500 capitalize">{p.name}</span>
+            <span className="text-slate-500">{p.name}</span>
             <span className="ml-auto font-semibold text-slate-800 tabular-nums">
-              ${Number(p.value).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+              ${Number(p.value).toLocaleString(intlLocale(i18n.language), { maximumFractionDigits: 0 })}
             </span>
           </div>
         )
@@ -52,10 +55,12 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export function RevenueChart({ data }: Props) {
+  const { t } = useTranslation("home");
+
   if (!data.length) {
     return (
       <div className="flex items-center justify-center h-full text-sm text-slate-400">
-        No transaction data yet
+        {t("revenueChart.empty")}
       </div>
     );
   }
@@ -88,8 +93,8 @@ export function RevenueChart({ data }: Props) {
           iconSize={10}
           wrapperStyle={{ fontSize: 11, color: "#64748b", paddingTop: 12 }}
         />
-        <Bar dataKey="revenue" name="Revenue" fill="#10b981" radius={[3, 3, 0, 0]} />
-        <Bar dataKey="expenses" name="Expenses" fill="#f43f5e" radius={[3, 3, 0, 0]} />
+        <Bar dataKey="revenue" name={t("revenueChart.revenue")} fill="#10b981" radius={[3, 3, 0, 0]} />
+        <Bar dataKey="expenses" name={t("revenueChart.expenses")} fill="#f43f5e" radius={[3, 3, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

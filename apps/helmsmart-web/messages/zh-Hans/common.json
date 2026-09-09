@@ -1,0 +1,25 @@
+{
+  "actions": {
+    "saved_bang": "已保存！"
+  },
+  "roles": {
+    "owner": "所有者",
+    "admin": "管理员",
+    "bookkeeper": "记账员",
+    "viewer": "只读成员",
+    "unknown": "未知"
+  },
+  "permission": {
+    "readOnlyTitle": "只读权限",
+    "readOnlyBody": "您的角色（{{role}}）没有在此处进行修改的权限。如需权限，请联系管理员。",
+    "denied": "您没有执行此操作的权限。请向所有者或管理员申请。"
+  },
+  "aiRoles": {
+    "AI Chief Operating Officer": "AI 首席运营官",
+    "AI Chief Information Officer": "AI 首席信息官",
+    "AI Marketing Director": "AI 市场总监",
+    "AI Finance Director": "AI 财务总监",
+    "AI Sales Development Rep": "AI 销售拓展专员",
+    "AI Receptionist": "AI 前台接待"
+  }
+}

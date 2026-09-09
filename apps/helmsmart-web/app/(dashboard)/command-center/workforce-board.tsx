@@ -1,13 +1,17 @@
 import type { WorkforceSummary } from "@helm/dna-intelligence";
 import { SeedWorkforceButton } from "./seed-workforce-button";
 import { EmployeeAvatarPicker } from "./employee-avatar-picker";
+import { getServerT } from "@/lib/i18n/server";
 
-/** "calls_answered" → "Calls Answered". */
+/**
+ * "calls_answered" → "Calls Answered", the fallback for a metric key with no
+ * entry under `metrics.*`. See `command-center-view.tsx` for the same rule.
+ */
 function humanize(key: string): string {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export function WorkforceBoard({
+export async function WorkforceBoard({
   summary,
   avatarById,
 }: {
@@ -15,14 +19,15 @@ export function WorkforceBoard({
   /** employeeId → resolved avatar id (chosen, or a stable default). */
   avatarById: Record<string, string>;
 }) {
+  const t = await getServerT("home");
+  const tc = await getServerT("common");
+
   if (summary.employees.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-        <h2 className="text-lg font-semibold text-slate-900">No AI employees yet</h2>
+        <h2 className="text-lg font-semibold text-slate-900">{t("commandCenter.board.emptyTitle")}</h2>
         <p className="text-sm text-slate-500 mt-1 mb-6 max-w-md mx-auto">
-          Hire your six-person AI back office — a receptionist, an SDR, and four
-          department directors — in one click. They start in draft so you can review
-          each before switching them on.
+          {t("commandCenter.board.emptyBody")}
         </p>
         <SeedWorkforceButton />
       </div>
@@ -39,7 +44,7 @@ export function WorkforceBoard({
           {totalKeys.map((k) => (
             <div key={k} className="rounded-xl border border-slate-200 bg-white p-4">
               <p className="text-2xl font-semibold text-slate-900">{summary.totals[k]}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{humanize(k)}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{t(`metrics.${k}`, { defaultValue: humanize(k) })}</p>
             </div>
           ))}
         </div>
@@ -59,18 +64,19 @@ export function WorkforceBoard({
                 />
                 <div>
                   <p className="font-semibold text-slate-900">{e.name}</p>
-                  <p className="text-xs text-slate-500">{e.role}</p>
+                  {/* Job title, not a name — translated like every other role badge. */}
+                  <p className="text-xs text-slate-500">{tc(`aiRoles.${e.role}`, { defaultValue: e.role })}</p>
                 </div>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
                 {keys.length === 0 ? (
-                  <p className="text-sm text-slate-400">No activity yet</p>
+                  <p className="text-sm text-slate-400">{t("commandCenter.board.noActivity")}</p>
                 ) : (
                   keys.map((k) => (
                     <div key={k}>
                       <p className="text-lg font-semibold text-slate-900">{e.metrics[k]}</p>
-                      <p className="text-[11px] text-slate-500">{humanize(k)}</p>
+                      <p className="text-[11px] text-slate-500">{t(`metrics.${k}`, { defaultValue: humanize(k) })}</p>
                     </div>
                   ))
                 )}

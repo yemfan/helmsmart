@@ -1,6 +1,7 @@
 "use server";
 
 import { sendEmail } from "@/lib/email";
+import { getServerT } from "@/lib/i18n/server";
 
 export interface SalesState {
   success?: boolean;
@@ -11,6 +12,10 @@ export async function submitSalesForm(
   _: SalesState,
   formData: FormData
 ): Promise<SalesState> {
+  // What the VISITOR reads comes back in their language. The sales
+  // notification below goes to the HelmSmart team, so it stays English.
+  const t = await getServerT("site");
+
   try {
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
@@ -21,15 +26,15 @@ export async function submitSalesForm(
     const message = formData.get("message") as string;
 
     if (!name || !email || !company) {
-      return { error: "Name, email, and company are required" };
+      return { error: t("sales.errors.required") };
     }
 
     if (!email.includes("@")) {
-      return { error: "Please provide a valid email address" };
+      return { error: t("sales.errors.email") };
     }
 
     if (interested.length === 0) {
-      return { error: "Please select at least one product of interest" };
+      return { error: t("sales.errors.interest") };
     }
 
     // Send to sales email
@@ -68,9 +73,6 @@ export async function submitSalesForm(
     return { success: true };
   } catch (error) {
     console.error("Sales form error:", error);
-    return {
-      error:
-        "Failed to submit inquiry. Please try again or email contact@helmsmart.ai",
-    };
+    return { error: t("sales.errors.failed") };
   }
 }

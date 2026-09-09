@@ -1,0 +1,1206 @@
+{
+  "overview": {
+    "metaTitle": "Books",
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "stats": {
+      "bankBalance": "Bank balance",
+      "revenue": "Revenue",
+      "expenses": "Expenses",
+      "netProfit": "Net profit",
+      "allLinkedAccounts": "All linked accounts",
+      "linkBankToSync": "Link your bank to sync",
+      "noTransactionsYet": "No transactions yet"
+    },
+    "actions": {
+      "title": "Actions",
+      "getStarted": "Get started"
+    },
+    "transactions": {
+      "title": "Transactions",
+      "linkToSync": "Link a bank to start syncing",
+      "noBankTitle": "No bank connected yet",
+      "noBankBody": "Link your bank via Plaid and we'll import the last 90 days, categorized by AI.",
+      "syncing": "Syncing transactions… check back in a moment.",
+      "pending": "Pending",
+      "needsReview": "Needs review"
+    }
+  },
+  "status": {
+    "invoice": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void"
+    },
+    "recurring": {
+      "active": "Active",
+      "paused": "Paused"
+    }
+  },
+  "invoices": {
+    "frequency": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annually": "Annually"
+    },
+    "list": {
+      "metaTitle": "Invoices · Books",
+      "export": "Export",
+      "newInvoice": "New invoice",
+      "outstanding": "Outstanding",
+      "overdue": "Overdue",
+      "collected30d": "Collected (30d)",
+      "invoiceCount_one": "{{count}} invoice",
+      "invoiceCount_other": "{{count}} invoices",
+      "pastDueCount_one": "{{count}} past due",
+      "pastDueCount_other": "{{count}} past due",
+      "paidCount_one": "{{count}} paid",
+      "paidCount_other": "{{count}} paid",
+      "emptyTitle": "No invoices yet",
+      "emptyBody": "Create your first invoice and send it directly to a client via email.",
+      "createInvoice": "Create invoice",
+      "columns": {
+        "client": "Client / Number",
+        "issued": "Issued",
+        "due": "Due",
+        "amount": "Amount",
+        "status": "Status"
+      }
+    },
+    "new": {
+      "metaTitle": "New invoice · Books",
+      "title": "New invoice",
+      "subtitle": "Create and send a professional invoice to your client"
+    },
+    "detail": {
+      "metaTitle": "Invoice · Books",
+      "print": "Print",
+      "documentLabel": "Invoice",
+      "issued": "Issued:",
+      "due": "Due:",
+      "paid": "Paid:",
+      "billTo": "Bill to",
+      "columns": {
+        "description": "Description",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "amount": "Amount"
+      },
+      "subtotal": "Subtotal",
+      "taxAt": "Tax ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notes"
+    },
+    "actions": {
+      "selectBankAccount": "Select a bank account",
+      "confirmVoid": "Void this invoice? This cannot be undone.",
+      "markPaidTitle": "Mark invoice as paid",
+      "noMappedBanks": "No bank accounts with an account mapping found. Set up bank → account mapping in Settings first.",
+      "depositInto": "Deposit into",
+      "journalHint": "This will post a journal entry: debit the bank, credit the revenue account(s).",
+      "posting": "Posting…",
+      "confirmPayment": "Confirm payment",
+      "sendInvoice": "Send invoice",
+      "resend": "Resend",
+      "payOnline": "Pay online",
+      "markPaid": "Mark paid",
+      "reminderSent": "Reminder sent",
+      "sendReminder": "Send reminder",
+      "void": "Void"
+    },
+    "errors": {
+      "noOrg": "No organization selected. Choose one and try again.",
+      "notAuthenticated": "You're not signed in. Sign in and try again.",
+      "notFound": "Invoice not found.",
+      "clientNoEmail": "This client has no email address.",
+      "sendFailed": "Couldn't send the invoice. Try again.",
+      "reminderFailed": "Couldn't send the reminder. Try again.",
+      "markPaidFailed": "Couldn't mark the invoice paid. Try again.",
+      "bankNotFound": "Bank account not found.",
+      "bankNoCoaMapping": "That bank account has no account mapping — set it in Settings first.",
+      "journalEntryFailed": "Couldn't create the journal entry."
+    },
+    "notifications": {
+      "paymentReceived": "Payment received: {{amount}}",
+      "markedPaid": "Invoice {{number}} marked as paid"
+    },
+    "builder": {
+      "title": "Invoice details",
+      "billTo": "Bill to",
+      "noClient": "No client",
+      "unnamedClient": "Unnamed",
+      "issueDate": "Issue date",
+      "dueDate": "Due date",
+      "columns": {
+        "description": "Description",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "amount": "Amount"
+      },
+      "descriptionPlaceholder": "Service or product description",
+      "revenueAccountOptional": "Revenue account (optional)",
+      "addLineItem": "Add line item",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "notesOptional": "Notes (optional)",
+      "notesPlaceholder": "Payment terms, bank details, thank you note…",
+      "saveAsDraft": "Save as draft",
+      "createInvoice": "Create invoice",
+      "errors": {
+        "dueDateRequired": "A due date is required.",
+        "noLineItems": "Add at least one line item.",
+        "saveFailed": "Couldn't save the invoice. Try again."
+      }
+    },
+    "timesheetImport": {
+      "trigger_one": "Import {{count}} time entry",
+      "trigger_other": "Import {{count}} time entries",
+      "title": "Import time entries",
+      "subtitle": "Selected entries become line items on this invoice",
+      "selectedOf": "{{selected}} of {{total}} selected",
+      "selectAll": "Select all",
+      "clear": "Clear",
+      "noDescription": "No description",
+      "hours_one": "{{count}}h",
+      "hours_other": "{{count}}h",
+      "minutes_one": "{{count}}m",
+      "minutes_other": "{{count}}m",
+      "selectAtLeastOne": "Select at least one entry.",
+      "importFailed": "Couldn't import those entries. Try again.",
+      "import": "Import",
+      "importCount_one": "Import {{count}}",
+      "importCount_other": "Import {{count}}"
+    },
+    "recurring": {
+      "metaTitle": "Recurring invoices · Books",
+      "noClient": "No client",
+      "confirmDelete": "Delete this recurring invoice? Future invoices will not be generated. This cannot be undone.",
+      "lastGenerated": "Last: {{date}}",
+      "pause": "Pause",
+      "resume": "Resume",
+      "activeCount_one": "{{count}} active",
+      "activeCount_other": "{{count}} active",
+      "pausedCount_one": "{{count}} paused",
+      "pausedCount_other": "{{count}} paused",
+      "autoGeneratedHint": "Invoices are auto-generated daily at 9 AM UTC",
+      "emptyTitle": "No recurring invoices",
+      "emptyBody": "Set up automatic billing for retainers, subscriptions, or any repeating service.",
+      "columns": {
+        "client": "Client / Schedule",
+        "frequency": "Frequency",
+        "amount": "Amount",
+        "nextInvoice": "Next invoice",
+        "status": "Status"
+      }
+    },
+    "recurringModal": {
+      "trigger": "Recurring",
+      "title": "New recurring invoice",
+      "defaultTitle": "Recurring invoice",
+      "client": "Client",
+      "noSpecificClient": "No specific client",
+      "frequency": "Frequency",
+      "firstInvoiceDate": "First invoice date",
+      "invoiceTitle": "Invoice title",
+      "optional": "(optional)",
+      "titlePlaceholder": "Monthly retainer, Website maintenance…",
+      "lineItems": "Line items",
+      "addItem": "Add item",
+      "columns": {
+        "description": "Description",
+        "qty": "Qty",
+        "price": "Price"
+      },
+      "itemPlaceholder": "Service description",
+      "taxRate": "Tax rate (%)",
+      "subtotal": "Subtotal",
+      "taxAt": "Tax ({{rate}}%)",
+      "perInvoice": "Per invoice",
+      "notes": "Notes",
+      "notesPlaceholder": "Payment terms, delivery instructions…",
+      "create": "Create recurring invoice",
+      "errors": {
+        "noLineItems": "Add at least one line item."
+      }
+    },
+    "stripe": {
+      "success": "Payment completed successfully — the invoice will be marked paid shortly.",
+      "cancelled": "Payment was cancelled. The invoice has not been charged."
+    }
+  },
+  "estimates": {
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "workflowTitle": "Estimate — {{amount}}",
+    "projectNameFallback": "Project {{number}}",
+    "meta": {
+      "list": "Estimates · Books",
+      "new": "New Estimate · Books",
+      "detail": "Estimate · Books",
+      "templates": "Estimate Templates · Books"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "expired": "Expired"
+    },
+    "list": {
+      "newEstimate": "New estimate",
+      "kpi": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "totalSent": "Total sent",
+        "sentCount_one": "{{count}} sent",
+        "sentCount_other": "{{count}} sent",
+        "estimateCount_one": "{{count}} estimate",
+        "estimateCount_other": "{{count}} estimates",
+        "totalCount_one": "{{count}} total estimate",
+        "totalCount_other": "{{count}} total estimates"
+      },
+      "columns": {
+        "client": "Client / Number",
+        "issued": "Issued",
+        "expires": "Expires",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "empty": {
+        "title": "No estimates yet",
+        "body": "Create and send professional estimates to clients. Accepted estimates convert to invoices in one click.",
+        "cta": "Create estimate"
+      }
+    },
+    "new": {
+      "back": "Back to estimates",
+      "title": "New Estimate",
+      "manageTemplates": "Manage templates →"
+    },
+    "detail": {
+      "back": "Estimates",
+      "orgFallback": "Estimate",
+      "unknownClient": "Unknown client",
+      "noClient": "No client",
+      "issueDate": "Issue date",
+      "validUntil": "Valid until",
+      "client": "Client",
+      "columns": {
+        "description": "Description",
+        "qty": "Qty",
+        "price": "Price",
+        "amount": "Amount"
+      },
+      "subtotal": "Subtotal",
+      "taxWithRate": "Tax ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notes",
+      "convertedToInvoice": "Converted to an invoice",
+      "viewInvoice": "View invoice →",
+      "convertedToProject": "A project was created from this estimate",
+      "viewProject": "View project →",
+      "actionsHeading": "Actions",
+      "detailsHeading": "Details",
+      "number": "Number",
+      "statusLabel": "Status",
+      "issued": "Issued",
+      "expires": "Expires"
+    },
+    "actions": {
+      "noClientEmail": "Client has no email address",
+      "send": "Send estimate",
+      "resend": "Resend estimate",
+      "markAccepted": "Mark accepted",
+      "markDeclined": "Mark declined",
+      "convertToInvoice": "Convert to invoice",
+      "createProject": "Create project"
+    },
+    "templates": {
+      "back": "Back to estimates",
+      "title": "Estimate Templates",
+      "newEstimate": "New estimate",
+      "lineCount_one": "{{count}} line",
+      "lineCount_other": "{{count}} lines",
+      "subtotalAmount": "{{amount}} subtotal",
+      "taxRate": "{{rate}}% tax",
+      "footnote": "Templates appear in the “Start from template” picker when creating a new estimate.",
+      "confirmDelete": "Delete template “{{name}}”? This cannot be undone.",
+      "deleteTitle": "Delete template",
+      "empty": {
+        "title": "No templates yet",
+        "body": "Build an estimate and click “Save as template” to reuse its line items.",
+        "cta": "Create an estimate →"
+      }
+    },
+    "builder": {
+      "aiLabel": "Draft with AI",
+      "aiPlaceholder": "Describe the job — e.g. Airport transfer for 6, round trip with 1hr wait",
+      "aiDraft": "Draft",
+      "aiHint": "AI fills in line items and a scope note — review and edit before sending.",
+      "startFromTemplate": "Start from template",
+      "blankEstimate": "— Blank estimate —",
+      "client": "Client",
+      "noClient": "No client",
+      "validUntil": "Valid until (expiry date)",
+      "lineItems": "Line Items",
+      "addLine": "Add line",
+      "columns": {
+        "description": "Description",
+        "qty": "Qty",
+        "unitPrice": "Unit price",
+        "amount": "Amount"
+      },
+      "descriptionPlaceholder": "Service or product",
+      "taxRate": "Tax rate (%)",
+      "subtotal": "Subtotal",
+      "taxWithRate": "Tax ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notes",
+      "optional": "(optional)",
+      "notesPlaceholder": "Scope of work, terms, assumptions…",
+      "saveAsTemplate": "Save as template",
+      "templateSaved": "Template saved",
+      "create": "Create estimate",
+      "templateNamePrompt": "Save these line items as a template. Template name:",
+      "errors": {
+        "expiryRequired": "Expiry date is required",
+        "lineRequired": "Add at least one line item",
+        "linesBeforeTemplate": "Add line items before saving a template",
+        "templateSaveFailed": "Failed to save template",
+        "draftFailed": "Failed to draft estimate"
+      }
+    },
+    "errors": {
+      "noOrg": "No organization selected",
+      "notFound": "Estimate not found",
+      "clientNoEmail": "Client has no email address",
+      "projectCreateFailed": "Failed to create project",
+      "describeJob": "Describe the job to estimate",
+      "draftFailed": "Couldn’t draft an estimate — try adding more detail",
+      "templateNameRequired": "Template name is required",
+      "lineRequired": "Add at least one line item",
+      "templateSaveFailed": "Failed to save template"
+    }
+  },
+  "bills": {
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "meta": {
+      "list": "Bills · Books",
+      "recurring": "Recurring Bills · Books"
+    },
+    "status": {
+      "paid": "Paid"
+    },
+    "due": {
+      "overdue_one": "{{count}}d overdue",
+      "overdue_other": "{{count}}d overdue",
+      "today": "Due today",
+      "inDays_one": "Due in {{count}}d",
+      "inDays_other": "Due in {{count}}d",
+      "onDate": "Due {{date}}"
+    },
+    "list": {
+      "title": "Bills",
+      "subtitle": "Track what you owe vendors. Expenses post to your books when paid.",
+      "recurring": "Recurring",
+      "newBill": "New bill",
+      "kpi": {
+        "totalOwed": "Total owed",
+        "overdue": "Overdue",
+        "dueInSevenDays": "Due in 7 days",
+        "openBills_one": "{{count}} open bill",
+        "openBills_other": "{{count}} open bills",
+        "pastDue_one": "{{count}} past due",
+        "pastDue_other": "{{count}} past due",
+        "comingUp_one": "{{count}} coming up",
+        "comingUp_other": "{{count}} coming up"
+      },
+      "filter": {
+        "open_one": "Open ({{count}})",
+        "open_other": "Open ({{count}})",
+        "paid_one": "Paid ({{count}})",
+        "paid_other": "Paid ({{count}})",
+        "all": "All"
+      },
+      "empty": {
+        "open": "No open bills",
+        "paid": "No paid bills yet",
+        "all": "No bills yet",
+        "body": "Record a vendor bill to track what you owe and when it’s due."
+      }
+    },
+    "row": {
+      "uncategorized": "Uncategorized",
+      "paidOn": "Paid {{date}}",
+      "markPaid": "Mark paid",
+      "recordPayment": "Record payment",
+      "linkBankFirst": "Link a bank account first"
+    },
+    "form": {
+      "title": "New bill",
+      "vendor": "Vendor *",
+      "vendorPlaceholder": "Acme Supplies",
+      "billNumber": "Bill #",
+      "optional": "(optional)",
+      "description": "Description",
+      "descriptionPlaceholder": "What’s this bill for?",
+      "category": "Category (expense account)",
+      "noExpenseAccounts": "No expense accounts — complete onboarding to seed your chart of accounts.",
+      "amount": "Amount ({{currency}}) *",
+      "billDate": "Bill date",
+      "dueDate": "Due date *",
+      "note": "Recording a bill just tracks the obligation. The expense posts to your books when you mark it paid.",
+      "save": "Save bill",
+      "billNumberPlaceholder": "e.g. INV-1042"
+    },
+    "pay": {
+      "title": "Pay bill",
+      "noBankAccount": "No bank account is mapped to your chart of accounts. Link a bank or set its mapping in Settings first.",
+      "payFrom": "Pay from",
+      "paymentDate": "Payment date",
+      "journal": "Journal: DR {{expense}} / CR {{bank}}",
+      "expenseFallback": "Expense",
+      "bankFallback": "Bank",
+      "submit": "Record payment"
+    },
+    "recurring": {
+      "title": "Recurring bills",
+      "frequency": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually"
+      },
+      "activeCount_one": "{{count}} active",
+      "activeCount_other": "{{count}} active",
+      "monthlyEstimate": "~{{amount}}/mo",
+      "autoGenerate": "auto-generate open bills on a schedule",
+      "backToBills": "Bills",
+      "newRecurring": "New recurring",
+      "paused": "Paused",
+      "next": "Next {{date}}",
+      "net": "Net {{days}}d",
+      "last": "Last {{date}}",
+      "resume": "Resume",
+      "pause": "Pause",
+      "footnote": "Active templates are checked daily. When a template’s next date arrives, a new open bill is created (due Net-N days later) and the date advances by its frequency. Pause to skip upcoming cycles.",
+      "empty": {
+        "title": "No recurring bills yet",
+        "body": "Set up rent, software subscriptions, or insurance once — we’ll create a fresh open bill each cycle so nothing slips through the cracks.",
+        "cta": "Create first template"
+      },
+      "form": {
+        "title": "New recurring bill",
+        "vendorPlaceholder": "Landlord LLC",
+        "descriptionPlaceholder": "e.g. Office rent, SaaS subscription…",
+        "frequency": "Frequency",
+        "firstDate": "First date",
+        "netDays": "Net (days)",
+        "note_one": "Each cycle spawns an open bill due {{count}} day after it’s generated. The expense posts to your books when you mark it paid.",
+        "note_other": "Each cycle spawns an open bill due {{count}} days after it’s generated. The expense posts to your books when you mark it paid.",
+        "save": "Save template"
+      }
+    },
+    "errors": {
+      "noOrg": "No organization selected",
+      "vendorRequired": "Vendor is required",
+      "invalidAmount": "Enter a valid amount",
+      "dueDateRequired": "Due date is required",
+      "firstRunDateRequired": "First run date is required",
+      "saveFailed": "Failed to save bill",
+      "selectBank": "Select a bank account",
+      "paymentFailed": "Failed to record payment",
+      "createRecurringFailed": "Failed to create recurring bill",
+      "notFound": "Bill not found",
+      "cantDeletePaid": "Can’t delete a paid bill — it has a posted journal entry"
+    }
+  },
+  "vendors": {
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "meta": {
+      "list": "Vendors · Books",
+      "report1099": "1099 Report · Books"
+    },
+    "list": {
+      "title": "Vendors",
+      "vendorCount_one": "{{count}} vendor",
+      "vendorCount_other": "{{count}} vendors",
+      "paidAmount": "{{amount}} paid",
+      "openAmount": "{{amount}} open",
+      "report1099": "1099 report",
+      "newVendor": "New vendor",
+      "footnote": "Spend is matched from bills by vendor name. Keep names consistent (use the autocomplete on the bill form) so totals stay accurate.",
+      "columns": {
+        "vendor": "Vendor",
+        "bills": "Bills",
+        "billed": "Billed",
+        "paid": "Paid",
+        "open": "Open"
+      },
+      "empty": {
+        "title": "No vendors yet",
+        "body": "Add the people and companies you pay. Their spend rolls up automatically from bills with a matching name.",
+        "cta": "Add first vendor"
+      }
+    },
+    "row": {
+      "confirmDelete": "OK"
+    },
+    "form": {
+      "newTitle": "New vendor",
+      "editTitle": "Edit vendor",
+      "name": "Name *",
+      "namePlaceholder": "Acme Supplies",
+      "nameHint": "Match this exactly to the vendor name on your bills to track spend.",
+      "email": "Email",
+      "phone": "Phone",
+      "notes": "Notes",
+      "notesPlaceholder": "Account number, payment terms, contact…",
+      "is1099": "1099 contractor",
+      "is1099Hint": "— include in year-end 1099 report",
+      "add": "Add vendor"
+    },
+    "report1099": {
+      "title": "1099 contractor report",
+      "reportableCount_one": "{{count}} contractor at or over $600",
+      "reportableCount_other": "{{count}} contractors at or over $600",
+      "paidInYear": "{{amount}} paid in {{year}}",
+      "backToVendors": "Vendors",
+      "taxYear": "Tax year",
+      "paidHeading": "Paid in {{year}}",
+      "exportCsv": "Export CSV",
+      "total": "Total",
+      "footnote": "Cash-basis: totals are bills marked paid during {{year}}, matched to each flagged contractor by name. Contractors paid $600 or more generally require a 1099-NEC. Confirm with your accountant.",
+      "columns": {
+        "contractor": "Contractor",
+        "paid": "Paid",
+        "status": "Status"
+      },
+      "badge": {
+        "reportable": "1099-NEC",
+        "underThreshold": "Under $600"
+      },
+      "empty": {
+        "title": "No 1099 contractors yet",
+        "body": "Mark a vendor as a “1099 contractor” in the Vendors directory and their paid totals will roll up here for year-end filing.",
+        "cta": "Go to Vendors →"
+      },
+      "csv": {
+        "contractor": "Contractor",
+        "email": "Email",
+        "paid": "Paid {{year}}",
+        "reportable": "Reportable (>= $600)",
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "errors": {
+      "noOrg": "No organization selected",
+      "nameRequired": "Vendor name is required",
+      "saveFailed": "Failed to save vendor"
+    }
+  },
+  "reports": {
+    "financial": {
+      "metaTitle": "Reports · Books",
+      "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+      "periodLine": "Period: {{label}} · {{start}} → {{end}}",
+      "agingLink": "AR / AP Aging Report",
+      "noActivity": "No activity this period",
+      "periods": {
+        "current_month": "This month",
+        "last_month": "Last month",
+        "ytd": "Year-to-date",
+        "q1": "Q1",
+        "q2": "Q2",
+        "q3": "Q3",
+        "q4": "Q4"
+      },
+      "periodLabels": {
+        "ytd": "YTD {{year}}",
+        "q1": "Q1 {{year}}",
+        "q2": "Q2 {{year}}",
+        "q3": "Q3 {{year}}",
+        "q4": "Q4 {{year}}"
+      },
+      "cards": {
+        "revenue": "Revenue",
+        "expenses": "Expenses",
+        "netIncome": "Net Income",
+        "netIncomeFormula": "Revenue − Expenses",
+        "accounts_one": "{{count}} account",
+        "accounts_other": "{{count}} accounts"
+      },
+      "pnl": {
+        "title": "Profit & Loss",
+        "revenue": "Revenue",
+        "totalRevenue": "Total Revenue",
+        "expenses": "Expenses",
+        "totalExpenses": "Total Expenses",
+        "netIncome": "Net Income"
+      },
+      "balanceSheet": {
+        "title": "Balance Sheet",
+        "outOfBalance": "⚠ Out of balance",
+        "assets": "Assets",
+        "totalAssets": "Total Assets",
+        "liabilities": "Liabilities",
+        "totalLiabilities": "Total Liabilities",
+        "equity": "Equity",
+        "totalEquity": "Total Equity (incl. Net Income)",
+        "equation": "Assets = Liabilities + Equity",
+        "balanced": "✓ Balanced",
+        "outBy": "Out by {{amount}}",
+        "empty": "No journal entries for this period"
+      }
+    },
+    "business": {
+      "metaTitle": "Reports",
+      "title": "Reports",
+      "subtitle": "Profit & loss, cash flow, time tracking, and receivables aging",
+      "exportCsv": "Export CSV",
+      "lifetimeToDate": "· lifetime to date",
+      "asOf": "· as of {{date}}",
+      "dateRange": "{{from}} – {{to}}",
+      "blendedMargin": "{{percent}}% blended margin",
+      "hours": {
+        "hours": "{{hours}}h",
+        "minutes": "{{minutes}}m",
+        "hoursMinutes": "{{hours}}h {{minutes}}m"
+      },
+      "range": {
+        "from": "From",
+        "to": "To",
+        "apply": "Apply"
+      },
+      "presets": {
+        "thisMonth": "This month",
+        "lastQuarter": "Last quarter",
+        "thisYear": "This year",
+        "lastYear": "Last year"
+      },
+      "tabs": {
+        "pnl": "Profit & Loss",
+        "cash": "Cash Flow",
+        "time": "Time Tracking",
+        "projects": "Projects",
+        "clients": "Clients",
+        "receivables": "Receivables",
+        "forecast": "Forecast",
+        "tax": "Sales Tax"
+      },
+      "errors": {
+        "notAuthenticated": "Not authenticated"
+      },
+      "fallbacks": {
+        "uncategorized": "Uncategorized",
+        "noProject": "No project",
+        "noClient": "No client",
+        "unknownClient": "Unknown client"
+      },
+      "pnl": {
+        "totalRevenue": "Total Revenue",
+        "totalExpenses": "Total Expenses",
+        "netIncome": "Net Income",
+        "profitablePeriod": "Profitable period",
+        "netLoss": "Net loss",
+        "revenue": "Revenue",
+        "expenses": "Expenses",
+        "noRevenue": "No revenue entries in this period",
+        "noExpenses": "No expense entries in this period"
+      },
+      "cash": {
+        "moneyIn": "Money In",
+        "moneyInSub": "Deposits & credits",
+        "moneyOut": "Money Out",
+        "moneyOutSub": "Withdrawals & debits",
+        "net": "Net Cash Flow",
+        "positiveFlow": "Positive flow",
+        "negativeFlow": "Negative flow",
+        "byCategory": "By Category",
+        "noTransactions": "No transactions in this period",
+        "columns": {
+          "category": "Category",
+          "in": "In",
+          "out": "Out"
+        }
+      },
+      "time": {
+        "totalHours": "Total Hours",
+        "billableHours": "Billable Hours",
+        "billableAmount": "Billable Amount",
+        "uninvoiced": "Uninvoiced",
+        "readyToInvoice": "ready to invoice",
+        "fullyInvoiced": "fully invoiced",
+        "hoursByProject": "Hours by project",
+        "noEntries": "No time entries in this period",
+        "total": "Total",
+        "byClient": "Billable revenue by client",
+        "periodSummary": "Period summary",
+        "billableHoursLabel": "Billable hours",
+        "earned": "Earned"
+      },
+      "projects": {
+        "revenue": "Revenue",
+        "laborCost": "Labor cost",
+        "expenses": "Expenses",
+        "profit": "Profit",
+        "profitByProject": "Profit by project",
+        "empty": "No projects yet",
+        "total": "Total",
+        "columns": {
+          "project": "Project",
+          "revenue": "Revenue",
+          "labor": "Labor",
+          "expenses": "Expenses",
+          "profit": "Profit",
+          "margin": "Margin"
+        },
+        "note": "Revenue is invoiced billable time. Profit nets labor cost (from your default labor rate) and tagged expenses. Figures are lifetime-to-date per project and aren't affected by the date range above."
+      },
+      "clients": {
+        "revenue": "Revenue",
+        "laborCost": "Labor cost",
+        "expenses": "Expenses",
+        "profit": "Profit",
+        "profitByClient": "Profit by client",
+        "empty": "No clients yet",
+        "total": "Total",
+        "columns": {
+          "client": "Client",
+          "revenue": "Revenue",
+          "labor": "Labor",
+          "expenses": "Expenses",
+          "profit": "Profit",
+          "margin": "Margin"
+        },
+        "note": "Revenue is everything invoiced to the client. Cost is the labor and expenses tracked against their projects — a client billed by flat fee with no project tracking will show a high margin."
+      },
+      "receivables": {
+        "outstanding": "Outstanding",
+        "current": "Current",
+        "notYetDue": "Not yet due",
+        "overdue": "Overdue",
+        "pastDueDate": "Past due date",
+        "d90Plus": "90+ days",
+        "atRisk": "At risk",
+        "byClient": "Receivables by client",
+        "empty": "No outstanding invoices — you're all paid up.",
+        "invoiceCount_one": "{{count}} invoice",
+        "invoiceCount_other": "{{count}} invoices",
+        "total": "Total",
+        "columns": {
+          "client": "Client",
+          "current": "Current",
+          "d1_30": "1–30",
+          "d31_60": "31–60",
+          "d61_90": "61–90",
+          "d90_plus": "90+",
+          "total": "Total"
+        },
+        "note": "Unpaid invoices (sent or overdue) bucketed by days past their due date, as of today. Independent of the date range above."
+      },
+      "forecast": {
+        "dipWarning": "Projected cash dips to {{amount}} within 90 days. Consider prioritizing collections on overdue invoices or delaying non-urgent bills.",
+        "cashOnHand": "Cash on hand",
+        "linkedAccounts": "Linked accounts",
+        "linkABank": "Link a bank for accuracy",
+        "expectedIn": "Expected in",
+        "openInvoices": "Open invoices",
+        "expectedOut": "Expected out",
+        "openBills": "Open bills",
+        "projected90": "Projected (90d)",
+        "afterOpenItems": "After all open items",
+        "title": "Projected cash flow",
+        "startingBalance": "Starting balance",
+        "total": "Total",
+        "columns": {
+          "period": "Period",
+          "expectedIn": "Expected in",
+          "expectedOut": "Expected out",
+          "net": "Net",
+          "projectedBalance": "Projected balance"
+        },
+        "buckets": {
+          "now": "Overdue / now",
+          "d1_30": "1–30 days",
+          "d31_60": "31–60 days",
+          "d61_90": "61–90 days",
+          "later": "90+ days"
+        },
+        "note": "Projection combines open invoices (money in) and open bills (money out) against your current bank balance, bucketed by due date as of today. It doesn't include recurring items not yet invoiced or billed, payroll, or taxes."
+      },
+      "tax": {
+        "collected": "Tax collected",
+        "toRemit": "To remit",
+        "taxableSales": "Taxable sales",
+        "nonTaxableSales": "Non-taxable sales",
+        "totalSales": "Total sales",
+        "preTax": "Pre-tax",
+        "byRate": "Tax collected by rate",
+        "empty": "No taxed invoices paid in this period",
+        "total": "Total",
+        "columns": {
+          "rate": "Rate",
+          "taxableSales": "Taxable sales",
+          "taxCollected": "Tax collected",
+          "invoices": "Invoices"
+        },
+        "note": "Cash-basis: sales tax on invoices paid between {{from}} and {{to}}, grouped by rate. Non-taxable sales are paid invoices with no tax applied. Use the date range above to match your filing period."
+      }
+    }
+  },
+  "journal": {
+    "metaTitle": "Journal · Books",
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "title": "General Ledger",
+    "entryCount_one": "{{count}} entry",
+    "entryCount_other": "{{count}} entries",
+    "reversal": "Reversal",
+    "empty": {
+      "title": "No journal entries yet",
+      "body": "Approve transactions in the Transactions tab to post double-entry journal entries here."
+    },
+    "sourceTypes": {
+      "bank_import": "Bank import",
+      "invoice": "Invoice",
+      "expense": "Expense",
+      "adjustment": "Adjustment",
+      "opening_balance": "Opening balance",
+      "period_close": "Period close",
+      "reversal": "Reversal"
+    },
+    "pagination": {
+      "previous": "← Previous",
+      "next": "Next →",
+      "pageOf": "Page {{page}} of {{total}}"
+    }
+  },
+  "accounts": {
+    "metaTitle": "Accounts · Books",
+    "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+    "activeCount": "{{active}} of {{total}} accounts active",
+    "title": "Chart of Accounts",
+    "autoGenerated": "Auto-generated based on your entity type.",
+    "taxReviewWarning": "⚠ Tax line codes require CPA review before use.",
+    "countInType_one": "{{count}} account",
+    "countInType_other": "{{count}} accounts",
+    "empty": "No accounts found. Complete onboarding to seed your chart of accounts.",
+    "types": {
+      "asset": "Assets",
+      "liability": "Liabilities",
+      "equity": "Equity",
+      "revenue": "Revenue",
+      "expense": "Expenses"
+    },
+    "normalBalance": {
+      "debit": "Debit",
+      "credit": "Credit"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "normalBalance": "Normal balance",
+      "taxCode": "Tax code"
+    }
+  },
+  "aging": {
+    "metaTitle": "Aging Reports · Books",
+    "title": "Aging Reports",
+    "subtitle": "Accounts receivable and payable — as of {{date}}",
+    "viewAll": "View all",
+    "unnamedClient": "Client",
+    "buckets": {
+      "current": "Current",
+      "1-30": "1–30 days",
+      "31-60": "31–60 days",
+      "61-90": "61–90 days",
+      "90+": "90+ days"
+    },
+    "tables": {
+      "ar": "Accounts Receivable (AR)",
+      "ap": "Accounts Payable (AP)"
+    },
+    "summary": {
+      "open": "{{count}} open",
+      "total": "{{amount}} total",
+      "pastDue": "{{amount}} past due",
+      "nothingPastDue": "nothing past due",
+      "open_one": "{{count}} open",
+      "open_other": "{{count}} open"
+    },
+    "empty": {
+      "invoices": "No open invoices",
+      "bills": "No open bills"
+    },
+    "columns": {
+      "client": "Client",
+      "vendor": "Vendor",
+      "reference": "Reference",
+      "dueDate": "Due Date",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "status": {
+      "current": "Current",
+      "daysOverdue": "{{days}}d overdue"
+    },
+    "cards": {
+      "totalReceivable": "Total Receivable",
+      "arOverdue": "AR Overdue",
+      "totalPayable": "Total Payable",
+      "apOverdue": "AP Overdue",
+      "openInvoices_one": "{{count}} open invoice",
+      "openInvoices_other": "{{count}} open invoices",
+      "invoices_one": "{{count}} invoice",
+      "invoices_other": "{{count}} invoices",
+      "openBills_one": "{{count}} open bill",
+      "openBills_other": "{{count}} open bills",
+      "bills_one": "{{count}} bill",
+      "bills_other": "{{count}} bills"
+    }
+  },
+  "expenses": {
+    "list": {
+      "metaTitle": "Expenses · Books",
+      "title": "Expenses",
+      "subtitle_one": "{{count}} entry · {{total}} total",
+      "subtitle_other": "{{count}} entries · {{total}} total",
+      "import": "Import",
+      "importCsv": "CSV / Spreadsheet",
+      "importOfx": "Bank Statement (OFX/QFX)",
+      "record": "Record expense",
+      "emptyTitle": "No expenses yet",
+      "emptyBody": "Record manual expenses here. Bank-imported transactions are categorized automatically on the Transactions page.",
+      "emptyCta": "Record first expense",
+      "columns": {
+        "date": "Date",
+        "description": "Description",
+        "account": "Account",
+        "amount": "Amount"
+      },
+      "total": "Total"
+    },
+    "new": {
+      "metaTitle": "New Expense · Books",
+      "title": "Record Expense",
+      "subtitle": "Post a manual expense to the journal",
+      "back": "Expenses"
+    },
+    "modal": {
+      "trigger": "Add Expense",
+      "triggerHint": "Manual entry",
+      "title": "Add expense",
+      "close": "Close"
+    },
+    "form": {
+      "details": "Expense details",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Office supplies at Staples",
+      "expenseAccount": "Expense account",
+      "suggest": "Suggest",
+      "suggestHint": "Let AI pick the best account",
+      "suggestHintDisabled": "Add a description first",
+      "suggestReason": "{{account}} — {{reason}}",
+      "suggestNoMatch": "No confident match — pick manually.",
+      "suggestFailed": "Couldn't suggest a category.",
+      "noExpenseAccounts": "No expense accounts in Chart of Accounts",
+      "debitedHint": "Debited (expense increases)",
+      "paidFrom": "Paid from",
+      "accountsPayable": "Accounts Payable (not yet paid)",
+      "creditedHint": "Credited (cash or liability increases)",
+      "project": "Project",
+      "optionalSuffix": " (optional)",
+      "noProject": "No project (general expense)",
+      "projectHint": "Counts against the project's profit",
+      "required": "Date, amount, description, and expense account are required.",
+      "saveFailed": "Failed to save expense",
+      "save": "Record expense"
+    },
+    "scan": {
+      "title": "Scan a receipt",
+      "subtitle": "Upload a receipt image and AI will fill in the details automatically.",
+      "extracting": "Extracting receipt data…",
+      "upload": "Upload receipt",
+      "takePhoto": "Take photo",
+      "clear": "Clear scan",
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "notConfigured": "AI not configured",
+      "noImage": "No image provided",
+      "unsupportedType": "Unsupported image type. Please upload a JPEG, PNG, or WebP file.",
+      "tooLarge": "Image must be under 10 MB",
+      "readFailed": "Failed to read image",
+      "parseFailed": "Failed to parse AI response",
+      "failed": "Failed to scan receipt"
+    },
+    "import": {
+      "back": "Expenses",
+      "clear": "Clear",
+      "redirecting": "Redirecting to Expenses…",
+      "failed": "Import failed",
+      "noRows": "No rows provided",
+      "failedCount_one": "{{count}} failed",
+      "failedCount_other": "{{count}} failed",
+      "csv": {
+        "metaTitle": "Import Expenses",
+        "title": "Import Expenses",
+        "subtitle": "Upload a CSV to add multiple expenses at once — import from spreadsheets, bank exports, or accounting software",
+        "formatTitle": "CSV format",
+        "formatRequired": "Required columns: date (YYYY-MM-DD), amount, description.",
+        "formatOptional": "Optional column: category — for example “Meals & Entertainment”, matched automatically against your Chart of Accounts.",
+        "downloadTemplate": "Download template",
+        "dropZone": "Drop your CSV here, or click to browse",
+        "dropZoneHint": "CSV files only · Supports exports from Quicken, QuickBooks, and bank statements",
+        "notCsv": "Please upload a .csv file",
+        "noValidRows": "No valid rows to import",
+        "preview": "Preview",
+        "validCount_one": "{{count}} valid",
+        "validCount_other": "{{count}} valid",
+        "skipCount_one": "{{count}} will skip",
+        "skipCount_other": "{{count}} will skip",
+        "columns": {
+          "date": "Date",
+          "amount": "Amount",
+          "description": "Description",
+          "category": "Category"
+        },
+        "rowErrors": {
+          "dateRequired": "date is required (YYYY-MM-DD)",
+          "amountRequired": "amount is required",
+          "amountNotNumber": "amount must be a number",
+          "amountNotPositive": "amount must be positive",
+          "descriptionRequired": "description is required"
+        },
+        "showingFirst": "Showing first {{shown}} of {{total}} rows",
+        "imported_one": "Imported {{count}} expense",
+        "imported_other": "Imported {{count}} expenses",
+        "importing_one": "Importing {{count}} expense…",
+        "importing_other": "Importing {{count}} expenses…",
+        "importAction_one": "Import {{count}} expense",
+        "importAction_other": "Import {{count}} expenses"
+      },
+      "ofx": {
+        "metaTitle": "Import OFX/QFX Statement",
+        "title": "Import Bank Statement",
+        "subtitle": "Upload an OFX or QFX file from your bank, Quicken, or QuickBooks to import transactions",
+        "formatTitle": "OFX/QFX Format",
+        "formatBody": "Upload a bank statement export from Quicken, QuickBooks, your bank's website, or any financial software that supports OFX format. Debits (expenses) will be imported as expense transactions; credits (deposits) are skipped.",
+        "viewExample": "View OFX format example",
+        "exampleTitle": "OFX format example:",
+        "exampleFooter": "(These are the header lines. Export a full file from your bank or Quicken.)",
+        "dropZone": "Drop your OFX/QFX file here, or click to browse",
+        "dropZoneHint": "Supports .ofx and .qfx file formats",
+        "notOfx": "Please upload an .ofx or .qfx file",
+        "noTransactions": "No transactions found in this OFX file. Ensure it contains STMTTRN blocks.",
+        "noValidRows": "No valid transactions to import",
+        "invalidRow": "Invalid date or amount",
+        "preview": "Transactions",
+        "toImport_one": "{{count}} to import",
+        "toImport_other": "{{count}} to import",
+        "skippedCount_one": "{{count}} skipped",
+        "skippedCount_other": "{{count}} skipped",
+        "columns": {
+          "date": "Date",
+          "amount": "Amount",
+          "description": "Description",
+          "memo": "Memo"
+        },
+        "showingFirst": "Showing first {{shown}} of {{total}} transactions",
+        "imported_one": "Imported {{count}} transaction",
+        "imported_other": "Imported {{count}} transactions",
+        "creditsSkipped_one": "{{count}} credit skipped",
+        "creditsSkipped_other": "{{count}} credits skipped",
+        "importing_one": "Importing {{count}} transaction…",
+        "importing_other": "Importing {{count}} transactions…",
+        "importAction_one": "Import {{count}} transaction",
+        "importAction_other": "Import {{count}} transactions"
+      }
+    },
+    "errors": {
+      "noOrg": "No organization selected."
+    }
+  },
+  "transactions": {
+    "list": {
+      "metaTitle": "Transactions · Books",
+      "subtitle": "AI-powered bookkeeping — cash basis, double-entry",
+      "count_one": "{{count}} transaction",
+      "count_other": "{{count}} transactions",
+      "exportCsv": "Export CSV",
+      "columns": {
+        "date": "Date",
+        "description": "Description",
+        "category": "Category",
+        "amount": "Amount",
+        "action": "Action"
+      },
+      "emptyPending": "No transactions need review 🎉",
+      "empty": "No transactions found.",
+      "previous": "← Previous",
+      "next": "Next →",
+      "page": "Page {{page}} of {{total}}"
+    },
+    "filters": {
+      "pending": "Needs review",
+      "all": "All",
+      "reviewed": "Reviewed"
+    },
+    "row": {
+      "skipped": "Skipped",
+      "posted": "Posted",
+      "reviewed": "Reviewed",
+      "aiMemo": "AI: {{memo}}",
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "notCategorized": "Not categorized",
+      "expand": "Expand",
+      "category": "Category",
+      "selectAccount": "— Select account —",
+      "memo": "Memo (optional)",
+      "memoPlaceholder": "Brief note…",
+      "approve": "Approve",
+      "skip": "Skip",
+      "approved": "Approved and posted to journal."
+    },
+    "mapping": {
+      "notLinked": "— Not linked —",
+      "link": "Link",
+      "linking": "…"
+    },
+    "plaid": {
+      "linkBank": "Link Bank",
+      "connectVia": "Connect via Plaid",
+      "linking": "Linking account…",
+      "preparing": "Preparing…",
+      "tokenFailed": "Failed to get link token",
+      "initFailed": "Failed to initialize bank link.",
+      "linkFailed": "Failed to link bank account.",
+      "linkRetry": "Bank link failed. Please try again.",
+      "unauthorized": "Please sign in again.",
+      "noOrganization": "No organization found.",
+      "missingPublicToken": "That bank link didn't complete. Try connecting again.",
+      "linkTokenFailed": "Couldn't start the bank connection. Try again.",
+      "saveConnectionFailed": "Couldn't save the bank connection. Try again.",
+      "exchangeFailed": "Couldn't finish connecting your bank. Try again."
+    },
+    "errors": {
+      "missingId": "Missing transaction ID.",
+      "approveFailed": "Failed to approve transaction.",
+      "skipFailed": "Failed to skip transaction.",
+      "orgNotFound": "Organization not found.",
+      "noChartOfAccounts": "No chart of accounts found.",
+      "categorizeFailed": "AI categorization failed."
+    }
+  }
+}
