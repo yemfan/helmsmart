@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { readBehaviorEvents } from "@/lib/behaviorStore";
 import { buildUserProfile } from "@/lib/userProfile";
@@ -8,7 +9,21 @@ import { getNextBestActions, type RecommendedAction } from "@/lib/recommendation
 import { trackEvent } from "@/lib/tracking";
 
 export default function NextSteps() {
-  const [actions, setActions] = useState<RecommendedAction[]>([]);
+  const pathname = usePathname();
+  const [allActions, setAllActions] = useState<RecommendedAction[]>([]);
+  /*
+   * Never recommend the page they are standing on.
+   *
+   * The picks come from behaviour, so the tool someone just used scores high —
+   * which is how a visitor reading their home-value report would be offered
+   * "Home Value Estimator" as a next step. Filtering here rather than inside
+   * getNextBestActions keeps that function pure and useful to callers that are
+   * not a page.
+   */
+  const actions = useMemo(
+    () => allActions.filter((a) => a.href !== pathname),
+    [allActions, pathname],
+  );
   const [profile, setProfile] = useState(() => buildUserProfile(readBehaviorEvents()));
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -19,7 +34,7 @@ export default function NextSteps() {
     const p = buildUserProfile(ev);
     setProfile(p);
     const next = getNextBestActions(p);
-    setActions(next);
+    setAllActions(next);
 
     if (!shownRef.current && next.length > 0) {
       shownRef.current = true;

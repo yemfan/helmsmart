@@ -56,7 +56,6 @@ export default function HomeValuePage() {
     startEstimateFromTypedInput,
     runEstimate,
     unlockReport,
-    nextActions,
     history,
     restoreFromHistory,
     busyRefine,
@@ -106,7 +105,6 @@ export default function HomeValuePage() {
           setDetails={setDetails}
           leadForm={leadForm}
           setLeadForm={setLeadForm}
-          nextActions={nextActions}
           onRefreshEstimate={() => void runEstimate(undefined, details)}
           onUnlockReport={() => void unlockReport()}
           unlockError={unlockError}

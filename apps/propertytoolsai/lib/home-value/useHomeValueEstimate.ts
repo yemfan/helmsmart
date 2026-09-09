@@ -416,19 +416,6 @@ export function useHomeValueEstimate() {
     setHistory(getHomeValueHistory());
   }
 
-  const nextActions = useMemo(() => {
-    if (unlockResult?.report?.recommendations?.actions?.length) {
-      return unlockResult.report.recommendations.actions;
-    }
-    if (estimateResult?.recommendations?.actions?.length) {
-      return estimateResult.recommendations.actions;
-    }
-    return [
-      "Get a detailed CMA report",
-      "Compare this home with recent local sales",
-      "Estimate mortgage affordability",
-    ];
-  }, [unlockResult, estimateResult]);
 
   async function startEstimate(selectedAddress: AddressSelection) {
     prepareAddressSelection(selectedAddress);
@@ -462,7 +449,6 @@ export function useHomeValueEstimate() {
     unlockReport,
     restoreFromHistory,
     refreshHistory,
-    nextActions,
     busyHero,
     busyRefine,
     history,

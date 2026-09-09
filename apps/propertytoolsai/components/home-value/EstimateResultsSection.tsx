@@ -4,7 +4,7 @@ import { EstimateCard } from "@/components/home-value/EstimateCard";
 import { RefinementForm } from "@/components/home-value/RefinementForm";
 import { ReportGate } from "@/components/home-value/ReportGate";
 import { FullReport } from "@/components/home-value/FullReport";
-import { NextSteps } from "@/components/home-value/NextSteps";
+import NextSteps from "@/components/NextSteps";
 import {
   CompsMapPanel,
   EstimateExplainabilityPanel,
@@ -27,7 +27,6 @@ export function EstimateResultsSection({
   setDetails,
   leadForm,
   setLeadForm,
-  nextActions,
   onRefreshEstimate,
   onUnlockReport,
   unlockError,
@@ -39,7 +38,6 @@ export function EstimateResultsSection({
   setDetails: React.Dispatch<React.SetStateAction<EstimateDetails>>;
   leadForm: LeadForm;
   setLeadForm: React.Dispatch<React.SetStateAction<LeadForm>>;
-  nextActions: string[];
   onRefreshEstimate: () => void;
   onUnlockReport: () => void;
   unlockError?: string | null;
@@ -147,7 +145,13 @@ export function EstimateResultsSection({
 
       <FullReport estimate={estimateResult} unlockResult={unlockResult} />
 
-      {uiState === "report_unlocked" ? <NextSteps actions={nextActions} /> : null}
+      {/*
+        Real, linked next steps — not the string list this used to render.
+        components/NextSteps picks them from the visitor's own behaviour, gives
+        each one a destination, and reports which were shown. It had been built
+        and then never mounted anywhere.
+      */}
+      {uiState === "report_unlocked" ? <NextSteps /> : null}
     </div>
   );
 }
