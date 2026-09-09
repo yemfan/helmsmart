@@ -8211,6 +8211,52 @@
       "loadFailed": "We could not load performance right now. Refresh to try again.",
       "note": "Leads are contacts created in the window. Messages count texts and emails in both directions, including the AI's. Closed volume and commission come from deals whose closing date falls in the window. Click a column to sort by it."
     },
+    "teamMarketing": {
+      "title": "Marketing across the team",
+      "subtitle": "Who is set up to market, and what it is producing. Hubs, networks, tracking, the Marketing Assistant, posts and hub traffic, one row per agent.",
+      "window": "Window",
+      "setup": {
+        "hubPublished": "Hub live",
+        "withNetwork": "Networks connected",
+        "withTracking": "Tracking on",
+        "autopilotOn": "Assistant posting",
+        "posting": "Posted this window"
+      },
+      "output": {
+        "postsPublished": "Posts went out",
+        "scheduledUpcoming": "Posts queued",
+        "hubViews": "Hub views",
+        "hubLeads": "Hub leads"
+      },
+      "attentionTitle": "Needs a word",
+      "attention": {
+        "no_hub": "No hub yet",
+        "no_network": "No network connected",
+        "no_tracking": "No tracking on the hub",
+        "failing": "Posts failing",
+        "silent": "Connected but quiet"
+      },
+      "showAll": "Show everyone",
+      "allGood": "Every agent is set up and posting.",
+      "noneMatch": "No one matches that right now.",
+      "col": {
+        "hub": "Hub",
+        "networks": "Networks",
+        "tracking": "Tracking",
+        "assistant": "Assistant",
+        "posts": "Posts",
+        "queued": "Queued",
+        "hubViews": "Hub views",
+        "hubLeads": "Hub leads",
+        "lastPost": "Last post",
+        "attention": "Attention"
+      },
+      "hubNotLive": "Not live",
+      "assistantOn": "Posting on its own",
+      "assistantOff": "Asks first",
+      "failedCount": "{{count}} failed",
+      "note": "Posts count what went out in the window. Queued is what is scheduled from today on. Tracking is GA4 or a Meta Pixel on a live hub. Click a reason above to see only those agents."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",
