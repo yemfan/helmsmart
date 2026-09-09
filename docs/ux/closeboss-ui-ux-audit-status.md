@@ -171,25 +171,61 @@ key assembled at runtime is not a literal for anything to resolve.
 checks the key against that namespace, which its own doc already intended for
 the `"ns:key"` prefix form.
 
-#### A namespace list DOES fall through — an earlier note here was wrong
+#### A namespace list behaves differently in i18next and in react-i18next
 
-This file previously claimed that `useTranslation(["a", "b"])` does not reach
-the second namespace and that `missingKeys.test.ts` was wrong to assume it
-does. **Both claims were false.** Checked against the pinned i18next (23.x)
-three ways — a plain list, a namespace added after `init`, and a list whose
-first entry was never loaded — and every one resolves from the later
-namespace. `i18next`'s `resolve()` iterates the whole list. The test's
-comment is correct and was left alone.
+This cost three wrong conclusions before it was measured properly, so here is
+the finding, checked through the hook itself against the pinned versions:
 
-What actually produced the raw keys during that migration was almost
-certainly a stale dev server: the pages rendered correctly as soon as an edit
-forced a recompile. The 196 explicit `{ ns: "..." }` options added to 11 files
-in #1680 were therefore unnecessary. They are valid and verified, so they were
-not reverted — but do not copy that pattern believing a list would fail.
+| call | a key that lives in the LATER namespace |
+| --- | --- |
+| `i18n.getFixedT(null, ["a", "b"])` | resolves |
+| `i18n.t(key, { ns: ["a", "b"] })` | resolves |
+| `useTranslation(["a", "b"])` then `t(key)` | **renders the raw key** |
+| `useTranslation(["b", "a"])` then `t(key)` | resolves |
+| `t(key, { ns: "b" })`, whatever the binding | resolves |
 
-The durable lesson is unchanged and is the reason this was caught at all:
-**render the pages.** The trap here was diagnosing from a dev server without
-confirming the mechanism.
+`i18next`'s own `resolve()` iterates the whole list. **react-i18next's hook
+does not**: it binds the FIRST namespace as the default for a bare `t()`, and
+the rest are loaded but never consulted. `ready` is `true` either way, so
+nothing warns you.
+
+So in a client component the binding's first namespace is what a bare `t()`
+reads, and reading from another means naming it on the call. This is why the
+route-group split (#1686) gives the public bundle a trimmed slice of
+`dashboard` under the same name rather than asking shared components to name
+both namespaces — they cannot.
+
+Two earlier notes in this file were wrong about this and are now removed. The
+196 explicit `{ ns: "..." }` options added in #1680 were the correct fix after
+all, not the unnecessary churn a later note called them.
+
+The durable lesson, which held throughout: **render the pages**, and measure
+the layer the app actually uses. Testing `getFixedT` proved nothing about a
+component calling `useTranslation`.
+
+#### The split shipped (#1686)
+
+The client bundle is now chosen by path, and each half carries only what its
+routes read:
+
+| group | namespaces | weight |
+| --- | --- | --- |
+| signed-in routes | 12 | **448 KB** |
+| public routes | 18 | **461 KB** |
+| *before, on every page* | *26* | *839 KB* |
+
+The public bundle maps `dashboard` to a trimmed 80 KB slice of that 364 KB
+namespace, under the same name, so no component needs to know which group
+renders it. The server never sees the split: `getServerT` translates through
+`lib/i18n/translator.ts`, which holds the full map, and the composed module
+spreads `app` last so the whole namespace wins over the slice.
+
+`routeGroups.test.ts` walks the import graph from every route entry point and
+fails when a client component's literal key is missing from its group's
+bundle. It resolves KEYS, not namespaces — the first version checked namespace
+presence and passed while the logo rendered `pages.brandLogo.tagline` on every
+public page. Reach is a property of imports, not folders:
+`components/dashboard/TopBar.tsx` renders on `/plans`.
 
 Smaller and still open: the client JS arrives in eight dependency rounds
 (~26 chunks), which is the bundler's chunk graph rather than app code; and
