@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "listTitle": "Clientes",
+    "detailTitle": "Cliente",
+    "importTitle": "Importar clientes",
+    "statementTitle": "Estado de cuenta del cliente"
+  },
+  "statuses": {
+    "all": "Todos",
+    "lead": "Cliente potencial",
+    "prospect": "Prospecto",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "archived": "Archivado"
+  },
+  "invoiceStatus": {
+    "draft": "Borrador",
+    "sent": "Enviada",
+    "paid": "Pagada",
+    "overdue": "Vencida",
+    "void": "Anulada"
+  },
+  "estimateStatus": {
+    "draft": "Borrador",
+    "sent": "Enviado",
+    "accepted": "Aceptado",
+    "declined": "Rechazado",
+    "expired": "Caducado"
+  },
+  "projectStatus": {
+    "active": "Activo",
+    "paused": "En pausa",
+    "completed": "Completado",
+    "cancelled": "Cancelado"
+  },
+  "messageDirection": {
+    "inbound": "Entrante",
+    "outbound": "Saliente"
+  },
+  "time": {
+    "justNow": "ahora mismo",
+    "minutesAgo": "hace {{n}} min",
+    "hoursAgo": "hace {{n}} h",
+    "daysAgo": "hace {{n}} d"
+  },
+  "list": {
+    "summary": "{{active}} activos · {{leads}} clientes potenciales · {{prospects}} prospectos",
+    "import": "Importar",
+    "export": "Exportar",
+    "searchPlaceholder": "Buscar clientes…",
+    "tags": "Etiquetas",
+    "clearTag": "Quitar",
+    "columns": {
+      "name": "Nombre",
+      "contact": "Contacto",
+      "status": "Estado",
+      "lifetime": "Total histórico"
+    },
+    "empty": {
+      "titleFiltered": "Ningún cliente coincide con sus filtros",
+      "hintFiltered": "Pruebe a ampliar la búsqueda o el filtro.",
+      "title": "Aún no hay clientes",
+      "hint": "Agregue su primer cliente para empezar a registrar clientes potenciales, contactos e ingresos."
+    }
+  },
+  "detail": {
+    "fallbackName": "Cliente",
+    "details": "Datos",
+    "created": "Creado el {{date}}",
+    "source": "Origen: {{source}}",
+    "actions": {
+      "sendEmail": "Enviar correo",
+      "statement": "Estado de cuenta",
+      "addExpense": "Agregar gasto",
+      "newInvoice": "Nueva factura",
+      "portalLink": "Enlace del portal",
+      "portalLinkTitle": "Copiar el enlace del portal del cliente",
+      "editTitle": "Editar cliente",
+      "new": "+ Nuevo",
+      "viewAllTasks": "Ver todas →",
+      "openInbox": "Abrir la bandeja de entrada →",
+      "edit": "Editar",
+      "copied": "¡Copiado!"
+    },
+    "stats": {
+      "lifetimeValue": "Valor total del cliente",
+      "outstanding": "Pendiente de cobro",
+      "invoices": "Facturas"
+    },
+    "profitability": {
+      "title": "Rentabilidad",
+      "margin": "{{pct}} % de margen",
+      "revenue": "Ingresos",
+      "labor": "Mano de obra",
+      "expenses": "Gastos",
+      "profit": "Beneficio",
+      "note": "Ingresos = todo lo facturado a este cliente; costo = mano de obra y gastos registrados en sus proyectos."
+    },
+    "invoices": {
+      "title": "Facturas",
+      "empty": "Aún no hay facturas"
+    },
+    "estimates": {
+      "title": "Presupuestos",
+      "empty": "Aún no hay presupuestos"
+    },
+    "projects": {
+      "title": "Proyectos",
+      "empty": "Aún no hay proyectos"
+    },
+    "tasks": {
+      "title": "Tareas abiertas",
+      "empty": "No hay tareas abiertas",
+      "overduePrefix": "Vencida · "
+    },
+    "messages": {
+      "title": "Mensajes",
+      "empty": "Aún no hay mensajes"
+    }
+  },
+  "form": {
+    "addTitle": "Agregar cliente",
+    "editTitle": "Editar cliente",
+    "addButton": "Agregar cliente",
+    "openAddButton": "Agregar cliente",
+    "saveChanges": "Guardar cambios",
+    "saved": "¡Guardado!",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "company": "Empresa",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "status": "Estado",
+    "source": "Origen",
+    "tags": "Etiquetas",
+    "tagsHint": "(separadas por comas)",
+    "tagsLabel": "Etiquetas (separadas por comas)",
+    "notes": "Notas",
+    "statusOptions": {
+      "lead": "Cliente potencial",
+      "prospect": "Prospecto",
+      "active": "Cliente activo",
+      "inactive": "Inactivo",
+      "archived": "Archivado"
+    },
+    "placeholders": {
+      "firstName": "María",
+      "lastName": "García",
+      "company": "Acme, S.A.",
+      "email": "maria@example.com",
+      "phone": "+1 (555) 000-0000",
+      "source": "Referido, sitio web…",
+      "tags": "vip, contratista, recurrente",
+      "tagsShort": "vip, contratista…",
+      "notes": "Cualquier contexto adicional…",
+      "notesShort": "Cualquier contexto sobre este cliente…"
+    },
+    "cancel": "Cancelar"
+  },
+  "notes": {
+    "title": "Notas y actividad",
+    "placeholder": "Registre una llamada, anote un seguimiento… (⌘↵ para guardar)",
+    "add": "Agregar nota",
+    "empty": "Aún no hay notas",
+    "kinds": {
+      "note": "Nota",
+      "call": "Llamada",
+      "meeting": "Reunión",
+      "email": "Correo electrónico",
+      "follow_up": "Seguimiento"
+    },
+    "errors": {
+      "empty": "Una nota no puede estar vacía.",
+      "saveFailed": "No se pudo guardar la nota. Inténtelo de nuevo."
+    }
+  },
+  "timeline": {
+    "title": "Historial de comunicaciones",
+    "entries_one": "{{count}} registro",
+    "entries_other": "{{count}} registros",
+    "all": "Todas",
+    "addNote": "Agregar una nota",
+    "notePlaceholder": "Escriba una nota sobre este cliente…",
+    "saveNote": "Guardar nota",
+    "empty": "Aún no hay comunicaciones",
+    "emptyFiltered": "Aún no hay registros de tipo {{type}}",
+    "received": "← recibido",
+    "sent": "→ enviado",
+    "duration": "{{minutes}} min {{seconds}} s",
+    "aiBadge": "AI",
+    "types": {
+      "call": "Llamada",
+      "sms": "SMS",
+      "email": "Correo electrónico",
+      "note": "Nota",
+      "appointment": "Cita",
+      "other": "Otro"
+    },
+    "sentiment": {
+      "positive": "Positivo",
+      "neutral": "Neutral",
+      "negative": "Negativo"
+    }
+  },
+  "preferences": {
+    "title": "Preferencias de comunicación",
+    "saved": "¡Guardado!",
+    "optOuts": {
+      "title": "Exclusiones de notificaciones",
+      "sms": {
+        "label": "Mensajes SMS",
+        "description": "Excluir de los mensajes de texto"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "description": "Excluir de los mensajes de correo"
+      },
+      "calls": {
+        "label": "Llamadas telefónicas",
+        "description": "Excluir de las llamadas telefónicas"
+      }
+    },
+    "contact": {
+      "title": "Preferencias de contacto",
+      "method": "Método de contacto preferido",
+      "methods": {
+        "any": "Cualquier método",
+        "sms": "Solo SMS",
+        "email": "Solo correo electrónico",
+        "call": "Solo llamada telefónica"
+      },
+      "bestTime": "Mejor hora para contactar",
+      "times": {
+        "none": "Sin preferencia",
+        "morning": "Mañana (6:00 - 12:00)",
+        "afternoon": "Tarde (12:00 - 18:00)",
+        "evening": "Noche (18:00 - 22:00)",
+        "weekdays": "Solo días laborables",
+        "weekends": "Solo fines de semana"
+      },
+      "notes": "Notas adicionales",
+      "notesPlaceholder": "p. ej., «prefiere el correo después de las 5 p. m.», «no llamar los lunes»"
+    }
+  },
+  "brief": {
+    "title": "Informe del cliente con IA",
+    "stale": "Se recomienda actualizarlo",
+    "refresh": "Actualizar el informe",
+    "generateTitle": "Generar informe",
+    "intro": "Genere con IA un resumen de la relación con este cliente, su historial y las siguientes acciones recomendadas.",
+    "generate": "Generar informe",
+    "loading": "Analizando los datos del cliente…",
+    "health": "{{label}} ({{score}}/10)",
+    "nextAction": "Siguiente acción recomendada",
+    "generatedAt": "Generado el {{date}}",
+    "noHeadline": "No se generó ninguna conclusión"
+  },
+  "import": {
+    "title": "Importar clientes",
+    "subtitle": "Suba un CSV para agregar varios clientes a la vez",
+    "back": "Clientes",
+    "ai": {
+      "title": "Agregar con IA",
+      "hint": "Pegue una lista, una firma de correo o cualquier texto con nombres y correos, o tome una foto de una tarjeta de presentación. Extraeremos los contactos para que los revise antes de importarlos.",
+      "placeholder": "Pegue aquí los contactos…",
+      "uploadPhoto": "Subir una foto",
+      "extract": "Extraer con IA",
+      "fileLabel_one": "IA · {{count}} contacto",
+      "fileLabel_other": "IA · {{count}} contactos"
+    },
+    "csv": {
+      "title": "Formato CSV",
+      "required": "Obligatorio:",
+      "or": "o",
+      "optional": "Opcional:",
+      "statusValues": "(lead/prospect/active/inactive)",
+      "tagsHint": "(separadas por comas)",
+      "downloadTemplate": "Descargar plantilla"
+    },
+    "drop": {
+      "hint": "Arrastre aquí su archivo CSV, o haga clic para buscarlo",
+      "limits": "Solo archivos CSV · Hasta 5,000 filas"
+    },
+    "preview": {
+      "title": "Vista previa",
+      "valid": "{{n}} válidas",
+      "willSkip": "{{n}} se omitirán",
+      "showing": "Mostrando las primeras 50 de {{n}} filas",
+      "rowError": "Se requiere un nombre o una empresa",
+      "columns": {
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "company": "Empresa",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "status": "Estado",
+        "tags": "Etiquetas"
+      }
+    },
+    "result": {
+      "imported_one": "Se importó {{count}} cliente",
+      "imported_other": "Se importaron {{count}} clientes",
+      "failedSuffix": " · {{n}} con error",
+      "redirecting": "Redirigiendo a Clientes…"
+    },
+    "actions": {
+      "clear": "Limpiar",
+      "import_one": "Importar {{count}} cliente",
+      "import_other": "Importar {{count}} clientes",
+      "importing_one": "Importando {{count}} cliente…",
+      "importing_other": "Importando {{count}} clientes…"
+    },
+    "errors": {
+      "csvOnly": "Suba un archivo .csv.",
+      "noValidRows": "No hay filas válidas para importar.",
+      "importFailed": "La importación falló. Inténtelo de nuevo.",
+      "noContacts": "No se encontraron contactos en ese contenido.",
+      "extractFailed": "No se pudieron leer los contactos de ese contenido."
+    }
+  },
+  "statement": {
+    "label": "Estado de cuenta",
+    "title": "Estado de cuenta",
+    "documentTitle": "Estado de cuenta — {{name}}",
+    "asOf": "Al {{date}}",
+    "back": "← Volver al cliente",
+    "print": "Imprimir / guardar en PDF",
+    "statementFor": "Estado de cuenta de",
+    "balanceDue": "Saldo pendiente",
+    "totalBilled": "Total facturado",
+    "totalPaid": "Total pagado",
+    "empty": "No hay facturas registradas para este cliente.",
+    "columns": {
+      "date": "Fecha",
+      "invoice": "Factura",
+      "due": "Vencimiento",
+      "status": "Estado",
+      "amount": "Importe"
+    },
+    "footer": "{{org}} · Estado de cuenta de {{name}} · Generado el {{date}}"
+  },
+  "errors": {
+    "unauthorized": "Vuelva a iniciar sesión.",
+    "noOrganization": "No se encontró ninguna organización.",
+    "firstNameRequired": "El nombre es obligatorio.",
+    "missingClientId": "Falta el ID del cliente.",
+    "createFailed": "No se pudo crear el cliente. Inténtelo de nuevo.",
+    "updateFailed": "No se pudo actualizar el cliente. Inténtelo de nuevo.",
+    "deleteFailed": "No se pudo eliminar el cliente. Inténtelo de nuevo.",
+    "logFailed": "No se pudo registrar esta comunicación. Inténtelo de nuevo.",
+    "preferencesFailed": "No se pudieron guardar estas preferencias. Inténtelo de nuevo.",
+    "aiNotConfigured": "La IA aún no está configurada.",
+    "clientNotFound": "Ese cliente ya no existe.",
+    "briefFailed": "No se pudo generar el informe. Inténtelo de nuevo.",
+    "briefParseFailed": "No se pudo leer la respuesta de la IA. Inténtelo de nuevo.",
+    "briefSaveFailed": "No se pudo guardar el informe. Inténtelo de nuevo.",
+    "importInvalidBody": "No se pudo leer esa solicitud de importación.",
+    "extractUnsupportedImage": "Tipo de imagen no admitido. Use JPEG, PNG o WebP.",
+    "extractImageTooLarge": "La imagen debe pesar menos de 10 MB.",
+    "extractNoInput": "Pegue texto o suba una imagen.",
+    "extractReadFailed": "No se pudo leer ese contenido.",
+    "extractParseFailed": "No se pudieron leer los contactos de ese contenido.",
+    "extractFailed": "La extracción falló. Inténtelo de nuevo."
+  }
+}

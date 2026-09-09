@@ -1,0 +1,25 @@
+{
+  "actions": {
+    "saved_bang": "¡Guardado!"
+  },
+  "roles": {
+    "owner": "Propietario",
+    "admin": "Administrador",
+    "bookkeeper": "Contable",
+    "viewer": "Solo lectura",
+    "unknown": "desconocido"
+  },
+  "permission": {
+    "readOnlyTitle": "Acceso de solo lectura",
+    "readOnlyBody": "Su rol ({{role}}) no tiene permiso para hacer cambios aquí. Solicite acceso a un administrador.",
+    "denied": "No tiene permiso para hacer esto. Solicite acceso al propietario o a un administrador."
+  },
+  "aiRoles": {
+    "AI Chief Operating Officer": "Director de Operaciones con IA",
+    "AI Chief Information Officer": "Director de Información con IA",
+    "AI Marketing Director": "Director de Marketing con IA",
+    "AI Finance Director": "Director Financiero con IA",
+    "AI Sales Development Rep": "Representante de Desarrollo de Ventas con IA",
+    "AI Receptionist": "Recepcionista con IA"
+  }
+}

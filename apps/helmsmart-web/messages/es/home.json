@@ -1,0 +1,435 @@
+{
+  "dashboard": {
+    "metaTitle": "Panel de control",
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "clientSummary_one": "{{count}} cliente activo · {{total}} en total",
+    "clientSummary_other": "{{count}} clientes activos · {{total}} en total",
+    "actions": {
+      "newInvoice": "Nueva factura",
+      "clients": "Clientes"
+    },
+    "kpi": {
+      "bankBalance": "Saldo bancario",
+      "bankBalanceLinked": "Todas las cuentas conectadas",
+      "bankBalanceEmpty": "Conectar una cuenta bancaria",
+      "revenueMtd": "Ingresos (mes en curso)",
+      "expensesMtd": "Gastos (mes en curso)",
+      "outstanding": "Pendiente de cobro",
+      "outstandingInvoices_one": "{{count}} factura",
+      "outstandingInvoices_other": "{{count}} facturas",
+      "outstandingWithOverdue": "{{invoices}} · {{overdue}} vencidas"
+    },
+    "chart": {
+      "title": "Ingresos frente a gastos",
+      "subtitle": "Últimos 6 meses",
+      "fullReport": "Informe completo"
+    },
+    "cashFlow": {
+      "title": "Perspectiva de flujo de caja",
+      "viewForecast": "Ver previsión",
+      "cashOnHand": "Efectivo disponible",
+      "linkedAccounts": "Cuentas conectadas",
+      "linkABank": "Conectar un banco",
+      "expectedIn": "Entradas previstas",
+      "overdueAmount": "{{amount}} vencido",
+      "openInvoices": "Facturas abiertas",
+      "expectedOut": "Salidas previstas",
+      "dueNow": "{{amount}} a pagar ahora",
+      "openBills": "Facturas de proveedor abiertas",
+      "projected90": "Previsión (90 d)",
+      "afterOpenItems": "Después de las partidas abiertas",
+      "dipWarning": "Se prevé que el efectivo baje hasta {{amount}} en los próximos 90 días. Priorice el cobro de las facturas vencidas o retrase las facturas de proveedor que no sean urgentes."
+    },
+    "projects": {
+      "title": "Proyectos activos",
+      "profit": "{{amount}} de beneficio",
+      "viewAll": "Ver todo",
+      "empty": "No hay proyectos activos",
+      "create": "Crear un proyecto →",
+      "budgetHours": "{{hours}} h de presupuesto",
+      "noBudget": "Sin presupuesto",
+      "overdueDays": "{{count}} d de retraso",
+      "dueToday": "Vence hoy",
+      "daysLeft": "Quedan {{count}} d"
+    },
+    "uninvoiced": {
+      "title": "Horas sin facturar",
+      "allInvoiced": "Todas las horas facturadas",
+      "allInvoicedHint": "No hay horas facturables pendientes de facturar.",
+      "billable": "{{hours}} facturables",
+      "notYetInvoiced": "aún sin facturar",
+      "goToTimesheets": "Ir a partes de horas",
+      "createInvoice": "Crear factura"
+    },
+    "recentInvoices": {
+      "title": "Facturas recientes",
+      "viewAll": "Ver todo",
+      "empty": "Aún no hay facturas"
+    },
+    "recentClients": {
+      "title": "Clientes recientes",
+      "viewAll": "Ver todo",
+      "empty": "Aún no hay clientes",
+      "added": "Añadido el {{date}}"
+    },
+    "approvals": {
+      "title": "Aprobaciones pendientes",
+      "viewAll": "Ver todo",
+      "review": "Revisar →"
+    },
+    "formLeads": {
+      "title": "Clientes potenciales recientes de formularios",
+      "allForms": "Todos los formularios",
+      "untitledForm": "Formulario",
+      "anonymous": "Anónimo"
+    },
+    "tasks": {
+      "title": "Próximas tareas",
+      "viewAll": "Ver todo",
+      "empty": "No hay tareas que venzan esta semana",
+      "overdue": "Vencida",
+      "today": "Hoy"
+    },
+    "events": {
+      "title": "Próximos eventos",
+      "calendar": "Calendario",
+      "empty": "No hay eventos en los próximos 7 días",
+      "allDay": "Todo el día",
+      "today": "Hoy"
+    },
+    "duration": {
+      "minutes": "{{minutes}} min",
+      "hours": "{{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    }
+  },
+  "invoiceStatus": {
+    "draft": "Borrador",
+    "sent": "Enviada",
+    "paid": "Pagada",
+    "overdue": "Vencida",
+    "void": "Anulada"
+  },
+  "clientStatus": {
+    "lead": "Cliente potencial",
+    "prospect": "Prospecto",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "estimateStatus": {
+    "draft": "Borrador",
+    "sent": "Enviado",
+    "accepted": "Aceptado",
+    "declined": "Rechazado",
+    "expired": "Caducado"
+  },
+  "projectStatus": {
+    "active": "Activo",
+    "paused": "En pausa",
+    "completed": "Completado",
+    "cancelled": "Cancelado"
+  },
+  "taskStatus": {
+    "open": "Abierta",
+    "in_progress": "En curso",
+    "done": "Hecha",
+    "cancelled": "Cancelada"
+  },
+  "metrics": {
+    "calls_answered": "Llamadas atendidas",
+    "messages_sent": "Mensajes enviados",
+    "appointments_booked": "Citas agendadas",
+    "insights_delivered": "Análisis entregados",
+    "tokens": "Tokens usados",
+    "cost_cents": "Costo",
+    "revenue_cents": "Ingresos",
+    "conversion_rate": "Tasa de conversión",
+    "funnel_sessions": "Sesiones del embudo"
+  },
+  "commandCenter": {
+    "metaTitle": "Centro de mando",
+    "title": "Centro de mando",
+    "subtitle": "Su negocio de un vistazo: la actividad de su equipo de IA y la salud de cada departamento en los últimos 30 días",
+    "workforceHeading": "Equipo de IA",
+    "nodes": {
+      "aiWorkforce": "Equipo de IA",
+      "finance": "Finanzas",
+      "revenue": "Ingresos",
+      "communication": "Comunicación",
+      "marketing": "Marketing",
+      "operations": "Operaciones",
+      "service": "Servicio",
+      "intelligence": "Inteligencia de negocio",
+      "people": "Personas",
+      "knowledge": "Conocimiento"
+    },
+    "kpi": {
+      "employees": "Empleados",
+      "health": "Salud"
+    },
+    "briefing": {
+      "unconfigured": "Contrate a su equipo de IA para activar el centro de mando. En cuanto sus empleados estén activos, su actividad y los indicadores de cada departamento se resumirán aquí.",
+      "active": "En los últimos 30 días, su equipo de IA completó {{actions}} con {{employees}}. Los indicadores de salud por departamento se van habilitando módulo a módulo.",
+      "actions_one": "{{count}} acción",
+      "actions_other": "{{count}} acciones",
+      "employees_one": "{{count}} empleado",
+      "employees_other": "{{count}} empleados"
+    },
+    "board": {
+      "emptyTitle": "Aún no hay empleados de IA",
+      "emptyBody": "Contrate en un clic su equipo administrativo de IA de seis personas: un recepcionista, un comercial y cuatro directores de departamento. Empiezan en borrador para que pueda revisar cada uno antes de activarlo.",
+      "noActivity": "Aún no hay actividad"
+    },
+    "seed": {
+      "cta": "Formar su equipo de IA",
+      "pending": "Formando el equipo…",
+      "error": "No se pudo formar el equipo"
+    },
+    "avatar": {
+      "change": "Cambiar el avatar de {{name}}",
+      "choose": "Elegir un avatar para {{name}}"
+    },
+    "tim": {
+      "role": "Tim · director de información con IA",
+      "todaysBriefing": "Resumen de hoy",
+      "overdue_one": "{{count}} factura vencida — {{amount}} sin cobrar",
+      "overdue_other": "{{count}} facturas vencidas — {{amount}} sin cobrar",
+      "urgentTasks_one": "{{count}} tarea urgente abierta",
+      "urgentTasks_other": "{{count}} tareas urgentes abiertas",
+      "openTasks_one": "{{count}} tarea abierta — ninguna urgente",
+      "openTasks_other": "{{count}} tareas abiertas — ninguna urgente",
+      "allClear": "Nada urgente — todo parece en orden"
+    }
+  },
+  "grid": {
+    "status": {
+      "ok": "Saludable",
+      "attention": "Necesita atención",
+      "critical": "Crítico",
+      "unconfigured": "Sin configurar"
+    },
+    "window": {
+      "today": "Hoy",
+      "mtd": "Mes en curso",
+      "qtd": "Trimestre en curso",
+      "ytd": "Año en curso"
+    },
+    "cooBriefing": "Resumen del director de operaciones con IA",
+    "alertView": "Ver",
+    "dismissAlert": "Descartar la alerta"
+  },
+  "insights": {
+    "metaTitle": "Análisis del negocio · Tim",
+    "title": "Análisis del negocio",
+    "subtitle": "Inteligencia semanal de Tim, su director de información con IA",
+    "pastDigests": "Resúmenes anteriores",
+    "dateRange": "{{start}} – {{end}}",
+    "insightCount_one": "{{count}} hallazgo",
+    "insightCount_other": "{{count}} hallazgos",
+    "tim": {
+      "role": "Director de información con IA",
+      "weekOf": "Semana del {{start}} – {{end}}",
+      "refreshRecommended": "· se recomienda actualizar",
+      "intro": "Analizo su negocio cada semana y destaco las cifras que cambian una decisión. Genere ahora su primer resumen.",
+      "analysing": "Analizando…",
+      "refresh": "Actualizar",
+      "run": "Ejecutar el análisis",
+      "error": "No se pudieron generar los análisis",
+      "footer": "Generado el {{date}} · Tim se ejecuta automáticamente cada lunes"
+    },
+    "errors": {
+      "notAuthenticated": "Inicie sesión de nuevo para ejecutar el análisis de Tim."
+    }
+  },
+  "weeklyInsights": {
+    "defaultHeadline": "Resumen semanal del negocio",
+    "errors": {
+      "notConfigured": "La IA no está configurada",
+      "generateFailed": "No se pudieron generar los análisis",
+      "parseFailed": "No se pudo interpretar la respuesta de la IA"
+    },
+    "notification": {
+      "title": "El análisis semanal del negocio de Tim ya está listo",
+      "body": "Su resumen semanal está listo para revisar."
+    }
+  },
+  "briefing": {
+    "headline": "Esto es lo que necesita su atención hoy.",
+    "allClear": "Está todo al día: hoy no hay nada urgente.",
+    "chaseOverdue_one": "Reclamar {{count}} factura vencida ({{amount}})",
+    "chaseOverdue_other": "Reclamar {{count}} facturas vencidas ({{amount}})",
+    "replyUrgent_one": "Responder a {{count}} mensaje urgente",
+    "replyUrgent_other": "Responder a {{count}} mensajes urgentes",
+    "unread_one": "{{count}} mensaje sin leer esperando en la bandeja de entrada",
+    "unread_other": "{{count}} mensajes sin leer esperando en la bandeja de entrada",
+    "tasksDue_one": "{{count}} tarea necesita atención hoy",
+    "tasksDue_other": "{{count}} tareas necesitan atención hoy"
+  },
+  "ask": {
+    "metaTitle": "Preguntar a la IA",
+    "title": "Preguntar a la IA",
+    "subtitle": "Datos en vivo de su negocio",
+    "newChat": "Nueva conversación",
+    "emptyTitle": "Su asistente de negocio con IA",
+    "emptyBody": "Pregunte lo que quiera sobre sus clientes, facturas, ingresos o gastos. Tengo acceso a los datos en vivo de su negocio.",
+    "suggested": {
+      "outstandingRevenue": "¿Cuánto tengo pendiente de cobro este mes?",
+      "activeClients": "¿Cuántos clientes activos tengo?",
+      "topExpenses": "¿Cuáles son mis principales categorías de gasto?",
+      "overdueInvoices": "¿Tengo alguna factura vencida?",
+      "netIncome": "¿Cuál fue mi beneficio neto este mes?"
+    },
+    "placeholder": "Pregunte sobre su negocio…",
+    "error": "Lo sentimos, algo salió mal. Inténtelo de nuevo.",
+    "footer": "Basado en datos en vivo · Intro para enviar · Mayús+Intro para una nueva línea",
+    "errors": {
+      "unauthorized": "Inicie sesión de nuevo para consultar los datos de su negocio.",
+      "notConfigured": "La IA aún no está configurada: añada una clave de API de Anthropic.",
+      "invalidRequest": "No se pudo leer esa solicitud. Inténtelo de nuevo.",
+      "noMessages": "Escriba primero una pregunta.",
+      "stream": "[Se produjo un error: {{message}}]"
+    },
+    "yourBusiness": "su negocio",
+    "uncategorized": "Sin categoría"
+  },
+  "aiPanel": {
+    "open": "Abrir {{product}} AI",
+    "close": "Cerrar {{product}} AI",
+    "expand": "Ampliar {{product}} AI",
+    "minimize": "Minimizar {{product}} AI",
+    "expandShort": "Ampliar",
+    "minimizeShort": "Minimizar",
+    "title": "{{product}} AI",
+    "subtitle": "Guía + redacción de SMS por cliente",
+    "dragHint": "Arrastre para moverlo · Haga doble clic para restablecer la posición y el tamaño",
+    "guideTab": "Guía de IA",
+    "newContactTab": "Nueva pestaña de contacto",
+    "closeTab": "Cerrar la pestaña",
+    "tabNotFound": "No se encontró la pestaña.",
+    "resizeWidth": "Ajustar el ancho",
+    "resizeWidthHint": "Arrastre para ajustar el ancho",
+    "resizeHeight": "Ajustar la altura",
+    "resizeHeightHint": "Arrastre para ajustar la altura",
+    "resizePanel": "Ajustar el tamaño del panel",
+    "resizeHint": "Arrastre para ajustar el tamaño",
+    "tryAsking": "Pruebe a preguntar:",
+    "quickPrompts": {
+      "overdue": "¿Qué facturas están vencidas?",
+      "cashFlow": "¿Cómo va mi flujo de caja este mes?",
+      "topClients": "¿Quiénes son mis mejores clientes?",
+      "focus": "¿En qué debería centrarme hoy?"
+    },
+    "askPlaceholder": "Pregunte a {{product}} AI…",
+    "send": "Enviar",
+    "noResponse": "No hubo respuesta: inténtelo de nuevo.",
+    "networkError": "Error de red. Inténtelo de nuevo.",
+    "requestFailed": "La solicitud falló",
+    "threadLoadFailed": "No se pudo cargar la conversación.",
+    "threadNetworkError": "Error de red al cargar la conversación.",
+    "draftFailed": "No se pudo redactar el borrador.",
+    "sendFailed": "No se pudo enviar.",
+    "toggleFailed": "No se pudo cambiar el estado.",
+    "sent": "Enviado.",
+    "contact": {
+      "newTab": "Nueva pestaña de contacto",
+      "fallbackName": "Contacto",
+      "noPhone": "(sin teléfono)",
+      "change": "cambiar",
+      "changeTitle": "Elegir otro contacto",
+      "searchPlaceholder": "Busque un contacto por nombre, correo, teléfono…",
+      "searching": "Buscando…",
+      "noMatch": "Ningún contacto coincide.",
+      "pickFirst": "Elija arriba un contacto para empezar a redactar un SMS."
+    },
+    "prompt": {
+      "label": "¿Qué quiere decirle?",
+      "placeholder": "p. ej. “Confirmar mañana a las 3 p. m.” o “Preguntar si recibieron la factura”",
+      "generate": "Generar el borrador",
+      "drafting": "Redactando…"
+    },
+    "draft": {
+      "label": "Borrador (editable)",
+      "send": "Enviar SMS",
+      "sending": "Enviando…",
+      "noPhone": "Sin teléfono registrado",
+      "autoPilotSending": "El piloto automático está enviando…",
+      "autoPilotWill": "El piloto automático enviará este borrador."
+    },
+    "thread": {
+      "label": "Conversación de SMS",
+      "labelLoading": "Conversación de SMS (cargando…)",
+      "empty": "Aún no hay mensajes.",
+      "statusTitle": "Estado: {{status}}",
+      "statusUnknown": "desconocido"
+    },
+    "autoPilot": {
+      "label": "Piloto automático",
+      "title": "Piloto automático: envía los borradores y responde solo a los SMS entrantes de este cliente."
+    },
+    "smsStatus": {
+      "delivered": "Entregado",
+      "received": "Recibido",
+      "failed": "Fallido",
+      "undelivered": "No entregado",
+      "blocked": "Bloqueado",
+      "rejected": "Rechazado",
+      "queued": "En cola",
+      "accepted": "Aceptado",
+      "scheduled": "Programado",
+      "sending": "Enviando",
+      "sent": "Enviado"
+    }
+  },
+  "search": {
+    "openTitle": "Buscar (⌘K)",
+    "trigger": "Buscar…",
+    "placeholder": "Buscar clientes, facturas, transacciones…",
+    "noResults": "Sin resultados para “{{query}}”",
+    "typeMore": "Escriba al menos 2 caracteres para buscar",
+    "unnamed": "Sin nombre",
+    "sections": {
+      "clients": "Clientes",
+      "invoices": "Facturas",
+      "transactions": "Transacciones",
+      "messages": "Mensajes",
+      "estimates": "Presupuestos",
+      "projects": "Proyectos",
+      "tasks": "Tareas"
+    },
+    "navigateHint": "para navegar",
+    "closeHint": "para cerrar"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "allCaughtUp": "Todo al día",
+    "empty": "Aún no hay notificaciones",
+    "ago": {
+      "justNow": "ahora mismo",
+      "minutes": "hace {{count}} min",
+      "hours": "hace {{count}} h",
+      "days": "hace {{count}} d"
+    }
+  },
+  "comingSoon": {
+    "eta": "Disponible en {{eta}}"
+  },
+  "roi": {
+    "title": "Recuperación de llamadas perdidas: últimos 7 días",
+    "autoTexted": "SMS automáticos",
+    "autoTextedSub": "Llamadas perdidas con SMS de vuelta",
+    "booked": "Citas agendadas por SMS",
+    "bookedSub": "Citas recuperadas",
+    "conversion": "Conversión",
+    "noMissedCalls": "Aún no hay llamadas perdidas",
+    "conversionSub": "{{booked}} de {{total}} clientes potenciales con cita"
+  },
+  "revenueChart": {
+    "empty": "Aún no hay datos de transacciones",
+    "revenue": "Ingresos",
+    "expenses": "Gastos"
+  }
+}

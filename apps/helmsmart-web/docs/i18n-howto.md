@@ -114,6 +114,67 @@ guard catches.
 - A value that is byte-identical to the English is only right for a URL, a
   proper noun, or an interpolation-only string. The guard fails the rest.
 
+## Spanish (es) style
+
+- **`es` with no region tag**, formatted through `es-US`: the customers are US
+  small businesses, so the currency is USD and the date order is the one their
+  bank statements use.
+- **Usted, not tú.** This is business software addressing a business owner.
+  Commands to the app stay in the infinitive on buttons (`Guardar cambios`,
+  `Cancelar`), which is the convention every Spanish-language SaaS uses, and
+  prose addressed to the owner uses usted (`Su empresa`, `Puede…`).
+- **Sentence case**, not Title Case. Spanish does not capitalise every word in
+  a heading, and it does not capitalise days, months, or languages.
+- Keep the inverted opening marks: `¿Cómo podemos ayudar?`, `¡Guardado!`.
+- Product and people nouns stay: HelmSmart, Tim, Emma, Alex, Emily, Mark,
+  Google Business, Stripe, Plaid, Twilio, Slack, QuickBooks, Resend, Retell,
+  1099, PDF, CSV, OFX, SMS.
+- **Plurals**: Spanish has `one` and `other`, like English. A key with `_one`
+  in the English bundle needs `_one` and `_other` in Spanish too — unlike
+  zh-Hans, which takes `_other` alone.
+
+Fixed terms, matching the Chinese glossary one for one:
+
+| English | Español |
+| --- | --- |
+| Books | Contabilidad |
+| Invoices | Facturas |
+| Quotes / Estimates | Presupuestos |
+| Bills | Facturas de proveedor |
+| Expenses | Gastos |
+| Vendors | Proveedores |
+| Journal | Libro diario |
+| Chart of accounts | Plan de cuentas |
+| Aging | Antigüedad de saldos |
+| Accounts receivable | Cuentas por cobrar |
+| Accounts payable | Cuentas por pagar |
+| Reconcile | Conciliar |
+| Transactions | Transacciones |
+| Reports | Informes |
+| Clients | Clientes |
+| Pipeline | Embudo de ventas |
+| Timesheets | Partes de horas |
+| Workflows | Flujos de trabajo |
+| Automations | Automatizaciones |
+| Inbox | Bandeja de entrada |
+| Tasks | Tareas |
+| Calendar | Calendario |
+| Command Center | Centro de mando |
+| Insights | Análisis del negocio |
+| AI Receptionist | Recepcionista con IA |
+| AI Client Assistant | Asistente de clientes con IA |
+| Reception | Recepción |
+| Settings | Configuración |
+| Save changes | Guardar cambios |
+| Saving… | Guardando… |
+| Saved! | ¡Guardado! |
+| Cancel | Cancelar |
+| Delete | Eliminar |
+| Edit | Editar |
+| Sign in | Iniciar sesión |
+| Sign up | Crear cuenta |
+| Log out | Cerrar sesión |
+
 ## Owner-facing AI text
 
 Append the directive to the system prompt of a generator whose output the

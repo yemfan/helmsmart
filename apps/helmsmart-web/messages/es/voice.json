@@ -1,0 +1,357 @@
+{
+  "meta": {
+    "receptionist": "Recepcionista con IA",
+    "clientAssistant": "Asistente de clientes con IA"
+  },
+  "receptionist": {
+    "subtitle": "Claude atiende sus llamadas las 24 horas y responde por SMS a las que usted pierde: agenda citas, toma mensajes y resuelve preguntas frecuentes",
+    "settings": "Configuración",
+    "stats": {
+      "callsHandled": "Llamadas atendidas",
+      "allTime": "Desde el inicio",
+      "appointmentsBooked": "Citas agendadas",
+      "viaVoiceAgent": "Mediante el agente de voz",
+      "messagesTaken": "Mensajes tomados",
+      "savedToInbox": "Guardados en la bandeja de entrada",
+      "minutesUsed": "Minutos usados",
+      "talkTime": "Tiempo de conversación",
+      "estCost": "Costo estimado de IA",
+      "costRate": "a {{rate}}/min",
+      "hours": "{{value}} h",
+      "minutes": "{{value}} min"
+    },
+    "transcripts": {
+      "title": "Transcripciones de llamadas",
+      "emptyTitle": "Aún no hay llamadas",
+      "emptyBody": "Active el agente de voz y configure su webhook de Twilio para empezar a atender llamadas.",
+      "turns_one": "{{count}} intervención",
+      "turns_other": "{{count}} intervenciones",
+      "appointmentBooked": "Cita agendada",
+      "caller": "Quien llama",
+      "agent": "Agente de IA"
+    },
+    "duration": {
+      "none": "—",
+      "minutesSeconds": "{{minutes}} min {{seconds}} s",
+      "seconds": "{{seconds}} s"
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h"
+    }
+  },
+  "clientAssistant": {
+    "subtitle": "Su IA llama a sus contactos en su nombre: seguimientos, recordatorios de citas, encuestas y avisos"
+  },
+  "recording": {
+    "label": "Grabación"
+  },
+  "missedCall": {
+    "title": "Respuesta por SMS a llamadas perdidas",
+    "settingsLink": "Configuración de la respuesta automática",
+    "autoReply": "Respuesta automática",
+    "active": "Activa",
+    "off": "Desactivada",
+    "noNumber": "Ningún número configurado",
+    "missedToday": "Perdidas hoy",
+    "noneToday": "Ninguna hoy",
+    "unanswered_one": "{{count}} llamada sin atender",
+    "unanswered_other": "{{count}} llamadas sin atender",
+    "repliesSent": "Respuestas enviadas",
+    "thisWeek": "Esta semana",
+    "recentCalls": "Llamadas recientes",
+    "emptyTitle": "Aún no hay llamadas registradas",
+    "emptyBody": "Las llamadas perdidas aparecerán aquí en cuanto configure su número de Twilio.",
+    "autoReplied": "Respondida automáticamente",
+    "unknownStatus": "—",
+    "status": {
+      "missed": "Perdida",
+      "voicemail": "Buzón de voz",
+      "completed": "Completada",
+      "answered": "Atendida",
+      "active": "En curso",
+      "busy": "Ocupado",
+      "failed": "Fallida",
+      "no-answer": "Sin respuesta",
+      "canceled": "Cancelada",
+      "queued": "En cola",
+      "ringing": "Sonando"
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h"
+    }
+  },
+  "outbound": {
+    "title": "Realizar llamadas con IA",
+    "subtitle": "Elija un propósito y llame a un contacto o a toda la lista.",
+    "noNumber": "Conecte un número de teléfono para realizar llamadas salientes.",
+    "noNumberLink": "Configuración → Agente de voz con IA",
+    "purposes": {
+      "follow_up": {
+        "label": "Seguimiento",
+        "hint": "Reactivar clientes potenciales y clientes"
+      },
+      "appointment_reminder": {
+        "label": "Recordatorio de cita",
+        "hint": "Confirmar las citas próximas"
+      },
+      "survey": {
+        "label": "Encuesta / reseña",
+        "hint": "Pedir su opinión o una reseña"
+      },
+      "promo": {
+        "label": "Promoción / aviso",
+        "hint": "Compartir novedades o una oferta"
+      }
+    },
+    "surveyLabel": "¿Qué debe preguntar la IA?",
+    "promoLabel": "¿Cuál es el aviso?",
+    "detailHint": "La IA lo integra en una llamada breve y cordial, y lo adapta a cada contacto.",
+    "contacts_one": "{{count}} contacto",
+    "contacts_other": "{{count}} contactos",
+    "callAll": "Llamar a todos ({{count}})",
+    "callAllCapped": "Llamar a todos (los primeros {{count}})",
+    "emptyAppointments": "No hay citas próximas con número de teléfono.",
+    "emptyContacts": "Aún no hay contactos con número de teléfono.",
+    "unnamed": "Sin nombre",
+    "noPhone": "sin teléfono",
+    "thisContact": "este contacto",
+    "aiCall": "Llamada con IA",
+    "disclosure": "Las llamadas avisan de que son de IA y solo se marcan entre las 8:00 y las 21:00, hora local.",
+    "surveyDetailRequired": "Añada primero las preguntas de la encuesta.",
+    "promoDetailRequired": "Añada primero el mensaje del aviso.",
+    "confirmOne": "¿Realizar una llamada con IA a {{name}}, al {{phone}}?\n\nEl agente de IA le llamará ahora en su nombre.",
+    "confirmAll_one": "¿Realizar una llamada con IA a {{count}} contacto?\n\nSe marcará en segundo plano, de forma escalonada y solo dentro del horario de llamadas.",
+    "confirmAll_other": "¿Realizar llamadas con IA a {{count}} contactos?\n\nSe marcarán en segundo plano, de forma escalonada y solo dentro del horario de llamadas.",
+    "calling": "Llamando ahora a {{name}}: el agente de IA está marcando.",
+    "queued_one": "{{count}} llamada en cola: marcando ahora, de forma escalonada y dentro del horario de llamadas.",
+    "queued_other": "{{count}} llamadas en cola: marcando ahora, de forma escalonada y dentro del horario de llamadas.",
+    "surveyPlaceholder": "p. ej. “¿Cómo fue nuestro servicio, del 1 al 5? ¿Nos dejaría una reseña en Google?”",
+    "promoPlaceholder": "p. ej. “Tenemos un 15 % de descuento en reservas nuevas hasta el viernes, ¿quiere que le agende?”",
+    "errors": {
+      "noOrganization": "No se encontró ninguna empresa.",
+      "contactNotFound": "Ese contacto ya no existe.",
+      "contactNoPhone": "Este contacto no tiene número de teléfono.",
+      "noNumber": "Conecte primero un número de teléfono, en Configuración → Agente de voz con IA.",
+      "outsideHours": "Fuera del horario de llamadas (de 8:00 a 21:00, hora local). Inténtelo más tarde.",
+      "noAgent": "Todavía no hay ningún agente de voz conectado a su número.",
+      "noneSelected": "No hay contactos seleccionados.",
+      "noneReachable": "No hay contactos localizables: necesitan un número de teléfono.",
+      "alreadyQueued": "Esos contactos ya están en cola o se les está llamando."
+    }
+  },
+  "settings": {
+    "title": "Agente de voz con IA",
+    "subtitle": "Atiende sus llamadas con Claude cuando usted no está disponible",
+    "toggleNeedsNumber": "Añada primero un número de teléfono: el agente no tiene dónde atender.",
+    "needsNumber": "El agente de voz necesita un número de teléfono para poder atender llamadas.",
+    "connected": "Conectado a {{number}}",
+    "notAnswered": "Su recepcionista no atiende las llamadas al {{number}}",
+    "sharedWarning_one": "Este número lo comparte otra cuenta, y es esa cuenta la que lo atiende, así que quien llama oye ese negocio y no el suyo. Su configuración de abajo se guarda, pero no se usará hasta que el número sea solo suyo.",
+    "sharedWarning_other": "Este número lo comparten otras {{count}} cuentas, y una de ellas lo atiende, así que quien llama oye ese negocio y no el suyo. Su configuración de abajo se guarda, pero no se usará hasta que el número sea solo suyo.",
+    "sharedNotice_one": "Tenga en cuenta que este número también lo usa otra cuenta. Hoy las llamadas se atienden como su negocio, pero eso puede cambiar si esa cuenta cambia su configuración.",
+    "sharedNotice_other": "Tenga en cuenta que este número también lo usan otras {{count}} cuentas. Hoy las llamadas se atienden como su negocio, pero eso puede cambiar si esas cuentas cambian su configuración.",
+    "agentName": {
+      "label": "Nombre del agente",
+      "hint": "(cómo se llama a sí mismo el recepcionista)",
+      "placeholder": "p. ej. María",
+      "help": "Se usa cuando el agente se presenta. Déjelo en blanco para que no dé ningún nombre."
+    },
+    "dba": {
+      "label": "Nombre comercial",
+      "hint": "(el nombre con el que opera — opcional)",
+      "placeholder": "El nombre de su negocio",
+      "help": "El nombre comercial que anuncia el recepcionista. Déjelo en blanco para usar el nombre de la cuenta: la facturación y las facturas conservan siempre el nombre de la cuenta.",
+      "helpWithName": "El nombre comercial que anuncia el recepcionista. Déjelo en blanco para usar el nombre de la cuenta ({{name}}): la facturación y las facturas conservan siempre el nombre de la cuenta."
+    },
+    "greeting": {
+      "label": "Saludo de apertura",
+      "help": "Lo primero que oye quien llama. Use {{agentToken}} y {{businessToken}} como marcadores.",
+      "placeholder": "¡Hola! Gracias por llamar. ¿En qué puedo ayudarle hoy?"
+    },
+    "context": {
+      "label": "Contexto del negocio",
+      "hint": "(lo que Claude sabe de usted)",
+      "help": "Con texto simple basta. Cuanto más detalle, mejor funciona el agente.",
+      "useTemplate": "Usar esta plantilla"
+    },
+    "bookingAlert": {
+      "label": "Enviarme un SMS cuando se agende una cita",
+      "hint": "(opcional)",
+      "help": "Su propio móvil. El recepcionista le envía la cita por SMS en cuanto se agenda, para que no tenga que estar pendiente de la aplicación. Déjelo en blanco para no recibir ningún SMS."
+    },
+    "save": "Guardar la configuración",
+    "saved": "¡Guardado!",
+    "saveFailed": "No se pudo guardar esa configuración."
+  },
+  "config": {
+    "calendar": {
+      "title": "Calendario",
+      "description": "Conecte Google Calendar para que el recepcionista agende en su calendario real y solo ofrezca horas en las que de verdad está libre.",
+      "notConfigured": "Google Calendar todavía no está configurado en el servidor. Hasta que lo esté, las citas usan el calendario propio de HelmSmart.",
+      "connected": "Conectado",
+      "connectedWithEmail": "Conectado · {{email}}",
+      "disconnect": "Desconectar",
+      "disconnecting": "Desconectando…",
+      "connect": "Conectar Google Calendar"
+    },
+    "hours": {
+      "title": "Horario comercial",
+      "description": "El recepcionista solo agenda dentro de este horario.",
+      "days": {
+        "mon": "lunes",
+        "tue": "martes",
+        "wed": "miércoles",
+        "thu": "jueves",
+        "fri": "viernes",
+        "sat": "sábado",
+        "sun": "domingo"
+      },
+      "closed": "Cerrado",
+      "open": "Abierto",
+      "to": "a",
+      "save": "Guardar el horario",
+      "saving": "Guardando…",
+      "saved": "¡Guardado!"
+    },
+    "appointmentTypes": {
+      "title": "Tipos de cita",
+      "description": "Lo que el recepcionista puede agendar: cada tipo con su duración, para que el hueco del calendario sea el correcto.",
+      "empty": "Aún no hay tipos de cita.",
+      "minutes": "{{count}} min",
+      "namePlaceholder": "p. ej. Consulta",
+      "minUnit": "min",
+      "add": "Añadir"
+    },
+    "knowledge": {
+      "title": "Base de conocimiento",
+      "description": "Productos, servicios, precios, políticas, preguntas frecuentes: aquello con lo que responde el recepcionista. Si no está aquí, el agente toma un mensaje en vez de adivinar.",
+      "empty": "Aún no hay entradas de conocimiento.",
+      "titlePlaceholder": "Tema (p. ej. Precios, Servicios, Estacionamiento)",
+      "contentPlaceholder": "¿Qué debe saber el recepcionista sobre esto?",
+      "add": "Añadir entrada"
+    }
+  },
+  "setup": {
+    "title": "Configuración del recepcionista",
+    "description": "Todo lo de abajo tiene que estar listo para que el agente atienda y agende.",
+    "badge": {
+      "needsSetup": "Falta configurar",
+      "notVerified": "Sin verificar",
+      "ready": "Listo",
+      "notAnswering": "No atiende",
+      "checking": "Comprobando…"
+    },
+    "items": {
+      "numberOk": "Número de teléfono conectado — {{number}}",
+      "numberMissing": "Número de teléfono sin configurar",
+      "numberFix": "Escriba arriba el número al que llaman sus clientes y luego apunte ese número hacia nosotros en la consola de su operador.",
+      "hours": "Horario comercial definido",
+      "hoursFix": "Defina los días y las horas de apertura en la sección Horario comercial, más abajo.",
+      "typesOk": "Tipos de cita añadidos ({{count}})",
+      "typesMissing": "Sin tipos de cita",
+      "typesFix": "Añada al menos un servicio (con su duración) en Tipos de cita, más abajo.",
+      "agent": "Agente de voz activado",
+      "agentFix": "Active el interruptor Agente de voz con IA de arriba.",
+      "calendarOk": "Google Calendar conectado",
+      "calendarOptional": "Google Calendar (opcional)",
+      "calendarFix": "Conecte Google Calendar abajo para ofrecer solo las horas en las que de verdad está libre.",
+      "calendarFixUnconfigured": "Opcional: conecte un calendario para evitar citas duplicadas."
+    },
+    "verify": "Verificar la conexión",
+    "verifying": "Comprobando Retell…",
+    "verifyHint": "Confirma que en Retell su número está vinculado al agente con el webhook de entrada.",
+    "verifyOk": "Conexión correcta: agente y webhook de entrada confirmados en Retell.",
+    "verifyUnknownNumber": "Retell no reconoce este número.",
+    "verifyMissing": "El número aparece en Retell, pero {{missing}} no está bien configurado allí.",
+    "missingWebhook": "el webhook de entrada",
+    "missingAgent": "el vínculo con el agente",
+    "manual": {
+      "summary": "¿Prefiere configurar Retell a mano?",
+      "step1": "En su número de Retell, en Inbound Call Agent, seleccione el agente compartido.",
+      "step2": "Marque “Add an inbound webhook” y pegue la URL de abajo, sustituyendo la clave por su RETELL_FUNCTION_SECRET.",
+      "step3": "Apunte cada función personalizada hacia la URL de funciones.",
+      "inboundLabel": "Webhook de entrada (en el número de teléfono)",
+      "functionLabel": "Endpoint de funciones personalizadas",
+      "note": "Use las URL con www exactamente como se muestran: el dominio sin www redirige y Retell no lo sigue en un POST.",
+      "copy": "Copiar"
+    }
+  },
+  "number": {
+    "label": "Su número de teléfono",
+    "help": "El número al que llaman sus clientes. Apúntelo hacia la plataforma en la consola de su operador y luego escríbalo aquí.",
+    "save": "Guardar el número",
+    "saving": "Guardando…",
+    "saveFailed": "No se pudo guardar ese número.",
+    "wiredOk": "Guardado y conectado: el agente atenderá este número.",
+    "savedNotAnswering": "Guardado, pero todavía no atiende llamadas",
+    "notInProvider": "Este número todavía no está en el proveedor de voz.",
+    "notAttached": "No está vinculado al agente recepcionista.",
+    "webhookWrong": "Su webhook de entrada no apunta aquí."
+  },
+  "wizard": {
+    "connectedTitle": "Número conectado — {{number}}",
+    "connectedBody": "Se ha vinculado a su agente automáticamente. Complete la lista de abajo y luego llame para probarlo.",
+    "buyTab": "Comprar un número",
+    "importTab": "Conectar uno existente",
+    "buyHint": "Compraremos un número y lo conectaremos a su recepcionista automáticamente. Se factura a unos $2 al mes.",
+    "areaCode": "Código de área",
+    "tollFree": "Número gratuito",
+    "getNumber": "Obtener mi número",
+    "gettingNumber": "Obteniendo su número…",
+    "importHint": "¿Ya tiene un número? Conéctelo a través de su enlace troncal SIP de Twilio: nosotros vinculamos el agente por usted.",
+    "phoneNumber": "Número de teléfono",
+    "terminationUri": "URI de terminación SIP",
+    "sipUser": "Usuario SIP (opcional)",
+    "sipPass": "Contraseña SIP (opcional)",
+    "connectNumber": "Conectar el número",
+    "connecting": "Conectando…",
+    "genericError": "Algo salió mal."
+  },
+  "autoReply": {
+    "title": "Configuración de la respuesta automática",
+    "numberLabel": "Número de teléfono de Twilio",
+    "numberHelp": "Se guarda en formato E.164 (por ejemplo, {{example}}). Debe coincidir con el número de Twilio que enruta al agente.",
+    "numberInvalid": "Número de teléfono no válido.",
+    "toggleTitle": "Responder automáticamente a las llamadas perdidas",
+    "toggleHint": "Enviar un SMS automáticamente cuando usted no conteste",
+    "messageLabel": "Mensaje de respuesta automática",
+    "messageHint": "Se envía por SMS al número de quien llama",
+    "save": "Guardar cambios",
+    "saved": "¡Guardado!"
+  },
+  "channels": {
+    "title": "Canales",
+    "manage": "Gestionar en Configuración",
+    "manual": "solo manual",
+    "notConnected": "sin conectar"
+  },
+  "errors": {
+    "unauthorized": "Su sesión se cerró. Inicie sesión de nuevo para cambiar esta configuración.",
+    "saveHours": "No se pudo guardar el horario comercial.",
+    "nameRequired": "El nombre es obligatorio.",
+    "saveApptType": "No se pudo guardar ese tipo de cita.",
+    "createApptType": "No se pudo crear ese tipo de cita.",
+    "deleteApptType": "No se pudo eliminar ese tipo de cita.",
+    "titleContentRequired": "El título y el contenido son obligatorios.",
+    "saveKnowledge": "No se pudo guardar esa entrada de conocimiento.",
+    "createKnowledge": "No se pudo crear esa entrada de conocimiento.",
+    "deleteKnowledge": "No se pudo eliminar esa entrada de conocimiento.",
+    "disconnectCalendar": "No se pudo desconectar Google Calendar.",
+    "missingApiKey": "RETELL_API_KEY no está definida en el servidor.",
+    "missingFunctionSecret": "RETELL_FUNCTION_SECRET no está definida en el servidor.",
+    "missingAgentId": "RETELL_AGENT_ID no está definida en el servidor: añada el id del agente recepcionista compartido.",
+    "noOrganization": "No hay ninguna empresa seleccionada.",
+    "alreadyHasNumber": "Este negocio ya tiene un número conectado.",
+    "invalidAreaCode": "Escriba un código de área de EE. UU. válido, de 3 dígitos (por ejemplo, 626).",
+    "buyFailed": "Ahora mismo no se pudo comprar un número.",
+    "terminationUriRequired": "Escriba su URI de terminación SIP (por ejemplo, yourtrunk.pstn.twilio.com).",
+    "importFailed": "No se pudo importar ese número.",
+    "noNumberConnected": "Todavía no hay ningún número conectado.",
+    "verifyFailed": "No se pudo comprobar el número con Retell.",
+    "numberNotStored": "El número {{number}} se aprovisionó, pero no se pudo guardar en la empresa: {{reason}}"
+  }
+}

@@ -82,6 +82,66 @@ export const PROPER_NOUNS = new Set([
   "Sarah K.",
 ]);
 
+/**
+ * Every locale this app ships a `messages/<locale>/` directory for.
+ *
+ * Read from disk rather than imported from `config.ts` so adding a locale is
+ * one directory and the guards pick it up on the next run. A guard that named
+ * its locales in a literal would have gone on comparing English to Chinese
+ * while a third language shipped unchecked beside them — which is exactly the
+ * shape of gap this suite exists to close.
+ */
+export function locales(): string[] {
+  return readdirSync(MESSAGES, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+}
+
+/** The shipped locales other than the source language, which is what a parity or
+ *  untranslated-value check compares AGAINST English. */
+export function translatedLocales(): string[] {
+  return locales().filter((l) => l !== "en");
+}
+
+/**
+ * Is a translated value that is byte-identical to its English source
+ * legitimately identical?
+ *
+ * Shared, because two guards ask exactly this question — `untranslatedValues`
+ * over every bundle, and `navLabels` over the sidebar's — and they answered it
+ * differently. `navLabels` checked only `PROPER_NOUNS`, so Spanish
+ * `settingsTabs.general` = "General" was reported as untranslated. It is the
+ * correct Spanish word, and the other guard already knew that: a single token
+ * with no space is exempt by shape. A guard that fails a correct translation
+ * teaches people to edit the translation to appease it, which is worse than
+ * the gap it was defending.
+ *
+ * The proper-noun list stays a deliberate decision; the shapes below are
+ * mechanical.
+ */
+export function legitimatelyIdentical(value: string): boolean {
+  const v = value.trim();
+  if (PROPER_NOUNS.has(v)) return true;
+  // Nothing to translate without letters: "24/7", "—", "$".
+  if (!/[A-Za-z]{2,}/.test(v)) return true;
+  // A URL, an email, an interpolation, a hex colour, a phone number: not prose.
+  if (/:\/\/|@|\{\{|^#|^\+?\d[\d ()-]{6,}$/.test(v)) return true;
+  /*
+   * A single token with no space. Brand names (HelmSmart, QuickBooks),
+   * acronyms (AI, CSV, OFX), the SMS keywords — and the many words spelled
+   * the same in English and Spanish (General, Total, Normal, Manual, Formal,
+   * Color, Blog, Legal). STOP and HELP are not merely conventional here:
+   * they are the words a US carrier requires the reply to contain.
+   */
+  if (!/\s/.test(v)) return true;
+  // "123 Main St, Sugar Land, TX" — a US postal address the field hands to a
+  // geocoder. The correct Chinese for those words is the wrong thing to type.
+  // Kept in step with the same test in residualEnglish.test.ts.
+  if (/^\d+\s+[A-Za-z].*,\s*[A-Z]{2}(?:\s+\d{5}(?:-\d{4})?)?$/.test(v)) return true;
+  return false;
+}
+
 export function readJson(path: string): Bundle | null {
   try {
     return JSON.parse(readFileSync(path, "utf8")) as Bundle;

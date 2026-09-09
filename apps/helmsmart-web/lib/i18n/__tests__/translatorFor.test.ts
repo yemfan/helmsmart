@@ -87,9 +87,14 @@ const fixtureTranslator = createTranslator({
       // Chinese has no `one` category — `_other` alone is the correct bundle.
       demo: { items_other: "{{count}} 项" },
     },
+    es: {
+      // Spanish HAS both categories, like English. A bundle that copied the
+      // Chinese shape and shipped `_other` alone would render "1 artículos".
+      demo: { items_one: "{{count}} artículo", items_other: "{{count}} artículos" },
+    },
   },
   defaultLocale: "en",
-  supported: ["en", "zh-Hans"],
+  supported: ["en", "zh-Hans", "es"],
 });
 
 describe("translatorFor, on shapes the shipped bundles do not have yet", () => {

@@ -1,8 +1,7 @@
 # HelmSmart three-language design (en · zh-Hans · es)
 
-Status: **built and verified, 2026-09-09**, on branch `feat/helmsmart-i18n`.
-English and Simplified Chinese ship; Spanish is fully wired for — contract,
-`Intl` tag, AI directive, picker — and needs only its bundles.
+Status: **built and verified, 2026-09-09**. All three languages ship:
+English, Simplified Chinese (PR #1693) and Spanish (PR #1694).
 
 This document is both the design and the record of what was built. Where the
 two diverged, the divergence and its reason are marked **Changed in build**.
@@ -29,7 +28,7 @@ Decisions at a glance:
 | Bundles | per app: `apps/helmsmart-web/messages/<locale>/<ns>.json`; HelmSmart reuses the package's already-translated `common` namespace |
 | Two readers | UI locale is the **owner's** language; `clients.preferred_language` stays the **contact's** language. They never collapse. |
 | Pack terms × translation | relabel first (`terms[label] ?? label`), then translate the result; `nav.json` carries both core and pack nouns |
-| Spanish | contract, Intl map, directive and picker support land now; `es` enters `SUPPORTED_LOCALES` only when its bundles pass the parity test |
+| Spanish | shipped. `es` entered `SUPPORTED_LOCALES` once its 4,039 keys passed the parity and untranslated-value guards |
 | CI | port the CloseBoss guard tests; add `vitest-helmsmart.yml` (HelmSmart has no vitest gate today) |
 
 ## What exists today
@@ -442,6 +441,36 @@ resolve the locale, and `app/(marketing)/blog/[slug]` exported
 with a request-time dependency throws `DYNAMIC_SERVER_USAGE` and returns HTTP
 500 — **in a production build only**, never in `next dev`. The route is now
 `force-dynamic`, and a production build plus a live request confirmed it.
+
+### Spanish, and what shipping a third language cost
+
+The design claimed Spanish would be "one bundle away". Shipping it measured
+that claim: 4,039 keys across the same 16 namespaces, plus a Spanish `common`
+in the shared package, plus one line adding `es` to `SUPPORTED_LOCALES`. No
+directive, `Intl` tag, picker or resolution rule needed changing — those had
+known `es` since the first branch.
+
+What the design did NOT anticipate is that the GUARDS named their languages.
+`navLabels` and `untranslatedValues` both read the `zh-Hans` directory by
+literal, so Spanish would have shipped beside them entirely unchecked — the
+same class of blind spot the suite exists to close, one level up. They now read
+the locale list from the `messages/` directory, so a fourth language is held to
+every assertion the moment its folder exists.
+
+Unifying them turned up a second flaw. The two guards each answered "is this
+identical value legitimately identical?" and answered it differently:
+`untranslatedValues` exempted any single token with no space, `navLabels`
+exempted only proper nouns. Spanish "General" is the correct translation of
+"General", and only one of the two knew it. A guard that fails a correct
+translation teaches people to edit the translation until it passes, which is
+worse than the gap it was defending, so the predicate now lives once in
+`bundles.ts` and both import it.
+
+Spanish also differs from Chinese in a way the bundles have to respect:
+Spanish has a `one` plural category, so every `_one` key in English needs a
+Spanish `_one` too, while zh-Hans correctly carries `_other` alone. That is
+why the Spanish key count matches English exactly (4,039) and the Chinese one
+is lower (4,005).
 
 ## How it was verified
 
