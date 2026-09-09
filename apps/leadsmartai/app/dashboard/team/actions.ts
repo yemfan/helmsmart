@@ -17,6 +17,8 @@ import { MAX_ROSTER_ROWS, parseRoster } from "@/lib/teams/roster";
 import { parseBrandInput } from "@/lib/teams/brand";
 import { canAdministerTeam, canManageTeam, isAssignableRole } from "@/lib/teams/roles";
 import { saveTeamBrand } from "@/lib/teams/brand.server";
+import { ATTENTION_KEYS, type Attention } from "@/lib/teams/marketing";
+import { nudgeAttention } from "@/lib/teams/nudges.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -160,6 +162,27 @@ export async function resendInvite(formData: FormData) {
   const ok = await requeueInvite({ teamId, inviteId });
   revalidatePath("/dashboard/team");
   return ok ? { ok: true as const } : { ok: false as const, error: "That invitation is no longer pending." };
+}
+
+/**
+ * Email every agent in one attention bucket ("no hub yet", ...). Owner or
+ * manager. Each agent hears about a reason at most once a week, so a
+ * second click reports what was skipped rather than sending again.
+ */
+export async function nudgeAgents(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const reason = String(formData.get("reason") ?? "");
+  if (!teamId || !(ATTENTION_KEYS as readonly string[]).includes(reason)) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can email agents." };
+  try {
+    const r = await nudgeAttention({ teamId, reason: reason as Attention, byAgentId: ctx.agentId });
+    return { ok: true as const, ...r };
+  } catch (e) {
+    console.error("[team.nudge]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not send those emails right now. Try again in a minute." };
+  }
 }
 
 /** The brokerage brand shown on every member hub. Owner only. An emptied form clears it. */

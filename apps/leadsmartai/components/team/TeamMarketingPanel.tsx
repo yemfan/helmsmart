@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { autopilotIsOn, type Attention, type MarketingRow, type TeamMarketing } from "@/lib/teams/marketing";
 import { downloadCsv, toCsv } from "@/lib/teams/csv";
+import { nudgeAgents } from "@/app/dashboard/team/actions";
 
 /**
  * Marketing across the team on /dashboard/team, for the owner and managers:
@@ -42,6 +43,56 @@ const ATTENTION_TONE: Record<Attention, string> = {
   failing: "bg-rose-50 text-rose-800 ring-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-900",
   silent: "bg-slate-100 text-slate-700 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700",
 };
+
+/**
+ * One click emails everyone in the selected bucket. The label carries the
+ * outcome; the small text after it says who was skipped and why.
+ */
+function NudgeButton({ teamId, reason, count }: { teamId: string; reason: Attention; count: number }) {
+  const { t } = useTranslation("dashboard");
+  const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamMarketing.${s}`, vars);
+  const [pending, startTransition] = useTransition();
+  const [result, setResult] = useState<{ sent: number; failed: number; skippedRecent: number; noEmail: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        disabled={pending || result !== null || count === 0}
+        onClick={() =>
+          startTransition(async () => {
+            setError(null);
+            const fd = new FormData();
+            fd.set("teamId", teamId);
+            fd.set("reason", reason);
+            const r = await nudgeAgents(fd);
+            if (r.ok) setResult({ sent: r.sent, failed: r.failed, skippedRecent: r.skippedRecent, noEmail: r.noEmail });
+            else setError(r.error);
+          })
+        }
+        className="inline-flex min-h-8 items-center rounded-full bg-blue-600 px-3 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+      >
+        {result ? k("nudged", { count: result.sent }) : pending ? k("nudging") : k("nudge", { count })}
+      </button>
+      {result && (result.skippedRecent > 0 || result.noEmail > 0 || result.failed > 0) ? (
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          {[
+            result.skippedRecent > 0 ? k("nudgeSkipped", { count: result.skippedRecent }) : null,
+            result.noEmail > 0 ? k("nudgeNoEmail", { count: result.noEmail }) : null,
+            result.failed > 0 ? k("nudgeFailed", { count: result.failed }) : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
+      ) : null}
+      {error ? (
+        <span className="text-xs text-rose-600" role="alert">
+          {error}
+        </span>
+      ) : null}
+    </span>
+  );
+}
 
 export function TeamMarketingPanel({ teamId }: { teamId: string }) {
   const { t, i18n } = useTranslation("dashboard");
@@ -184,9 +235,12 @@ export function TeamMarketingPanel({ teamId }: { teamId: string }) {
                 </button>
               ))}
               {only ? (
-                <button type="button" onClick={() => setOnly(null)} className="text-xs text-slate-600 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
-                  {k("showAll")}
-                </button>
+                <>
+                  <button type="button" onClick={() => setOnly(null)} className="text-xs text-slate-600 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100">
+                    {k("showAll")}
+                  </button>
+                  <NudgeButton key={only} teamId={teamId} reason={only} count={rows.length} />
+                </>
               ) : null}
             </div>
           ) : (
