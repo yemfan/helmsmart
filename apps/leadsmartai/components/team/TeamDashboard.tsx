@@ -21,6 +21,7 @@ import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
 import { TeamPerformancePanel } from "./TeamPerformancePanel";
 import { BrokerageBrandCard } from "./BrokerageBrandCard";
 import type { TeamBrand } from "@/lib/teams/brand";
+import type { MemberDirectory } from "@/lib/teams/directory.server";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -45,6 +46,7 @@ export function TeamDashboard({
   board,
   brand,
   pooledCredits = false,
+  directory = {},
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -59,6 +61,8 @@ export function TeamDashboard({
   brand?: TeamBrand | null;
   /** Owner only: whether members spend from the owner's credit balance. */
   pooledCredits?: boolean;
+  /** Names and emails by agent id, for the lists. */
+  directory?: MemberDirectory;
 }) {
   const { t } = useTranslation("dashboard");
   if (!roster) {
@@ -94,13 +98,14 @@ export function TeamDashboard({
         currentAgentId={currentAgentId}
         isOwner={isOwner}
         members={roster.members}
+        directory={directory}
       />
 
       <TeamPerformancePanel teamId={roster.team.id} />
 
       {canManage && board ? <OnboardingBoardCard teamId={roster.team.id} board={board} /> : null}
 
-      <TeamBreakdownPanel teamId={roster.team.id} />
+      <TeamBreakdownPanel teamId={roster.team.id} directory={directory} />
 
       {isOwner ? <PooledCreditsCard teamId={roster.team.id} pooled={pooledCredits} /> : null}
 
@@ -290,11 +295,13 @@ function RosterCard({
   currentAgentId,
   isOwner,
   members,
+  directory = {},
 }: {
   teamId: string;
   currentAgentId: string;
   isOwner: boolean;
   members: TeamMembership[];
+  directory?: MemberDirectory;
 }) {
   const { t } = useTranslation("dashboard");
   return (
@@ -308,7 +315,7 @@ function RosterCard({
               {m.role === "owner" ? "★" : "●"}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-slate-900">{t("pages.dashFragments.agentWord")} {shortenId(m.agentId)}
+              <p className="truncate text-sm font-medium text-slate-900">{directory[m.agentId]?.name ?? directory[m.agentId]?.email ?? `${t("pages.dashFragments.agentWord")} ${shortenId(m.agentId)}`}
                 {m.agentId === currentAgentId ? (
                   <span className="ml-2 text-xs text-slate-500">{t("pages.team.you")}</span>
                 ) : null}

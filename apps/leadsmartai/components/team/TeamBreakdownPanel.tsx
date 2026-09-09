@@ -19,7 +19,9 @@ import type {
  *   3. Contacts desc
  *   4. Agent id asc
  */
-export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
+import type { MemberDirectory } from "@/lib/teams/directory.server";
+
+export function TeamBreakdownPanel({ teamId, directory = {} }: { teamId: string; directory?: MemberDirectory }) {
   const { t } = useTranslation("dashboard");
   const [breakdown, setBreakdown] = useState<TeamBreakdown | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +78,7 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
             ) : (
               <>
                 {breakdown.rows.map((r) => (
-                  <Row key={r.agentId} row={r} />
+                  <Row key={r.agentId} row={r} directory={directory} />
                 ))}
                 <TotalsRow totals={breakdown.totals} />
               </>
@@ -88,13 +90,13 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
   );
 }
 
-function Row({ row }: { row: MemberBreakdownRow }) {
+function Row({ row, directory = {} }: { row: MemberBreakdownRow; directory?: MemberDirectory }) {
   const { t } = useTranslation("dashboard");
   return (
     <tr className="text-slate-800">
       <td className="py-2.5 pr-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">{t("pages.dashFragments.agentLabel")} {shortenId(row.agentId)}
+          <span className="text-sm font-medium">{directory[row.agentId]?.name ?? directory[row.agentId]?.email ?? `${t("pages.dashFragments.agentLabel")} ${shortenId(row.agentId)}`}
           </span>
           {row.role === "owner" ? (
             <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-blue-700 ring-1 ring-blue-200">{t("pages.teamBreakdown.owner")}</span>
