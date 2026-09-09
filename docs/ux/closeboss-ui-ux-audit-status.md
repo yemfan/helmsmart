@@ -153,23 +153,43 @@ Doing only the first two steps makes things **worse**, not better: duplicating
 the chrome adds 19 KB to the single bundle everyone downloads and buys nothing
 until the split actually lands. So it is all-or-nothing, and it wants an
 explicit decision rather than a drive-by — the failure mode is raw keys
-reaching users, which has now happened three more ways (see below).
+reaching users, which happened twice more doing #1680 (see below).
 
-#### Three ways a namespace move renders raw keys
+#### Two ways a namespace move renders raw keys
 
-All three were hit doing #1680, and two got past the test suite:
+Both were hit doing #1680, and neither was caught by the test suite:
 
 - A rewrite matching `t(` misses `tr(`.
 - Keys held in constant arrays and passed as variables are invisible to a
   literal-key rewrite. This broke a blog post that renders correctly in
   production; only loading the page showed it.
-- `useTranslation(["a", "b"])` does **not** fall through to the second
-  namespace — i18next treats the first as the default, and there is no
-  fallback without `fallbackNS`. `missingKeys.test.ts` assumed the opposite
-  in a comment, which is why a broken page passed its tests.
 
-Render the pages. `clientNamespace.test.ts` now also honours an explicit
-`{ ns: "..." }` and checks the key against that namespace.
+Render the pages. Neither of these is visible to a static check, because a
+key assembled at runtime is not a literal for anything to resolve.
+
+`clientNamespace.test.ts` now also honours an explicit `{ ns: "..." }` and
+checks the key against that namespace, which its own doc already intended for
+the `"ns:key"` prefix form.
+
+#### A namespace list DOES fall through — an earlier note here was wrong
+
+This file previously claimed that `useTranslation(["a", "b"])` does not reach
+the second namespace and that `missingKeys.test.ts` was wrong to assume it
+does. **Both claims were false.** Checked against the pinned i18next (23.x)
+three ways — a plain list, a namespace added after `init`, and a list whose
+first entry was never loaded — and every one resolves from the later
+namespace. `i18next`'s `resolve()` iterates the whole list. The test's
+comment is correct and was left alone.
+
+What actually produced the raw keys during that migration was almost
+certainly a stale dev server: the pages rendered correctly as soon as an edit
+forced a recompile. The 196 explicit `{ ns: "..." }` options added to 11 files
+in #1680 were therefore unnecessary. They are valid and verified, so they were
+not reverted — but do not copy that pattern believing a list would fail.
+
+The durable lesson is unchanged and is the reason this was caught at all:
+**render the pages.** The trap here was diagnosing from a dev server without
+confirming the mechanism.
 
 Smaller and still open: the client JS arrives in eight dependency rounds
 (~26 chunks), which is the bundler's chunk graph rather than app code; and
