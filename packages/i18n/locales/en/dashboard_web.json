@@ -1,0 +1,1958 @@
+{
+  "boss": {
+    "approvalChoice": {
+      "ask": "You approve",
+      "assisted": "Max checks",
+      "auto": "On its own"
+    },
+    "approvalSentence": {
+      "call": {
+        "ask": "{{name}} lines up calls and waits for your go-ahead before dialing.",
+        "assisted": "{{name}} places calls once Max has checked the plan; you're asked only when Max is unsure.",
+        "auto": "{{name}} places calls without asking, within calling hours."
+      },
+      "sms": {
+        "ask": "{{name}} drafts texts and waits for your approval before sending.",
+        "assisted": "{{name}} sends texts once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} sends texts without asking, within quiet hours and contact limits."
+      },
+      "email": {
+        "ask": "{{name}} drafts emails and waits for your approval before sending.",
+        "assisted": "{{name}} sends emails once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} sends emails without asking, within contact limits."
+      },
+      "social": {
+        "ask": "{{name}} drafts posts and waits for your approval before publishing.",
+        "assisted": "{{name}} publishes posts once Max has checked them; you're asked only when Max is unsure.",
+        "auto": "{{name}} publishes posts without asking."
+      }
+    },
+    "memoryLine": {
+      "count_one": "Max remembers your recent missions and {{count}} saved note.",
+      "count_other": "Max remembers your recent missions and {{count}} saved notes.",
+      "none": "Max remembers your recent missions. Say “remember…” to save a note.",
+      "manage": "See notes"
+    },
+    "captain": "Captain of your AI Real Estate Team",
+    "greeting": {
+      "welcome": "Welcome back",
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "composer": {
+      "answer": "Type your answer…",
+      "autopilot": "Tell your team what to do — they'll act and report back…",
+      "ask": "Tell your team what to do…"
+    },
+    "suggestions": {
+      "findLeads": "Find me new leads this week",
+      "sphereReach": "Who in my sphere should I reach out to?",
+      "coldLeads": "Which leads are going cold?",
+      "clearTasks": "Help me clear my overdue tasks",
+      "likelySellers": "Who in my sphere might sell soon?",
+      "weekPosts": "Plan this week's social posts",
+      "checkIn": "Text my hot leads a check-in",
+      "justListed": "Draft a just-listed social post",
+      "planDay": "Plan my day"
+    },
+    "team": {
+      "heading": "Your AI team",
+      "receptionist": "Receptionist",
+      "sales_assistant": "Sales Assistant",
+      "marketing_assistant": "Marketing Assistant",
+      "transaction_assistant": "Transaction Coordinator",
+      "accountant": "Accountant",
+      "realtor": "For your review"
+    },
+    "verbs": {
+      "off": "Off duty",
+      "needsYou": "Waiting on you",
+      "activeNow": "Active just now",
+      "working": "Working",
+      "idle": "Standing by",
+      "receptionist": {
+        "working": "Answering calls",
+        "idle": "On call"
+      },
+      "sales_assistant": {
+        "working": "Following up",
+        "idle": "Watching leads"
+      },
+      "marketing_assistant": {
+        "working": "Creating content",
+        "idle": "Planning posts"
+      },
+      "transaction_assistant": {
+        "working": "Tracking deadlines",
+        "idle": "Monitoring deals"
+      },
+      "accountant": {
+        "working": "Running the numbers",
+        "idle": "Watching the books"
+      }
+    },
+    "channel": {
+      "call": "Call",
+      "sms": "Text",
+      "email": "Email",
+      "social": "Social"
+    },
+    "metrics": {
+      "hotLeads": "Hot leads",
+      "apptsToday": "Appts today",
+      "activeDeals": "Active deals",
+      "deadlines": "Deadlines",
+      "noHotLeads": "No hot leads right now.",
+      "noAppts": "No appointments today.",
+      "noDeals": "No active deals.",
+      "noDeadlines": "No deadlines in the next 7 days."
+    },
+    "deadlines": {
+      "inspection": "Inspection contingency",
+      "appraisal": "Appraisal deadline",
+      "loan": "Loan contingency",
+      "closing": "Closing"
+    },
+    "day": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "runs": {
+      "overnight": "From last night's run",
+      "earlier": "Earlier command"
+    },
+    "autopilot": {
+      "on": "Autopilot on",
+      "off": "Autopilot off",
+      "onTitle": "Autopilot on — the Boss acts, then tells you",
+      "offTitle": "Autopilot off — the Boss asks before sending"
+    },
+    "approvals": {
+      "overnightHelp": "Max works your pipeline at about 4am: research and tasks done, outbound drafted for your morning approval. Never calls, never sends overnight.",
+      "title": "Approval settings",
+      "subtitle": "Choose where the Boss acts on its own and where it asks first — per assistant, per channel.",
+      "allChannels": "Autopilot (all channels)",
+      "allChannelsHelp": "The master switch. Per-channel choices below override it.",
+      "askFirstTitle": "Flip everything to ask-first — nothing sends without you",
+      "done": "Done"
+    },
+    "status": {
+      "done": "Done",
+      "scheduled": "Scheduled",
+      "needsInput": "Needs info",
+      "awaitingApproval": "Awaiting you"
+    },
+    "panels": {
+      "revenue": "Revenue & commission",
+      "pipeline": "Pipeline forecast",
+      "emailEngagement": "Email engagement",
+      "loading": "Loading…"
+    },
+    "proposal": "Proposal",
+    "openLead": "Open lead",
+    "open": "Open",
+    "dismiss": "Dismiss",
+    "notNow": "Not now",
+    "actionFailed": "Action failed.",
+    "uploadFailed": "Upload failed",
+    "couldNotWorkOut": "Couldn't work that one out — try rephrasing it.",
+    "addFile": "Add a file",
+    "businessPerformance": "Business performance",
+    "defaultHeadline": "Here's where things stand — and what I'd like to do for you.",
+    "approval": {
+      "ask": "you approve",
+      "assisted": "Max approves",
+      "auto": "auto",
+      "askHint": "Nothing sends until you approve it.",
+      "assistedHint": "Max proofreads and risk-checks it, and only asks you when he's unsure.",
+      "autoHint": "Sends on its own, within quiet hours and contact limits."
+    }
+  },
+  "disclaimers": {
+    "aiCma": "AI-generated estimate from public web data (recent comparable sales). This is an opinion of value, not an appraisal — verify the comps and pricing before relying on it.",
+    "buildOffer": "AI-suggested terms to support your strategy — not legal or financial advice. Confirm price, contingencies, and dates with your buyer and broker before submitting.",
+    "contractReview": "This is an AI summary to help you spot issues — it is NOT legal advice and is not a substitute for review by your broker or a real-estate attorney. Verify every term, date, and dollar figure against the document before relying on it.",
+    "deepReport": "AI-generated estimate from public web data. Value, rent, affordability, and deal metrics are opinions for planning only — not an appraisal, loan approval, or investment advice. Verify figures and consult a lender / advisor before deciding.",
+    "houseSearch": "AI-generated results from public web data. Listings, prices, and availability may be out of date — verify each on its source site before sharing or relying on it.",
+    "offerCompare": "AI summary to support your judgment — not legal or financial advice. Verify each offer's terms and the net figures before advising the seller."
+  },
+  "notifications": {
+    "feed": {
+      "subtitle": "Everything your AI team flagged for you, newest first.",
+      "unreadCount_one": "{{count}} unread",
+      "unreadCount_other": "{{count}} unread",
+      "allCaughtUp": "You're all caught up.",
+      "markAllRead": "Mark all read",
+      "marking": "Marking…",
+      "markFailed": "Couldn't update notifications. Try again.",
+      "empty": "Nothing here yet. Hot leads, missed calls and reminders will show up as they happen.",
+      "unread": "Unread",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "needsYou": "Needs you today",
+      "none": "Nothing waiting",
+      "types": {
+        "hot_lead": "Hot lead",
+        "missed_call": "Missed call",
+        "reminder": "Reminder",
+        "new_lead": "New lead",
+        "avatar_ready": "Avatar ready"
+      }
+    },
+    "title": "Notifications",
+    "subtitle": "Hot leads to prioritize, calls you may have missed, and reminders across your pipeline.",
+    "hotLeads": "Hot leads",
+    "hotLeadsSub": "High-intent contacts",
+    "viewAll": "View all",
+    "noHotLeads": "No hot leads right now. Ratings update as leads engage.",
+    "missedCalls": "Missed calls",
+    "missedCallsSub": "No answer or failed dial",
+    "callLog": "Call log",
+    "noMissedCalls": "No missed calls on record.",
+    "unknownCaller": "Unknown caller",
+    "aiCaptured": "AI captured details — tap to review",
+    "reminders": "Reminders",
+    "remindersSub": "Appointments, tasks, follow-ups",
+    "calendar": "Calendar",
+    "overdueTasks": "Overdue tasks",
+    "followUps": "Follow-ups",
+    "followUpReminder": "Follow-up Reminder",
+    "due": "Due {{when}}",
+    "scheduled": "Scheduled {{when}}",
+    "listingAlerts": "Property listing alerts",
+    "columns": {
+      "lead": "Lead",
+      "type": "Type",
+      "property": "Property",
+      "sent": "Sent"
+    },
+    "callToday": "Call {{name}} today",
+    "callTomorrow": "Call {{name}} tomorrow",
+    "contactOn": "Contact {{name}} · {{when}}"
+  },
+  "roles": {
+    "user": "Consumer",
+    "agent": "Real estate agent",
+    "loan_broker": "Loan / mortgage broker",
+    "broker": "Broker",
+    "broker_owner": "Broker owner",
+    "managing_broker": "Managing broker",
+    "team_lead": "Team lead",
+    "brokerage_admin": "Brokerage admin",
+    "owner": "Owner",
+    "partner": "Partner",
+    "admin": "Administrator",
+    "support": "Support"
+  },
+  "shell": {
+    "upgradeTitle": "Grow with AI follow-ups",
+    "upgradeBody": "Upgrade for more credits and automation.",
+    "home": "CloseBoss home"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "openCount": "{{count}} open tasks",
+    "completion": "Task Completion (30 days)",
+    "doneByDay": "Tasks Done by Day (30 days) — {{count}} total",
+    "done": "Done",
+    "cancel": "Cancel",
+    "addTask": "Add Task",
+    "newTask": "New Task",
+    "titlePlaceholder": "Task title *",
+    "notesPlaceholder": "Notes / description",
+    "noContact": "No contact",
+    "saving": "Saving...",
+    "createTask": "Create Task",
+    "searchPlaceholder": "Search tasks...",
+    "taskAdded": "Task added.",
+    "updated": "Updated.",
+    "error": "Error",
+    "failed": "Failed",
+    "updateFailed": "Update failed",
+    "yesterday": "Yesterday",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "openLinked": "Open linked page",
+    "markDone": "Mark done",
+    "cancelTask": "Cancel task",
+    "editTask": "Edit task",
+    "noMatch": "No tasks match your search.",
+    "noOpen": "No open tasks.",
+    "none": "No tasks.",
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "done": "Done",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "source": {
+      "all": "All sources",
+      "manual": "Manual",
+      "briefing": "Briefing",
+      "playbook": "Playbook",
+      "coaching": "Coaching"
+    },
+    "overdueDays": "{{count}}d overdue",
+    "inDays": "{{count}}d",
+    "chart": {
+      "done": "Done",
+      "onTime": "On time",
+      "late": "Late",
+      "open": "Open",
+      "overdue": "Overdue",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "back": "← Back",
+    "columns": {
+      "task": "Task",
+      "contact": "Contact",
+      "due": "Due",
+      "priority": "Priority",
+      "status": "Status",
+      "memo": "Memo"
+    }
+  },
+  "tips": {
+    "accountantOther": "Referral fees, vendor rebills, and anything else owed to you outside of closings.",
+    "callDoubleClick": "Double-click for full call details",
+    "removeFile": "Remove file",
+    "snooze7d": "Snooze for 7 days",
+    "offerAiTerms": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for this listing",
+    "compareOffers": "Compare offers + net-to-seller",
+    "openCma": "Open the CMA + pitch builder",
+    "moveLater": "Move to a later date",
+    "moveTaskLater": "Move task to a later date",
+    "quiet7d": "Quiet 7d+",
+    "settingsSections": "Settings sections",
+    "profilePhoto": "User profile photo",
+    "calendarEmail": "Calendar & email",
+    "calendarEmailHelp": "Two-way Google Calendar sync, and the forwarding address that turns offers, listing agreements and showing requests into tasks.",
+    "connectedSocial": "Connected social accounts",
+    "socialAutoposting": "Social auto-posting",
+    "weeklySchedule": "Weekly post schedule",
+    "tiktokPosting": "TikTok posting",
+    "tiktokPostingHelp": "TikTok requires the account holder to choose the audience and declare commercial content. Applies to every post published for you.",
+    "tcNotifications": "Transaction Coordinator notifications",
+    "commissionDefaults": "Commission defaults",
+    "offerAiTermsBuyer": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer.",
+    "snoozeAria": "Dismiss {{title}} for 7 days"
+  },
+  "topbar": {
+    "search": "Search leads, clients, addresses...",
+    "askMax": "Ask Max",
+    "quickActions": "Quick actions",
+    "openQuickActions": "Open quick actions menu",
+    "closeQuickActions": "Close quick actions menu",
+    "signedIn": "Signed in",
+    "account": "Account",
+    "home": "Home",
+    "myProfile": "My Profile",
+    "mySettings": "My Settings",
+    "helpGuides": "Help & guides",
+    "creditsBilling": "Credits & Billing",
+    "logOut": "Log out",
+    "upsell": "Grow with AI follow-ups",
+    "actions": {
+      "addLead": "Add Lead",
+      "sendMessage": "Send Message",
+      "createTask": "Create Task",
+      "createAppointment": "Create Appointment",
+      "generateCma": "Generate CMA",
+      "compareProperties": "Compare properties"
+    },
+    "searchLeads": "Search leads",
+    "topUp": "Top up credits any time — everything included.",
+    "takeTheTour": "Take the tour"
+  },
+  "pages": {
+    "accountMenu": {
+      "signedInAs": "Signed in as",
+      "home": "Home",
+      "profile": "My Profile",
+      "settings": "My Settings",
+      "billing": "Billing & Subscription",
+      "logOut": "Log out",
+      "photoAlt": "User profile photo",
+      "account": "Account",
+      "yourAccount": "Your account"
+    },
+    "agentSignup": {
+      "startFreeAsAgent": "Start Free as Agent",
+      "completeAgentSetup": "Complete agent setup",
+      "nameRequired": "Name is required.",
+      "emailRequired": "Email is required.",
+      "phoneRequired": "Phone is required for agent onboarding.",
+      "phoneInvalid": "Phone must be a valid US number (10 digits).",
+      "passwordRequirements": "Please choose a password that meets all the requirements below.",
+      "acceptTerms": "Please accept the Terms of Service and Privacy Policy to continue.",
+      "sessionExpired": "Session expired. Please log in again.",
+      "confirmEmailThenLogIn": "Check your email to confirm your account, then log in to access the dashboard.",
+      "emailSendFailed": "We couldn't send the confirmation email. Please try again in a few minutes.",
+      "signupFailed": "Agent signup failed.",
+      "emailTiedToAccount": "Email is tied to your signed-in account",
+      "saving": "Saving…",
+      "saveAgentProfile": "Save agent profile",
+      "createAgentAccount": "Create Agent Account",
+      "intro": "Get access to the agent portal and CMA tools.",
+      "signedInPrefilled": "You're signed in — we filled this form from your account. Finish the fields below to activate your agent profile (no new password needed).",
+      "signedInNoPassword": "You're signed in — no password needed to save your agent profile.",
+      "guidedOnboarding": "Guided onboarding",
+      "accountType": "Account type",
+      "realEstateAgent": "Real estate agent",
+      "loanBroker": "Loan broker",
+      "name": "Name",
+      "phone": "Phone",
+      "phoneHint": "For lead alerts and follow-ups",
+      "license": "License number",
+      "brokerage": "Brokerage",
+      "email": "Email",
+      "password": "Password",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "signUpHere": "Sign up here"
+    },
+    "agentSignupModal": {
+      "loadingForm": "Loading form…"
+    },
+    "aiActionGateBanner": {
+      "chooseAPlan": "Choose a plan",
+      "viewPlansUpgrade": "View plans & upgrade"
+    },
+    "authModal": {
+      "close": "Close",
+      "dialogLabel": "Sign in or create account",
+      "login": "Login",
+      "signUp": "Sign Up",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "forgotPassword": "Forgot password?",
+      "notNow": "Not now",
+      "resetHeading": "Reset your password",
+      "resetBody": "Enter the email you use for CloseBoss and we'll send you a reset link.",
+      "sendResetLink": "Send reset link",
+      "backToLogin": "Back to log in",
+      "emailResetLink": "Email me a reset link",
+      "sending": "Sending…",
+      "loggingIn": "Logging in…",
+      "creatingAccount": "Creating account…",
+      "logIn": "Log in",
+      "createFreeAccount": "Create free account",
+      "or": "or",
+      "resetEmailSent": "Check your email for a link to reset your password.",
+      "resetEmailRequired": "Enter your email address first.",
+      "resetSendFailed": "We couldn't send the reset email. Please try again in a moment.",
+      "nameRequired": "Name is required.",
+      "signInFailedOauth": "Sign in failed.",
+      "authFailed": "Authentication failed.",
+      "continueGoogle": "Continue with Google",
+      "continueApple": "Continue with Apple"
+    },
+    "brandLogo": {
+      "tagline": "Your AI Real Estate Team"
+    },
+    "cma": {
+      "loadFailed": "Could not load your CMA reports.",
+      "createFailed": "Could not generate the CMA.",
+      "loading": "Loading…",
+      "savedCount_one": "{{count}} saved report",
+      "savedCount_other": "{{count}} saved reports",
+      "cancel": "Cancel",
+      "newCma": "New CMA",
+      "generateHeading": "Generate a CMA",
+      "generateIntro": "Enter the subject address. We pull live comparable sales from the web and cite every source.",
+      "subjectAddress": "Subject address",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "quotaReached": "You've used every CMA on your plan this month.",
+      "liveWeb": "Grounded in live web sources, with citations.",
+      "generating": "Generating…",
+      "generate": "Generate CMA",
+      "working": "Researching comparable sales — this takes about a minute.",
+      "loadFailedInline": "Could not load your reports:",
+      "empty": "No CMA reports yet. Generate one from an address above.",
+      "comps_one": "{{count}} comp",
+      "comps_other": "{{count}} comps",
+      "confidence": "{{score}}% confidence",
+      "quotaTitle": "Resets {{date}}",
+      "unlimited": "Unlimited",
+      "remaining": "{{remaining}} of {{limit}} left",
+      "metaTitle": "CMA reports",
+      "valuationUnavailable": "Valuation unavailable"
+    },
+    "cmaShareView": {
+      "yourAgent": "Your Agent"
+    },
+    "commandChain": {
+      "youTheRealtor": "You, the Realtor",
+      "theBoss": "The boss",
+      "oneCommand": "one command",
+      "bossAssistant": "Boss Assistant",
+      "delegatesTo": "delegates to",
+      "whatHappens": "What happens next — automatically",
+      "whatYouGet": "What you get — ready to hand over",
+      "steps": "plans it · assigns the right teammates · reports back",
+      "teamLegend": "Highlighted teammates are the ones this command needs. The others are idle, not unavailable — your Boss Assistant can call on any of the five.",
+      "onThisCommand": "working on this command",
+      "idle": "idle on this command",
+      "team": {
+        "receptionist": "Receptionist",
+        "sales": "Sales",
+        "marketing": "Marketing",
+        "transaction": "Transaction",
+        "accountant": "Accountant"
+      },
+      "commands": {
+        "open_house": {
+          "chip": "Open house",
+          "command": "“Set up Saturday’s open house at 123 Main St.”",
+          "steps": {
+            "s1": "Researches the home, comps & neighborhood",
+            "s2": "Builds the flyer, sign-in & just-listed copy",
+            "s3": "Markets it to your sphere and the portals",
+            "s4": "Preps instant follow-up for every sign-in"
+          },
+          "artifacts": {
+            "a1": "Just-listed flyer",
+            "a2": "Open-house sign-in",
+            "a3": "Social + portal posts",
+            "a4": "Comps research brief",
+            "a5": "Follow-up templates"
+          }
+        },
+        "seller_presentation": {
+          "chip": "Seller presentation",
+          "command": "“Build a seller presentation for 123 Main St.”",
+          "steps": {
+            "s1": "Pulls live comps and a value range (AI CMA)",
+            "s2": "Writes the pricing strategy and marketing plan",
+            "s3": "Adds schools, neighborhood & your branding",
+            "s4": "Delivers a share-ready, professional report"
+          },
+          "artifacts": {
+            "a1": "AI CMA report",
+            "a2": "Listing presentation (PDF)",
+            "a3": "Pricing strategy",
+            "a4": "Marketing plan",
+            "a5": "Net-to-seller estimate"
+          }
+        },
+        "buyer_showings": {
+          "chip": "Buyer showings",
+          "command": "“Find and show homes to the Garcias.”",
+          "steps": {
+            "s1": "Searches the market from your plain-English brief",
+            "s2": "Shortlists matches with deep reports (affordability, ROI)",
+            "s3": "Books the showings and routes the tour",
+            "s4": "Emails the buyer the full lineup"
+          },
+          "artifacts": {
+            "a1": "Matched shortlist",
+            "a2": "Property Deep Reports",
+            "a3": "Comparison report",
+            "a4": "Showing schedule",
+            "a5": "Buyer email lineup"
+          }
+        },
+        "cold_call": {
+          "chip": "Cold-call & qualify",
+          "command": "“Cold-call my new leads and qualify them.”",
+          "steps": {
+            "s1": "Researches each lead before dialing",
+            "s2": "Places the outbound calls in a natural voice",
+            "s3": "Qualifies on budget, timeline & motivation — buyer or seller",
+            "s4": "Scores intent, books the hot ones, logs the rest"
+          },
+          "artifacts": {
+            "a1": "Qualified lead list",
+            "a2": "Call notes + transcripts",
+            "a3": "Intent-scored pipeline",
+            "a4": "Booked appointments"
+          }
+        },
+        "closing": {
+          "chip": "Coordinate the closing",
+          "command": "“Take 123 Main St to closing.”",
+          "steps": {
+            "s1": "Builds the transaction timeline and task list",
+            "s2": "Tracks contingencies, dates & documents",
+            "s3": "Preps the net-to-seller summary",
+            "s4": "Logs the commission and expenses"
+          },
+          "artifacts": {
+            "a1": "Transaction timeline",
+            "a2": "Deadline tracker",
+            "a3": "Net-to-seller sheet",
+            "a4": "Commission + expense log"
+          }
+        }
+      }
+    },
+    "comparisonReport": {
+      "metaTitle": "AI Property Comparison Report",
+      "heading": "AI Property Comparison Report",
+      "clientName": "Client name",
+      "clientPlaceholder": "e.g. Jane Smith",
+      "properties": "Properties (min. 2)",
+      "address": "Address",
+      "addressPlaceholder": "123 Main St, City, ST — or paste a Zillow/Redfin/Realtor.com/Compass link",
+      "price": "Price ($)",
+      "sqft": "Sqft",
+      "beds": "Beds",
+      "baths": "Baths",
+      "rent": "Monthly rent ($) — optional",
+      "created": "Report created",
+      "generate": "Generate report & AI content",
+      "generating": "Generating report…",
+      "upgrade": "Upgrade to Pro or Premium to generate AI comparison reports.",
+      "sqftBedBath": "{{sqft}} sqft · {{beds}} bd / {{baths}} ba",
+      "disclaimerLine": "Generated by CloseBoss · For discussion purposes only · Not financial advice"
+    },
+    "comparisonReportView": {
+      "yourAgent": "Your agent",
+      "reportDate": "Report date:",
+      "execSummary": "Executive summary",
+      "overview": "Comparison overview",
+      "estRoi": "Est. ROI / yr",
+      "breakdown": "Property breakdown",
+      "listPrice": "List / price",
+      "investmentScore": "Investment score",
+      "aiRecommendation": "AI recommendation",
+      "contactAgent": "Contact your agent",
+      "yourName": "Your name",
+      "yourEmail": "Your email",
+      "message": "Message (optional)",
+      "sent": "Message sent. Your agent will follow up soon.",
+      "prepared": "Prepared {{date}}",
+      "eyebrow": "AI Property Comparison Report",
+      "preparedFor": "Prepared for {{name}}",
+      "fallbackAgent": "Your real estate professional",
+      "license": "Lic #{{number}}",
+      "referenceId": "Reference ID: {{id}}",
+      "preparingPdf": "Preparing PDF…",
+      "downloadPdf": "Download PDF",
+      "colProperty": "Property",
+      "colPrice": "Price",
+      "colPerSqft": "$/sqft",
+      "colScore": "Score",
+      "size": "Size",
+      "dimensions": "Dimensions",
+      "pros": "Pros",
+      "cons": "Cons",
+      "closeForm": "Close form",
+      "messageForm": "Message form",
+      "sending": "Sending…",
+      "sendMessage": "Send message",
+      "sendFailed": "Failed to send",
+      "couldNotSend": "Could not send",
+      "recommended": "Recommended",
+      "questions": "Questions about this comparison? Reach out directly or send a message below.",
+      "emailAgent": "Email agent"
+    },
+    "completeProfile": {
+      "h1": "Complete your CloseBoss profile",
+      "sub": "You signed in with Google or Apple. Confirm your name, choose whether you're a",
+      "fullName": "Full name",
+      "role": "Role",
+      "phoneNumber": "Phone number",
+      "cancelNote": "Use Cancel to sign out and return to the homepage if you need to stop or use a different account.",
+      "continue": "Continue"
+    },
+    "cookieConsent": {
+      "title": "Cookies on closebossai.com",
+      "body": "We use strictly necessary cookies so the site works. Optional cookies help us measure and improve the product. You can change your mind any time from the footer “Cookie settings” link.",
+      "necessaryName": "Strictly necessary",
+      "necessaryDesc": "Keeps you signed in, remembers preferences, prevents CSRF. Always on — required for the site to function.",
+      "analyticsName": "Analytics",
+      "analyticsDesc": "Aggregated product usage and performance data. Helps us fix bugs and prioritize improvements. Does not include advertising tracking.",
+      "marketingName": "Marketing",
+      "marketingDesc": "Measures the effectiveness of marketing and remembers your preferences across visits. Off unless you enable it.",
+      "privacy": "Privacy Policy",
+      "categories": "Cookie categories",
+      "acceptAll": "Accept all",
+      "essentialOnly": "Essential only",
+      "saveChoices": "Save choices",
+      "customize": "Customize",
+      "settings": "Cookie settings"
+    },
+    "customerSupportChat": {
+      "thisConversationRefreshesAutomatically": "This conversation refreshes automatically.",
+      "startAConversationAnd": "Start a conversation and our support team will reply here.",
+      "startChat": "Start chat"
+    },
+    "dashFragments": {
+      "couldntLoadRoster": "Couldn't load routing roster:",
+      "noDbRules": "No DB rules yet — pool is currently driven by the",
+      "envAllowlist": "env allowlist. Each agent can take over their slot by enrolling from their settings page.",
+      "sortedByActivity": "Sorted by recent activity. Disabled rows are agents whose DB rule has",
+      "brandKnowledge": "Brand & knowledge",
+      "nothingScheduled": "Nothing scheduled — a quiet calendar means a quiet pipeline.",
+      "marketingCreates": "Your Marketing Assistant creates demand; leads it generates are handed to your",
+      "toConvert": "to convert.",
+      "ends": "Ends",
+      "creditsPerMo": "credits / mo",
+      "forMultipleAgents": "for multiple agents + pooled credits.",
+      "results": "Results",
+      "noStructuredFields": "No structured fields.",
+      "wantYourOwn": "Want your own analysis? Try our calculators on the homepage.",
+      "noPagesConnected": "No Pages connected yet.",
+      "toStartPosting": "to start posting.",
+      "liveOn": "Live on",
+      "caption": "Caption",
+      "currentMrr": "Current MRR (canonical):",
+      "window": "Window:",
+      "scheduledJobs": "scheduled jobs",
+      "allSchedulesUtc": "All schedules are UTC. Jobs are triggered with",
+      "authAutomatically": "auth automatically.",
+      "showings": "Showings (",
+      "offers": "Offers (",
+      "submitted": "Submitted",
+      "appointments": "appointments ·",
+      "tasksSep": "tasks ·",
+      "followUps": "follow-ups ·",
+      "usedAll": "You've used all",
+      "deepReport": "Deep Report",
+      "forTodayResets": "for today. Resets at midnight UTC.",
+      "refineSearch": "Refine search (",
+      "email": "Email",
+      "toBuyer": "to buyer",
+      "offersOn": "Offers on",
+      "agent": "Agent:",
+      "price": "Price:",
+      "seller": "Seller:",
+      "created": "Created",
+      "lastActivity": "Last activity",
+      "noUpcoming": "No upcoming reminders.",
+      "willShowHere": "will show here.",
+      "overdueTask": "overdue task",
+      "unreadMessage": "unread message",
+      "urgentTask": "urgent task",
+      "activeDeals": "active deals",
+      "with": "With",
+      "next": "Next:",
+      "drafts": "drafts",
+      "renews": "renews",
+      "creditsStayYours": "— credits you already have stay yours.",
+      "weeklyBriefing": "Weekly Housing Briefing",
+      "subscribeTo": "Subscribe to",
+      "everyWeek": "Every week,",
+      "sendsDigest": "sends a plain-English digest of where mortgage rates went and what moved the housing market — paired with a local market snapshot for the region you pick. No jargon, every number linked to its source.",
+      "deliveredBy": "Delivered by",
+      "resetPassword": "Reset your password",
+      "resetBody": "Enter the email you use for CloseBoss and we'll send you a reset link.",
+      "sendResetLink": "Send reset link",
+      "sendingResetLink": "Sending…",
+      "resetEmailSent": "Check your email for a link to reset your password.",
+      "resetEmailRequired": "Enter your email address first.",
+      "resetSendFailed": "We couldn't send the reset email. Please try again in a moment.",
+      "backToLogin": "Back to log in",
+      "confirmed": "You're confirmed",
+      "linkExpired": "This link has expired",
+      "couldntConfirm": "We couldn't confirm this subscription — the link may have expired or already been used. You can subscribe again to get a fresh confirmation email.",
+      "reportNotFound": "Report not found",
+      "reportNotFoundBody": "This link may be invalid or the report may have been removed. Ask your agent for an updated link.",
+      "closeBossHome": "CloseBoss home",
+      "preferPreview": "Prefer a 2-minute interactive preview first?",
+      "iAgree": "I agree to the",
+      "preferRegular": "Prefer regular user signup?",
+      "brandColor": "Brand color",
+      "ownBrandColor": "Put your own brand color (and logo) on every generated social card with",
+      "preview": "Preview (",
+      "lucyCalls": "Select contacts and Lucy calls each one (up to",
+      "perBatchDiscloses": "per batch). Each call discloses it's an AI and is logged below in Inbound & outbound activity.",
+      "batchLimit": "Batch limit reached (",
+      "draftLandsHere": "When a trigger fires and your review policy is set to Review, the draft lands here. To see the flow without waiting,",
+      "clickGenerate": "and click “Generate draft”.",
+      "queuedCron": "Queued. The sender cron runs every 15 min, respects quiet hours + frequency caps.",
+      "sentVia": "Sent via",
+      "sendFailed": "Send failed —",
+      "tryWord": "Try",
+      "couldntLoadReport": "Couldn't load report:",
+      "avg": "Avg",
+      "dToClose": "d to close",
+      "couldntLoadForecast": "Couldn't load pipeline forecast:",
+      "noCloseDate": "have no close date set yet —",
+      "weightedAdd": "weighted. Add a target close date to see them on the chart.",
+      "due": "Due",
+      "noContactsYet": "You don't have any contacts yet.",
+      "thenComeBack": "then come back to apply this playbook.",
+      "sendProperties": "Send properties",
+      "pickFavorites": "Pick from their favorites (",
+      "willSend": "Will send (",
+      "anniversaryOptIn": "with anniversary opt-in confirmed",
+      "emptyRowsSkipped": "empty rows skipped",
+      "withWarnings": "with warnings",
+      "textCallersBack": "Text callers back",
+      "keepAiAnswering": "Keep the AI answering",
+      "needMoreMinutes": "Need more included minutes?",
+      "photos": "Photos (",
+      "selectedForVideo": "selected for video",
+      "sVideo": "s video",
+      "firstAgentWins": "The first agent to reply wins roughly half the time. The second agent wins a quarter. Everyone after that is fighting for scraps.",
+      "fourteenDaysFree": "Free to start. No credit card. Fifteen-minute setup. If it doesn't earn back its price in your first month, you'll have lost nothing.",
+      "leads": "Leads:",
+      "cmaToday": "CMA today:",
+      "proLeadCap": "Pro lead cap is",
+      "youAndFriend": "You and your friend each get",
+      "aiTokens": "AI tokens",
+      "whenTheySignUp": "when they sign up with your link.",
+      "generateFirstDraft": "Generate a first draft below — the AI will use the situation, the contact, and your",
+      "stopKeyword": "Their last message was a stop keyword (STOP / UNSUBSCRIBE / etc.). Texting them again would violate opt-out compliance — both AI drafting and sending are blocked.",
+      "looksLikeComplaint": "The contact's last message looks like a complaint, dispute, or urgent issue. AI drafting is paused — reply personally if you choose to.",
+      "toolsFor": "Tools for",
+      "promptTunedFor": "AI prompt tuned for the",
+      "toneCopyPaste": "tone. Copy and paste into the AI chat panel or your favorite LLM.",
+      "seatsUsed": "seats used",
+      "agentWord": "Agent",
+      "inviteFor": "Invite for",
+      "growthDigestHistory": "Weekly Growth & Opportunities email run history. Shows digests generated on or after",
+      "errorLoadingRows": "Error loading rows:",
+      "perCronHealth": "Per-cron + AI-feature health over the last",
+      "daysSupportTool": "days. Support tool — not linked in the sidebar.",
+      "recentSignInsSince": "Recent sign-ins since",
+      "nudgeHistory": "Daily overdue-task digest run history. Shows rows created on or after",
+      "aiScore": "AI score:",
+      "insights": "Insights:",
+      "reportUnavailable": "This report isn't available",
+      "reportUnavailableBody": "The market analysis for this link is being updated. Please contact your agent for the latest valuation.",
+      "couldntLoadCoaching": "Couldn't load coaching insights:",
+      "dueOn": "Due {{date}}",
+      "property": "Property",
+      "detectedBut": "detected, but",
+      "contractReviewBody": "Drop in the purchase contract (PDF) or paste the text. You'll get a plain-English summary, the key terms + deadlines, and flags for anything unusual or left blank —",
+      "flagsToReview": "Flags to review (",
+      "day": "Day",
+      "totalPlans": "total plans",
+      "matchesSoFar": "matches so far.",
+      "tasksCount": "Tasks (",
+      "yourNameBrokerage": "Your name, brokerage,",
+      "voiceMarketCompliance": "voice, market, and compliance are filled in automatically. Just provide the specifics:",
+      "seedsA": "Seeds a",
+      "checklistAutofills": "checklist and auto-fills deadlines from the anchor date. You can adjust anything later.",
+      "dOverdue": "d overdue",
+      "weeklyUpdate": "Weekly update",
+      "published": "Published",
+      "source": "Source:",
+      "youreOn": "you're on",
+      "policySoDrafts": "policy, so every AI-drafted reply lands here before it ships. Most agents move to",
+      "availableIn": "Available in",
+      "shipsDuringPilot": "ships during the pilot",
+      "builtFor": "Built for",
+      "aiPlatformFor": "The AI platform built for",
+      "cantLoadPage": "CloseBoss — can't load this page",
+      "ref": "Ref:",
+      "findNextHome": "Find your next home",
+      "findNextHomeBody": "Describe what you're looking for in plain English. We search the live web for real, current listings and link you straight to the source.",
+      "usingThe": "Using the",
+      "analyzeNewListings": "to analyze new listings and compare them to past deals.",
+      "unsubscribed": "You've been unsubscribed",
+      "unsubscribedBody": "You won't receive any more CloseBoss weekly housing briefings. If this was a mistake, you can subscribe again anytime.",
+      "offerExtended": "Offer extended",
+      "newExpiration": "New expiration:",
+      "inviteUnusable": "Invitation can't be used",
+      "goToMyDashboard": "Go to my dashboard",
+      "logIn": "Log in",
+      "backToDashboard": "Back to dashboard",
+      "noAccess": "You don't have access",
+      "noAccessBody": "This page is restricted to authorized staff or roles. If you believe this is a mistake, contact your administrator or sign in with the correct account.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "financial": "Financial",
+      "call": "Call",
+      "beingProcessed": "are being processed.",
+      "detectedColumns": "Detected columns:",
+      "draft": "Draft",
+      "view": "View",
+      "couldntLoadBuyers": "Couldn't load likely buyers:",
+      "currentlyAt": "Currently at",
+      "tokens": "Tokens:",
+      "minutesApart": "minutes apart. The ladder stops the moment the caller is reached.",
+      "perDay": "per day",
+      "yourTime": "your time",
+      "couldntLoadMonetization": "Couldn't load monetization view:",
+      "drip": "Drip",
+      "signalsFire": "Signals fire automatically when the detection batch runs — refi activity, job changes, equity milestones crossed. You can also",
+      "addSignalManually": "and add a signal manually.",
+      "couldntLoadVoiceCalls": "Couldn't load voice calls:",
+      "twilioErrorCode": "Twilio error code",
+      "waitingForOk": "waiting for your OK",
+      "failedAfter": "Failed after",
+      "aiDraftedSchedule": "AI-drafted for you — schedule to",
+      "noSocialAccount": "No social account connected —",
+      "pathALeadTakes": "The path a lead takes from first touch to closed deal under the",
+      "step": "Step",
+      "describeSituation": "Describe the situation — the AI figures out what kind of message you need (DM reply, follow-up, objection, appointment, opener) and writes it in your",
+      "readAs": "Read as:",
+      "unclaimedLead": "unclaimed lead",
+      "errorLoadingRowsShort": "Error loading rows:",
+      "irrWorkflow": "A common workflow is to use cap rate and cash-on-cash return to narrow the field, then run detailed IRR projections for the top contenders using tools like the",
+      "deal": "Deal",
+      "receivables": "Receivables",
+      "textBackSent": "Text-back sent",
+      "reachingOutFor": "reaching out on behalf of",
+      "totalCalls": "total calls",
+      "refreshed": "Refreshed",
+      "digest": "Digest:",
+      "buyer": "Buyer:",
+      "photosCount": "Photos (",
+      "showing": "Showing",
+      "showImportErrors": "Show import errors (",
+      "withWord": "With",
+      "compliance": "Compliance:",
+      "couldntLoadCoordinator": "Couldn't load the coordinator board:",
+      "escalatedToYou": "escalated to you",
+      "thisWeekCombined": "This week, AI + manual replies combined.",
+      "preparedFor": "Prepared for",
+      "dInStage": "d in stage",
+      "currentPlan": "Current plan:",
+      "unread": "Unread",
+      "daysOnMarketLower": "days on market",
+      "seeOur": "See our",
+      "activeCampaigns": "Active campaigns:",
+      "disclosureSample": "Disclosure sample (always included on calls):",
+      "smsThread": "SMS thread",
+      "savedSearches": "saved searches",
+      "newInvoice": "New invoice",
+      "stepsSetUp": "steps set up",
+      "score": "Score",
+      "last": "Last",
+      "logExpense": "Log expense",
+      "saved": "Saved",
+      "couldntLoadSellers": "Couldn't load likely sellers:",
+      "show": "Show",
+      "batchesCappedAt": "Batches are capped at",
+      "toPopulateFeed": "to populate this feed.",
+      "freeTextReminder": "Free-text reminder for yourself — e.g.",
+      "templateNotSeeded": "The template library hasn't been seeded yet. Run",
+      "shareThisLink": "Share this link — your clients get a weekly,",
+      "warmWishes": "Warm wishes,",
+      "runFailed": "Run failed:",
+      "draftsUseYour": "Drafts use your",
+      "inspiredBy": "Inspired by",
+      "agentLabel": "Agent",
+      "draftChannelOf": "Draft {{channel}}",
+      "channelText": "text",
+      "channelEmail": "email",
+      "scoreOutOf": "Score {{score}}/100",
+      "warmWishesTo": "Warm wishes, {{name}}",
+      "friend": "friend",
+      "onePerDaySpread": "1 (spread out)",
+      "comparableSales": "Comparable sales ({{count}})"
+    },
+    "deepReportView": {
+      "title": "Property Deep Report",
+      "dealRating": "Deal rating",
+      "locationMap": "Location map",
+      "estValue": "Estimated value",
+      "propertyDetails": "Property details",
+      "loanAffordability": "Loan affordability",
+      "loanAmount": "Loan amount",
+      "propertyTax": "Property tax",
+      "totalMonthly": "Total monthly (PITI)",
+      "incomeNeeded": "Income needed",
+      "housingRatio": "at a 28% housing ratio",
+      "investmentReturns": "Investment returns",
+      "noComps": "No comparable sales found.",
+      "downPaymentPct": "Down payment ({{pct}}%)",
+      "principalInterest": "P&I ({{rate}}% / {{years}}yr)"
+    },
+    "delayedCapture": {
+      "beforeYouLeave": "Before you leave:",
+      "sub": "Get your free estimate and follow-up strategy.",
+      "close": "Close"
+    },
+    "demoContent": {
+      "senders": {
+        "you": "You"
+      },
+      "briefings": {
+        "br-001": {
+          "title": "AI handled 14 lead replies overnight",
+          "body": "Median response time: 47 seconds. 3 leads booked tours; 2 are waiting on your input.",
+          "actionLabel": "Review AI drafts"
+        },
+        "br-002": {
+          "title": "Voice AI answered 4 inbound calls",
+          "body": "All transcribed + summarized. One caller (Lily Zhang) requested a Tuesday callback.",
+          "actionLabel": "View call summaries"
+        },
+        "br-003": {
+          "title": "Vanessa Crowe is at peak sphere score",
+          "body": "5 years since close + 35% equity growth + life event signal. Auto-draft is in your queue.",
+          "actionLabel": "Review sphere outreach"
+        }
+      },
+      "tasks": {
+        "t-001": {
+          "title": "Confirm Saturday 11am tour with listing agent",
+          "dueLabel": "Today, 4:00pm"
+        },
+        "t-002": {
+          "title": "Reply to Eve — price negotiation question (AI escalated)",
+          "dueLabel": "Today, 5:30pm"
+        },
+        "t-003": {
+          "title": "Send CMA — listing presentation Tue 2pm",
+          "dueLabel": "Tomorrow, 10am"
+        },
+        "t-004": {
+          "title": "Closing call with Karen Larson",
+          "dueLabel": "Tomorrow, 10am"
+        },
+        "t-005": {
+          "title": "Listing prep walkthrough with Natalie",
+          "dueLabel": "Mon, 4pm"
+        }
+      },
+      "events": {
+        "e-001": {
+          "title": "Tour — 4456 Maple Ave with Sarah Chen",
+          "when": "Sat 11:00am"
+        },
+        "e-002": {
+          "title": "Listing presentation — Mark Davis",
+          "when": "Tue 2:00pm"
+        },
+        "e-003": {
+          "title": "Closing call — Karen Larson",
+          "when": "Tomorrow 10:00am"
+        },
+        "e-004": {
+          "title": "Callback — Lily Zhang",
+          "when": "Tue 10:00am"
+        },
+        "e-005": {
+          "title": "Listing prep — Natalie Bowers",
+          "when": "Mon 4:00pm"
+        }
+      },
+      "contacts": {
+        "c-001": {
+          "lastActivity": "AI replied 2 min ago — buyer ready to tour",
+          "interest": "3-bed condo · downtown · max $850K",
+          "tag": "Hot · Tour Saturday"
+        },
+        "c-002": {
+          "lastActivity": "AI sent first-touch SMS 15 min ago",
+          "interest": "First-time buyer · pre-approved $620K",
+          "tag": "First-time · pre-approved"
+        },
+        "c-003": {
+          "lastActivity": "Signed in at 4456 Maple Ave open house",
+          "interest": "Open-house lead · upgrading from condo",
+          "tag": "Same-day open house"
+        },
+        "c-004": {
+          "lastActivity": "Replied yesterday — wants to talk Tuesday",
+          "interest": "Investor · multifamily focus"
+        },
+        "c-005": {
+          "lastActivity": "CMA delivered · listing presentation Tue 2pm",
+          "interest": "Selling — $1.2M est",
+          "tag": "Listing presentation Tue"
+        },
+        "c-006": {
+          "lastActivity": "AI sequence step 2 sent 1h ago"
+        },
+        "c-007": {
+          "lastActivity": "Browsing /homes — 4 properties this week"
+        },
+        "c-008": {
+          "lastActivity": "Submitted home-value request"
+        },
+        "c-009": {
+          "lastActivity": "AI text-back fired · waiting on reply"
+        },
+        "c-010": {
+          "lastActivity": "Tour booked Wed 5pm — 8124 Pine St"
+        },
+        "c-011": {
+          "lastActivity": "Anniversary check-in sent · responded warmly",
+          "interest": "Closed Mar 2022 · sphere candidate"
+        },
+        "c-012": {
+          "lastActivity": "Opened email · no click"
+        },
+        "c-013": {
+          "lastActivity": "Open-house sign-in · 2 days ago"
+        },
+        "c-014": {
+          "lastActivity": "AI follow-up: replied within 38 sec"
+        },
+        "c-015": {
+          "lastActivity": "Offer accepted — under contract",
+          "tag": "Under contract"
+        },
+        "c-016": {
+          "lastActivity": "Quarterly check-in queued"
+        },
+        "c-017": {
+          "lastActivity": "Saved-search alert dispatched"
+        },
+        "c-018": {
+          "lastActivity": "AI sequence step 3 sent · awaiting reply"
+        },
+        "c-019": {
+          "lastActivity": "Visited /mortgage-calculator twice this week"
+        },
+        "c-020": {
+          "lastActivity": "Buyer tour scheduled Sat 11am",
+          "tag": "Tour Saturday"
+        },
+        "c-021": {
+          "lastActivity": "Bot-filtered — flagged as low-intent"
+        },
+        "c-022": {
+          "lastActivity": "Showing feedback received — strong interest"
+        },
+        "c-023": {
+          "lastActivity": "Sphere score: high (equity + life event)",
+          "interest": "Closed Jun 2020 · likely seller"
+        },
+        "c-024": {
+          "lastActivity": "Newsletter open · clicked listing"
+        },
+        "c-025": {
+          "lastActivity": "Mid-funnel drip · day 14 of 30"
+        },
+        "c-026": {
+          "lastActivity": "Single-page visit · no engagement signal"
+        },
+        "c-027": {
+          "lastActivity": "Open-house sign-in · viewed twice"
+        },
+        "c-028": {
+          "lastActivity": "Replied to Q3 ad — wants new construction"
+        },
+        "c-029": {
+          "lastActivity": "Consultation booked — Thu 3pm"
+        },
+        "c-030": {
+          "lastActivity": "Sphere score: very high · 5 yrs since close",
+          "interest": "Closed Jun 2020 · 35% equity growth"
+        },
+        "c-031": {
+          "lastActivity": "Saved 3 properties — Cap Hill"
+        },
+        "c-032": {
+          "lastActivity": "Voice-AI call answered · 4-min convo",
+          "tag": "Voice AI conversion"
+        },
+        "c-033": {
+          "lastActivity": "Auto-replied · no engagement back"
+        },
+        "c-034": {
+          "lastActivity": "Cold reader · monthly newsletter only"
+        },
+        "c-035": {
+          "lastActivity": "Open-house lead · tour Sat afternoon"
+        },
+        "c-036": {
+          "lastActivity": "Listing prep walkthrough Mon 4pm",
+          "tag": "Seller — listing prep"
+        },
+        "c-037": {
+          "lastActivity": "Birthday card auto-sent · responded"
+        },
+        "c-038": {
+          "lastActivity": "Mortgage calculator share · sent to fiancé"
+        },
+        "c-039": {
+          "lastActivity": "Multi-portal lead · dedupe-merged"
+        },
+        "c-040": {
+          "lastActivity": "AI follow-up step 2 sent"
+        },
+        "c-041": {
+          "lastActivity": "Replied yesterday — interested in new builds"
+        },
+        "c-042": {
+          "lastActivity": "Inspection scheduled · 7124 Aspen Ct",
+          "tag": "Under contract"
+        },
+        "c-043": {
+          "lastActivity": "Newsletter open — first in 6 mo"
+        },
+        "c-044": {
+          "lastActivity": "Voice-AI · request callback Tue morning"
+        },
+        "c-045": {
+          "lastActivity": "AI text-back: 19 sec response time",
+          "tag": "Sub-minute response"
+        },
+        "c-046": {
+          "lastActivity": "Browsing /homes — 2 pages"
+        },
+        "c-047": {
+          "lastActivity": "Sign-in 5 days ago · drip step 3"
+        },
+        "c-048": {
+          "lastActivity": "Closing call tomorrow 10am",
+          "tag": "Closing tomorrow"
+        },
+        "c-049": {
+          "lastActivity": "Equity letter delivered — 38% appreciation",
+          "interest": "Closed Feb 2019 · investor lead potential"
+        },
+        "c-050": {
+          "lastActivity": "AI escalated · price negotiation question",
+          "tag": "Escalated · needs you"
+        }
+      },
+      "dealStages": {
+        "under_contract": "Under contract",
+        "inspection": "Inspection",
+        "appraisal": "Appraisal",
+        "clear_to_close": "Clear to close",
+        "closed": "Closed",
+        "active_showing": "Active showing"
+      },
+      "deals": {
+        "d-001": {
+          "nextMilestone": "Inspection scheduled"
+        },
+        "d-002": {
+          "nextMilestone": "Appraisal due"
+        },
+        "d-003": {
+          "nextMilestone": "Closing call tomorrow"
+        },
+        "d-004": {
+          "nextMilestone": "2nd showing booked"
+        }
+      },
+      "drafts": {
+        "dr-001": {
+          "reasoning": "David asked about Tuesday — proposing two specific time slots based on your calendar availability."
+        },
+        "dr-002": {
+          "reasoning": "30-day sphere check-in trigger fired (closed Jun 2020). Adding equity stat from recent comp pulls."
+        },
+        "dr-003": {
+          "reasoning": "Following up on Tuesday 10am callback that's now 36 hours out. Adding three matched properties to the message."
+        },
+        "dr-004": {
+          "reasoning": "Sphere score very high (5 yrs since close, 35% equity growth, life event: new child). Soft seller-prospecting nudge."
+        },
+        "dr-005": {
+          "reasoning": "24h reminder before Saturday tour. Including parking + access notes pulled from the listing."
+        }
+      },
+      "conversations": {
+        "conv-001": {
+          "preview": "AI: \"Saturday 11am works — let me confirm with the listing agent.\""
+        },
+        "conv-002": {
+          "preview": "AI: \"What's your move-in window? I can pull a few options that fit your $620K budget.\""
+        },
+        "conv-003": {
+          "preview": "AI escalated — pricing question outside auto-reply scope"
+        },
+        "conv-004": {
+          "preview": "AI: \"Got it — emailing comps for the 6300 block of Redmond Way now.\""
+        },
+        "conv-005": {
+          "preview": "Voice AI call · 4 min summary attached to contact"
+        },
+        "conv-006": {
+          "preview": "AI replied in 38 sec · awaiting Hannah's response"
+        }
+      },
+      "sources": {
+        "open_house": "Open house",
+        "referral": "Referral",
+        "idx_website": "IDX website",
+        "past_client": "Past client"
+      }
+    },
+    "editorialLanding": {
+      "navProblem": "The problem",
+      "navHowItWorks": "How it works",
+      "navFeatures": "Features",
+      "navPricing": "Pricing",
+      "navSignIn": "Sign in",
+      "heroBefore": "Stop",
+      "heroEm": "losing",
+      "heroAfter": "leads in the first 5 minutes.",
+      "heroSub": "CloseBoss texts and emails every new buyer and seller inquiry in under 60 seconds — in your voice, on your number — then hands the warm ones back to you ready to tour.",
+      "ctaTrial": "Start free",
+      "ctaDemo": "Watch 90-second demo",
+      "noCard": "No credit card",
+      "worksWith": "Works with Zillow, Realtor, FUB, IDX",
+      "demoTime": "Today 0:00",
+      "demoLeadLabel": "New lead from Zillow:",
+      "demoLead": "Sarah M., 555-0147, interested in 2418 Oakhurst Dr.",
+      "demoAgent1": "Hi Sarah, this is Mark with Windermere — saw you asked about 2418 Oakhurst. Are you hoping to tour this weekend or just gathering info for now?",
+      "demoBuyer": "This weekend, if possible. Saturday afternoon?",
+      "demoAgent2": "Perfect — I have 1pm or 3:30pm open. I'll send a calendar hold. Quick thing: are you already working with a lender, or should I introduce you to someone?",
+      "tourRequested": "Tour requested",
+      "confirm": "Confirm",
+      "reschedule": "Reschedule",
+      "leadScore": "Lead score",
+      "weekendReady": "Weekend-ready",
+      "zillowOrigin": "Zillow origin",
+      "prequalAsked": "Pre-qual asked",
+      "quote": "I closed three deals in my trial that would have ghosted me in week one.",
+      "videoBefore": "Watch CloseBoss turn a cold Zillow inquiry into a",
+      "videoEm": "Saturday tour.",
+      "playDemo": "Play demo video",
+      "firstReply": "First reply, median",
+      "replyLift": "Reply rate lift",
+      "yourStack": "Works with your stack",
+      "problemBefore": "You don't have",
+      "problemMid": "a traffic",
+      "problemEm": "problem.",
+      "problemP1": "Every agent we talk to has tried the same playbook. More Zillow spend. Facebook lead gen. Two IDX sites. A landing page that converts at 3%. The leads come in — and then what?",
+      "problemP2": "The problem isn't that your leads are bad. It's that by the time you see the Zillow alert, they've already heard back from someone else. They filled out four forms on a Saturday morning; they're touring with whoever texted them first.",
+      "problemP3": "CloseBoss closes that five-minute window. Every new inquiry gets a reply in your voice, on your number, before you've finished your coffee. The warm ones come back to you. The tire-kickers stay in a drip. You spend your day on the three people who are actually going to close.",
+      "howBefore": "Four steps,",
+      "howEm": "none of them yours.",
+      "featuresBefore": "Built for the way agents",
+      "featuresEm": "actually work.",
+      "instantAi": "Instant AI",
+      "scoringThat": "Lead scoring that reads",
+      "pipelineBefore": "A pipeline that",
+      "pipelineEm": "stays honest.",
+      "stackBefore": "Works with",
+      "stackEm": "what you already use.",
+      "testimonialsBefore": "What agents who closed",
+      "testimonialsEm": "actually say.",
+      "pricingBefore": "Simple pricing,",
+      "pricingEm": "no contracts.",
+      "faqBefore": "The questions agents",
+      "faqEm": "actually ask.",
+      "finalBefore": "Stop losing leads",
+      "finalEm": "tomorrow morning.",
+      "seePricing": "See pricing",
+      "footerBlurb": "AI-powered lead follow-up, scoring, and pipeline management. Built for real estate agents who close.",
+      "footerProduct": "Product",
+      "footerFreeTools": "Free tools",
+      "footerCompany": "Company",
+      "footerLegal": "Legal",
+      "madeForAgents": "Made for agents who close",
+      "firstReplyHint": "Median first-reply time across 30-day trial users.",
+      "replyLiftHint": "Measured against the agent's prior 30-day average.",
+      "demoSenderSub": "3 bed / 2 bath in Lakewood",
+      "volume": "Vol. I · Built for agents",
+      "established": "Est. 2024 · Seattle",
+      "threadCaption": "Actual message thread · Client name changed",
+      "smsSender": "Sarah M. · Zillow lead · 2 min ago",
+      "smsSystemBody": "Sarah M. · Sat 1:00pm · Oakhurst Dr.",
+      "smsScore": "Hot · 92/100",
+      "videoLabel": "Captions on · Muted",
+      "pricingSub": "Free plan never expires · Cancel a paid plan anytime",
+      "copyright": "© 2026 CloseBoss · All rights reserved",
+      "pricingSeePlans": "See all plans"
+    },
+    "entitlementUpgrade": {
+      "currentPlan": "Current plan:",
+      "close": "Close",
+      "comparePlans": "Compare plans",
+      "upgradeNow": "Upgrade Now"
+    },
+    "error": {
+      "somethingWentWrongLoading": "Something went wrong loading this page. Try again, or sign out and back in.",
+      "aClientErrorOccurred": "A client error occurred. Try again, or open the site in a private window."
+    },
+    "growthCapture": {
+      "thanks": "Thanks — we'll follow up with next steps.",
+      "email": "Email",
+      "continueCta": "Continue",
+      "tellMore": "Tell us a bit more",
+      "cityZip": "City or ZIP (optional)",
+      "phone": "Phone (optional)",
+      "name": "Name (optional)"
+    },
+    "homeValueWidget": {
+      "h1": "What's My Home Worth?",
+      "sub": "Get an instant home value estimate and have a local agent follow up with a personalized report.",
+      "addressPlaceholder": "Enter property address",
+      "estimatedValue": "Estimated Home Value",
+      "estimatedRange": "Estimated range:",
+      "unlockNote": "Enter your email to unlock your full home value report and have a local expert follow up.",
+      "nameOptional": "Name (optional)",
+      "phoneOptional": "Phone (optional)",
+      "thankYou": "Thank you! Your home value report request has been sent. An agent will follow up with a detailed CMA.",
+      "poweredBy": "Powered by CloseBoss",
+      "getMyEstimate": "Get My Estimate",
+      "unlockFullReport": "Unlock Full Report"
+    },
+    "houseSearch": {
+      "whatLookingFor": "What is your buyer looking for?",
+      "savedAs": "Saved as",
+      "detach": "Detach",
+      "refine": "Refine the search",
+      "noMatches": "No real listings matched. Try loosening the criteria.",
+      "close": "Close",
+      "open": "Open",
+      "cancel": "Cancel",
+      "searchingWeb": "Searching the web for matching listings… this can take up to a minute.",
+      "quickLineToBuyer": "A quick line to your buyer…",
+      "unlimitedSearches": "Unlimited searches",
+      "saveSearch": "Save search",
+      "sendEmail": "Send email",
+      "viewListing": "View listing ↗",
+      "emailToBuyer": "✉ Email to buyer",
+      "selectedCount_one": "{{count}} selected",
+      "selectedCount_other": "{{count}} selected",
+      "runCount_one": "{{count}} run",
+      "runCount_other": "{{count}} runs",
+      "emailListingsToBuyer_one": "Email {{count}} listing to buyer",
+      "emailListingsToBuyer_other": "Email {{count}} listings to buyer",
+      "listingsSuffix_one": "{{count}} listing",
+      "listingsSuffix_other": "{{count}} listings",
+      "quotaResets": "Daily House Search quota — resets {{date}}"
+    },
+    "idxCapture": {
+      "close": "Close",
+      "allSet": "You're all set.",
+      "agentWillReach": "A local agent will reach out shortly. We'll also send updates by email.",
+      "keepBrowsing": "Keep browsing",
+      "email": "Email",
+      "name": "Name (optional)",
+      "consent": "I agree to receive automated text messages about this property and similar homes from CloseBoss and its agents at the number above. Msg & data rates may apply; message frequency varies. Consent is not a condition of purchase. Reply STOP to unsubscribe, HELP for help.",
+      "privacyNote": "We respect your privacy. No spam — just listings that match what you're looking for.",
+      "action": {
+        "favorite": {
+          "title": "Save this home",
+          "subtitle": "Get instant alerts when the price changes or it goes pending.",
+          "cta": "Save home"
+        },
+        "save_search": {
+          "title": "Save this search",
+          "subtitle": "We'll email you when new homes match your filters.",
+          "cta": "Save search"
+        },
+        "schedule_tour": {
+          "title": "Schedule a tour",
+          "subtitle": "We'll connect you with a local agent to schedule a showing.",
+          "cta": "Request tour"
+        },
+        "contact_agent": {
+          "title": "Talk to a local agent",
+          "subtitle": "Get fast answers about this home and the neighborhood.",
+          "cta": "Contact agent"
+        },
+        "view_threshold": {
+          "title": "Save your search to keep browsing",
+          "subtitle": "Free instant access — we'll email you new matches as they hit the market.",
+          "cta": "Continue browsing"
+        }
+      },
+      "phoneRequired": "Phone (required)",
+      "phoneOptional": "Phone (optional, for SMS updates)"
+    },
+    "index": {
+      "wishingYouABright": "Wishing you a bright winter",
+      "hopeAutumnTreatsYou": "Hope autumn treats you well",
+      "aLittleSunshineFor": "A little sunshine for your day",
+      "yourAgent": "Your agent"
+    },
+    "labels": {
+      "call": "Call",
+      "sms": "SMS",
+      "emailChannel": "Email",
+      "emailAddress": "Email",
+      "send": "Send",
+      "close": "Close",
+      "status": "Status",
+      "submitted": "Submitted",
+      "accepted": "Accepted",
+      "financing": "Financing",
+      "notes": "Notes",
+      "appraisal": "Appraisal",
+      "loan": "Loan",
+      "breadcrumb": "Breadcrumb",
+      "calls": "Calls",
+      "missed": "Missed",
+      "all": "All",
+      "off": "Off",
+      "decrement": "Decrement",
+      "increment": "Increment",
+      "location": "Location",
+      "price": "Price",
+      "insurance": "Insurance",
+      "hoa": "HOA",
+      "melloRoos": "Mello-Roos",
+      "neighborhood": "Neighborhood",
+      "schools": "Schools",
+      "language": "Language"
+    },
+    "leadCapture": {
+      "close": "Close",
+      "enterEmail": "Enter your email to unlock the full report.",
+      "email": "Email",
+      "enterName": "Enter your name to personalize your report.",
+      "name": "Name",
+      "viewReport": "View report",
+      "smsOptional": "Get instant updates via SMS (optional, but recommended).",
+      "talkToAgent": "Talk to an agent",
+      "skip": "Skip for now",
+      "allSet": "You're all set.",
+      "unlocked": "Your full report is unlocked. You can view it anytime below.",
+      "viewYourReport": "View your report",
+      "noSpam": "We save your progress at each step. No spam."
+    },
+    "localSeoForm": {
+      "intro": "Get a fast estimate and personalized next steps.",
+      "address": "Property address",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "submitted": "Submitted! We will follow up shortly."
+    },
+    "localSeoLead": {
+      "getMyFreeReport": "Get My Free Report"
+    },
+    "misc": {
+      "close": "Close",
+      "createAgentAccount": "Create your agent account",
+      "privacyPolicy": "Privacy Policy",
+      "terms": "Terms",
+      "sendEmail": "Send email",
+      "subject": "Subject",
+      "sendSms": "Send SMS",
+      "twilioNote": "Uses your Twilio number; delivery updates sync when configured.",
+      "hideTranslation": "Hide translation",
+      "retry": "Retry",
+      "hideBossGuide": "Hide Boss setup guide",
+      "send": "Send",
+      "likelyBuyers": "Today's likely buyers",
+      "likelySellers": "Today's likely sellers",
+      "draftMessage": "Draft message",
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "actionPlanAria": "Today's action plan",
+      "actionPlan": "Today's Action Plan",
+      "pipelineAria": "Sales pipeline",
+      "pipeline": "Your Sales Pipeline",
+      "somethingWrong": "Something went wrong",
+      "tryAgain": "Try Again",
+      "poweredByGoogle": "Powered by Google",
+      "client": "Client",
+      "change": "Change",
+      "recentWithBuyer": "Recent with this buyer",
+      "creditsTip": "Credits — click to buy more",
+      "vsPrevPeriod": "vs prev period",
+      "comparePlans": "Compare plans",
+      "chooseAvatar": "Choose an avatar",
+      "unexpectedError": "An unexpected error occurred.",
+      "logoAlt": "CloseBoss AI"
+    },
+    "notifications": {
+      "missedCall": "Missed Call:",
+      "appointments": "Appointments",
+      "tasks": "Tasks",
+      "nearbyActivity": "Automated nearby listing activity sent to your leads (email/SMS).",
+      "lead": "Lead"
+    },
+    "onboardingFunnel": {
+      "fullName": "Full name",
+      "namePlaceholder": "Jordan Martinez",
+      "workEmail": "Work email",
+      "quickSetup": "Quick setup",
+      "primaryCity": "Primary city / farm area",
+      "cityPlaceholder": "e.g. Austin, TX",
+      "pipelineFocus": "Pipeline focus",
+      "dealSize": "Typical deal size",
+      "simulation": "Live system simulation",
+      "newLeads": "New leads",
+      "leadsWaiting": "Leads are waiting",
+      "unlocked": "What you unlocked in this preview",
+      "chooseScale": "Choose how you scale",
+      "finishSetup": "Finish setup in the real app",
+      "previewBanner": "Preview experience — no charge until you upgrade.",
+      "pricing": "Pricing",
+      "heroTitle": "You're minutes from your first qualified leads",
+      "heroSub": "No credit card. We'll personalize your demo pipeline, then show you real-style conversations.",
+      "logIn": "Log in",
+      "tuneDemo": "We'll tune the demo to your market and price band.",
+      "back": "Back",
+      "tapToRespond": "Tap one to respond — speed wins listings.",
+      "draftOnPro": "AI can draft follow-ups on Pro — unlock after upgrade.",
+      "provedSpeed": "You just proved response speed. Premium agents get full CRM, AI follow-ups, and unlimited lead routing — so none of these slip while you're in appointments.",
+      "inboxPreview": "Inbox + thread view (what you'll use daily)",
+      "openPricing": "Open full pricing page",
+      "trialNote": "Start free — the free plan never expires. Cancel a paid plan anytime.",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "save17": "Save 17%",
+      "createProfile": "Create your agent profile (phone + password), then start your trial or upgrade from pricing. Your preview preferences aren't lost — we passed your email to signup.",
+      "createAccount": "Create agent account",
+      "viewPlans": "View all plans & pricing",
+      "alreadyRegistered": "Already registered? Log in",
+      "restart": "Restart preview (clears saved progress)",
+      "stepOfEight": "Step {{step}} of 8",
+      "alreadyHaveAccount": "Already have an account?",
+      "scoreN": "Score {{score}}",
+      "profilesMatched": "Realistic lead profiles matched to {{city}}",
+      "teamPrice": "Team — {{price}} per team",
+      "continue": "Continue →",
+      "activatePipeline": "Activate my pipeline →",
+      "turningOn": "Turning on your AI lead desk…",
+      "openInbox": "Open my inbox →",
+      "handshake": "Secure handshake with CloseBoss routing…",
+      "writeFastReply": "Write a fast reply… (demo)",
+      "sendReply": "Send reply →",
+      "comparePlans": "Compare plans & unlock →",
+      "teamHeading": "Need more than one seat?",
+      "contactSales": "Contact sales →",
+      "readyCreateAccount": "I&apos;m ready — create my agent account →",
+      "loadingConversation": "Loading conversation…",
+      "simulatedLeadStream": "Simulated live “incoming lead” stream",
+      "moreQueued": "2 more conversations are queued in your territory",
+      "waitingCount_one": "{{count}} waiting",
+      "waitingCount_other": "{{count}} waiting",
+      "noCardCancel": "No credit card required · Cancel anytime",
+      "teamSeats": "Up to 5 seats · round-robin routing · Top Producer Track for every member.",
+      "incoming": "Incoming ·",
+      "firstResponseWins": "⏱ First response wins · waiting {{minutes}}m",
+      "availableLanguages": "Available in English and 中文.",
+      "forever": "forever",
+      "perMo": "/mo",
+      "billedMonthly": "Billed monthly",
+      "billedYearly": "${{annual}} billed yearly · save ${{save}}",
+      "badgePopular": "Most Popular",
+      "badgeSignature": "Bilingual & Luxury",
+      "creditsPerMo": "{{credits}} credits/mo",
+      "approxCallMinutes": "≈ {{minutes}} AI call minutes",
+      "approxVideos": "≈ {{videos}} AI videos",
+      "plan": {
+        "starter": {
+          "tagline": "For new agents testing the platform.",
+          "leads": "5 leads · 50 contacts",
+          "cma": "2 CMA reports/day",
+          "sms": "AI SMS + email (basic)",
+          "actions": "100 AI actions/mo",
+          "noSms": "No SMS automation",
+          "limitedAi": "Limited AI"
+        },
+        "pro": {
+          "tagline": "For active agents closing deals consistently.",
+          "leads": "500 leads · 500 contacts",
+          "bilingual": "Bilingual English / 中文 AI",
+          "coaching": "Producer Track coaching",
+          "cma": "5 CMA reports/day",
+          "sms": "SMS + email AI (< 60s)",
+          "bookkeeping": "Bookkeeping — invoices & expenses",
+          "actions": "5,000 AI actions/mo"
+        },
+        "premium": {
+          "tagline": "For top producers running solo.",
+          "leads": "Unlimited leads & contacts",
+          "receptionist": "AI Receptionist + AI Concierge",
+          "coaching": "Top Producer Track coaching",
+          "isa": "ISA workflow",
+          "esign": "E-signature (Dotloop / DocuSign)",
+          "actions": "Unlimited AI actions"
+        },
+        "signature": {
+          "tagline": "For relationship-driven agents serving high-value clients.",
+          "everything": "Everything in Premium, plus:",
+          "sphere": "Sphere Intelligence Pro",
+          "onboarding": "White-glove onboarding",
+          "concierge": "Concierge support",
+          "calendar": "Cultural calendar automations",
+          "voice": "Custom voice tuning"
+        }
+      },
+      "startFreeTrial": "Start free trial",
+      "freeTrialNote": "Your real workspace, no credit card",
+      "upgrade": "Upgrade",
+      "focus": {
+        "buyers": {
+          "label": "Mostly buyers",
+          "hint": "Tour requests & pre-approvals"
+        },
+        "sellers": {
+          "label": "Mostly sellers",
+          "hint": "Listings & CMA conversations"
+        },
+        "both": {
+          "label": "Both equally",
+          "hint": "Mixed pipeline"
+        }
+      }
+    },
+    "oneWord": {
+      "admin": "Admin",
+      "reply": "Reply",
+      "english": "English",
+      "provider": "Provider",
+      "worked": "Worked:",
+      "concerns": "Concerns:",
+      "action": "Action:",
+      "bookkeeper": "Bookkeeper"
+    },
+    "openHouseSignup": {
+      "leaveInfo": "Leave your info and we will follow up with open house updates.",
+      "property": "Property:",
+      "fullName": "Your full name",
+      "notesOptional": "Notes (optional)",
+      "notesPlaceholder": "Anything you'd like the agent to know?",
+      "interestedIn": "I'm interested in:",
+      "moreInfo": "More information about this property",
+      "similarProps": "Similar properties on the market",
+      "valuation": "A home valuation for my property",
+      "loadingProperty": "Loading property…",
+      "submit": "Submit",
+      "heading": "Sign up for Open House Updates",
+      "demoNote": "Sample address — scan the QR code at the property to sign in for that listing."
+    },
+    "paywall": {
+      "youVeReachedYour": "You’ve reached your free limit. Upgrade to continue.",
+      "startFreeTrial": "Start Free Trial"
+    },
+    "paywallModal": {
+      "closeDialog": "Close dialog",
+      "title": "Upgrade to continue",
+      "close": "Close",
+      "sub": "Unlock CRM, alerts, dashboard insights, and higher usage limits."
+    },
+    "postcardAnimations": {
+      "happyBirthday": "Happy Birthday,",
+      "anotherYear": "Another year in your home,",
+      "thinkingOfYou": "Thinking of you,",
+      "anniversaryCongrats": "Congrats on the anniversary 🎊",
+      "agentAlt": "Agent"
+    },
+    "postcardScene": {
+      "yourAgent": "Your agent"
+    },
+    "presentationView": {
+      "title": "Seller Listing Presentation",
+      "propertyDetails": "Property Details",
+      "pricingStrategy": "Pricing Strategy",
+      "marketInsights": "Market Insights",
+      "marketingPlan": "Marketing Plan",
+      "neighborhood": "Neighborhood",
+      "schools": "Schools",
+      "school": "School",
+      "level": "Level",
+      "rating": "Rating",
+      "distance": "Distance",
+      "noComps": "No comparable sold data available yet.",
+      "address": "Address",
+      "sqft": "Sqft",
+      "sold": "Sold",
+      "price": "Price",
+      "sources": "Sources"
+    },
+    "pricing": {
+      "theMath": "The math",
+      "humanVsAi": "A human team vs your AI team",
+      "hiringAddsUp": "Hiring even a partial team adds up fast — and you'd still have to manage it. Your AI team does the same jobs for the price of a tool.",
+      "humanPerYear": "A human team — per year",
+      "plusBenefits": "Plus benefits, training, and turnover — and you manage all of it.",
+      "yourAiTeam": "Your AI team — CloseBoss",
+      "virtuallyFree": "The whole team — virtually free next to one human hire.",
+      "start7DayFree": "Start 7-day free trial",
+      "starting": "Starting..."
+    },
+    "progressiveLeadCapture": {
+      "savePhone": "Save phone"
+    },
+    "serviceAreas": {
+      "state": "State",
+      "county": "County",
+      "allCities": "I serve all cities in this county",
+      "city": "City",
+      "add": "Add service area",
+      "hint": "Pick a state, then a county, then either name a city or check “all cities” to cover the whole county.",
+      "selectState": "Select state…"
+    },
+    "serviceAreasPicker": {
+      "pickAStateFirst": "Pick a state first",
+      "selectCounty": "Select county…",
+      "pickACountyFirst": "Pick a county first",
+      "cityPlaceholder": "e.g. Alhambra",
+      "removeAria": "Remove {{area}}"
+    },
+    "shareReport": {
+      "share": "Share",
+      "downloadPdf": "Download PDF",
+      "contact": "Contact",
+      "emailEllipsis": "Email…",
+      "textEllipsis": "Text…",
+      "emailALink": "Email a link",
+      "textALink": "Text a link",
+      "enterManually": "Enter manually…",
+      "loadingContacts": "Loading contacts…",
+      "openMessagingApp": "Open messaging app",
+      "openEmailApp": "Open email app",
+      "phonePlaceholder": "Phone number",
+      "emailPlaceholder": "Email address"
+    },
+    "signupPage": {
+      "prefilled": "You're signed in — we filled this form from your account. Update anything below and save (no new password needed).",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords don't match.",
+      "nameRequired": "Name is required.",
+      "emailRequired": "Email is required.",
+      "phoneInvalid": "Phone must be a valid US number (10 digits) if provided.",
+      "smsConsentRequired": "To receive SMS, please check the box confirming you consent to text messages. Or leave the phone field empty.",
+      "sessionExpired": "Session expired. Please log in again.",
+      "couldNotSaveProfile": "Could not save profile.",
+      "passwordRequirements": "Please choose a password that meets all the requirements below.",
+      "acceptTerms": "Please accept the Terms of Service and Privacy Policy to continue.",
+      "confirmEmailThenLogIn": "Check your email to confirm your account, then come back to log in.",
+      "emailSendFailed": "We couldn't send the confirmation email. Please try again in a few minutes.",
+      "signupFailed": "Signup failed.",
+      "signInFailed": "Sign in failed.",
+      "emailTiedToAccount": "Email is tied to your signed-in account",
+      "saving": "Saving…",
+      "creatingAccount": "Creating account…",
+      "saveProfile": "Save profile",
+      "signUp": "Sign Up",
+      "iAgree": "I agree to the",
+      "continueGoogle": "Continue with Google",
+      "continueApple": "Continue with Apple",
+      "goToDashboard": "Go to dashboard",
+      "startAgentSetup": "Start agent setup",
+      "alreadyHaveAccount": "Already have an account?",
+      "logIn": "Log in",
+      "alreadyRegistered": "An account already exists for this email.",
+      "logInInstead": "Log in instead"
+    },
+    "subscribe": {
+      "subscribe": "Subscribe",
+      "checkYourEmailTo": "Check your email to confirm your subscription.",
+      "weLlSendYour": "We'll send your weekly rates + housing briefing for the region you picked. In the meantime, browse the latest issues below."
+    },
+    "subscribeForm": {
+      "email": "Email",
+      "region": "Region",
+      "states": "States",
+      "topMetros": "Top metros",
+      "freeBriefing": "Free weekly briefing. No spam — unsubscribe anytime."
+    },
+    "supportChat": {
+      "support": "Support",
+      "closeChat": "Close support chat",
+      "openChat": "Open support chat",
+      "title": "Customer Support",
+      "yourName": "Your name",
+      "yourEmail": "Your email",
+      "subject": "Subject (optional)",
+      "describeIssue": "Start by describing your question or issue below.",
+      "refreshing": "Refreshing…",
+      "writeMessage": "Write your message...",
+      "describeIssuePlaceholder": "Describe your issue to start the chat..."
+    },
+    "topbar": {
+      "upgrade": "Upgrade"
+    },
+    "tour": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "done": "Done",
+      "close": "Close the tour",
+      "progress": "{{current}} of {{total}}",
+      "steps": {
+        "askMax": {
+          "title": "Start with Max",
+          "body": "Tell Max what you want done in plain words — \"text my hot leads\", \"plan my day\" — and your AI team carries it out."
+        },
+        "conversations": {
+          "title": "Every conversation, one place",
+          "body": "Calls, texts and emails for a contact sit in a single thread, whether you or your AI team sent them."
+        },
+        "leads": {
+          "title": "Your book",
+          "body": "Everyone you know, with ratings that update themselves as people call, reply and open what you send."
+        },
+        "tasks": {
+          "title": "What needs you",
+          "body": "Anything your AI team wants approved before it goes out waits here. Nothing sends without you."
+        },
+        "aiTeam": {
+          "title": "Your AI team",
+          "body": "Five assistants — Receptionist, Sales, Marketing, Transaction, Accountant. Each has its own settings and its own record of what it did. Manage them here."
+        },
+        "quickActions": {
+          "title": "Start something quickly",
+          "body": "Add a contact, write a post or send a message without leaving the page you are on."
+        },
+        "account": {
+          "title": "You and your account",
+          "body": "Your profile, settings, billing and the help guides sit behind your name — along with this tour, whenever you want it again."
+        }
+      }
+    },
+    "voiceAiDemoRequest": {
+      "weLlHaveThe": "We'll have the AI give you a call shortly. Pick up to hear how it qualifies a real-estate lead.",
+      "ourTeamWillReach": "Our team will reach out within one business day to schedule your private demo.",
+      "haveTheAiCall": "Have the AI call me",
+      "requestAPrivateDemo": "Request a private demo"
+    },
+    "voiceDemo": {
+      "onTheList": "You're on the list.",
+      "callYou": "Or have it call you.",
+      "callYouSub": "We'll dial you within minutes so you hear the AI from the receiving end — the same experience your leads will have.",
+      "yourName": "Your name",
+      "namePlaceholder": "Alex Rivera",
+      "brokerage": "Brokerage",
+      "brokeragePlaceholder": "Greenfield Realty",
+      "phone": "Phone",
+      "email": "Email",
+      "whatYouWant": "What you want",
+      "consent": "I agree to receive calls and texts from CloseBoss at the number provided, including via automated systems, for the purpose of demoing the voice AI. Consent is not a condition of any purchase. Reply STOP to unsubscribe."
+    },
+    "warehouseMetrics": {
+      "zhvi": {
+        "label": "Typical home value (ZHVI)",
+        "short": "Home value"
+      },
+      "median_sale_price": {
+        "label": "Median sale price",
+        "short": "Sale price"
+      },
+      "inventory": {
+        "label": "Homes for sale",
+        "short": "Inventory"
+      },
+      "median_dom": {
+        "label": "Median days on market",
+        "short": "Days on market"
+      },
+      "months_supply": {
+        "label": "Months of supply",
+        "short": "Months supply"
+      },
+      "homes_sold": {
+        "label": "Homes sold",
+        "short": "Homes sold"
+      },
+      "sale_to_list": {
+        "label": "Sale-to-list ratio",
+        "short": "Sale-to-list"
+      },
+      "new_home_inventory": {
+        "label": "New-home inventory",
+        "short": "New-home inv."
+      },
+      "mortgage_30yr": {
+        "label": "30-year fixed mortgage rate",
+        "short": "30-yr rate"
+      },
+      "mortgage_15yr": {
+        "label": "15-year fixed mortgage rate",
+        "short": "15-yr rate"
+      },
+      "treasury_10yr": {
+        "label": "10-year Treasury yield",
+        "short": "10-yr Treasury"
+      },
+      "dayOne": "day",
+      "dayOther": "days"
+    }
+  }
+}
