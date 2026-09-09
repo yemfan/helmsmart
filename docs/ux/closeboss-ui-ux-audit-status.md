@@ -227,6 +227,21 @@ presence and passed while the logo rendered `pages.brandLogo.tagline` on every
 public page. Reach is a property of imports, not folders:
 `components/dashboard/TopBar.tsx` renders on `/plans`.
 
+Measured on production afterwards, the largest chunk a page downloads:
+
+| page | before | after |
+| --- | --- | --- |
+| Ask Max | 225 KB | **113 KB** |
+| `/plans` | 227 KB | **125 KB** |
+
+**The Lighthouse scores barely moved** — 0.81-0.85 against 0.80-0.85 before,
+with LCP tightening from 1.71-1.97 s to 1.71-1.77 s. That is the honest
+result and it makes sense: the locale chunk never blocked first paint, since
+the server already rendered the text. What halving it buys is the first load
+after each deploy, when the browser is fetching that chunk before the page
+becomes interactive, and every byte on a phone plan. Do not expect a
+performance score to show it.
+
 Smaller and still open: the client JS arrives in eight dependency rounds
 (~26 chunks), which is the bundler's chunk graph rather than app code; and
 the server's response time varies run to run (0.6-2.6 s for the same page on
