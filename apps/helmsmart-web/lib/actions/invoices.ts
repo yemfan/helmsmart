@@ -395,12 +395,16 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
 
   // Fire notification — the owner reads this one, so it speaks their language
   // and their organization's currency.
+  const paidAmount = money(total, await getServerLocale(), await orgCurrency(orgId));
   await createNotification({
     type: "invoice_paid",
-    title: t("invoices.notifications.paymentReceived", {
-      amount: money(total, await getServerLocale(), await orgCurrency(orgId)),
-    }),
+    title: t("invoices.notifications.paymentReceived", { amount: paidAmount }),
     body: t("invoices.notifications.markedPaid", { number: inv.invoice_number }),
+    titleKey: "notifications.events.invoicePaid",
+    bodyKey: "notifications.events.invoicePaidBody",
+    // The amount is already formatted in the org's currency; the reader's
+    // language decides the sentence around it, not the number inside it.
+    params: { amount: paidAmount, number: inv.invoice_number },
     link: `/books/invoices/${invoiceId}`,
   });
 

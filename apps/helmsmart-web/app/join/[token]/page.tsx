@@ -1,6 +1,16 @@
+/**
+ * Public team-invitation landing page — /join/[token]
+ *
+ * Read by a colleague who may have no HelmSmart account at all, so the locale
+ * is the VISITOR's — cookie, then Accept-Language — exactly as `app/accept/[id]`
+ * resolves it, and never an owner's stored preference. The invitation EMAIL
+ * that leads here is already translated; this page was not, so a Spanish reader
+ * followed a Spanish email to an English "Invalid invitation".
+ */
 import { createServiceClient } from "@/lib/supabase/server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getServerT } from "@/lib/i18n/server";
 import { AcceptButton } from "./accept-client";
 import { Building2 } from "lucide-react";
 
@@ -10,6 +20,7 @@ export default async function JoinPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
+  const t = await getServerT("public");
 
   // Look up invitation (service client — no session required)
   const serviceSb = await createServiceClient();
@@ -34,6 +45,8 @@ export default async function JoinPage({
   const invalid = !invite;
   const accepted = !!invite?.accepted_at;
   const expired  = invite ? new Date(invite.expires_at) < new Date() : false;
+  // Which refusal to explain, and the key group that holds both halves of it.
+  const reason = invalid ? "invalid" : accepted ? "accepted" : "expired";
 
   // Check if user is already signed in
   const supabase = await createClient();
@@ -83,14 +96,10 @@ export default async function JoinPage({
           /* Error state */
           <div>
             <h1 style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", margin: "0 0 8px" }}>
-              {invalid ? "Invalid invitation" : accepted ? "Already accepted" : "Invitation expired"}
+              {t(`join.error.${reason}.title`)}
             </h1>
             <p style={{ fontSize: 14, color: "#64748b", margin: "0 0 24px", lineHeight: 1.6 }}>
-              {invalid
-                ? "This invitation link is invalid or has been revoked."
-                : accepted
-                ? "This invitation has already been used. Try signing in directly."
-                : "This invitation expired. Ask your team admin to send a new one."}
+              {t(`join.error.${reason}.body`)}
             </p>
             <a
               href="/login"
@@ -105,21 +114,30 @@ export default async function JoinPage({
                 textDecoration: "none",
               }}
             >
-              Go to sign in
+              {t("join.error.signIn")}
             </a>
           </div>
         ) : (
           /* Valid invitation */
           <div>
             <h1 style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", margin: "0 0 8px" }}>
-              You're invited!
+              {t("join.invited.title")}
             </h1>
-            <p style={{ fontSize: 14, color: "#64748b", margin: "0 0 4px", lineHeight: 1.6 }}>
-              <strong style={{ color: "#334155" }}>{orgName}</strong> has invited you to join their workspace as a{" "}
-              <strong style={{ color: "#334155", textTransform: "capitalize" }}>{invite.role}</strong>.
+            {/*
+              One sentence, one key. Split around the two <strong>s it would
+              carry English word order into every language — and the role and
+              the workspace do not sit in that order in Chinese. The emphasis
+              goes, the sentence stays whole. `role` is a database enum, so it
+              is translated through its own key group rather than capitalised.
+            */}
+            <p style={{ fontSize: 14, color: "#334155", margin: "0 0 4px", lineHeight: 1.6 }}>
+              {t("join.invited.body", {
+                org: orgName,
+                role: t(`join.roles.${invite.role}`, { defaultValue: invite.role }),
+              })}
             </p>
             <p style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 28px" }}>
-              Sent to {invite.email}
+              {t("join.invited.sentTo", { email: invite.email })}
             </p>
 
             {user ? (
@@ -141,7 +159,7 @@ export default async function JoinPage({
                     textDecoration: "none",
                   }}
                 >
-                  Create an account & join
+                  {t("join.invited.signUp")}
                 </a>
                 <a
                   href={`/login?return=/join/${token}`}
@@ -156,7 +174,7 @@ export default async function JoinPage({
                     textDecoration: "none",
                   }}
                 >
-                  Sign in to existing account
+                  {t("join.invited.signIn")}
                 </a>
               </div>
             )}

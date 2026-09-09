@@ -180,9 +180,17 @@
     "ask": "Pedir a Alex que les envíe un recordatorio"
   },
   "errors": {
-    "notAuthenticated": "No autenticado",
-    "noOrg": "Sin empresa",
+    "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
+    "noOrg": "No hay ninguna empresa seleccionada. Vuelva a iniciar sesión para continuar.",
     "titleRequired": "El título es obligatorio",
     "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria"
+  },
+  "generated": {
+    "reviewOpenItems": "Revise y priorice los pendientes — cambie este título",
+    "reviewOpenItemsNotes": "Mark creó esta tarea. Cambie el título, asígnela y ponga una fecha de vencimiento.",
+    "callBack": "Devolver la llamada a {{who}}",
+    "followUpAiCall": "Seguimiento: llamada con IA de {{who}}",
+    "replyNeeded": "{{intent}} de {{sender}} — requiere respuesta",
+    "followUpWithClient": "Dar seguimiento a {{client_name}}"
   }
 }

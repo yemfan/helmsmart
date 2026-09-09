@@ -135,13 +135,19 @@ export async function GET(request: NextRequest) {
         // metrics table may be absent for this pack — ignore
       }
 
-      // Notify the owner
+      // Notify the owner. The headline is the digest's own sentence — already
+      // written in the owner's language by `generateBusinessInsight`, and not
+      // a template — so it carries no key. The stand-in for a missing headline
+      // is copy, so that one does.
+      const headline = result.insight?.headline;
       await createNotificationService(
         org.id,
         {
           type: "system",
           title: t("weeklyInsights.notification.title"),
-          body: result.insight?.headline ?? t("weeklyInsights.notification.body"),
+          body: headline ?? t("weeklyInsights.notification.body"),
+          titleKey: "notifications.events.weeklyInsight",
+          bodyKey: headline ? undefined : "notifications.events.weeklyInsightBody",
           link: "/insights",
         },
         db

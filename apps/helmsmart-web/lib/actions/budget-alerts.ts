@@ -66,6 +66,13 @@ export async function checkProjectBudgetAlert(projectId: string): Promise<void> 
         ? `${project.name} is over budget`
         : `${project.name} is nearing budget`,
     body: `This project has used ${burnPct.toFixed(0)}% of its budget.`,
+    titleKey:
+      newLevel === 100
+        ? "notifications.events.budgetOver"
+        : "notifications.events.budgetNearing",
+    bodyKey: "notifications.events.budgetBody",
+    // The project's own name is data — it is never translated.
+    params: { project: project.name, percent: burnPct.toFixed(0) },
     link: `/projects/${projectId}`,
   });
 

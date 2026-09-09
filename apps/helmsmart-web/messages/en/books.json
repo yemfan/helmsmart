@@ -692,7 +692,7 @@
         "tax": "Sales Tax"
       },
       "errors": {
-        "notAuthenticated": "Not authenticated"
+        "notAuthenticated": "Your session has expired. Sign in again to continue."
       },
       "fallbacks": {
         "uncategorized": "Uncategorized",
@@ -1202,5 +1202,8 @@
       "noChartOfAccounts": "No chart of accounts found.",
       "categorizeFailed": "AI categorization failed."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Your session has expired. Sign in again to continue."
   }
 }

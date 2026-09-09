@@ -261,6 +261,13 @@ export async function submitApprovalRequest(input: {
     type: "system",
     title: `Approval needed: ${input.subjectLabel}`,
     body: `Step 1 of ${steps.length}: ${firstStep.step_name}`,
+    titleKey: "notifications.events.approvalNeeded",
+    bodyKey: "notifications.events.approvalNeededBody",
+    params: {
+      subject: input.subjectLabel,
+      total: steps.length,
+      step: firstStep.step_name,
+    },
     link: `/workflows/requests/${request.id}`,
   });
 
@@ -339,6 +346,16 @@ export async function respondToApprovalStep(
       type: "system",
       title: `Approval rejected: ${request.subject_label}`,
       body: note ? `Reason: ${note.slice(0, 100)}` : "No reason given",
+      titleKey: "notifications.events.approvalRejected",
+      // Two keys rather than one with an empty `reason`: "Motivo:" followed by
+      // nothing is not a sentence in any of the three languages.
+      bodyKey: note
+        ? "notifications.events.approvalRejectedBody"
+        : "notifications.events.approvalRejectedNoReason",
+      params: {
+        subject: request.subject_label,
+        reason: note ? note.slice(0, 100) : "",
+      },
       link: `/workflows/requests/${requestId}`,
     });
 
@@ -362,6 +379,9 @@ export async function respondToApprovalStep(
       type: "system",
       title: `✅ Approved: ${request.subject_label}`,
       body: `All ${maxStep} approval step${maxStep > 1 ? "s" : ""} completed`,
+      titleKey: "notifications.events.approvalApproved",
+      bodyKey: "notifications.events.approvalApprovedBody",
+      params: { subject: request.subject_label, count: maxStep },
       link: `/workflows/requests/${requestId}`,
     });
 
@@ -385,6 +405,13 @@ export async function respondToApprovalStep(
     type: "system",
     title: `Approval step ${nextStep}: ${request.subject_label}`,
     body: `Step ${request.current_step} approved. Step ${nextStep} needs your review.`,
+    titleKey: "notifications.events.approvalAdvanced",
+    bodyKey: "notifications.events.approvalAdvancedBody",
+    params: {
+      subject: request.subject_label,
+      step: nextStep,
+      previous: request.current_step,
+    },
     link: `/workflows/requests/${requestId}`,
   });
 

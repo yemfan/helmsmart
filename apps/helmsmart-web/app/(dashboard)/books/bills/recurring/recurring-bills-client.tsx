@@ -72,7 +72,8 @@ function NewRecurringBillModal({
         });
         onSaved();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("bills.errors.createRecurringFailed"));
+        console.error("create recurring bill", err);
+        setError(t("bills.errors.createRecurringFailed"));
       }
     });
   }

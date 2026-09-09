@@ -167,7 +167,10 @@ export async function POST(request: NextRequest) {
     await createNotificationService(org.id, {
       type: "new_message",
       title: "New SMS received",
+      // No body key: the message is what the customer texted, in their own
+      // language. It is quoted, not translated.
       body: body.length > 80 ? body.slice(0, 77) + "…" : body,
+      titleKey: "notifications.events.newSms",
       link: "/inbox",
     });
 
@@ -352,6 +355,11 @@ async function handleAppointmentSelfService(args: {
         type: "booking",
         title: "Appointment cancelled by customer",
         body: `${from}${res.label ? ` — was ${res.label}` : ""}`,
+        titleKey: "notifications.events.appointmentCancelled",
+        // With no label there is no sentence left to translate — just the
+        // number — so that case carries no body key at all.
+        bodyKey: res.label ? "notifications.events.appointmentCancelledBody" : undefined,
+        params: { caller: from, when: res.label ?? "" },
         link: "/calendar",
       });
     }

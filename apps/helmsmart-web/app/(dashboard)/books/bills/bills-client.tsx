@@ -87,7 +87,8 @@ function NewBillModal({
         });
         onSaved();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("bills.errors.saveFailed"));
+        console.error("save bill", err);
+        setError(t("bills.errors.saveFailed"));
       }
     });
   }
@@ -200,7 +201,8 @@ function PayBillModal({
         await payBill({ billId: bill.id, bankAccountId, paymentDate });
         onPaid();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("bills.errors.paymentFailed"));
+        console.error("record bill payment", err);
+        setError(t("bills.errors.paymentFailed"));
       }
     });
   }

@@ -1,29 +1,40 @@
+/**
+ * Public client portal — /portal/[token]
+ *
+ * `clients.portal_token` is the capability; nobody signs in. So the reader is
+ * the CUSTOMER and the locale is theirs — cookie, then Accept-Language, the
+ * way `app/accept/[id]` resolves it — while the money stays in the org's
+ * `organizations.currency`, which is what these amounts actually are.
+ */
 import { createServiceClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { intlLocale } from "@leadsmart/i18n";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { FileText, CheckCircle2, Clock, AlertCircle, XCircle, Calendar, ChevronRight } from "lucide-react";
 
-const fmt = (n: number | string) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(n));
-
-const fmtDate = (d: string) =>
-  new Date(d + "T00:00:00").toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
-
-const INV_STATUS: Record<string, { label: string; bgColor: string; textColor: string; icon: React.ElementType }> = {
-  draft:   { label: "Draft",   bgColor: "#f1f5f9", textColor: "#64748b", icon: FileText },
-  sent:    { label: "Sent",    bgColor: "#eff6ff", textColor: "#2563eb", icon: Clock },
-  paid:    { label: "Paid",    bgColor: "#f0fdf4", textColor: "#16a34a", icon: CheckCircle2 },
-  overdue: { label: "Overdue", bgColor: "#fff1f2", textColor: "#e11d48", icon: AlertCircle },
-  void:    { label: "Void",    bgColor: "#f1f5f9", textColor: "#94a3b8", icon: XCircle },
+/**
+ * Colour and icon per status — the LABEL is deliberately not here.
+ *
+ * A `label: "Overdue"` in a module-scope map is copy that never passes through
+ * a `>` and a `<`, so no scan of the JSX can see it, and it renders English on
+ * an otherwise translated page. The status is a database enum, so its label is
+ * looked up by enum value with every value present in the bundle.
+ */
+const INV_STATUS: Record<string, { bgColor: string; textColor: string; icon: React.ElementType }> = {
+  draft:   { bgColor: "#f1f5f9", textColor: "#64748b", icon: FileText },
+  sent:    { bgColor: "#eff6ff", textColor: "#2563eb", icon: Clock },
+  paid:    { bgColor: "#f0fdf4", textColor: "#16a34a", icon: CheckCircle2 },
+  overdue: { bgColor: "#fff1f2", textColor: "#e11d48", icon: AlertCircle },
+  void:    { bgColor: "#f1f5f9", textColor: "#94a3b8", icon: XCircle },
 };
 
-const EST_STATUS: Record<string, { label: string; bgColor: string; textColor: string }> = {
-  draft:    { label: "Draft",    bgColor: "#f1f5f9", textColor: "#64748b" },
-  sent:     { label: "Awaiting approval", bgColor: "#eff6ff", textColor: "#2563eb" },
-  accepted: { label: "Accepted", bgColor: "#f0fdf4", textColor: "#16a34a" },
-  declined: { label: "Declined", bgColor: "#fff1f2", textColor: "#e11d48" },
-  expired:  { label: "Expired",  bgColor: "#fffbeb", textColor: "#d97706" },
+const EST_STATUS: Record<string, { bgColor: string; textColor: string }> = {
+  draft:    { bgColor: "#f1f5f9", textColor: "#64748b" },
+  sent:     { bgColor: "#eff6ff", textColor: "#2563eb" },
+  accepted: { bgColor: "#f0fdf4", textColor: "#16a34a" },
+  declined: { bgColor: "#fff1f2", textColor: "#e11d48" },
+  expired:  { bgColor: "#fffbeb", textColor: "#d97706" },
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -56,6 +67,7 @@ export default async function ClientPortalPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
+  const [locale, t] = await Promise.all([getServerLocale(), getServerT("public")]);
   const sb = await createServiceClient();
 
   const { data: client } = await sb
@@ -69,10 +81,10 @@ export default async function ClientPortalPage({
   const clientName =
     [client.first_name, client.last_name].filter(Boolean).join(" ") ||
     client.company ||
-    "Client";
+    t("portal.clientFallback");
 
   const [orgRes, invoicesRes, estimatesRes, eventsRes] = await Promise.all([
-    sb.from("organizations").select("name").eq("id", client.organization_id).single(),
+    sb.from("organizations").select("name, currency").eq("id", client.organization_id).single(),
     sb.from("invoices")
       .select("id, invoice_number, status, issue_date, due_date, total, paid_at")
       .eq("client_id", client.id)
@@ -104,6 +116,11 @@ export default async function ClientPortalPage({
   const openEstimates    = estimates.filter((e) => e.status === "sent");
   const appUrl           = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
+  // Built once, called per row — constructing an Intl formatter is the
+  // expensive half.
+  const fmt = moneyFormatter(locale, orgRes.data?.currency);
+  const fmtDate = dateFormatter(locale, { month: "short", day: "numeric", year: "numeric" });
+
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {/* Top bar */}
@@ -115,7 +132,7 @@ export default async function ClientPortalPage({
             </div>
             <span style={{ color: "#e2e8f0", fontWeight: 700, fontSize: 15 }}>{orgName}</span>
           </div>
-          <span style={{ color: "#94a3b8", fontSize: 12, fontWeight: 500 }}>Client Portal</span>
+          <span style={{ color: "#94a3b8", fontSize: 12, fontWeight: 500 }}>{t("portal.badge")}</span>
         </div>
       </div>
 
@@ -123,21 +140,21 @@ export default async function ClientPortalPage({
         {/* Greeting */}
         <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#0f172a", margin: "0 0 4px" }}>
-            Hi {clientName} 👋
+            {t("portal.greeting", { name: clientName })}
           </h1>
           <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>
-            Here's a summary of your account with {orgName}.
+            {t("portal.subtitle", { org: orgName })}
           </p>
         </div>
 
         {/* KPI strip */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 28 }}>
           <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "20px 22px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Amount paid</p>
+            <p style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>{t("portal.kpi.paid")}</p>
             <p style={{ fontSize: 22, fontWeight: 800, color: "#16a34a", margin: 0, fontVariantNumeric: "tabular-nums" }}>{fmt(totalPaid)}</p>
           </div>
           <div style={{ background: totalOutstanding > 0 ? "#fff7f7" : "#fff", border: `1px solid ${totalOutstanding > 0 ? "#fecaca" : "#e2e8f0"}`, borderRadius: 14, padding: "20px 22px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>Outstanding</p>
+            <p style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 6px" }}>{t("portal.kpi.outstanding")}</p>
             <p style={{ fontSize: 22, fontWeight: 800, color: totalOutstanding > 0 ? "#e11d48" : "#94a3b8", margin: 0, fontVariantNumeric: "tabular-nums" }}>{fmt(totalOutstanding)}</p>
           </div>
         </div>
@@ -146,7 +163,7 @@ export default async function ClientPortalPage({
         {openEstimates.length > 0 && (
           <div style={{ background: "#eef2ff", border: "1px solid #c7d2fe", borderRadius: 14, padding: "16px 20px", marginBottom: 28 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#4338ca", margin: "0 0 12px" }}>
-              ✍️ {openEstimates.length} estimate{openEstimates.length !== 1 ? "s" : ""} waiting for your approval
+              {t("portal.estimatesWaiting", { count: openEstimates.length })}
             </p>
             {openEstimates.map((est) => (
               <div key={est.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -161,7 +178,7 @@ export default async function ClientPortalPage({
                     borderRadius: 8, fontSize: 12, fontWeight: 600, textDecoration: "none",
                   }}
                 >
-                  Review →
+                  {t("portal.review")}
                 </a>
               </div>
             ))}
@@ -170,13 +187,15 @@ export default async function ClientPortalPage({
 
         {/* Upcoming appointments */}
         {events.length > 0 && (
-          <Section title="Upcoming Appointments">
+          <Section title={t("portal.sections.appointments")}>
             {events.map((evt, i) => {
               const evtDate = new Date(evt.start_at);
               const isToday = evtDate.toISOString().slice(0, 10) === today;
               const dateStr = isToday
-                ? `Today at ${evtDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
-                : evtDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+                ? t("portal.todayAt", {
+                    time: evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit" }),
+                  })
+                : evtDate.toLocaleDateString(intlLocale(locale), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
               const isLast = i === events.length - 1;
               return (
                 <div key={evt.id} style={{ padding: "14px 20px", borderBottom: isLast ? "none" : "1px solid #f8fafc", display: "flex", alignItems: "center", gap: 14 }}>
@@ -195,11 +214,14 @@ export default async function ClientPortalPage({
 
         {/* Invoices */}
         {invoices.length > 0 && (
-          <Section title="Invoices">
+          <Section title={t("portal.sections.invoices")}>
             {invoices.map((inv, i) => {
               const effectiveStatus =
                 inv.status === "sent" && inv.due_date < today ? "overdue" : inv.status;
               const cfg = INV_STATUS[effectiveStatus] ?? INV_STATUS.sent;
+              const statusLabel = t(`portal.invoiceStatus.${effectiveStatus}`, {
+                defaultValue: effectiveStatus,
+              });
               const StatusIcon = cfg.icon;
               const isLast = i === invoices.length - 1;
               return (
@@ -210,10 +232,10 @@ export default async function ClientPortalPage({
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b", fontFamily: "monospace" }}>{inv.invoice_number}</span>
-                      <Badge label={cfg.label} bgColor={cfg.bgColor} textColor={cfg.textColor} />
+                      <Badge label={statusLabel} bgColor={cfg.bgColor} textColor={cfg.textColor} />
                     </div>
                     <p style={{ fontSize: 12, color: "#94a3b8", margin: "2px 0 0" }}>
-                      Due {fmtDate(inv.due_date)}
+                      {t("portal.due", { date: fmtDate(inv.due_date) })}
                     </p>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -223,7 +245,7 @@ export default async function ClientPortalPage({
                         href={`${appUrl}/pay/${inv.id}`}
                         style={{ padding: "7px 16px", background: effectiveStatus === "overdue" ? "#e11d48" : "#4f46e5", color: "#fff", borderRadius: 8, fontSize: 12, fontWeight: 600, textDecoration: "none" }}
                       >
-                        Pay now
+                        {t("portal.payNow")}
                       </a>
                     )}
                   </div>
@@ -235,7 +257,7 @@ export default async function ClientPortalPage({
 
         {/* Estimates */}
         {estimates.length > 0 && (
-          <Section title="Estimates">
+          <Section title={t("portal.sections.estimates")}>
             {estimates.map((est, i) => {
               const today2 = new Date().toISOString().slice(0, 10);
               const effectiveStatus =
@@ -243,17 +265,24 @@ export default async function ClientPortalPage({
                   ? "expired"
                   : est.status;
               const cfg = EST_STATUS[effectiveStatus] ?? EST_STATUS.sent;
+              const statusLabel = t(`portal.estimateStatus.${effectiveStatus}`, {
+                defaultValue: effectiveStatus,
+              });
               const isLast = i === estimates.length - 1;
               return (
                 <div key={est.id} style={{ padding: "14px 20px", borderBottom: isLast ? "none" : "1px solid #f8fafc", display: "flex", alignItems: "center", gap: 14 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b", fontFamily: "monospace" }}>{est.estimate_number}</span>
-                      <Badge label={cfg.label} bgColor={cfg.bgColor} textColor={cfg.textColor} />
+                      <Badge label={statusLabel} bgColor={cfg.bgColor} textColor={cfg.textColor} />
                     </div>
+                    {/* Two independent labels joined by a separator, not one
+                        sentence cut in half — each translates on its own. */}
                     <p style={{ fontSize: 12, color: "#94a3b8", margin: "2px 0 0" }}>
-                      Issued {fmtDate(est.issue_date)}
-                      {est.expiry_date ? ` · Expires ${fmtDate(est.expiry_date)}` : ""}
+                      {t("portal.issued", { date: fmtDate(est.issue_date) })}
+                      {est.expiry_date
+                        ? ` · ${t("portal.expires", { date: fmtDate(est.expiry_date) })}`
+                        : ""}
                     </p>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -263,7 +292,7 @@ export default async function ClientPortalPage({
                         href={`${appUrl}/accept/${est.id}`}
                         style={{ padding: "7px 16px", background: "#f8fafc", color: "#4f46e5", border: "1.5px solid #c7d2fe", borderRadius: 8, fontSize: 12, fontWeight: 600, textDecoration: "none" }}
                       >
-                        Review →
+                        {t("portal.review")}
                       </a>
                     )}
                   </div>
@@ -275,12 +304,12 @@ export default async function ClientPortalPage({
 
         {invoices.length === 0 && estimates.length === 0 && events.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
-            <p style={{ fontSize: 14 }}>Nothing to show yet. Check back soon!</p>
+            <p style={{ fontSize: 14 }}>{t("portal.empty")}</p>
           </div>
         )}
 
         <p style={{ textAlign: "center", fontSize: 12, color: "#cbd5e1", marginTop: 40 }}>
-          Powered by HelmSmart · {orgName}
+          {t("portal.poweredBy")} · {orgName}
         </p>
       </div>
     </div>

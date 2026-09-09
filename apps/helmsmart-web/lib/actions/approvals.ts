@@ -3,13 +3,14 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
 import { enforceAutonomy } from "@/lib/workforce-gating";
 import { normalizePhoneE164 } from "@/lib/phone";
 
 async function orgScope() {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error("Not authenticated");
+  if (!orgId) throw new Error((await getServerT("home"))("errors.notAuthenticated"));
   return orgId;
 }
 
@@ -33,7 +34,7 @@ export async function letSarahFollowUp(
     .eq("id", clientId)
     .eq("organization_id", orgId)
     .single();
-  if (!client) throw new Error("Client not found");
+  if (!client) throw new Error((await getServerT("home"))("errors.clientNotFound"));
 
   const phoneResult = normalizePhoneE164((client.phone as string | null) ?? "");
   if (!phoneResult.ok) return { status: "no_phone" };
@@ -168,10 +169,20 @@ export async function letMarkCreateTask(): Promise<{ status: "created" | "error"
 
   const dueDate = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
 
+  /*
+   * Written in the owner's language, not stored as a key. A task becomes their
+   * record — they rename it, assign it, close it — so the text has to be
+   * theirs from the moment it is created. A key would be resolved on every
+   * later read and would silently overwrite an edit they made.
+   */
+  // `{ ns: "tasks" }` explicitly: this file binds `home` for its own errors,
+  // and a task's copy belongs to the tasks surface.
+  const t = await getServerT("home");
+
   const { error } = await supabase.from("tasks").insert({
     organization_id: orgId,
-    title: "Review and prioritise open items — update this title",
-    notes: "Mark created this task. Edit the title, assign it, and set a due date.",
+    title: t("generated.reviewOpenItems", { ns: "tasks" }),
+    notes: t("generated.reviewOpenItemsNotes", { ns: "tasks" }),
     priority: "high",
     status: "open",
     due_date: dueDate,

@@ -18,7 +18,10 @@ export function NpiSetting({ initial }: { initial: string }) {
         await updateOrgNpi(npi);
         setSaved(true);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Couldn't save");
+        console.error("save practice NPI", e);
+        // English-only surface, same as eligibility-panel.tsx: no namespace is
+        // bound here, so the literal is the whole vocabulary available.
+        setError("Couldn't save");
       }
     });
   }

@@ -286,13 +286,14 @@
     }
   },
   "errors": {
-    "noOrg": "未选择组织",
-    "notAuthenticated": "尚未登录",
+    "noOrg": "尚未选择企业，请重新登录后继续。",
+    "notAuthenticated": "登录已过期，请重新登录后继续。",
     "nameRequired": "请填写名称",
     "firstRunDateRequired": "请填写首次执行日期",
     "createTemplateFailed": "创建模板失败",
     "templateNotFound": "找不到该模板",
     "createProjectFailed": "创建项目失败",
-    "unnamedClient": "未命名客户"
+    "unnamedClient": "未命名客户",
+    "invoiceNotFound": "找不到该发票"
   }
 }

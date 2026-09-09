@@ -152,7 +152,8 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
       if (data.confidence)  setScanConfidence(data.confidence);
 
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : t("expenses.scan.failed"));
+      console.error("scan receipt", err);
+      setScanError(t("expenses.scan.failed"));
       setScannedFile(null);
     } finally {
       setScanning(false);
@@ -185,7 +186,8 @@ export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess
         }
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("expenses.form.saveFailed"));
+        console.error("save expense", err);
+        setError(t("expenses.form.saveFailed"));
       }
     });
   }

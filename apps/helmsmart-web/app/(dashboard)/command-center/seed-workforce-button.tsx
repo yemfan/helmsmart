@@ -24,7 +24,8 @@ export function SeedWorkforceButton() {
               await seedWorkforce();
               router.refresh();
             } catch (e) {
-              setError(e instanceof Error ? e.message : t("commandCenter.seed.error"));
+              console.error("seed workforce", e);
+              setError(t("commandCenter.seed.error"));
             }
           })
         }

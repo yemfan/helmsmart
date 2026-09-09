@@ -48,7 +48,8 @@ export function EstimateActions({
           router.push(redirectTo(result));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("common:errors.generic"));
+        console.error("estimate action", err);
+        setError(t("common:errors.generic"));
       } finally {
         setActiveAction(null);
       }

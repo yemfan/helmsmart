@@ -92,6 +92,9 @@ export async function GET(request: NextRequest) {
               type: "system",
               title: `${newReviews} new review${newReviews > 1 ? "s" : ""} on Google Business`,
               body: `Check your Google Business dashboard to respond and boost your reputation.`,
+              titleKey: "notifications.events.newGoogleReviews",
+              bodyKey: "notifications.events.newGoogleReviewsBody",
+              params: { count: newReviews },
               link: "/google/reviews",
             },
             supabase

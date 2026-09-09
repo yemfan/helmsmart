@@ -1,0 +1,120 @@
+{
+  "join": {
+    "error": {
+      "invalid": {
+        "title": "邀请无效",
+        "body": "此邀请链接无效或已被撤销。"
+      },
+      "accepted": {
+        "title": "邀请已被使用",
+        "body": "此邀请已被使用。请直接登录。"
+      },
+      "expired": {
+        "title": "邀请已过期",
+        "body": "此邀请已过期。请让团队管理员重新发送一份。"
+      },
+      "signIn": "前往登录"
+    },
+    "invited": {
+      "title": "你收到一份邀请",
+      "body": "{{org}} 邀请你以{{role}}的身份加入他们的工作区。",
+      "sentTo": "发送至 {{email}}",
+      "signUp": "注册并加入",
+      "signIn": "使用已有账户登录"
+    },
+    "roles": {
+      "owner": "所有者",
+      "admin": "管理员",
+      "bookkeeper": "记账员",
+      "viewer": "查看者"
+    },
+    "accept": {
+      "button": "接受邀请并加入 {{org}}",
+      "joining": "加入中…",
+      "done": "已加入，正在跳转到你的工作区…",
+      "error": "无法接受此邀请，请重试。"
+    }
+  },
+  "pay": {
+    "metaTitle": "发票支付",
+    "paid": {
+      "title": "已收到付款",
+      "on": "付款日期：{{date}}"
+    },
+    "overdue": "此发票已逾期，请尽快付款。",
+    "void": "此发票已作废，无法再支付。",
+    "label": "发票",
+    "issued": "开具于 {{date}}",
+    "due": "到期日 {{date}}",
+    "billTo": "付款方",
+    "clientFallback": "尊敬的客户",
+    "table": {
+      "description": "说明",
+      "qty": "数量",
+      "price": "单价",
+      "amount": "金额"
+    },
+    "totals": {
+      "subtotal": "小计",
+      "tax": "税费（{{rate}}%）",
+      "totalDue": "应付合计"
+    },
+    "notes": "备注",
+    "amountDue": "应付金额",
+    "footer": "由 Stripe 安全处理付款 · 发票 {{number}}",
+    "payNow": "立即付款"
+  },
+  "portal": {
+    "badge": "客户门户",
+    "greeting": "你好，{{name}} 👋",
+    "subtitle": "以下是你在 {{org}} 的账户概览。",
+    "clientFallback": "客户",
+    "kpi": {
+      "paid": "已付金额",
+      "outstanding": "未结金额"
+    },
+    "estimatesWaiting_other": "✍️ 有 {{count}} 份报价单等待你确认",
+    "review": "查看 →",
+    "sections": {
+      "appointments": "近期预约",
+      "invoices": "发票",
+      "estimates": "报价单"
+    },
+    "todayAt": "今天 {{time}}",
+    "issued": "开具于 {{date}}",
+    "due": "到期日 {{date}}",
+    "expires": "有效期至 {{date}}",
+    "payNow": "立即付款",
+    "empty": "暂时没有内容，请稍后再来查看。",
+    "poweredBy": "由 HelmSmart 提供支持",
+    "invoiceStatus": {
+      "draft": "草稿",
+      "sent": "已发送",
+      "paid": "已付款",
+      "overdue": "已逾期",
+      "void": "已作废"
+    },
+    "estimateStatus": {
+      "draft": "草稿",
+      "sent": "待确认",
+      "accepted": "已接受",
+      "declined": "已拒绝",
+      "expired": "已过期"
+    }
+  },
+  "reschedule": {
+    "badge": "改期",
+    "title": "重新安排你的预约",
+    "current": "当前预约时间为 {{when}}。请在下方选择新的时间。",
+    "today": "今天",
+    "past": "此预约的时间已过。请发短信给我们重新预约。",
+    "poweredBy": "由 HelmSmart 提供支持",
+    "slots": {
+      "none": "当天没有可预约的时间，请在上方选择其他日期。",
+      "unavailable": "该时间已不可预约，请另选一个。",
+      "error": "出了点问题，请重试。",
+      "doneTitle": "预约已改期 ✓",
+      "doneBody": "新的时间为 {{when}}。我们已给你发送确认信息。"
+    }
+  }
+}

@@ -412,6 +412,52 @@
       "minutes": "hace {{count}} min",
       "hours": "hace {{count}} h",
       "days": "hace {{count}} d"
+    },
+    "events": {
+      "approvalNeeded": "Se necesita aprobación: {{subject}}",
+      "approvalNeededBody": "Paso 1 de {{total}}: {{step}}",
+      "approvalRejected": "Aprobación rechazada: {{subject}}",
+      "approvalRejectedBody": "Motivo: {{reason}}",
+      "approvalRejectedNoReason": "Sin motivo indicado",
+      "approvalApproved": "✅ Aprobado: {{subject}}",
+      "approvalApprovedBody_one": "Se completó {{count}} paso de aprobación",
+      "approvalApprovedBody_other": "Se completaron los {{count}} pasos de aprobación",
+      "approvalAdvanced": "Paso de aprobación {{step}}: {{subject}}",
+      "approvalAdvancedBody": "El paso {{previous}} fue aprobado. El paso {{step}} necesita su revisión.",
+      "approvalExpired": "Aprobación vencida: {{subject}}",
+      "approvalExpiredBody": "El paso «{{step}}» venció. La solicitud ha caducado.",
+      "approvalEscalated": "Aprobación escalada: {{subject}}",
+      "approvalEscalatedBody": "El paso «{{step}}» venció. Se pasó al paso {{next}}.",
+      "budgetNearing": "{{project}} está por agotar su presupuesto",
+      "budgetOver": "{{project}} superó el presupuesto",
+      "budgetBody": "Este proyecto ha usado el {{percent}} % de su presupuesto.",
+      "invoicePaid": "Pago recibido: {{amount}}",
+      "invoicePaidBody": "Factura {{number}} marcada como pagada",
+      "invoiceOverdue": "Factura vencida: {{amount}}",
+      "invoiceOverdueBody": "La factura {{number}} de {{client}} está vencida",
+      "invoiceOverdueBodyNoClient": "La factura {{number}} está vencida",
+      "reminderSent": "Recordatorio enviado: factura {{number}}",
+      "reminderSentBody_one": "Recordatorio n.º {{reminder}} enviado — {{count}} día de retraso, {{amount}}",
+      "reminderSentBody_other": "Recordatorio n.º {{reminder}} enviado — {{count}} días de retraso, {{amount}}",
+      "estimateAccepted": "Presupuesto {{number}} aceptado — factura en borrador",
+      "estimateAcceptedBody": "El cliente lo aceptó en línea. Hay una factura en borrador lista para revisar y enviar.",
+      "callbackRequested": "Llamada de vuelta solicitada",
+      "callbackRequestedBody": "{{caller}}: {{reason}}",
+      "bookingByReceptionist": "Cita agendada por la recepcionista",
+      "appointmentCancelled": "Cita cancelada por el cliente",
+      "appointmentCancelledBody": "{{caller}} — era {{when}}",
+      "employeeCreatedTask": "{{employee}} creó una tarea para usted",
+      "newGoogleReviews_one": "{{count}} reseña nueva en Google Business",
+      "newGoogleReviews_other": "{{count}} reseñas nuevas en Google Business",
+      "newGoogleReviewsBody": "Revise su panel de Google Business para responder y mejorar su reputación.",
+      "weeklyInsight": "El análisis semanal del negocio de Tim ya está listo",
+      "weeklyInsightBody": "Su resumen semanal está listo para revisar.",
+      "newEmail": "Nuevo correo recibido",
+      "newSms": "Nuevo SMS recibido",
+      "missedCall": "Llamada perdida",
+      "missedCallBody": "De {{number}}",
+      "missedCallAutoTexted": "Llamada perdida — respondida por SMS",
+      "missedCallAutoTextedBody": "Se envió un SMS a {{number}}"
     }
   },
   "comingSoon": {
@@ -431,5 +477,10 @@
     "empty": "Aún no hay datos de transacciones",
     "revenue": "Ingresos",
     "expenses": "Gastos"
+  },
+  "errors": {
+    "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
+    "clientNotFound": "No se encontró el cliente",
+    "invalidAvatar": "Ese avatar no es una de las opciones disponibles."
   }
 }

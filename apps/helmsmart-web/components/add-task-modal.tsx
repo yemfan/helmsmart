@@ -62,7 +62,8 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
       setOpen(false);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common:errors.generic"));
+      console.error("create task", err);
+      setError(t("common:errors.generic"));
     } finally {
       setLoading(false);
     }

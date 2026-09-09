@@ -191,6 +191,63 @@ system: BASE_PROMPT + languageDirectiveForJson(locale)   // JSON the code parses
 `locale` is `await getServerLocale()` in a request, or
 `await userUiLocale(userId)` in a cron.
 
+## Errors, and the three ways they leak English
+
+An audit of the shipped app found English on screen in a Spanish UI while all
+79 guards were green. Each cause is now a rule.
+
+**1. Never show `e.message` ahead of your own translated string.** This shape
+was in 43 components:
+
+```tsx
+catch (e) { setError(e instanceof Error ? e.message : t("thing.failed")); }  // WRONG
+```
+
+The fallback is reached only when the thrown value is not an `Error`, which is
+almost never — so the reader gets the message, and the message is English
+either because a server action threw English or because Next redacted it in a
+production build and substituted its own text. Write it the other way round:
+
+```tsx
+catch (e) { console.error("saving a bill", e); setError(t("thing.failed")); }
+```
+
+Keep a thrown message only when it names a cause your fallback cannot, AND you
+know it is translated at the throw site. Leave a comment saying which.
+
+**2. A server action's error strings are copy.** `return { ok: false, error }`
+reaches the client verbatim, so translate at the source with
+`await getServerT(ns)` — server actions run inside a request. This is how
+"Choose an image first." shipped inside an otherwise fully Spanish dialog.
+
+**3. Text you STORE cannot be translated later.** A sentence composed at write
+time is frozen in that language forever, and no bundle can reach it. Two
+different fixes, and which one you need depends on who owns the row:
+
+- **A notification** is a system message nobody edits. Store a KEY and its
+  params (`titleKey`, `params` on `notifications`) and render in the reader's
+  language at read time. `title` stays English as the floor, so old rows and
+  missing keys degrade to English rather than to a blank line.
+- **A task, a note, an invoice line** becomes the owner's own record, which
+  they rename and edit. A key would fight them. Generate the text in the
+  owner's language at write time, via `userUiLocale(ownerId)` +
+  `translatorFor`.
+
+And say something a person can act on. "No org" and "Not authenticated" are
+our vocabulary; they became "No business is selected. Sign in again to
+continue." in three languages for the same reason.
+
+## New routes are covered by default
+
+`lib/i18n/__tests__/routeCoverage.test.ts` fails when a file under `app/`
+renders UI and calls no translator. Every other guard skips such a file
+entirely — they check that opted-in files are clean, which is not the same as
+"no English on screen" — so this one asks the opposite question.
+
+If a new route genuinely has no copy (a redirect, a bare layout), add it to
+that file's `EXEMPT` map with the reason. The guard also fails on an exemption
+whose file has since started translating, so the list shrinks on its own.
+
 ## Done means
 
 1. `npx tsc --noEmit` clean.

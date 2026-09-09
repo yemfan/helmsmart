@@ -64,7 +64,8 @@ export function ClientNotesPanel({ clientId, initialNotes }: Props) {
       try {
         await addClientNote(clientId, savedBody, savedKind);
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("notes.errors.saveFailed"));
+        console.error("save client note", err);
+        setError(t("notes.errors.saveFailed"));
         setNotes((prev) => prev.filter((n) => n.id !== optimistic.id));
       }
     });

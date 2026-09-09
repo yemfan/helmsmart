@@ -106,7 +106,8 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
         });
         router.push(`/books/estimates/${id}`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("common:errors.generic"));
+        console.error("save estimate", err);
+        setError(t("common:errors.generic"));
       }
     });
   }
@@ -157,7 +158,8 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
         setTimeout(() => setTemplateSaved(false), 2500);
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("estimates.builder.errors.templateSaveFailed"));
+        console.error("save estimate template", e);
+        setError(t("estimates.builder.errors.templateSaveFailed"));
       }
     });
   }
@@ -181,7 +183,8 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
         if (result.note) setNotes(result.note);
         setError(null);
       } catch (e) {
-        setAiError(e instanceof Error ? e.message : t("estimates.builder.errors.draftFailed"));
+        console.error("draft estimate with AI", e);
+        setAiError(t("estimates.builder.errors.draftFailed"));
       } finally {
         setAiLoading(false);
       }

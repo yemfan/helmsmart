@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServiceClient } from "@/lib/supabase/server";
+import { orgOwnerRecipients } from "@/lib/org-recipients";
 
 import { SUPPORTED_LOCALES, type SupportedLocale } from "./config";
 
@@ -71,4 +72,36 @@ export async function userUiLocales(
 function coerce(value: unknown): SupportedLocale | null {
   const v = typeof value === "string" ? value.trim() : "";
   return (SUPPORTED_LOCALES as readonly string[]).includes(v) ? (v as SupportedLocale) : null;
+}
+
+/**
+ * The language to WRITE an organization's own records in.
+ *
+ * For text that is stored rather than rendered — a task title, a note — and
+ * therefore cannot be translated later. A notification can carry a key and be
+ * resolved at read time; a task cannot, because the owner renames and edits it
+ * and it becomes theirs. So the language has to be chosen at write time, and
+ * the only sensible answer is the language the business reads.
+ *
+ * Takes the first owner/admin who has actually chosen one. An org whose people
+ * have never picked a language returns null, which every caller treats as
+ * English — the same "no evidence" contract as `userUiLocale`.
+ *
+ * Webhooks and crons are exactly the callers that need this: they have no
+ * request, so no cookie, and would otherwise write English into a Spanish
+ * business's task list forever.
+ */
+export async function orgWriteLocale(
+  orgId: string,
+  db?: Db,
+): Promise<SupportedLocale | null> {
+  const supabase = db ?? (await createServiceClient());
+  const recipients = await orgOwnerRecipients(supabase, orgId);
+  if (!recipients.length) return null;
+  const locales = await userUiLocales(recipients.map((r) => r.userId), supabase);
+  for (const r of recipients) {
+    const chosen = locales.get(r.userId);
+    if (chosen) return chosen;
+  }
+  return null;
 }

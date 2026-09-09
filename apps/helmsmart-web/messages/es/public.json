@@ -1,0 +1,121 @@
+{
+  "join": {
+    "error": {
+      "invalid": {
+        "title": "Invitación no válida",
+        "body": "Este enlace de invitación no es válido o ha sido revocado."
+      },
+      "accepted": {
+        "title": "Ya se ha aceptado",
+        "body": "Esta invitación ya se ha utilizado. Pruebe a iniciar sesión directamente."
+      },
+      "expired": {
+        "title": "Invitación caducada",
+        "body": "Esta invitación ha caducado. Pida al administrador de su equipo que le envíe una nueva."
+      },
+      "signIn": "Ir a iniciar sesión"
+    },
+    "invited": {
+      "title": "¡Está invitado!",
+      "body": "{{org}} le ha invitado a unirse a su espacio de trabajo como {{role}}.",
+      "sentTo": "Enviada a {{email}}",
+      "signUp": "Crear una cuenta y unirse",
+      "signIn": "Iniciar sesión con una cuenta existente"
+    },
+    "roles": {
+      "owner": "propietario",
+      "admin": "administrador",
+      "bookkeeper": "contable",
+      "viewer": "lector"
+    },
+    "accept": {
+      "button": "Aceptar y unirse a {{org}}",
+      "joining": "Uniéndose…",
+      "done": "Ya está dentro. Redirigiendo a su espacio de trabajo…",
+      "error": "No hemos podido aceptar esta invitación. Inténtelo de nuevo."
+    }
+  },
+  "pay": {
+    "metaTitle": "Pago de la factura",
+    "paid": {
+      "title": "Pago recibido",
+      "on": "Pagada el {{date}}"
+    },
+    "overdue": "Esta factura está vencida. Le rogamos que la pague lo antes posible.",
+    "void": "Esta factura ha sido anulada y ya no se puede pagar.",
+    "label": "Factura",
+    "issued": "Emitida el {{date}}",
+    "due": "Vence el {{date}}",
+    "billTo": "Facturar a",
+    "clientFallback": "Cliente estimado",
+    "table": {
+      "description": "Descripción",
+      "qty": "Cant.",
+      "price": "Precio",
+      "amount": "Importe"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "tax": "Impuestos ({{rate}} %)",
+      "totalDue": "Total a pagar"
+    },
+    "notes": "Notas",
+    "amountDue": "Importe a pagar",
+    "footer": "Pago seguro procesado por Stripe · Factura {{number}}",
+    "payNow": "Pagar ahora"
+  },
+  "portal": {
+    "badge": "Portal del cliente",
+    "greeting": "Hola, {{name}} 👋",
+    "subtitle": "Aquí tiene un resumen de su cuenta con {{org}}.",
+    "clientFallback": "Cliente",
+    "kpi": {
+      "paid": "Importe pagado",
+      "outstanding": "Pendiente de pago"
+    },
+    "estimatesWaiting_one": "✍️ {{count}} presupuesto pendiente de su aprobación",
+    "estimatesWaiting_other": "✍️ {{count}} presupuestos pendientes de su aprobación",
+    "review": "Revisar →",
+    "sections": {
+      "appointments": "Próximas citas",
+      "invoices": "Facturas",
+      "estimates": "Presupuestos"
+    },
+    "todayAt": "Hoy a las {{time}}",
+    "issued": "Emitido el {{date}}",
+    "due": "Vence el {{date}}",
+    "expires": "Caduca el {{date}}",
+    "payNow": "Pagar ahora",
+    "empty": "Todavía no hay nada que mostrar. Vuelva pronto.",
+    "poweredBy": "Con tecnología de HelmSmart",
+    "invoiceStatus": {
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "paid": "Pagada",
+      "overdue": "Vencida",
+      "void": "Anulada"
+    },
+    "estimateStatus": {
+      "draft": "Borrador",
+      "sent": "Pendiente de aprobación",
+      "accepted": "Aceptado",
+      "declined": "Rechazado",
+      "expired": "Caducado"
+    }
+  },
+  "reschedule": {
+    "badge": "Cambiar la cita",
+    "title": "Cambie la fecha de su cita",
+    "current": "Actualmente reservada para {{when}}. Elija un nuevo horario a continuación.",
+    "today": "Hoy",
+    "past": "Esta cita ya ha pasado. Envíenos un SMS para reservar una nueva.",
+    "poweredBy": "Con tecnología de HelmSmart",
+    "slots": {
+      "none": "No hay horarios libres ese día. Pruebe con otro día de arriba.",
+      "unavailable": "Ese horario ya no está disponible. Elija otro, por favor.",
+      "error": "Algo ha salido mal. Inténtelo de nuevo.",
+      "doneTitle": "Su cita ha cambiado ✓",
+      "doneBody": "Nuevo horario: {{when}}. Le hemos enviado una confirmación."
+    }
+  }
+}

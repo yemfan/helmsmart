@@ -46,7 +46,8 @@ function VendorModal({
         else await createVendor(payload);
         onSaved();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("vendors.errors.saveFailed"));
+        console.error("save vendor", err);
+        setError(t("vendors.errors.saveFailed"));
       }
     });
   }

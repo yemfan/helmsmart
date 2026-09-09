@@ -81,6 +81,9 @@ export async function GET(request: NextRequest) {
           type: "system",
           title: `Approval expired: ${req.subject_label}`,
           body: `Step "${step.step_name}" timed out. The request has expired.`,
+          titleKey: "notifications.events.approvalExpired",
+          bodyKey: "notifications.events.approvalExpiredBody",
+          params: { subject: req.subject_label, step: step.step_name },
           link: `/workflows/requests/${req.id}`,
         });
       } else {
@@ -100,6 +103,13 @@ export async function GET(request: NextRequest) {
           type: "system",
           title: `Approval escalated: ${req.subject_label}`,
           body: `Step "${step.step_name}" timed out. Moved to step ${nextStep}.`,
+          titleKey: "notifications.events.approvalEscalated",
+          bodyKey: "notifications.events.approvalEscalatedBody",
+          params: {
+            subject: req.subject_label,
+            step: step.step_name,
+            next: nextStep,
+          },
           link: `/workflows/requests/${req.id}`,
         });
 

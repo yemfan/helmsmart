@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
@@ -319,16 +320,26 @@ export async function runReceptionistTool(name: string, input: unknown, ctx: Too
     await ctx.db.from("tasks").insert({
       organization_id: ctx.orgId,
       client_id: clientId,
-      title: `Call back ${callerName || ctx.fromNumber}`,
+      title: translatorFor(await orgWriteLocale(ctx.orgId, ctx.db), "tasks")(
+        "generated.callBack",
+        { who: callerName || ctx.fromNumber },
+      ),
       notes: `From ${ctx.fromNumber}: ${reason}`,
       due_date: new Date().toISOString().slice(0, 10),
       priority: "high",
       status: "open",
     });
+    const caller = callerName || ctx.fromNumber;
     await createNotificationService(ctx.orgId, {
       type: "missed_call",
       title: "Call-back requested",
-      body: `${callerName || ctx.fromNumber}: ${reason}`.slice(0, 120),
+      body: `${caller}: ${reason}`.slice(0, 120),
+      titleKey: "notifications.events.callbackRequested",
+      bodyKey: "notifications.events.callbackRequestedBody",
+      // The caller's name and their own words — data, never translated. The
+      // reason is trimmed here rather than after joining, so the key's own
+      // punctuation can't be what gets cut off.
+      params: { caller, reason: reason.slice(0, 100) },
       link: "/tasks",
     });
     return { text: "Let the caller know someone from the team will call them back." };
@@ -370,7 +381,12 @@ export async function notifyBooking(
   await createNotificationService(org.orgId, {
     type: "booking",
     title: "Appointment booked by the receptionist",
+    // No body key: `bookedNote` is a sentence the booking code already
+    // composed ("Cleaning on Tue Mar 4 at 2pm (from +1…)"), not a template
+    // with slots. Splitting it into params would mean re-deriving the label
+    // here, and the date inside it would still be English.
     body: booked.bookedNote,
+    titleKey: "notifications.events.bookingByReceptionist",
     link: "/calendar",
   });
 

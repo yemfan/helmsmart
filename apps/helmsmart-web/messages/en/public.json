@@ -1,0 +1,121 @@
+{
+  "join": {
+    "error": {
+      "invalid": {
+        "title": "Invalid invitation",
+        "body": "This invitation link is invalid or has been revoked."
+      },
+      "accepted": {
+        "title": "Already accepted",
+        "body": "This invitation has already been used. Try signing in directly."
+      },
+      "expired": {
+        "title": "Invitation expired",
+        "body": "This invitation expired. Ask your team admin to send a new one."
+      },
+      "signIn": "Go to sign in"
+    },
+    "invited": {
+      "title": "You're invited!",
+      "body": "{{org}} has invited you to join their workspace as a {{role}}.",
+      "sentTo": "Sent to {{email}}",
+      "signUp": "Create an account & join",
+      "signIn": "Sign in to existing account"
+    },
+    "roles": {
+      "owner": "owner",
+      "admin": "admin",
+      "bookkeeper": "bookkeeper",
+      "viewer": "viewer"
+    },
+    "accept": {
+      "button": "Accept & join {{org}}",
+      "joining": "Joining…",
+      "done": "Joined! Redirecting to your workspace…",
+      "error": "We couldn't accept this invitation. Please try again."
+    }
+  },
+  "pay": {
+    "metaTitle": "Invoice Payment",
+    "paid": {
+      "title": "Payment received",
+      "on": "Paid on {{date}}"
+    },
+    "overdue": "This invoice is past due. Please pay as soon as possible.",
+    "void": "This invoice has been voided and is no longer payable.",
+    "label": "Invoice",
+    "issued": "Issued {{date}}",
+    "due": "Due {{date}}",
+    "billTo": "Bill to",
+    "clientFallback": "Valued customer",
+    "table": {
+      "description": "Description",
+      "qty": "Qty",
+      "price": "Price",
+      "amount": "Amount"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "tax": "Tax ({{rate}}%)",
+      "totalDue": "Total due"
+    },
+    "notes": "Notes",
+    "amountDue": "Amount due",
+    "footer": "Secure payment processed by Stripe · Invoice {{number}}",
+    "payNow": "Pay now"
+  },
+  "portal": {
+    "badge": "Client Portal",
+    "greeting": "Hi {{name}} 👋",
+    "subtitle": "Here's a summary of your account with {{org}}.",
+    "clientFallback": "Client",
+    "kpi": {
+      "paid": "Amount paid",
+      "outstanding": "Outstanding"
+    },
+    "estimatesWaiting_one": "✍️ {{count}} estimate waiting for your approval",
+    "estimatesWaiting_other": "✍️ {{count}} estimates waiting for your approval",
+    "review": "Review →",
+    "sections": {
+      "appointments": "Upcoming appointments",
+      "invoices": "Invoices",
+      "estimates": "Estimates"
+    },
+    "todayAt": "Today at {{time}}",
+    "issued": "Issued {{date}}",
+    "due": "Due {{date}}",
+    "expires": "Expires {{date}}",
+    "payNow": "Pay now",
+    "empty": "Nothing to show yet. Check back soon!",
+    "poweredBy": "Powered by HelmSmart",
+    "invoiceStatus": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void"
+    },
+    "estimateStatus": {
+      "draft": "Draft",
+      "sent": "Awaiting approval",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "expired": "Expired"
+    }
+  },
+  "reschedule": {
+    "badge": "Reschedule",
+    "title": "Reschedule your appointment",
+    "current": "Currently booked for {{when}}. Pick a new time below.",
+    "today": "Today",
+    "past": "This appointment has already passed. Text us to book a new one.",
+    "poweredBy": "Powered by HelmSmart",
+    "slots": {
+      "none": "No open times that day — try another day above.",
+      "unavailable": "That time isn't available anymore — please pick another.",
+      "error": "Something went wrong — please try again.",
+      "doneTitle": "You're rescheduled ✓",
+      "doneBody": "New time: {{when}}. We've sent you a confirmation."
+    }
+  }
+}

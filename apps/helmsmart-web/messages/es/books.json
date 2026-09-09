@@ -692,7 +692,7 @@
         "tax": "Impuesto sobre ventas"
       },
       "errors": {
-        "notAuthenticated": "No autenticado"
+        "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar."
       },
       "fallbacks": {
         "uncategorized": "Sin categoría",
@@ -1202,5 +1202,8 @@
       "noChartOfAccounts": "No se encontró ningún plan de cuentas.",
       "categorizeFailed": "La categorización con IA falló."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar."
   }
 }

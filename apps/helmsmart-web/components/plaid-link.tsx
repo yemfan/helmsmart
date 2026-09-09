@@ -45,7 +45,8 @@ export function PlaidLink({ children, className = "" }: Props) {
       if (!res.ok || !data.link_token) throw new Error(data.error ?? t("transactions.plaid.tokenFailed"));
       setLinkToken(data.link_token);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("transactions.plaid.initFailed"));
+      console.error("create Plaid link token", e);
+      setError(t("transactions.plaid.initFailed"));
     } finally {
       setFetchingToken(false);
     }
@@ -77,7 +78,8 @@ export function PlaidLink({ children, className = "" }: Props) {
         // Refresh the page to show the newly linked accounts
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("transactions.plaid.linkRetry"));
+        console.error("exchange Plaid public token", e);
+        setError(t("transactions.plaid.linkRetry"));
       } finally {
         setExchanging(false);
         setLinkToken(null); // invalidate token after use

@@ -50,7 +50,8 @@ export function CampaignForm({ availableTags }: { availableTags: string[] }) {
       const improved = await refineCampaignBody({ body: body.trim(), mode });
       if (improved) { setBody(improved); setPreview(false); }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("campaigns.form.errors.refineFailed"));
+      console.error("refine campaign body", err);
+      setError(t("campaigns.form.errors.refineFailed"));
     } finally {
       setRefineLoading(false);
       setRefineMode(null);
@@ -66,7 +67,8 @@ export function CampaignForm({ availableTags }: { availableTags: string[] }) {
       const ideas = await generateSubjectLines({ context, tone: aiTone });
       setSubjectIdeas(ideas);
     } catch (err) {
-      setSubjectError(err instanceof Error ? err.message : t("campaigns.form.errors.suggestFailed"));
+      console.error("suggest subject lines", err);
+      setSubjectError(t("campaigns.form.errors.suggestFailed"));
     } finally {
       setSubjectLoading(false);
     }
@@ -83,7 +85,8 @@ export function CampaignForm({ availableTags }: { availableTags: string[] }) {
       if (!name.trim() && s) setName(s);
       setPreview(false);
     } catch (err) {
-      setAiError(err instanceof Error ? err.message : t("campaigns.form.errors.generateFailed"));
+      console.error("generate campaign copy", err);
+      setAiError(t("campaigns.form.errors.generateFailed"));
     } finally {
       setAiLoading(false);
     }
@@ -114,6 +117,12 @@ export function CampaignForm({ availableTags }: { availableTags: string[] }) {
         router.push(`/marketing/${id}`);
       }
     } catch (err) {
+      console.error("create/send campaign", err);
+      // Kept: createCampaign and sendCampaign throw `getServerT("marketing")`
+      // strings — "already sent", "no recipients", "not found" — which are
+      // already in the reader's language AND name a cause the generic fallback
+      // cannot. Every other catch on this screen was inverted; only this one
+      // has something worth more than the fallback.
       setError(err instanceof Error ? err.message : t("campaigns.form.errors.generic"));
     } finally {
       setLoading(false);

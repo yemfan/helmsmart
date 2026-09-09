@@ -93,6 +93,9 @@ async function handleRequest(request: NextRequest) {
           type: "missed_call",
           title: "Missed call",
           body: `From ${from}`,
+          titleKey: "notifications.events.missedCall",
+          bodyKey: "notifications.events.missedCallBody",
+          params: { number: from ?? "" },
           link: "/reception",
         });
 

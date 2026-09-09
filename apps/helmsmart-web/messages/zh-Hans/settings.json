@@ -152,7 +152,7 @@
       "blockText": "✅ *HelmSmart 已连接到 Slack！*\n新线索、未接来电、表单提交和 AI 审批请求都会发送到这里。"
     },
     "errors": {
-      "notAuthenticated": "登录已失效",
+      "notAuthenticated": "登录已过期，请重新登录后继续。",
       "invalidUrl": "请填写有效的 Slack incoming webhook 地址（hooks.slack.com）",
       "saveFailed": "保存失败",
       "testFailed": "测试失败",
@@ -198,7 +198,7 @@
     "revoke": "撤销",
     "revoking": "撤销中…",
     "errors": {
-      "notAuthenticated": "登录已失效",
+      "notAuthenticated": "登录已过期，请重新登录后继续。",
       "invitePending": "该邮箱已有一条待接受的邀请",
       "inviteFailed": "创建邀请失败",
       "memberNotFound": "未找到该成员"

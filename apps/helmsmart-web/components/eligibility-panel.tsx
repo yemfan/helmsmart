@@ -81,7 +81,12 @@ export function EligibilityPanel({ clientId, insurance, latest }: Props) {
         await updateClientInsurance(clientId, { payerId, payerName, memberId, dateOfBirth: dob });
         setSavedNote(true);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Couldn't save");
+        console.error("save client insurance", e);
+        // This whole panel is still English-only — a medical-gated surface
+        // with no namespace bound — so there is no key to reach for. Showing
+        // the literal at least keeps the message stable instead of leaking a
+        // Postgres error or Next's production redaction text.
+        setError("Couldn't save");
       }
     });
   }
@@ -93,7 +98,8 @@ export function EligibilityPanel({ clientId, insurance, latest }: Props) {
         const res = await checkPatientEligibility(clientId);
         setResult(res);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eligibility check failed");
+        console.error("check patient eligibility", e);
+        setError("Eligibility check failed");
       }
     });
   }

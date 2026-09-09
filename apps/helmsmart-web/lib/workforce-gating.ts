@@ -104,7 +104,12 @@ export async function enforceAutonomy(
     await createNotificationService(orgId, {
       type: "system",
       title: `${employee.name} created a task for you`,
+      // No body key: `description` is the caller's own sentence about the work
+      // it wanted done, composed wherever the tool lives. It is the task's
+      // title too, and it stays in whatever language it arrived in.
       body: opts.description.slice(0, 120),
+      titleKey: "notifications.events.employeeCreatedTask",
+      params: { employee: employee.name },
       link: "/tasks",
     });
 

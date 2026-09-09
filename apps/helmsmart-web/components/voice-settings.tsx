@@ -66,7 +66,8 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       } catch (e) {
         // A refused save has to say so. The button used to read "Saved!" over a
         // rejected write, which is the same lie as a toggle that saves nothing.
-        setSaveError(e instanceof Error ? e.message : t("settings.saveFailed"));
+        console.error("save voice settings", e);
+        setSaveError(t("settings.saveFailed"));
         return;
       }
       setSaveError(null);

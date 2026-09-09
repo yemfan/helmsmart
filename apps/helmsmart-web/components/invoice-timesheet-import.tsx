@@ -63,7 +63,8 @@ export function InvoiceTimesheetImport({ invoiceId, uninvoicedEntries, currency 
         setSelected(new Set());
         router.refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("invoices.timesheetImport.importFailed"));
+        console.error("import timesheet lines", e);
+        setError(t("invoices.timesheetImport.importFailed"));
       }
     });
   }

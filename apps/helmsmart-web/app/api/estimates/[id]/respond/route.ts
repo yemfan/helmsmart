@@ -73,6 +73,9 @@ export async function POST(
           type: "system",
           title: `Quote ${est.estimate_number} accepted — invoice drafted`,
           body: "The client accepted online. A draft invoice is ready to review and send.",
+          titleKey: "notifications.events.estimateAccepted",
+          bodyKey: "notifications.events.estimateAcceptedBody",
+          params: { number: est.estimate_number },
           link: `/books/invoices/${invoiceId}`,
         },
         supabase

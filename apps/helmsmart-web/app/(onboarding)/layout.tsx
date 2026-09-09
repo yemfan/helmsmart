@@ -11,7 +11,7 @@ export default function OnboardingLayout({
         {/* Logo */}
         <div className="mb-10 text-center">
           <span className="text-2xl font-bold text-slate-900 tracking-tight">
-            SMB<span className="text-indigo-600">ai</span>
+            HelmSmart<span className="text-indigo-600">.ai</span>
           </span>
         </div>
 
