@@ -8288,6 +8288,56 @@
       "volume": "Closed volume",
       "note": "Activity is new leads, messages, calls answered and appointments over 90 days, shown next to the 90 days before. The money lags the work by a quarter, which is why the work is what to watch."
     },
+    "teamCompliance": {
+      "title": "Compliance audit",
+      "subtitle": "Every post the team published in the window, checked for fair-housing wording, guarantees, unsupported claims and missing brokerage identification.",
+      "run": "Run audit",
+      "runAgain": "Run again",
+      "running": "Checking posts…",
+      "ranNow": "Audit done",
+      "runFailed": "The audit could not run right now. Try again in a minute.",
+      "never": "No audit has been run yet. Choose a window and run one; the result stays here for the next visit.",
+      "lastRun": "Last run {{date}} by {{by}} over {{days}} days.",
+      "stat": {
+        "postsReviewed": "Posts reviewed",
+        "postsFlagged": "Posts with findings",
+        "agentsFlagged": "Agents with findings",
+        "findings": "Findings"
+      },
+      "clean": "Nothing to circle. Every post checked came back clean.",
+      "byKind": "By kind",
+      "showAll": "Show all",
+      "kind": {
+        "fair_housing": "Fair housing",
+        "outcome_promise": "Guarantee",
+        "unsupported_claim": "Unsupported claim",
+        "missing_brokerage": "No brokerage named",
+        "flagged_by_review": "Flagged before publishing"
+      },
+      "why": {
+        "fair_housing": "Wording HUD's advertising guidance warns about: it excludes or selects for a protected class.",
+        "outcome_promise": "A promised outcome. Advertising rules treat a guarantee as a claim that must be honoured.",
+        "unsupported_claim": "A superlative with nothing behind it. Say who measured it, or drop it.",
+        "missing_brokerage": "Neither the brokerage name nor its license appears in the ad.",
+        "flagged_by_review": "The claim review flagged this before it went out, and it was published anyway."
+      },
+      "severity": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "col": {
+        "agent": "Agent",
+        "kind": "Kind",
+        "severity": "Severity",
+        "quote": "Words at issue",
+        "platform": "Network",
+        "date": "Published",
+        "link": "Post"
+      },
+      "open": "Open",
+      "note": "Automated wording checks over the newest 5,000 posts in the window; a person decides what each one means. The fair-housing list follows HUD advertising guidance; state law may add more."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",
