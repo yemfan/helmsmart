@@ -45,6 +45,7 @@ import {
 
 import pkgEnCommon from "@leadsmart/i18n/locale/en/common";
 import pkgZhCommon from "@leadsmart/i18n/locale/zh-Hans/common";
+import pkgEsCommon from "@leadsmart/i18n/locale/es/common";
 
 import enCommon from "@/messages/en/common.json";
 import enNav from "@/messages/en/nav.json";
@@ -80,12 +81,29 @@ import zhBooks from "@/messages/zh-Hans/books.json";
 import zhSite from "@/messages/zh-Hans/site.json";
 import zhEmails from "@/messages/zh-Hans/emails.json";
 
+import esCommon from "@/messages/es/common.json";
+import esNav from "@/messages/es/nav.json";
+import esSettings from "@/messages/es/settings.json";
+import esAuth from "@/messages/es/auth.json";
+import esHome from "@/messages/es/home.json";
+import esInbox from "@/messages/es/inbox.json";
+import esClients from "@/messages/es/clients.json";
+import esTasks from "@/messages/es/tasks.json";
+import esPipeline from "@/messages/es/pipeline.json";
+import esProjects from "@/messages/es/projects.json";
+import esWorkflows from "@/messages/es/workflows.json";
+import esVoice from "@/messages/es/voice.json";
+import esMarketing from "@/messages/es/marketing.json";
+import esBooks from "@/messages/es/books.json";
+import esSite from "@/messages/es/site.json";
+import esEmails from "@/messages/es/emails.json";
+
 export const I18N_COOKIE_NAME = "helmsmart_locale";
 
 /** How long the locale cookie sticks around — one year, refreshed on each change. */
 export const I18N_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-export const SUPPORTED_LOCALES = ["en", "zh-Hans"] as const satisfies readonly Locale[];
+export const SUPPORTED_LOCALES = ["en", "zh-Hans", "es"] as const satisfies readonly Locale[];
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export { DEFAULT_LOCALE };
@@ -180,5 +198,23 @@ export const resources: Record<SupportedLocale, Record<AppNamespace, Bundle>> = 
     books: zhBooks,
     site: zhSite,
     emails: zhEmails,
+  },
+  es: {
+    common: { ...overlay(pkgEsCommon, esCommon), app_name: "HelmSmart" },
+    nav: esNav,
+    settings: esSettings,
+    auth: esAuth,
+    home: esHome,
+    inbox: esInbox,
+    clients: esClients,
+    tasks: esTasks,
+    pipeline: esPipeline,
+    projects: esProjects,
+    workflows: esWorkflows,
+    voice: esVoice,
+    marketing: esMarketing,
+    books: esBooks,
+    site: esSite,
+    emails: esEmails,
   },
 };

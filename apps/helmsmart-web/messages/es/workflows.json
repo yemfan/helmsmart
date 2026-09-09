@@ -1,0 +1,253 @@
+{
+  "meta": {
+    "list": "Flujos de trabajo de aprobación",
+    "new": "Nuevo flujo de trabajo",
+    "edit": "Editar flujo de trabajo",
+    "requests": "Solicitudes de aprobación",
+    "request": "Solicitud de aprobación",
+    "automations": "Automatizaciones"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "approved": "Aprobada",
+    "rejected": "Rechazada",
+    "cancelled": "Cancelada",
+    "expired": "Caducada",
+    "waiting": "En espera",
+    "skipped": "Omitida"
+  },
+  "subjectType": {
+    "estimate": "Presupuesto",
+    "expense": "Gasto",
+    "invoice": "Factura",
+    "bill": "Factura de proveedor",
+    "manual": "Manual",
+    "custom": "Personalizado"
+  },
+  "triggers": {
+    "manual": "Activación manual",
+    "estimate_over_amount": "Presupuesto por encima del umbral",
+    "expense_over_amount": "Gasto por encima del umbral",
+    "custom": "Personalizado"
+  },
+  "list": {
+    "title": "Flujos de trabajo de aprobación",
+    "subtitle": "Aprobaciones secuenciales de varios pasos para presupuestos, gastos y más",
+    "newWorkflow": "Nuevo flujo de trabajo",
+    "pendingBanner_one": "{{count}} aprobación pendiente espera su revisión",
+    "pendingBanner_other": "{{count}} aprobaciones pendientes esperan su revisión",
+    "morePending": "+{{count}} más",
+    "configured": "Flujos de trabajo configurados",
+    "emptyTitle": "Aún no hay flujos de trabajo",
+    "emptyBody": "Cree un flujo de trabajo de aprobación para exigir un visto bueno antes de actuar sobre presupuestos, gastos u otros elementos.",
+    "createFirst": "Crear el primer flujo de trabajo",
+    "inactive": "Inactivo",
+    "overThreshold": "más de ${{amount}}",
+    "stepCount_one": "{{count}} paso",
+    "stepCount_other": "{{count}} pasos",
+    "recentRequests": "Solicitudes recientes",
+    "viewAll": "Ver todas",
+    "noRequests": "Aún no hay solicitudes de aprobación"
+  },
+  "requests": {
+    "title": "Solicitudes de aprobación",
+    "filterAll": "Todas",
+    "empty": "No hay solicitudes",
+    "step": "Paso {{number}}"
+  },
+  "request": {
+    "workflowLabel": "Flujo de trabajo:",
+    "requestedOn": "Solicitada el {{date}}",
+    "stepsTitle": "Pasos de aprobación",
+    "waiting": "en espera",
+    "awaitingDecision": "Esperando su decisión",
+    "rejectionTitle": "Motivo del rechazo",
+    "detailsTitle": "Detalles de la solicitud"
+  },
+  "decision": {
+    "title": "Su decisión",
+    "rejectReasonLabel": "Motivo del rechazo (opcional)",
+    "rejectReasonPlaceholder": "Explique por qué se rechaza…",
+    "noteLabel": "Nota (opcional)",
+    "notePlaceholder": "Agregue un comentario opcional a su aprobación…",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "confirmReject": "Confirmar el rechazo",
+    "cancel": "Cancelar",
+    "approveFailed": "No se pudo aprobar ese paso.",
+    "rejectFailed": "No se pudo rechazar ese paso."
+  },
+  "editor": {
+    "newTitle": "Nuevo flujo de trabajo de aprobación",
+    "editTitle": "Editar flujo de trabajo",
+    "save": "Guardar flujo de trabajo",
+    "saved": "¡Guardado!",
+    "saving": "Guardando…",
+    "detailsTitle": "Datos del flujo de trabajo",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "p. ej., Aprobación de compras grandes",
+    "descriptionLabel": "Descripción (opcional)",
+    "descriptionPlaceholder": "Cuándo se aplica este flujo de trabajo",
+    "triggerTitle": "Activador",
+    "triggerTypes": {
+      "manual": {
+        "label": "Activación manual",
+        "description": "Se inicia manualmente desde un registro"
+      },
+      "estimate_over_amount": {
+        "label": "Presupuesto por encima de un importe",
+        "description": "Se activa automáticamente cuando el total del presupuesto supera el umbral"
+      },
+      "expense_over_amount": {
+        "label": "Gasto por encima de un importe",
+        "description": "Se activa automáticamente cuando el importe del gasto supera el umbral"
+      },
+      "custom": {
+        "label": "Personalizado",
+        "description": "Para cualquier otro fin"
+      }
+    },
+    "amountLabel": "Umbral de importe ($)",
+    "amountPlaceholder": "p. ej., 5000",
+    "stepsTitle": "Pasos de aprobación",
+    "addStep": "Agregar paso",
+    "firstStepName": "Aprobación del responsable",
+    "nextStepName": "Paso {{number}}",
+    "stepNameLabel": "Nombre del paso",
+    "stepNamePlaceholder": "p. ej., Revisión del responsable",
+    "approverRoleLabel": "Rol del aprobador",
+    "roles": {
+      "any": "Cualquier administrador o propietario",
+      "owner": "Solo el propietario",
+      "admin": "Administrador o propietario",
+      "bookkeeper": "Contable, administrador o propietario"
+    },
+    "timeoutLabel": "Escalar automáticamente después de (horas)",
+    "timeoutPlaceholder": "Déjelo en blanco para desactivarlo",
+    "activeTitle": "El flujo de trabajo está activo",
+    "activeHint": "Los flujos de trabajo inactivos no pueden aceptar solicitudes nuevas",
+    "deleteWorkflow": "Eliminar este flujo de trabajo",
+    "deleteConfirm": "¿Eliminar este flujo de trabajo?",
+    "errors": {
+      "nameRequired": "El nombre del flujo de trabajo es obligatorio",
+      "stepRequired": "Agregue al menos un paso de aprobación",
+      "amountRequired": "Introduzca un umbral de importe",
+      "saveFailed": "No se pudo guardar ese flujo de trabajo.",
+      "createFailed": "No se pudo crear ese flujo de trabajo."
+    }
+  },
+  "automations": {
+    "title": "Automatizaciones",
+    "subtitle": "Ejecute acciones automáticas cuando ocurran eventos del negocio",
+    "rules": "Reglas",
+    "newAutomation": "Nueva automatización",
+    "emptyTitle": "Aún no hay automatizaciones",
+    "emptyBody": "Cree reglas para crear tareas, enviar correos o registrar notas de forma automática cuando ocurran eventos del negocio.",
+    "createFirst": "Crear la primera automatización",
+    "enable": "Activar",
+    "disable": "Desactivar",
+    "deleteConfirm": "¿Eliminar la automatización «{{name}}»?",
+    "runs_one": "{{count}} ejecución",
+    "runs_other": "{{count}} ejecuciones",
+    "neverRun": "nunca se ha ejecutado",
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "daysAgo": "hace {{count}} d"
+    },
+    "triggerLabels": {
+      "invoice_overdue": "Factura vencida",
+      "invoice_paid": "Factura pagada",
+      "new_lead": "Nuevo cliente potencial",
+      "campaign_sent": "Campaña enviada"
+    },
+    "actionLabels": {
+      "create_task": "Crear tarea",
+      "send_email": "Enviar correo",
+      "add_note": "Agregar nota"
+    },
+    "variables": {
+      "title": "Variables de plantilla",
+      "client_name": "Nombre completo del cliente",
+      "invoice_number": "Número de factura (p. ej., INV-0012)",
+      "amount": "Total de la factura (p. ej., $1,200.00)",
+      "campaign_name": "Nombre de la campaña"
+    },
+    "errors": {
+      "notAuthenticated": "Su sesión se ha cerrado. Vuelva a iniciar sesión para gestionar las automatizaciones.",
+      "createFailed": "No se pudo crear esa regla de automatización."
+    },
+    "modal": {
+      "title": "Nueva automatización",
+      "close": "Cerrar",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "p. ej., Crear una tarea de seguimiento cuando venza una factura",
+      "whenLabel": "Cuando ocurra esto…",
+      "doLabel": "Haga esto…",
+      "triggers": {
+        "invoice_overdue": {
+          "label": "Una factura pasa a estar vencida",
+          "hint": "Se dispara a diario cuando una factura enviada supera su fecha de vencimiento"
+        },
+        "invoice_paid": {
+          "label": "Una factura se paga",
+          "hint": "Se dispara cuando una factura se marca como pagada"
+        },
+        "new_lead": {
+          "label": "Se crea un cliente potencial",
+          "hint": "Se dispara cuando se crea un cliente con el estado de cliente potencial"
+        },
+        "campaign_sent": {
+          "label": "Se envía una campaña",
+          "hint": "Se dispara después de enviar una campaña de marketing"
+        }
+      },
+      "actions": {
+        "create_task": {
+          "label": "Crear una tarea",
+          "hint": "Agrega una tarea a la lista de tareas, con la opción de vincularla al cliente"
+        },
+        "send_email": {
+          "label": "Enviar un correo",
+          "hint": "Envía un correo transaccional al cliente"
+        },
+        "add_note": {
+          "label": "Agregar una nota",
+          "hint": "Registra una nota de actividad en la ficha del cliente"
+        }
+      },
+      "configureAction": "Configurar la acción",
+      "taskTitleLabel": "Título de la tarea",
+      "taskTitlePlaceholder": "Dar seguimiento a {{client_name}}",
+      "dueInDaysLabel": "Vence en (días)",
+      "emailSubjectLabel": "Asunto del correo",
+      "emailBodyLabel": "Cuerpo del correo",
+      "noteBodyLabel": "Cuerpo de la nota",
+      "notePlaceholder": "Registro automático: la factura {{invoice_number}} está vencida",
+      "create": "Crear automatización",
+      "creating": "Creando…",
+      "cancel": "Cancelar",
+      "nameRequired": "El nombre es obligatorio",
+      "createFailed": "No se pudo crear la automatización",
+      "defaults": {
+        "taskInvoiceOverdue": "Seguimiento: factura vencida {{invoice_number}} de {{client_name}}",
+        "taskInvoicePaid": "Seguimiento: factura pagada {{invoice_number}} de {{client_name}}",
+        "taskNewLead": "Dar seguimiento al nuevo cliente potencial {{client_name}}",
+        "taskCampaignSent": "Seguimiento tras la campaña {{campaign_name}}",
+        "taskGeneric": "Dar seguimiento a {{client_name}}",
+        "note": "Nota de actividad automática"
+      }
+    }
+  },
+  "errors": {
+    "unauthorized": "Su sesión se ha cerrado. Vuelva a iniciar sesión para continuar.",
+    "noSession": "Su sesión se ha cerrado. Vuelva a iniciar sesión para continuar.",
+    "workflowNotFound": "Ese flujo de trabajo de aprobación ya no existe.",
+    "workflowInactive": "Ese flujo de trabajo de aprobación está desactivado. Actívelo en Flujos de trabajo para poder usarlo.",
+    "workflowNoSteps": "Ese flujo de trabajo de aprobación aún no tiene pasos. Agregue al menos un aprobador.",
+    "requestNotFound": "Esa solicitud de aprobación ya no existe.",
+    "requestNotPending": "Esa solicitud ya se ha resuelto.",
+    "noPendingStep": "Esa solicitud no tiene ningún paso pendiente de decisión."
+  }
+}

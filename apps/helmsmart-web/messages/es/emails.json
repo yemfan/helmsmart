@@ -1,0 +1,77 @@
+{
+  "digest": {
+    "fromName": "{{org}} a través de HelmSmart",
+    "subject": "Su semana en {{org}}: {{outstanding}} pendiente de cobro",
+    "headerNote": "Su semana por delante",
+    "title": "Resumen del lunes",
+    "intro": "Así está la situación al empezar la semana.",
+    "cash": {
+      "label": "Efectivo disponible",
+      "linked": "Cuentas vinculadas",
+      "none": "Vincular un banco"
+    },
+    "outstanding": {
+      "label": "Pendiente de cobro",
+      "overdue": "{{amount}} vencido",
+      "open": "{{count}} sin cobrar"
+    },
+    "bills": {
+      "label": "Facturas por pagar",
+      "dueThisWeek": "{{amount}} vence esta semana",
+      "open": "{{count}} sin pagar"
+    },
+    "tasks": {
+      "label": "Tareas abiertas",
+      "overdue": "{{count}} vencidas",
+      "onTrack": "al día"
+    },
+    "openDashboard": "Abrir el panel →",
+    "viewForecast": "Ver la previsión de flujo de caja",
+    "footer": "Resumen semanal · Con tecnología de HelmSmart",
+    "text": {
+      "heading": "{{org}} — su semana por delante",
+      "cash": "Efectivo disponible: {{amount}}",
+      "outstanding": "Pendiente de cobro: {{amount}}",
+      "outstandingOverdue": "Pendiente de cobro: {{amount}} ({{overdue}} vencido)",
+      "bills": "Facturas por pagar: {{amount}}",
+      "billsDueSoon": "Facturas por pagar: {{amount}} ({{dueSoon}} vence esta semana)",
+      "tasks": "Tareas abiertas: {{count}}",
+      "tasksOverdue": "Tareas abiertas: {{count}} ({{overdue}} vencidas)",
+      "dashboard": "Panel: {{url}}"
+    }
+  },
+  "invite": {
+    "fromName": "{{org}} a través de HelmSmart",
+    "subject": "Le han invitado a unirse a {{org}} en HelmSmart",
+    "heading": "¡Está invitado!",
+    "body": "<strong>{{org}}</strong> le ha invitado a unirse a su espacio de trabajo en HelmSmart como <strong>{{role}}</strong>.",
+    "accept": "Aceptar la invitación",
+    "expiry": "Esta invitación caduca en 7 días. Si no la esperaba, puede ignorar este correo.",
+    "footer": "Con tecnología de HelmSmart",
+    "roles": {
+      "admin": "administrador",
+      "bookkeeper": "contable",
+      "viewer": "lector"
+    },
+    "text": {
+      "body": "Le han invitado a unirse a {{org}} en HelmSmart como {{role}}.",
+      "accept": "Acéptela aquí: {{url}}",
+      "expiry": "Este enlace caduca en 7 días."
+    }
+  },
+  "formAlert": {
+    "fromName": "Formularios de HelmSmart",
+    "subject": "Nuevo envío de formulario: {{form}}",
+    "heading": "Nuevo envío: {{form}}",
+    "submitted": "Enviado el {{date}}",
+    "view": "Ver en HelmSmart →"
+  },
+  "bookingAlert": {
+    "subject": "Nueva cita: {{when}}",
+    "intro": "Su recepcionista con IA ha reservado una cita.",
+    "when": "Cuándo: {{when}}",
+    "caller": "Quién llama: {{caller}}",
+    "unknownCaller": "un número desconocido",
+    "onCalendar": "Ya está en su calendario: {{url}}"
+  }
+}

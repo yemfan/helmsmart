@@ -8,11 +8,14 @@ import {
   PROPER_NOUNS,
   ROOT,
   leafKeys,
+  legitimatelyIdentical,
   loadNamespace,
   loadNamespaces,
+  locales,
   lookup,
   packageOnlyCommonKey,
   readJson,
+  translatedLocales,
   type Bundle,
 } from "./bundles";
 
@@ -25,13 +28,13 @@ import {
  * That is deliberate — a pack can relabel "Clients" to "Patients" before the
  * locale is applied, and a label with no translation renders itself rather than
  * a raw key. The cost is that the bundle and the component agree only by
- * spelling: rename a nav item in `components/sidebar.tsx` and the Chinese
+ * spelling: rename a nav item in `components/sidebar.tsx` and the translated
  * sidebar silently goes back to English, one item at a time, with nothing
  * failing anywhere. `missingKeys` cannot see it either, because the key is a
  * variable.
  *
  * So this guard reads the labels out of the component and demands they exist in
- * both nav bundles. Ported from
+ * every nav bundle. Ported from
  * `apps/leadsmartai/lib/i18n/__tests__/navLabels.test.ts`, which pins the same
  * contract for a nav tree assembled the same way, and extended here with the
  * two other navigations that share the `nav` namespace — `settings-tabs.tsx`
@@ -39,10 +42,15 @@ import {
  * key with a template literal and are therefore invisible to every other guard
  * in this directory.
  *
- * The last block is the general parity check: for every namespace, the `en` and
- * `zh-Hans` bundles carry the SAME leaf keys. A key present in one and missing
- * from the other is the gap that renders English to a Chinese reader without
- * anything looking wrong.
+ * The last block is the general parity check: for every namespace and every
+ * shipped locale, the bundles carry the SAME leaf keys as English. A key
+ * present in one and missing from the other is the gap that renders English to
+ * a translated reader without anything looking wrong.
+ *
+ * Nothing here names a language. The locale list is read from the `messages/`
+ * directory, so a new one is held to every assertion in this file the moment
+ * its folder exists — the alternative is a guard that keeps checking the two
+ * languages it was written for while a third ships unexamined beside them.
  */
 
 const SIDEBAR = join(ROOT, "components", "sidebar.tsx");
@@ -50,7 +58,11 @@ const SETTINGS_TABS = join(ROOT, "components", "settings-tabs.tsx");
 const BOOKS_NAV = join(ROOT, "components", "books-nav.tsx");
 
 const enNav = readJson(join(MESSAGES, "en", "nav.json"));
-const zhNav = readJson(join(MESSAGES, "zh-Hans", "nav.json"));
+/** Every translated locale's nav bundle, keyed by locale — read from disk so a
+ *  new language is held to these assertions the moment its directory exists. */
+const translatedNav = translatedLocales().map(
+  (locale) => [locale, readJson(join(MESSAGES, locale, "nav.json"))] as const,
+);
 
 /**
  * The English labels in `navSections`, group titles and item labels alike.
@@ -109,11 +121,16 @@ describe("sidebar labels", () => {
     expect(missing, `\nmessages/en/nav.json is missing:\n${missing.join("\n")}\n`).toEqual([]);
   });
 
-  it("has a Chinese nav key for every label the sidebar renders", () => {
-    const missing = [...new Set(sidebarLabels())].filter(
-      (l) => typeof lookup(zhNav, l) !== "string",
-    );
-    expect(missing, `\nmessages/zh-Hans/nav.json is missing:\n${missing.join("\n")}\n`).toEqual([]);
+  it("has a translated nav key for every label the sidebar renders", () => {
+    for (const [locale, nav] of translatedNav) {
+      const missing = [...new Set(sidebarLabels())].filter(
+        (l) => typeof lookup(nav, l) !== "string",
+      );
+      expect(
+        missing,
+        `\nmessages/${locale}/nav.json is missing:\n${missing.join("\n")}\n`,
+      ).toEqual([]);
+    }
   });
 });
 
@@ -123,7 +140,12 @@ describe("settings tabs and books nav", () => {
     expect(keys.length).toBeGreaterThan(3);
     for (const k of keys) {
       expect(typeof lookup(enNav, `settingsTabs.${k}`), `en settingsTabs.${k}`).toBe("string");
-      expect(typeof lookup(zhNav, `settingsTabs.${k}`), `zh settingsTabs.${k}`).toBe("string");
+      for (const [locale, nav] of translatedNav) {
+        expect(
+          typeof lookup(nav, `settingsTabs.${k}`),
+          `${locale} settingsTabs.${k}`,
+        ).toBe("string");
+      }
     }
   });
 
@@ -132,7 +154,9 @@ describe("settings tabs and books nav", () => {
     expect(keys.length).toBeGreaterThan(6);
     for (const k of keys) {
       expect(typeof lookup(enNav, `books.${k}`), `en books.${k}`).toBe("string");
-      expect(typeof lookup(zhNav, `books.${k}`), `zh books.${k}`).toBe("string");
+      for (const [locale, nav] of translatedNav) {
+        expect(typeof lookup(nav, `books.${k}`), `${locale} books.${k}`).toBe("string");
+      }
     }
   });
 });
@@ -178,70 +202,89 @@ describe("plural-aware key comparison", () => {
 });
 
 describe("nav namespace", () => {
-  it("carries the same key set in both locales", () => {
+  it("carries the same key set in every locale", () => {
     const en = logicalKeys(enNav as Bundle);
-    const zh = logicalKeys(zhNav as Bundle);
-    expect([...en].filter((k) => !zh.has(k)), "missing from zh-Hans").toEqual([]);
-    expect([...zh].filter((k) => !en.has(k)), "not declared in en").toEqual([]);
+    for (const [locale, nav] of translatedNav) {
+      const other = logicalKeys(nav as Bundle);
+      expect([...en].filter((k) => !other.has(k)), `missing from ${locale}`).toEqual([]);
+      expect([...other].filter((k) => !en.has(k)), `not declared in en (${locale})`).toEqual([]);
+    }
   });
 
-  it("has no Chinese value that is still its English source", () => {
+  it("has no translated value that is still its English source", () => {
     /*
      * A half-translated sidebar reads as translated to the parity check above:
-     * the key is there, carrying the English. Only a proper noun is legitimately
-     * identical — the product's own name, an AI employee's, a platform's.
+     * the key is there, carrying the English.
+     *
+     * `legitimatelyIdentical` is the SAME predicate `untranslatedValues` uses,
+     * deliberately — this check used to accept only a proper noun, and so
+     * reported Spanish "General" as untranslated. It is the correct Spanish
+     * word, and a guard that fails a correct translation teaches people to
+     * edit the translation to appease it.
      */
-    const identical = leafKeys(enNav as Bundle).filter((k) => {
-      const e = lookup(enNav, k);
-      const z = lookup(zhNav, k);
-      if (typeof e !== "string" || e !== z) return false;
-      return !PROPER_NOUNS.has(e.trim());
-    });
-    expect(identical, `\nzh-Hans nav values still in English:\n${identical.join("\n")}\n`).toEqual(
-      [],
-    );
+    for (const [locale, nav] of translatedNav) {
+      const identical = leafKeys(enNav as Bundle).filter((k) => {
+        const e = lookup(enNav, k);
+        const other = lookup(nav, k);
+        if (typeof e !== "string" || e !== other) return false;
+        return !legitimatelyIdentical(e);
+      });
+      expect(
+        identical,
+        `\n${locale} nav values still in English:\n${identical.join("\n")}\n`,
+      ).toEqual([]);
+    }
   });
 });
 
 describe("bundle parity", () => {
-  it("gives every namespace the same leaf keys in en and zh-Hans", () => {
+  it("gives every namespace the same leaf keys in every shipped locale", () => {
     /*
      * The general form of the nav check above, across every bundle this app
-     * ships. `common` is compared in RESOLVED form — the shared package's half
-     * overlaid with the app's — because that is what a reader actually gets, and
-     * a gap on either side of that overlay renders English to a Chinese reader
-     * with nothing else in this directory complaining.
+     * ships and every language it ships them in. `common` is compared in
+     * RESOLVED form — the shared package's half overlaid with the app's —
+     * because that is what a reader actually gets, and a gap on either side of
+     * that overlay renders English to a translated reader with nothing else in
+     * this directory complaining.
+     *
+     * The locale list is read from disk, not written here: naming the
+     * languages in a literal is how a third one ships unchecked beside the
+     * two that are named.
      */
     const en = loadNamespaces("en");
-    const zh = loadNamespaces("zh-Hans");
     const findings: string[] = [];
 
-    for (const ns of Object.keys(en)) {
-      const zhBundle = zh[ns];
-      if (!zhBundle) {
-        findings.push(`${ns}: no messages/zh-Hans/${ns}.json at all`);
-        continue;
-      }
-      const zhKeys = logicalKeys(zhBundle);
-      const enKeys = logicalKeys(en[ns]);
-      for (const k of enKeys) {
-        if (!zhKeys.has(k)) findings.push(`${ns}: ${k} missing from zh-Hans`);
-      }
-      for (const k of zhKeys) {
-        if (!enKeys.has(k)) findings.push(`${ns}: ${k} is in zh-Hans but not in en`);
-      }
-      for (const locale of [
-        ["en", en[ns]] as const,
-        ["zh-Hans", zhBundle] as const,
-      ]) {
-        for (const base of pluralsWithoutOther(locale[1])) {
-          findings.push(`${ns}: ${base} is pluralised in ${locale[0]} with no _other form`);
+    for (const locale of translatedLocales()) {
+      const other = loadNamespaces(locale);
+
+      for (const ns of Object.keys(en)) {
+        const otherBundle = other[ns];
+        if (!otherBundle) {
+          findings.push(`${ns}: no messages/${locale}/${ns}.json at all`);
+          continue;
         }
+        const otherKeys = logicalKeys(otherBundle);
+        const enKeys = logicalKeys(en[ns]);
+        for (const k of enKeys) {
+          if (!otherKeys.has(k)) findings.push(`${locale} ${ns}: ${k} missing`);
+        }
+        for (const k of otherKeys) {
+          if (!enKeys.has(k)) findings.push(`${locale} ${ns}: ${k} is in ${locale} but not in en`);
+        }
+        for (const base of pluralsWithoutOther(otherBundle)) {
+          findings.push(`${locale} ${ns}: ${base} is pluralised with no _other form`);
+        }
+      }
+
+      for (const ns of Object.keys(other)) {
+        if (!en[ns]) findings.push(`${ns}: no messages/en/${ns}.json at all`);
       }
     }
 
-    for (const ns of Object.keys(zh)) {
-      if (!en[ns]) findings.push(`${ns}: no messages/en/${ns}.json at all`);
+    for (const ns of Object.keys(en)) {
+      for (const base of pluralsWithoutOther(en[ns])) {
+        findings.push(`en ${ns}: ${base} is pluralised with no _other form`);
+      }
     }
 
     expect(findings, `\n${findings.join("\n")}\n`).toEqual([]);
@@ -286,7 +329,7 @@ describe("the common overlay", () => {
   it("keeps every package key an app group does not itself override", () => {
     const findings: string[] = [];
 
-    for (const locale of ["en", "zh-Hans"]) {
+    for (const locale of locales()) {
       const pkg = readJson(join(PACKAGE_LOCALES, locale, "common.json")) ?? {};
       const app = readJson(join(MESSAGES, locale, "common.json")) ?? {};
       const resolved = loadNamespace(locale, "common");

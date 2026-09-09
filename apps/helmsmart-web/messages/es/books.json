@@ -1,0 +1,1206 @@
+{
+  "overview": {
+    "metaTitle": "Contabilidad",
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "stats": {
+      "bankBalance": "Saldo bancario",
+      "revenue": "Ingresos",
+      "expenses": "Gastos",
+      "netProfit": "Beneficio neto",
+      "allLinkedAccounts": "Todas las cuentas vinculadas",
+      "linkBankToSync": "Vincule su banco para sincronizar",
+      "noTransactionsYet": "Aún no hay transacciones"
+    },
+    "actions": {
+      "title": "Acciones",
+      "getStarted": "Comenzar"
+    },
+    "transactions": {
+      "title": "Transacciones",
+      "linkToSync": "Vincule un banco para empezar a sincronizar",
+      "noBankTitle": "Aún no hay ningún banco conectado",
+      "noBankBody": "Vincule su banco a través de Plaid e importaremos los últimos 90 días, categorizados con IA.",
+      "syncing": "Sincronizando transacciones… vuelva a consultar en un momento.",
+      "pending": "Pendiente",
+      "needsReview": "Requiere revisión"
+    }
+  },
+  "status": {
+    "invoice": {
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "paid": "Pagada",
+      "overdue": "Vencida",
+      "void": "Anulada"
+    },
+    "recurring": {
+      "active": "Activa",
+      "paused": "Pausada"
+    }
+  },
+  "invoices": {
+    "frequency": {
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annually": "Anual"
+    },
+    "list": {
+      "metaTitle": "Facturas · Contabilidad",
+      "export": "Exportar",
+      "newInvoice": "Nueva factura",
+      "outstanding": "Pendiente de cobro",
+      "overdue": "Vencidas",
+      "collected30d": "Cobrado (30 d)",
+      "invoiceCount_one": "{{count}} factura",
+      "invoiceCount_other": "{{count}} facturas",
+      "pastDueCount_one": "{{count}} vencida",
+      "pastDueCount_other": "{{count}} vencidas",
+      "paidCount_one": "{{count}} pagada",
+      "paidCount_other": "{{count}} pagadas",
+      "emptyTitle": "Aún no hay facturas",
+      "emptyBody": "Cree su primera factura y envíela directamente a un cliente por correo electrónico.",
+      "createInvoice": "Crear factura",
+      "columns": {
+        "client": "Cliente / Número",
+        "issued": "Emitida",
+        "due": "Vence",
+        "amount": "Importe",
+        "status": "Estado"
+      }
+    },
+    "new": {
+      "metaTitle": "Nueva factura · Contabilidad",
+      "title": "Nueva factura",
+      "subtitle": "Cree y envíe una factura profesional a su cliente"
+    },
+    "detail": {
+      "metaTitle": "Factura · Contabilidad",
+      "print": "Imprimir",
+      "documentLabel": "Factura",
+      "issued": "Emitida:",
+      "due": "Vence:",
+      "paid": "Pagada:",
+      "billTo": "Facturar a",
+      "columns": {
+        "description": "Descripción",
+        "qty": "Cant.",
+        "unitPrice": "Precio unitario",
+        "amount": "Importe"
+      },
+      "subtotal": "Subtotal",
+      "taxAt": "Impuesto ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notas"
+    },
+    "actions": {
+      "selectBankAccount": "Seleccione una cuenta bancaria",
+      "confirmVoid": "¿Anular esta factura? Esta acción no se puede deshacer.",
+      "markPaidTitle": "Marcar la factura como pagada",
+      "noMappedBanks": "No se encontraron cuentas bancarias con una cuenta contable asignada. Configure primero la correspondencia banco → cuenta en Configuración.",
+      "depositInto": "Depositar en",
+      "journalHint": "Se registrará un asiento contable: cargo al banco y abono a la o las cuentas de ingresos.",
+      "posting": "Registrando…",
+      "confirmPayment": "Confirmar pago",
+      "sendInvoice": "Enviar factura",
+      "resend": "Reenviar",
+      "payOnline": "Pagar en línea",
+      "markPaid": "Marcar como pagada",
+      "reminderSent": "Recordatorio enviado",
+      "sendReminder": "Enviar recordatorio",
+      "void": "Anular"
+    },
+    "errors": {
+      "noOrg": "No hay ninguna empresa seleccionada. Elija una e inténtelo de nuevo.",
+      "notAuthenticated": "No ha iniciado sesión. Inicie sesión e inténtelo de nuevo.",
+      "notFound": "No se encontró la factura.",
+      "clientNoEmail": "Este cliente no tiene dirección de correo electrónico.",
+      "sendFailed": "No se pudo enviar la factura. Inténtelo de nuevo.",
+      "reminderFailed": "No se pudo enviar el recordatorio. Inténtelo de nuevo.",
+      "markPaidFailed": "No se pudo marcar la factura como pagada. Inténtelo de nuevo.",
+      "bankNotFound": "No se encontró la cuenta bancaria.",
+      "bankNoCoaMapping": "Esa cuenta bancaria no tiene ninguna cuenta contable asignada; configúrela primero en Configuración.",
+      "journalEntryFailed": "No se pudo crear el asiento contable."
+    },
+    "notifications": {
+      "paymentReceived": "Pago recibido: {{amount}}",
+      "markedPaid": "Factura {{number}} marcada como pagada"
+    },
+    "builder": {
+      "title": "Datos de la factura",
+      "billTo": "Facturar a",
+      "noClient": "Sin cliente",
+      "unnamedClient": "Sin nombre",
+      "issueDate": "Fecha de emisión",
+      "dueDate": "Fecha de vencimiento",
+      "columns": {
+        "description": "Descripción",
+        "qty": "Cant.",
+        "unitPrice": "Precio unitario",
+        "amount": "Importe"
+      },
+      "descriptionPlaceholder": "Descripción del servicio o producto",
+      "revenueAccountOptional": "Cuenta de ingresos (opcional)",
+      "addLineItem": "Añadir línea",
+      "subtotal": "Subtotal",
+      "tax": "Impuesto",
+      "total": "Total",
+      "notesOptional": "Notas (opcional)",
+      "notesPlaceholder": "Condiciones de pago, datos bancarios, nota de agradecimiento…",
+      "saveAsDraft": "Guardar como borrador",
+      "createInvoice": "Crear factura",
+      "errors": {
+        "dueDateRequired": "La fecha de vencimiento es obligatoria.",
+        "noLineItems": "Añada al menos una línea.",
+        "saveFailed": "No se pudo guardar la factura. Inténtelo de nuevo."
+      }
+    },
+    "timesheetImport": {
+      "trigger_one": "Importar {{count}} registro de horas",
+      "trigger_other": "Importar {{count}} registros de horas",
+      "title": "Importar registros de horas",
+      "subtitle": "Los registros seleccionados se convierten en líneas de esta factura",
+      "selectedOf": "{{selected}} de {{total}} seleccionados",
+      "selectAll": "Seleccionar todo",
+      "clear": "Borrar",
+      "noDescription": "Sin descripción",
+      "hours_one": "{{count}} h",
+      "hours_other": "{{count}} h",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min",
+      "selectAtLeastOne": "Seleccione al menos un registro.",
+      "importFailed": "No se pudieron importar esos registros. Inténtelo de nuevo.",
+      "import": "Importar",
+      "importCount_one": "Importar {{count}}",
+      "importCount_other": "Importar {{count}}"
+    },
+    "recurring": {
+      "metaTitle": "Facturas periódicas · Contabilidad",
+      "noClient": "Sin cliente",
+      "confirmDelete": "¿Eliminar esta factura periódica? No se generarán facturas futuras. Esta acción no se puede deshacer.",
+      "lastGenerated": "Última: {{date}}",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "activeCount_one": "{{count}} activa",
+      "activeCount_other": "{{count}} activas",
+      "pausedCount_one": "{{count}} pausada",
+      "pausedCount_other": "{{count}} pausadas",
+      "autoGeneratedHint": "Las facturas se generan automáticamente cada día a las 9:00 UTC",
+      "emptyTitle": "No hay facturas periódicas",
+      "emptyBody": "Configure la facturación automática para cuotas fijas, suscripciones o cualquier servicio recurrente.",
+      "columns": {
+        "client": "Cliente / Programación",
+        "frequency": "Frecuencia",
+        "amount": "Importe",
+        "nextInvoice": "Próxima factura",
+        "status": "Estado"
+      }
+    },
+    "recurringModal": {
+      "trigger": "Periódica",
+      "title": "Nueva factura periódica",
+      "defaultTitle": "Factura periódica",
+      "client": "Cliente",
+      "noSpecificClient": "Sin cliente concreto",
+      "frequency": "Frecuencia",
+      "firstInvoiceDate": "Fecha de la primera factura",
+      "invoiceTitle": "Título de la factura",
+      "optional": "(opcional)",
+      "titlePlaceholder": "Cuota mensual, mantenimiento del sitio web…",
+      "lineItems": "Líneas",
+      "addItem": "Añadir línea",
+      "columns": {
+        "description": "Descripción",
+        "qty": "Cant.",
+        "price": "Precio"
+      },
+      "itemPlaceholder": "Descripción del servicio",
+      "taxRate": "Tipo impositivo (%)",
+      "subtotal": "Subtotal",
+      "taxAt": "Impuesto ({{rate}}%)",
+      "perInvoice": "Por factura",
+      "notes": "Notas",
+      "notesPlaceholder": "Condiciones de pago, instrucciones de entrega…",
+      "create": "Crear factura periódica",
+      "errors": {
+        "noLineItems": "Añada al menos una línea."
+      }
+    },
+    "stripe": {
+      "success": "El pago se completó correctamente; la factura se marcará como pagada en breve.",
+      "cancelled": "El pago se canceló. No se ha cobrado la factura."
+    }
+  },
+  "estimates": {
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "workflowTitle": "Presupuesto — {{amount}}",
+    "projectNameFallback": "Proyecto {{number}}",
+    "meta": {
+      "list": "Presupuestos · Contabilidad",
+      "new": "Nuevo presupuesto · Contabilidad",
+      "detail": "Presupuesto · Contabilidad",
+      "templates": "Plantillas de presupuesto · Contabilidad"
+    },
+    "status": {
+      "draft": "Borrador",
+      "sent": "Enviado",
+      "accepted": "Aceptado",
+      "declined": "Rechazado",
+      "expired": "Caducado"
+    },
+    "list": {
+      "newEstimate": "Nuevo presupuesto",
+      "kpi": {
+        "pending": "Pendientes",
+        "accepted": "Aceptados",
+        "totalSent": "Total enviado",
+        "sentCount_one": "{{count}} enviado",
+        "sentCount_other": "{{count}} enviados",
+        "estimateCount_one": "{{count}} presupuesto",
+        "estimateCount_other": "{{count}} presupuestos",
+        "totalCount_one": "{{count}} presupuesto en total",
+        "totalCount_other": "{{count}} presupuestos en total"
+      },
+      "columns": {
+        "client": "Cliente / Número",
+        "issued": "Emitido",
+        "expires": "Caduca",
+        "amount": "Importe",
+        "status": "Estado"
+      },
+      "empty": {
+        "title": "Aún no hay presupuestos",
+        "body": "Cree y envíe presupuestos profesionales a sus clientes. Los presupuestos aceptados se convierten en facturas con un solo clic.",
+        "cta": "Crear presupuesto"
+      }
+    },
+    "new": {
+      "back": "Volver a presupuestos",
+      "title": "Nuevo presupuesto",
+      "manageTemplates": "Gestionar plantillas →"
+    },
+    "detail": {
+      "back": "Presupuestos",
+      "orgFallback": "Presupuesto",
+      "unknownClient": "Cliente desconocido",
+      "noClient": "Sin cliente",
+      "issueDate": "Fecha de emisión",
+      "validUntil": "Válido hasta",
+      "client": "Cliente",
+      "columns": {
+        "description": "Descripción",
+        "qty": "Cant.",
+        "price": "Precio",
+        "amount": "Importe"
+      },
+      "subtotal": "Subtotal",
+      "taxWithRate": "Impuesto ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notas",
+      "convertedToInvoice": "Convertido en factura",
+      "viewInvoice": "Ver factura →",
+      "convertedToProject": "Se creó un proyecto a partir de este presupuesto",
+      "viewProject": "Ver proyecto →",
+      "actionsHeading": "Acciones",
+      "detailsHeading": "Detalles",
+      "number": "Número",
+      "statusLabel": "Estado",
+      "issued": "Emitido",
+      "expires": "Caduca"
+    },
+    "actions": {
+      "noClientEmail": "El cliente no tiene dirección de correo electrónico",
+      "send": "Enviar presupuesto",
+      "resend": "Reenviar presupuesto",
+      "markAccepted": "Marcar como aceptado",
+      "markDeclined": "Marcar como rechazado",
+      "convertToInvoice": "Convertir en factura",
+      "createProject": "Crear proyecto"
+    },
+    "templates": {
+      "back": "Volver a presupuestos",
+      "title": "Plantillas de presupuesto",
+      "newEstimate": "Nuevo presupuesto",
+      "lineCount_one": "{{count}} línea",
+      "lineCount_other": "{{count}} líneas",
+      "subtotalAmount": "{{amount}} de subtotal",
+      "taxRate": "{{rate}} % de impuesto",
+      "footnote": "Las plantillas aparecen en el selector “Empezar desde una plantilla” al crear un presupuesto nuevo.",
+      "confirmDelete": "¿Eliminar la plantilla “{{name}}”? Esta acción no se puede deshacer.",
+      "deleteTitle": "Eliminar plantilla",
+      "empty": {
+        "title": "Aún no hay plantillas",
+        "body": "Cree un presupuesto y haga clic en “Guardar como plantilla” para reutilizar sus líneas.",
+        "cta": "Crear un presupuesto →"
+      }
+    },
+    "builder": {
+      "aiLabel": "Redactar con IA",
+      "aiPlaceholder": "Describa el trabajo: p. ej. traslado al aeropuerto para 6 personas, ida y vuelta con 1 h de espera",
+      "aiDraft": "Redactar",
+      "aiHint": "La IA completa las líneas y una nota de alcance; revise y edite antes de enviar.",
+      "startFromTemplate": "Empezar desde una plantilla",
+      "blankEstimate": "— Presupuesto en blanco —",
+      "client": "Cliente",
+      "noClient": "Sin cliente",
+      "validUntil": "Válido hasta (fecha de caducidad)",
+      "lineItems": "Líneas",
+      "addLine": "Añadir línea",
+      "columns": {
+        "description": "Descripción",
+        "qty": "Cant.",
+        "unitPrice": "Precio unitario",
+        "amount": "Importe"
+      },
+      "descriptionPlaceholder": "Servicio o producto",
+      "taxRate": "Tipo impositivo (%)",
+      "subtotal": "Subtotal",
+      "taxWithRate": "Impuesto ({{rate}}%)",
+      "total": "Total",
+      "notes": "Notas",
+      "optional": "(opcional)",
+      "notesPlaceholder": "Alcance del trabajo, condiciones, supuestos…",
+      "saveAsTemplate": "Guardar como plantilla",
+      "templateSaved": "Plantilla guardada",
+      "create": "Crear presupuesto",
+      "templateNamePrompt": "Guarde estas líneas como plantilla. Nombre de la plantilla:",
+      "errors": {
+        "expiryRequired": "La fecha de caducidad es obligatoria",
+        "lineRequired": "Añada al menos una línea",
+        "linesBeforeTemplate": "Añada líneas antes de guardar una plantilla",
+        "templateSaveFailed": "No se pudo guardar la plantilla",
+        "draftFailed": "No se pudo redactar el presupuesto"
+      }
+    },
+    "errors": {
+      "noOrg": "No hay ninguna empresa seleccionada",
+      "notFound": "No se encontró el presupuesto",
+      "clientNoEmail": "El cliente no tiene dirección de correo electrónico",
+      "projectCreateFailed": "No se pudo crear el proyecto",
+      "describeJob": "Describa el trabajo que quiere presupuestar",
+      "draftFailed": "No se pudo redactar un presupuesto: pruebe a añadir más detalle",
+      "templateNameRequired": "El nombre de la plantilla es obligatorio",
+      "lineRequired": "Añada al menos una línea",
+      "templateSaveFailed": "No se pudo guardar la plantilla"
+    }
+  },
+  "bills": {
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "meta": {
+      "list": "Facturas de proveedor · Contabilidad",
+      "recurring": "Facturas de proveedor periódicas · Contabilidad"
+    },
+    "status": {
+      "paid": "Pagada"
+    },
+    "due": {
+      "overdue_one": "{{count}} día de retraso",
+      "overdue_other": "{{count}} días de retraso",
+      "today": "Vence hoy",
+      "inDays_one": "Vence en {{count}} día",
+      "inDays_other": "Vence en {{count}} días",
+      "onDate": "Vence el {{date}}"
+    },
+    "list": {
+      "title": "Facturas de proveedor",
+      "subtitle": "Controle lo que debe a sus proveedores. Los gastos se contabilizan en sus libros cuando las paga.",
+      "recurring": "Periódicas",
+      "newBill": "Nueva factura de proveedor",
+      "kpi": {
+        "totalOwed": "Total adeudado",
+        "overdue": "Vencidas",
+        "dueInSevenDays": "Vencen en 7 días",
+        "openBills_one": "{{count}} factura de proveedor pendiente",
+        "openBills_other": "{{count}} facturas de proveedor pendientes",
+        "pastDue_one": "{{count}} vencida",
+        "pastDue_other": "{{count}} vencidas",
+        "comingUp_one": "{{count}} próxima",
+        "comingUp_other": "{{count}} próximas"
+      },
+      "filter": {
+        "open_one": "Pendientes ({{count}})",
+        "open_other": "Pendientes ({{count}})",
+        "paid_one": "Pagadas ({{count}})",
+        "paid_other": "Pagadas ({{count}})",
+        "all": "Todas"
+      },
+      "empty": {
+        "open": "No hay facturas de proveedor pendientes",
+        "paid": "Aún no hay facturas de proveedor pagadas",
+        "all": "Aún no hay facturas de proveedor",
+        "body": "Registre una factura de proveedor para controlar lo que debe y cuándo vence."
+      }
+    },
+    "row": {
+      "uncategorized": "Sin categoría",
+      "paidOn": "Pagada el {{date}}",
+      "markPaid": "Marcar como pagada",
+      "recordPayment": "Registrar pago",
+      "linkBankFirst": "Vincule primero una cuenta bancaria"
+    },
+    "form": {
+      "title": "Nueva factura de proveedor",
+      "vendor": "Proveedor *",
+      "vendorPlaceholder": "Suministros Acme",
+      "billNumber": "N.º de factura",
+      "optional": "(opcional)",
+      "description": "Descripción",
+      "descriptionPlaceholder": "¿A qué corresponde esta factura?",
+      "category": "Categoría (cuenta de gastos)",
+      "noExpenseAccounts": "No hay cuentas de gastos: complete la configuración inicial para generar su plan de cuentas.",
+      "amount": "Importe ({{currency}}) *",
+      "billDate": "Fecha de la factura",
+      "dueDate": "Fecha de vencimiento *",
+      "note": "Registrar una factura de proveedor solo anota la obligación. El gasto se contabiliza en sus libros cuando la marca como pagada.",
+      "save": "Guardar factura de proveedor",
+      "billNumberPlaceholder": "p. ej. INV-1042"
+    },
+    "pay": {
+      "title": "Pagar factura de proveedor",
+      "noBankAccount": "No hay ninguna cuenta bancaria asignada a su plan de cuentas. Vincule un banco o defina antes su correspondencia en Configuración.",
+      "payFrom": "Pagar desde",
+      "paymentDate": "Fecha de pago",
+      "journal": "Asiento: DEBE {{expense}} / HABER {{bank}}",
+      "expenseFallback": "Gasto",
+      "bankFallback": "Banco",
+      "submit": "Registrar pago"
+    },
+    "recurring": {
+      "title": "Facturas de proveedor periódicas",
+      "frequency": {
+        "weekly": "Semanal",
+        "monthly": "Mensual",
+        "quarterly": "Trimestral",
+        "annually": "Anual"
+      },
+      "activeCount_one": "{{count}} activa",
+      "activeCount_other": "{{count}} activas",
+      "monthlyEstimate": "~{{amount}}/mes",
+      "autoGenerate": "generar automáticamente facturas de proveedor pendientes según un calendario",
+      "backToBills": "Facturas de proveedor",
+      "newRecurring": "Nueva periódica",
+      "paused": "Pausada",
+      "next": "Próxima {{date}}",
+      "net": "Plazo {{days}} días",
+      "last": "Última {{date}}",
+      "resume": "Reanudar",
+      "pause": "Pausar",
+      "footnote": "Las plantillas activas se revisan a diario. Cuando llega la próxima fecha de una plantilla, se crea una nueva factura de proveedor pendiente (con vencimiento según el plazo en días) y la fecha avanza según su frecuencia. Pause para saltarse los próximos ciclos.",
+      "empty": {
+        "title": "Aún no hay facturas de proveedor periódicas",
+        "body": "Configure una sola vez el alquiler, las suscripciones de software o los seguros: crearemos una factura de proveedor pendiente nueva en cada ciclo para que no se le escape nada.",
+        "cta": "Crear la primera plantilla"
+      },
+      "form": {
+        "title": "Nueva factura de proveedor periódica",
+        "vendorPlaceholder": "Arrendador, LLC",
+        "descriptionPlaceholder": "p. ej. alquiler de la oficina, suscripción SaaS…",
+        "frequency": "Frecuencia",
+        "firstDate": "Primera fecha",
+        "netDays": "Plazo (días)",
+        "note_one": "Cada ciclo genera una factura de proveedor pendiente con vencimiento {{count}} día después de generarse. El gasto se contabiliza en sus libros cuando la marca como pagada.",
+        "note_other": "Cada ciclo genera una factura de proveedor pendiente con vencimiento {{count}} días después de generarse. El gasto se contabiliza en sus libros cuando la marca como pagada.",
+        "save": "Guardar plantilla"
+      }
+    },
+    "errors": {
+      "noOrg": "No hay ninguna empresa seleccionada",
+      "vendorRequired": "El proveedor es obligatorio",
+      "invalidAmount": "Introduzca un importe válido",
+      "dueDateRequired": "La fecha de vencimiento es obligatoria",
+      "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria",
+      "saveFailed": "No se pudo guardar la factura de proveedor",
+      "selectBank": "Seleccione una cuenta bancaria",
+      "paymentFailed": "No se pudo registrar el pago",
+      "createRecurringFailed": "No se pudo crear la factura de proveedor periódica",
+      "notFound": "No se encontró la factura de proveedor",
+      "cantDeletePaid": "No se puede eliminar una factura de proveedor pagada: tiene un asiento contable registrado"
+    }
+  },
+  "vendors": {
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "meta": {
+      "list": "Proveedores · Contabilidad",
+      "report1099": "Informe 1099 · Contabilidad"
+    },
+    "list": {
+      "title": "Proveedores",
+      "vendorCount_one": "{{count}} proveedor",
+      "vendorCount_other": "{{count}} proveedores",
+      "paidAmount": "{{amount}} pagado",
+      "openAmount": "{{amount}} pendiente",
+      "report1099": "Informe 1099",
+      "newVendor": "Nuevo proveedor",
+      "footnote": "El gasto se asocia desde las facturas de proveedor por el nombre del proveedor. Mantenga los nombres coherentes (use el autocompletado del formulario de la factura) para que los totales sigan siendo exactos.",
+      "columns": {
+        "vendor": "Proveedor",
+        "bills": "Facturas",
+        "billed": "Facturado",
+        "paid": "Pagado",
+        "open": "Pendiente"
+      },
+      "empty": {
+        "title": "Aún no hay proveedores",
+        "body": "Añada las personas y empresas a las que paga. Su gasto se acumula automáticamente a partir de las facturas de proveedor con un nombre coincidente.",
+        "cta": "Añadir el primer proveedor"
+      }
+    },
+    "row": {
+      "confirmDelete": "Aceptar"
+    },
+    "form": {
+      "newTitle": "Nuevo proveedor",
+      "editTitle": "Editar proveedor",
+      "name": "Nombre *",
+      "namePlaceholder": "Suministros Acme",
+      "nameHint": "Haga que coincida exactamente con el nombre del proveedor en sus facturas para poder seguir el gasto.",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "notes": "Notas",
+      "notesPlaceholder": "Número de cuenta, condiciones de pago, contacto…",
+      "is1099": "Contratista 1099",
+      "is1099Hint": "— incluir en el informe 1099 de fin de año",
+      "add": "Añadir proveedor"
+    },
+    "report1099": {
+      "title": "Informe de contratistas 1099",
+      "reportableCount_one": "{{count}} contratista con $600 o más",
+      "reportableCount_other": "{{count}} contratistas con $600 o más",
+      "paidInYear": "{{amount}} pagados en {{year}}",
+      "backToVendors": "Proveedores",
+      "taxYear": "Ejercicio fiscal",
+      "paidHeading": "Pagado en {{year}}",
+      "exportCsv": "Exportar CSV",
+      "total": "Total",
+      "footnote": "Base de efectivo: los totales son las facturas de proveedor marcadas como pagadas durante {{year}}, asociadas por nombre a cada contratista marcado. Los contratistas a los que se paga $600 o más suelen requerir un 1099-NEC. Confírmelo con su contador.",
+      "columns": {
+        "contractor": "Contratista",
+        "paid": "Pagado",
+        "status": "Estado"
+      },
+      "badge": {
+        "reportable": "1099-NEC",
+        "underThreshold": "Menos de $600"
+      },
+      "empty": {
+        "title": "Aún no hay contratistas 1099",
+        "body": "Marque a un proveedor como “contratista 1099” en el directorio de proveedores y sus totales pagados se acumularán aquí para la declaración de fin de año.",
+        "cta": "Ir a Proveedores →"
+      },
+      "csv": {
+        "contractor": "Contratista",
+        "email": "Correo electrónico",
+        "paid": "Pagado {{year}}",
+        "reportable": "Declarable (>= $600)",
+        "yes": "Sí",
+        "no": "No"
+      }
+    },
+    "errors": {
+      "noOrg": "No hay ninguna empresa seleccionada",
+      "nameRequired": "El nombre del proveedor es obligatorio",
+      "saveFailed": "No se pudo guardar el proveedor"
+    }
+  },
+  "reports": {
+    "financial": {
+      "metaTitle": "Informes · Contabilidad",
+      "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+      "periodLine": "Período: {{label}} · {{start}} → {{end}}",
+      "agingLink": "Informe de antigüedad de saldos (cobros / pagos)",
+      "noActivity": "Sin actividad en este período",
+      "periods": {
+        "current_month": "Este mes",
+        "last_month": "El mes pasado",
+        "ytd": "Del año hasta la fecha",
+        "q1": "T1",
+        "q2": "T2",
+        "q3": "T3",
+        "q4": "T4"
+      },
+      "periodLabels": {
+        "ytd": "Año {{year}} hasta la fecha",
+        "q1": "T1 {{year}}",
+        "q2": "T2 {{year}}",
+        "q3": "T3 {{year}}",
+        "q4": "T4 {{year}}"
+      },
+      "cards": {
+        "revenue": "Ingresos",
+        "expenses": "Gastos",
+        "netIncome": "Beneficio neto",
+        "netIncomeFormula": "Ingresos − Gastos",
+        "accounts_one": "{{count}} cuenta",
+        "accounts_other": "{{count}} cuentas"
+      },
+      "pnl": {
+        "title": "Estado de resultados",
+        "revenue": "Ingresos",
+        "totalRevenue": "Ingresos totales",
+        "expenses": "Gastos",
+        "totalExpenses": "Gastos totales",
+        "netIncome": "Beneficio neto"
+      },
+      "balanceSheet": {
+        "title": "Balance general",
+        "outOfBalance": "⚠ Descuadrado",
+        "assets": "Activos",
+        "totalAssets": "Total de activos",
+        "liabilities": "Pasivos",
+        "totalLiabilities": "Total de pasivos",
+        "equity": "Patrimonio",
+        "totalEquity": "Total de patrimonio (incl. beneficio neto)",
+        "equation": "Activos = Pasivos + Patrimonio",
+        "balanced": "✓ Cuadrado",
+        "outBy": "Descuadre de {{amount}}",
+        "empty": "No hay asientos contables en este período"
+      }
+    },
+    "business": {
+      "metaTitle": "Informes",
+      "title": "Informes",
+      "subtitle": "Estado de resultados, flujo de caja, registro de horas y antigüedad de las cuentas por cobrar",
+      "exportCsv": "Exportar CSV",
+      "lifetimeToDate": "· acumulado hasta la fecha",
+      "asOf": "· a fecha de {{date}}",
+      "dateRange": "{{from}} – {{to}}",
+      "blendedMargin": "{{percent}} % de margen combinado",
+      "hours": {
+        "hours": "{{hours}} h",
+        "minutes": "{{minutes}} min",
+        "hoursMinutes": "{{hours}} h {{minutes}} min"
+      },
+      "range": {
+        "from": "Desde",
+        "to": "Hasta",
+        "apply": "Aplicar"
+      },
+      "presets": {
+        "thisMonth": "Este mes",
+        "lastQuarter": "El trimestre pasado",
+        "thisYear": "Este año",
+        "lastYear": "El año pasado"
+      },
+      "tabs": {
+        "pnl": "Estado de resultados",
+        "cash": "Flujo de caja",
+        "time": "Registro de horas",
+        "projects": "Proyectos",
+        "clients": "Clientes",
+        "receivables": "Cuentas por cobrar",
+        "forecast": "Previsión",
+        "tax": "Impuesto sobre ventas"
+      },
+      "errors": {
+        "notAuthenticated": "No autenticado"
+      },
+      "fallbacks": {
+        "uncategorized": "Sin categoría",
+        "noProject": "Sin proyecto",
+        "noClient": "Sin cliente",
+        "unknownClient": "Cliente desconocido"
+      },
+      "pnl": {
+        "totalRevenue": "Ingresos totales",
+        "totalExpenses": "Gastos totales",
+        "netIncome": "Beneficio neto",
+        "profitablePeriod": "Período con beneficio",
+        "netLoss": "Pérdida neta",
+        "revenue": "Ingresos",
+        "expenses": "Gastos",
+        "noRevenue": "No hay ingresos registrados en este período",
+        "noExpenses": "No hay gastos registrados en este período"
+      },
+      "cash": {
+        "moneyIn": "Entradas de dinero",
+        "moneyInSub": "Depósitos y abonos",
+        "moneyOut": "Salidas de dinero",
+        "moneyOutSub": "Retiros y cargos",
+        "net": "Flujo de caja neto",
+        "positiveFlow": "Flujo positivo",
+        "negativeFlow": "Flujo negativo",
+        "byCategory": "Por categoría",
+        "noTransactions": "No hay transacciones en este período",
+        "columns": {
+          "category": "Categoría",
+          "in": "Entradas",
+          "out": "Salidas"
+        }
+      },
+      "time": {
+        "totalHours": "Horas totales",
+        "billableHours": "Horas facturables",
+        "billableAmount": "Importe facturable",
+        "uninvoiced": "Sin facturar",
+        "readyToInvoice": "listo para facturar",
+        "fullyInvoiced": "todo facturado",
+        "hoursByProject": "Horas por proyecto",
+        "noEntries": "No hay registros de horas en este período",
+        "total": "Total",
+        "byClient": "Ingresos facturables por cliente",
+        "periodSummary": "Resumen del período",
+        "billableHoursLabel": "Horas facturables",
+        "earned": "Generado"
+      },
+      "projects": {
+        "revenue": "Ingresos",
+        "laborCost": "Coste de mano de obra",
+        "expenses": "Gastos",
+        "profit": "Beneficio",
+        "profitByProject": "Beneficio por proyecto",
+        "empty": "Aún no hay proyectos",
+        "total": "Total",
+        "columns": {
+          "project": "Proyecto",
+          "revenue": "Ingresos",
+          "labor": "Mano de obra",
+          "expenses": "Gastos",
+          "profit": "Beneficio",
+          "margin": "Margen"
+        },
+        "note": "Los ingresos son el tiempo facturable ya facturado. El beneficio descuenta el coste de mano de obra (según su tarifa laboral predeterminada) y los gastos etiquetados. Las cifras son acumuladas por proyecto y no dependen del rango de fechas de arriba."
+      },
+      "clients": {
+        "revenue": "Ingresos",
+        "laborCost": "Coste de mano de obra",
+        "expenses": "Gastos",
+        "profit": "Beneficio",
+        "profitByClient": "Beneficio por cliente",
+        "empty": "Aún no hay clientes",
+        "total": "Total",
+        "columns": {
+          "client": "Cliente",
+          "revenue": "Ingresos",
+          "labor": "Mano de obra",
+          "expenses": "Gastos",
+          "profit": "Beneficio",
+          "margin": "Margen"
+        },
+        "note": "Los ingresos son todo lo facturado al cliente. El coste es la mano de obra y los gastos registrados en sus proyectos: un cliente facturado con una tarifa plana y sin seguimiento de proyectos mostrará un margen alto."
+      },
+      "receivables": {
+        "outstanding": "Pendiente de cobro",
+        "current": "Al corriente",
+        "notYetDue": "Aún no vencido",
+        "overdue": "Vencido",
+        "pastDueDate": "Pasada la fecha de vencimiento",
+        "d90Plus": "Más de 90 días",
+        "atRisk": "En riesgo",
+        "byClient": "Cuentas por cobrar por cliente",
+        "empty": "No hay facturas pendientes: lo tiene todo cobrado.",
+        "invoiceCount_one": "{{count}} factura",
+        "invoiceCount_other": "{{count}} facturas",
+        "total": "Total",
+        "columns": {
+          "client": "Cliente",
+          "current": "Al corriente",
+          "d1_30": "1–30 d",
+          "d31_60": "31–60 d",
+          "d61_90": "61–90 d",
+          "d90_plus": "Más de 90",
+          "total": "Total"
+        },
+        "note": "Facturas impagadas (enviadas o vencidas) agrupadas por los días transcurridos desde su vencimiento, a día de hoy. Independiente del rango de fechas de arriba."
+      },
+      "forecast": {
+        "dipWarning": "El efectivo previsto baja hasta {{amount}} en los próximos 90 días. Considere priorizar el cobro de las facturas vencidas o aplazar las facturas de proveedor no urgentes.",
+        "cashOnHand": "Efectivo disponible",
+        "linkedAccounts": "Cuentas vinculadas",
+        "linkABank": "Vincule un banco para más precisión",
+        "expectedIn": "Entradas previstas",
+        "openInvoices": "Facturas pendientes",
+        "expectedOut": "Salidas previstas",
+        "openBills": "Facturas de proveedor pendientes",
+        "projected90": "Previsión (90 d)",
+        "afterOpenItems": "Después de todas las partidas abiertas",
+        "title": "Flujo de caja previsto",
+        "startingBalance": "Saldo inicial",
+        "total": "Total",
+        "columns": {
+          "period": "Período",
+          "expectedIn": "Entradas previstas",
+          "expectedOut": "Salidas previstas",
+          "net": "Neto",
+          "projectedBalance": "Saldo previsto"
+        },
+        "buckets": {
+          "now": "Vencido / ahora",
+          "d1_30": "1–30 días",
+          "d31_60": "31–60 días",
+          "d61_90": "61–90 días",
+          "later": "Más de 90 días"
+        },
+        "note": "La previsión combina las facturas pendientes (entradas) y las facturas de proveedor pendientes (salidas) con su saldo bancario actual, agrupadas por fecha de vencimiento a día de hoy. No incluye las partidas periódicas aún no facturadas, las nóminas ni los impuestos."
+      },
+      "tax": {
+        "collected": "Impuesto cobrado",
+        "toRemit": "A ingresar",
+        "taxableSales": "Ventas sujetas a impuesto",
+        "nonTaxableSales": "Ventas exentas",
+        "totalSales": "Ventas totales",
+        "preTax": "Antes de impuestos",
+        "byRate": "Impuesto cobrado por tipo",
+        "empty": "No hay facturas con impuesto pagadas en este período",
+        "total": "Total",
+        "columns": {
+          "rate": "Tipo",
+          "taxableSales": "Ventas sujetas a impuesto",
+          "taxCollected": "Impuesto cobrado",
+          "invoices": "Facturas"
+        },
+        "note": "Base de efectivo: impuesto sobre ventas de las facturas pagadas entre {{from}} y {{to}}, agrupado por tipo. Las ventas exentas son facturas pagadas sin impuesto aplicado. Use el rango de fechas de arriba para que coincida con su período de declaración."
+      }
+    }
+  },
+  "journal": {
+    "metaTitle": "Libro diario · Contabilidad",
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "title": "Libro mayor",
+    "entryCount_one": "{{count}} asiento",
+    "entryCount_other": "{{count}} asientos",
+    "reversal": "Reversión",
+    "empty": {
+      "title": "Aún no hay asientos contables",
+      "body": "Apruebe transacciones en la pestaña Transacciones para registrar aquí los asientos de partida doble."
+    },
+    "sourceTypes": {
+      "bank_import": "Importación bancaria",
+      "invoice": "Factura",
+      "expense": "Gasto",
+      "adjustment": "Ajuste",
+      "opening_balance": "Saldo de apertura",
+      "period_close": "Cierre de período",
+      "reversal": "Reversión"
+    },
+    "pagination": {
+      "previous": "← Anterior",
+      "next": "Siguiente →",
+      "pageOf": "Página {{page}} de {{total}}"
+    }
+  },
+  "accounts": {
+    "metaTitle": "Cuentas · Contabilidad",
+    "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+    "activeCount": "{{active}} de {{total}} cuentas activas",
+    "title": "Plan de cuentas",
+    "autoGenerated": "Generado automáticamente según su tipo de entidad.",
+    "taxReviewWarning": "⚠ Los códigos de línea fiscal requieren la revisión de un contador antes de usarse.",
+    "countInType_one": "{{count}} cuenta",
+    "countInType_other": "{{count}} cuentas",
+    "empty": "No se encontraron cuentas. Complete la configuración inicial para generar su plan de cuentas.",
+    "types": {
+      "asset": "Activos",
+      "liability": "Pasivos",
+      "equity": "Patrimonio",
+      "revenue": "Ingresos",
+      "expense": "Gastos"
+    },
+    "normalBalance": {
+      "debit": "Debe",
+      "credit": "Haber"
+    },
+    "columns": {
+      "code": "Código",
+      "name": "Nombre",
+      "normalBalance": "Saldo normal",
+      "taxCode": "Código fiscal"
+    }
+  },
+  "aging": {
+    "metaTitle": "Informes de antigüedad de saldos · Contabilidad",
+    "title": "Informes de antigüedad de saldos",
+    "subtitle": "Cuentas por cobrar y por pagar — a fecha de {{date}}",
+    "viewAll": "Ver todo",
+    "unnamedClient": "Cliente",
+    "buckets": {
+      "current": "Al corriente",
+      "1-30": "1–30 días",
+      "31-60": "31–60 días",
+      "61-90": "61–90 días",
+      "90+": "Más de 90 días"
+    },
+    "tables": {
+      "ar": "Cuentas por cobrar (AR)",
+      "ap": "Cuentas por pagar (AP)"
+    },
+    "summary": {
+      "open": "{{count}} pendientes",
+      "total": "{{amount}} en total",
+      "pastDue": "{{amount}} vencido",
+      "nothingPastDue": "nada vencido",
+      "open_one": "{{count}} pendiente",
+      "open_other": "{{count}} pendientes"
+    },
+    "empty": {
+      "invoices": "No hay facturas pendientes",
+      "bills": "No hay facturas de proveedor pendientes"
+    },
+    "columns": {
+      "client": "Cliente",
+      "vendor": "Proveedor",
+      "reference": "Referencia",
+      "dueDate": "Fecha de vencimiento",
+      "amount": "Importe",
+      "status": "Estado"
+    },
+    "status": {
+      "current": "Al corriente",
+      "daysOverdue": "{{days}} días de retraso"
+    },
+    "cards": {
+      "totalReceivable": "Total por cobrar",
+      "arOverdue": "Cobros vencidos",
+      "totalPayable": "Total por pagar",
+      "apOverdue": "Pagos vencidos",
+      "openInvoices_one": "{{count}} factura pendiente",
+      "openInvoices_other": "{{count}} facturas pendientes",
+      "invoices_one": "{{count}} factura",
+      "invoices_other": "{{count}} facturas",
+      "openBills_one": "{{count}} factura de proveedor pendiente",
+      "openBills_other": "{{count}} facturas de proveedor pendientes",
+      "bills_one": "{{count}} factura de proveedor",
+      "bills_other": "{{count}} facturas de proveedor"
+    }
+  },
+  "expenses": {
+    "list": {
+      "metaTitle": "Gastos · Contabilidad",
+      "title": "Gastos",
+      "subtitle_one": "{{count}} registro · {{total}} en total",
+      "subtitle_other": "{{count}} registros · {{total}} en total",
+      "import": "Importar",
+      "importCsv": "CSV / hoja de cálculo",
+      "importOfx": "Extracto bancario (OFX/QFX)",
+      "record": "Registrar gasto",
+      "emptyTitle": "Aún no hay gastos",
+      "emptyBody": "Registre aquí los gastos manuales. Las transacciones importadas del banco se categorizan automáticamente en la página Transacciones.",
+      "emptyCta": "Registrar el primer gasto",
+      "columns": {
+        "date": "Fecha",
+        "description": "Descripción",
+        "account": "Cuenta",
+        "amount": "Importe"
+      },
+      "total": "Total"
+    },
+    "new": {
+      "metaTitle": "Nuevo gasto · Contabilidad",
+      "title": "Registrar gasto",
+      "subtitle": "Contabilice un gasto manual en el libro diario",
+      "back": "Gastos"
+    },
+    "modal": {
+      "trigger": "Añadir gasto",
+      "triggerHint": "Entrada manual",
+      "title": "Añadir gasto",
+      "close": "Cerrar"
+    },
+    "form": {
+      "details": "Datos del gasto",
+      "date": "Fecha",
+      "amount": "Importe",
+      "description": "Descripción",
+      "descriptionPlaceholder": "p. ej. material de oficina en Staples",
+      "expenseAccount": "Cuenta de gastos",
+      "suggest": "Sugerir",
+      "suggestHint": "Deje que la IA elija la mejor cuenta",
+      "suggestHintDisabled": "Añada primero una descripción",
+      "suggestReason": "{{account}} — {{reason}}",
+      "suggestNoMatch": "No hay ninguna coincidencia fiable; elíjala manualmente.",
+      "suggestFailed": "No se pudo sugerir una categoría.",
+      "noExpenseAccounts": "No hay cuentas de gastos en el plan de cuentas",
+      "debitedHint": "Cargado (el gasto aumenta)",
+      "paidFrom": "Pagado desde",
+      "accountsPayable": "Cuentas por pagar (aún sin pagar)",
+      "creditedHint": "Abonado (aumenta el efectivo o el pasivo)",
+      "project": "Proyecto",
+      "optionalSuffix": " (opcional)",
+      "noProject": "Sin proyecto (gasto general)",
+      "projectHint": "Se descuenta del beneficio del proyecto",
+      "required": "La fecha, el importe, la descripción y la cuenta de gastos son obligatorios.",
+      "saveFailed": "No se pudo guardar el gasto",
+      "save": "Registrar gasto"
+    },
+    "scan": {
+      "title": "Escanear un recibo",
+      "subtitle": "Suba la imagen de un recibo y la IA completará los datos automáticamente.",
+      "extracting": "Extrayendo los datos del recibo…",
+      "upload": "Subir recibo",
+      "takePhoto": "Hacer foto",
+      "clear": "Borrar escaneo",
+      "confidence": {
+        "high": "Confianza alta",
+        "medium": "Confianza media",
+        "low": "Confianza baja"
+      },
+      "notConfigured": "IA no configurada",
+      "noImage": "No se proporcionó ninguna imagen",
+      "unsupportedType": "Tipo de imagen no admitido. Suba un archivo JPEG, PNG o WebP.",
+      "tooLarge": "La imagen debe pesar menos de 10 MB",
+      "readFailed": "No se pudo leer la imagen",
+      "parseFailed": "No se pudo interpretar la respuesta de la IA",
+      "failed": "No se pudo escanear el recibo"
+    },
+    "import": {
+      "back": "Gastos",
+      "clear": "Borrar",
+      "redirecting": "Redirigiendo a Gastos…",
+      "failed": "La importación falló",
+      "noRows": "No se proporcionó ninguna fila",
+      "failedCount_one": "{{count}} con error",
+      "failedCount_other": "{{count}} con errores",
+      "csv": {
+        "metaTitle": "Importar gastos",
+        "title": "Importar gastos",
+        "subtitle": "Suba un CSV para añadir varios gastos a la vez: importe desde hojas de cálculo, exportaciones bancarias o software de contabilidad",
+        "formatTitle": "Formato CSV",
+        "formatRequired": "Columnas obligatorias: date (YYYY-MM-DD), amount, description.",
+        "formatOptional": "Columna opcional: category — por ejemplo “Meals & Entertainment”, que se asocia automáticamente con su plan de cuentas.",
+        "downloadTemplate": "Descargar plantilla",
+        "dropZone": "Suelte aquí su CSV o haga clic para buscarlo",
+        "dropZoneHint": "Solo archivos CSV · Admite exportaciones de Quicken, QuickBooks y extractos bancarios",
+        "notCsv": "Suba un archivo .csv",
+        "noValidRows": "No hay filas válidas para importar",
+        "preview": "Vista previa",
+        "validCount_one": "{{count}} válida",
+        "validCount_other": "{{count}} válidas",
+        "skipCount_one": "{{count}} se omitirá",
+        "skipCount_other": "{{count}} se omitirán",
+        "columns": {
+          "date": "Fecha",
+          "amount": "Importe",
+          "description": "Descripción",
+          "category": "Categoría"
+        },
+        "rowErrors": {
+          "dateRequired": "date es obligatorio (YYYY-MM-DD)",
+          "amountRequired": "amount es obligatorio",
+          "amountNotNumber": "amount debe ser un número",
+          "amountNotPositive": "amount debe ser positivo",
+          "descriptionRequired": "description es obligatorio"
+        },
+        "showingFirst": "Mostrando las primeras {{shown}} de {{total}} filas",
+        "imported_one": "Se importó {{count}} gasto",
+        "imported_other": "Se importaron {{count}} gastos",
+        "importing_one": "Importando {{count}} gasto…",
+        "importing_other": "Importando {{count}} gastos…",
+        "importAction_one": "Importar {{count}} gasto",
+        "importAction_other": "Importar {{count}} gastos"
+      },
+      "ofx": {
+        "metaTitle": "Importar extracto OFX/QFX",
+        "title": "Importar extracto bancario",
+        "subtitle": "Suba un archivo OFX o QFX de su banco, de Quicken o de QuickBooks para importar transacciones",
+        "formatTitle": "Formato OFX/QFX",
+        "formatBody": "Suba una exportación de extracto bancario desde Quicken, QuickBooks, el sitio web de su banco o cualquier software financiero compatible con el formato OFX. Los cargos (gastos) se importarán como transacciones de gasto; los abonos (depósitos) se omiten.",
+        "viewExample": "Ver un ejemplo de formato OFX",
+        "exampleTitle": "Ejemplo de formato OFX:",
+        "exampleFooter": "(Estas son las líneas de cabecera. Exporte un archivo completo desde su banco o desde Quicken.)",
+        "dropZone": "Suelte aquí su archivo OFX/QFX o haga clic para buscarlo",
+        "dropZoneHint": "Admite los formatos de archivo .ofx y .qfx",
+        "notOfx": "Suba un archivo .ofx o .qfx",
+        "noTransactions": "No se encontraron transacciones en este archivo OFX. Compruebe que contenga bloques STMTTRN.",
+        "noValidRows": "No hay transacciones válidas para importar",
+        "invalidRow": "Fecha o importe no válidos",
+        "preview": "Transacciones",
+        "toImport_one": "{{count}} para importar",
+        "toImport_other": "{{count}} para importar",
+        "skippedCount_one": "{{count}} omitida",
+        "skippedCount_other": "{{count}} omitidas",
+        "columns": {
+          "date": "Fecha",
+          "amount": "Importe",
+          "description": "Descripción",
+          "memo": "Nota"
+        },
+        "showingFirst": "Mostrando las primeras {{shown}} de {{total}} transacciones",
+        "imported_one": "Se importó {{count}} transacción",
+        "imported_other": "Se importaron {{count}} transacciones",
+        "creditsSkipped_one": "{{count}} abono omitido",
+        "creditsSkipped_other": "{{count}} abonos omitidos",
+        "importing_one": "Importando {{count}} transacción…",
+        "importing_other": "Importando {{count}} transacciones…",
+        "importAction_one": "Importar {{count}} transacción",
+        "importAction_other": "Importar {{count}} transacciones"
+      }
+    },
+    "errors": {
+      "noOrg": "No hay ninguna empresa seleccionada."
+    }
+  },
+  "transactions": {
+    "list": {
+      "metaTitle": "Transacciones · Contabilidad",
+      "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
+      "count_one": "{{count}} transacción",
+      "count_other": "{{count}} transacciones",
+      "exportCsv": "Exportar CSV",
+      "columns": {
+        "date": "Fecha",
+        "description": "Descripción",
+        "category": "Categoría",
+        "amount": "Importe",
+        "action": "Acción"
+      },
+      "emptyPending": "No hay transacciones que revisar 🎉",
+      "empty": "No se encontraron transacciones.",
+      "previous": "← Anterior",
+      "next": "Siguiente →",
+      "page": "Página {{page}} de {{total}}"
+    },
+    "filters": {
+      "pending": "Requiere revisión",
+      "all": "Todas",
+      "reviewed": "Revisadas"
+    },
+    "row": {
+      "skipped": "Omitida",
+      "posted": "Contabilizada",
+      "reviewed": "Revisada",
+      "aiMemo": "IA: {{memo}}",
+      "confidence": {
+        "high": "Confianza alta",
+        "medium": "Confianza media",
+        "low": "Confianza baja"
+      },
+      "notCategorized": "Sin categorizar",
+      "expand": "Ampliar",
+      "category": "Categoría",
+      "selectAccount": "— Seleccione una cuenta —",
+      "memo": "Nota (opcional)",
+      "memoPlaceholder": "Nota breve…",
+      "approve": "Aprobar",
+      "skip": "Omitir",
+      "approved": "Aprobada y contabilizada en el libro diario."
+    },
+    "mapping": {
+      "notLinked": "— Sin vincular —",
+      "link": "Vincular",
+      "linking": "…"
+    },
+    "plaid": {
+      "linkBank": "Vincular banco",
+      "connectVia": "Conectar mediante Plaid",
+      "linking": "Vinculando la cuenta…",
+      "preparing": "Preparando…",
+      "tokenFailed": "No se pudo obtener el token de vinculación",
+      "initFailed": "No se pudo inicializar la vinculación bancaria.",
+      "linkFailed": "No se pudo vincular la cuenta bancaria.",
+      "linkRetry": "La vinculación bancaria falló. Inténtelo de nuevo.",
+      "unauthorized": "Vuelva a iniciar sesión.",
+      "noOrganization": "No se encontró ninguna empresa.",
+      "missingPublicToken": "Esa vinculación bancaria no se completó. Pruebe a conectarla de nuevo.",
+      "linkTokenFailed": "No se pudo iniciar la conexión bancaria. Inténtelo de nuevo.",
+      "saveConnectionFailed": "No se pudo guardar la conexión bancaria. Inténtelo de nuevo.",
+      "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo."
+    },
+    "errors": {
+      "missingId": "Falta el ID de la transacción.",
+      "approveFailed": "No se pudo aprobar la transacción.",
+      "skipFailed": "No se pudo omitir la transacción.",
+      "orgNotFound": "No se encontró la empresa.",
+      "noChartOfAccounts": "No se encontró ningún plan de cuentas.",
+      "categorizeFailed": "La categorización con IA falló."
+    }
+  }
+}

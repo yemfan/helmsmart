@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "Embudo de ventas"
+  },
+  "stages": {
+    "lead": "Cliente potencial",
+    "qualified": "Cualificado",
+    "proposal": "Propuesta",
+    "negotiation": "Negociación",
+    "won": "Ganado",
+    "lost": "Perdido"
+  },
+  "board": {
+    "title": "Embudo de ventas",
+    "subtitle_one": "Arrastre los clientes entre etapas · {{count}} negocio activo",
+    "subtitle_other": "Arrastre los clientes entre etapas · {{count}} negocios activos",
+    "pipelineValue": "Valor del embudo",
+    "won": "Ganado",
+    "manageClients": "Gestionar clientes",
+    "dropHere": "Suelte aquí"
+  },
+  "card": {
+    "unnamed": "Sin nombre",
+    "today": "Hoy",
+    "daysInStage": "{{count}} d"
+  },
+  "detail": {
+    "sinceToday": "Desde hoy",
+    "daysInStage_one": "{{count}} día en esta etapa",
+    "daysInStage_other": "{{count}} días en esta etapa",
+    "expectedValue": "Valor previsto",
+    "note": "Nota",
+    "notePlaceholder": "Notas del negocio, próximos pasos…",
+    "noNote": "Sin notas",
+    "contact": "Contacto",
+    "moveToStage": "Mover a la etapa",
+    "viewProfile": "Ver el perfil completo",
+    "sarah": {
+      "queued": "Sarah creó una tarea para usted",
+      "seeTasks": "ver Tareas",
+      "noPhone": "No hay ningún número de teléfono registrado.",
+      "drafting": "Redactando…",
+      "ask": "Pedir a Sarah que haga el seguimiento"
+    }
+  }
+}

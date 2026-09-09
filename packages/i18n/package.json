@@ -12,7 +12,8 @@
     "./next/client": "./src/next/client.tsx",
     "./locales/*.json": "./locales/*.json",
     "./locale/en/*": "./locales/en/*.json",
-    "./locale/zh-Hans/*": "./locales/zh-Hans/*.json"
+    "./locale/zh-Hans/*": "./locales/zh-Hans/*.json",
+    "./locale/es/*": "./locales/es/*.json"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",

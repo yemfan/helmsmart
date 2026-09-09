@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "tasks": "Tareas",
+    "recurringTasks": "Tareas recurrentes",
+    "calendar": "Calendario"
+  },
+  "priority": {
+    "low": "Baja",
+    "normal": "Media",
+    "high": "Alta",
+    "urgent": "Urgente"
+  },
+  "frequency": {
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "quarterly": "Trimestral",
+    "annually": "Anual"
+  },
+  "responsibleEmployee": {
+    "handledBy": "A cargo de"
+  },
+  "list": {
+    "title": "Tareas",
+    "count_one": "{{count}} tarea",
+    "count_other": "{{count}} tareas",
+    "overdue": "· {{count}} vencidas",
+    "recurringLink": "Recurrentes",
+    "allPriorities": "Todas las prioridades",
+    "tabs": {
+      "open": "Abiertas",
+      "inProgress": "En curso",
+      "done": "Completadas"
+    },
+    "empty": {
+      "done": "No hay tareas completadas",
+      "inProgress": "No hay tareas en curso",
+      "open": "No hay tareas abiertas 🎉",
+      "hint": "Cree tareas para llevar el control de su trabajo, sus seguimientos y sus compromisos con los clientes."
+    }
+  },
+  "row": {
+    "priorityTitle": "Prioridad: {{priority}}",
+    "confirmDelete": "¿Eliminar esta tarea?",
+    "overdueDays": "{{count}} d de retraso",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "inDays": "{{count}} d"
+  },
+  "add": {
+    "trigger": "Añadir tarea",
+    "title": "Nueva tarea",
+    "taskLabel": "Tarea",
+    "taskPlaceholder": "¿Qué hay que hacer?",
+    "dueDate": "Fecha de vencimiento",
+    "priority": "Prioridad",
+    "client": "Cliente",
+    "optional": "(opcional)",
+    "noClient": "Sin cliente",
+    "notes": "Notas",
+    "notesPlaceholder": "Cualquier contexto adicional…",
+    "submit": "Crear tarea",
+    "titleRequired": "El título es obligatorio"
+  },
+  "mark": {
+    "ask": "Pedir a Mark que cree una tarea",
+    "created": "Tarea creada",
+    "viewIt": "verla"
+  },
+  "recurring": {
+    "title": "Tareas recurrentes",
+    "subtitle": "{{count}} activas · crean tareas automáticamente según un calendario",
+    "backToTasks": "Tareas",
+    "new": "Nueva recurrente",
+    "emptyTitle": "Todavía no hay tareas recurrentes",
+    "emptyBody": "Configure una sola vez las tareas que se repiten —la nómina, las declaraciones trimestrales, la renovación de licencias— y cada ciclo añadiremos una tarea nueva para que no se le escape nada.",
+    "createFirst": "Crear la primera plantilla",
+    "footnote": "Las plantillas activas se revisan a diario. Cuando llega la siguiente fecha de una plantilla, se crea una tarea abierta nueva (con vencimiento ese mismo día) y la fecha avanza según su frecuencia. Póngala en pausa para saltarse los próximos ciclos.",
+    "paused": "En pausa",
+    "resume": "Reanudar",
+    "pause": "Pausar",
+    "confirm": "Confirmar",
+    "next": "Próxima {{date}}",
+    "last": "Última {{date}}",
+    "modal": {
+      "title": "Nueva tarea recurrente",
+      "titleLabel": "Título *",
+      "titlePlaceholder": "p. ej. Procesar la nómina",
+      "notes": "Notas",
+      "notesPlaceholder": "Detalles, lista de comprobación, enlaces…",
+      "client": "Cliente",
+      "noClient": "Sin cliente",
+      "priority": "Prioridad",
+      "frequency": "Frecuencia",
+      "firstDate": "Primera fecha",
+      "hint": "Cada ciclo se crea una tarea abierta nueva, con vencimiento el día en que se ejecuta; después la fecha avanza según la frecuencia.",
+      "submit": "Guardar la plantilla",
+      "titleRequired": "El título es obligatorio",
+      "firstDateRequired": "La primera fecha es obligatoria",
+      "createFailed": "No se pudo crear la tarea recurrente"
+    }
+  },
+  "calendar": {
+    "newEvent": "Nuevo evento",
+    "today": "Hoy",
+    "monthView": "Vista de mes",
+    "listView": "Vista de lista",
+    "filters": {
+      "all": "Todos",
+      "appointment": "Citas",
+      "task": "Tareas",
+      "meeting": "Reuniones",
+      "reminder": "Recordatorios"
+    },
+    "types": {
+      "appointment": "Cita",
+      "task": "Tarea",
+      "meeting": "Reunión",
+      "reminder": "Recordatorio"
+    },
+    "more": "+{{count}} más",
+    "allDay": "Todo el día",
+    "durationHoursMinutes": "{{hours}} h {{minutes}} min",
+    "durationMinutes": "{{minutes}} min",
+    "empty": {
+      "all": "No hay eventos este mes",
+      "appointment": "No hay citas este mes",
+      "task": "No hay tareas este mes",
+      "meeting": "No hay reuniones este mes",
+      "reminder": "No hay recordatorios este mes"
+    },
+    "modal": {
+      "title": "Nuevo evento",
+      "titlePlaceholder": "Título del evento",
+      "date": "Fecha",
+      "type": "Tipo",
+      "color": "Color",
+      "allDay": "Todo el día",
+      "client": "Cliente (opcional)",
+      "noClient": "Sin cliente",
+      "unnamed": "Sin nombre",
+      "descriptionPlaceholder": "Descripción (opcional)",
+      "submit": "Crear evento",
+      "durationMinutes": "{{count}} min",
+      "durationHours": "{{count}} h"
+    },
+    "detail": {
+      "reopen": "Reabrir",
+      "complete": "Completar",
+      "confirmDelete": "¿Eliminar este evento?"
+    }
+  },
+  "reminders": {
+    "title": "Recordatorios automáticos de citas",
+    "subtitle": "El agente llama automáticamente para confirmar las próximas citas.",
+    "leadBefore": "Llamar",
+    "leadAfter": "antes de la cita.",
+    "unitHours": "horas",
+    "unitDays": "días",
+    "save": "Guardar",
+    "saved": "¡Guardado!",
+    "noNumber": "Conecte un número de teléfono en <link>Configuración → Agente de voz con IA</link> para poder hacer llamadas de recordatorio.",
+    "upcoming": "Próximos recordatorios",
+    "empty": "No hay citas próximas con un número de teléfono.",
+    "unnamed": "Sin nombre",
+    "when": "Cita {{start}} · recordatorio {{reminder}}",
+    "off": "Los recordatorios están desactivados: active el interruptor de arriba y guarde para empezar a llamar automáticamente.",
+    "status": {
+      "pending": "Programada",
+      "queued": "Se marcará en breve",
+      "calling": "Llamando…",
+      "done": "Llamada realizada",
+      "failed": "Fallida"
+    }
+  },
+  "alexReminder": {
+    "queued": "Alex creó una tarea para usted",
+    "seeTasks": "ver Tareas",
+    "summary_one": "<b>{{count}} factura vencida</b> por un total de <b>{{total}}</b>, sin ningún recordatorio enviado todavía.",
+    "summary_other": "<b>{{count}} facturas vencidas</b> por un total de <b>{{total}}</b>, sin ningún recordatorio enviado todavía.",
+    "ask": "Pedir a Alex que les envíe un recordatorio"
+  },
+  "errors": {
+    "notAuthenticated": "No autenticado",
+    "noOrg": "Sin empresa",
+    "titleRequired": "El título es obligatorio",
+    "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria"
+  }
+}

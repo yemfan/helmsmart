@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "title": "Bandeja de entrada"
+  },
+  "list": {
+    "title": "Bandeja de entrada",
+    "newConversation": "Nueva conversación",
+    "unknownSender": "Desconocido",
+    "outboundPrefix": "Usted: ",
+    "filters": {
+      "all": "Todos",
+      "sms": "SMS",
+      "email": "Correo"
+    },
+    "empty": {
+      "title": "Todavía no hay mensajes",
+      "hint": "Aquí aparecerán los SMS y los correos de sus clientes."
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{n}} min",
+      "hoursAgo": "hace {{n}} h"
+    }
+  },
+  "badges": {
+    "urgent": "Urgente",
+    "intent": {
+      "question": "Pregunta",
+      "booking": "Solicitud de cita",
+      "billing": "Facturación",
+      "complaint": "Reclamación",
+      "other": "Mensaje"
+    }
+  },
+  "thread": {
+    "channel": {
+      "email": "Correo",
+      "sms": "SMS"
+    },
+    "addAsClient": "Añadir como cliente",
+    "addAsClientTitle": "Crear un cliente a partir de esta conversación",
+    "translationLabel": "Inglés",
+    "draftWithAi": "Redactar con IA",
+    "replyPlaceholder": {
+      "email": "Responder por correo… (⌘↵ para enviar)",
+      "sms": "Responder por SMS… (⌘↵ para enviar)"
+    }
+  },
+  "unselected": {
+    "title": "Seleccione una conversación",
+    "hint": "Responda a los SMS y los correos de sus clientes desde una sola bandeja de entrada.",
+    "newMessage": "Mensaje nuevo"
+  },
+  "compose": {
+    "title": "Mensaje nuevo",
+    "to": "Para",
+    "selectClient": "Seleccione un cliente…",
+    "unnamedClient": "Sin nombre",
+    "subject": "Asunto",
+    "subjectPlaceholder": "Línea de asunto…",
+    "noSubject": "(Sin asunto)",
+    "message": "Mensaje",
+    "bodyPlaceholder": {
+      "email": "Escriba su correo…",
+      "sms": "Escriba su SMS…"
+    },
+    "errors": {
+      "noEmail": "Este cliente no tiene dirección de correo.",
+      "noPhone": "Este cliente no tiene número de teléfono.",
+      "sendFailed": "No se pudo enviar el mensaje. Inténtelo de nuevo."
+    },
+    "cancel": "Cancelar",
+    "send": "Enviar"
+  },
+  "forwarding": {
+    "label": "Reenvíe aquí su correo",
+    "copy": "Copiar la dirección",
+    "copied": "Dirección copiada",
+    "copyTitle": "Copiar",
+    "copiedTitle": "Copiado"
+  },
+  "errors": {
+    "noOrganization": "No hay ninguna empresa seleccionada.",
+    "noSendingNumber": "No hay ningún número de teléfono configurado para enviar SMS.",
+    "nothingToReplyTo": "Todavía no hay ninguna conversación a la que responder.",
+    "draftFailed": "No se pudo redactar la respuesta. Inténtelo de nuevo.",
+    "nameRequired": "El nombre es obligatorio.",
+    "unauthorized": "Vuelva a iniciar sesión.",
+    "createClientFailed": "No se pudo crear el cliente. Inténtelo de nuevo."
+  }
+}

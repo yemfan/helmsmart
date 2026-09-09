@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "title": "Configuración",
+    "team": "Equipo · Configuración"
+  },
+  "page": {
+    "title": "Configuración",
+    "subtitle": "Gestione su empresa y sus integraciones."
+  },
+  "actions": {
+    "saving": "Guardando…",
+    "saved": "¡Guardado!"
+  },
+  "sections": {
+    "businessInfo": "Información de la empresa",
+    "teamAndPlan": "Equipo y plan",
+    "bankAccounts": "Cuentas bancarias",
+    "billingRates": "Tarifas de facturación",
+    "invoiceReminders": "Recordatorios de pago de facturas",
+    "socialChannels": "Canales de redes sociales",
+    "socialAutopilot": "Piloto automático de redes sociales",
+    "voiceAgent": "Agente de voz con IA",
+    "slackNotifications": "Notificaciones de Slack",
+    "insuranceEligibility": "Elegibilidad del seguro"
+  },
+  "language": {
+    "title": "Idioma",
+    "description": "El idioma en el que usted lee HelmSmart. Es su propia elección: no cambia lo que reciben sus clientes."
+  },
+  "general": {
+    "businessName": "Nombre de la empresa",
+    "timezone": "Zona horaria",
+    "timezones": {
+      "America/New_York": "Nueva York",
+      "America/Chicago": "Chicago",
+      "America/Denver": "Denver",
+      "America/Los_Angeles": "Los Ángeles",
+      "America/Anchorage": "Anchorage",
+      "Pacific/Honolulu": "Honolulú"
+    },
+    "entityType": "Tipo de entidad",
+    "entityTypes": {
+      "sole_prop": "Empresa unipersonal",
+      "llc": "LLC",
+      "s_corp": "Corporación S",
+      "c_corp": "Corporación C",
+      "partnership": "Sociedad colectiva",
+      "nonprofit": "Organización sin fines de lucro"
+    },
+    "entityTypeHelp": "Póngase en contacto con soporte para cambiar el tipo de entidad. Las tarifas de facturación están en la pestaña Finanzas.",
+    "weeklyDigest": {
+      "label": "Correo con el resumen semanal",
+      "help": "Un resumen de los lunes con el efectivo, las cuentas por cobrar, las facturas de proveedor y las tareas, enviado por correo a los propietarios y administradores."
+    },
+    "englishAssist": {
+      "label": "Mostrarme también el inglés (asistencia multilingüe)",
+      "help": "Traduce al inglés los mensajes de clientes que no estén en inglés en su bandeja de entrada y envía las respuestas y los recordatorios en dos idiomas (el del cliente + inglés) para que usted pueda leer lo que salió."
+    },
+    "save": "Guardar cambios"
+  },
+  "teamPlan": {
+    "membersTitle": "Miembros del equipo",
+    "membersSubtitle": "Invitaciones, roles, accesos",
+    "planName": "Plan {{plan}}",
+    "plans": {
+      "starter": "Inicial",
+      "growth": "Crecimiento",
+      "pro": "Profesional"
+    },
+    "status": {
+      "trialing": "Prueba",
+      "active": "Activa",
+      "past_due": "Vencida",
+      "canceled": "Cancelada",
+      "cancelled": "Cancelada",
+      "unpaid": "Sin pagar",
+      "incomplete": "Incompleta",
+      "incomplete_expired": "Caducada",
+      "paused": "En pausa"
+    },
+    "trialEnds": "termina el {{date}}",
+    "freeDuringBeta": "Gratis durante la beta"
+  },
+  "financial": {
+    "bank": {
+      "description": "Vincule un banco a través de Plaid para importar los últimos 90 días de transacciones (clasificadas con IA) y después asigne cada cuenta a una entrada del plan de cuentas para que se registre en el libro diario por partida doble.",
+      "empty": "Todavía no hay ninguna cuenta bancaria vinculada: use el botón Vincular banco de arriba para conectar una."
+    },
+    "rates": {
+      "hourly": "Tarifa por hora predeterminada",
+      "hourlyPlaceholder": "p. ej. 125",
+      "hourlyHelp": "Su tarifa facturable: se aplica automáticamente al iniciar un temporizador.",
+      "laborCost": "Costo de mano de obra predeterminado",
+      "laborCostPlaceholder": "p. ej. 45",
+      "laborCostHelp": "Lo que le cuesta una hora de trabajo (salarios o pagos a contratistas). Se usa para calcular la ganancia del proyecto.",
+      "save": "Guardar tarifas"
+    },
+    "reminders": {
+      "title": "Recordatorios de pago automáticos",
+      "description": "Envía automáticamente correos a los clientes sobre las facturas vencidas según un calendario",
+      "presetsLabel": "Ajustes rápidos:",
+      "presets": {
+        "gentle": "Suave (7, 21 días)",
+        "standard": "Estándar (3, 7, 14, 30 días)",
+        "aggressive": "Insistente (1, 3, 7, 14, 21, 30 días)"
+      },
+      "intervalsLabel": "Enviar recordatorios cuando el retraso sea de (días, separados por comas)",
+      "intervalsHelp": "Ejemplo: 3, 7, 14, 30 envía recordatorios a los 3, 7, 14 y 30 días de retraso",
+      "maxLabel": "Dejar de enviar después de este número de recordatorios por factura",
+      "save": "Guardar configuración",
+      "savedNote": "Guardado",
+      "errors": {
+        "noDays": "Escriba al menos un día de recordatorio (p. ej. 3, 7, 14)",
+        "saveFailed": "No se pudo guardar"
+      }
+    }
+  },
+  "marketing": {
+    "socialChannelsDescription": "Conecte las cuentas en las que publica su marketing con IA. Al conectar se abre el inicio de sesión seguro del proveedor; al desconectar se elimina el acceso guardado aquí.",
+    "socialAutopilotDescription": "Actívelo y Emily escribirá y programará publicaciones sobre su empresa con la frecuencia que usted elija."
+  },
+  "slack": {
+    "connected": "Conectado",
+    "description": "Reciba avisos en Slack de clientes potenciales, llamadas y aprobaciones",
+    "createApp": "Crear la aplicación",
+    "webhookLabel": "URL del webhook entrante",
+    "webhookHelp": "En su aplicación de Slack: Features → Incoming Webhooks → Add New Webhook to Workspace. Copie aquí la URL.",
+    "save": "Guardar",
+    "sendTest": "Enviar un mensaje de prueba",
+    "testSent": "Mensaje de prueba enviado ✓",
+    "notifyHeading": "Avisarme cuando",
+    "toggles": {
+      "slack_notify_new_lead": {
+        "label": "Se añade un cliente potencial",
+        "description": "Cuando se crea un cliente manualmente o mediante un formulario"
+      },
+      "slack_notify_form_submission": {
+        "label": "Se envía un formulario",
+        "description": "Cuando alguien envía un formulario de captación de clientes potenciales"
+      },
+      "slack_notify_missed_call": {
+        "label": "Hay una llamada perdida",
+        "description": "Cuando el recepcionista con IA registra una llamada entrante perdida"
+      },
+      "slack_notify_approval": {
+        "label": "La IA necesita una aprobación",
+        "description": "Cuando la acción de un empleado con IA requiere su aprobación"
+      }
+    },
+    "test": {
+      "text": "✅ ¡La integración de HelmSmart con Slack funciona!",
+      "blockText": "✅ *¡HelmSmart está conectado a Slack!*\nAquí recibirá notificaciones de nuevos clientes potenciales, llamadas perdidas, envíos de formularios y aprobaciones de la IA."
+    },
+    "errors": {
+      "notAuthenticated": "No autenticado",
+      "invalidUrl": "Debe ser una URL válida de incoming webhook de Slack (hooks.slack.com)",
+      "saveFailed": "No se pudo guardar",
+      "testFailed": "La prueba falló",
+      "testSendFailed": "No se pudo enviar el mensaje de prueba. Revise la URL de su webhook."
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "subtitle": "Gestione quién tiene acceso a su espacio de trabajo",
+    "backToSettings": "Configuración",
+    "membersTitle": "Miembros del equipo",
+    "pendingTitle": "Invitaciones pendientes",
+    "unknownUser": "Desconocido",
+    "you": "usted",
+    "invitedAs": "Invitado como {{role}} · caduca en {{days}} d",
+    "roles": {
+      "owner": "Propietario",
+      "admin": "Administrador",
+      "bookkeeper": "Contable",
+      "viewer": "Lector"
+    },
+    "roleDescriptions": {
+      "admin": "Acceso completo; puede gestionar a los miembros",
+      "bookkeeper": "Acceso a Contabilidad e Informes",
+      "viewer": "Acceso de solo lectura"
+    },
+    "invite": {
+      "title": "Invitar a un miembro del equipo",
+      "emailLabel": "Dirección de correo",
+      "emailPlaceholder": "colega@ejemplo.com",
+      "roleLabel": "Rol",
+      "roleOption": "{{label}} — {{description}}",
+      "send": "Enviar la invitación",
+      "sending": "Enviando…",
+      "sent": "Invitación enviada a {{email}}. Tiene 7 días para aceptarla.",
+      "sentFallbackRecipient": "esa persona",
+      "invalidEmail": "Escriba una dirección de correo válida.",
+      "genericError": "Algo salió mal"
+    },
+    "removeConfirm": "¿Quitar a este miembro del equipo? Perderá el acceso de inmediato.",
+    "removeTitle": "Quitar al miembro",
+    "revokeConfirm": "¿Revocar esta invitación?",
+    "revoke": "Revocar",
+    "revoking": "Revocando…",
+    "errors": {
+      "notAuthenticated": "No autenticado",
+      "invitePending": "Ya hay una invitación activa pendiente para este correo",
+      "inviteFailed": "No se pudo crear la invitación",
+      "memberNotFound": "No se encontró al miembro"
+    }
+  },
+  "errors": {
+    "noOrganization": "No se encontró ninguna empresa.",
+    "unauthorized": "No autorizado.",
+    "businessNameRequired": "El nombre de la empresa es obligatorio.",
+    "missingBankAccount": "Falta la cuenta bancaria.",
+    "bankLinkFailed": "No se pudo actualizar la vinculación de la cuenta.",
+    "orgUpdateRefused": "No se pudo guardar: puede que no tenga permisos sobre esta empresa."
+  },
+  "org": {
+    "errors": {
+      "structureRequired": "Seleccione una estructura de empresa.",
+      "createFailed": "No se pudo crear la empresa. Inténtelo de nuevo.",
+      "membershipFailed": "La empresa se creó, pero falló la asignación de miembros. Póngase en contacto con soporte."
+    }
+  }
+}
