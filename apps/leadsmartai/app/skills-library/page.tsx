@@ -1,112 +1,112 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Download, ShieldCheck, Sparkles } from "lucide-react";
-
-import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/closeboss/skills/catalog";
-import { getServerT } from "@/lib/i18n/server";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getServerT();
-  const title = t("routeMeta.skillsLibrary.title", { ns: "web_marketing" });
-  const description = t("routeMeta.skillsLibrary.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
-  keywords: [
-    "real estate AI prompts",
-    "realtor AI skills",
-    "real estate ChatGPT prompts",
-    "fair housing compliant listing description",
-    "real estate marketing prompts",
-    "AI for real estate agents",
-  ],
-  alternates: { canonical: "/skills-library" },
-  openGraph: {
-    title,
-    description:
-      t("social.skillsLibrary.ogDescription", { ns: "web_marketing" }),
-    url: "/skills-library",
-    type: "website",
-  },
-  twitter: { card: "summary_large_image", title: t("social.skillsLibrary.twitterTitle", { ns: "web_marketing" }), description: t("social.skillsLibrary.twitterDescription", { ns: "web_marketing" }) },
-};
-}
-
-const PILLAR_ORDER: SkillPillar[] = [
-  "lead_gen", "nurture", "valuation", "listing", "buyer", "negotiation", "compliance", "communication", "operations",
-];
-
-export default async function SkillsLibraryPage() {
-  const t = await getServerT();
-  const count = SKILLS.length;
-
-  return (
-    <div className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
-      {/* Hero */}
-      <div className="text-center">
-        <p className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-          <Sparkles size={14} aria-hidden /> {t("pages.skillsLibrary.freeNoSignup", { ns: "dashboard" })}
-        </p>
-        <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-5xl dark:text-white">{t("pages.skillsLibraryPage.h1", { ns: "dashboard" })}</h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-300">
-          {count} {t("pages.skillsLibraryPage.sub", { ns: "dashboard" })}</p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="/skills-library/download"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-blue-700 md:text-base"
-          >
-            <Download size={18} aria-hidden /> {t("pages.skillsLibraryPage.downloadMd", { ns: "dashboard" })}</a>
-          <Link
-            href="/start-free"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-          >{t("pages.skillsLibraryPage.haveAiRun", { ns: "dashboard" })}</Link>
-        </div>
-        <p className="mx-auto mt-4 flex max-w-xl items-center justify-center gap-1.5 text-xs text-slate-400">
-          <ShieldCheck size={14} aria-hidden /> {t("pages.skillsLibraryPage.notLegalAdvice", { ns: "dashboard" })}</p>
-      </div>
-
-      {/* Pillars + skills */}
-      <div className="mt-14 space-y-10">
-        {PILLAR_ORDER.map((pillar) => {
-          const rows = SKILLS.filter((s) => s.pillar === pillar).sort((a, b) => a.num - b.num);
-          if (!rows.length) return null;
-          return (
-            <section key={pillar}>
-              <h2 className="border-b border-slate-200 pb-2 font-heading text-xl font-bold text-slate-900 dark:border-slate-800 dark:text-white">
-                {PILLAR_LABEL[pillar]}
-              </h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {rows.map((s) => (
-                  <div
-                    key={s.id}
-                    className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
-                  >
-                    <div className="flex items-baseline justify-between gap-2">
-                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {s.num}. {s.title}
-                      </h3>
-                      <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                        {ASSIGNEE_LABEL[s.defaultAssignee]}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{s.value}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="mt-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-8 text-center text-white">
-        <h2 className="font-heading text-2xl font-bold">{t("pages.skillsLibraryPage.dontJustPrompt", { ns: "dashboard" })}</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-white/90">{t("pages.skillsLibraryPage.runsWholeLibrary", { ns: "dashboard" })}</p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/start-free" className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-700 transition hover:bg-slate-50">{t("pages.skillsLibraryPage.startFree", { ns: "dashboard" })}</Link>
-          <a href="/skills-library/download" className="rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">{t("pages.skillsLibraryPage.downloadLibrary", { ns: "dashboard" })}</a>
-        </div>
-      </div>
-    </div>
-  );
-}
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Download, ShieldCheck, Sparkles } from "lucide-react";
+
+import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/closeboss/skills/catalog";
+import { getServerT } from "@/lib/i18n/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.skillsLibrary.title", { ns: "web_marketing" });
+  const description = t("routeMeta.skillsLibrary.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: [
+    "real estate AI prompts",
+    "realtor AI skills",
+    "real estate ChatGPT prompts",
+    "fair housing compliant listing description",
+    "real estate marketing prompts",
+    "AI for real estate agents",
+  ],
+  alternates: { canonical: "/skills-library" },
+  openGraph: {
+    title,
+    description:
+      t("social.skillsLibrary.ogDescription", { ns: "web_marketing" }),
+    url: "/skills-library",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image", title: t("social.skillsLibrary.twitterTitle", { ns: "web_marketing" }), description: t("social.skillsLibrary.twitterDescription", { ns: "web_marketing" }) },
+};
+}
+
+const PILLAR_ORDER: SkillPillar[] = [
+  "lead_gen", "nurture", "valuation", "listing", "buyer", "negotiation", "compliance", "communication", "operations",
+];
+
+export default async function SkillsLibraryPage() {
+  const t = await getServerT();
+  const count = SKILLS.length;
+
+  return (
+    <div className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
+      {/* Hero */}
+      <div className="text-center">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+          <Sparkles size={14} aria-hidden /> {t("pages.skillsLibrary.freeNoSignup", { ns: "web_pages" })}
+        </p>
+        <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-5xl dark:text-white">{t("pages.skillsLibraryPage.h1", { ns: "web_pages" })}</h1>
+        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-300">
+          {count} {t("pages.skillsLibraryPage.sub", { ns: "web_pages" })}</p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/skills-library/download"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-blue-700 md:text-base"
+          >
+            <Download size={18} aria-hidden /> {t("pages.skillsLibraryPage.downloadMd", { ns: "web_pages" })}</a>
+          <Link
+            href="/start-free"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          >{t("pages.skillsLibraryPage.haveAiRun", { ns: "web_pages" })}</Link>
+        </div>
+        <p className="mx-auto mt-4 flex max-w-xl items-center justify-center gap-1.5 text-xs text-slate-400">
+          <ShieldCheck size={14} aria-hidden /> {t("pages.skillsLibraryPage.notLegalAdvice", { ns: "web_pages" })}</p>
+      </div>
+
+      {/* Pillars + skills */}
+      <div className="mt-14 space-y-10">
+        {PILLAR_ORDER.map((pillar) => {
+          const rows = SKILLS.filter((s) => s.pillar === pillar).sort((a, b) => a.num - b.num);
+          if (!rows.length) return null;
+          return (
+            <section key={pillar}>
+              <h2 className="border-b border-slate-200 pb-2 font-heading text-xl font-bold text-slate-900 dark:border-slate-800 dark:text-white">
+                {PILLAR_LABEL[pillar]}
+              </h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {rows.map((s) => (
+                  <div
+                    key={s.id}
+                    className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {s.num}. {s.title}
+                      </h3>
+                      <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                        {ASSIGNEE_LABEL[s.defaultAssignee]}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{s.value}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="mt-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-8 text-center text-white">
+        <h2 className="font-heading text-2xl font-bold">{t("pages.skillsLibraryPage.dontJustPrompt", { ns: "web_pages" })}</h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-white/90">{t("pages.skillsLibraryPage.runsWholeLibrary", { ns: "web_pages" })}</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/start-free" className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-700 transition hover:bg-slate-50">{t("pages.skillsLibraryPage.startFree", { ns: "web_pages" })}</Link>
+          <a href="/skills-library/download" className="rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">{t("pages.skillsLibraryPage.downloadLibrary", { ns: "web_pages" })}</a>
+        </div>
+      </div>
+    </div>
+  );
+}
