@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
 
-const LEADSMART_URL = "https://leadsmart-ai.com";
+const CLOSEBOSS_URL = "https://www.closebossai.com";
 
 // Copy lives in `site.about.values.items.*`; the array holds only the key.
 const VALUES = ["pain", "works", "clarity", "corner"];
@@ -49,7 +49,7 @@ export default async function AboutPage() {
                 {rich(t("about.origin.p1"), {
                   links: [
                     {
-                      href: LEADSMART_URL,
+                      href: CLOSEBOSS_URL,
                       external: true,
                       className: "font-semibold text-indigo-600 hover:text-indigo-700",
                     },
@@ -67,7 +67,7 @@ export default async function AboutPage() {
             </p>
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold text-lg">
-                L
+                C
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 text-lg">{t("about.sibling.name")}</h3>
@@ -75,7 +75,7 @@ export default async function AboutPage() {
                   {t("about.sibling.description")}
                 </p>
                 <Link
-                  href={LEADSMART_URL}
+                  href={CLOSEBOSS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700"

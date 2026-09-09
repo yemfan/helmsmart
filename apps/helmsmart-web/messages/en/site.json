@@ -139,7 +139,7 @@
   "about": {
     "meta": {
       "title": "About — HelmSmart",
-      "description": "HelmSmart is an AI-powered front office for small businesses — built by the team behind LeadSmart AI. More control, less effort."
+      "description": "HelmSmart is an AI-powered front office for small businesses — built by the team behind CloseBoss. More control, less effort."
     },
     "hero": {
       "eyebrow": "Our story",
@@ -148,15 +148,15 @@
     },
     "origin": {
       "title": "Where HelmSmart came from",
-      "p1": "We built <a>LeadSmart AI</a> — an AI growth platform for real estate agents and mortgage professionals — and watched it transform how thousands of professionals handle leads, follow-ups, and client communication.",
+      "p1": "We built <a>CloseBoss</a> — an AI growth platform for real estate agents and mortgage professionals — and watched it transform how thousands of professionals handle leads, follow-ups, and client communication.",
       "p2": "Along the way, we kept hearing the same story from a different crowd: plumbers, salon owners, contractors, consultants, and every other small business owner who isn't a real estate agent but faces the exact same problems. Missed calls. Admin overload. Invoices that go out late. Expensive after-hours answering services.",
-      "p3": "HelmSmart is our answer. The same AI infrastructure and product philosophy behind LeadSmart AI — rebuilt from the ground up for every small business that needs a smarter front office."
+      "p3": "HelmSmart is our answer. The same AI infrastructure and product philosophy behind CloseBoss — rebuilt from the ground up for every small business that needs a smarter front office."
     },
     "sibling": {
       "eyebrow": "Our sibling product",
-      "name": "LeadSmart AI",
+      "name": "CloseBoss",
       "description": "AI growth engine for real estate agents and mortgage professionals — capturing, qualifying, and converting leads automatically.",
-      "link": "Visit LeadSmart AI →",
+      "link": "Visit CloseBoss →",
       "note": "Both products are built by the same team and share the same commitment: AI that actually works, built around real-world pain, not feature lists."
     },
     "mission": {
@@ -172,7 +172,7 @@
         },
         "works": {
           "title": "AI that actually works",
-          "description": "We've spent years building production AI systems. HelmSmart uses the same battle-tested AI infrastructure behind LeadSmart AI."
+          "description": "We've spent years building production AI systems. HelmSmart uses the same battle-tested AI infrastructure behind CloseBoss."
         },
         "clarity": {
           "title": "Plain-English clarity",
@@ -750,7 +750,7 @@
       },
       "thirdParty": {
         "title": "5. Third-Party Services",
-        "intro": "HelmSmart is built by the same team behind <a>LeadSmart AI</a>, and both products share similar privacy standards and infrastructure. We use third-party service providers for:",
+        "intro": "HelmSmart is built by the same team behind <a>CloseBoss</a>, and both products share similar privacy standards and infrastructure. We use third-party service providers for:",
         "items": {
           "i1": "Email delivery (Resend)",
           "i2": "Authentication (Supabase)",
@@ -778,7 +778,7 @@
         "webLabel": "Web:"
       }
     },
-    "footerNote": "HelmSmart is committed to the same privacy standards as our sibling product, <a>LeadSmart AI</a>. Both products prioritize user privacy and data security."
+    "footerNote": "HelmSmart is committed to the same privacy standards as our sibling product, <a>CloseBoss</a>. Both products prioritize user privacy and data security."
   },
   "terms": {
     "meta": {
@@ -852,7 +852,7 @@
       },
       "related": {
         "title": "11. Related Products",
-        "p": "HelmSmart is built by the same team behind <a>LeadSmart AI</a>, another AI-powered business platform. Both products share similar terms of service standards and are committed to the same level of quality and support."
+        "p": "HelmSmart is built by the same team behind <a>CloseBoss</a>, another AI-powered business platform. Both products share similar terms of service standards and are committed to the same level of quality and support."
       },
       "changes": {
         "title": "12. Changes to Terms",
@@ -865,7 +865,7 @@
         "webLabel": "Web:"
       }
     },
-    "footerNote": "For more information about HelmSmart's privacy practices, please see our <a>Privacy Policy</a>. Both HelmSmart and our sibling product <a>LeadSmart AI</a> follow the same commitment to transparency and user rights."
+    "footerNote": "For more information about HelmSmart's privacy practices, please see our <a>Privacy Policy</a>. Both HelmSmart and our sibling product <a>CloseBoss</a> follow the same commitment to transparency and user rights."
   },
   "book": {
     "meta": {

@@ -139,7 +139,7 @@
   "about": {
     "meta": {
       "title": "Quiénes somos — HelmSmart",
-      "description": "HelmSmart es una oficina administrativa con IA para pequeñas empresas, creada por el equipo detrás de LeadSmart AI. Más control, menos esfuerzo."
+      "description": "HelmSmart es una oficina administrativa con IA para pequeñas empresas, creada por el equipo detrás de CloseBoss. Más control, menos esfuerzo."
     },
     "hero": {
       "eyebrow": "Nuestra historia",
@@ -148,15 +148,15 @@
     },
     "origin": {
       "title": "De dónde salió HelmSmart",
-      "p1": "Creamos <a>LeadSmart AI</a>, una plataforma de crecimiento con IA para agentes inmobiliarios y profesionales hipotecarios, y vimos cómo transformó la manera en que miles de profesionales gestionan sus clientes potenciales, sus seguimientos y su comunicación con los clientes.",
+      "p1": "Creamos <a>CloseBoss</a>, una plataforma de crecimiento con IA para agentes inmobiliarios y profesionales hipotecarios, y vimos cómo transformó la manera en que miles de profesionales gestionan sus clientes potenciales, sus seguimientos y su comunicación con los clientes.",
       "p2": "Por el camino no dejábamos de escuchar la misma historia de otro público: plomeros, dueños de salones de belleza, contratistas, consultores y cualquier otro dueño de una pequeña empresa que no es agente inmobiliario pero se enfrenta exactamente a los mismos problemas. Llamadas perdidas. Papeleo desbordado. Facturas que salen tarde. Servicios de contestación nocturna carísimos.",
-      "p3": "HelmSmart es nuestra respuesta. La misma infraestructura de IA y la misma filosofía de producto que hay detrás de LeadSmart AI, reconstruidas desde cero para cualquier pequeña empresa que necesite una oficina más inteligente."
+      "p3": "HelmSmart es nuestra respuesta. La misma infraestructura de IA y la misma filosofía de producto que hay detrás de CloseBoss, reconstruidas desde cero para cualquier pequeña empresa que necesite una oficina más inteligente."
     },
     "sibling": {
       "eyebrow": "Nuestro producto hermano",
-      "name": "LeadSmart AI",
+      "name": "CloseBoss",
       "description": "Motor de crecimiento con IA para agentes inmobiliarios y profesionales hipotecarios: capta, califica y convierte clientes potenciales de forma automática.",
-      "link": "Visitar LeadSmart AI →",
+      "link": "Visitar CloseBoss →",
       "note": "Ambos productos los hace el mismo equipo y comparten el mismo compromiso: IA que funciona de verdad, construida alrededor de problemas reales y no de listas de funciones."
     },
     "mission": {
@@ -172,7 +172,7 @@
         },
         "works": {
           "title": "IA que funciona de verdad",
-          "description": "Llevamos años construyendo sistemas de IA en producción. HelmSmart usa la misma infraestructura de IA, ya probada a fondo, que hay detrás de LeadSmart AI."
+          "description": "Llevamos años construyendo sistemas de IA en producción. HelmSmart usa la misma infraestructura de IA, ya probada a fondo, que hay detrás de CloseBoss."
         },
         "clarity": {
           "title": "Claridad en lenguaje corriente",
@@ -750,7 +750,7 @@
       },
       "thirdParty": {
         "title": "5. Servicios de terceros",
-        "intro": "HelmSmart está desarrollado por el mismo equipo que creó <a>LeadSmart AI</a>, y ambos productos comparten estándares e infraestructura de privacidad similares. Recurrimos a proveedores externos para:",
+        "intro": "HelmSmart está desarrollado por el mismo equipo que creó <a>CloseBoss</a>, y ambos productos comparten estándares e infraestructura de privacidad similares. Recurrimos a proveedores externos para:",
         "items": {
           "i1": "Entrega de correo electrónico (Resend)",
           "i2": "Autenticación (Supabase)",
@@ -778,7 +778,7 @@
         "webLabel": "Web:"
       }
     },
-    "footerNote": "HelmSmart mantiene los mismos estándares de privacidad que nuestro producto hermano, <a>LeadSmart AI</a>. Ambos productos dan prioridad a la privacidad del usuario y a la seguridad de los datos."
+    "footerNote": "HelmSmart mantiene los mismos estándares de privacidad que nuestro producto hermano, <a>CloseBoss</a>. Ambos productos dan prioridad a la privacidad del usuario y a la seguridad de los datos."
   },
   "terms": {
     "meta": {
@@ -852,7 +852,7 @@
       },
       "related": {
         "title": "11. Productos relacionados",
-        "p": "HelmSmart está desarrollado por el mismo equipo que creó <a>LeadSmart AI</a>, otra plataforma de negocio impulsada por IA. Ambos productos comparten estándares similares en sus términos del servicio y el mismo compromiso con la calidad y el soporte."
+        "p": "HelmSmart está desarrollado por el mismo equipo que creó <a>CloseBoss</a>, otra plataforma de negocio impulsada por IA. Ambos productos comparten estándares similares en sus términos del servicio y el mismo compromiso con la calidad y el soporte."
       },
       "changes": {
         "title": "12. Cambios en los términos",
@@ -865,7 +865,7 @@
         "webLabel": "Web:"
       }
     },
-    "footerNote": "Para más información sobre las prácticas de privacidad de HelmSmart, consulte nuestra <a>Política de privacidad</a>. Tanto HelmSmart como nuestro producto hermano <a>LeadSmart AI</a> mantienen el mismo compromiso con la transparencia y los derechos del usuario."
+    "footerNote": "Para más información sobre las prácticas de privacidad de HelmSmart, consulte nuestra <a>Política de privacidad</a>. Tanto HelmSmart como nuestro producto hermano <a>CloseBoss</a> mantienen el mismo compromiso con la transparencia y los derechos del usuario."
   },
   "book": {
     "meta": {
