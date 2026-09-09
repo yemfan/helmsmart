@@ -7,7 +7,6 @@ export type ReportTemplateInput = {
   medianPpsf?: number;
   localTrendPct?: number;
   compCount?: number;
-  actions?: string[];
 };
 
 function money(value?: number) {
@@ -114,14 +113,6 @@ export function buildHomeValueReportHtml(input: ReportTemplateInput) {
           <p>Comparable Data Points: ${input.compCount ?? "—"}</p>
         </div>
 
-        <div class="card">
-          <h2>Suggested Next Steps</h2>
-          <ul>
-            ${(input.actions ?? [])
-              .map((a) => `<li>${a}</li>`)
-              .join("")}
-          </ul>
-        </div>
       </div>
     </body>
   </html>

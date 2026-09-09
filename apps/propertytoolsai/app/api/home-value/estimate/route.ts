@@ -191,7 +191,6 @@ export async function POST(req: Request) {
       comps: compsMapped,
       recommendations: {
         type: "seller",
-        actions: [] as string[],
       },
       provider: {
         source: "ai_web_search",

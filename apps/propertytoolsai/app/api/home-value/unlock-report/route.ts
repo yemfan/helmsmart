@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         median_ppsf: body.median_ppsf || 0,
         local_trend_pct: null,
         comp_count: null,
-        recommendations: body.recommendations || { actions: [] },
+        recommendations: body.recommendations || {},
       };
     }
 
@@ -118,9 +118,7 @@ export async function POST(req: Request) {
           compCount: session.comp_count,
           city: session.city,
         },
-        recommendations: session.recommendations ?? {
-          actions: [],
-        },
+        recommendations: session.recommendations ?? {},
         pdfUrl: null,
       },
     });
