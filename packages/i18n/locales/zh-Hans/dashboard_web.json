@@ -1,0 +1,1958 @@
+{
+  "boss": {
+    "approvalChoice": {
+      "ask": "您审批",
+      "assisted": "Max 把关",
+      "auto": "自行执行"
+    },
+    "approvalSentence": {
+      "call": {
+        "ask": "{{name}} 会安排通话，但拨打前等您同意。",
+        "assisted": "{{name}} 会在 Max 核对方案后拨打；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在允许的通话时段内自行拨打，无需询问。"
+      },
+      "sms": {
+        "ask": "{{name}} 会起草短信，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送短信；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在免打扰时段和联系频率限制内自行发送短信，无需询问。"
+      },
+      "email": {
+        "ask": "{{name}} 会起草邮件，发送前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发送邮件；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会在联系频率限制内自行发送邮件，无需询问。"
+      },
+      "social": {
+        "ask": "{{name}} 会起草帖子，发布前等您审批。",
+        "assisted": "{{name}} 会在 Max 校对后发布帖子；只有 Max 拿不准时才会问您。",
+        "auto": "{{name}} 会自行发布帖子，无需询问。"
+      }
+    },
+    "memoryLine": {
+      "count_one": "Max 记得您最近的任务和 {{count}} 条笔记。",
+      "count_other": "Max 记得您最近的任务和 {{count}} 条笔记。",
+      "none": "Max 记得您最近的任务。说“记住……”即可保存一条笔记。",
+      "manage": "查看笔记"
+    },
+    "captain": "您的 AI 房产团队队长",
+    "greeting": {
+      "welcome": "欢迎回来",
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "composer": {
+      "answer": "输入您的回答…",
+      "autopilot": "告诉团队要做什么 —— 他们会执行并向您汇报…",
+      "ask": "告诉团队要做什么…"
+    },
+    "suggestions": {
+      "findLeads": "帮我找这周的新客户",
+      "sphereReach": "我该联系人脉圈里的哪些人？",
+      "coldLeads": "哪些客户正在变冷？",
+      "clearTasks": "帮我清掉逾期的任务",
+      "likelySellers": "我的人脉圈里谁可能很快要卖房？",
+      "weekPosts": "安排这周的社交媒体帖子",
+      "checkIn": "给我的重点客户发条问候短信",
+      "justListed": "写一条新房源上市的社交帖子",
+      "planDay": "安排我今天的日程"
+    },
+    "team": {
+      "heading": "您的 AI 团队",
+      "receptionist": "前台接待",
+      "sales_assistant": "销售助理",
+      "marketing_assistant": "营销助理",
+      "transaction_assistant": "交易协调员",
+      "accountant": "会计",
+      "realtor": "待您审阅"
+    },
+    "verbs": {
+      "off": "已停用",
+      "needsYou": "等待您处理",
+      "activeNow": "刚刚活跃",
+      "working": "工作中",
+      "idle": "待命中",
+      "receptionist": {
+        "working": "正在接听来电",
+        "idle": "随时接听"
+      },
+      "sales_assistant": {
+        "working": "正在跟进",
+        "idle": "关注客户动向"
+      },
+      "marketing_assistant": {
+        "working": "正在创作内容",
+        "idle": "规划发帖"
+      },
+      "transaction_assistant": {
+        "working": "正在跟踪截止日期",
+        "idle": "监控交易进度"
+      },
+      "accountant": {
+        "working": "正在核算数据",
+        "idle": "关注账目"
+      }
+    },
+    "channel": {
+      "call": "电话",
+      "sms": "短信",
+      "email": "邮件",
+      "social": "社交媒体"
+    },
+    "metrics": {
+      "hotLeads": "重点客户",
+      "apptsToday": "今日预约",
+      "activeDeals": "进行中交易",
+      "deadlines": "截止日期",
+      "noHotLeads": "暂无重点客户。",
+      "noAppts": "今天没有预约。",
+      "noDeals": "暂无进行中的交易。",
+      "noDeadlines": "未来 7 天内没有截止日期。"
+    },
+    "deadlines": {
+      "inspection": "验房期限",
+      "appraisal": "评估截止日期",
+      "loan": "贷款条件期限",
+      "closing": "过户日"
+    },
+    "day": {
+      "today": "今天",
+      "yesterday": "昨天"
+    },
+    "runs": {
+      "overnight": "来自昨晚的任务",
+      "earlier": "较早的指令"
+    },
+    "autopilot": {
+      "on": "自动执行已开启",
+      "off": "自动执行已关闭",
+      "onTitle": "自动执行开启 —— 团队先执行，再向您汇报",
+      "offTitle": "自动执行关闭 —— 发送前会先征求您的同意"
+    },
+    "approvals": {
+      "overnightHelp": "Max 会在凌晨 4 点左右处理您的客户管道：完成调研和任务，把要发出的内容拟好草稿，等您早上审批。夜间绝不拨打电话、绝不发送。",
+      "title": "审批设置",
+      "subtitle": "按助理、按渠道决定团队可以自行执行，还是需要先征求您的同意。",
+      "allChannels": "自动执行（所有渠道）",
+      "allChannelsHelp": "总开关。下方的单个渠道设置会覆盖它。",
+      "askFirstTitle": "全部改为先询问 —— 未经您同意不会发送任何内容",
+      "done": "完成"
+    },
+    "status": {
+      "done": "已完成",
+      "scheduled": "已安排",
+      "needsInput": "需要补充信息",
+      "awaitingApproval": "等待您审批"
+    },
+    "panels": {
+      "revenue": "收入与佣金",
+      "pipeline": "成交预测",
+      "emailEngagement": "邮件互动情况",
+      "loading": "加载中…"
+    },
+    "proposal": "提议",
+    "openLead": "查看客户",
+    "open": "打开",
+    "dismiss": "忽略",
+    "notNow": "暂不处理",
+    "actionFailed": "操作失败。",
+    "uploadFailed": "上传失败",
+    "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。",
+    "addFile": "添加文件",
+    "businessPerformance": "业务表现",
+    "defaultHeadline": "这是目前的情况 —— 以及我建议为您做的事。",
+    "approval": {
+      "ask": "您审批",
+      "assisted": "Max 审批",
+      "auto": "自动",
+      "askHint": "未经您审批不会发送。",
+      "assistedHint": "Max 负责校对和风险把关，只有拿不准时才会询问您。",
+      "autoHint": "在免打扰时段和联系频率限制内自动发送。"
+    }
+  },
+  "disclaimers": {
+    "aiCma": "由 AI 依据公开网络数据（近期可比成交）生成的估算。这是价值意见，并非正式评估 — 采用前请核实可比房源与定价。",
+    "buildOffer": "AI 建议的条款仅供辅助决策 — 并非法律或财务意见。递交前请与您的买方及经纪公司确认价格、附带条件与各项日期。",
+    "contractReview": "这是帮助您发现问题的 AI 摘要 — 并非法律意见，也不能替代您的经纪公司或房地产律师的审阅。采用前请逐项核对合同中的条款、日期与金额。",
+    "deepReport": "由 AI 依据公开网络数据生成的估算。估值、租金、可负担性与交易指标仅为规划参考的意见 — 并非评估、贷款批复或投资建议。决策前请核实数据并咨询贷款机构／顾问。",
+    "houseSearch": "由 AI 依据公开网络数据生成的结果。房源、价格与在售状态可能已过时 — 分享或采用前请在原始网站逐条核实。",
+    "offerCompare": "AI 摘要仅供辅助判断 — 并非法律或财务意见。向卖方提供建议前，请核实每份报价的条款与净收益数字。"
+  },
+  "notifications": {
+    "feed": {
+      "subtitle": "AI 团队为您标记的一切，最新在前。",
+      "unreadCount_one": "{{count}} 条未读",
+      "unreadCount_other": "{{count}} 条未读",
+      "allCaughtUp": "全部处理完了。",
+      "markAllRead": "全部标为已读",
+      "marking": "标记中…",
+      "markFailed": "无法更新通知，请重试。",
+      "empty": "这里还没有内容。热门线索、未接来电和提醒会随时出现在这里。",
+      "unread": "未读",
+      "today": "今天",
+      "yesterday": "昨天",
+      "needsYou": "今天需要您处理",
+      "none": "暂无待办",
+      "types": {
+        "hot_lead": "热门线索",
+        "missed_call": "未接来电",
+        "reminder": "提醒",
+        "new_lead": "新线索",
+        "avatar_ready": "数字分身已就绪"
+      }
+    },
+    "title": "通知",
+    "subtitle": "需要优先跟进的重点客户、可能漏接的来电，以及各环节的提醒。",
+    "hotLeads": "重点客户",
+    "hotLeadsSub": "高意向联系人",
+    "viewAll": "查看全部",
+    "noHotLeads": "暂无重点客户。客户产生互动后评级会自动更新。",
+    "missedCalls": "未接来电",
+    "missedCallsSub": "无人接听或拨号失败",
+    "callLog": "通话记录",
+    "noMissedCalls": "没有未接来电记录。",
+    "unknownCaller": "未知来电",
+    "aiCaptured": "AI 已记录详情 —— 点击查看",
+    "reminders": "提醒",
+    "remindersSub": "预约、任务与跟进",
+    "calendar": "日历",
+    "overdueTasks": "逾期任务",
+    "followUps": "跟进事项",
+    "followUpReminder": "跟进提醒",
+    "due": "截止 {{when}}",
+    "scheduled": "已安排 {{when}}",
+    "listingAlerts": "房源提醒",
+    "columns": {
+      "lead": "客户",
+      "type": "类型",
+      "property": "房源",
+      "sent": "发送时间"
+    },
+    "callToday": "今天致电 {{name}}",
+    "callTomorrow": "明天致电 {{name}}",
+    "contactOn": "联系 {{name}} · {{when}}"
+  },
+  "roles": {
+    "user": "普通用户",
+    "agent": "房地产经纪人",
+    "loan_broker": "贷款 / 房贷经纪",
+    "broker": "经纪商",
+    "broker_owner": "经纪公司股东",
+    "managing_broker": "管理经纪人",
+    "team_lead": "团队负责人",
+    "brokerage_admin": "经纪公司管理员",
+    "owner": "所有者",
+    "partner": "合伙人",
+    "admin": "管理员",
+    "support": "客服支持"
+  },
+  "shell": {
+    "upgradeTitle": "用 AI 跟进推动增长",
+    "upgradeBody": "升级以获得更多额度与自动化功能。",
+    "home": "CloseBoss 首页"
+  },
+  "tasks": {
+    "title": "任务",
+    "openCount": "{{count}} 项待办",
+    "completion": "任务完成率（近 30 天）",
+    "doneByDay": "每日完成任务（近 30 天）— 共 {{count}} 项",
+    "done": "已完成",
+    "cancel": "取消",
+    "addTask": "添加任务",
+    "newTask": "新建任务",
+    "titlePlaceholder": "任务标题 *",
+    "notesPlaceholder": "备注 / 说明",
+    "noContact": "不关联客户",
+    "saving": "保存中…",
+    "createTask": "创建任务",
+    "searchPlaceholder": "搜索任务…",
+    "taskAdded": "任务已添加。",
+    "updated": "已更新。",
+    "error": "出错了",
+    "failed": "操作失败",
+    "updateFailed": "更新失败",
+    "yesterday": "昨天",
+    "today": "今天",
+    "tomorrow": "明天",
+    "openLinked": "打开关联页面",
+    "markDone": "标记完成",
+    "cancelTask": "取消任务",
+    "editTask": "编辑任务",
+    "noMatch": "没有匹配的任务。",
+    "noOpen": "暂无待办任务。",
+    "none": "暂无任务。",
+    "priority": {
+      "low": "低",
+      "normal": "普通",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "status": {
+      "open": "待办",
+      "done": "已完成",
+      "cancelled": "已取消",
+      "all": "全部"
+    },
+    "source": {
+      "all": "全部来源",
+      "manual": "手动",
+      "briefing": "简报",
+      "playbook": "剧本",
+      "coaching": "辅导"
+    },
+    "overdueDays": "逾期 {{count}} 天",
+    "inDays": "{{count}} 天后",
+    "chart": {
+      "done": "已完成",
+      "onTime": "按时",
+      "late": "逾期完成",
+      "open": "待办",
+      "overdue": "已逾期",
+      "pending": "进行中",
+      "cancelled": "已取消"
+    },
+    "back": "← 返回",
+    "columns": {
+      "task": "任务",
+      "contact": "联系人",
+      "due": "截止日期",
+      "priority": "优先级",
+      "status": "状态",
+      "memo": "备注"
+    }
+  },
+  "tips": {
+    "accountantOther": "推荐费、供应商代垫费用，以及成交之外应付给您的其他款项。",
+    "callDoubleClick": "双击查看完整通话详情",
+    "removeFile": "移除文件",
+    "snooze7d": "延后 7 天",
+    "offerAiTerms": "为该房源获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信",
+    "compareOffers": "比较报价与卖方净收益",
+    "openCma": "打开市场比较分析与提案生成器",
+    "moveLater": "改到更晚的日期",
+    "moveTaskLater": "将任务改到更晚的日期",
+    "quiet7d": "静默 7 天以上",
+    "settingsSections": "设置分区",
+    "profilePhoto": "用户头像",
+    "calendarEmail": "日历与邮件",
+    "calendarEmailHelp": "Google 日历双向同步，以及将报价、委托协议和看房请求自动转为任务的转发地址。",
+    "connectedSocial": "已连接的社交账号",
+    "socialAutoposting": "社交自动发布",
+    "weeklySchedule": "每周发布计划",
+    "tiktokPosting": "TikTok 发布设置",
+    "tiktokPostingHelp": "TikTok 要求由账号持有人选择可见范围并声明商业内容。适用于为你发布的每一条帖子。",
+    "tcNotifications": "交易协调通知",
+    "commissionDefaults": "佣金默认设置",
+    "offerAiTermsBuyer": "为新的买方报价获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信。",
+    "snoozeAria": "将“{{title}}”搁置 7 天"
+  },
+  "topbar": {
+    "search": "搜索客户、房源地址…",
+    "askMax": "问 Max",
+    "quickActions": "快捷操作",
+    "openQuickActions": "打开快捷操作菜单",
+    "closeQuickActions": "关闭快捷操作菜单",
+    "signedIn": "已登录",
+    "account": "账户",
+    "home": "首页",
+    "myProfile": "个人资料",
+    "mySettings": "我的设置",
+    "helpGuides": "帮助与指南",
+    "creditsBilling": "额度与账单",
+    "logOut": "退出登录",
+    "upsell": "用 AI 跟进赢得更多客户",
+    "actions": {
+      "addLead": "添加客户",
+      "sendMessage": "发送消息",
+      "createTask": "新建任务",
+      "createAppointment": "新建预约",
+      "generateCma": "生成 CMA 报告",
+      "compareProperties": "房源对比"
+    },
+    "searchLeads": "搜索客户",
+    "topUp": "随时充值额度 — 功能全部包含。",
+    "takeTheTour": "重新导览"
+  },
+  "pages": {
+    "accountMenu": {
+      "signedInAs": "当前登录",
+      "home": "首页",
+      "profile": "我的资料",
+      "settings": "我的设置",
+      "billing": "账单与订阅",
+      "logOut": "退出登录",
+      "photoAlt": "用户头像",
+      "account": "账号",
+      "yourAccount": "您的账户"
+    },
+    "agentSignup": {
+      "startFreeAsAgent": "经纪人免费开始",
+      "completeAgentSetup": "完成经纪人设置",
+      "nameRequired": "请填写姓名。",
+      "emailRequired": "请填写邮箱。",
+      "phoneRequired": "开通经纪人账户需要填写电话。",
+      "phoneInvalid": "请填写有效的美国电话号码（10 位）。",
+      "passwordRequirements": "请设置一个满足下方全部要求的密码。",
+      "acceptTerms": "请先同意服务条款和隐私政策。",
+      "sessionExpired": "登录状态已过期，请重新登录。",
+      "confirmEmailThenLogIn": "请查收邮件确认您的账户，然后登录进入仪表板。",
+      "emailSendFailed": "确认邮件没能发出去，请过几分钟再试。",
+      "signupFailed": "经纪人注册失败。",
+      "emailTiedToAccount": "邮箱与您已登录的账户绑定",
+      "saving": "保存中…",
+      "saveAgentProfile": "保存经纪人资料",
+      "createAgentAccount": "创建经纪人账户",
+      "intro": "开通经纪人后台和 CMA 工具的使用权限。",
+      "signedInPrefilled": "您已登录——表单已根据您的账号自动填写。补全下面的字段即可激活经纪人资料（不需要另设密码）。",
+      "signedInNoPassword": "您已登录——保存经纪人资料不需要密码。",
+      "guidedOnboarding": "引导式设置",
+      "accountType": "账号类型",
+      "realEstateAgent": "房产经纪人",
+      "loanBroker": "贷款经纪",
+      "name": "姓名",
+      "phone": "电话",
+      "phoneHint": "用于客源提醒和跟进",
+      "license": "执照号",
+      "brokerage": "所属经纪公司",
+      "email": "邮箱",
+      "password": "密码",
+      "terms": "服务条款",
+      "privacy": "隐私政策",
+      "signUpHere": "点此注册"
+    },
+    "agentSignupModal": {
+      "loadingForm": "正在加载表单…"
+    },
+    "aiActionGateBanner": {
+      "chooseAPlan": "选择套餐",
+      "viewPlansUpgrade": "查看套餐并升级"
+    },
+    "authModal": {
+      "close": "关闭",
+      "dialogLabel": "登录或注册",
+      "login": "登录",
+      "signUp": "注册",
+      "name": "姓名",
+      "namePlaceholder": "您的姓名",
+      "forgotPassword": "忘记密码？",
+      "notNow": "暂不",
+      "resetHeading": "重设您的密码",
+      "resetBody": "填写您在 CloseBoss 使用的邮箱，我们会给您发送重设密码的链接。",
+      "sendResetLink": "发送重设链接",
+      "backToLogin": "返回登录",
+      "emailResetLink": "把重设密码链接发到我邮箱",
+      "sending": "发送中…",
+      "loggingIn": "正在登录…",
+      "creatingAccount": "正在创建账户…",
+      "logIn": "登录",
+      "createFreeAccount": "创建免费账户",
+      "or": "或",
+      "resetEmailSent": "请查收邮件，里面有重设密码的链接。",
+      "resetEmailRequired": "请先填写您的邮箱地址。",
+      "resetSendFailed": "重设密码邮件没能发出去，请稍后再试。",
+      "nameRequired": "请填写姓名。",
+      "signInFailedOauth": "登录失败。",
+      "authFailed": "身份验证失败。",
+      "continueGoogle": "使用 Google 继续",
+      "continueApple": "使用 Apple 继续"
+    },
+    "brandLogo": {
+      "tagline": "您的 AI 房产团队"
+    },
+    "cma": {
+      "loadFailed": "无法加载您的 CMA 报告。",
+      "createFailed": "CMA 生成失败。",
+      "loading": "加载中…",
+      "savedCount_one": "已保存 {{count}} 份报告",
+      "savedCount_other": "已保存 {{count}} 份报告",
+      "cancel": "取消",
+      "newCma": "新建 CMA",
+      "generateHeading": "生成 CMA",
+      "generateIntro": "填写目标房产地址。我们会从网络抓取实时可比成交，并标注每一处来源。",
+      "subjectAddress": "目标房产地址",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "quotaReached": "本月套餐内的 CMA 次数已用完。",
+      "liveWeb": "基于实时网络数据，附来源引用。",
+      "generating": "生成中…",
+      "generate": "生成 CMA",
+      "working": "正在检索可比成交——大约需要一分钟。",
+      "loadFailedInline": "无法加载您的报告：",
+      "empty": "还没有 CMA 报告。在上方填入地址即可生成一份。",
+      "comps_one": "{{count}} 个可比成交",
+      "comps_other": "{{count}} 个可比成交",
+      "confidence": "置信度 {{score}}%",
+      "quotaTitle": "{{date}} 重置",
+      "unlimited": "不限次数",
+      "remaining": "剩余 {{remaining}} / {{limit}}",
+      "metaTitle": "市场比较分析报告",
+      "valuationUnavailable": "无法估值"
+    },
+    "cmaShareView": {
+      "yourAgent": "您的经纪人"
+    },
+    "commandChain": {
+      "youTheRealtor": "您，这位经纪人",
+      "theBoss": "才是老板",
+      "oneCommand": "一句指令",
+      "bossAssistant": "Boss 助理",
+      "delegatesTo": "分派给",
+      "whatHappens": "接下来会自动发生什么",
+      "whatYouGet": "您拿到的成果——可以直接交出去",
+      "steps": "制定计划 · 分派合适的队友 · 回报结果",
+      "teamLegend": "高亮的助理是这条指令需要的人手。其余几位只是暂时闲置，并非无法使用——Boss 助理可以调用这五位中的任何一位。",
+      "onThisCommand": "正在处理这条指令",
+      "idle": "这条指令用不到",
+      "team": {
+        "receptionist": "前台",
+        "sales": "销售",
+        "marketing": "营销",
+        "transaction": "交易",
+        "accountant": "会计"
+      },
+      "commands": {
+        "open_house": {
+          "chip": "开放日",
+          "command": "“帮我安排周六在 123 Main St 的开放日。”",
+          "steps": {
+            "s1": "调研房源、可比成交与周边社区",
+            "s2": "制作宣传单、签到表和新上市文案",
+            "s3": "向您的人脉圈和各大房源门户推广",
+            "s4": "为每位签到访客准备即时跟进"
+          },
+          "artifacts": {
+            "a1": "新上市宣传单",
+            "a2": "开放日签到表",
+            "a3": "社交媒体与门户帖文",
+            "a4": "可比成交调研简报",
+            "a5": "跟进话术模板"
+          }
+        },
+        "seller_presentation": {
+          "chip": "卖方提案",
+          "command": "“为 123 Main St 做一份卖方提案。”",
+          "steps": {
+            "s1": "获取实时可比成交与估值区间（AI CMA）",
+            "s2": "撰写定价策略与营销方案",
+            "s3": "加入学区、社区信息和您的品牌元素",
+            "s4": "交付可直接分享的专业报告"
+          },
+          "artifacts": {
+            "a1": "AI CMA 报告",
+            "a2": "房源提案（PDF）",
+            "a3": "定价策略",
+            "a4": "营销方案",
+            "a5": "卖方净收益测算"
+          }
+        },
+        "buyer_showings": {
+          "chip": "买方带看",
+          "command": "“帮 Garcia 一家找房并安排带看。”",
+          "steps": {
+            "s1": "根据您的一句话需求搜索市场",
+            "s2": "筛选匹配房源并附深度报告（负担能力、投资回报）",
+            "s3": "预约带看并规划看房路线",
+            "s4": "将完整看房清单邮件发给买家"
+          },
+          "artifacts": {
+            "a1": "匹配房源清单",
+            "a2": "房源深度报告",
+            "a3": "对比报告",
+            "a4": "带看日程",
+            "a5": "买家看房清单邮件"
+          }
+        },
+        "cold_call": {
+          "chip": "外呼与客源筛选",
+          "command": "“给我的新客源打电话并做筛选。”",
+          "steps": {
+            "s1": "拨号前先调研每一位客源",
+            "s2": "以自然语音拨出外呼电话",
+            "s3": "从预算、时间线和购房动机筛选——买家或卖家",
+            "s4": "评估意向度，热门客户直接约见，其余记录归档"
+          },
+          "artifacts": {
+            "a1": "已筛选客源名单",
+            "a2": "通话记录与文字转录",
+            "a3": "带意向评分的客户管道",
+            "a4": "已预约的会面"
+          }
+        },
+        "closing": {
+          "chip": "协调成交交割",
+          "command": "“把 123 Main St 这单推进到交割。”",
+          "steps": {
+            "s1": "制定交易时间表与任务清单",
+            "s2": "跟踪附加条件、关键日期与文件",
+            "s3": "准备卖方净收益汇总",
+            "s4": "记录佣金与各项支出"
+          },
+          "artifacts": {
+            "a1": "交易时间表",
+            "a2": "截止日期跟踪表",
+            "a3": "卖方净收益表",
+            "a4": "佣金与支出台账"
+          }
+        }
+      }
+    },
+    "comparisonReport": {
+      "metaTitle": "AI 房源对比报告",
+      "heading": "AI 房源对比报告",
+      "clientName": "客户姓名",
+      "clientPlaceholder": "例如：张女士",
+      "properties": "房源（至少 2 套）",
+      "address": "地址",
+      "addressPlaceholder": "示例：123 Main St, City, ST——或粘贴 Zillow／Redfin／Realtor.com／Compass 链接",
+      "price": "价格（美元）",
+      "sqft": "面积（平方英尺）",
+      "beds": "卧室数",
+      "baths": "卫浴数",
+      "rent": "月租金（美元）——可选",
+      "created": "报告已生成",
+      "generate": "生成报告与 AI 文案",
+      "generating": "正在生成报告…",
+      "upgrade": "升级到 Pro 或 Premium 即可生成 AI 对比报告。",
+      "sqftBedBath": "{{sqft}} 平方英尺 · {{beds}} 卧 / {{baths}} 卫",
+      "disclaimerLine": "由 CloseBoss 生成 · 仅供讨论参考 · 并非财务建议"
+    },
+    "comparisonReportView": {
+      "yourAgent": "您的经纪人",
+      "reportDate": "报告日期：",
+      "execSummary": "内容摘要",
+      "overview": "对比总览",
+      "estRoi": "预估年化回报率",
+      "breakdown": "房源明细",
+      "listPrice": "挂牌价／价格",
+      "investmentScore": "投资评分",
+      "aiRecommendation": "AI 建议",
+      "contactAgent": "联系您的经纪人",
+      "yourName": "您的姓名",
+      "yourEmail": "您的邮箱",
+      "message": "留言（可选）",
+      "sent": "留言已发送，您的经纪人会尽快与您联系。",
+      "prepared": "制作于 {{date}}",
+      "eyebrow": "AI 房源对比报告",
+      "preparedFor": "为 {{name}} 制作",
+      "fallbackAgent": "您的房地产专业人士",
+      "license": "执照号 {{number}}",
+      "referenceId": "报告编号：{{id}}",
+      "preparingPdf": "正在生成 PDF…",
+      "downloadPdf": "下载 PDF",
+      "colProperty": "房源",
+      "colPrice": "价格",
+      "colPerSqft": "每平方英尺单价",
+      "colScore": "评分",
+      "size": "面积",
+      "dimensions": "户型",
+      "pros": "优点",
+      "cons": "缺点",
+      "closeForm": "收起表单",
+      "messageForm": "留言表单",
+      "sending": "发送中…",
+      "sendMessage": "发送留言",
+      "sendFailed": "发送失败",
+      "couldNotSend": "无法发送，请稍后再试。",
+      "recommended": "推荐",
+      "questions": "对这份对比有疑问？可以直接联系，或在下方留言。",
+      "emailAgent": "给经纪人发邮件"
+    },
+    "completeProfile": {
+      "h1": "完善您的 CloseBoss 资料",
+      "sub": "您是用 Google 或 Apple 登录的。请确认您的姓名，并选择您是",
+      "fullName": "全名",
+      "role": "身份",
+      "phoneNumber": "手机号",
+      "cancelNote": "如果您想中止，或者改用另一个账户，点击「取消」即可退出登录并返回首页。",
+      "continue": "继续"
+    },
+    "cookieConsent": {
+      "title": "closebossai.com 的 Cookie",
+      "body": "我们使用必要 Cookie 来保证网站正常运行。可选 Cookie 帮助我们衡量并改进产品。您随时可以通过页脚的“Cookie 设置”链接更改选择。",
+      "necessaryName": "严格必要",
+      "necessaryDesc": "用于保持登录状态、记住偏好设置、防止 CSRF 攻击。始终开启——网站运行所必需。",
+      "analyticsName": "分析",
+      "analyticsDesc": "汇总的产品使用与性能数据，帮助我们修复问题并确定改进优先级。不包含广告追踪。",
+      "marketingName": "营销",
+      "marketingDesc": "用于衡量营销效果，并跨访问记住您的偏好。除非您开启，否则不启用。",
+      "privacy": "隐私政策",
+      "categories": "Cookie 类别",
+      "acceptAll": "全部接受",
+      "essentialOnly": "仅必要 Cookie",
+      "saveChoices": "保存选择",
+      "customize": "自定义",
+      "settings": "Cookie 设置"
+    },
+    "customerSupportChat": {
+      "thisConversationRefreshesAutomatically": "本对话会自动刷新。",
+      "startAConversationAnd": "发起对话，我们的客服团队会在这里回复。",
+      "startChat": "开始对话"
+    },
+    "dashFragments": {
+      "couldntLoadRoster": "无法载入分派名单：",
+      "noDbRules": "目前还没有数据库规则——线索池由以下环境变量白名单驱动：",
+      "envAllowlist": "。每位经纪人都可以在自己的设置页启用，从而接管属于自己的名额。",
+      "sortedByActivity": "按最近活跃度排序。灰色行表示这些经纪人的数据库规则处于",
+      "brandKnowledge": "品牌与知识库",
+      "nothingScheduled": "日程是空的——空日历意味着空管道。",
+      "marketingCreates": "市场助理负责创造需求；它带来的线索会交给您的",
+      "toConvert": "去转化。",
+      "ends": "结束于",
+      "creditsPerMo": "点数／月",
+      "forMultipleAgents": "适合多位经纪人共享点数池。",
+      "results": "结果",
+      "noStructuredFields": "没有结构化字段。",
+      "wantYourOwn": "想做自己的分析？到首页试试我们的计算器。",
+      "noPagesConnected": "尚未连接任何主页。",
+      "toStartPosting": "即可开始发布。",
+      "liveOn": "已发布到",
+      "caption": "文案",
+      "currentMrr": "当前 MRR（口径统一后）：",
+      "window": "统计窗口：",
+      "scheduledJobs": "个定时任务",
+      "allSchedulesUtc": "所有排程均按 UTC 时间。任务触发时会自动携带",
+      "authAutomatically": "凭据。",
+      "showings": "带看（",
+      "offers": "报价（",
+      "submitted": "已提交",
+      "appointments": "个预约 ·",
+      "tasksSep": "项任务 ·",
+      "followUps": "次跟进 ·",
+      "usedAll": "您今天的",
+      "deepReport": "深度报告",
+      "forTodayResets": "额度已用完。UTC 午夜重置。",
+      "refineSearch": "细化搜索（",
+      "email": "把",
+      "toBuyer": "个房源发给买家",
+      "offersOn": "以下房源的报价：",
+      "agent": "经纪人：",
+      "price": "价格：",
+      "seller": "卖方：",
+      "created": "创建于",
+      "lastActivity": "最近活动",
+      "noUpcoming": "没有即将到期的提醒。",
+      "willShowHere": "会显示在这里。",
+      "overdueTask": "项逾期任务",
+      "unreadMessage": "条未读消息",
+      "urgentTask": "项紧急任务",
+      "activeDeals": "笔进行中的交易",
+      "with": "与",
+      "next": "下一个：",
+      "drafts": "份草稿",
+      "renews": "续订于",
+      "creditsStayYours": "——您已有的点数仍然归您。",
+      "weeklyBriefing": "每周住房简报",
+      "subscribeTo": "订阅",
+      "everyWeek": "每周，",
+      "sendsDigest": "都会发来一份大白话的摘要：房贷利率去了哪里、是什么在推动住房市场——并配上您所选地区的本地市场快照。不用行话，每一个数字都链接到它的出处。",
+      "deliveredBy": "由以下机构送达：",
+      "resetPassword": "重设您的密码",
+      "resetBody": "填写您在 CloseBoss 使用的邮箱，我们会给您发送重设密码的链接。",
+      "sendResetLink": "发送重设链接",
+      "sendingResetLink": "发送中…",
+      "resetEmailSent": "请查收邮件，里面有重设密码的链接。",
+      "resetEmailRequired": "请先填写您的邮箱地址。",
+      "resetSendFailed": "重设密码邮件没能发出去，请稍后再试。",
+      "backToLogin": "返回登录",
+      "confirmed": "已确认订阅",
+      "linkExpired": "此链接已失效",
+      "couldntConfirm": "我们无法确认这次订阅——链接可能已过期，或者已经被使用过。您可以重新订阅，获取一封新的确认邮件。",
+      "reportNotFound": "找不到该报告",
+      "reportNotFoundBody": "此链接可能无效，或者报告已被删除。请向您的经纪人索取新的链接。",
+      "closeBossHome": "CloseBoss 首页",
+      "preferPreview": "想先看 2 分钟的互动预览？",
+      "iAgree": "我同意",
+      "preferRegular": "想用普通用户方式注册？",
+      "brandColor": "品牌色",
+      "ownBrandColor": "用以下方式，把您自己的品牌色（和 logo）放到每一张生成的社交卡片上：",
+      "preview": "预览（",
+      "lucyCalls": "选择联系人，Lucy 会逐个致电（每批最多",
+      "perBatchDiscloses": "位）。每一通电话都会声明自己是 AI，并记录在下方的「来电与外呼活动」里。",
+      "batchLimit": "已达单批上限（",
+      "draftLandsHere": "当触发条件命中、且您的审核策略设为「需审核」时，草稿会落到这里。想不等待就看看流程，",
+      "clickGenerate": "，然后点击「生成草稿」。",
+      "queuedCron": "已排队。发送任务每 15 分钟跑一次，会遵守免打扰时段和发送频率上限。",
+      "sentVia": "发送渠道：",
+      "sendFailed": "发送失败——",
+      "tryWord": "试试",
+      "couldntLoadReport": "无法载入报告：",
+      "avg": "平均",
+      "dToClose": "天成交",
+      "couldntLoadForecast": "无法载入管道预测：",
+      "noCloseDate": "笔交易还没有设定预计成交日期——",
+      "weightedAdd": "（加权）。设定一个目标成交日期，它们才会出现在图表上。",
+      "due": "截止",
+      "noContactsYet": "您还没有任何联系人。",
+      "thenComeBack": "，然后回来套用这个 playbook。",
+      "sendProperties": "发送房源",
+      "pickFavorites": "从他们的收藏里挑（",
+      "willSend": "将发送（",
+      "anniversaryOptIn": "条已确认周年纪念订阅",
+      "emptyRowsSkipped": "行空数据已跳过",
+      "withWarnings": "条带警告",
+      "textCallersBack": "给来电者回短信",
+      "keepAiAnswering": "让 AI 继续接听",
+      "needMoreMinutes": "需要更多包含分钟数？",
+      "photos": "照片（",
+      "selectedForVideo": "张已选入视频",
+      "sVideo": "秒视频",
+      "firstAgentWins": "第一个回复的经纪人，大约有一半的概率赢下客户。第二个只剩四分之一。排在后面的，就只能抢残羹了。",
+      "fourteenDaysFree": "免费开始。不用信用卡。15 分钟完成设置。如果第一个月它没把自己的价钱挣回来，您也没有任何损失。",
+      "leads": "线索：",
+      "cmaToday": "今日 CMA：",
+      "proLeadCap": "Pro 套餐的线索上限是",
+      "youAndFriend": "您和您的朋友各得",
+      "aiTokens": "个 AI 代币",
+      "whenTheySignUp": "——只要他们通过您的链接注册。",
+      "generateFirstDraft": "在下面生成初稿——AI 会结合具体情况、这位联系人，以及您的",
+      "stopKeyword": "对方最后一条消息是退订关键词（STOP／UNSUBSCRIBE 等）。再给他们发短信会违反退订合规要求——AI 起草和发送都已被阻止。",
+      "looksLikeComplaint": "这位联系人最后一条消息看起来像投诉、争议或紧急问题。AI 起草已暂停——如果您决定回复，请亲自来。",
+      "toolsFor": "适用于",
+      "promptTunedFor": "针对",
+      "toneCopyPaste": "口吻调校过的 AI 提示词。复制粘贴到 AI 聊天面板，或您常用的大模型里。",
+      "seatsUsed": "个席位已使用",
+      "agentWord": "经纪人",
+      "inviteFor": "邀请对象：",
+      "growthDigestHistory": "每周「增长与机会」邮件的运行记录。显示在以下时间之后生成的摘要：",
+      "errorLoadingRows": "载入数据出错：",
+      "perCronHealth": "按定时任务和 AI 功能统计的健康状况，统计窗口为最近",
+      "daysSupportTool": "天。这是支持工具——没有放在侧边栏里。",
+      "recentSignInsSince": "以下时间之后的签到记录：",
+      "nudgeHistory": "每日逾期任务摘要的运行记录。显示在以下时间之后创建的行：",
+      "aiScore": "AI 评分：",
+      "insights": "洞察：",
+      "reportUnavailable": "这份报告暂时无法查看",
+      "reportUnavailableBody": "该链接对应的市场分析正在更新。请联系您的经纪人获取最新估值。",
+      "couldntLoadCoaching": "无法载入教练洞察：",
+      "dueOn": "截止 {{date}}",
+      "property": "房产",
+      "detectedBut": "已识别，但",
+      "contractReviewBody": "把购房合同（PDF）拖进来，或者直接粘贴文本。您会得到一份大白话摘要、关键条款和截止日期，以及所有异常或留空之处的提示——",
+      "flagsToReview": "需要复核的提示（",
+      "day": "第",
+      "totalPlans": "个方案",
+      "matchesSoFar": "条匹配。",
+      "tasksCount": "任务（",
+      "yourNameBrokerage": "您的姓名、经纪公司、",
+      "voiceMarketCompliance": "的语气、市场和合规信息都会自动填好。您只需要提供具体内容：",
+      "seedsA": "会生成一份",
+      "checklistAutofills": "清单，并从基准日期自动推算各项截止时间。之后您随时可以调整。",
+      "dOverdue": "天逾期",
+      "weeklyUpdate": "每周更新",
+      "published": "发布于",
+      "source": "来源：",
+      "youreOn": "您当前的策略是",
+      "policySoDrafts": "，所以每一条 AI 起草的回复在发出去之前都会落到这里。多数经纪人之后会切换到",
+      "availableIn": "上线时间：",
+      "shipsDuringPilot": "将在试点期间交付",
+      "builtFor": "专为",
+      "aiPlatformFor": "专为以下机构打造的 AI 平台：",
+      "cantLoadPage": "CloseBoss——无法载入此页面",
+      "ref": "参考编号：",
+      "findNextHome": "找到您的下一个家",
+      "findNextHomeBody": "用大白话描述您想要什么。我们会在网上实时搜索真实、在售的房源，并把您直接带到原始页面。",
+      "usingThe": "用",
+      "analyzeNewListings": "分析新上房源，并和以往的项目做比较。",
+      "unsubscribed": "您已退订",
+      "unsubscribedBody": "您将不再收到 CloseBoss 的每周住房简报。如果这是误操作，您随时可以重新订阅。",
+      "offerExtended": "报价有效期已延长",
+      "newExpiration": "新的到期时间：",
+      "inviteUnusable": "此邀请无法使用",
+      "goToMyDashboard": "前往我的仪表板",
+      "logIn": "登录",
+      "backToDashboard": "返回工作台",
+      "noAccess": "您没有访问权限",
+      "noAccessBody": "此页面仅限授权员工或特定角色访问。如果您认为这是误判，请联系管理员，或用正确的账户登录。",
+      "emailLabel": "邮箱",
+      "passwordLabel": "密码",
+      "financial": "财务",
+      "call": "致电",
+      "beingProcessed": "位联系人正在处理中。",
+      "detectedColumns": "识别到的列：",
+      "draft": "草稿",
+      "view": "查看",
+      "couldntLoadBuyers": "无法载入潜在买家：",
+      "currentlyAt": "当前处于",
+      "tokens": "代币：",
+      "minutesApart": "分钟一次。只要联系上来电者，这一串就立即停止。",
+      "perDay": "条／天",
+      "yourTime": "（您的时区）",
+      "couldntLoadMonetization": "无法载入变现视图：",
+      "drip": "滴灌",
+      "signalsFire": "检测批次运行时，信号会自动触发——再融资动向、工作变动、净值里程碑达成。您也可以",
+      "addSignalManually": "，手动添加一条信号。",
+      "couldntLoadVoiceCalls": "无法载入语音通话：",
+      "twilioErrorCode": "Twilio 错误码",
+      "waitingForOk": "条内容等您确认",
+      "failedAfter": "失败于",
+      "aiDraftedSchedule": "已由 AI 为您起草——可排期到",
+      "noSocialAccount": "尚未连接社交账号——",
+      "pathALeadTakes": "在以下模式下，一条线索从首次接触到成交所走的路径：",
+      "step": "第",
+      "describeSituation": "描述一下具体情况——AI 会判断您需要哪一类消息（私信回复、跟进、异议处理、约见、开场白），并用您的",
+      "readAs": "读作：",
+      "unclaimedLead": "条待认领线索",
+      "errorLoadingRowsShort": "载入数据出错：",
+      "irrWorkflow": "常见做法是：先用资本化率和现金回报率把范围收窄，再对最有希望的几个用下面这类工具做详细的 IRR 推演：",
+      "deal": "交易",
+      "receivables": "应收账款",
+      "textBackSent": "回拨短信已发送",
+      "reachingOutFor": "代表以下人员联系：",
+      "totalCalls": "通电话",
+      "refreshed": "刷新于",
+      "digest": "摘要码：",
+      "buyer": "买方：",
+      "photosCount": "照片（",
+      "showing": "显示",
+      "showImportErrors": "查看导入错误（",
+      "withWord": "与",
+      "compliance": "合规：",
+      "couldntLoadCoordinator": "无法载入交易协调看板：",
+      "escalatedToYou": "条已升级给您",
+      "thisWeekCombined": "本周，AI 回复与人工回复合计。",
+      "preparedFor": "呈交对象：",
+      "dInStage": "天处于此阶段",
+      "currentPlan": "当前套餐：",
+      "unread": "未读",
+      "daysOnMarketLower": "天在售",
+      "seeOur": "详见我们的",
+      "activeCampaigns": "进行中的活动：",
+      "disclosureSample": "声明示例（每通电话都会包含）：",
+      "smsThread": "短信会话",
+      "savedSearches": "个已保存的搜索",
+      "newInvoice": "新建发票",
+      "stepsSetUp": "步已设置完成",
+      "score": "评分",
+      "last": "最近",
+      "logExpense": "记一笔支出",
+      "saved": "已保存",
+      "couldntLoadSellers": "无法载入潜在卖家：",
+      "show": "显示",
+      "batchesCappedAt": "每批上限为",
+      "toPopulateFeed": "，这条动态流才会有内容。",
+      "freeTextReminder": "给自己写的自由文本提醒——例如",
+      "templateNotSeeded": "模板库还没有初始化。请运行",
+      "shareThisLink": "把这个链接分享出去——您的客户每周都会收到一份",
+      "warmWishes": "顺祝安好，",
+      "runFailed": "运行失败：",
+      "draftsUseYour": "草稿会使用您的",
+      "inspiredBy": "灵感来自",
+      "agentLabel": "经纪人",
+      "draftChannelOf": "{{channel}}草稿",
+      "channelText": "短信",
+      "channelEmail": "邮件",
+      "scoreOutOf": "评分 {{score}}/100",
+      "warmWishesTo": "顺祝安好，{{name}}",
+      "friend": "朋友",
+      "onePerDaySpread": "1（全天分散发布）",
+      "comparableSales": "可比成交（{{count}}）"
+    },
+    "deepReportView": {
+      "title": "房产深度报告",
+      "dealRating": "交易评级",
+      "locationMap": "位置地图",
+      "estValue": "估值",
+      "propertyDetails": "房屋详情",
+      "loanAffordability": "贷款负担能力",
+      "loanAmount": "贷款金额",
+      "propertyTax": "房产税",
+      "totalMonthly": "每月总支出（本金+利息+税+保险）",
+      "incomeNeeded": "所需收入",
+      "housingRatio": "按 28% 房贷收入比计算",
+      "investmentReturns": "投资回报",
+      "noComps": "未找到可比成交房源。",
+      "downPaymentPct": "首付（{{pct}}%）",
+      "principalInterest": "本息（{{rate}}% / {{years}} 年）"
+    },
+    "delayedCapture": {
+      "beforeYouLeave": "走之前：",
+      "sub": "领取您的免费估值和后续跟进建议。",
+      "close": "关闭"
+    },
+    "demoContent": {
+      "senders": {
+        "you": "你"
+      },
+      "briefings": {
+        "br-001": {
+          "title": "AI 昨夜处理了 14 条客源回复",
+          "body": "响应时间中位数 47 秒。3 位客户已预约看房；2 位在等你决定。",
+          "actionLabel": "查看 AI 草稿"
+        },
+        "br-002": {
+          "title": "语音 AI 接听了 4 通来电",
+          "body": "全部已转写并生成摘要。其中一位来电者（Lily Zhang）希望周二回电。",
+          "actionLabel": "查看通话摘要"
+        },
+        "br-003": {
+          "title": "Vanessa Crowe 的人脉分已达峰值",
+          "body": "成交已满 5 年 + 房产净值上涨 35% + 出现人生阶段信号。自动草稿已在你的队列中。",
+          "actionLabel": "查看人脉维护外联"
+        }
+      },
+      "tasks": {
+        "t-001": {
+          "title": "与挂牌经纪确认周六上午 11 点的看房",
+          "dueLabel": "今天 下午 4:00"
+        },
+        "t-002": {
+          "title": "回复 Eve——议价问题（AI 已升级）",
+          "dueLabel": "今天 下午 5:30"
+        },
+        "t-003": {
+          "title": "发送 CMA——周二下午 2 点挂牌洽谈",
+          "dueLabel": "明天 上午 10:00"
+        },
+        "t-004": {
+          "title": "与 Karen Larson 的成交电话",
+          "dueLabel": "明天 上午 10:00"
+        },
+        "t-005": {
+          "title": "与 Natalie 一起做挂牌前房屋检视",
+          "dueLabel": "周一 下午 4:00"
+        }
+      },
+      "events": {
+        "e-001": {
+          "title": "看房——4456 Maple Ave，陪同 Sarah Chen",
+          "when": "周六 11:00"
+        },
+        "e-002": {
+          "title": "挂牌洽谈——Mark Davis",
+          "when": "周二 14:00"
+        },
+        "e-003": {
+          "title": "成交电话——Karen Larson",
+          "when": "明天 10:00"
+        },
+        "e-004": {
+          "title": "回电——Lily Zhang",
+          "when": "周二 10:00"
+        },
+        "e-005": {
+          "title": "挂牌准备——Natalie Bowers",
+          "when": "周一 16:00"
+        }
+      },
+      "contacts": {
+        "c-001": {
+          "lastActivity": "AI 2 分钟前已回复——买家可以看房了",
+          "interest": "3 卧公寓 · 市中心 · 预算上限 85 万美元",
+          "tag": "热门 · 周六看房"
+        },
+        "c-002": {
+          "lastActivity": "AI 15 分钟前已发出首次触达短信",
+          "interest": "首次购房 · 已获 62 万美元预批",
+          "tag": "首次购房 · 已预批"
+        },
+        "c-003": {
+          "lastActivity": "在 4456 Maple Ave 的开放日签到",
+          "interest": "开放日客源 · 想从公寓换大房",
+          "tag": "当天开放日"
+        },
+        "c-004": {
+          "lastActivity": "昨天已回复——希望周二再谈",
+          "interest": "投资客 · 关注多户住宅"
+        },
+        "c-005": {
+          "lastActivity": "CMA 已送达 · 周二下午 2 点挂牌洽谈",
+          "interest": "打算出售——估价 120 万美元",
+          "tag": "周二挂牌洽谈"
+        },
+        "c-006": {
+          "lastActivity": "AI 序列第 2 步已于 1 小时前发出"
+        },
+        "c-007": {
+          "lastActivity": "正在浏览 /homes——本周看了 4 套房"
+        },
+        "c-008": {
+          "lastActivity": "已提交房屋估值申请"
+        },
+        "c-009": {
+          "lastActivity": "AI 短信回拨已触发 · 等待回复"
+        },
+        "c-010": {
+          "lastActivity": "已约周三下午 5 点看房——8124 Pine St"
+        },
+        "c-011": {
+          "lastActivity": "已发送周年问候 · 回应热情",
+          "interest": "2022 年 3 月成交 · 人脉维护对象"
+        },
+        "c-012": {
+          "lastActivity": "已打开邮件 · 未点击"
+        },
+        "c-013": {
+          "lastActivity": "开放日签到 · 2 天前"
+        },
+        "c-014": {
+          "lastActivity": "AI 跟进：38 秒内即回复"
+        },
+        "c-015": {
+          "lastActivity": "报价已被接受——进入合约阶段",
+          "tag": "合约中"
+        },
+        "c-016": {
+          "lastActivity": "季度问候已排队"
+        },
+        "c-017": {
+          "lastActivity": "已发送收藏搜索提醒"
+        },
+        "c-018": {
+          "lastActivity": "AI 序列第 3 步已发出 · 等待回复"
+        },
+        "c-019": {
+          "lastActivity": "本周两次访问 /mortgage-calculator"
+        },
+        "c-020": {
+          "lastActivity": "已约周六上午 11 点买方看房",
+          "tag": "周六看房"
+        },
+        "c-021": {
+          "lastActivity": "已被机器人过滤——标记为低意向"
+        },
+        "c-022": {
+          "lastActivity": "已收到看房反馈——意向强烈"
+        },
+        "c-023": {
+          "lastActivity": "人脉分：高（房产净值 + 人生阶段信号）",
+          "interest": "2020 年 6 月成交 · 有出售可能"
+        },
+        "c-024": {
+          "lastActivity": "打开了新闻邮件 · 点击了房源"
+        },
+        "c-025": {
+          "lastActivity": "中段培育邮件 · 第 14 天 / 共 30 天"
+        },
+        "c-026": {
+          "lastActivity": "只访问了一个页面 · 无互动信号"
+        },
+        "c-027": {
+          "lastActivity": "开放日签到 · 看过两次"
+        },
+        "c-028": {
+          "lastActivity": "回复了第三季度广告——想要新建房"
+        },
+        "c-029": {
+          "lastActivity": "已约咨询——周四下午 3 点"
+        },
+        "c-030": {
+          "lastActivity": "人脉分：极高 · 距成交已 5 年",
+          "interest": "2020 年 6 月成交 · 房产净值上涨 35%"
+        },
+        "c-031": {
+          "lastActivity": "收藏了 3 套房——Cap Hill"
+        },
+        "c-032": {
+          "lastActivity": "语音 AI 已接通 · 通话 4 分钟",
+          "tag": "语音 AI 转化"
+        },
+        "c-033": {
+          "lastActivity": "已自动回复 · 对方未再互动"
+        },
+        "c-034": {
+          "lastActivity": "冷读者 · 仅接收月度新闻邮件"
+        },
+        "c-035": {
+          "lastActivity": "开放日客源 · 周六下午看房"
+        },
+        "c-036": {
+          "lastActivity": "周一下午 4 点挂牌前房屋检视",
+          "tag": "卖方——挂牌准备"
+        },
+        "c-037": {
+          "lastActivity": "生日贺卡已自动发出 · 已回复"
+        },
+        "c-038": {
+          "lastActivity": "分享了房贷计算器 · 发给未婚伴侣"
+        },
+        "c-039": {
+          "lastActivity": "多平台重复客源 · 已合并去重"
+        },
+        "c-040": {
+          "lastActivity": "AI 跟进第 2 步已发出"
+        },
+        "c-041": {
+          "lastActivity": "昨天已回复——对新建房有兴趣"
+        },
+        "c-042": {
+          "lastActivity": "已安排验房 · 7124 Aspen Ct",
+          "tag": "合约中"
+        },
+        "c-043": {
+          "lastActivity": "打开了新闻邮件——6 个月来第一次"
+        },
+        "c-044": {
+          "lastActivity": "语音 AI · 要求周二上午回电"
+        },
+        "c-045": {
+          "lastActivity": "AI 短信回拨：响应时间 19 秒",
+          "tag": "一分钟内响应"
+        },
+        "c-046": {
+          "lastActivity": "正在浏览 /homes——看了 2 个页面"
+        },
+        "c-047": {
+          "lastActivity": "5 天前签到 · 培育邮件第 3 步"
+        },
+        "c-048": {
+          "lastActivity": "明天上午 10 点成交电话",
+          "tag": "明天成交"
+        },
+        "c-049": {
+          "lastActivity": "净值报告已送达——增值 38%",
+          "interest": "2019 年 2 月成交 · 有转为投资客源的潜力"
+        },
+        "c-050": {
+          "lastActivity": "AI 已升级 · 议价问题",
+          "tag": "已升级 · 需你处理"
+        }
+      },
+      "dealStages": {
+        "under_contract": "合约中",
+        "inspection": "验房",
+        "appraisal": "估价",
+        "clear_to_close": "可以过户",
+        "closed": "已成交",
+        "active_showing": "正在看房"
+      },
+      "deals": {
+        "d-001": {
+          "nextMilestone": "已安排验房"
+        },
+        "d-002": {
+          "nextMilestone": "估价即将到期"
+        },
+        "d-003": {
+          "nextMilestone": "明天成交电话"
+        },
+        "d-004": {
+          "nextMilestone": "已约第二次看房"
+        }
+      },
+      "drafts": {
+        "dr-001": {
+          "reasoning": "David 问到周二——根据你日历上的空档，提出了两个具体时间。"
+        },
+        "dr-002": {
+          "reasoning": "30 天人脉问候已触发（2020 年 6 月成交）。已补上近期可比成交得出的净值数据。"
+        },
+        "dr-003": {
+          "reasoning": "跟进周二上午 10 点的回电，距今还有 36 小时。已在消息中附上三套匹配房源。"
+        },
+        "dr-004": {
+          "reasoning": "人脉分极高（距成交 5 年、房产净值上涨 35%、人生阶段：家中添丁）。以温和方式试探出售意向。"
+        },
+        "dr-005": {
+          "reasoning": "周六看房前 24 小时提醒。已附上从房源信息中提取的停车与进门说明。"
+        }
+      },
+      "conversations": {
+        "conv-001": {
+          "preview": "AI：“周六上午 11 点可以——我来跟挂牌经纪确认。”"
+        },
+        "conv-002": {
+          "preview": "AI：“你打算什么时候入住？我可以按你 62 万美元的预算找几套。”"
+        },
+        "conv-003": {
+          "preview": "AI 已升级——定价问题超出自动回复范围"
+        },
+        "conv-004": {
+          "preview": "AI：“收到——正在把 Redmond Way 6300 号段的可比成交发到你邮箱。”"
+        },
+        "conv-005": {
+          "preview": "语音 AI 通话 · 4 分钟摘要已附在联系人上"
+        },
+        "conv-006": {
+          "preview": "AI 在 38 秒内回复 · 等待 Hannah 回应"
+        }
+      },
+      "sources": {
+        "open_house": "开放日",
+        "referral": "转介绍",
+        "idx_website": "IDX 网站",
+        "past_client": "老客户"
+      }
+    },
+    "editorialLanding": {
+      "navProblem": "问题所在",
+      "navHowItWorks": "如何运作",
+      "navFeatures": "功能",
+      "navPricing": "价格",
+      "navSignIn": "登录",
+      "heroBefore": "别再在最初 5 分钟里",
+      "heroEm": "丢掉",
+      "heroAfter": "客源。",
+      "heroSub": "每一条新的买家或卖家咨询，CloseBoss 都会在 60 秒内用您的语气、从您的号码发出短信和邮件——然后把有意向的客户交回给您，随时可以带看。",
+      "ctaTrial": "免费开始",
+      "ctaDemo": "看 90 秒演示",
+      "noCard": "无需信用卡",
+      "worksWith": "兼容 Zillow、Realtor、FUB、IDX",
+      "demoTime": "今天 0:00",
+      "demoLeadLabel": "来自 Zillow 的新客源：",
+      "demoLead": "Sarah M.，555-0147，关注 2418 Oakhurst Dr.",
+      "demoAgent1": "您好 Sarah，我是 Windermere 的 Mark——看到您咨询了 2418 Oakhurst。您是想这个周末看房，还是先了解一下？",
+      "demoBuyer": "可以的话这个周末，周六下午方便吗？",
+      "demoAgent2": "好的——我周六下午 1 点和 3 点半有空。我先帮您占个时间。顺便问一下：您已经在联系贷款经纪了吗，还是需要我介绍一位？",
+      "tourRequested": "已申请看房",
+      "confirm": "确认",
+      "reschedule": "改期",
+      "leadScore": "客源评分",
+      "weekendReady": "周末可看房",
+      "zillowOrigin": "来自 Zillow",
+      "prequalAsked": "已问过贷款预批",
+      "quote": "试用期里我成交了三单——换以前，这三个人第一周就没影了。",
+      "videoBefore": "看 CloseBoss 如何把一条冷冰冰的 Zillow 咨询，变成一次",
+      "videoEm": "周六看房。",
+      "playDemo": "播放演示视频",
+      "firstReply": "首次回复中位数",
+      "replyLift": "回复率提升",
+      "yourStack": "兼容您现有的工具",
+      "problemBefore": "您缺的",
+      "problemMid": "从来不是",
+      "problemEm": "流量。",
+      "problemP1": "我们接触的每一位经纪人，都试过同一套打法。加大 Zillow 投放。Facebook 获客。两个 IDX 网站。一个转化率 3% 的落地页。客源是进来了——然后呢？",
+      "problemP2": "问题不在于您的客源质量差。而是等您看到 Zillow 的提醒时，别人早就回复过他们了。他们周六上午填了四份表格，最后跟着第一个发短信的人去看房。",
+      "problemP3": "CloseBoss 帮您抢下这五分钟。每一条新咨询，都会在您喝完咖啡之前，用您的语气、从您的号码回复出去。有意向的交回给您，随便看看的留在滴灌里。您把一整天的精力，放在真正会成交的那三个人身上。",
+      "howBefore": "四个步骤，",
+      "howEm": "没有一步要您动手。",
+      "featuresBefore": "按经纪人",
+      "featuresEm": "真实的工作方式打造。",
+      "instantAi": "即时 AI",
+      "scoringThat": "会读懂内容的客源评分",
+      "pipelineBefore": "一条",
+      "pipelineEm": "不自欺的成交流程。",
+      "stackBefore": "兼容",
+      "stackEm": "您现在就在用的工具。",
+      "testimonialsBefore": "成交的经纪人",
+      "testimonialsEm": "真实的评价。",
+      "pricingBefore": "价格简单，",
+      "pricingEm": "不签合约。",
+      "faqBefore": "经纪人",
+      "faqEm": "真正会问的问题。",
+      "finalBefore": "从明天早上起，",
+      "finalEm": "别再丢客源。",
+      "seePricing": "查看价格",
+      "footerBlurb": "AI 驱动的客源跟进、评分和成交流程管理。为真正在成交的房产经纪人打造。",
+      "footerProduct": "产品",
+      "footerFreeTools": "免费工具",
+      "footerCompany": "公司",
+      "footerLegal": "法律",
+      "madeForAgents": "为在成交的经纪人打造",
+      "firstReplyHint": "30 天试用用户首次回复时间的中位数。",
+      "replyLiftHint": "与该经纪人此前 30 天的平均值相比。",
+      "demoSenderSub": "Lakewood 三室两卫",
+      "volume": "第 I 卷 · 为经纪人打造",
+      "established": "创立于 2024 年 · 西雅图",
+      "threadCaption": "真实对话记录 · 客户姓名已更换",
+      "smsSender": "Sarah M. · Zillow 客源 · 2 分钟前",
+      "smsSystemBody": "Sarah M. · 周六 13:00 · Oakhurst Dr.",
+      "smsScore": "热门 · 92/100",
+      "videoLabel": "已开字幕 · 静音",
+      "pricingSub": "免费版永不过期 · 付费套餐可随时取消",
+      "copyright": "© 2026 CloseBoss · 保留所有权利",
+      "pricingSeePlans": "查看全部套餐"
+    },
+    "entitlementUpgrade": {
+      "currentPlan": "当前方案：",
+      "close": "关闭",
+      "comparePlans": "对比方案",
+      "upgradeNow": "立即升级"
+    },
+    "error": {
+      "somethingWentWrongLoading": "页面加载出错。请重试，或退出后重新登录。",
+      "aClientErrorOccurred": "浏览器端出错了。请重试，或用无痕窗口打开本站。"
+    },
+    "growthCapture": {
+      "thanks": "谢谢——我们会联系您安排下一步。",
+      "email": "邮箱",
+      "continueCta": "继续",
+      "tellMore": "再补充一点信息",
+      "cityZip": "城市或邮编（选填）",
+      "phone": "电话（选填）",
+      "name": "姓名（选填）"
+    },
+    "homeValueWidget": {
+      "h1": "我的房子值多少钱？",
+      "sub": "立刻获取房屋估价，并由本地经纪人跟进，送上一份定制报告。",
+      "addressPlaceholder": "输入房产地址",
+      "estimatedValue": "预估房屋价值",
+      "estimatedRange": "估值区间：",
+      "unlockNote": "留下邮箱即可解锁完整的房屋估价报告，并由本地专业人士跟进。",
+      "nameOptional": "姓名（选填）",
+      "phoneOptional": "电话（选填）",
+      "thankYou": "谢谢！您的房屋估价报告请求已发送。经纪人会带着一份详细的 CMA 与您联系。",
+      "poweredBy": "由 CloseBoss 提供支持",
+      "getMyEstimate": "获取我的估值",
+      "unlockFullReport": "解锁完整报告"
+    },
+    "houseSearch": {
+      "whatLookingFor": "您的买家在找什么样的房子？",
+      "savedAs": "已保存为",
+      "detach": "取消关联",
+      "refine": "细化搜索条件",
+      "noMatches": "没有匹配的真实房源。可以试着放宽条件。",
+      "close": "关闭",
+      "open": "打开",
+      "cancel": "取消",
+      "searchingWeb": "正在全网搜索匹配房源…最多可能需要一分钟。",
+      "quickLineToBuyer": "给买家写一句话…",
+      "unlimitedSearches": "搜索不限次数",
+      "saveSearch": "保存搜索",
+      "sendEmail": "发送邮件",
+      "viewListing": "查看房源 ↗",
+      "emailToBuyer": "✉ 发邮件给买家",
+      "selectedCount_one": "已选 {{count}} 项",
+      "selectedCount_other": "已选 {{count}} 项",
+      "runCount_one": "运行 {{count}} 次",
+      "runCount_other": "运行 {{count}} 次",
+      "emailListingsToBuyer_one": "把 {{count}} 套房源发邮件给买家",
+      "emailListingsToBuyer_other": "把 {{count}} 套房源发邮件给买家",
+      "listingsSuffix_one": "{{count}} 套房源",
+      "listingsSuffix_other": "{{count}} 套房源",
+      "quotaResets": "每日房源搜索额度——{{date}} 重置"
+    },
+    "idxCapture": {
+      "close": "关闭",
+      "allSet": "都办好了。",
+      "agentWillReach": "当地经纪人稍后会联系您。我们也会通过邮件发送更新。",
+      "keepBrowsing": "继续浏览",
+      "email": "邮箱",
+      "name": "姓名（选填）",
+      "consent": "我同意 CloseBoss 及其经纪人通过上方号码，就本套房源及类似房源向我发送自动短信。可能产生短信和流量费用；发送频率不定。同意与否不影响购买。回复 STOP 退订，回复 HELP 获取帮助。",
+      "privacyNote": "我们尊重您的隐私。不发垃圾信息——只发符合您需求的房源。",
+      "action": {
+        "favorite": {
+          "title": "收藏这套房源",
+          "subtitle": "价格变动或进入待售状态时，第一时间通知你。",
+          "cta": "收藏房源"
+        },
+        "save_search": {
+          "title": "保存此搜索",
+          "subtitle": "有新房源符合你的筛选条件时，我们会发邮件通知你。",
+          "cta": "保存搜索"
+        },
+        "schedule_tour": {
+          "title": "预约看房",
+          "subtitle": "我们会为你对接当地经纪人，安排看房时间。",
+          "cta": "申请看房"
+        },
+        "contact_agent": {
+          "title": "联系当地经纪人",
+          "subtitle": "快速了解这套房源和周边社区的情况。",
+          "cta": "联系经纪人"
+        },
+        "view_threshold": {
+          "title": "保存搜索以继续浏览",
+          "subtitle": "免费即时访问——有新房源上市符合条件时，我们会发邮件给你。",
+          "cta": "继续浏览"
+        }
+      },
+      "phoneRequired": "电话（必填）",
+      "phoneOptional": "电话（选填，用于接收短信更新）"
+    },
+    "index": {
+      "wishingYouABright": "祝您冬日温暖明亮",
+      "hopeAutumnTreatsYou": "愿这个秋天待您不薄",
+      "aLittleSunshineFor": "送您今天一点阳光",
+      "yourAgent": "您的经纪人"
+    },
+    "labels": {
+      "call": "电话",
+      "sms": "短信",
+      "emailChannel": "邮件",
+      "emailAddress": "邮箱",
+      "send": "发送",
+      "close": "关闭",
+      "status": "状态",
+      "submitted": "提交时间",
+      "accepted": "接受时间",
+      "financing": "贷款方式",
+      "notes": "备注",
+      "appraisal": "评估",
+      "loan": "贷款",
+      "breadcrumb": "面包屑导航",
+      "calls": "通话",
+      "missed": "未接",
+      "all": "全部",
+      "off": "已关闭",
+      "decrement": "减少",
+      "increment": "增加",
+      "location": "位置",
+      "price": "价格",
+      "insurance": "保险",
+      "hoa": "业主协会费（HOA）",
+      "melloRoos": "特别税（Mello-Roos）",
+      "neighborhood": "周边社区",
+      "schools": "学校",
+      "language": "语言"
+    },
+    "leadCapture": {
+      "close": "关闭",
+      "enterEmail": "填写邮箱即可解锁完整报告。",
+      "email": "邮箱",
+      "enterName": "填写姓名，让报告更贴合您。",
+      "name": "姓名",
+      "viewReport": "查看报告",
+      "smsOptional": "通过短信接收即时更新（选填，但建议开启）。",
+      "talkToAgent": "联系经纪人",
+      "skip": "暂时跳过",
+      "allSet": "都设置好了。",
+      "unlocked": "您的完整报告已解锁，随时可以在下方查看。",
+      "viewYourReport": "查看您的报告",
+      "noSpam": "我们会保存每一步的进度，不会发送垃圾信息。"
+    },
+    "localSeoForm": {
+      "intro": "快速获取估值和为您量身定制的下一步建议。",
+      "address": "房屋地址",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话（选填）",
+      "submitted": "已提交！我们会尽快与您联系。"
+    },
+    "localSeoLead": {
+      "getMyFreeReport": "领取我的免费报告"
+    },
+    "misc": {
+      "close": "关闭",
+      "createAgentAccount": "创建您的经纪人账号",
+      "privacyPolicy": "隐私政策",
+      "terms": "服务条款",
+      "sendEmail": "发送邮件",
+      "subject": "主题",
+      "sendSms": "发送短信",
+      "twilioNote": "使用您的 Twilio 号码；配置完成后会同步送达状态。",
+      "hideTranslation": "隐藏翻译",
+      "retry": "重试",
+      "hideBossGuide": "隐藏 Boss 设置指引",
+      "send": "发送",
+      "likelyBuyers": "今天可能出手的买家",
+      "likelySellers": "今天可能卖房的业主",
+      "draftMessage": "拟写消息",
+      "signIn": "登录",
+      "signUp": "注册",
+      "actionPlanAria": "今日行动计划",
+      "actionPlan": "今日行动计划",
+      "pipelineAria": "成交流程",
+      "pipeline": "您的成交流程",
+      "somethingWrong": "出了点问题",
+      "tryAgain": "重试",
+      "poweredByGoogle": "由 Google 提供支持",
+      "client": "客户",
+      "change": "更换",
+      "recentWithBuyer": "最近与这位买家看过的",
+      "creditsTip": "额度——点击可充值",
+      "vsPrevPeriod": "较上一周期",
+      "comparePlans": "对比方案",
+      "chooseAvatar": "选择一个头像",
+      "unexpectedError": "发生了未预期的错误。",
+      "logoAlt": "CloseBoss AI 标志"
+    },
+    "notifications": {
+      "missedCall": "未接来电：",
+      "appointments": "预约",
+      "tasks": "待办",
+      "nearbyActivity": "自动发给客源的周边房源动态（邮件／短信）。",
+      "lead": "线索"
+    },
+    "onboardingFunnel": {
+      "fullName": "姓名",
+      "namePlaceholder": "张伟",
+      "workEmail": "工作邮箱",
+      "quickSetup": "快速设置",
+      "primaryCity": "主要城市／深耕区域",
+      "cityPlaceholder": "例如：Austin, TX",
+      "pipelineFocus": "业务重点",
+      "dealSize": "常见成交金额",
+      "simulation": "系统实时模拟",
+      "newLeads": "新客源",
+      "leadsWaiting": "客源正在等您跟进",
+      "unlocked": "您在本次预览中解锁的功能",
+      "chooseScale": "选择您的扩张方式",
+      "finishSetup": "在正式应用中完成设置",
+      "previewBanner": "预览体验——升级前不会收费。",
+      "pricing": "价格方案",
+      "heroTitle": "距离您的第一批优质客源，只差几分钟",
+      "heroSub": "无需信用卡。我们会根据您的情况生成演示客户流，并展示接近真实的对话。",
+      "logIn": "登录",
+      "tuneDemo": "我们会按您所在市场和价格区间调整演示内容。",
+      "back": "返回",
+      "tapToRespond": "点一条回复试试——回得快才抢得到房源委托。",
+      "draftOnPro": "AI 代写跟进是 Pro 版功能——升级后即可使用。",
+      "provedSpeed": "您刚刚验证了响应速度的价值。Premium 版包含完整 CRM、AI 跟进和不限量的客源分配，您外出带看时也不会漏掉任何一条。",
+      "inboxPreview": "收件箱 + 会话视图（您日常使用的界面）",
+      "openPricing": "查看完整价格页",
+      "trialNote": "免费开始——免费版永不过期，付费套餐可随时取消。",
+      "monthly": "按月",
+      "annual": "按年",
+      "save17": "省 17%",
+      "createProfile": "创建您的经纪人资料（手机号 + 密码），然后开始试用或直接升级。您在预览中的设置不会丢失——邮箱已带入注册流程。",
+      "createAccount": "创建经纪人账号",
+      "viewPlans": "查看全部方案与价格",
+      "alreadyRegistered": "已经注册过？登录",
+      "restart": "重新开始预览（会清除已保存的进度）",
+      "stepOfEight": "第 {{step}} 步，共 8 步",
+      "alreadyHaveAccount": "已经有账号了？",
+      "scoreN": "评分 {{score}}",
+      "profilesMatched": "与 {{city}} 匹配的真实客户画像",
+      "teamPrice": "团队版——每个团队 {{price}}",
+      "continue": "继续 →",
+      "activatePipeline": "启动我的客户漏斗 →",
+      "turningOn": "正在启动您的 AI 客户台…",
+      "openInbox": "打开我的收件箱 →",
+      "handshake": "正在与 CloseBoss 路由建立安全连接…",
+      "writeFastReply": "快速回复一句…（演示）",
+      "sendReply": "发送回复 →",
+      "comparePlans": "对比套餐并解锁 →",
+      "teamHeading": "需要多个席位？",
+      "contactSales": "联系销售 →",
+      "readyCreateAccount": "我准备好了——创建我的经纪人账户 →",
+      "loadingConversation": "正在加载对话…",
+      "simulatedLeadStream": "模拟的「新线索入口」实时流",
+      "moreQueued": "你的区域里还有 2 段对话在排队",
+      "waitingCount_one": "{{count}} 条待处理",
+      "waitingCount_other": "{{count}} 条待处理",
+      "noCardCancel": "无需信用卡 · 可随时取消",
+      "teamSeats": "最多 5 个席位 · 轮流分配客源 · 每位成员都享 Top Producer Track。",
+      "incoming": "来电 ·",
+      "firstResponseWins": "⏱ 先回复者胜出 · 已等待 {{minutes}} 分钟",
+      "availableLanguages": "支持英文与中文界面。",
+      "forever": "永久免费",
+      "perMo": "/月",
+      "billedMonthly": "按月计费",
+      "billedYearly": "${{annual}} 按年计费 · 节省 ${{save}}",
+      "badgePopular": "最受欢迎",
+      "badgeSignature": "双语 · 尊享",
+      "creditsPerMo": "每月 {{credits}} 额度",
+      "approxCallMinutes": "≈ {{minutes}} 分钟 AI 通话",
+      "approxVideos": "≈ {{videos}} 条 AI 视频",
+      "plan": {
+        "starter": {
+          "tagline": "适合刚开始试用平台的经纪人。",
+          "leads": "5 条线索 · 50 位联系人",
+          "cma": "每日 2 份 CMA 报告",
+          "sms": "AI 短信 + 邮件（基础版）",
+          "actions": "每月 100 次 AI 操作",
+          "noSms": "不含短信自动化",
+          "limitedAi": "AI 功能受限"
+        },
+        "pro": {
+          "tagline": "适合持续成交的活跃经纪人。",
+          "leads": "500 条线索 · 500 位联系人",
+          "bilingual": "中英双语 AI",
+          "coaching": "Producer Track 教练课程",
+          "cma": "每日 5 份 CMA 报告",
+          "sms": "短信 + 邮件 AI（60 秒内响应）",
+          "bookkeeping": "记账 — 发票与支出",
+          "actions": "每月 5,000 次 AI 操作"
+        },
+        "premium": {
+          "tagline": "适合单打独斗的顶尖经纪人。",
+          "leads": "线索与联系人不限量",
+          "receptionist": "AI 前台接待 + AI 专属助理",
+          "coaching": "Top Producer Track 教练课程",
+          "isa": "ISA 内勤销售流程",
+          "esign": "电子签名（Dotloop / DocuSign）",
+          "actions": "AI 操作不限量"
+        },
+        "signature": {
+          "tagline": "适合服务高净值客户、以关系取胜的经纪人。",
+          "everything": "涵盖 Premium 全部内容，另加：",
+          "sphere": "人脉智能 Pro",
+          "onboarding": "专属上线服务",
+          "concierge": "专属客服支持",
+          "calendar": "文化节庆日历自动化",
+          "voice": "定制语音调校"
+        }
+      },
+      "startFreeTrial": "开始免费试用",
+      "freeTrialNote": "真实工作台，无需信用卡",
+      "upgrade": "升级",
+      "focus": {
+        "buyers": {
+          "label": "以买方为主",
+          "hint": "看房预约与贷款预批"
+        },
+        "sellers": {
+          "label": "以卖方为主",
+          "hint": "房源挂牌与 CMA 沟通"
+        },
+        "both": {
+          "label": "买卖各半",
+          "hint": "混合型客户管道"
+        }
+      }
+    },
+    "oneWord": {
+      "admin": "管理员",
+      "reply": "回复",
+      "english": "英语",
+      "provider": "服务商",
+      "worked": "满意之处：",
+      "concerns": "顾虑：",
+      "action": "行动：",
+      "bookkeeper": "记账助理"
+    },
+    "openHouseSignup": {
+      "leaveInfo": "留下您的联系方式，我们会把开放日的最新情况发给您。",
+      "property": "房产：",
+      "fullName": "您的全名",
+      "notesOptional": "备注（选填）",
+      "notesPlaceholder": "有什么想让经纪人知道的吗？",
+      "interestedIn": "我感兴趣的是：",
+      "moreInfo": "这处房产的更多信息",
+      "similarProps": "市面上的同类房源",
+      "valuation": "为我自己的房子做一次估价",
+      "loadingProperty": "正在加载房产信息…",
+      "submit": "提交",
+      "heading": "登记以接收开放日通知",
+      "demoNote": "示例地址——请扫描房源现场的二维码，登记该套房源。"
+    },
+    "paywall": {
+      "youVeReachedYour": "已达免费额度上限，升级后可继续使用。",
+      "startFreeTrial": "开始免费试用"
+    },
+    "paywallModal": {
+      "closeDialog": "关闭对话框",
+      "title": "升级后继续",
+      "close": "关闭",
+      "sub": "解锁 CRM、提醒、仪表盘洞察，以及更高的用量额度。"
+    },
+    "postcardAnimations": {
+      "happyBirthday": "生日快乐，",
+      "anotherYear": "又在这个家住满一年了，",
+      "thinkingOfYou": "想起你了，",
+      "anniversaryCongrats": "恭喜迎来这个纪念日 🎊",
+      "agentAlt": "经纪人"
+    },
+    "postcardScene": {
+      "yourAgent": "您的经纪人"
+    },
+    "presentationView": {
+      "title": "卖方房源提案",
+      "propertyDetails": "房屋详情",
+      "pricingStrategy": "定价策略",
+      "marketInsights": "市场洞察",
+      "marketingPlan": "营销方案",
+      "neighborhood": "周边社区",
+      "schools": "学校",
+      "school": "学校",
+      "level": "学段",
+      "rating": "评分",
+      "distance": "距离",
+      "noComps": "暂无可比成交数据。",
+      "address": "地址",
+      "sqft": "面积（平方英尺）",
+      "sold": "成交日",
+      "price": "价格",
+      "sources": "数据来源"
+    },
+    "pricing": {
+      "theMath": "算一笔账",
+      "humanVsAi": "真人团队 vs 您的 AI 团队",
+      "hiringAddsUp": "哪怕只招半个团队，成本也会迅速累加——而且您还得管理他们。您的 AI 团队做同样的活，花的只是一个软件的钱。",
+      "humanPerYear": "真人团队——每年",
+      "plusBenefits": "还要加上福利、培训和人员流动——而且全都得您来管。",
+      "yourAiTeam": "您的 AI 团队——CloseBoss",
+      "virtuallyFree": "整个团队的成本，跟雇一个真人比几乎可以忽略不计。",
+      "start7DayFree": "开始 7 天免费试用",
+      "starting": "启动中…"
+    },
+    "progressiveLeadCapture": {
+      "savePhone": "保存电话"
+    },
+    "serviceAreas": {
+      "state": "州",
+      "county": "县",
+      "allCities": "本县所有城市我都服务",
+      "city": "城市",
+      "add": "添加服务区域",
+      "hint": "先选州，再选县，然后填一个城市名，或勾选“所有城市”覆盖整个县。",
+      "selectState": "选择州…"
+    },
+    "serviceAreasPicker": {
+      "pickAStateFirst": "请先选择州",
+      "selectCounty": "选择县…",
+      "pickACountyFirst": "请先选择一个县",
+      "cityPlaceholder": "例如：Alhambra",
+      "removeAria": "移除 {{area}}"
+    },
+    "shareReport": {
+      "share": "分享",
+      "downloadPdf": "下载 PDF",
+      "contact": "联系",
+      "emailEllipsis": "邮件…",
+      "textEllipsis": "短信…",
+      "emailALink": "用邮件发送链接",
+      "textALink": "用短信发送链接",
+      "enterManually": "手动输入…",
+      "loadingContacts": "正在加载联系人…",
+      "openMessagingApp": "打开短信应用",
+      "openEmailApp": "打开邮件应用",
+      "phonePlaceholder": "电话号码",
+      "emailPlaceholder": "邮箱地址"
+    },
+    "signupPage": {
+      "prefilled": "您已登录——这张表单已按您的账户信息填好。下面有需要改的地方改完保存即可（不需要重新设置密码）。",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "passwordMismatch": "两次输入的密码不一致。",
+      "nameRequired": "请填写姓名。",
+      "emailRequired": "请填写邮箱。",
+      "phoneInvalid": "如填写电话，请填写有效的美国号码（10 位）。",
+      "smsConsentRequired": "如需接收短信，请勾选同意接收短信的选项；否则请留空电话栏。",
+      "sessionExpired": "登录状态已过期，请重新登录。",
+      "couldNotSaveProfile": "资料保存失败。",
+      "passwordRequirements": "请设置一个满足下方全部要求的密码。",
+      "acceptTerms": "请先同意服务条款和隐私政策。",
+      "confirmEmailThenLogIn": "请查收邮件确认您的账户，然后回来登录。",
+      "emailSendFailed": "确认邮件没能发出去，请过几分钟再试。",
+      "signupFailed": "注册失败。",
+      "signInFailed": "登录失败。",
+      "emailTiedToAccount": "邮箱与您已登录的账户绑定",
+      "saving": "保存中…",
+      "creatingAccount": "正在创建账户…",
+      "saveProfile": "保存资料",
+      "signUp": "注册",
+      "iAgree": "我同意",
+      "continueGoogle": "使用 Google 继续",
+      "continueApple": "使用 Apple 继续",
+      "goToDashboard": "进入工作台",
+      "startAgentSetup": "开始经纪人设置",
+      "alreadyHaveAccount": "已经有账号了？",
+      "logIn": "登录",
+      "alreadyRegistered": "这个邮箱已经注册过账户了。",
+      "logInInstead": "直接登录"
+    },
+    "subscribe": {
+      "subscribe": "订阅",
+      "checkYourEmailTo": "请查收邮件确认订阅。",
+      "weLlSendYour": "我们会按您选择的地区，每周发送利率与房产简报。在此期间，可以先浏览下方的最新几期。"
+    },
+    "subscribeForm": {
+      "email": "邮箱",
+      "region": "地区",
+      "states": "各州",
+      "topMetros": "主要都市区",
+      "freeBriefing": "每周免费简报。不发垃圾邮件——随时可以退订。"
+    },
+    "supportChat": {
+      "support": "客服",
+      "closeChat": "关闭客服对话",
+      "openChat": "打开客服对话",
+      "title": "客户支持",
+      "yourName": "您的姓名",
+      "yourEmail": "您的邮箱",
+      "subject": "主题（选填）",
+      "describeIssue": "请在下方描述您的问题或需求。",
+      "refreshing": "刷新中…",
+      "writeMessage": "写下您的消息…",
+      "describeIssuePlaceholder": "描述您的问题以开始对话…"
+    },
+    "topbar": {
+      "upgrade": "升级"
+    },
+    "tour": {
+      "next": "下一步",
+      "back": "上一步",
+      "skip": "跳过",
+      "done": "完成",
+      "close": "关闭导览",
+      "progress": "第 {{current}} / {{total}} 步",
+      "steps": {
+        "askMax": {
+          "title": "从 Max 开始",
+          "body": "用日常语言告诉 Max 你想做什么——“给我的高意向客户发条短信”“安排我今天的日程”——你的 AI 团队会去执行。"
+        },
+        "conversations": {
+          "title": "所有对话，集中一处",
+          "body": "同一位联系人的通话、短信和邮件都在一条会话里，无论是你还是 AI 团队发出的。"
+        },
+        "leads": {
+          "title": "你的客户名册",
+          "body": "你认识的所有人。随着对方来电、回复、打开你发的内容，评级会自动更新。"
+        },
+        "tasks": {
+          "title": "等你处理的事",
+          "body": "AI 团队发出前需要你批准的内容都在这里——最终由你拍板。"
+        },
+        "aiTeam": {
+          "title": "你的 AI 团队",
+          "body": "五位助理——前台、销售、营销、交易、会计。每位都有自己的设置和工作记录，都在这里管理。"
+        },
+        "quickActions": {
+          "title": "快速开始",
+          "body": "无需离开当前页面，就能添加联系人、撰写帖子或发送消息。"
+        },
+        "account": {
+          "title": "你和你的账户",
+          "body": "个人资料、设置、账单和帮助指南都在你的名字下面——想再看一次导览，也从这里进入。"
+        }
+      }
+    },
+    "voiceAiDemoRequest": {
+      "weLlHaveThe": "AI 稍后就会给您来电。接起来听听它是怎么甄别房产客源的。",
+      "ourTeamWillReach": "我们会在一个工作日内联系您，安排一对一演示。",
+      "haveTheAiCall": "让 AI 打给我",
+      "requestAPrivateDemo": "预约一对一演示"
+    },
+    "voiceDemo": {
+      "onTheList": "已经把您加入名单。",
+      "callYou": "也可以让它打给您。",
+      "callYouSub": "我们会在几分钟内拨给您，让您以接听方的身份听听 AI——和您的客户听到的完全一样。",
+      "yourName": "您的姓名",
+      "namePlaceholder": "张伟",
+      "brokerage": "所属经纪公司",
+      "brokeragePlaceholder": "示例地产公司",
+      "phone": "电话",
+      "email": "邮箱",
+      "whatYouWant": "您想要什么",
+      "consent": "我同意 CloseBoss 通过我提供的号码向我拨打电话和发送短信（包括使用自动系统），用于演示语音 AI。同意与否不影响任何购买。回复 STOP 即可退订。"
+    },
+    "warehouseMetrics": {
+      "zhvi": {
+        "label": "典型房屋价值（ZHVI）",
+        "short": "房屋价值"
+      },
+      "median_sale_price": {
+        "label": "成交价中位数",
+        "short": "成交价"
+      },
+      "inventory": {
+        "label": "在售房源数",
+        "short": "库存"
+      },
+      "median_dom": {
+        "label": "在售天数中位数",
+        "short": "在售天数"
+      },
+      "months_supply": {
+        "label": "库存消化月数",
+        "short": "消化月数"
+      },
+      "homes_sold": {
+        "label": "成交套数",
+        "short": "成交套数"
+      },
+      "sale_to_list": {
+        "label": "成交价与挂牌价之比",
+        "short": "成交/挂牌"
+      },
+      "new_home_inventory": {
+        "label": "新房库存",
+        "short": "新房库存"
+      },
+      "mortgage_30yr": {
+        "label": "30 年固定房贷利率",
+        "short": "30 年利率"
+      },
+      "mortgage_15yr": {
+        "label": "15 年固定房贷利率",
+        "short": "15 年利率"
+      },
+      "treasury_10yr": {
+        "label": "10 年期美债收益率",
+        "short": "10 年美债"
+      },
+      "dayOne": "天",
+      "dayOther": "天"
+    }
+  }
+}
