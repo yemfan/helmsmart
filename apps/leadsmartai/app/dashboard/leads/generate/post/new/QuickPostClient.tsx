@@ -363,6 +363,9 @@ export default function QuickPostClient() {
     if (t && (TRIGGER_IDS as Set<string>).has(t)) {
       setTrigger(t as Trigger);
     }
+    // The brokerage library's "Use in a post" hands the approved wording over as the brief.
+    const b = (searchParams?.get("brief") ?? "").trim();
+    if (b) setBrief(b.slice(0, 1500));
     setHydratedFromQuery(true);
   }, [searchParams, hydratedFromQuery]);
 

@@ -9,6 +9,8 @@ import { loadTeamBrand } from "@/lib/teams/brand.server";
 import { canManageTeam } from "@/lib/teams/roles";
 import { loadMemberDirectory, type MemberDirectory } from "@/lib/teams/directory.server";
 import type { TeamBrand } from "@/lib/teams/brand";
+import { listLibrary } from "@/lib/teams/library.server";
+import type { LibraryItem } from "@/lib/teams/library";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -41,6 +43,7 @@ export default async function TeamPage() {
   let roster: TeamRoster | null = null;
   let isOwner = false;
   let canManage = false;
+  let library: LibraryItem[] = [];
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
@@ -52,17 +55,19 @@ export default async function TeamPage() {
     const r = await getRoster(team.id);
     const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
     canManage = canManageTeam(myRole);
-    const [seat, dir, b, br] = await Promise.all([
+    const [seat, dir, b, br, lib] = await Promise.all([
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
       canManage ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
+      listLibrary(team.id),
     ]);
     directory = dir;
     roster = r;
     seatUsage = { used: seat.used, cap: seat.cap, full: seat.full };
     board = b;
     brand = br;
+    library = lib;
   }
 
   return (
@@ -75,6 +80,7 @@ export default async function TeamPage() {
       seatUsage={seatUsage}
       board={board}
       brand={brand}
+      library={library}
       directory={directory}
     />
   );

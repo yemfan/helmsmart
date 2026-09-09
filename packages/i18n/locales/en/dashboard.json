@@ -8338,6 +8338,56 @@
       "open": "Open",
       "note": "Automated wording checks over the newest 5,000 posts in the window; a person decides what each one means. The fair-housing list follows HUD advertising guidance; state law may add more."
     },
+    "teamLibrary": {
+      "title": "Brokerage library",
+      "subtitle": "Approved wording, shared media and links from the brokerage. Copy it, or open the composer with it — you post from your own account as always.",
+      "subtitleManager": "Approved wording, shared media and links every agent can post from. Add a listing-ad template, the disclosure line, the logo, a brand video, a market report.",
+      "openForm": "Add an item",
+      "closeForm": "Close",
+      "kindLabel": "Kind",
+      "kind": {
+        "caption": "Wording",
+        "media": "Media",
+        "link": "Link"
+      },
+      "all": "All",
+      "titleLabel": "Title",
+      "titlePlaceholder": {
+        "caption": "e.g. Just-listed post, Open-house post, Required disclosure",
+        "media": "e.g. Brokerage logo, Brand video, Fall flyer",
+        "link": "e.g. Brokerage website, Q3 market report"
+      },
+      "bodyLabel": "Wording",
+      "bodyLabelOptional": "Wording to post with it (optional)",
+      "bodyPlaceholder": "The text an agent can post as-is or edit. Put [address] or [price] where they fill in the blanks.",
+      "mediaUrlLabel": "Image or video URL",
+      "mediaUrlHint": "A direct link to a PNG, JPG, MP4 or similar. Files in a shared drive need a public link.",
+      "linkUrlLabel": "URL",
+      "add": "Add to library",
+      "adding": "Adding…",
+      "added": "Added!",
+      "error": {
+        "kind_required": "Choose a kind.",
+        "title_required": "Give it a title.",
+        "title_too_long": "That title is too long.",
+        "body_required": "Add the wording.",
+        "body_too_long": "That is longer than any network allows (2,200 characters).",
+        "mediaUrl_required": "Add the URL.",
+        "mediaUrl_bad_url": "That does not look like a web address.",
+        "failed": "We could not save that right now."
+      },
+      "copy": "Copy wording",
+      "copied": "Copied!",
+      "useInPost": "Use in a post",
+      "openMedia": "Open file",
+      "openLink": "Open link",
+      "remove": "Remove",
+      "removing": "Removing…",
+      "addedBy": "{{name}} · {{date}}",
+      "empty": "The brokerage has not added anything yet.",
+      "emptyManager": "Nothing here yet. Add the wording and files agents ask you for most.",
+      "note": "Every agent posts from their own accounts on their own plan. The library shares words and files, not billing."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",
