@@ -8238,6 +8238,12 @@
         "failing": "发帖失败",
         "silent": "已连接但无动静"
       },
+      "nudge": "给这 {{count}} 位经纪人发邮件",
+      "nudging": "发送中…",
+      "nudged": "已发送给 {{count}} 位",
+      "nudgeSkipped": "{{count}} 位本周已发过",
+      "nudgeNoEmail": "{{count}} 位没有邮箱",
+      "nudgeFailed": "{{count}} 位发送失败",
       "showAll": "显示全部",
       "allGood": "每位经纪人都已设置完成并在发帖。",
       "noneMatch": "目前没有符合条件的经纪人。",

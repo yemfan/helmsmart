@@ -8238,6 +8238,12 @@
         "failing": "Posts failing",
         "silent": "Connected but quiet"
       },
+      "nudge": "Email these {{count}} agents",
+      "nudging": "Emailing…",
+      "nudged": "Sent to {{count}}",
+      "nudgeSkipped": "{{count}} already emailed this week",
+      "nudgeNoEmail": "{{count}} without an email address",
+      "nudgeFailed": "{{count}} could not be sent",
       "showAll": "Show everyone",
       "allGood": "Every agent is set up and posting.",
       "noneMatch": "No one matches that right now.",
