@@ -126,12 +126,50 @@ are the admin back office, the client portal, public SEO articles (the whole
 cap-rate cluster) and a blog post. Every signed-in agent downloads all of it,
 and so does every visitor to the pricing page.
 
-The fix is two halves that only pay off together: load just the namespaces a
-route needs, and move the public-route strings out of the `dashboard`
-namespace. That is a refactor of the translation layer with real regression
-risk — raw keys reaching users, which has already happened twice here (the
-`getServerT` plural keys, the palette keys dropped in a rewrite) — so it
-wants an explicit decision rather than a drive-by.
+The fix is two halves that only pay off together: move the public-route
+strings out of the `dashboard` namespace, then load just the namespaces a
+route needs. **The first half shipped (#1680)** — `dashboard` is down from
+607 KB to 364 KB and a `web_pages` namespace holds the 93 lifted subtrees.
+Nothing downloads less yet; the bundle still ships every namespace.
+
+#### What the second half needs (measured, not started)
+
+Splitting the bundle by route group requires every module a route renders to
+resolve only that group's namespaces. Three things stand in the way, all
+counted on the code as it stands after #1680:
+
+| Blocker | Size |
+|---|---|
+| 11 `pages.*` subtrees plus the top-level `disclaimers` are chrome BOTH worlds render (`dashFragments` is 12 KB of the 19 KB) | 19 KB |
+| **32 shared modules bind a dashboard-group namespace and are imported directly by public routes** — including `components/cookie-consent/CookieConsent.tsx`, which the root layout renders on every page | — |
+| App routes themselves bind 7 `web_*` namespaces (`web_contacts`, `web_posts`, `web_quick_post`, …), so the app group is not just the four obvious ones | — |
+
+The shared chrome is easy: carry it in both namespaces, with a test asserting
+the copies stay byte-identical — once the groups exist a route never downloads
+both, so it is the arrangement `common` already has. The 32 modules are the
+real work, and the transitive importers are not counted above.
+
+Doing only the first two steps makes things **worse**, not better: duplicating
+the chrome adds 19 KB to the single bundle everyone downloads and buys nothing
+until the split actually lands. So it is all-or-nothing, and it wants an
+explicit decision rather than a drive-by — the failure mode is raw keys
+reaching users, which has now happened three more ways (see below).
+
+#### Three ways a namespace move renders raw keys
+
+All three were hit doing #1680, and two got past the test suite:
+
+- A rewrite matching `t(` misses `tr(`.
+- Keys held in constant arrays and passed as variables are invisible to a
+  literal-key rewrite. This broke a blog post that renders correctly in
+  production; only loading the page showed it.
+- `useTranslation(["a", "b"])` does **not** fall through to the second
+  namespace — i18next treats the first as the default, and there is no
+  fallback without `fallbackNS`. `missingKeys.test.ts` assumed the opposite
+  in a comment, which is why a broken page passed its tests.
+
+Render the pages. `clientNamespace.test.ts` now also honours an explicit
+`{ ns: "..." }` and checks the key against that namespace.
 
 Smaller and still open: the client JS arrives in eight dependency rounds
 (~26 chunks), which is the bundler's chunk graph rather than app code; and
