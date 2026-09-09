@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
-import { delta, type PerformanceMetrics, type PerformanceRow, type TeamPerformance } from "@/lib/teams/performance";
+import { delta, METRIC_KEYS, type PerformanceMetrics, type PerformanceRow, type TeamPerformance } from "@/lib/teams/performance";
+import { downloadCsv, toCsv } from "@/lib/teams/csv";
 
 /**
  * Team performance on /dashboard/team: a window picker, four headline
@@ -81,6 +82,13 @@ export function TeamPerformancePanel({ teamId }: { teamId: string }) {
   const td = "px-3 py-2 text-right text-sm tabular-nums text-slate-800 dark:text-slate-200";
   const chip = (active: boolean) =>
     `inline-flex min-h-8 items-center rounded-full px-3 text-xs font-medium transition ${active ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900" : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`;
+
+  const exportCsv = () => {
+    if (!data) return;
+    const header = [k("agent"), "email", "role", k("rank", { rank: "" }).trim(), ...METRIC_KEYS.map((m) => k(`col.${m}`)), ...METRIC_KEYS.map((m) => `${k(`col.${m}`)} (${k("previous")})`)];
+    const body = data.rows.map((r) => [r.name ?? "", r.email ?? "", r.role, r.rank || "", ...METRIC_KEYS.map((m) => r[m]), ...METRIC_KEYS.map((m) => r.previous[m])]);
+    downloadCsv(`team-performance-${days}d.csv`, toCsv(header, body));
+  };
 
   const headline: { key: SortKey; money?: boolean }[] = [{ key: "newLeads" }, { key: "appointments" }, { key: "dealsClosed" }, { key: "closedVolume", money: true }];
 
@@ -177,7 +185,12 @@ export function TeamPerformancePanel({ teamId }: { teamId: string }) {
               </table>
             </div>
           )}
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{k("note")}</p>
+          <div className="mt-2 flex flex-wrap items-start justify-between gap-2">
+            <p className="text-xs text-slate-500 dark:text-slate-400">{k("note")}</p>
+            <button type="button" onClick={exportCsv} className="shrink-0 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300">
+              {k("exportCsv")}
+            </button>
+          </div>
         </>
       )}
     </section>

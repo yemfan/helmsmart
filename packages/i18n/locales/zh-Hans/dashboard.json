@@ -8206,6 +8206,8 @@
         "postsPublished": "帖子"
       },
       "rank": "按成交额排名第 {{rank}}",
+      "exportCsv": "导出 CSV",
+      "previous": "上一时段",
       "teamTotal": "团队合计",
       "empty": "还没有团队成员。",
       "loadFailed": "暂时无法加载业绩数据。请刷新重试。",
@@ -8251,11 +8253,34 @@
         "lastPost": "最近发帖",
         "attention": "关注"
       },
+      "exportCsv": "导出 CSV",
       "hubNotLive": "未上线",
       "assistantOn": "自动发帖",
       "assistantOff": "先询问",
       "failedCount": "{{count}} 条失败",
       "note": "帖子统计该时段内已发出的内容。排队指从今天起已排期的帖子。追踪指已上线主页上的 GA4 或 Meta Pixel。点击上方的原因可只查看相应经纪人。"
+    },
+    "teamRetention": {
+      "title": "留任信号",
+      "subtitle": "本季度与上季度对比：谁的活跃度在下滑，谁在上升。",
+      "stepIn": "需要介入（{{count}}）",
+      "wellDone": "值得表扬（{{count}}）",
+      "tooEarly": "历史数据还不够。信号需要一个季度的活跃度作为对比。",
+      "noneAtRisk": "本季度没有人下滑。",
+      "noneRising": "本季度暂时没有人特别突出。",
+      "risk": {
+        "gone_quiet": "已无动静",
+        "slipping": "活跃度减半",
+        "closings_down": "成交停止"
+      },
+      "rise": {
+        "rising": "活跃度上升",
+        "new_closer": "首次成交"
+      },
+      "activity": "活跃度",
+      "closings": "成交",
+      "volume": "成交额",
+      "note": "活跃度指 90 天内的新线索、消息、已接来电和预约，并与之前 90 天并列显示。收入通常滞后于工作一个季度，所以要关注的是工作本身。"
     },
     "teamBrand": {
       "title": "经纪公司品牌",
