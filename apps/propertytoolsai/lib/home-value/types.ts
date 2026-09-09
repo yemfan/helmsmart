@@ -96,7 +96,6 @@ export type EstimateResponse = {
   comps: EstimateComp[];
   recommendations?: {
     type?: string;
-    actions?: string[];
   };
   provider?: {
     source: string;
@@ -121,9 +120,13 @@ export type UnlockReportResponse = {
       compCount?: number;
       city?: string;
     };
+    /**
+     * `type` is the report's framing ("seller"). An `actions` string[] used to
+     * sit beside it: every producer set it to [], and once the report started
+     * rendering the real recommendation engine, nothing read it either.
+     */
     recommendations?: {
       type?: string;
-      actions?: string[];
     };
     pdfUrl?: string;
   };

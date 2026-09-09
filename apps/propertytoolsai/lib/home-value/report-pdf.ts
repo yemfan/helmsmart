@@ -16,7 +16,6 @@ type GeneratePdfInput = {
   medianPpsf?: number;
   localTrendPct?: number;
   compCount?: number;
-  actions?: string[];
   sessionId: string;
 };
 

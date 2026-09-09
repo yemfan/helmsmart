@@ -186,7 +186,7 @@ export function useHomeValueEstimate() {
               estimate: data.session.estimate,
               supportingData: { medianPpsf: 0 },
               comps: data.comps ?? [],
-              recommendations: { actions: [] },
+              recommendations: {},
             });
             setUiState("preview_ready");
           }
@@ -355,7 +355,7 @@ export function useHomeValueEstimate() {
           confidence: estimateResult?.estimate.confidence ?? "low",
           confidence_score: estimateResult?.estimate.confidenceScore ?? 0,
           median_ppsf: estimateResult?.supportingData.medianPpsf ?? 0,
-          recommendations: estimateResult?.recommendations ?? { actions: [] },
+          recommendations: estimateResult?.recommendations ?? {},
         }),
       });
 
@@ -401,7 +401,7 @@ export function useHomeValueEstimate() {
             estimate: data.session.estimate,
             supportingData: { medianPpsf: 0 },
             comps: data.comps ?? [],
-            recommendations: { actions: [] },
+            recommendations: {},
           });
           setUiState("preview_ready");
         }
