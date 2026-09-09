@@ -2,15 +2,18 @@
 
 import { useState, useEffect, type ReactNode } from "react";
 import { Building2, DollarSign, Mic, Cog, Megaphone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type TabKey = "general" | "financial" | "marketing" | "voice" | "operations";
 
-const TABS: { key: TabKey; label: string; icon: typeof Building2 }[] = [
-  { key: "general", label: "General", icon: Building2 },
-  { key: "financial", label: "Financial", icon: DollarSign },
-  { key: "marketing", label: "Marketing", icon: Megaphone },
-  { key: "voice", label: "Voice AI", icon: Mic },
-  { key: "operations", label: "Operations", icon: Cog },
+// Labels come from the `nav` bundle (`settingsTabs.<key>`), so the tab keys
+// stay the deep-link vocabulary (`?tab=marketing`) whatever the language.
+const TABS: { key: TabKey; icon: typeof Building2 }[] = [
+  { key: "general", icon: Building2 },
+  { key: "financial", icon: DollarSign },
+  { key: "marketing", icon: Megaphone },
+  { key: "voice", icon: Mic },
+  { key: "operations", icon: Cog },
 ];
 
 /**
@@ -31,6 +34,7 @@ export function SettingsTabs({
   operations: ReactNode;
 }) {
   const [tab, setTab] = useState<TabKey>("general");
+  const { t } = useTranslation("nav");
 
   // Deep-link from other pages: ?tab=marketing (e.g. the /social autopilot
   // Settings link) opens Marketing; #voice-agent / #operations still work.
@@ -51,7 +55,7 @@ export function SettingsTabs({
   return (
     <div>
       <div className="flex gap-1 border-b border-slate-200 mb-8 overflow-x-auto">
-        {TABS.map(({ key, label, icon: Icon }) => (
+        {TABS.map(({ key, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -62,7 +66,7 @@ export function SettingsTabs({
             }`}
           >
             <Icon className="w-4 h-4" />
-            {label}
+            {t(`settingsTabs.${key}`)}
           </button>
         ))}
       </div>

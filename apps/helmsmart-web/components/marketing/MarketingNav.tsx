@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { HelmLogo } from "@/components/logo";
+import { LanguageToggle } from "@/components/language-toggle";
 
 const navLinks = [
   { label: "Product", href: "/features" },
@@ -42,6 +43,7 @@ export function MarketingNav() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
+          <LanguageToggle />
           <Link
             href="/login"
             className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
@@ -82,6 +84,9 @@ export function MarketingNav() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-gray-100 pt-3">
+              <div className="px-3 py-1">
+                <LanguageToggle />
+              </div>
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}

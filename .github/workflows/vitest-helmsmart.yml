@@ -1,0 +1,66 @@
+# Vitest unit suite for the helmsmart-web app.
+#
+# Why this exists: `apps/helmsmart-web/vitest.config.ts` has included
+# `lib/**/*.test.ts` since the app was created, and nothing ever ran it — no
+# workflow called `pnpm --filter helmsmart test`, and `next build` compiles the
+# app without executing a single test file. The i18n guard tests added with the
+# three-language work (residual English, missing keys, locale-blind dates, …)
+# protect nothing unless something runs them on every PR. This closes that hole
+# the same way `vitest-leadsmartai.yml` closed it for CloseBoss.
+#
+# Triggers: EVERY pull request, deliberately unfiltered by path. Once this job is
+# a required status check on main, GitHub leaves a required check that never
+# fires stuck "Expected — Waiting for status" forever, which would block any PR
+# outside the filter. The suite runs in seconds, so the install is the only real
+# cost and pnpm/action-setup caches it. Don't add a `paths:` filter here
+# without first dropping it from the required-checks list.
+#
+# Concurrency: cancel superseded runs on the same ref.
+
+name: helmsmart · vitest
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: vitest-helmsmart-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vitest:
+    name: pnpm --filter helmsmart run test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install deps (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # The suite is pure — node environment, no setup file, no env reads.
+      - name: Run vitest
+        run: pnpm --filter helmsmart run test
+
+      # @leadsmart/i18n carries the translation core both apps run on
+      # (key resolution, plurals, the AI language directive). Its own package
+      # has no test runner; the CloseBoss suite exercises it through the
+      # app's shims, and this step keeps HelmSmart honest about the same
+      # package from its side.
+      - name: Typecheck @leadsmart/i18n
+        run: pnpm --filter @leadsmart/i18n run build

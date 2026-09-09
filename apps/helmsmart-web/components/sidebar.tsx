@@ -11,9 +11,11 @@ import {
   FileInput, GitBranch, MessageCircle,
 } from "lucide-react";
 import { Sidebar as HelmUiSidebar, type NavSection } from "@helm/ui";
+import { useTranslation } from "react-i18next";
 import { signOut } from "@/lib/actions/auth";
 import { ChangePasswordModal } from "@/components/change-password-modal";
 import { AvatarUploadModal } from "@/components/avatar-upload-modal";
+import { LanguageToggle } from "@/components/language-toggle";
 
 const ICON = 16;
 
@@ -92,13 +94,20 @@ interface Props {
 
 export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarUrl, productName = "HelmSmart", logoLetter = "H", terms = {} }: Props) {
   const pathname = usePathname();
+  const { t } = useTranslation("nav");
 
   // Longest-prefix match so e.g. /books/invoices keeps "Books" highlighted.
   const activeHref = ALL_HREFS
     .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
     .sort((a, b) => b.length - a.length)[0];
 
-  const relabel = (s: string) => terms[s] ?? s;
+  // Pack terms first ("Clients" → "Patients"), then the locale. The `nav`
+  // bundle is keyed by the English label that survives the relabel, so a
+  // label with no translation renders itself rather than a raw key.
+  const relabel = (s: string) => {
+    const term = terms[s] ?? s;
+    return t(term, { defaultValue: term });
+  };
   const sections: NavSection[] = navSections.map((section) => ({
     label: relabel(section.title),
     items: section.items.map((item) => ({
@@ -120,7 +129,7 @@ export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarU
       activeHref={activeHref}
       linkComponent={Link}
       notificationsSlot={notificationsSlot}
-      aiEmployee={{ name: "Mark, AI COO", status: "active" }}
+      aiEmployee={{ name: t("aiEmployee.coo"), status: "active" }}
       footer={userEmail ? <UserFooter userEmail={userEmail} avatarUrl={avatarUrl} /> : undefined}
     />
   );
@@ -131,6 +140,7 @@ function UserFooter({ userEmail, avatarUrl }: { userEmail: string; avatarUrl?: s
   const [pwOpen, setPwOpen] = useState(false);
   const [picOpen, setPicOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation("nav");
 
   // Close the menu on an outside click.
   useEffect(() => {
@@ -144,11 +154,16 @@ function UserFooter({ userEmail, avatarUrl }: { userEmail: string; avatarUrl?: s
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
+      {/* Language sits with the account: it is a per-person choice, and this
+          is the one piece of chrome every signed-in page shares. */}
+      <div style={{ display: "flex", justifyContent: "flex-start", padding: "0 4px 6px" }}>
+        <LanguageToggle tone="dark" />
+      </div>
       {/* The avatar chip — click it to open the account menu. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Account menu"
+        aria-label={t("account.menu")}
         style={{
           display: "flex", alignItems: "center", gap: 8, width: "100%",
           background: "transparent", border: "none", cursor: "pointer",
@@ -190,7 +205,7 @@ function UserFooter({ userEmail, avatarUrl }: { userEmail: string; avatarUrl?: s
       {open && (
         <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl border border-slate-200 shadow-xl py-1 z-50 overflow-hidden">
           <div className="px-3 py-2 border-b border-slate-100">
-            <p className="text-[11px] text-slate-400">Signed in as</p>
+            <p className="text-[11px] text-slate-400">{t("account.signedInAs")}</p>
             <p className="text-sm font-medium text-slate-800 truncate">{userEmail}</p>
           </div>
           <button
@@ -198,24 +213,24 @@ function UserFooter({ userEmail, avatarUrl }: { userEmail: string; avatarUrl?: s
             onClick={() => { setPicOpen(true); setOpen(false); }}
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
           >
-            <Camera size={14} /> Change picture
+            <Camera size={14} /> {t("account.changePicture")}
           </button>
           <button
             type="button"
             onClick={() => { setPwOpen(true); setOpen(false); }}
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
           >
-            <KeyRound size={14} /> Change password
+            <KeyRound size={14} /> {t("account.changePassword")}
           </button>
           <form action={signOut}>
             <button type="submit" className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
-              <RefreshCw size={14} /> Switch account
+              <RefreshCw size={14} /> {t("account.switchAccount")}
             </button>
           </form>
           <div className="border-t border-slate-100 my-1" />
           <form action={signOut}>
             <button type="submit" className="flex items-center gap-2 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50">
-              <LogOut size={14} /> Log out
+              <LogOut size={14} /> {t("account.logOut")}
             </button>
           </form>
         </div>

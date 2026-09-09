@@ -1,7 +1,6 @@
-import { resolveLocale } from "@leadsmart/i18n";
+import { createTranslator } from "@leadsmart/i18n";
 
-import { DEFAULT_LOCALE, resources, type SupportedLocale } from "./config";
-import { interpolate, resolveKey } from "./resolveKey";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, resources } from "./config";
 
 /**
  * A translator for an EXPLICIT locale.
@@ -14,26 +13,10 @@ import { interpolate, resolveKey } from "./resolveKey";
  *
  * Deliberately synchronous and free of `server-only`: the bundles are static
  * imports, and the newsletter's email renderer is a pure function that has to
- * stay unit-testable.
+ * stay unit-testable. The resolution order itself lives in the shared package.
  */
-export function translatorFor(
-  locale: string | null | undefined,
-  defaultNs = "common",
-): (key: string, opts?: { ns?: string; [k: string]: unknown }) => string {
-  const loc: SupportedLocale = resolveLocale(locale) ?? DEFAULT_LOCALE;
-  return (key, opts) => {
-    const ns = (opts?.ns as string | undefined) ?? defaultNs;
-    type Ns = keyof (typeof resources)[typeof loc];
-
-    const resolved = resolveKey(key, {
-      bundle: resources[loc]?.[ns as Ns],
-      // Undefined when we're already on English — nothing to fall back to.
-      fallbackBundle:
-        loc === DEFAULT_LOCALE ? undefined : resources[DEFAULT_LOCALE]?.[ns as Ns],
-      defaultValue: opts?.defaultValue,
-    });
-
-    // Null means no bundle in any language has it: render the key, loudly.
-    return resolved == null ? key : interpolate(resolved, opts ?? {});
-  };
-}
+export const translatorFor = createTranslator({
+  resources,
+  defaultLocale: DEFAULT_LOCALE,
+  supported: SUPPORTED_LOCALES,
+});

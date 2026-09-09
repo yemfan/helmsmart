@@ -14,6 +14,7 @@ import { ReceptionSettings } from "@/components/reception-settings";
 import { NpiSetting } from "@/components/npi-setting";
 import { SlackSettings } from "@/components/slack-settings";
 import { InvoiceReminderSettings } from "@/components/invoice-reminder-settings";
+import { LanguagePanel } from "@/components/language-panel";
 import { getActivePack } from "@/lib/packs";
 import { requirePermission } from "@/lib/rbac";
 import { Users, ChevronRight } from "lucide-react";
@@ -80,6 +81,8 @@ export default async function SettingsPage() {
       <SettingsTabs
         general={
           <>
+            <LanguagePanel />
+
             <section>
               <h2 className={SECTION_H2}>Business information</h2>
               <OrgSettingsForm

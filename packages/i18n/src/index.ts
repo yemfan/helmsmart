@@ -1,15 +1,26 @@
 /**
- * Shared i18n contract — locale codes + resolution helpers used by
- * both `apps/leadsmartai` (web) and `apps/leadsmart-mobile` (Expo).
+ * Shared i18n contract — locale codes, resolution helpers and the pure
+ * translation core used by `apps/leadsmartai` (web), `apps/leadsmart-mobile`
+ * (Expo) and `apps/helmsmart-web`.
  *
- * Translation strings themselves live as JSON files under
- * `packages/i18n/locales/<code>/<namespace>.json`. Each app's i18next
- * init module imports those JSONs directly:
+ * WHAT LIVES HERE. Everything about translating that does not depend on a
+ * framework: the locale list, key resolution (with plurals), the explicit-
+ * locale translator factory, the AI language directives, the `Intl` tag map
+ * and the nav-tree translator. The Next-bound halves — cookies, headers, the
+ * i18next client instance, the provider — are factories under
+ * `@leadsmart/i18n/next/server` and `@leadsmart/i18n/next/client`, so each
+ * app configures them once with its own cookie name and resources.
+ *
+ * Translation strings themselves live as JSON files. CloseBoss and mobile
+ * keep theirs under `packages/i18n/locales/<code>/<namespace>.json` (they are
+ * shared between web and mobile); HelmSmart keeps its own under
+ * `apps/helmsmart-web/messages/`. Each app's config module imports its JSONs
+ * directly:
  *
  *   import enCommon from "@leadsmart/i18n/locale/en/common";
  *   import zhCommon from "@leadsmart/i18n/locale/zh-Hans/common";
  *
- * Namespaces (current set):
+ * Namespaces (CloseBoss + mobile set):
  *   - common        Shared verbs / status / errors used everywhere
  *   - settings      Settings screens (mobile + web)
  *   - nav           Tab bar + navigation labels (mobile)
@@ -18,65 +29,63 @@
  *   - leads             Mobile Leads list tab
  *   - lead_detail       Mobile Lead detail screen (/lead/[id])
  *   - lead_components   Embedded lead detail components
- *                        (QuickActionsRow, ReplySection, Pipeline*)
  *   - task_calendar_components
- *                       Task + Calendar + BookingLink cards and
- *                       composer modals (used on Lead detail, Tasks
- *                       tab, and Calendar tab)
- *   - reply_composer    SMS ReplyComposer, EmailReplyModal, AI draft
- *                       button, and the AI-action upgrade banner
+ *                       Task + Calendar + BookingLink cards and composer modals
+ *   - reply_composer    SMS ReplyComposer, EmailReplyModal, AI draft button
  *   - inbox             Mobile Inbox tab (thread list)
- *   - calendar_screen   Mobile Calendar tab parent (sections, header,
- *                        ReminderCard)
- *   - showings_screen   Mobile Showings list + detail (status, reactions,
- *                        feedback form)
- *   - sphere_screen     Mobile Sphere screen (likely buyers / sellers)
+ *   - calendar_screen   Mobile Calendar tab parent
+ *   - showings_screen   Mobile Showings list + detail
+ *   - sphere_screen     Mobile Sphere screen
  *   - mobile_misc_screens
- *                       Small standalone mobile screens:
- *                        notifications, post-history, scheduled,
- *                        recurring
- *   - web_posts         Web /dashboard/leads/generate/posts page
- *                        (Server Component + PostsListClient +
- *                        TopPerformersStrip)
- *   - web_generate_leads
- *                       Web /dashboard/leads/generate landing +
- *                        connect / scheduled / recurring / ads
- *                        Server Component headers
- *   - web_contacts      Web /dashboard/contacts page + the shared
- *                        SmartListTabs nav + manager popover
- *   - web_marketing     Document metadata for the public marketing
- *                        pages: landing (/), about, pricing
- *   - web_contacts_client
- *                       Web ContactsClient — the full contacts list,
- *                        add menu, search/filter, table rows, bulk
- *                        actions, edit form
- *   - web_generate_leads_clients
- *                       Web Generate Leads list clients:
- *                        ConnectClient, CampaignListClient,
- *                        ScheduledListClient, RecurringListClient
- *   - web_landing       Public landing-page body
- *                        (LeadSmartLandingV2 marketing site)
- *   - web_about         /about page body
- *   - web_pricing       /pricing page body
- *                        (ConsumerPricingClientPage)
- *   - web_quick_post    Quick Post wizard
- *                        (/dashboard/leads/generate/post/new)
+ *                       Small standalone mobile screens
+ *   - web_*             Web-only namespaces, one per public page or dashboard
+ *                       surface; see `apps/leadsmartai/lib/i18n/config.ts`
  *
  * Future namespaces follow the same pattern — add a JSON file pair
  * (en + zh-Hans) and reference it from the app's resources map.
  */
 export {
+  ALL_LOCALES,
   SUPPORTED_LOCALES,
   DEFAULT_LOCALE,
   resolveLocale,
   localeDisplayName,
+  localeShortLabel,
+  type Locale,
   type SupportedLocale,
 } from "./locales";
 
+export {
+  resolveKey,
+  lookupString,
+  interpolate,
+  pluralCandidates,
+  type Bundle,
+  type ResolveInput,
+} from "./resolveKey";
+
+export {
+  createTranslator,
+  type Resources,
+  type Translate,
+  type TranslateOptions,
+  type TranslatorConfig,
+} from "./translator";
+
+export {
+  LANGUAGE_NAMES,
+  makeLanguageDirectives,
+  type DirectiveWording,
+  type LanguageDirectives,
+} from "./languageDirective";
+
+export { intlLocale } from "./intl";
+export { translateNavSections } from "./nav";
+
 /**
- * Canonical namespace identifiers. Keep in sync with the JSON files
- * under locales/<code>/. Adding a new namespace: add the literal
- * here + the JSON file pair, and i18next will pick it up when the
+ * Canonical namespace identifiers for the CloseBoss + mobile bundles. Keep in
+ * sync with the JSON files under locales/<code>/. Adding a new namespace: add
+ * the literal here + the JSON file pair, and i18next will pick it up when the
  * app reinitializes.
  */
 export const NAMESPACES = [

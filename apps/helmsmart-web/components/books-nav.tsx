@@ -2,28 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
+// Labels live in the `nav` bundle under `books.<key>`; the hrefs are the
+// stable part.
 const TABS = [
-  { label: "Overview",     href: "/books" },
-  { label: "Transactions", href: "/books/transactions" },
-  { label: "Invoices",     href: "/books/invoices" },
-  { label: "Recurring",    href: "/books/invoices/recurring" },
-  { label: "Estimates",    href: "/books/estimates" },
-  { label: "Expenses",     href: "/books/expenses" },
-  { label: "Bills",        href: "/books/bills" },
-  { label: "Vendors",      href: "/books/vendors" },
-  { label: "Journal",      href: "/books/journal" },
-  { label: "Accounts",     href: "/books/accounts" },
-  { label: "Aging",        href: "/books/aging" },
-  { label: "Reports",      href: "/books/reports" },
+  { key: "overview",     href: "/books" },
+  { key: "transactions", href: "/books/transactions" },
+  { key: "invoices",     href: "/books/invoices" },
+  { key: "recurring",    href: "/books/invoices/recurring" },
+  { key: "estimates",    href: "/books/estimates" },
+  { key: "expenses",     href: "/books/expenses" },
+  { key: "bills",        href: "/books/bills" },
+  { key: "vendors",      href: "/books/vendors" },
+  { key: "journal",      href: "/books/journal" },
+  { key: "accounts",     href: "/books/accounts" },
+  { key: "aging",        href: "/books/aging" },
+  { key: "reports",      href: "/books/reports" },
 ] as const;
 
 export function BooksNav() {
   const pathname = usePathname();
+  const { t } = useTranslation("nav");
 
   return (
     <nav className="flex gap-1 border-b border-slate-200 mb-6 -mt-2">
-      {TABS.map(({ label, href }) => {
+      {TABS.map(({ key, href }) => {
         const active = (() => {
           if (href === "/books") return pathname === "/books";
           // /books/invoices should NOT activate when we're on the Recurring sub-page
@@ -47,7 +51,7 @@ export function BooksNav() {
                 : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
-            {label}
+            {t(`books.${key}`)}
           </Link>
         );
       })}
