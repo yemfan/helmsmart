@@ -84,27 +84,24 @@ export default async function SEOAuditPage() {
       status: org?.auto_request_reviews ? "pass" : "warn",
       recommendation: !org?.auto_request_reviews ? t("google.seo.autoRequestRec") : undefined,
     },
-    {
-      id: "schema",
-      title: t("google.seo.schemaTitle"),
-      description: t("google.seo.schemaDesc"),
-      status: "pass",
-      recommendation: undefined,
-    },
-    {
-      id: "sitemap",
-      title: t("google.seo.sitemapTitle"),
-      description: t("google.seo.sitemapDesc"),
-      status: "pass",
-      recommendation: undefined,
-    },
-    {
-      id: "robots",
-      title: t("google.seo.robotsTitle"),
-      description: t("google.seo.robotsDesc"),
-      status: "pass",
-      recommendation: undefined,
-    },
+  ];
+
+  /*
+   * Structured data, the sitemap and robots.txt are TRUE — the app ships
+   * app/sitemap.ts, app/robots.ts and lib/structured-data.ts — but they are
+   * identical for every business on HelmSmart. They were three hardcoded
+   * `status: "pass"` entries inside the scored list, which made a third of the
+   * score unreachable: a brand-new org with nothing connected scored 50%,
+   * most of it for work it had not done and could not do.
+   *
+   * A score is only useful if moving it means something. So these are shown,
+   * because a reader wants to know the boxes are ticked, but they are not
+   * counted — the percentage now measures only what this business can change.
+   */
+  const platformItems = [
+    { id: "schema", title: t("google.seo.schemaTitle"), description: t("google.seo.schemaDesc") },
+    { id: "sitemap", title: t("google.seo.sitemapTitle"), description: t("google.seo.sitemapDesc") },
+    { id: "robots", title: t("google.seo.robotsTitle"), description: t("google.seo.robotsDesc") },
   ];
 
   const passCount = auditItems.filter((item) => item.status === "pass").length;
@@ -167,6 +164,27 @@ export default async function SEOAuditPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Handled by HelmSmart — true for every business here, so not scored. */}
+      <div className="mt-6">
+        <h2 className="text-sm font-semibold text-slate-700 mb-3">
+          {t("google.seo.platformTitle")}
+        </h2>
+        <p className="text-xs text-slate-500 mb-3">{t("google.seo.platformSubtitle")}</p>
+        <div className="space-y-3">
+          {platformItems.map((item) => (
+            <div key={item.id} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-700">{item.title}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* SEO Tips */}
