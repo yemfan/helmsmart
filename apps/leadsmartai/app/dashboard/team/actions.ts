@@ -29,6 +29,8 @@ import { checkLicenseFormat } from "@/lib/teams/license";
 import type { BrandLicenseRecord } from "@/lib/teams/brand";
 import { parseAnnouncementInput, REACTIONS, type Reaction } from "@/lib/teams/billboard";
 import { createAnnouncement, markRead, react as svcReact, removeAnnouncement as svcRemoveAnnouncement, setPinned } from "@/lib/teams/billboard.server";
+import { parseBoardInput, parseReply } from "@/lib/teams/board";
+import { addReply, createBoardPost, removeBoardPost as svcRemoveBoardPost, removeReply, setLike } from "@/lib/teams/board.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -407,6 +409,91 @@ export async function reactToAnnouncement(formData: FormData) {
     return { ok: true as const };
   } catch (e) {
     console.warn("[team.billboard.react]", e instanceof Error ? e.message : e);
+    return { ok: false as const };
+  }
+}
+
+/** Post to the office board. Any member. */
+export async function postToBoard(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null, reason: null };
+  const ctx = await getCurrentAgentContext();
+  if (!(await getRole({ teamId, agentId: ctx.agentId }))) return { ok: false as const, error: "You are not on this team.", field: null, reason: null };
+  const parsed = parseBoardInput({ kind: formData.get("kind"), title: formData.get("title"), body: formData.get("body"), linkUrl: formData.get("linkUrl"), price: formData.get("price") });
+  if (!parsed.ok) return { ok: false as const, error: "Check the form.", field: parsed.field, reason: parsed.reason };
+  try {
+    const post = await createBoardPost(teamId, ctx.agentId, parsed.input);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, post };
+  } catch (e) {
+    console.error("[team.board.post]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not post that right now.", field: null, reason: null };
+  }
+}
+
+/** Take a board post down: the author, or a manager. */
+export async function removeBoardPost(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  if (!teamId || !id) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!role) return { ok: false as const, error: "You are not on this team." };
+  try {
+    const done = await svcRemoveBoardPost(teamId, id, { agentId: ctx.agentId, canManage: canManageTeam(role) });
+    revalidatePath("/dashboard/team");
+    return done ? { ok: true as const } : { ok: false as const, error: "That post is not yours to remove." };
+  } catch (e) {
+    console.error("[team.board.remove]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not remove that right now." };
+  }
+}
+
+export async function replyToBoard(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const postId = String(formData.get("postId") ?? "");
+  if (!teamId || !postId) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  if (!(await getRole({ teamId, agentId: ctx.agentId }))) return { ok: false as const, error: "You are not on this team." };
+  const parsed = parseReply(formData.get("body"));
+  if (!parsed.ok) return { ok: false as const, error: parsed.reason === "too_long" ? "That reply is too long." : "Write something first." };
+  try {
+    const reply = await addReply(teamId, postId, ctx.agentId, parsed.body);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, reply };
+  } catch (e) {
+    console.error("[team.board.reply]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not post that reply right now." };
+  }
+}
+
+export async function removeBoardReply(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const replyId = String(formData.get("replyId") ?? "");
+  if (!teamId || !replyId) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!role) return { ok: false as const, error: "You are not on this team." };
+  try {
+    const done = await removeReply(teamId, replyId, { agentId: ctx.agentId, canManage: canManageTeam(role) });
+    revalidatePath("/dashboard/team");
+    return done ? { ok: true as const } : { ok: false as const, error: "That reply is not yours to remove." };
+  } catch (e) {
+    console.error("[team.board.removeReply]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not remove that right now." };
+  }
+}
+
+export async function likeBoardPost(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const liked = String(formData.get("liked") ?? "") === "true";
+  if (!postId) return { ok: false as const };
+  try {
+    const ctx = await getCurrentAgentContext();
+    await setLike(postId, ctx.agentId, liked);
+    return { ok: true as const };
+  } catch (e) {
+    console.warn("[team.board.like]", e instanceof Error ? e.message : e);
     return { ok: false as const };
   }
 }

@@ -8564,6 +8564,58 @@
       "empty": "还没有帖子。",
       "emptyManager": "还没有帖子。先发布本周每位经纪人都该知道的那件事吧。"
     },
+    "teamBoard": {
+      "title": "办公室留言板",
+      "subtitle": "非正式的地方。发布还没上 MLS 的房源、正在找房的买家、一个问题、一条经验，或者任何事。同事可以回复。",
+      "openComposer": "发布新帖",
+      "closeComposer": "收起",
+      "kindLabel": "类型",
+      "kind": {
+        "listing": "房源",
+        "buyer_need": "买家需求",
+        "question": "提问",
+        "tip": "经验",
+        "other": "随便聊"
+      },
+      "all": "全部",
+      "titleLabel": "标题",
+      "titlePlaceholder": {
+        "listing": "例如：即将上市：Arcadia 三房两卫带泳池",
+        "buyer_need": "例如：买家在 Pasadena 找四房，要院子和好学区",
+        "question": "例如：有人用过这家验房师吗？",
+        "tip": "例如：县登记处的新网站快多了",
+        "other": "想说点什么？"
+      },
+      "priceLabel": "要价",
+      "budgetLabel": "预算上限",
+      "bodyLabel": "详情（可选）",
+      "bodyPlaceholder": "房间数、区域、时间，任何能帮同事行动的信息。",
+      "linkLabel": "链接（可选）",
+      "post": "发布",
+      "posting": "发布中…",
+      "posted": "已发布！",
+      "error": {
+        "kind_required": "请选择类型。",
+        "title_required": "请填写标题。",
+        "title_too_long": "标题太长了。",
+        "body_too_long": "内容太长了（上限 3,000 字符）。",
+        "linkUrl_bad_url": "这看起来不是有效的网址。",
+        "price_range": "这看起来不是有效的价格。"
+      },
+      "upTo": "最高 {{price}}",
+      "openLink": "打开链接",
+      "matchBuyers": "留言板上可能匹配的买家（{{count}}）：",
+      "matchListings": "留言板上可能匹配的房源（{{count}}）：",
+      "replies": "回复（{{count}}）",
+      "replyPlaceholder": "回复…",
+      "reply": "回复",
+      "replying": "发送中…",
+      "remove": "移除",
+      "removing": "移除中…",
+      "byOn": "{{name}} 发布于 {{date}}",
+      "empty": "还没有帖子。来当第一个：一套即将上市的房源、一位在找房的买家、一个问题。",
+      "note": "团队里的每个人都能看到这个留言板。自己的帖子可以自己移除；经理可以移除任何帖子。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",
