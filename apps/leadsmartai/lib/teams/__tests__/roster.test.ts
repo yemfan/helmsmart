@@ -50,3 +50,21 @@ describe("parseRoster", () => {
     expect(parseRoster("  \n\n")).toEqual({ rows: [], problems: [] });
   });
 });
+
+describe("parseRoster with a Lofty agent export", () => {
+  it("reads Lofty's user columns as they ship (First Name, Last Name, Email, Phone, Group, Permission Profile)", () => {
+    const lofty = [
+      "First Name,Last Name,Email,Phone,Group,Permission Profile",
+      "Jason,Oliver,jason@example.com,6509849102,Company Name/First-tier Group name,Company Admin",
+      "Lucky,Chuck,lucky@example.com,6509949120,Company Name/First-tier Group name,Group Owner",
+      "Kevin,Leon,kevin@example.com,6509949121,Company Name/Second-tier Group name,Standard User",
+    ].join("\n");
+    const r = parseRoster(lofty);
+    expect(r.problems).toEqual([]);
+    expect(r.rows).toEqual([
+      { email: "jason@example.com", name: "Jason Oliver", phone: "+16509849102" },
+      { email: "lucky@example.com", name: "Lucky Chuck", phone: "+16509949120" },
+      { email: "kevin@example.com", name: "Kevin Leon", phone: "+16509949121" },
+    ]);
+  });
+});
