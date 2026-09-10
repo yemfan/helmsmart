@@ -557,6 +557,7 @@
       "services": "服务",
       "tools": "工具",
       "areas": "服务区域",
+      "open-houses": "开放日",
       "posts": "动态",
       "contact": "联系",
       "menu": "页面栏目",
@@ -777,6 +778,13 @@
       "blurb": "我熟悉每一条街道的社区。",
       "ask": "向我的助理询问某个区域"
     },
+    "openHouses": {
+      "kicker": "欢迎来看房",
+      "title": "即将举办的开放日",
+      "blurb": "欢迎到场参观、随意提问。在门口签到，之后即可收到房源详情。",
+      "details": "详情与路线",
+      "openNow": "正在开放"
+    },
     "featured": {
       "kicker": "精选",
       "title": "为你精选",
@@ -894,6 +902,10 @@
         "title": "区域",
         "blurb": "{{name}} 服务的社区和城市。"
       },
+      "open-houses": {
+        "title": "开放日",
+        "blurb": "{{name}} 即将举办的开放日看房。"
+      },
       "posts": {
         "title": "动态",
         "blurb": "来自 {{name}} 的市场快报、建议和资讯。"
@@ -907,6 +919,7 @@
       "services": "全部服务",
       "tools": "全部工具",
       "areas": "全部区域",
+      "open-houses": "全部开放日",
       "posts": "全部动态",
       "about": "更多关于我"
     }

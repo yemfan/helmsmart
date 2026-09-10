@@ -14,6 +14,7 @@ import {
   AreasSection,
   ContentSection,
   LeadCaptureSection,
+  OpenHousesSection,
   SeoSection,
   SettingsSection,
   SocialSection,
@@ -22,7 +23,7 @@ import {
 } from "./editor/sections2";
 
 /**
- * The Marketing Hub editor — one page, fifteen sections, one document.
+ * The Marketing Hub editor — one page, sixteen sections, one document.
  *
  * A single route with `?section=` rather than fifteen routes: the sections
  * share one payload (the config document plus what the account can back),
@@ -180,6 +181,8 @@ function SectionBody({ section, ...props }: SectionProps & { section: SectionKey
       return <ToolsSection {...props} />;
     case "areas":
       return <AreasSection {...props} />;
+    case "openHouses":
+      return <OpenHousesSection {...props} />;
     case "content":
       return <ContentSection {...props} />;
     case "social":

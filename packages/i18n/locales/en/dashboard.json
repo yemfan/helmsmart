@@ -7577,6 +7577,7 @@
         "workforce": "AI Workforce",
         "tools": "Tools",
         "areas": "Market Areas",
+        "openHouses": "Open Houses",
         "content": "Content",
         "social": "Social Media",
         "leadCapture": "Lead Capture",
@@ -7790,6 +7791,17 @@
         "note": "Note (optional)",
         "useProfile": "Add areas from my profile",
         "empty": "No areas yet. Your profile's service areas are shown until you add some."
+      },
+      "openHouses": {
+        "title": "Open houses",
+        "desc": "Your upcoming open houses, shown on your hub automatically.",
+        "enabled": "Show the open houses section",
+        "headline": "Section headline",
+        "headlineHint": "Blank uses “Upcoming open houses”.",
+        "upcoming": "{{count}} upcoming on your Open Houses page.",
+        "none": "Nothing upcoming right now, so the section is hidden.",
+        "manage": "Manage open houses",
+        "auto": "Scheduling an open house is what publishes it here. Each card links to its sign-in page, and it disappears once the open house ends."
       },
       "content": {
         "title": "Content",

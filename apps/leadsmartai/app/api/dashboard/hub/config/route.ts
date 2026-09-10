@@ -9,6 +9,7 @@ import {
   loadWorkforceAvailability,
   resolveBooking,
   serviceAreasOf,
+  loadHubOpenHouses,
 } from "@/lib/marketing-hub/loadHub";
 import { workforceEditorRows } from "@/lib/marketing-hub/workforce";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
@@ -33,7 +34,7 @@ async function editorPayload(agentId: string) {
   const id = Number(agentId);
   // ensureAssistantsForAgent seeds the roster rows the first time an agent
   // opens anything that needs them — the editor is such a place.
-  const [settings, agent, agentRow, feed, availability] = await Promise.all([
+  const [settings, agent, agentRow, feed, availability, openHouses] = await Promise.all([
     loadHubSettings(id),
     loadPresentationAgent(id),
     supabaseAdmin
@@ -45,6 +46,7 @@ async function editorPayload(agentId: string) {
     ensureAssistantsForAgent(agentId)
       .catch((e) => console.warn("[hub.config] ensureAssistants:", e instanceof Error ? e.message : e))
       .then(() => loadWorkforceAvailability(id)),
+    loadHubOpenHouses(id),
   ]);
   const row = (agentRow.data ?? {}) as Record<string, unknown>;
   return {
@@ -66,6 +68,7 @@ async function editorPayload(agentId: string) {
     receptionistEnabled: availability.receptionistEnabled,
     booking: resolveBooking(settings.config.leadCapture, availability.bookingEnabled),
     posts: feed.slice(0, 40).map((item) => ({ slug: slugFor(item), title: titleOf(item), postedAt: item.postedAt })),
+    upcomingOpenHouses: openHouses.length,
   };
 }
 

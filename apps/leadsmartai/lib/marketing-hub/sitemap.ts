@@ -5,6 +5,7 @@ import { normalizeHubConfig } from "./config";
 import { MIN_ITEMS_TO_INDEX } from "./feedItems";
 import { bioOf, serviceAreasOf } from "./loadHub";
 import { hubSitemapPaths, type HubSitemapEntry } from "./sitemapPaths";
+import { HUB_OPEN_HOUSE_STATUSES } from "./openHouses";
 
 export type { HubSitemapEntry } from "./sitemapPaths";
 
@@ -33,7 +34,7 @@ export async function listHubSitemapEntries(): Promise<HubSitemapEntry[]> {
     if (!rows.length) return [];
     const ids = rows.map((r) => Number(r.id)).filter(Number.isFinite);
 
-    const [settings, posts] = await Promise.all([
+    const [settings, posts, openHouses] = await Promise.all([
       supabaseAdmin.from("agent_hub_settings").select("agent_id, config").in("agent_id", ids as never[]),
       supabaseAdmin
         .from("scheduled_posts")
@@ -41,7 +42,19 @@ export async function listHubSitemapEntries(): Promise<HubSitemapEntry[]> {
         .in("agent_id", ids as never[])
         .eq("status", "posted")
         .limit(20000),
+      supabaseAdmin
+        .from("open_houses")
+        .select("agent_id")
+        .in("agent_id", ids as never[])
+        .in("status", [...HUB_OPEN_HOUSE_STATUSES] as never[])
+        .gte("end_at", new Date().toISOString())
+        .limit(20000),
     ]);
+    const openHouseCount = new Map<number, number>();
+    for (const o of (openHouses.data as { agent_id: unknown }[] | null) ?? []) {
+      const id = Number(o.agent_id);
+      openHouseCount.set(id, (openHouseCount.get(id) ?? 0) + 1);
+    }
     const configById = new Map<number, unknown>();
     for (const s of (settings.data as { agent_id: unknown; config: unknown }[] | null) ?? []) {
       configById.set(Number(s.agent_id), s.config);
@@ -71,6 +84,7 @@ export async function listHubSitemapEntries(): Promise<HubSitemapEntry[]> {
           // Same rule as the page: the typed bio, else the twin's.
           bio: bioOf(r),
           feedCount,
+          openHouseCount: openHouseCount.get(id) ?? 0,
         }),
       );
     }

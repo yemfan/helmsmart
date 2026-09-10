@@ -36,7 +36,7 @@ import {
   type SaveState,
 } from "./ui";
 
-/** Editor sections, part two: Tools, Areas, Content, Social, Lead Capture, Trust, SEO, Appearance, Settings. */
+/** Editor sections, part two: Tools, Areas, Open Houses, Content, Social, Lead Capture, Trust, SEO, Appearance, Settings. */
 
 function useSave<K extends keyof HubConfig>(key: K, onSaved: SectionProps["onSaved"], draft: HubConfig[K]) {
   const [state, setState] = useState<SaveState>("idle");
@@ -147,6 +147,35 @@ export function AreasSection({ data, onSaved }: SectionProps) {
         ) : null}
       </div>
       <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
+    </Card>
+  );
+}
+
+// ── Open houses ──────────────────────────────────────────────────────────
+
+/**
+ * Nothing to curate: the hub shows whatever is upcoming on the Open Houses
+ * page. This section is the switch, the headline, and the way there.
+ */
+export function OpenHousesSection({ data, onSaved }: SectionProps) {
+  const { t } = useTranslation("dashboard");
+  const [d, setD] = useState(data.config.openHouses);
+  const { state, error, save, dirty } = useSave("openHouses", onSaved, d);
+  const k = (s: string) => t(`pages.hubEditor.openHouses.${s}`);
+  return (
+    <Card title={k("title")} description={k("desc")}>
+      <SwitchRow checked={d.enabled} onChange={(v) => setD({ ...d, enabled: v })} label={k("enabled")} />
+      <Field label={k("headline")} hint={k("headlineHint")}>
+        <TextInput value={d.headline ?? ""} onChange={(v) => setD({ ...d, headline: v || null })} maxLength={120} />
+      </Field>
+      <p className="text-sm text-slate-600 dark:text-slate-400">
+        {data.upcomingOpenHouses > 0 ? k("upcoming").replace("{{count}}", String(data.upcomingOpenHouses)) : k("none")}{" "}
+        <Link href="/dashboard/open-houses" className="font-medium text-[#0072ce] hover:underline">
+          {k("manage")}
+        </Link>
+      </p>
+      <p className="text-xs text-slate-500 dark:text-slate-400">{k("auto")}</p>
+      <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(d)} />
     </Card>
   );
 }

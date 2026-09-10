@@ -27,6 +27,7 @@ import {
   HubFooter,
   HubHeader,
   MobileStickyBar,
+  OpenHouses,
   Section,
   Services,
   Tools,
@@ -284,6 +285,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
           <>
             <Hero {...props} bio="excerpt" />
             {assistant}
+            <OpenHouses {...props} locale={locale} limit={3} />
             <HomeValueBand {...props} />
             <Services {...props} limit={3} />
             <Tools {...props} limit={3} />
@@ -295,6 +297,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
           <>
             <Hero {...props} />
             {assistant}
+            <OpenHouses {...props} locale={locale} />
             <Workforce {...props} />
             <Services {...props} />
             <Tools {...props} />

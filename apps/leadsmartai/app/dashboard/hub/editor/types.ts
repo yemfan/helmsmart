@@ -29,6 +29,8 @@ export type EditorData = {
   receptionistEnabled: boolean;
   booking: ResolvedBooking;
   posts: { slug: string; title: string; postedAt: string }[];
+  /** Upcoming open houses on the agent's Open Houses page — what the hub will show. */
+  upcomingOpenHouses: number;
 };
 
 export type MetricsData = {
@@ -62,6 +64,7 @@ export type SectionKey =
   | "workforce"
   | "tools"
   | "areas"
+  | "openHouses"
   | "content"
   | "social"
   | "leadCapture"
@@ -80,6 +83,7 @@ export const SECTION_KEYS: SectionKey[] = [
   "workforce",
   "tools",
   "areas",
+  "openHouses",
   "content",
   "social",
   "leadCapture",

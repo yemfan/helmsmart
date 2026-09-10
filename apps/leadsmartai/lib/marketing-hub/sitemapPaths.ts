@@ -18,6 +18,8 @@ export function hubSitemapPaths(args: {
   serviceAreas: string[];
   feedCount: number;
   bio: string | null;
+  /** Upcoming open houses; omitted means none were loaded. */
+  openHouseCount?: number;
 }): HubSitemapEntry[] {
   const { username, config } = args;
   if (config.seo.noindex) return [];
@@ -33,6 +35,7 @@ export function hubSitemapPaths(args: {
       areaCount: areas.length,
       feedCount: args.feedCount,
       hasAbout: Boolean(args.bio),
+      openHouseCount: args.openHouseCount ?? 0,
     };
     for (const page of availablePages(facts)) out.push({ path: `${root}/${page}`, priority: 0.5 });
   }

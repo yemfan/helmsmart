@@ -56,6 +56,7 @@ export function pageFactsOf(hub: Hub): HubPageFacts {
         hub.testimonials.length ||
         hub.config.trust.points.length,
     ),
+    openHouseCount: hub.openHouses.length,
   };
 }
 

@@ -250,6 +250,19 @@ export const HubConfigSchema = z.object({
     })
     .default({}),
 
+  /**
+   * Upcoming open houses, read from the agent's Open Houses page. Nothing
+   * to curate here: scheduling one is what publishes it, each card links to
+   * the open house's own sign-in page, and the section is gone the moment
+   * the last one ends.
+   */
+  openHouses: z
+    .object({
+      enabled: z.boolean().default(true),
+      headline: z.string().trim().max(120).nullable().default(null),
+    })
+    .default({}),
+
   content: z
     .object({
       showFeed: z.boolean().default(true),

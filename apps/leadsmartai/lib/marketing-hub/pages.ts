@@ -14,7 +14,7 @@ import { servicesToRender, toolKeysToRender, type HubConfig } from "./config";
  * Pure: takes the hub's config and a few counts, returns paths.
  */
 
-export const HUB_PAGE_KEYS = ["about", "services", "tools", "areas", "posts", "contact"] as const;
+export const HUB_PAGE_KEYS = ["about", "services", "tools", "areas", "open-houses", "posts", "contact"] as const;
 export type HubPageKey = (typeof HUB_PAGE_KEYS)[number];
 
 export type HubPageFacts = {
@@ -25,6 +25,8 @@ export type HubPageFacts = {
   feedCount: number;
   /** Whether the About page has anything beyond the name: bio, facts, team, testimonials. */
   hasAbout: boolean;
+  /** Upcoming open houses. None, and there is no page and no menu entry. */
+  openHouseCount: number;
 };
 
 export function pageAvailable(key: HubPageKey, f: HubPageFacts): boolean {
@@ -37,6 +39,8 @@ export function pageAvailable(key: HubPageKey, f: HubPageFacts): boolean {
       return f.config.tools.enabled && toolKeysToRender(f.config, f.hasSavedConfig).length > 0;
     case "areas":
       return f.config.areas.enabled && f.areaCount > 0;
+    case "open-houses":
+      return f.config.openHouses.enabled && f.openHouseCount > 0;
     case "posts":
       return f.config.content.showFeed && f.feedCount > 0;
     case "contact":

@@ -9,6 +9,7 @@ import {
   Building2,
   Calculator,
   CalendarCheck,
+  CalendarDays,
   Globe,
   Handshake,
   Home,
@@ -48,6 +49,7 @@ import { areaSlug } from "@/lib/marketing-hub/areas";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
 import type { FeedItem } from "@/lib/marketing-hub/feedItems";
 import type { Hub } from "@/lib/marketing-hub/loadHub";
+import { formatListPrice, formatOpenHouseWhen, openHouseLocality } from "@/lib/marketing-hub/openHouses";
 import { availablePages, sectionHref, type HubPageFacts } from "@/lib/marketing-hub/pages";
 import HubMobileNav from "./HubMobileNav";
 import { hubTool, hubToolHref, resolveHubTools, type HubToolIcon } from "@/lib/marketing-hub/tools";
@@ -224,6 +226,7 @@ export function hubMenu(hub: Hub, L: HubLabels, fromHome: boolean | undefined): 
     hasAbout: Boolean(
       hub.bio || hub.specialties.length || hub.workforce.length || hub.testimonials.length || hub.config.trust.points.length,
     ),
+    openHouseCount: hub.openHouses.length,
   };
   const pages = availablePages(facts);
   const items: { key: string; href: string; label: string }[] = pages.map((key) => ({
@@ -741,6 +744,62 @@ export function Areas({ hub, L, theme, fromHome, limit }: SectionProps & { limit
           <ArrowRight className="h-4 w-4" aria-hidden />
         </TrackedLink>
       ) : null}
+    </Section>
+  );
+}
+
+// ── open houses ──────────────────────────────────────────────────────────
+
+/**
+ * Upcoming open houses, each a card that links to its own sign-in page. The
+ * time reads in the agent's zone — the house is where it is — and the date
+ * in the visitor's language. Nothing to render means nothing rendered.
+ */
+export function OpenHouses({ hub, L, theme, fromHome, limit, locale }: SectionProps & { limit?: number; locale: string }) {
+  if (!hub.config.openHouses.enabled || !hub.openHouses.length) return null;
+  const all = hub.openHouses;
+  const items = limit ? all.slice(0, limit) : all;
+  const cut = items.length < all.length;
+  const now = Date.now();
+  const title = hub.config.openHouses.headline?.trim() || L.openHouses.title;
+  return (
+    <Section id="open-houses" kicker={L.openHouses.kicker} title={title} blurb={L.openHouses.blurb} theme={theme} tone="tint">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((oh) => {
+          const when = formatOpenHouseWhen(oh.startAt, oh.endAt, locale, hub.timezone);
+          const price = formatListPrice(oh.listPrice, locale);
+          const locality = openHouseLocality(oh);
+          const openNow = Date.parse(oh.startAt) <= now;
+          return (
+            <li key={oh.id}>
+              <TrackedLink
+                username={hub.username}
+                href={`/oh/${oh.slug}`}
+                event="content_opened"
+                meta={{ slug: `open-house:${oh.id}` }}
+                className={`group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:border-slate-300 hover:shadow-[var(--shadow-raised)] focus:outline-none focus-visible:ring-2 ${theme.ring}`}
+              >
+                <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <CalendarDays className={`h-4 w-4 shrink-0 ${theme.text}`} aria-hidden />
+                  <time dateTime={oh.startAt}>{when.date}</time>
+                  {openNow ? (
+                    <span className="ml-auto rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">{L.openHouses.openNow}</span>
+                  ) : null}
+                </span>
+                {when.time ? <span className="mt-1 text-sm text-slate-600">{when.time}</span> : null}
+                <span className="mt-4 block text-base font-semibold leading-snug text-slate-900">{oh.address}</span>
+                {locality ? <span className="mt-0.5 block text-sm text-slate-600">{locality}</span> : null}
+                {price ? <span className="mt-2 block text-sm font-semibold text-slate-900">{price}</span> : null}
+                <span className={`mt-4 inline-flex items-center gap-1 text-sm font-semibold ${theme.text}`}>
+                  {L.openHouses.details}
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden />
+                </span>
+              </TrackedLink>
+            </li>
+          );
+        })}
+      </ul>
+      {cut ? <SeeAll href={sectionHref(hub.username, "open-houses", hub.config.appearance.layout, { fromHome })} label={L.seeAll["open-houses"]} theme={theme} /> : null}
     </Section>
   );
 }

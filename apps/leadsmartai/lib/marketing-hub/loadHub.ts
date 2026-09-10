@@ -17,6 +17,7 @@ import {
   type PublicWorkforceType,
 } from "./config";
 import { publicWorkforce, type PublicWorkforceMember, type WorkforceAvailability } from "./workforce";
+import { upcomingOpenHouses, type HubOpenHouse, type OpenHouseSource } from "./openHouses";
 
 /**
  * Everything the public hub page needs, from a username.
@@ -78,6 +79,10 @@ export type Hub = {
   booking: ResolvedBooking;
   /** Real 30-day counts for "watch my AI work", when the agent opted in and there is anything to show. */
   activity: HubActivity | null;
+  /** The agent's IANA time zone — open house times are shown in it. */
+  timezone: string | null;
+  /** Upcoming open houses, soonest first. */
+  openHouses: HubOpenHouse[];
 };
 
 /** What the AI team actually did for this agent recently. Real rows, counted. */
@@ -114,7 +119,28 @@ const NOT_FOUND: Hub = {
   assistantAvailable: false,
   booking: { mode: "request", externalUrl: null },
   activity: null,
+  timezone: null,
+  openHouses: [],
 };
+
+/** The agent's upcoming open houses — scheduled or in progress, not yet ended. */
+export async function loadHubOpenHouses(agentId: number | string, limit = 12): Promise<HubOpenHouse[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("open_houses")
+      .select("id, property_address, city, state, list_price, start_at, end_at, signin_slug, status")
+      .eq("agent_id", agentId as never)
+      .in("status", ["scheduled", "in_progress"] as never[])
+      .gte("end_at", new Date().toISOString())
+      .order("start_at", { ascending: true })
+      .limit(limit);
+    if (error) throw new Error(error.message);
+    return upcomingOpenHouses((data as OpenHouseSource[] | null) ?? [], new Date().toISOString(), limit);
+  } catch (e) {
+    console.warn("[marketing-hub] loadHubOpenHouses failed:", e instanceof Error ? e.message : e);
+    return [];
+  }
+}
 
 /**
  * Count what the AI team did in the last 30 days. Only called when the
@@ -339,7 +365,7 @@ export async function loadHubByUsername(
     const { data, error } = await supabaseAdmin
       .from("agents")
       .select(
-        "id, username, hub_published, bio, specialties, brand_name, service_areas, service_areas_v2, dt_brand_profile, dt_avatar_video_url, deleted_at",
+        "id, username, hub_published, bio, specialties, brand_name, service_areas, service_areas_v2, dt_brand_profile, dt_avatar_video_url, deleted_at, timezone",
       )
       .eq("username", username)
       .maybeSingle();
@@ -370,7 +396,7 @@ export async function loadHubByUsername(
       };
     }
 
-    const [agent, plan, trackingRow, feed, settings, testimonials, availability, receptionist] =
+    const [agent, plan, trackingRow, feed, settings, testimonials, availability, receptionist, openHouses] =
       await Promise.all([
         loadPresentationAgent(agentId),
         resolveAgentPlan(agentId),
@@ -394,6 +420,7 @@ export async function loadHubByUsername(
           .select("extra_notes")
           .eq("agent_id", agentId as never)
           .maybeSingle(),
+        loadHubOpenHouses(agentId),
       ]);
     const brokerage = await loadBrandForAgent(agentId);
 
@@ -453,6 +480,8 @@ export async function loadHubByUsername(
       assistantAvailable: config.assistant.enabled && isAnthropicConfigured(),
       booking: resolveBooking(config.leadCapture, availability.bookingEnabled),
       activity,
+      timezone: String(row.timezone ?? "").trim() || null,
+      openHouses: config.openHouses.enabled ? openHouses : [],
     };
   } catch (e) {
     console.warn("[marketing-hub] loadHubByUsername failed:", e);

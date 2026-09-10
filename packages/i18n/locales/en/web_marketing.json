@@ -557,6 +557,7 @@
       "services": "Services",
       "tools": "Tools",
       "areas": "Areas",
+      "open-houses": "Open houses",
       "posts": "Posts",
       "contact": "Contact",
       "menu": "Page sections",
@@ -777,6 +778,13 @@
       "blurb": "Neighborhoods I know street by street.",
       "ask": "Ask my assistant about an area"
     },
+    "openHouses": {
+      "kicker": "Come see it",
+      "title": "Upcoming open houses",
+      "blurb": "Stop by, look around, and ask anything. Sign in at the door to get the details afterwards.",
+      "details": "Details & directions",
+      "openNow": "Open now"
+    },
     "featured": {
       "kicker": "Featured",
       "title": "Featured for you",
@@ -894,6 +902,10 @@
         "title": "Areas",
         "blurb": "The neighborhoods and cities {{name}} serves."
       },
+      "open-houses": {
+        "title": "Open houses",
+        "blurb": "Upcoming open houses hosted by {{name}}."
+      },
       "posts": {
         "title": "Posts",
         "blurb": "Market updates, tips and news from {{name}}."
@@ -907,6 +919,7 @@
       "services": "All services",
       "tools": "All tools",
       "areas": "All areas",
+      "open-houses": "All open houses",
       "posts": "All posts",
       "about": "More about me"
     }

@@ -9,18 +9,25 @@ function facts(over: Partial<HubPageFacts> = {}): HubPageFacts {
     areaCount: 2,
     feedCount: 3,
     hasAbout: true,
+    openHouseCount: 1,
     ...over,
   };
 }
 
 describe("availablePages", () => {
   it("offers every page for a full hub", () => {
-    expect(availablePages(facts())).toEqual(["about", "services", "tools", "areas", "posts", "contact"]);
+    expect(availablePages(facts())).toEqual(["about", "services", "tools", "areas", "open-houses", "posts", "contact"]);
   });
 
   it("drops pages that would be empty", () => {
     const cfg = normalizeHubConfig({ services: { enabled: false }, leadCapture: { showForm: false } });
-    expect(availablePages(facts({ config: cfg, feedCount: 0, areaCount: 0, hasAbout: false }))).toEqual(["tools"]);
+    expect(availablePages(facts({ config: cfg, feedCount: 0, areaCount: 0, hasAbout: false, openHouseCount: 0 }))).toEqual(["tools"]);
+  });
+
+  it("offers the open-houses page only while something is upcoming, and never when switched off", () => {
+    expect(availablePages(facts({ openHouseCount: 0 }))).not.toContain("open-houses");
+    const off = normalizeHubConfig({ openHouses: { enabled: false } });
+    expect(availablePages(facts({ config: off, openHouseCount: 3 }))).not.toContain("open-houses");
   });
 
   it("respects an explicitly emptied service list", () => {
