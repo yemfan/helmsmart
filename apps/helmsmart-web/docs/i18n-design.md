@@ -1,7 +1,10 @@
 # HelmSmart three-language design (en · zh-Hans · es)
 
-Status: **built and verified, 2026-09-09**. All three languages ship:
-English, Simplified Chinese (PR #1693) and Spanish (PR #1694).
+Status: **shipped and audited, 2026-09-10**. All three languages are live:
+English, Simplified Chinese (#1693) and Spanish (#1694), with five follow-up
+PRs closing what an audit found afterwards (#1696, #1702, #1704, #1709, #1715).
+
+Read "What the audit found" before trusting a green test run.
 
 This document is both the design and the record of what was built. Where the
 two diverged, the divergence and its reason are marked **Changed in build**.
@@ -487,6 +490,77 @@ is lower (4,005).
 | `<html lang>` by cookie / by `Accept-Language` / default | `zh-Hans` / `zh-Hans` / `en` |
 | Marketing + auth pages under a zh cookie | Chinese, 0 raw keys across 8 routes |
 | Signed-in dashboard, Books, briefing | Chinese including dates, money and the AI briefing |
+
+## What the audit found
+
+Everything above shipped with 79 guard assertions passing. An audit then found
+English still on screen in Spanish and Chinese. That gap between "all green"
+and "correct" is the most useful thing this project produced, so it is written
+down rather than quietly patched.
+
+### Green guards were never the claim they looked like
+
+Every scan in `lib/i18n/__tests__/` opens with the same line:
+
+```ts
+if (!/useTranslation|getServerT/.test(src)) continue;
+```
+
+That gate is what allowed page-by-page adoption — a file is held to the
+standard once it opts in, so a half-finished surface fails loudly instead of
+blocking everything else. The cost is that a file which NEVER opts in is
+invisible to all of them. "All guards green" therefore meant *no English in
+the files that opted in*, which is a much weaker claim than it reads as, and
+it hid four entire public routes: the team invitation page, invoice payment,
+the client portal and the appointment rescheduler.
+
+`routeCoverage.test.ts` now inverts the question. A route that renders UI and
+calls no translator fails, and wants an exemption with a stated reason. It
+found three files the manual audit had missed on its first run.
+
+### Four classes a bundle cannot reach
+
+| Class | Why bundles miss it | Fix |
+| --- | --- | --- |
+| **Stored text** | a sentence composed at write time is frozen in that language | notifications carry `title_key` + `params`, rendered at read time |
+| **Records the owner edits** | a key would overwrite their edit on every read | tasks are written in the org's language at creation, via `orgWriteLocale` |
+| **`e.message` ahead of a fallback** | the translated fallback is dead code; the reader gets an English throw or Next's redaction text | show `t(...)`, log the raw one |
+| **Helpers in `lib/`** | they return display strings and call no translator, so every guard skips them | the helper takes a translator and holds no copy |
+
+The last one is worth care: **English in `lib/` is often correct.** Decide per
+reader. `lib/booking.ts` returns tool results the receptionist *speaks* in the
+caller's language; `lib/language.ts` holds prompts a model reads;
+`lib/marketing-content.ts` holds campaign templates that become the org's own
+content. Nine modules matched the shape; four were real.
+
+### Each language found what the previous one could not
+
+- **Chinese** exposed a briefing cache keyed by `(org, date)` that froze the
+  language for the day, and a static-generation crash that only appears in a
+  production build.
+- **Spanish**, being longer, exposed a Books tab row with no `overflow-x-auto`
+  — twelve tabs fit in English and in compact Chinese, and two became
+  unreachable in Spanish.
+- A **fourth language will find its own.** Check layout against the longest
+  one, and prove i18n work with a real `next build`, never `next dev` alone.
+
+### The most useful guard rejected a correct translation
+
+`zhRegister.test.ts` enforces that Chinese addresses the owner as 你 on their
+own dashboard and their customers as 您. It blocked the visitor confirmation
+emails for using 您 — which was the right register — because it wanted the
+claim recorded. What it actually checks is whether the author knows who is
+reading, and that is the question behind every decision in this document.
+
+### Bugs the translation surfaced that were not translation bugs
+
+- Sign-up and password reset decided "this succeeded" by string-matching the
+  words "check your email", which dies the moment that sentence is Chinese.
+- Client communication preferences reported saved while writing nothing: the
+  panel sent snake_case and the action read camelCase, on the consent flags
+  that gate outbound messaging.
+- The estimate acceptance page formatted the reader's locale against a
+  hardcoded `USD`, relabelling a Canadian firm's estimate as US dollars.
 
 ## Non-goals and open questions
 
