@@ -13,6 +13,7 @@ import { listLibrary } from "@/lib/teams/library.server";
 import type { LibraryItem } from "@/lib/teams/library";
 import { listReferrals } from "@/lib/teams/referrals.server";
 import type { Referral } from "@/lib/teams/referrals";
+import { arelloConfigured, loadAgentLicense } from "@/lib/teams/license.server";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -87,6 +88,8 @@ export default async function TeamPage() {
       brand={brand}
       library={library}
       referrals={referrals}
+      myLicense={await loadAgentLicense(ctx.agentId)}
+      arelloOn={arelloConfigured()}
       directory={directory}
     />
   );

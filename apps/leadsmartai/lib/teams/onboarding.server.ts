@@ -1,5 +1,8 @@
 import "server-only";
 
+import type { AgentLicense } from "./license";
+import { loadTeamLicenses } from "./license.server";
+
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeInviteExpiresAt, DEFAULT_INVITE_TTL_DAYS, generateInviteToken } from "./inviteToken";
 import type { RosterRow } from "./roster";
@@ -111,6 +114,8 @@ export async function requeueInvite(args: { teamId: string; inviteId: string }):
 
 export type BoardMember = {
   agentId: string;
+  /** The license the brokerage requires, or null when not entered yet. */
+  license: AgentLicense | null;
   name: string | null;
   email: string | null;
   role: TeamRole;
@@ -159,12 +164,15 @@ export async function getOnboardingBoard(teamId: string): Promise<OnboardingBoar
   let profiles = new Map<string, { full_name: string | null; email: string | null }>();
   const connections = new Map<string, number>();
   const contacts = new Map<string, number>();
+  let licenses = new Map<string, AgentLicense>();
   if (ids.length) {
-    const [{ data: agentRows }, { data: connRows }, { data: contactRows }] = await Promise.all([
+    const [{ data: agentRows }, { data: connRows }, { data: contactRows }, licenseRows] = await Promise.all([
       supabaseAdmin.from("agents").select("id, auth_user_id, onboarding_completed, hub_published, username").in("id", ids as never[]),
       supabaseAdmin.from("social_accounts").select("agent_id").in("agent_id", ids as never[]).eq("status", "connected").limit(20000),
       supabaseAdmin.from("contacts").select("agent_id").in("agent_id", ids as never[]).limit(200000),
+      loadTeamLicenses(teamId),
     ]);
+    licenses = licenseRows;
     agents = (agentRows as Record<string, unknown>[] | null) ?? [];
     for (const c of (connRows as { agent_id: unknown }[] | null) ?? []) connections.set(String(c.agent_id), (connections.get(String(c.agent_id)) ?? 0) + 1);
     for (const c of (contactRows as { agent_id: unknown }[] | null) ?? []) contacts.set(String(c.agent_id), (contacts.get(String(c.agent_id)) ?? 0) + 1);
@@ -182,6 +190,7 @@ export async function getOnboardingBoard(teamId: string): Promise<OnboardingBoar
     const p = a && typeof a.auth_user_id === "string" ? profiles.get(a.auth_user_id) : undefined;
     return {
       agentId: id,
+      license: licenses.get(id) ?? null,
       name: p?.full_name ?? null,
       email: p?.email ?? null,
       role: m.role === "manager" ? "manager" : m.role === "owner" ? "owner" : "member",
