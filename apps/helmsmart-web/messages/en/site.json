@@ -900,5 +900,10 @@
     },
     "confirm": "Confirm Appointment",
     "booking": "Booking…"
+  },
+  "notFound": {
+    "title": "This page doesn't exist.",
+    "body": "The link may be out of date, or the page may have moved.",
+    "backHome": "Back to home"
   }
 }

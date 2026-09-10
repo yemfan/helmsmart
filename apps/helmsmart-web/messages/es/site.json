@@ -900,5 +900,10 @@
     },
     "confirm": "Confirmar cita",
     "booking": "Reservando…"
+  },
+  "notFound": {
+    "title": "Esta página no existe.",
+    "body": "Puede que el enlace haya caducado o que la página se haya movido.",
+    "backHome": "Volver al inicio"
   }
 }
