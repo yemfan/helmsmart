@@ -35,6 +35,24 @@
       "error": "无法接受此邀请，请重试。"
     }
   },
+  "invoice": {
+    "documentTitle": "发票 {{number}}",
+    "label": "发票",
+    "paid": "已付款",
+    "billTo": "付款方",
+    "issueDate": "开票日期",
+    "dueDate": "到期日",
+    "paidOn": "付款日期",
+    "description": "项目说明",
+    "qty": "数量",
+    "unitPrice": "单价",
+    "amount": "金额",
+    "subtotal": "小计",
+    "tax": "税费（{{rate}}%）",
+    "total": "合计",
+    "notes": "备注",
+    "footer": "{{org}} · 发票 {{number}} · 生成于 {{date}}"
+  },
   "pay": {
     "metaTitle": "发票支付",
     "paid": {

@@ -3,24 +3,43 @@
  *
  * Opens in a new tab. User clicks "Print" or uses browser print-to-PDF.
  * No sidebar, no auth guards beyond the org cookie (same as detail page).
+ *
+ * TWO READERS, ON ONE PAGE. The document is the thing the CLIENT receives, so
+ * every word inside it — and its `<html lang>` — comes from that client's
+ * `preferred_language`, per `docs/i18n-design.md`. The toolbar above it is
+ * `.no-print`: the owner is the only person who ever sees it, so it speaks the
+ * owner's UI locale like the rest of Books.
+ *
+ * That split is why `getServerLocale()` cannot serve this page on its own. The
+ * request belongs to the OWNER — they clicked Print — so using it for the
+ * document would hand an English-speaking client a Chinese invoice the moment
+ * their contractor switched the dashboard to Chinese. This route was exempt
+ * from `routeCoverage` on the reasoning that a customer document is
+ * "deliberately English"; the design doc says the opposite, that it follows the
+ * contact. Being English was the bug, not the policy.
+ *
+ * Money is the one thing that does NOT follow the reader: the amount is in the
+ * org's own currency, because relabelling a Canadian total as dollars for a
+ * Spanish-speaking client is a lie about the amount rather than a translation
+ * of it. Same rule as `/pay/[id]`.
  */
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
+import { translatorFor } from "@/lib/i18n/translator";
+import { contactLocale } from "@/lib/i18n/contactLocale";
+import { orgCurrency } from "@/lib/books-currency";
+import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PrintButton } from "./print-button";
 
-export const metadata: Metadata = { title: "Invoice Print" };
-
-function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric",
-  });
+export async function generateMetadata(): Promise<Metadata> {
+  // The tab title belongs to the owner's browser, not to the document.
+  const t = await getServerT("books");
+  return { title: t("invoices.printToolbar.print") };
 }
 
 export default async function InvoicePrintPage({
@@ -38,7 +57,7 @@ export default async function InvoicePrintPage({
       .from("invoices")
       .select(`
         *,
-        clients(first_name, last_name, company, email, phone),
+        clients(first_name, last_name, company, email, phone, preferred_language),
         invoice_lines(id, description, quantity, unit_price, amount, sort_order)
       `)
       .eq("id", id)
@@ -57,6 +76,7 @@ export default async function InvoicePrintPage({
   const client = (Array.isArray(clientRaw) ? clientRaw[0] : clientRaw) as {
     first_name: string | null; last_name: string | null;
     company: string | null; email: string | null; phone: string | null;
+    preferred_language: string | null;
   } | null;
 
   const linesRaw = Array.isArray(inv.invoice_lines) ? inv.invoice_lines : [];
@@ -64,6 +84,16 @@ export default async function InvoicePrintPage({
     id: string; description: string; quantity: number;
     unit_price: number; amount: number; sort_order: number;
   }[]).sort((a, b) => a.sort_order - b.sort_order);
+
+  // The document speaks the client's language; the toolbar speaks the owner's.
+  // `coerceContactLocale` maps the stored "en" | "es" | "zh" onto app locales —
+  // a bare "zh" resolves to nothing and would render English at a Chinese reader.
+  const docLocale = contactLocale(client?.preferred_language) ?? DEFAULT_LOCALE;
+  const doc = translatorFor(docLocale, "public");
+  const [owner, currency] = await Promise.all([getServerT("books"), orgCurrency(orgId)]);
+
+  const fmt = moneyFormatter(docLocale, currency);
+  const fmtDate = dateFormatter(docLocale, { month: "long", day: "numeric", year: "numeric" });
 
   const clientName = client
     ? [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "—"
@@ -73,11 +103,11 @@ export default async function InvoicePrintPage({
   const isOverdue = inv.status === "sent" && inv.due_date < today;
 
   return (
-    <html lang="en">
+    <html lang={docLocale}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Invoice {inv.invoice_number}</title>
+        <title>{doc("invoice.documentTitle", { number: inv.invoice_number })}</title>
         <style>{`
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
@@ -208,8 +238,8 @@ export default async function InvoicePrintPage({
         <div className="page">
           {/* Print toolbar */}
           <div className="no-print">
-            <a href={`/books/invoices/${id}`}>← Back to invoice</a>
-            <PrintButton />
+            <a href={`/books/invoices/${id}`}>{owner("invoices.printToolbar.back")}</a>
+            <PrintButton label={owner("invoices.printToolbar.print")} />
           </div>
 
           {/* Header */}
@@ -221,11 +251,11 @@ export default async function InvoicePrintPage({
               )}
             </div>
             <div style={{ textAlign: "right" }}>
-              <div className="label">Invoice</div>
+              <div className="label">{doc("invoice.label")}</div>
               <div className="inv-num">{inv.invoice_number}</div>
               {inv.status === "paid" && (
                 <div style={{ marginTop: 8 }}>
-                  <span className="paid-stamp">PAID</span>
+                  <span className="paid-stamp">{doc("invoice.paid")}</span>
                 </div>
               )}
             </div>
@@ -234,7 +264,7 @@ export default async function InvoicePrintPage({
           {/* Meta: Bill to + Dates */}
           <div className="meta-grid">
             <div>
-              <div className="label">Bill to</div>
+              <div className="label">{doc("invoice.billTo")}</div>
               <div style={{ marginTop: 4, lineHeight: 1.6 }}>
                 <div style={{ fontWeight: 600, fontSize: 14, color: "#0f172a" }}>{clientName}</div>
                 {client?.email && <div style={{ color: "#64748b" }}>{client.email}</div>}
@@ -244,11 +274,11 @@ export default async function InvoicePrintPage({
             <div>
               <div className="dates">
                 <div className="date-block">
-                  <div className="label">Issue date</div>
+                  <div className="label">{doc("invoice.issueDate")}</div>
                   <div className="date-val">{fmtDate(inv.issue_date)}</div>
                 </div>
                 <div className="date-block">
-                  <div className="label">Due date</div>
+                  <div className="label">{doc("invoice.dueDate")}</div>
                   <div className={`date-val ${isOverdue ? "overdue-val" : ""}`}>
                     {fmtDate(inv.due_date)}
                   </div>
@@ -256,9 +286,9 @@ export default async function InvoicePrintPage({
               </div>
               {inv.paid_at && (
                 <div style={{ marginTop: 12 }}>
-                  <div className="label">Paid on</div>
+                  <div className="label">{doc("invoice.paidOn")}</div>
                   <div className="date-val" style={{ color: "#16a34a" }}>
-                    {new Date(inv.paid_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                    {fmtDate(new Date(inv.paid_at))}
                   </div>
                 </div>
               )}
@@ -269,10 +299,10 @@ export default async function InvoicePrintPage({
           <table>
             <thead>
               <tr>
-                <th style={{ width: "50%" }}>Description</th>
-                <th className="r" style={{ width: "12%" }}>Qty</th>
-                <th className="r" style={{ width: "19%" }}>Unit price</th>
-                <th className="r" style={{ width: "19%" }}>Amount</th>
+                <th style={{ width: "50%" }}>{doc("invoice.description")}</th>
+                <th className="r" style={{ width: "12%" }}>{doc("invoice.qty")}</th>
+                <th className="r" style={{ width: "19%" }}>{doc("invoice.unitPrice")}</th>
+                <th className="r" style={{ width: "19%" }}>{doc("invoice.amount")}</th>
               </tr>
             </thead>
             <tbody>
@@ -291,17 +321,17 @@ export default async function InvoicePrintPage({
           <div className="totals">
             <div className="totals-inner">
               <div className="totals-row">
-                <span>Subtotal</span>
+                <span>{doc("invoice.subtotal")}</span>
                 <span style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(Number(inv.subtotal))}</span>
               </div>
               {Number(inv.tax_rate) > 0 && (
                 <div className="totals-row">
-                  <span>Tax ({(Number(inv.tax_rate) * 100).toFixed(2)}%)</span>
+                  <span>{doc("invoice.tax", { rate: (Number(inv.tax_rate) * 100).toFixed(2) })}</span>
                   <span style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(Number(inv.tax_amount))}</span>
                 </div>
               )}
               <div className="totals-total">
-                <span>Total</span>
+                <span>{doc("invoice.total")}</span>
                 <span style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(Number(inv.total))}</span>
               </div>
             </div>
@@ -310,14 +340,18 @@ export default async function InvoicePrintPage({
           {/* Notes */}
           {inv.notes && (
             <div className="notes">
-              <div className="label">Notes</div>
+              <div className="label">{doc("invoice.notes")}</div>
               <p>{inv.notes}</p>
             </div>
           )}
 
           {/* Footer */}
           <div className="footer">
-            {org?.name} · Invoice {inv.invoice_number} · Generated {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+            {doc("invoice.footer", {
+              org: org?.name ?? "",
+              number: inv.invoice_number,
+              date: fmtDate(new Date().toISOString().slice(0, 10)),
+            })}
           </div>
         </div>
       </body>

@@ -35,6 +35,24 @@
       "error": "No hemos podido aceptar esta invitación. Inténtelo de nuevo."
     }
   },
+  "invoice": {
+    "documentTitle": "Factura {{number}}",
+    "label": "Factura",
+    "paid": "PAGADA",
+    "billTo": "Facturar a",
+    "issueDate": "Fecha de emisión",
+    "dueDate": "Fecha de vencimiento",
+    "paidOn": "Fecha de pago",
+    "description": "Descripción",
+    "qty": "Cant.",
+    "unitPrice": "Precio unitario",
+    "amount": "Importe",
+    "subtotal": "Subtotal",
+    "tax": "Impuesto ({{rate}} %)",
+    "total": "Total",
+    "notes": "Notas",
+    "footer": "{{org}} · Factura {{number}} · Generada el {{date}}"
+  },
   "pay": {
     "metaTitle": "Pago de la factura",
     "paid": {

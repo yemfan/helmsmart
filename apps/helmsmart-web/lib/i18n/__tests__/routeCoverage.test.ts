@@ -51,6 +51,8 @@ const RENDERS_UI = /\.tsx$/;
  * it belongs in a bundle.
  */
 const EXEMPT: Record<string, string> = {
+  "app/(dashboard)/books/invoices/[id]/print/print-button.tsx":
+    "renders one label, which the server page translates in the OWNER's locale and passes in — the page is its own <html> document, so there is no I18nProvider to hook",
   // `app/(auth)/layout.tsx` used to sit here on "no sentences". It had one — the
   // pack tagline — rendered from a TS constant, so it read as English under a
   // Chinese login form on every auth screen. The rule above was right; this
@@ -59,10 +61,13 @@ const EXEMPT: Record<string, string> = {
     "composes the sidebar, bell and AI panel; every string belongs to those components",
   "app/(onboarding)/layout.tsx": "renders the brand wordmark and a slot; no sentences",
   "app/(dashboard)/reception/page.tsx": "a bare redirect() to /voice, kept so old links land",
-  "app/(dashboard)/books/invoices/[id]/print/page.tsx":
-    "the printable invoice is a document the CUSTOMER receives, deliberately English — see docs/i18n-design.md, two readers",
-  "app/(dashboard)/books/invoices/[id]/print/print-button.tsx":
-    "the print control on that same customer-facing document; its label is an icon and an aria-label owned by the page above",
+  /*
+   * The printable invoice used to sit here as "deliberately English — the
+   * CUSTOMER receives it". The design doc says the opposite: a document the
+   * contact receives follows THEIR language. It now renders in the client's
+   * `preferred_language`, and its toolbar in the owner's, so neither file is
+   * exempt any more.
+   */
   "app/(onboarding)/onboarding/page.tsx":
     "auth gate and redirect only; every string is inside components/onboarding-form.tsx, which is translated",
   "app/(marketing)/_rich.tsx":

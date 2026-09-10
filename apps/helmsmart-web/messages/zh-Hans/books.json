@@ -39,6 +39,10 @@
     }
   },
   "invoices": {
+    "printToolbar": {
+      "back": "← 返回发票",
+      "print": "打印 / 存为 PDF"
+    },
     "frequency": {
       "weekly": "每周",
       "monthly": "每月",
