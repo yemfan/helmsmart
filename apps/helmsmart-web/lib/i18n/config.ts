@@ -116,6 +116,23 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export { DEFAULT_LOCALE };
 
+/**
+ * `og:locale` for each locale we ship.
+ *
+ * Open Graph wants a POSIX-style `language_TERRITORY` tag, not the BCP-47 the
+ * rest of the app carries — `zh_CN`, not `zh-Hans`. Nothing validates it, so a
+ * wrong tag is simply ignored by the scrapers that read it, which is why the
+ * page had none at all and nobody noticed.
+ *
+ * Typed against `SupportedLocale`, so adding a locale to the list above fails
+ * to compile until it has a tag here.
+ */
+export const OG_LOCALES: Record<SupportedLocale, string> = {
+  en: "en_US",
+  "zh-Hans": "zh_CN",
+  es: "es_ES",
+};
+
 export const namespaces = [
   "common",
   "nav",

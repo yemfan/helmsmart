@@ -294,6 +294,10 @@
     }
   },
   "pricing": {
+    "meta": {
+      "title": "Pricing — HelmSmart",
+      "description": "Simple, transparent plans for small businesses. 14-day free trial, no credit card."
+    },
     "hero": {
       "title": "Simple, transparent pricing",
       "subtitle": "All plans include a 14-day free trial. No credit card required."
@@ -372,7 +376,7 @@
   },
   "faq": {
     "meta": {
-      "title": "Frequently Asked Questions | HelmSmart",
+      "title": "Frequently Asked Questions — HelmSmart",
       "description": "Everything you need to know about HelmSmart."
     },
     "hero": {

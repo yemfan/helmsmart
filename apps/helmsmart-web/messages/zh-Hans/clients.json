@@ -24,7 +24,7 @@
     "draft": "草稿",
     "sent": "已发送",
     "accepted": "已接受",
-    "declined": "已谢绝",
+    "declined": "已拒绝",
     "expired": "已过期"
   },
   "projectStatus": {

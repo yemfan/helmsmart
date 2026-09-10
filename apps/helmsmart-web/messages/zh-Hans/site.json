@@ -294,6 +294,10 @@
     }
   },
   "pricing": {
+    "meta": {
+      "title": "价格——HelmSmart",
+      "description": "为小微企业准备的简单透明方案。14 天免费试用，无需信用卡。"
+    },
     "hero": {
       "title": "简单透明的价格",
       "subtitle": "所有套餐均含 14 天免费试用。无需信用卡。"
@@ -372,7 +376,7 @@
   },
   "faq": {
     "meta": {
-      "title": "常见问题 | HelmSmart",
+      "title": "常见问题——HelmSmart",
       "description": "关于 HelmSmart 你需要知道的一切。"
     },
     "hero": {
