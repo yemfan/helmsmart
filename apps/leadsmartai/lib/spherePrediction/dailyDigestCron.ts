@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendSMS } from "@/lib/twilioSms";
 
@@ -45,30 +46,11 @@ type AgentNotifyContact = {
 };
 
 async function fetchAgentNotifyContact(agentId: string): Promise<AgentNotifyContact | null> {
-  const { data: agent } = await supabaseAdmin
-    .from("agents")
-    .select("id, auth_user_id, first_name")
-    .eq("id", agentId)
-    .maybeSingle();
-  if (!agent) return null;
-  const a = agent as { id: unknown; auth_user_id: string | null; first_name: string | null };
-
-  let agentPhone: string | null = null;
-  if (a.auth_user_id) {
-    const { data: profile } = await supabaseAdmin
-      .from("user_profiles")
-      .select("phone")
-      .eq("user_id", a.auth_user_id)
-      .maybeSingle();
-    agentPhone = ((profile as { phone?: string | null } | null)?.phone) ?? null;
-  }
-
-  return {
-    agentId: String(a.id),
-    authUserId: a.auth_user_id,
-    firstName: a.first_name,
-    agentPhone,
-  };
+  // Name lives on user_profiles, not agents; the SMS goes to the agent's
+  // own mobile on the profile.
+  const a = await loadAgentDisplayIdentity(agentId);
+  if (!a) return null;
+  return { agentId: a.agentId, authUserId: a.authUserId, firstName: a.firstName, agentPhone: a.profilePhone };
 }
 
 function toE164(phone: string): string | null {

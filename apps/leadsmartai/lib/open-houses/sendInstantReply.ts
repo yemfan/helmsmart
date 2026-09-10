@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { sendSMS } from "@/lib/twilioSms";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -91,14 +92,9 @@ export async function sendOpenHouseInstantReply(
   let agentFirstName: string | null = null;
   let agentBrokerage: string | null = null;
   try {
-    const { data: agentRow } = await supabaseAdmin
-      .from("agents")
-      .select("first_name, brokerage_name")
-      .eq("id", visitor.agent_id)
-      .maybeSingle();
-    const a = agentRow as { first_name: string | null; brokerage_name: string | null } | null;
-    agentFirstName = a?.first_name ?? null;
-    agentBrokerage = a?.brokerage_name ?? null;
+    const a = await loadAgentDisplayIdentity(visitor.agent_id);
+    agentFirstName = a?.firstName ?? null;
+    agentBrokerage = a?.brokerage ?? null;
   } catch {
     // Non-fatal.
   }

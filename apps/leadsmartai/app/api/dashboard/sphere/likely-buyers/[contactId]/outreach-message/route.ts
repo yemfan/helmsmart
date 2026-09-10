@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
+
 import {
   generateBuyerOutreachMessage,
   type BuyerOutreachInput,
@@ -47,7 +49,7 @@ export async function POST(
 
     const { data: agentRow } = await supabase
       .from("agents")
-      .select("id, first_name")
+      .select("id")
       .eq("auth_user_id", userData.user.id)
       .maybeSingle();
 
@@ -58,8 +60,8 @@ export async function POST(
         { status: 403 },
       );
     }
-    const agentFirstName =
-      (agentRow as { first_name?: string | null } | null)?.first_name ?? null;
+    // The agent's name lives on user_profiles, not agents.
+    const agentFirstName = (await loadAgentDisplayIdentity(agentId).catch(() => null))?.firstName ?? null;
 
     // Ownership-scoped contact fetch (cross-agent ids 404 — existence not leaked).
     const { data: contactRow } = await supabase

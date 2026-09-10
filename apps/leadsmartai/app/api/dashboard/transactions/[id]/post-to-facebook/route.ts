@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { publishPost } from "@/lib/leads-gen/publish";
 import { buildListingCaption, type ListingStatus } from "@/lib/social/captionBuilder";
@@ -239,21 +240,8 @@ async function loadAgentDisplayMeta(
   agentId: string,
 ): Promise<{ name: string | null; brokerage: string | null }> {
   try {
-    const { data } = await supabaseAdmin
-      .from("agents")
-      .select("first_name, last_name, brokerage_name")
-      .eq("id", agentId)
-      .maybeSingle();
-    const a = data as
-      | {
-          first_name: string | null;
-          last_name: string | null;
-          brokerage_name: string | null;
-        }
-      | null;
-    if (!a) return { name: null, brokerage: null };
-    const name = `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || null;
-    return { name, brokerage: a.brokerage_name };
+    const a = await loadAgentDisplayIdentity(agentId);
+    return { name: a?.fullName ?? null, brokerage: a?.brokerage ?? null };
   } catch {
     return { name: null, brokerage: null };
   }

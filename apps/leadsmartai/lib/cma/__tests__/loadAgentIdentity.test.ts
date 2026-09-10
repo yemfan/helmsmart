@@ -1,58 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createFakePostgrest, type FakeTable } from "@/lib/testing/fakePostgrest";
 
 vi.mock("server-only", () => ({}));
 
 /**
- * A stand-in for PostgREST: every table declares the columns it really has,
- * and selecting one it does not have answers `{ data: null, error: 42703 }`
- * without throwing — exactly the shape that let the old
- * `select("first_name, last_name, brokerage_name, …, license_number")` on
- * `agents` fall through to a blank identity in production.
+ * The fake answers 42703 to an unknown column without throwing — exactly
+ * the shape that let the old `select("first_name, last_name, brokerage_name,
+ * …, license_number")` on `agents` fall through to a blank identity.
  */
-type Table = { columns: string[]; rows: Record<string, unknown>[] };
-const tables: Record<string, Table> = {};
-const selects: Array<{ table: string; columns: string }> = [];
-
-function query(table: string, columns: string) {
-  selects.push({ table, columns });
-  const t = tables[table];
-  const asked = columns.split(",").map((c) => c.trim()).filter(Boolean);
-  const missing = !t ? asked : asked.filter((c) => !t.columns.includes(c));
-  const filters: Array<[string, unknown]> = [];
-  const run = () => {
-    if (missing.length) {
-      return {
-        data: null,
-        error: { code: "42703", message: `column ${table}.${missing[0]} does not exist` },
-      };
-    }
-    const rows = t.rows.filter((r) => filters.every(([k, v]) => r[k] === v));
-    const pick = (r: Record<string, unknown>) =>
-      Object.fromEntries(asked.map((c) => [c, r[c] ?? null]));
-    return { data: rows.length ? pick(rows[0]) : null, error: null };
-  };
-  const builder = {
-    eq(col: string, val: unknown) {
-      filters.push([col, val]);
-      return builder;
-    },
-    maybeSingle: () => Promise.resolve(run()),
-    single: () => Promise.resolve(run()),
-  };
-  return builder;
-}
-
-const getUserById = vi.fn(async (id: string) => ({
-  data: { user: { id, email: `${id}@auth.example` } },
-  error: null,
-}));
-
-vi.mock("@/lib/supabase/admin", () => ({
-  supabaseAdmin: {
-    from: (table: string) => ({ select: (columns: string) => query(table, columns) }),
-    auth: { admin: { getUserById: (id: string) => getUserById(id) } },
-  },
-}));
+const tables: Record<string, FakeTable> = {};
+const UID = "auth-user-1";
+const fake = createFakePostgrest(tables, { authUsers: { [UID]: { email: `${UID}@auth.example` } } });
+vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: fake.supabaseAdmin }));
 
 const loadAgentLicense = vi.fn(async (_agentId: string) => null as null | { number: string; state: string });
 vi.mock("@/lib/teams/license.server", () => ({
@@ -62,13 +21,11 @@ vi.mock("@/lib/teams/license.server", () => ({
 const { loadAgentIdentity } = await import("../loadAgentIdentity");
 
 const AGENT = "agent-1";
-const UID = "auth-user-1";
 
 beforeEach(() => {
-  selects.length = 0;
+  fake.selects.length = 0;
   loadAgentLicense.mockReset();
   loadAgentLicense.mockResolvedValue(null);
-  getUserById.mockClear();
 
   // The columns these tables actually carry. `agents` has no first_name /
   // last_name / brokerage_name / license_number.
@@ -89,14 +46,7 @@ beforeEach(() => {
 describe("loadAgentIdentity", () => {
   it("only asks tables for columns they have", async () => {
     await loadAgentIdentity(AGENT);
-    const unknown = selects.flatMap(({ table, columns }) =>
-      columns
-        .split(",")
-        .map((c) => c.trim())
-        .filter((c) => !tables[table]?.columns.includes(c))
-        .map((c) => `${table}.${c}`),
-    );
-    expect(unknown).toEqual([]);
+    expect(fake.unknownColumns()).toEqual([]);
   });
 
   it("reads the name from user_profiles and the license from agent_licenses", async () => {
@@ -130,7 +80,6 @@ describe("loadAgentIdentity", () => {
     tables.user_profiles.rows[0].email = null;
     const identity = await loadAgentIdentity(AGENT);
     expect(identity.email).toBe(`${UID}@auth.example`);
-    expect(getUserById).toHaveBeenCalledWith(UID);
   });
 
   it("returns a blank identity for an unknown agent", async () => {
@@ -140,10 +89,10 @@ describe("loadAgentIdentity", () => {
 
   it("would have caught the old select: unknown columns answer 42703 and lose the name", async () => {
     // Sanity check on the fake itself, so the first test above is load-bearing.
-    const { data, error } = await query(
-      "agents",
-      "first_name, last_name, brokerage_name, auth_user_id, license_number",
-    ).eq("id", AGENT).maybeSingle();
+    const { data, error } = await fake
+      .query("agents", "first_name, last_name, brokerage_name, auth_user_id, license_number")
+      .eq("id", AGENT)
+      .maybeSingle();
     expect(data).toBeNull();
     expect(error?.code).toBe("42703");
   });

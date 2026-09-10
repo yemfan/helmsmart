@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { sendEmail } from "@/lib/email";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { generateOpenHouseSlug } from "@/lib/open-houses/slug";
@@ -163,19 +164,12 @@ export async function sendFeedbackRequest(
   }
 
   // Resolve the listing agent's display name for the from-line text.
-  const { data: agentRow } = await supabaseAdmin
-    .from("agents")
-    .select("first_name, last_name, brokerage_name")
-    .eq("id", agentId)
-    .maybeSingle();
-  const agent = agentRow as {
-    first_name: string | null;
-    last_name: string | null;
-    brokerage_name: string | null;
-  } | null;
-  const listingAgentName = agent
-    ? `${agent.first_name ?? ""} ${agent.last_name ?? ""}`.trim() || null
-    : null;
+  // Best-effort: the request still goes out unsigned if this fails.
+  const agent = await loadAgentDisplayIdentity(agentId).catch((e) => {
+    console.warn("[listing-feedback] agent lookup failed:", e instanceof Error ? e.message : e);
+    return null;
+  });
+  const listingAgentName = agent?.fullName ?? null;
 
   const formUrl = `${appBaseUrl}/feedback/${feedback.request_slug}`;
   const { subject, html, text } = renderFeedbackRequestEmail({
@@ -186,7 +180,7 @@ export async function sendFeedbackRequest(
     showingDate: feedback.showing_date,
     formUrl,
     listingAgentName,
-    brokerage: agent?.brokerage_name ?? null,
+    brokerage: agent?.brokerage ?? null,
   });
 
   await sendEmail({ to: feedback.buyer_agent_email, subject, text, html });

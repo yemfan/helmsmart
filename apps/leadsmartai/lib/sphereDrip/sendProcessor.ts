@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
 import type { AgentMessageSettingsEffective } from "@/lib/agent-messaging/types";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -312,12 +313,15 @@ async function fetchContacts(contactIds: string[]): Promise<Map<string, ContactR
 }
 
 async function fetchAgent(agentId: string): Promise<AgentRow | null> {
-  const { data } = await supabaseAdmin
-    .from("agents")
-    .select("id, first_name")
-    .eq("id", agentId)
-    .maybeSingle();
-  return (data as AgentRow | null) ?? null;
+  // The name lives on user_profiles, not agents. Best-effort: the drip
+  // still sends, unsigned, if the lookup fails.
+  try {
+    const a = await loadAgentDisplayIdentity(agentId);
+    return a ? { id: a.agentId, first_name: a.firstName } : null;
+  } catch (e) {
+    console.warn("[sphereDrip] agent lookup failed:", e instanceof Error ? e.message : e);
+    return null;
+  }
 }
 
 function toSendContext(contact: ContactRow): ContactSendContext {

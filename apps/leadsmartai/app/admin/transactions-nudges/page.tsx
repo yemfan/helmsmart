@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/auth/requireRole";
+import { loadAgentDisplayIdentities, type AgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NudgeLogClient, type NudgeLogRow } from "./NudgeLogClient";
 import { getServerT } from "@/lib/i18n/server";
@@ -45,24 +46,25 @@ export default async function AdminNudgeLogPage() {
   const agentsById = new Map<string, { email: string | null; firstName: string | null }>();
 
   if (agentIds.length) {
-    const { data: agents } = await supabaseAdmin
-      .from("agents")
-      .select("id, first_name, auth_user_id")
-      .in("id", agentIds);
+    // Names live on user_profiles, not agents. Best-effort — a failed
+    // lookup just renders empty cells.
+    const identities = await loadAgentDisplayIdentities(agentIds).catch((e) => {
+      console.warn("[admin.transactions-nudges] agent lookup failed:", e instanceof Error ? e.message : e);
+      return new Map<string, AgentDisplayIdentity>();
+    });
 
-    // Resolve emails via auth.users. Best-effort — missing ones just
-    // render as empty in the UI.
-    for (const a of ((agents ?? []) as Array<{ id: string | number; first_name: string | null; auth_user_id: string | null }>)) {
+    // Resolve emails via auth.users, falling back to the profile email.
+    for (const a of identities.values()) {
       let email: string | null = null;
-      if (a.auth_user_id) {
+      if (a.authUserId) {
         try {
-          const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(String(a.auth_user_id));
+          const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(a.authUserId);
           email = authUser?.user?.email ?? null;
         } catch {
           email = null;
         }
       }
-      agentsById.set(String(a.id), { email, firstName: a.first_name ?? null });
+      agentsById.set(a.agentId, { email: email ?? a.email, firstName: a.firstName });
     }
   }
 
