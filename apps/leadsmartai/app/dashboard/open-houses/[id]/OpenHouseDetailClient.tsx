@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { PlaybooksPanel } from "@/components/dashboard/PlaybooksPanel";
+import { WrapupCard } from "@/components/open-houses/WrapupCard";
 import type {
   OpenHouseRow,
   OpenHouseStatus,
@@ -382,6 +383,8 @@ export function OpenHouseDetailClient({
               </div>
             )}
           </div>
+
+          <WrapupCard openHouse={oh} visitors={visitors} onUpdated={(next) => setOH((prev) => ({ ...prev, ...next }))} />
 
           <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("pages.openHouseDetail.followUp")}</h3>

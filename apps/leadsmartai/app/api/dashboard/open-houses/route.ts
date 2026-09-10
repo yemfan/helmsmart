@@ -75,6 +75,10 @@ export async function POST(req: Request) {
         mlsUrl: body.mlsUrl ?? null,
         listPrice: body.listPrice ?? null,
         hostNotes: body.hostNotes ?? null,
+        ownerName: body.ownerName ?? null,
+        ownerEmail: body.ownerEmail ?? null,
+        requestingAgentName: body.requestingAgentName ?? null,
+        requestingAgentEmail: body.requestingAgentEmail ?? null,
         occurrences,
       });
       return NextResponse.json({
@@ -113,6 +117,10 @@ export async function POST(req: Request) {
       mlsUrl: body.mlsUrl ?? null,
       listPrice: body.listPrice ?? null,
       hostNotes: body.hostNotes ?? null,
+      ownerName: body.ownerName ?? null,
+      ownerEmail: body.ownerEmail ?? null,
+      requestingAgentName: body.requestingAgentName ?? null,
+      requestingAgentEmail: body.requestingAgentEmail ?? null,
     });
     return NextResponse.json({ ok: true, openHouse: created });
   } catch (err) {

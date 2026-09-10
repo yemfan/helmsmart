@@ -170,6 +170,10 @@
       "schedule": "30 * * * *"
     },
     {
+      "path": "/api/cron/open-house-wrapups",
+      "schedule": "15 * * * *"
+    },
+    {
       "path": "/api/cron/seller-weekly-updates",
       "schedule": "0 17 * * 1"
     },

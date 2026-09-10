@@ -34,6 +34,18 @@ export type OpenHouseRow = {
   host_notes: string | null;
   status: OpenHouseStatus;
 
+  /** The wrap-up: who the day's report goes to, what it said, when it went. */
+  listing_id?: string | null;
+  owner_name?: string | null;
+  owner_email?: string | null;
+  requesting_agent_name?: string | null;
+  requesting_agent_email?: string | null;
+  summary?: unknown;
+  summary_ready_at?: string | null;
+  host_comment?: string | null;
+  summary_sent_at?: string | null;
+  summary_sent_to?: string[] | null;
+
   recurrence_group_id: string | null;
 
   created_at: string;
