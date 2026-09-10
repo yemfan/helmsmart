@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type {
   ListingFeedbackRow,
@@ -61,20 +62,9 @@ export async function getPublicFeedbackBySlug(
   let listingAgentName: string | null = null;
   let brokerage: string | null = null;
   try {
-    const { data: agentRow } = await supabaseAdmin
-      .from("agents")
-      .select("first_name, last_name, brokerage_name")
-      .eq("id", row.agent_id)
-      .maybeSingle();
-    const a = agentRow as {
-      first_name: string | null;
-      last_name: string | null;
-      brokerage_name: string | null;
-    } | null;
-    listingAgentName = a
-      ? `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || null
-      : null;
-    brokerage = a?.brokerage_name ?? null;
+    const a = await loadAgentDisplayIdentity(row.agent_id);
+    listingAgentName = a?.fullName ?? null;
+    brokerage = a?.brokerage ?? null;
   } catch {
     // non-fatal
   }

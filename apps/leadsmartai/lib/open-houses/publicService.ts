@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import type {
@@ -82,14 +83,9 @@ export async function getPublicOpenHouseBySlug(
   let firstName: string | null = null;
   let headline: string | null = null;
   try {
-    const { data: agentRow } = await supabaseAdmin
-      .from("agents")
-      .select("first_name, brokerage_name")
-      .eq("id", row.agent_id)
-      .maybeSingle();
-    const a = agentRow as { first_name: string | null; brokerage_name: string | null } | null;
-    firstName = a?.first_name ?? null;
-    headline = a?.brokerage_name ?? null;
+    const a = await loadAgentDisplayIdentity(row.agent_id);
+    firstName = a?.firstName ?? null;
+    headline = a?.brokerage ?? null;
   } catch {
     // non-fatal
   }

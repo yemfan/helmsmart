@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
 import { logAssistantActivity } from "@/lib/closeboss/activities";
@@ -29,7 +30,6 @@ import type { TransactionRow, TransactionTaskRow } from "./types";
  * monitoring (Vercel log drains) and smoke tests.
  */
 
-type AgentRow = { id: string | number; auth_user_id: string | null; first_name?: string | null };
 
 export type RunOverdueNudgesResult = {
   processedAgents: number;
@@ -194,33 +194,29 @@ export async function runOverdueNudges(opts: {
         continue;
       }
 
-      // Resolve agent email via auth.admin.
-      const { data: agentRows } = await supabaseAdmin
-        .from("agents")
-        .select("id, auth_user_id, first_name")
-        .eq("id", agentId)
-        .maybeSingle();
-      const agent = agentRows as AgentRow | null;
-      if (!agent?.auth_user_id) {
+      // Resolve agent email via auth.admin. The name lives on
+      // user_profiles, not agents; a database error here throws into the
+      // per-agent catch rather than reading as "no such agent".
+      const agent = await loadAgentDisplayIdentity(agentId);
+      if (!agent?.authUserId) {
         result.skippedNoEmail += 1;
         continue;
       }
 
-      const { data: authUser, error: authErr } = await supabaseAdmin.auth.admin.getUserById(
-        String(agent.auth_user_id),
-      );
-      if (authErr || !authUser?.user?.email) {
+      const { data: authUser, error: authErr } = await supabaseAdmin.auth.admin.getUserById(agent.authUserId);
+      const email = (authErr ? null : authUser?.user?.email) ?? agent.email ?? null;
+      if (!email) {
         result.skippedNoEmail += 1;
         continue;
       }
 
       const { subject, html, text } = renderDigestEmail(digest, {
         appBaseUrl,
-        agentFirstName: agent.first_name ?? null,
+        agentFirstName: agent.firstName,
       });
 
       await sendEmail({
-        to: authUser.user.email,
+        to: email,
         subject,
         text,
         html,

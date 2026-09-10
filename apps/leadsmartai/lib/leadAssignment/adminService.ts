@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentities } from "@/lib/agents/displayIdentity.server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 import {
@@ -97,20 +98,9 @@ export async function getRoutingPoolRoster(): Promise<GetRoutingPoolRosterResult
 async function fetchAgentMeta(agentIds: string[]): Promise<RosterAgentMeta[]> {
   if (agentIds.length === 0) return [];
   try {
-    const { data, error } = await supabaseAdmin
-      .from("agents")
-      .select("id, first_name, last_name")
-      .in("id", agentIds as unknown as never[]);
-    if (error) throw new Error(error.message);
-    return ((data ?? []) as Array<{
-      id: string | number;
-      first_name: string | null;
-      last_name: string | null;
-    }>).map((r) => ({
-      agentId: String(r.id),
-      displayName:
-        `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim() || null,
-    }));
+    // Names live on user_profiles, not agents.
+    const identities = await loadAgentDisplayIdentities(agentIds);
+    return [...identities.values()].map((a) => ({ agentId: a.agentId, displayName: a.fullName }));
   } catch (e) {
     console.warn("[adminService.fetchAgentMeta] failed:", e);
     return [];

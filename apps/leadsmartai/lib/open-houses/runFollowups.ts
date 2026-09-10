@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentities } from "@/lib/agents/displayIdentity.server";
 import { sendEmail } from "@/lib/email";
 import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
 import { sendSMS } from "@/lib/twilioSms";
@@ -117,13 +118,15 @@ async function processQueue(ctx: {
 
   // Batch fetch agent first names.
   const agentIds = [...new Set(visitors.map((v) => v.agent_id))];
-  const { data: agentRows } = await supabaseAdmin
-    .from("agents")
-    .select("id, first_name")
-    .in("id", agentIds);
+  // Names live on user_profiles, not agents. Best-effort: a failed lookup
+  // sends the follow-ups unsigned rather than not at all.
   const agentFirstNameById = new Map<string, string | null>();
-  for (const a of (agentRows ?? []) as Array<{ id: string | number; first_name: string | null }>) {
-    agentFirstNameById.set(String(a.id), a.first_name ?? null);
+  try {
+    for (const a of (await loadAgentDisplayIdentities(agentIds)).values()) {
+      agentFirstNameById.set(a.agentId, a.firstName);
+    }
+  } catch (e) {
+    console.warn("[open-houses.followups] agent lookup failed:", e instanceof Error ? e.message : e);
   }
 
   for (const v of visitors) {

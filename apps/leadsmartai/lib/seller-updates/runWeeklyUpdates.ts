@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { isAnthropicConfigured } from "@/lib/anthropic";
 import { sendEmail } from "@/lib/email";
 import { logEmailMessage } from "@/lib/ai-email/lead-resolution";
@@ -145,19 +146,11 @@ export async function runWeeklySellerUpdates(opts: {
       }
 
       // Best-effort agent identity for the email signature.
-      const { data: agentRow } = await supabaseAdmin
-        .from("agents")
-        .select("first_name, last_name, brokerage_name")
-        .eq("id", tx.agent_id)
-        .maybeSingle();
-      const agent = agentRow as {
-        first_name: string | null;
-        last_name: string | null;
-        brokerage_name: string | null;
-      } | null;
-      const agentName = agent
-        ? `${agent.first_name ?? ""} ${agent.last_name ?? ""}`.trim() || null
-        : null;
+      const agent = await loadAgentDisplayIdentity(tx.agent_id).catch((e) => {
+        console.warn("[seller-updates] agent lookup failed:", e instanceof Error ? e.message : e);
+        return null;
+      });
+      const agentName = agent?.fullName ?? null;
 
       const sellerFirstName =
         seller.first_name ||
@@ -169,7 +162,7 @@ export async function runWeeklySellerUpdates(opts: {
         commentary,
         sellerFirstName,
         agentName,
-        agentBrokerage: agent?.brokerage_name ?? null,
+        agentBrokerage: agent?.brokerage ?? null,
       });
 
       const sent = await sendEmail({ to: seller.email, subject, text, html });

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { loadAgentDisplayIdentity } from "@/lib/agents/displayIdentity.server";
 import { isAnthropicConfigured } from "@/lib/anthropic";
 import { sendEmail } from "@/lib/email";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -139,26 +140,17 @@ export async function runWeeklyGrowthDigest(opts: {
         continue;
       }
 
-      // Resolve email.
-      const { data: agentRow } = await supabaseAdmin
-        .from("agents")
-        .select("id, auth_user_id, first_name")
-        .eq("id", agentId)
-        .maybeSingle();
-      const agent = agentRow as {
-        id: string | number;
-        auth_user_id: string | null;
-        first_name?: string | null;
-      } | null;
-      if (!agent?.auth_user_id) {
+      // Resolve email. The name lives on user_profiles, not agents; a
+      // database error here throws into the per-agent catch below rather
+      // than reading as "no such agent".
+      const agent = await loadAgentDisplayIdentity(agentId);
+      if (!agent?.authUserId) {
         result.skippedNoEmail += 1;
         if (logId) await stampLog(logId, { skipped_reason: "no-auth-user" });
         continue;
       }
-      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(
-        String(agent.auth_user_id),
-      );
-      const email = authUser?.user?.email ?? null;
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(agent.authUserId);
+      const email = authUser?.user?.email ?? agent.email ?? null;
       if (!email) {
         result.skippedNoEmail += 1;
         if (logId) await stampLog(logId, { skipped_reason: "no-email" });
@@ -168,7 +160,7 @@ export async function runWeeklyGrowthDigest(opts: {
       const { subject, html, text } = renderGrowthDigestEmail({
         opportunities: top,
         appBaseUrl,
-        agentFirstName: agent.first_name ?? null,
+        agentFirstName: agent.firstName,
       });
 
       await sendEmail({ to: email, subject, text, html });

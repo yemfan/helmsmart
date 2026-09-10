@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loadAgentDisplayIdentities } from "@/lib/agents/displayIdentity.server";
 import { requireRoleRoute } from "@/lib/auth/requireRole";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -23,24 +24,25 @@ export async function GET(req: Request) {
         .is("agent_id", null)
         .order("created_at", { ascending: false })
         .range(from, to),
-      supabaseAdmin
-        .from("agents")
-        .select("id, name, email")
-        .order("name", { ascending: true }),
+      supabaseAdmin.from("agents").select("id"),
     ]);
 
     if (leadsResult.error) throw leadsResult.error;
     if (agentsResult.error) throw agentsResult.error;
 
+    // Names and emails live on user_profiles, not agents.
+    const identities = await loadAgentDisplayIdentities(
+      ((agentsResult.data ?? []) as Array<{ id: string | number }>).map((a) => a.id),
+    );
+    const agents = [...identities.values()]
+      .map((a) => ({ id: a.agentId, name: a.fullName ?? a.email ?? `Agent #${a.agentId}`, email: a.email }))
+      .sort((x, y) => x.name.localeCompare(y.name));
+
     return NextResponse.json({
       ok: true,
       leads: leadsResult.data ?? [],
       total: leadsResult.count ?? 0,
-      agents: (agentsResult.data ?? []).map((a: any) => ({
-        id: String(a.id),
-        name: a.name ?? a.email ?? `Agent #${a.id}`,
-        email: a.email ?? null,
-      })),
+      agents,
       page,
       pageSize,
     });
