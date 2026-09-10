@@ -34,6 +34,10 @@ export type CreateOpenHouseInput = {
   mlsUrl?: string | null;
   listPrice?: number | null;
   hostNotes?: string | null;
+  ownerName?: string | null;
+  ownerEmail?: string | null;
+  requestingAgentName?: string | null;
+  requestingAgentEmail?: string | null;
 };
 
 export async function createOpenHouse(input: CreateOpenHouseInput): Promise<OpenHouseRow> {
@@ -57,6 +61,10 @@ export async function createOpenHouse(input: CreateOpenHouseInput): Promise<Open
         end_at: input.endAt,
         signin_slug: slug,
         host_notes: input.hostNotes ?? null,
+        owner_name: input.ownerName ?? null,
+        owner_email: input.ownerEmail ?? null,
+        requesting_agent_name: input.requestingAgentName ?? null,
+        requesting_agent_email: input.requestingAgentEmail ?? null,
       })
       .select("*")
       .single();
@@ -238,6 +246,11 @@ export type UpdateOpenHouseInput = Partial<{
   host_notes: string | null;
   status: OpenHouseStatus;
   transaction_id: string | null;
+  owner_name: string | null;
+  owner_email: string | null;
+  requesting_agent_name: string | null;
+  requesting_agent_email: string | null;
+  host_comment: string | null;
 }>;
 
 export async function updateOpenHouse(

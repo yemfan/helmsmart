@@ -80,6 +80,10 @@ export function NewOpenHouseClient() {
   const [startTime, setStartTime] = useState("14:00");
   const [endTime, setEndTime] = useState("16:00");
   const [hostNotes, setHostNotes] = useState("");
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [requestingAgentName, setRequestingAgentName] = useState("");
+  const [requestingAgentEmail, setRequestingAgentEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -139,6 +143,10 @@ export function NewOpenHouseClient() {
         mlsUrl: mlsUrl.trim() || null,
         listPrice: listPrice ? Number(listPrice) : null,
         hostNotes: hostNotes.trim() || null,
+        ownerName: ownerName.trim() || null,
+        ownerEmail: ownerEmail.trim() || null,
+        requestingAgentName: requestingAgentName.trim() || null,
+        requestingAgentEmail: requestingAgentEmail.trim() || null,
       };
       const body = isRecurring
         ? {
@@ -482,6 +490,17 @@ export function NewOpenHouseClient() {
             className="mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm"
           />
           <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.copiedToAll")}</p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+          <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{t("pages.newOpenHouse.wrapupTitle")}</p>
+          <p className="mt-0.5 text-[11px] text-slate-500">{t("pages.newOpenHouse.wrapupHint")}</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <input value={ownerName} onChange={(e) => setOwnerName(e.target.value)} placeholder={t("pages.newOpenHouse.ownerName")} aria-label={t("pages.newOpenHouse.ownerName")} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm" />
+            <input type="email" value={ownerEmail} onChange={(e) => setOwnerEmail(e.target.value)} placeholder={t("pages.newOpenHouse.ownerEmail")} aria-label={t("pages.newOpenHouse.ownerEmail")} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm" />
+            <input value={requestingAgentName} onChange={(e) => setRequestingAgentName(e.target.value)} placeholder={t("pages.newOpenHouse.requestingAgentName")} aria-label={t("pages.newOpenHouse.requestingAgentName")} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm" />
+            <input type="email" value={requestingAgentEmail} onChange={(e) => setRequestingAgentEmail(e.target.value)} placeholder={t("pages.newOpenHouse.requestingAgentEmail")} aria-label={t("pages.newOpenHouse.requestingAgentEmail")} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm" />
+          </div>
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
