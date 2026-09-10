@@ -2,12 +2,26 @@
  * Agent licenses — the pure half.
  *
  * What a license number looks like in each state, where a person checks
- * it, what the ARELLO licensee service can and cannot confirm, how a
- * verification answer turns into a status, and the brokerage line that
- * goes on every published post. No I/O; license.server.ts does the rest.
+ * it, which states have a public record we can read for free, how a
+ * lookup answer turns into a status, and the brokerage line that goes on
+ * every published post. No I/O; license.server.ts does the rest.
  */
 
 export type LicenseStatus = "format_ok" | "verified" | "not_found" | "inactive" | "mismatch" | "unavailable";
+
+/** The useful part of the regulator's public record, as stored beside the license. */
+export type LicenseRecord = {
+  holderName: string | null;
+  /** SALESPERSON, BROKER, CORPORATION, … as the regulator prints it. */
+  licenseType: string | null;
+  statusRaw: string | null;
+  active: boolean;
+  expiresOn: string | null;
+  issuedOn: string | null;
+  responsibleBroker: { id: string; name: string } | null;
+  discipline: string | null;
+  lookedUpAt: string;
+};
 
 export type AgentLicense = {
   agentId: string;
@@ -15,7 +29,8 @@ export type AgentLicense = {
   state: string;
   status: LicenseStatus;
   verifiedAt: string | null;
-  verifiedBy: "arello" | "manager" | null;
+  verifiedBy: "record" | "manager" | null;
+  record: LicenseRecord | null;
 };
 
 type StateRule = {
@@ -59,10 +74,12 @@ export const LICENSE_STATES: Record<string, StateRule> = {
 
 export const US_STATES: readonly string[] = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
 
-/** Jurisdictions the ARELLO licensee web service carries (arello.com, September 2026). */
-export const ARELLO_JURISDICTIONS: ReadonlySet<string> = new Set([
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NC", "OK", "OR", "SC", "SD", "TN", "TX", "UT", "VT", "WV", "WY",
-]);
+/** States whose regulator publishes a per-license page we read for free (lib/licenses). */
+export const PUBLIC_RECORD_STATES: ReadonlySet<string> = new Set(["CA"]);
+
+export function hasPublicRecord(state: string): boolean {
+  return PUBLIC_RECORD_STATES.has(state);
+}
 
 const GENERIC = /^[A-Z0-9][A-Z0-9.\-]{2,14}$/i;
 
@@ -105,38 +122,22 @@ export function licenseLookupUrl(state: string): string | null {
   return LICENSE_STATES[state]?.lookup ?? null;
 }
 
-export function canVerifyViaArello(state: string): boolean {
-  return ARELLO_JURISDICTIONS.has(state);
+export function licenseRegulator(state: string): string | null {
+  return LICENSE_STATES[state]?.regulator ?? null;
 }
 
-/** One record as the ARELLO / SourceRE search returns it (the fields we read). */
-export type ArelloHit = {
-  licenseNumber?: string | null;
-  licenseStatus?: string | null;
-  licenseType?: string | null;
-  licenseExpirationDate?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  officeName?: string | null;
-  score?: number | null;
-};
-
-const ACTIVE = /\b(active|current|valid|licensed|in good standing)\b/i;
-
 /**
- * What the answer means. The number must match exactly (a fuzzy name hit
- * is not proof); an expired or suspended license is "inactive"; a matching
- * number under a different surname is a mismatch worth a person's look.
+ * What a lookup answer means for the stored status. A record that is
+ * current confirms the license; an expired or suspended one is "inactive";
+ * no record under that number is "not found"; a state with no public page
+ * is "unavailable" (a manager confirms by hand); a failed fetch changes
+ * nothing, because a slow government site is not evidence.
  */
-export function verificationOutcome(hits: readonly ArelloHit[], want: { number: string; lastName?: string | null }): { status: LicenseStatus; hit: ArelloHit | null } {
-  const number = normalizeLicenseNumber(want.number);
-  const hit = hits.find((h) => normalizeLicenseNumber(String(h.licenseNumber ?? "")) === number) ?? null;
-  if (!hit) return { status: "not_found", hit: null };
-  const last = want.lastName?.trim().toLowerCase();
-  if (last && hit.lastName && hit.lastName.trim().toLowerCase() !== last) return { status: "mismatch", hit };
-  if (hit.licenseStatus && !ACTIVE.test(hit.licenseStatus)) return { status: "inactive", hit };
-  if (hit.licenseExpirationDate && Date.parse(hit.licenseExpirationDate) < Date.now()) return { status: "inactive", hit };
-  return { status: "verified", hit };
+export function statusFromLookup(kind: "found" | "not_found" | "unsupported" | "error", record?: { active: boolean } | null): LicenseStatus | null {
+  if (kind === "found") return record?.active ? "verified" : "inactive";
+  if (kind === "not_found") return "not_found";
+  if (kind === "unsupported") return "unavailable";
+  return null;
 }
 
 export type BrokerageLineInput = {

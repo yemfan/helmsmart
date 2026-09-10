@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import { importRoster, resendInvite, verifyMemberLicense } from "@/app/dashboard/team/actions";
 import { licenseLabel, licenseLookupUrl, type AgentLicense } from "@/lib/teams/license";
-import { LicenseStatusChip } from "./LicenseForm";
+import { LicenseRecordLine, LicenseStatusChip } from "./LicenseForm";
 import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
 
 /**
@@ -239,6 +239,7 @@ function LicenseCell({ teamId, agentId, license: initial }: { teamId: string; ag
         {license.state} {licenseLabel(license.state)}
         {license.number}
       </span>
+      <LicenseRecordLine license={license} />
       <span className="flex flex-wrap items-center gap-1.5">
         <LicenseStatusChip license={license} />
         {license.status !== "verified" ? (

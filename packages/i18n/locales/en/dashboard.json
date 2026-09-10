@@ -8462,6 +8462,8 @@
       "numberLabel": "License number ({{label}})",
       "genericRegulator": "state regulator",
       "numberHint": "Shown in ads as {{label}}",
+      "numberHintRecord": "Shown in ads as {{label}}. Saving reads your {{regulator}} public record and fills in your details.",
+      "lookingUp": "Looking up…",
       "save": "Save license",
       "saving": "Saving…",
       "saved": "Saved!",
@@ -8486,13 +8488,19 @@
         "not_found": "The regulator's records have no license with this number.",
         "inactive": "The regulator lists this license as expired or not active.",
         "mismatch": "This number is on file under a different surname.",
-        "unavailable": "This state does not share its records; a manager can confirm it by hand."
+        "unavailable": "No public record to read for this state; a manager can confirm it by hand."
       },
-      "byArello": "against the state's records",
+      "byRecord": "by the {{regulator}} public record",
       "byManager": "by your brokerage",
       "checkOnRegulator": "Check on the {{regulator}} site",
-      "arelloOff": "Automatic verification is not connected; your brokerage confirms licenses by hand.",
-      "note": "Only your state and license number are stored. The number is printed on your posts and your lead page; nothing else from the lookup is shown."
+      "lookupNone": "No public record to read for this state yet; your brokerage confirms the license by hand.",
+      "record": {
+        "line": "{{regulator}} record: {{name}} · {{type}} · {{status}}",
+        "expires": "expires {{date}}",
+        "broker": "broker {{name}}",
+        "discipline": "Discipline noted on the record"
+      },
+      "note": "Your state and number are stored with what the public record says about them. The number is printed on your posts and your lead page; the record fills in your name and brokerage where they were blank, and never overwrites what you typed."
     },
     "teamBrand": {
       "title": "Brokerage brand",
@@ -8500,7 +8508,9 @@
       "name": "Brokerage name",
       "nameHint": "As it should read on agent pages.",
       "license": "Brokerage license",
-      "licenseHint": "Required. The brokerage's DRE or state license number; it goes on every agent page and post.",
+      "licenseHint": "Required. The brokerage's DRE or state license number; it goes on every agent page and post. A California number fills in the name from the DRE record.",
+      "licenseRecord": "DRE record: {{name}} · {{type}} · {{status}}",
+      "licenseExpires": "expires {{date}}",
       "logo": "Logo URL",
       "logoHint": "A link to a PNG or SVG on a white background.",
       "website": "Website",

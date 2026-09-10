@@ -56,7 +56,6 @@ export function TeamDashboard({
   library = [],
   referrals = [],
   myLicense = null,
-  arelloOn = false,
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -75,7 +74,6 @@ export function TeamDashboard({
   referrals?: Referral[];
   /** The caller's own license; null means the brokerage is still waiting for it. */
   myLicense?: AgentLicense | null;
-  arelloOn?: boolean;
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -113,7 +111,7 @@ export function TeamDashboard({
           <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.teamLicense.cardTitle")}</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t("pages.teamLicense.cardIntro", { brokerage: brand?.name ?? roster.team.name })}</p>
           <div className="mt-4">
-            <LicenseForm initial={null} required arelloOn={arelloOn} />
+            <LicenseForm initial={null} required />
           </div>
         </section>
       ) : null}

@@ -15,7 +15,6 @@
         "dist/**"
       ],
       "env": [
-        "ARELLO_*",
         "NEXT_PUBLIC_*",
         "EXPO_PUBLIC_*",
         "SUPABASE_*",
