@@ -63,6 +63,7 @@ export type SectionKey =
   | "tools"
   | "areas"
   | "content"
+  | "announcements"
   | "social"
   | "leadCapture"
   | "trust"
@@ -81,6 +82,7 @@ export const SECTION_KEYS: SectionKey[] = [
   "tools",
   "areas",
   "content",
+  "announcements",
   "social",
   "leadCapture",
   "trust",

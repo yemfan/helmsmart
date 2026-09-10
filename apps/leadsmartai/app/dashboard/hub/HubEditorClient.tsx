@@ -10,6 +10,7 @@ import { SECTION_KEYS, type EditorData, type SectionKey } from "./editor/types";
 import { OverviewSection, AnalyticsSection } from "./editor/Overview";
 import { AssistantSection, HeroSection, ProfileSection, ServicesSection, WorkforceSection } from "./editor/sections1";
 import {
+  AnnouncementsSection,
   AppearanceSection,
   AreasSection,
   ContentSection,
@@ -182,6 +183,8 @@ function SectionBody({ section, ...props }: SectionProps & { section: SectionKey
       return <AreasSection {...props} />;
     case "content":
       return <ContentSection {...props} />;
+    case "announcements":
+      return <AnnouncementsSection {...props} />;
     case "social":
       return <SocialSection {...props} />;
     case "leadCapture":

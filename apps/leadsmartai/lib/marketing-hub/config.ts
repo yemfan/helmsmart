@@ -139,6 +139,26 @@ const FeaturedItemSchema = z.object({
 });
 export type FeaturedItem = z.infer<typeof FeaturedItemSchema>;
 
+/** One thing the agent wants noticed: an event, a milestone, a notice. Dated ones sort by date. */
+const AnnouncementSchema = z.object({
+  id: z.string().trim().min(1).max(40),
+  title: z.string().trim().min(1).max(120),
+  body: z.string().trim().max(400).nullable().default(null),
+  /** YYYY-MM-DD, the day it happens; null for a standing notice. */
+  date: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v), "date")
+    .transform((v) => v || null)
+    .nullable()
+    .default(null),
+  url: httpUrl.nullable().default(null),
+  /** Shown as the card's label — "Event", "New", "Notice". */
+  badge: z.string().trim().max(40).nullable().default(null),
+});
+export type HubAnnouncement = z.infer<typeof AnnouncementSchema>;
+export const ANNOUNCEMENT_DAYS_AHEAD = [3, 7, 10, 14, 30] as const;
+
 export const BOOKING_MODES = ["auto", "receptionist", "external", "request", "off"] as const;
 export type BookingMode = (typeof BOOKING_MODES)[number];
 
@@ -254,6 +274,22 @@ export const HubConfigSchema = z.object({
     .object({
       showFeed: z.boolean().default(true),
       featured: z.array(FeaturedItemSchema).max(6).default([]),
+    })
+    .default({}),
+
+  /**
+   * What is coming up: open houses and listings pulled from the agent's own
+   * calendar and listings automatically, plus anything they write in.
+   */
+  announcements: z
+    .object({
+      enabled: z.boolean().default(true),
+      headline: z.string().trim().max(120).nullable().default(null),
+      showOpenHouses: z.boolean().default(true),
+      showListings: z.boolean().default(true),
+      /** How far ahead an open house is announced. */
+      daysAhead: z.number().int().min(1).max(60).default(10),
+      items: z.array(AnnouncementSchema).max(8).default([]),
     })
     .default({}),
 

@@ -47,7 +47,7 @@ import {
 import { areaSlug } from "@/lib/marketing-hub/areas";
 import { contentBody, slugFor, titleOf } from "@/lib/marketing-hub/contentPages";
 import type { FeedItem } from "@/lib/marketing-hub/feedItems";
-import type { Hub } from "@/lib/marketing-hub/loadHub";
+import type { Hub, HubOpenHouse } from "@/lib/marketing-hub/loadHub";
 import { availablePages, sectionHref, type HubPageFacts } from "@/lib/marketing-hub/pages";
 import HubMobileNav from "./HubMobileNav";
 import { hubTool, hubToolHref, resolveHubTools, type HubToolIcon } from "@/lib/marketing-hub/tools";
@@ -233,6 +233,9 @@ export function hubMenu(hub: Hub, L: HubLabels, fromHome: boolean | undefined): 
   }));
   if (hub.assistantAvailable) {
     items.splice(1, 0, { key: "assistant", href: sectionHref(hub.username, "assistant", layout, { fromHome }), label: L.nav.assistant });
+  }
+  if (hasAnnouncements(hub)) {
+    items.splice(1, 0, { key: "announcements", href: layout === "pages" && !fromHome ? `/@${hub.username}#announcements` : "#announcements", label: L.announcements.nav });
   }
   if (layout === "pages" && !fromHome) items.unshift({ key: "home", href: `/@${hub.username}`, label: L.nav.home });
   return items;
@@ -1024,5 +1027,113 @@ export function HubFooter({ hub, L, theme }: SectionProps) {
         </div>
       </div>
     </footer>
+  );
+}
+
+/** Whether the announcements section has anything to say. */
+export function hasAnnouncements(hub: Hub): boolean {
+  const cfg = hub.config.announcements;
+  return cfg.enabled && ((cfg.showOpenHouses && hub.openHouses.length > 0) || (cfg.showListings && hub.listings.length > 0) || cfg.items.length > 0);
+}
+
+function icsFor(oh: HubOpenHouse, title: string): string {
+  const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const esc = (s: string) => s.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//CloseBoss//Hub//EN", "BEGIN:VEVENT", `UID:${oh.id}@closebossai.com`, `DTSTAMP:${stamp(new Date().toISOString())}`, `DTSTART:${stamp(oh.startAt)}`, `DTEND:${stamp(oh.endAt)}`, `SUMMARY:${esc(title)}`, `LOCATION:${esc([oh.address, oh.city].filter(Boolean).join(", "))}`, "END:VEVENT", "END:VCALENDAR"];
+  return `data:text/calendar;charset=utf-8,${encodeURIComponent(lines.join("\r\n"))}`;
+}
+
+/**
+ * What is coming up: the agent's open houses inside the window and listings
+ * about to start or just started, pulled automatically, plus anything they
+ * wrote in. Soonest first; a standing notice with no date comes last.
+ */
+export function Announcements({ hub, L, theme, locale }: SectionProps & { locale?: string }) {
+  if (!hasAnnouncements(hub)) return null;
+  const cfg = hub.config.announcements;
+  const tz = hub.timezone ?? "America/Los_Angeles";
+  const tag = locale ?? "en-US";
+  const day = (iso: string) => new Intl.DateTimeFormat(tag, { weekday: "short", month: "short", day: "numeric", timeZone: tz }).format(new Date(iso));
+  const time = (iso: string) => new Intl.DateTimeFormat(tag, { hour: "numeric", minute: "2-digit", timeZone: tz }).format(new Date(iso));
+  const money = (n: number) => n.toLocaleString(tag, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  type Card = { id: string; badge: string; when: string | null; title: string; body: string | null; href: string | null; external: boolean; cta: string | null; ics: string | null; sort: string };
+  const cards: Card[] = [];
+  if (cfg.showOpenHouses) {
+    for (const oh of hub.openHouses) {
+      const title = [oh.address, oh.city].filter(Boolean).join(", ");
+      cards.push({
+        id: `oh-${oh.id}`,
+        badge: L.announcements.openHouse,
+        when: `${day(oh.startAt)} · ${time(oh.startAt)} – ${time(oh.endAt)}`,
+        title,
+        body: oh.listPrice ? money(oh.listPrice) : null,
+        href: oh.slug ? `/oh/${oh.slug}` : null,
+        external: false,
+        cta: oh.slug ? L.announcements.details : null,
+        ics: icsFor(oh, `${L.announcements.openHouse}: ${title}`),
+        sort: oh.startAt,
+      });
+    }
+  }
+  if (cfg.showListings) {
+    for (const l of hub.listings) {
+      cards.push({
+        id: `ls-${l.id}`,
+        badge: l.kind === "coming_soon" ? L.announcements.comingSoon : L.announcements.justListed,
+        when: l.startedOn ? `${l.kind === "coming_soon" ? L.announcements.availableFrom : L.announcements.listedOn} ${day(`${l.startedOn}T12:00:00Z`)}` : null,
+        title: [l.address, l.city].filter(Boolean).join(", "),
+        body: l.listPrice ? money(l.listPrice) : null,
+        href: l.url,
+        external: true,
+        cta: l.url ? L.announcements.details : null,
+        ics: null,
+        sort: l.startedOn ? `${l.startedOn}T12:00:00Z` : "9999",
+      });
+    }
+  }
+  for (const item of cfg.items) {
+    cards.push({
+      id: item.id,
+      badge: item.badge?.trim() || L.announcements.notice,
+      when: item.date ? day(`${item.date}T12:00:00Z`) : null,
+      title: item.title,
+      body: item.body,
+      href: item.url,
+      external: true,
+      cta: item.url ? L.announcements.details : null,
+      ics: null,
+      sort: item.date ? `${item.date}T12:00:00Z` : "9999",
+    });
+  }
+  cards.sort((a, b) => a.sort.localeCompare(b.sort));
+  return (
+    <Section id="announcements" kicker={L.announcements.kicker} title={cfg.headline?.trim() || L.announcements.title} theme={theme} tone="tint">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((c) => (
+          <li key={c.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${theme.tint}`}>{c.badge}</span>
+              {c.when ? <span className="text-xs font-medium text-slate-500">{c.when}</span> : null}
+            </div>
+            <h3 className="mt-3 text-base font-semibold text-slate-900">{c.title}</h3>
+            {c.body ? <p className="mt-1 text-sm text-slate-600">{c.body}</p> : null}
+            {c.href || c.ics ? (
+              <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
+                {c.href ? (
+                  <a href={c.href} className={`${theme.text} underline-offset-4 hover:underline`} {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}>
+                    {c.cta}
+                  </a>
+                ) : null}
+                {c.ics ? (
+                  <a href={c.ics} download={`${c.id}.ics`} className="text-slate-600 underline-offset-4 hover:underline">
+                    {L.announcements.addToCalendar}
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }
