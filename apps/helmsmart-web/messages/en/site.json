@@ -619,6 +619,15 @@
       "subtitle": "Operating company & mailing address",
       "dba": "HelmSmart is a DBA of MAXY Investment Inc.",
       "country": "United States"
+    },
+    "confirmationEmail": {
+      "subject": "We received your message — HelmSmart",
+      "heading": "Thanks for reaching out!",
+      "greeting": "Hi {{name}},",
+      "body": "We received your message and will get back to you within one business day.",
+      "subjectLabel": "Subject:",
+      "signoff": "Best,",
+      "team": "The HelmSmart team"
     }
   },
   "sales": {
@@ -707,6 +716,14 @@
       "email": "Please provide a valid email address",
       "interest": "Please select at least one product of interest",
       "failed": "Failed to submit inquiry. Please try again or email contact@helmsmart.ai"
+    },
+    "confirmationEmail": {
+      "subject": "Thanks for your interest in HelmSmart!",
+      "heading": "We're excited to connect!",
+      "greeting": "Hi {{name}},",
+      "body": "Thanks for reaching out to the HelmSmart sales team. We'll review your inquiry and get back to you within one business day with a personalized plan for {{company}}.",
+      "signoff": "Best,",
+      "team": "The HelmSmart team"
     }
   },
   "privacy": {

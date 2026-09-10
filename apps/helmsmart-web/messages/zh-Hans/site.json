@@ -619,6 +619,15 @@
       "subtitle": "经营主体与通信地址",
       "dba": "HelmSmart 是 MAXY Investment Inc. 的经营字号。",
       "country": "美国"
+    },
+    "confirmationEmail": {
+      "subject": "我们已收到您的留言 —— HelmSmart",
+      "heading": "感谢您的来信！",
+      "greeting": "{{name}}，您好：",
+      "body": "我们已收到您的留言，将在一个工作日内回复您。",
+      "subjectLabel": "主题：",
+      "signoff": "顺颂商祺，",
+      "team": "HelmSmart 团队"
     }
   },
   "sales": {
@@ -707,6 +716,14 @@
       "email": "请填写有效的电子邮箱地址",
       "interest": "请至少选择一项感兴趣的产品",
       "failed": "咨询提交失败。请重试，或发邮件至 contact@helmsmart.ai"
+    },
+    "confirmationEmail": {
+      "subject": "感谢您对 HelmSmart 的关注！",
+      "heading": "期待与您联系！",
+      "greeting": "{{name}}，您好：",
+      "body": "感谢您联系 HelmSmart 销售团队。我们会审阅您的咨询，并在一个工作日内为 {{company}} 提供专属方案。",
+      "signoff": "顺颂商祺，",
+      "team": "HelmSmart 团队"
     }
   },
   "privacy": {
