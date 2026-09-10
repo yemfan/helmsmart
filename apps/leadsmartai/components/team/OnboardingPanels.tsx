@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
-import { importRoster, resendInvite } from "@/app/dashboard/team/actions";
+import { importRoster, resendInvite, verifyMemberLicense } from "@/app/dashboard/team/actions";
+import { licenseLabel, licenseLookupUrl, type AgentLicense } from "@/lib/teams/license";
+import { LicenseStatusChip } from "./LicenseForm";
 import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
 
 /**
@@ -150,6 +152,7 @@ export function OnboardingBoardCard({ teamId, board }: { teamId: string; board: 
               <tr>
                 <th className={th}>{k("colAgent")}</th>
                 <th className={th}>{k("colJoined")}</th>
+                <th className={th}>{k("colLicense")}</th>
                 <th className={th}>{k("colSetUp")}</th>
                 <th className={th}>{k("colHub")}</th>
                 <th className={th}>{k("colAccounts")}</th>
@@ -165,6 +168,9 @@ export function OnboardingBoardCard({ teamId, board }: { teamId: string; board: 
                     {m.role === "owner" ? <span className="ml-2 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("pages.team.owner")}</span> : null}
                   </td>
                   <td className={td}>{date(m.joinedAt)}</td>
+                  <td className={td}>
+                    <LicenseCell teamId={teamId} agentId={m.agentId} license={m.license} />
+                  </td>
                   <td className={td}>{m.onboardingCompleted ? yes : no}</td>
                   <td className={td}>
                     {m.hubPublished && m.username ? (
@@ -216,6 +222,59 @@ export function OnboardingBoardCard({ teamId, board }: { teamId: string; board: 
         </div>
       ) : null}
     </section>
+  );
+}
+
+/** Number, state and verification; a manager who checked the regulator's lookup can vouch for it. */
+function LicenseCell({ teamId, agentId, license: initial }: { teamId: string; agentId: string; license: AgentLicense | null }) {
+  const { t } = useTranslation("dashboard");
+  const [license, setLicense] = useState(initial);
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  if (!license) return <span className="text-slate-400">{t("pages.teamOnboarding.no")}</span>;
+  const lookup = licenseLookupUrl(license.state);
+  return (
+    <span className="flex flex-col gap-1">
+      <span className="tabular-nums">
+        {license.state} {licenseLabel(license.state)}
+        {license.number}
+      </span>
+      <span className="flex flex-wrap items-center gap-1.5">
+        <LicenseStatusChip license={license} />
+        {license.status !== "verified" ? (
+          <>
+            {lookup ? (
+              <a href={lookup} target="_blank" rel="noreferrer" className="text-xs text-blue-700 underline-offset-2 hover:underline dark:text-blue-400">
+                {t("pages.teamOnboarding.checkLicense")}
+              </a>
+            ) : null}
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                startTransition(async () => {
+                  setError(null);
+                  const fd = new FormData();
+                  fd.set("teamId", teamId);
+                  fd.set("agentId", agentId);
+                  const r = await verifyMemberLicense(fd);
+                  if (r.ok) setLicense(r.license);
+                  else setError(r.error);
+                })
+              }
+              className="rounded-md border border-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-60 dark:border-slate-600 dark:text-slate-300"
+            >
+              {pending ? t("pages.teamOnboarding.verifying") : t("pages.teamOnboarding.markVerified")}
+            </button>
+          </>
+        ) : null}
+        {error ? (
+          <span className="text-xs text-rose-600" role="alert">
+            {error}
+          </span>
+        ) : null}
+      </span>
+    </span>
   );
 }
 

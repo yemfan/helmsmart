@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
 import { provisionHubUsername } from "@/lib/teams/provisionHub.server";
+import { loadAgentLicense } from "@/lib/teams/license.server";
 import { getServerT } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -45,7 +46,10 @@ export default async function AcceptInvitePage({
   if (result.ok) {
     // A hub address from their name, so "hub live" on the broker's board is one click away.
     await provisionHubUsername(agentId);
-    redirect("/dashboard/team");
+    // The brokerage requires the agent's license: it goes on every post and
+    // the hub footer. Ask once, here, before anything else.
+    const license = await loadAgentLicense(agentId);
+    redirect(license ? "/dashboard/team" : "/dashboard/team/license");
   }
 
   // After the early redirect above, this branch is the failure case.

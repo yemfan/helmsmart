@@ -23,6 +23,7 @@ import { parseLibraryInput } from "@/lib/teams/library";
 import { addLibraryItem as svcAddLibraryItem, removeLibraryItem as svcRemoveLibraryItem } from "@/lib/teams/library.server";
 import { parseReferralInput, type ReferralMove } from "@/lib/teams/referrals";
 import { createReferral as svcCreateReferral, moveReferral as svcMoveReferral, searchContacts } from "@/lib/teams/referrals.server";
+import { markLicenseVerified, saveAgentLicense } from "@/lib/teams/license.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -278,6 +279,36 @@ export async function moveReferral(formData: FormData) {
     console.error("[team.referrals.move]", msg);
     const error = msg === "not_allowed" ? "That referral is not yours to change now." : msg === "amount_required" ? "Enter the closed amount." : "We could not update that referral right now.";
     return { ok: false as const, error };
+  }
+}
+
+/** The caller's own license: state + number. Checked for shape, then against ARELLO when configured. */
+export async function saveMyLicense(formData: FormData) {
+  const ctx = await getCurrentAgentContext();
+  const r = await saveAgentLicense({ agentId: ctx.agentId, state: String(formData.get("state") ?? ""), number: String(formData.get("number") ?? "") });
+  if (r.ok) {
+    revalidatePath("/dashboard/team");
+    revalidatePath("/dashboard/team/license");
+  }
+  return r;
+}
+
+/** A manager checked the regulator's lookup and vouches for a member's license. Owner or manager. */
+export async function verifyMemberLicense(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const agentId = String(formData.get("agentId") ?? "");
+  if (!teamId || !agentId) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can verify a license." };
+  if (!(await getRole({ teamId, agentId }))) return { ok: false as const, error: "That agent is not on this team." };
+  try {
+    const license = await markLicenseVerified({ agentId, byAgentId: ctx.agentId });
+    revalidatePath("/dashboard/team");
+    return license ? { ok: true as const, license } : { ok: false as const, error: "That agent has not entered a license yet." };
+  } catch (e) {
+    console.error("[team.license.verify]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not save that right now." };
   }
 }
 

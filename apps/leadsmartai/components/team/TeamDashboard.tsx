@@ -27,6 +27,8 @@ import type { LibraryItem } from "@/lib/teams/library";
 import { TeamLibraryPanel } from "./TeamLibraryPanel";
 import type { Referral } from "@/lib/teams/referrals";
 import { TeamReferralsPanel } from "./TeamReferralsPanel";
+import type { AgentLicense } from "@/lib/teams/license";
+import { LicenseForm } from "./LicenseForm";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -53,6 +55,8 @@ export function TeamDashboard({
   directory = {},
   library = [],
   referrals = [],
+  myLicense = null,
+  arelloOn = false,
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -69,6 +73,9 @@ export function TeamDashboard({
   library?: LibraryItem[];
   /** Everyone: referrals they are part of; managers: the whole office. */
   referrals?: Referral[];
+  /** The caller's own license; null means the brokerage is still waiting for it. */
+  myLicense?: AgentLicense | null;
+  arelloOn?: boolean;
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -100,6 +107,16 @@ export function TeamDashboard({
       </header>
 
       {canManage && seatUsage ? <SeatUsageBanner usage={seatUsage} /> : null}
+
+      {!myLicense ? (
+        <section className="rounded-2xl border border-amber-200 bg-white p-6 ring-1 ring-amber-900/[0.06] shadow-sm dark:border-amber-900 dark:bg-slate-900">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{t("pages.teamLicense.cardTitle")}</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t("pages.teamLicense.cardIntro", { brokerage: brand?.name ?? roster.team.name })}</p>
+          <div className="mt-4">
+            <LicenseForm initial={null} required arelloOn={arelloOn} />
+          </div>
+        </section>
+      ) : null}
 
       <RosterCard
         teamId={roster.team.id}

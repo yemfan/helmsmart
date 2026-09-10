@@ -15,6 +15,7 @@ import type { TikTokPostPrefs } from "./tiktok-creator-info";
 import { ensureYouTubeAccessToken, uploadYouTubeVideo } from "./youtube-publish";
 import { decryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { withBrokerageLine } from "@/lib/teams/license.server";
 
 /**
  * Shared publish helper. The sync /api/leads-gen/publish route and
@@ -139,6 +140,10 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   // expects them in the caption). FB keeps hashtags separate so
   // they're rendered as plain text (no benefit to inlining).
   let caption = rawCaption.trim();
+  // A team member's post names the brokerage and the licenses the state
+  // requires in an ad, unless the caption already does. Before the
+  // hashtags, so the tag line stays last.
+  caption = await withBrokerageLine(agentId, caption);
   const inlineHashtags =
     platform === "instagram" ||
     platform === "linkedin" ||

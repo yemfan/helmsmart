@@ -57,7 +57,12 @@ export function parseBrandInput(input: Record<string, unknown>): { ok: true; bra
     const field = (parsed.error.issues[0]?.path[0] as keyof TeamBrand | undefined) ?? "name";
     return { ok: false, field };
   }
-  return { ok: true, brand: normalizeBrand(parsed.data) };
+  const brand = normalizeBrand(parsed.data);
+  // Advertising rules name the brokerage AND its license together: a brand
+  // with one and not the other would put half a footer on every hub.
+  if (brand && brand.name && !brand.license) return { ok: false, field: "license" };
+  if (brand && brand.license && !brand.name) return { ok: false, field: "name" };
+  return { ok: true, brand };
 }
 
 function str(v: unknown): string {
