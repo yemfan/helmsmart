@@ -5,7 +5,7 @@
   },
   "page": {
     "title": "设置",
-    "subtitle": "管理您的企业信息与集成。"
+    "subtitle": "管理你的企业信息与集成。"
   },
   "actions": {
     "saving": "保存中…",
@@ -25,7 +25,7 @@
   },
   "language": {
     "title": "语言",
-    "description": "您阅读 HelmSmart 所使用的语言。这是您个人的选择，不会改变客户收到的内容。"
+    "description": "你阅读 HelmSmart 所使用的语言。这是你个人的选择，不会改变客户收到的内容。"
   },
   "general": {
     "businessName": "企业名称",
@@ -54,7 +54,7 @@
     },
     "englishAssist": {
       "label": "同时显示英文（多语言辅助）",
-      "help": "把收件箱里非英文的客户消息翻译成英文，并以双语（客户语言 + 英文）发送回复和提醒，方便您看懂发出去的内容。"
+      "help": "把收件箱里非英文的客户消息翻译成英文，并以双语（客户语言 + 英文）发送回复和提醒，方便你看懂发出去的内容。"
     },
     "save": "保存更改"
   },
@@ -89,7 +89,7 @@
     "rates": {
       "hourly": "默认小时费率",
       "hourlyPlaceholder": "例如 125",
-      "hourlyHelp": "您对外收费的费率 —— 开始计时时自动套用。",
+      "hourlyHelp": "你对外收费的费率 —— 开始计时时自动套用。",
       "laborCost": "默认人工成本费率",
       "laborCostPlaceholder": "例如 45",
       "laborCostHelp": "每工时的实际成本（工资／外包报酬），用于计算项目利润。",
@@ -117,14 +117,14 @@
   },
   "marketing": {
     "socialChannelsDescription": "连接 AI 营销要发布内容的账号。点击连接会打开服务商的安全登录页；断开连接会移除这里保存的授权。",
-    "socialAutopilotDescription": "开启后，Emily 会按您选定的节奏为您的业务撰写并排期发布内容。"
+    "socialAutopilotDescription": "开启后，Emily 会按你选定的节奏为你的业务撰写并排期发布内容。"
   },
   "slack": {
     "connected": "已连接",
-    "description": "新线索、来电和待审批事项都会在 Slack 中通知您",
+    "description": "新线索、来电和待审批事项都会在 Slack 中通知你",
     "createApp": "创建应用",
     "webhookLabel": "Incoming Webhook 地址",
-    "webhookHelp": "在您的 Slack 应用中依次打开：Features → Incoming Webhooks → Add New Webhook to Workspace，然后把地址复制到这里。",
+    "webhookHelp": "在你的 Slack 应用中依次打开：Features → Incoming Webhooks → Add New Webhook to Workspace，然后把地址复制到这里。",
     "save": "保存",
     "sendTest": "发送测试消息",
     "testSent": "测试消息已发送 ✓",
@@ -144,7 +144,7 @@
       },
       "slack_notify_approval": {
         "label": "需要审批",
-        "description": "AI 员工的某项操作需要您批准时"
+        "description": "AI 员工的某项操作需要你批准时"
       }
     },
     "test": {
@@ -192,7 +192,7 @@
   },
   "team": {
     "title": "团队",
-    "subtitle": "管理谁可以访问您的工作区",
+    "subtitle": "管理谁可以访问你的工作区",
     "backToSettings": "设置",
     "membersTitle": "团队成员",
     "pendingTitle": "待接受的邀请",
@@ -241,7 +241,7 @@
     "businessNameRequired": "请填写企业名称。",
     "missingBankAccount": "缺少银行账户。",
     "bankLinkFailed": "更新账户映射失败。",
-    "orgUpdateRefused": "保存失败 —— 您可能没有该企业的操作权限。"
+    "orgUpdateRefused": "保存失败 —— 你可能没有该企业的操作权限。"
   },
   "org": {
     "errors": {

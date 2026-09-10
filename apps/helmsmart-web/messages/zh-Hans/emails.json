@@ -68,10 +68,10 @@
   },
   "bookingAlert": {
     "subject": "新预约：{{when}}",
-    "intro": "您的 AI 前台接待已为您安排了一个预约。",
+    "intro": "你的 AI 前台接待已为你安排了一个预约。",
     "when": "时间：{{when}}",
     "caller": "来电号码：{{caller}}",
     "unknownCaller": "未知号码",
-    "onCalendar": "该预约已加入您的日历：{{url}}"
+    "onCalendar": "该预约已加入你的日历：{{url}}"
   }
 }

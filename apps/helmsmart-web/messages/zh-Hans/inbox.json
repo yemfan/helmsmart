@@ -6,7 +6,7 @@
     "title": "收件箱",
     "newConversation": "新建会话",
     "unknownSender": "未知联系人",
-    "outboundPrefix": "您：",
+    "outboundPrefix": "你：",
     "filters": {
       "all": "全部",
       "sms": "短信",

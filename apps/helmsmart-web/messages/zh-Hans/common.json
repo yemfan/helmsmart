@@ -9,10 +9,13 @@
     "viewer": "只读成员",
     "unknown": "未知"
   },
+  "offline": {
+    "title": "你已离线"
+  },
   "permission": {
     "readOnlyTitle": "只读权限",
-    "readOnlyBody": "您的角色（{{role}}）没有在此处进行修改的权限。如需权限，请联系管理员。",
-    "denied": "您没有执行此操作的权限。请向所有者或管理员申请。"
+    "readOnlyBody": "你的角色（{{role}}）没有在此处进行修改的权限。如需权限，请联系管理员。",
+    "denied": "你没有执行此操作的权限。请向所有者或管理员申请。"
   },
   "aiRoles": {
     "AI Chief Operating Officer": "AI 首席运营官",
