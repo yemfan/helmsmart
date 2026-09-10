@@ -51,7 +51,10 @@ const RENDERS_UI = /\.tsx$/;
  * it belongs in a bundle.
  */
 const EXEMPT: Record<string, string> = {
-  "app/(auth)/layout.tsx": "renders the brand wordmark and a slot; no sentences",
+  // `app/(auth)/layout.tsx` used to sit here on "no sentences". It had one — the
+  // pack tagline — rendered from a TS constant, so it read as English under a
+  // Chinese login form on every auth screen. The rule above was right; this
+  // record of the file was wrong. It translates now and is no longer exempt.
   "app/(dashboard)/layout.tsx":
     "composes the sidebar, bell and AI panel; every string belongs to those components",
   "app/(onboarding)/layout.tsx": "renders the brand wordmark and a slot; no sentences",

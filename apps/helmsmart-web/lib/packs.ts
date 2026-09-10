@@ -21,7 +21,11 @@ const helmManifest: PackManifest = {
   dataPack: "helm",
   auth: "shared",
   terms: {},
+  // `tagline` is the fallback; `taglineKey` is what actually renders, so the
+  // auth pages stop showing English under a Chinese form. Both say the same
+  // thing in English — keep them in step.
   tagline: "More control, less effort",
+  taglineKey: "footer.tagline",
 };
 
 const PACKS: Record<string, PackManifest> = {
