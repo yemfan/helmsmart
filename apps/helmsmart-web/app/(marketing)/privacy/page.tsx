@@ -3,9 +3,9 @@ import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
 
-const LEADSMART_URL = "https://leadsmart-ai.com";
-const LEADSMART_LINK = {
-  href: LEADSMART_URL,
+const CLOSEBOSS_URL = "https://www.closebossai.com";
+const CLOSEBOSS_LINK = {
+  href: CLOSEBOSS_URL,
   external: true,
   className: "text-indigo-600 hover:text-indigo-700 font-medium",
 };
@@ -71,7 +71,7 @@ export default async function PrivacyPage() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("privacy.sections.thirdParty.title")}</h2>
             <p className="text-gray-600 leading-relaxed mb-3">
-              {rich(t("privacy.sections.thirdParty.intro"), { links: [LEADSMART_LINK] })}
+              {rich(t("privacy.sections.thirdParty.intro"), { links: [CLOSEBOSS_LINK] })}
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-600">
               {["i1", "i2", "i3", "i4"].map((i) => (
@@ -112,7 +112,7 @@ export default async function PrivacyPage() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             {rich(t("privacy.footerNote"), {
-              links: [{ ...LEADSMART_LINK, className: "text-indigo-600 hover:text-indigo-700" }],
+              links: [{ ...CLOSEBOSS_LINK, className: "text-indigo-600 hover:text-indigo-700" }],
             })}
           </p>
         </div>

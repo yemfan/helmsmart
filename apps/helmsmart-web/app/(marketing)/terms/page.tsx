@@ -4,8 +4,8 @@ import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
 
 const LINK_CLASS = "text-indigo-600 hover:text-indigo-700";
-const LEADSMART_LINK = {
-  href: "https://leadsmart-ai.com",
+const CLOSEBOSS_LINK = {
+  href: "https://www.closebossai.com",
   external: true,
   className: `${LINK_CLASS} font-medium`,
 };
@@ -84,7 +84,7 @@ export default async function TermsPage() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("terms.sections.related.title")}</h2>
             <p className="text-gray-600 leading-relaxed">
-              {rich(t("terms.sections.related.p"), { links: [LEADSMART_LINK] })}
+              {rich(t("terms.sections.related.p"), { links: [CLOSEBOSS_LINK] })}
             </p>
           </div>
 
@@ -104,7 +104,7 @@ export default async function TermsPage() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             {rich(t("terms.footerNote"), {
-              links: [PRIVACY_LINK, { ...LEADSMART_LINK, className: LINK_CLASS }],
+              links: [PRIVACY_LINK, { ...CLOSEBOSS_LINK, className: LINK_CLASS }],
             })}
           </p>
         </div>

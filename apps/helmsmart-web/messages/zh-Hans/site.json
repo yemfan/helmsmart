@@ -139,7 +139,7 @@
   "about": {
     "meta": {
       "title": "关于我们——HelmSmart",
-      "description": "HelmSmart 是为小微企业打造的 AI 前台中枢，由 LeadSmart AI 的原班团队开发。更多掌控，更少投入。"
+      "description": "HelmSmart 是为小微企业打造的 AI 前台中枢，由 CloseBoss 的原班团队开发。更多掌控，更少投入。"
     },
     "hero": {
       "eyebrow": "我们的故事",
@@ -148,15 +148,15 @@
     },
     "origin": {
       "title": "HelmSmart 的由来",
-      "p1": "我们做出了 <a>LeadSmart AI</a>——一个面向房地产经纪人和贷款顾问的 AI 增长平台，并亲眼看到它改变了数以千计的从业者处理商机、跟进和客户沟通的方式。",
+      "p1": "我们做出了 <a>CloseBoss</a>——一个面向房地产经纪人和贷款顾问的 AI 增长平台，并亲眼看到它改变了数以千计的从业者处理商机、跟进和客户沟通的方式。",
       "p2": "一路走来，我们不断从另一群人口中听到同样的故事：水暖工、美发店主、承包商、顾问，以及每一位并非房地产经纪、却面对着一模一样难题的小微企业老板。漏接的电话。堆积的杂务。迟迟发不出的发票。昂贵的夜间接听服务。",
-      "p3": "HelmSmart 就是我们的答案。与 LeadSmart AI 同样的 AI 基础设施和产品理念——为每一家需要更聪明前台的小微企业彻底重做了一遍。"
+      "p3": "HelmSmart 就是我们的答案。与 CloseBoss 同样的 AI 基础设施和产品理念——为每一家需要更聪明前台的小微企业彻底重做了一遍。"
     },
     "sibling": {
       "eyebrow": "我们的兄弟产品",
-      "name": "LeadSmart AI",
+      "name": "CloseBoss",
       "description": "面向房地产经纪人和贷款顾问的 AI 增长引擎——自动捕捉、筛选并转化商机。",
-      "link": "访问 LeadSmart AI →",
+      "link": "访问 CloseBoss →",
       "note": "两款产品出自同一团队，也秉持同一承诺：真正管用的 AI，围绕真实痛点打造，而不是堆砌功能清单。"
     },
     "mission": {
@@ -172,7 +172,7 @@
         },
         "works": {
           "title": "真正管用的 AI",
-          "description": "我们花了多年时间构建生产级 AI 系统。HelmSmart 使用的正是支撑 LeadSmart AI 的那套久经考验的 AI 基础设施。"
+          "description": "我们花了多年时间构建生产级 AI 系统。HelmSmart 使用的正是支撑 CloseBoss 的那套久经考验的 AI 基础设施。"
         },
         "clarity": {
           "title": "大白话，不绕弯",
@@ -750,7 +750,7 @@
       },
       "thirdParty": {
         "title": "5. 第三方服务",
-        "intro": "HelmSmart 由 <a>LeadSmart AI</a> 的原班团队打造，两款产品遵循相似的隐私标准并共享基础设施。我们使用的第三方服务商包括：",
+        "intro": "HelmSmart 由 <a>CloseBoss</a> 的原班团队打造，两款产品遵循相似的隐私标准并共享基础设施。我们使用的第三方服务商包括：",
         "items": {
           "i1": "邮件发送（Resend）",
           "i2": "身份认证（Supabase）",
@@ -778,7 +778,7 @@
         "webLabel": "网址："
       }
     },
-    "footerNote": "HelmSmart 与兄弟产品 <a>LeadSmart AI</a> 秉持同样的隐私标准。两款产品都把用户隐私和数据安全放在首位。"
+    "footerNote": "HelmSmart 与兄弟产品 <a>CloseBoss</a> 秉持同样的隐私标准。两款产品都把用户隐私和数据安全放在首位。"
   },
   "terms": {
     "meta": {
@@ -852,7 +852,7 @@
       },
       "related": {
         "title": "11. 相关产品",
-        "p": "HelmSmart 由 <a>LeadSmart AI</a> 的原班团队打造，后者是另一款 AI 驱动的商业平台。两款产品遵循相似的服务条款标准，并致力于提供同等水准的质量与支持。"
+        "p": "HelmSmart 由 <a>CloseBoss</a> 的原班团队打造，后者是另一款 AI 驱动的商业平台。两款产品遵循相似的服务条款标准，并致力于提供同等水准的质量与支持。"
       },
       "changes": {
         "title": "12. 条款变更",
@@ -865,7 +865,7 @@
         "webLabel": "网址："
       }
     },
-    "footerNote": "如需了解 HelmSmart 的隐私实践，请查看我们的<a>隐私政策</a>。HelmSmart 与兄弟产品 <a>LeadSmart AI</a> 同样恪守对透明度和用户权利的承诺。"
+    "footerNote": "如需了解 HelmSmart 的隐私实践，请查看我们的<a>隐私政策</a>。HelmSmart 与兄弟产品 <a>CloseBoss</a> 同样恪守对透明度和用户权利的承诺。"
   },
   "book": {
     "meta": {

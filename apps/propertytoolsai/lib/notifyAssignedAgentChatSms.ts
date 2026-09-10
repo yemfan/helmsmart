@@ -8,7 +8,7 @@ export type NotifyAssignedAgentChatSmsParams = {
 };
 
 /**
- * SMS the agent a deep link to LeadSmart support inbox (opens conversation by public id when UI supports it).
+ * SMS the agent a deep link to the CloseBoss support inbox (opens conversation by public id when UI supports it).
  */
 export async function notifyAssignedAgentChatSms(
   params: NotifyAssignedAgentChatSmsParams
@@ -16,18 +16,19 @@ export async function notifyAssignedAgentChatSms(
   const sid = process.env.TWILIO_ACCOUNT_SID?.trim();
   const token = process.env.TWILIO_AUTH_TOKEN?.trim();
   const from = process.env.TWILIO_FROM_NUMBER?.trim();
-  const leadsmartBase =
+  const closebossBase =
+    process.env.NEXT_PUBLIC_CLOSEBOSS_URL?.trim().replace(/\/$/, "") ||
     process.env.NEXT_PUBLIC_LEADSMART_URL?.trim().replace(/\/$/, "") ||
     process.env.LEADSMART_APP_URL?.trim().replace(/\/$/, "");
 
   if (!sid || !token || !from) {
     return { sent: false, reason: "twilio_not_configured" };
   }
-  if (!leadsmartBase) {
-    return { sent: false, reason: "leadsmart_url_missing" };
+  if (!closebossBase) {
+    return { sent: false, reason: "closeboss_url_missing" };
   }
 
-  const openUrl = `${leadsmartBase}/dashboard/support?conversation=${encodeURIComponent(params.conversationPublicId)}`;
+  const openUrl = `${closebossBase}/dashboard/support?conversation=${encodeURIComponent(params.conversationPublicId)}`;
 
   const body = [
     `PropertyTools: ${params.customerName} started a chat.`,

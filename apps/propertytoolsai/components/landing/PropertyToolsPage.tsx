@@ -15,7 +15,10 @@ import { trackEvent } from "@/lib/marketing/trackEvent";
 import { mergeAuthHeaders } from "@/lib/mergeAuthHeaders";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-const LEADSMART_URL = process.env.NEXT_PUBLIC_LEADSMART_URL ?? "https://www.leadsmart-ai.com";
+// LeadSmart AI was renamed to CloseBoss (leadsmart-ai.com is retired / 404).
+// Dedicated env var so a stale NEXT_PUBLIC_LEADSMART_URL cannot repoint us
+// back at the dead domain; default to the live CloseBoss host.
+const CLOSEBOSS_URL = process.env.NEXT_PUBLIC_CLOSEBOSS_URL?.trim() || "https://www.closebossai.com";
 
 const tools = [
   {
@@ -403,14 +406,14 @@ export default function PropertyToolsPage() {
           Are You an Agent?
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-sm text-gray-600 md:text-base">
-          Use LeadSmart AI to turn traffic like this into real deals.
+          Use CloseBoss to turn traffic like this into real deals.
         </p>
         <a
-          href={LEADSMART_URL}
+          href={CLOSEBOSS_URL}
           target="_blank"
           rel="noopener noreferrer"
           className={buttonClasses("default", "sm", "mt-4 text-sm")}
-          onClick={() => trackEvent("tool_click", { tool: "leadsmart_cross_sell", href: LEADSMART_URL })}
+          onClick={() => trackEvent("tool_click", { tool: "closeboss_cross_sell", href: CLOSEBOSS_URL })}
         >
           Learn More
         </a>

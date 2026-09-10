@@ -78,7 +78,7 @@ export const PROPER_NOUNS = new Set([
   // A sibling product named on the About page, and the customer quoted in the
   // landing testimonial. A product keeps its name in either language, and so
   // does a person — translating either would misattribute it.
-  "LeadSmart AI",
+  "CloseBoss",
   "Sarah K.",
 ]);
 

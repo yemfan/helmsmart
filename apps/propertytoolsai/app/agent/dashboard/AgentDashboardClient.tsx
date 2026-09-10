@@ -30,9 +30,12 @@ type ActivityEvent = {
 
 type IntentCount = { count: number; lastAt: string | null };
 
-const LEADSMART_DASHBOARD_URL =
-  process.env.NEXT_PUBLIC_LEADSMART_URL?.trim() ||
-  "https://www.leadsmart-ai.com/dashboard";
+// LeadSmart AI was renamed to CloseBoss (leadsmart-ai.com is retired / 404).
+// Append the path to whichever base wins so a configured host still lands on
+// the dashboard rather than the marketing home page.
+const CLOSEBOSS_DASHBOARD_URL = `${(
+  process.env.NEXT_PUBLIC_CLOSEBOSS_URL?.trim() || "https://www.closebossai.com"
+).replace(/\/$/, "")}/dashboard`;
 
 export default function AgentDashboardClient() {
   const [range, setRange] = useState<DateRange>(getPresetDateRange("30d"));
@@ -121,17 +124,17 @@ export default function AgentDashboardClient() {
       title="Agent Dashboard"
       subtitle="Focus on the highest-intent leads and close faster."
       actions={
-        // Bridge button: most agent work happens in LeadSmart; this
+        // Bridge button: most agent work happens in CloseBoss; this
         // PropertyToolsAI dashboard is the surface where consumer-tool
         // activity from claimed leads bubbles up. One-click hop back
         // to the primary CRM.
         <a
-          href={LEADSMART_DASHBOARD_URL}
+          href={CLOSEBOSS_DASHBOARD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
         >
-          Open LeadSmart →
+          Open CloseBoss →
         </a>
       }
       kpis={
