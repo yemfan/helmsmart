@@ -1,7 +1,7 @@
 -- =============================================================================
 -- PropertyTools — delete ONE auth user safely
 --
--- Same Supabase project as LeadSmart; this script mirrors
+-- Same Supabase project as CloseBoss; this script mirrors
 -- `apps/leadsmartai/supabase/scripts/delete_user_by_id.sql`. If you change one,
 -- update the other so they stay in sync.
 --

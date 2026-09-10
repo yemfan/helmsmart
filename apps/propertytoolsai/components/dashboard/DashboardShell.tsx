@@ -9,7 +9,7 @@ type Props = {
   kpiGridClassName?: string;
   /**
    * Right-aligned action slot in the header. Used for cross-app
-   * bridge buttons ("Open LeadSmart →") and dashboard-level
+   * bridge buttons ("Open CloseBoss →") and dashboard-level
    * primary CTAs. Optional — header collapses to title-only when
    * omitted.
    */

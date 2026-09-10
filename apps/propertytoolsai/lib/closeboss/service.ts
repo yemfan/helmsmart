@@ -1,11 +1,11 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import { scoreLead } from "@/lib/leadScoring";
-import { generateLeadSmartNarrative } from "@/lib/leadsmart/aiClient";
-import { getLeadSmartConfig } from "@/lib/leadsmart/config";
-import { leadsmartLog } from "@/lib/leadsmart/logger";
-import type { LeadSmartIntelligence, LeadSmartRunRow } from "@/lib/leadsmart/types";
+import { generateCloseBossNarrative } from "@/lib/closeboss/aiClient";
+import { getCloseBossConfig } from "@/lib/closeboss/config";
+import { closebossLog } from "@/lib/closeboss/logger";
+import type { CloseBossIntelligence, CloseBossRunRow } from "@/lib/closeboss/types";
 
-async function persistRun(leadId: string, row: LeadSmartRunRow) {
+async function persistRun(leadId: string, row: CloseBossRunRow) {
   await supabaseServer.from("leadsmart_runs").insert({
     lead_id: leadId as any,
     status: row.status,
@@ -21,12 +21,12 @@ async function persistRun(leadId: string, row: LeadSmartRunRow) {
   } as any);
 }
 
-export async function buildLeadSmartIntelligence(leadId: string): Promise<LeadSmartIntelligence> {
+export async function buildCloseBossIntelligence(leadId: string): Promise<CloseBossIntelligence> {
   const started = Date.now();
-  const cfg = getLeadSmartConfig();
+  const cfg = getCloseBossConfig();
   try {
     const score = await scoreLead(leadId, false);
-    const ai = await generateLeadSmartNarrative({
+    const ai = await generateCloseBossNarrative({
       leadScore: score.lead_score,
       intent: score.intent,
       timeline: score.timeline,
@@ -34,7 +34,7 @@ export async function buildLeadSmartIntelligence(leadId: string): Promise<LeadSm
       explanation: score.explanation,
     });
     const latency = Date.now() - started;
-    const out: LeadSmartIntelligence = {
+    const out: CloseBossIntelligence = {
       lead_id: String(leadId),
       lead_score: score.lead_score,
       intent: score.intent,
@@ -69,7 +69,7 @@ export async function buildLeadSmartIntelligence(leadId: string): Promise<LeadSm
       latency_ms: latency,
       error: String(e?.message ?? "Unknown error"),
     });
-    leadsmartLog("error", "buildLeadSmartIntelligence failed", {
+    closebossLog("error", "buildCloseBossIntelligence failed", {
       lead_id: leadId,
       error: String(e?.message ?? "Unknown error"),
     });
@@ -77,8 +77,8 @@ export async function buildLeadSmartIntelligence(leadId: string): Promise<LeadSm
   }
 }
 
-export async function refreshLeadSmartBatch() {
-  const cfg = getLeadSmartConfig();
+export async function refreshCloseBossBatch() {
+  const cfg = getCloseBossConfig();
   const { data: leads, error } = await supabaseServer
     .from("leads")
     .select("id")
@@ -90,7 +90,7 @@ export async function refreshLeadSmartBatch() {
   for (const row of leads ?? []) {
     processed += 1;
     try {
-      await buildLeadSmartIntelligence(String((row as any).id));
+      await buildCloseBossIntelligence(String((row as any).id));
     } catch {
       failed += 1;
     }

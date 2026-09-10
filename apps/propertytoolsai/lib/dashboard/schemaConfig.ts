@@ -41,7 +41,7 @@ export function leadEngagementScore(row: Record<string, unknown>): number {
 }
 
 /**
- * Whether a lead counts as assigned to an agent (pipeline / LeadSmart AI heuristics).
+ * Whether a lead counts as assigned to an agent (pipeline / CloseBoss heuristics).
  */
 export function leadRowHasAssignedAgent(row: Record<string, unknown>): boolean {
   for (const key of ["assigned_agent_id", "assigned_crm_agent_id", "agent_id"]) {

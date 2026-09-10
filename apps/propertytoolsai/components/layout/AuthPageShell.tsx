@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Centered auth flows — same atmospheric background as LeadSmart AI / PropertyTools marketing.
+ * Centered auth flows — same atmospheric background as CloseBoss / PropertyTools marketing.
  */
 export default function AuthPageShell({ children, wide }: { children: ReactNode; wide?: boolean }) {
   return (

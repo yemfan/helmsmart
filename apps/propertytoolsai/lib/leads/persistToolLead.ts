@@ -137,6 +137,7 @@ export async function persistToolLead(
         property_value: propertyValue,
         buying_or_selling: buyingOrSelling,
         timeline: timeframe,
+        // Persisted key — see CloseBossHomeValueMeta in lib/homeValue/closeBossRouting.ts.
         leadsmart: {
           routing: "propertytools_tool_capture",
           ready_for_intelligence: true,

@@ -6,7 +6,7 @@ import navConfig, { propertyToolsNav as propertyToolsNavSections } from "@/nav.c
 import { leadSmartNav as leadSmartNavProduction } from "../../../leadsmartai/nav.config";
 
 /**
- * Combined preview for PropertyToolsAI + LeadSmart AI using **production** `@repo/ui` navigation.
+ * Combined preview for PropertyToolsAI + CloseBoss using **production** `@repo/ui` navigation.
  * Route: `/layout-preview` — not indexed (see `layout.tsx`).
  */
 
@@ -157,12 +157,12 @@ function PropertyToolsPreview() {
   );
 }
 
-function LeadSmartPreview() {
+function CloseBossPreview() {
   return (
     <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-gray-50 shadow-xl">
       <div className="flex min-h-[760px] flex-col md:flex-row">
         <PremiumSidebar
-          appName="LeadSmart AI"
+          appName="CloseBoss"
           sections={leadSmartNav}
           workspaceLabel="Workspace"
           footer={
@@ -174,7 +174,7 @@ function LeadSmartPreview() {
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <PremiumTopbar
-            appName="LeadSmart AI"
+            appName="CloseBoss"
             sections={leadSmartNav}
             searchPlaceholder="Search leads, clients, addresses..."
             creditsLabel="124 Credits"
@@ -289,12 +289,12 @@ export default function CombinedLayoutPreviewPage() {
                 mode === "leadsmart" ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-100",
               ].join(" ")}
             >
-              LeadSmart AI
+              CloseBoss
             </button>
           </div>
         </div>
 
-        {mode === "propertytools" ? <PropertyToolsPreview /> : <LeadSmartPreview />}
+        {mode === "propertytools" ? <PropertyToolsPreview /> : <CloseBossPreview />}
       </div>
     </main>
   );

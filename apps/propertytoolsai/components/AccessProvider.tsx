@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * PropertyTools tier, usage limits, and paywall — layered on {@link AuthProvider} (LeadSmart AI-style session).
+ * PropertyTools tier, usage limits, and paywall — layered on {@link AuthProvider} (CloseBoss-style session).
  * Role/plan resolution: `GET /api/access/usage` + `lib/access.ts` (incl. PREMIUM_GRANT_ROLES).
  */
 import {

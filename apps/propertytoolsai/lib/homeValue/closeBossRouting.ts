@@ -1,11 +1,17 @@
 /**
- * Payload helpers for LeadSmart AI — CRM + marketplace routing.
+ * Payload helpers for CloseBoss — CRM + marketplace routing.
  */
 import type { UserIntent } from "@/lib/homeValue/types";
 
-export type LeadSmartHomeValueMeta = {
+export type CloseBossHomeValueMeta = {
   v: 2;
   tool: string;
+  /**
+   * Persisted key, not a brand reference. This object is JSON-stringified
+   * into the lead's notes column, and rows written before the CloseBoss
+   * rename already carry it. Renaming it here would split old and new
+   * records, so it stays until a backfill migrates both.
+   */
   leadsmart: {
     routing: string;
     ready_for_intelligence: boolean;
@@ -22,7 +28,7 @@ export type LeadSmartHomeValueMeta = {
   market_source?: string;
 };
 
-export function buildLeadSmartHomeValueNotes(input: {
+export function buildCloseBossHomeValueNotes(input: {
   tool: string;
   likelyIntent: UserIntent;
   sessionId?: string | null;
@@ -35,7 +41,7 @@ export function buildLeadSmartHomeValueNotes(input: {
   compsPriced?: number | null;
   marketSource?: string | null;
 }): string {
-  const meta: LeadSmartHomeValueMeta = {
+  const meta: CloseBossHomeValueMeta = {
     v: 2,
     tool: input.tool,
     leadsmart: {

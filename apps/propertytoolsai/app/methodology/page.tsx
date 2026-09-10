@@ -63,7 +63,7 @@ const FAQ = [
   },
   {
     q: "When should I use a real CMA instead?",
-    a: "An AVM-based estimate is useful for quick benchmarking. If you're pricing to sell, qualifying for a refi, or making a contract decision, use a full comparative market analysis (CMA) prepared by a licensed agent who can inspect the property, weight comps by hand, and account for recent improvements. PropertyTools AI offers a CMA-report generator separately, and real licensed agents via LeadSmart AI.",
+    a: "An AVM-based estimate is useful for quick benchmarking. If you're pricing to sell, qualifying for a refi, or making a contract decision, use a full comparative market analysis (CMA) prepared by a licensed agent who can inspect the property, weight comps by hand, and account for recent improvements. PropertyTools AI offers a CMA-report generator separately, and real licensed agents via CloseBoss.",
   },
   {
     q: "What if my estimate is wrong?",

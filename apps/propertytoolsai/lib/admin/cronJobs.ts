@@ -37,7 +37,7 @@ export const CRON_JOBS: CronJob[] = [
   { id: "valuation-calibration",  label: "Valuation Calibration",     path: "/api/jobs/valuation-calibration",     schedule: "0 1 * * *",   description: "Auto-calibrate AVM model weights from recent sold data",                    category: "valuation" },
   // Data
   { id: "city-data-refresh",      label: "City Data Refresh",         path: "/api/cron/city-data-refresh",         schedule: "0 5 * * 1",   description: "Refresh local market stats (price, inventory, DOM) – Mondays",             category: "data" },
-  { id: "leadsmart-refresh",      label: "LeadSmart Refresh",         path: "/api/cron/leadsmart-refresh",         schedule: "30 5 * * *",  description: "Refresh lead batch from LeadSmart service",                                  category: "data" },
+  { id: "leadsmart-refresh",      label: "CloseBoss Refresh",         path: "/api/cron/leadsmart-refresh",         schedule: "30 5 * * *",  description: "Refresh lead batch from CloseBoss service",                                  category: "data" },
   // Tasks
   { id: "tasks-deferred",         label: "Deferred Tasks",            path: "/api/cron/tasks-deferred",            schedule: "0 7 * * *",   description: "Move deferred tasks to active when their due date arrives",                 category: "tasks" },
 ];

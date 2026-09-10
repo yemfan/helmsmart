@@ -4,7 +4,7 @@
 
 - Heuristic AVM + local median $/sqft blend
 - Simple adjustment model (beds, baths, condition, renovation, trend)
-- Lead capture + routing (unlock report, LeadSmart AI)
+- Lead capture + routing (unlock report, CloseBoss)
 - Confidence + intent inference from signals
 - Recommendation engine (intent + market + comps context)
 

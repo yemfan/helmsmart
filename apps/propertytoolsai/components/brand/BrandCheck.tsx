@@ -1,4 +1,4 @@
-/** Shared with LeadSmart AI — brand-colored ✓ chips for lists & CTAs */
+/** Shared with CloseBoss — brand-colored ✓ chips for lists & CTAs */
 
 export const BRAND = {
   primary: "#0072ce",

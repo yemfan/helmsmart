@@ -1,10 +1,11 @@
-export function leadsmartLog(
+export function closebossLog(
   level: "info" | "warn" | "error",
   message: string,
   meta?: Record<string, any>
 ) {
   const payload = {
     ts: new Date().toISOString(),
+    // Log-filter value, left as-is: dashboards and alerts may select on it.
     scope: "leadsmart",
     level,
     message,

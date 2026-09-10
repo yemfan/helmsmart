@@ -1186,7 +1186,7 @@ export function HomeValueToolInner() {
           zip: placeMeta.zip,
         }}
         title="Unlock full report"
-        subtitle="Get adjustment detail, confidence factors, and next steps. Leads use source home_value_estimator and route to LeadSmart AI."
+        subtitle="Get adjustment detail, confidence factors, and next steps. Leads use source home_value_estimator and route to CloseBoss."
         customSubmit={async ({ name, email, phone, timeline, buyingOrSelling }) => {
           const phoneTrim = phone.trim();
           const missing = result?.normalizedProperty?.missingFields ?? [];

@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         ? String(pt.subscription_status).toLowerCase()
         : status;
 
-    // Auto-end expired trial (LeadSmart trial lives on leadsmart_users).
+    // Auto-end expired trial (CloseBoss trial lives on leadsmart_users).
     if (status === "trialing" && trialEndsAt && trialEndsAt.getTime() <= Date.now()) {
       status = "inactive";
       plan = "free";

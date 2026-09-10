@@ -1,6 +1,6 @@
 # PropertyTools AI — static images
 
-- **`ptlogo.png`** — Horizontal logo (`PropertyToolsLogo`, same layout pattern as LeadSmart AI).
+- **`ptlogo.png`** — Horizontal logo (`PropertyToolsLogo`, same layout pattern as CloseBoss).
 - **`ptlog64.png`** — 64×64 favicon (same pixels as `ptlogo64.png`); copied to **`app/icon.png`**.
 - **`pt-logo180.png`** — 180×180 Apple touch icon (`metadata.icons.apple`), letterboxed from `ptlogo.png`.
 - **`ptlogo64.png`** — source 64×64 mark used to create `ptlog64.png`.

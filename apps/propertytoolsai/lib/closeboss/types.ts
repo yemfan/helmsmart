@@ -1,11 +1,11 @@
-export type LeadSmartIntent = "low" | "medium" | "high";
-export type LeadSmartTimeline = "0-3 months" | "3-6 months" | "6+ months";
+export type CloseBossIntent = "low" | "medium" | "high";
+export type CloseBossTimeline = "0-3 months" | "3-6 months" | "6+ months";
 
-export type LeadSmartIntelligence = {
+export type CloseBossIntelligence = {
   lead_id: string;
   lead_score: number;
-  intent: LeadSmartIntent;
-  timeline: LeadSmartTimeline;
+  intent: CloseBossIntent;
+  timeline: CloseBossTimeline;
   confidence: number;
   explanation: string[];
   ai_summary: string;
@@ -14,7 +14,7 @@ export type LeadSmartIntelligence = {
   latency_ms: number;
 };
 
-export type LeadSmartRunRow = {
+export type CloseBossRunRow = {
   status: "success" | "error";
   model?: string | null;
   score?: number | null;

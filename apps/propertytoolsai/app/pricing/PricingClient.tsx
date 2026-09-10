@@ -517,7 +517,7 @@ export default function PricingClient() {
         <p className="mt-4 text-xs text-slate-600">Trusted by thousands of home buyers and sellers</p>
       </section>
 
-      {/* Value props — LeadSmart AI-style top-accent feature cards */}
+      {/* Value props — CloseBoss-style top-accent feature cards */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {PRICING_VALUE_HIGHLIGHTS.map((item) => (
           <FeatureHighlightCard

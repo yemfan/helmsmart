@@ -1,4 +1,4 @@
-import { getLeadSmartConfig } from "@/lib/leadsmart/config";
+import { getCloseBossConfig } from "@/lib/closeboss/config";
 
 type AiPayload = {
   leadScore: number;
@@ -35,8 +35,8 @@ function fallback(payload: AiPayload) {
   };
 }
 
-export async function generateLeadSmartNarrative(payload: AiPayload) {
-  const cfg = getLeadSmartConfig();
+export async function generateCloseBossNarrative(payload: AiPayload) {
+  const cfg = getCloseBossConfig();
   if (!cfg.openaiApiKey) return fallback(payload);
 
   const prompt = `Return strict JSON with keys ai_summary and ai_next_best_action.
