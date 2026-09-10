@@ -25,29 +25,37 @@ National Association of REALTORS® collective mark.
 
 ## What is the source of what
 
-Fourteen of these files are byte-identical to artwork the apps serve today.
+Fifteen of these files are byte-identical to artwork the apps serve today.
 Edit the source here, re-export, and copy to the destination:
 
 | source | shipped as |
 | --- | --- |
-| `avatars/svg/avatar-{01,02,04…14}.svg` (13 files) | `apps/leadsmartai/public/avatars/avatar-NN.svg` |
+| `avatars/svg/avatar-01…14.svg` (14 files) | `apps/leadsmartai/public/avatars/avatar-NN.svg` |
 | `logo/png/icon-color-512.png` | `apps/maxyinvestment/public/logos/realtorboss.png` |
 
-### Three sources have drifted — the shipped file is newer
+`avatar-03.svg` reached that state late. #937 warmed its background gradient
+in the app — `#FAEEDA → #D7CAB6` pale beige became `#FFEAD1 → #E39A2E` gold —
+and the edit never came back here, so for fourteen months the "source" would
+have reverted a design decision on its next export. Synced from the shipped
+file on 2026-09-10, which is the direction that fixes it: what ships is the
+truth, and the kit follows.
 
-Measured 2026-09-10 against `main`. For these, the served asset was changed
-without the change coming back here, so **the source is not the master any
-more**. Re-derive from the shipped file before editing, or you will silently
-revert someone's work:
+### What this kit no longer sources
 
-| source | destination | state |
-| --- | --- | --- |
-| `avatars/svg/avatar-03.svg` | `apps/leadsmartai/public/avatars/avatar-03.svg` | shipped file differs |
-| `logo/png/app-tile-512.png` | `apps/leadsmartai/app/apple-icon.png` | shipped file differs |
-| `logo/RealtorBoss-app-icon-1024-square.png` | `apps/leadsmart-mobile/assets/adaptive-icon.png` | shipped file differs |
+Two mappings that used to hold are dead, and nothing here should be treated as
+their master:
 
-That drift is the argument for tracking these at all: while they sat untracked
-on one machine, nothing could notice the two copies parting company.
+| former destination | now produced by |
+| --- | --- |
+| `apps/leadsmartai/app/apple-icon.png` | `scripts/generate-brand-icons.mjs`, 180px from the **CloseBoss** master |
+| `apps/leadsmart-mobile/assets/adaptive-icon.png` | the same generator, as a 1024 inset Android foreground |
+
+Both were RealtorBoss exports until the CloseBoss icon work of 2026-08
+(#1086, #1088, then 83c8702c "one master for the brand mark, so the generator
+can't revert it"). They are CloseBoss artwork now, at different sizes from
+anything in this folder — `apple-icon.png` is 180px where `logo/png/app-tile-512.png`
+is 512. Copying a file from here over either one would put the wrong brand on
+the icon and be reverted by the next generator run.
 
 The remaining 44 files are masters and exports with no copy anywhere in the
 tree — the SVG logo set, the PNG render of every avatar, the favicon and
