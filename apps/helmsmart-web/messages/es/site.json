@@ -294,6 +294,10 @@
     }
   },
   "pricing": {
+    "meta": {
+      "title": "Precios — HelmSmart",
+      "description": "Planes simples y transparentes para pequeñas empresas. 14 días de prueba gratis, sin tarjeta."
+    },
     "hero": {
       "title": "Precios simples y transparentes",
       "subtitle": "Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito."
@@ -372,7 +376,7 @@
   },
   "faq": {
     "meta": {
-      "title": "Preguntas frecuentes | HelmSmart",
+      "title": "Preguntas frecuentes — HelmSmart",
       "description": "Todo lo que necesita saber sobre HelmSmart."
     },
     "hero": {

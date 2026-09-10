@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { getActivePack } from "@/lib/packs";
 import { I18nProvider } from "@/lib/i18n/client";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { OG_LOCALES } from "@/lib/i18n/config";
 
 const fontBody = Geist({
   subsets: ["latin"],
@@ -19,15 +20,29 @@ const fontMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [pack, t] = await Promise.all([getActivePack(), getServerT("site")]);
+  const [pack, locale, t] = await Promise.all([
+    getActivePack(),
+    getServerLocale(),
+    getServerT("site"),
+  ]);
+  const description = t("meta.description", {
+    defaultValue: "More control, less effort — AI-powered front office for small businesses.",
+  });
   return {
+    // Every page is served from one URL in whichever language the reader
+    // negotiated, so the only honest Open Graph signal is which language THIS
+    // response came back in. `alternateLocale` is deliberately absent: it would
+    // advertise siblings that have no distinct URL to point at.
+    openGraph: {
+      locale: OG_LOCALES[locale],
+      title: pack.productName,
+      description,
+    },
     title: {
       default: pack.productName,
       template: `%s | ${pack.productName}`,
     },
-    description: t("meta.description", {
-      defaultValue: "More control, less effort — AI-powered front office for small businesses.",
-    }),
+    description,
   };
 }
 

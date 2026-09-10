@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT("site");
+  return {
+    title: t("pricing.meta.title"),
+    description: t("pricing.meta.description"),
+  };
+}
 
 // Name, price, description, CTA label and every feature line live in
 // `site.pricing.plans.<id>`; this array holds the id, the styling and the
