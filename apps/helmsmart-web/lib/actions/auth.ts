@@ -14,10 +14,28 @@ import { cookies, headers } from "next/headers";
  */
 export type AuthState = { error: string; sent?: boolean } | null;
 
+/** Rate limiting is a fact about the CALLER, never about the address they typed,
+ *  so it is the one Supabase failure that is always safe to report verbatim. */
+function isRateLimit(message: string): boolean {
+  const m = message.toLowerCase();
+  return m.includes("for security purposes") || m.includes("rate limit");
+}
+
 /**
  * Supabase writes its own English messages. The handful an owner actually hits
- * get a translated equivalent; anything else passes through untouched, since a
- * message we did not anticipate is still better than a generic one.
+ * get a translated equivalent; anything else becomes a generic one.
+ *
+ * This used to `return message` for the unrecognised tail, on the reasoning that
+ * a specific English message beats a vague translated one. Two things were wrong
+ * with that. It fails OPEN into English — a zh-Hans reader who mistypes an email
+ * gets `Email address "…" is invalid` in a red box under a Chinese form, which is
+ * the one thing the whole i18n effort exists to prevent. And, worse, it forwards
+ * whatever Supabase chose to say, which is not ours to publish: see
+ * `requestPasswordReset` below, where passing the raw message through turned an
+ * upstream account-enumeration leak into a visible one.
+ *
+ * The detail is not lost, it just stops being the user's problem — the raw text
+ * goes to the server log, where the person who can act on it will look.
  */
 async function authErrorMessage(message: string): Promise<string> {
   const t = await getServerT("auth");
@@ -25,10 +43,11 @@ async function authErrorMessage(message: string): Promise<string> {
   if (m.includes("invalid login credentials")) return t("errors.invalidCredentials");
   if (m.includes("email not confirmed")) return t("errors.emailNotConfirmed");
   if (m.includes("already registered")) return t("errors.userAlreadyRegistered");
-  if (m.includes("for security purposes") || m.includes("rate limit"))
-    return t("errors.rateLimited");
+  if (isRateLimit(m)) return t("errors.rateLimited");
   if (m.includes("password should be at least")) return t("errors.passwordMinLength");
-  return message;
+
+  console.error("[auth] unmapped Supabase error:", message);
+  return t("errors.unexpected");
 }
 
 /**
@@ -117,6 +136,26 @@ export async function signOut(): Promise<void> {
 
 // ── Password reset (step 1 — send email) ─────────────────────────────────────
 
+/**
+ * Ask Supabase to mail a reset link, and answer the SAME WAY whatever happens.
+ *
+ * `resetPasswordForEmail` deliberately returns success for an address with no
+ * account, so that this screen cannot be used to find out who has one. Supabase
+ * does not always hold that line — it answers 400 `email_address_invalid` for an
+ * address on a reserved or blocked domain, and that check only runs once a user
+ * exists (supabase/auth#2702). Reporting the error therefore told an attacker
+ * exactly what Supabase was trying not to say: red box means the account is
+ * real, "check your email" means it is not. One submission per guess.
+ *
+ * So only the rate-limit case is reported — it depends on the caller, not on the
+ * address, and swallowing it would leave someone staring at "check your email"
+ * for a mail that was never sent. Everything else is logged and answered
+ * identically, which is what the endpoint was always supposed to do.
+ *
+ * Note this makes an undeliverable address indistinguishable from a delivered
+ * one, on purpose. That is the trade the non-disclosure requires, and it is why
+ * the log line matters: it is the only place the real reason survives.
+ */
 export async function requestPasswordReset(
   _: AuthState,
   formData: FormData
@@ -130,7 +169,13 @@ export async function requestPasswordReset(
     redirectTo: `${await requestOrigin()}/api/auth/callback?next=/reset-password`,
   });
 
-  if (error) return { error: await authErrorMessage(error.message) };
+  if (error && isRateLimit(error.message)) {
+    return { error: t("errors.rateLimited") };
+  }
+
+  if (error) {
+    console.error("[auth] password reset refused:", error.message);
+  }
 
   return { error: t("errors.checkEmailReset"), sent: true };
 }
