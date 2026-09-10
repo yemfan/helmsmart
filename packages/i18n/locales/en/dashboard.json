@@ -8616,6 +8616,70 @@
       "empty": "Nothing posted yet. Be the first: a coming-soon listing, a buyer you need a home for, a question.",
       "note": "Everyone on the team sees this board. Posts are yours to remove; managers can remove any."
     },
+    "teamScorecard": {
+      "title": "Brokerage scorecard",
+      "subtitle": "The office's production by month, the trailing twelve months against the twelve before, the market measures, and the pipeline.",
+      "tableView": "Table",
+      "vsPriorYear": "vs. the prior year",
+      "stat": {
+        "closed": "Closings",
+        "volume": "Closed volume",
+        "gci": "Gross commission",
+        "avgPrice": "Average price",
+        "dom": "Days on market",
+        "saleToList": "Sale-to-list",
+        "inventory": "Active listings",
+        "underContract": "Under contract",
+        "closing30": "Closing in 30 days",
+        "fallThrough": "Fall-through rate",
+        "producing": "Producing agents",
+        "sides": "Listing / buyer sides"
+      },
+      "chart": {
+        "closed": "Closings per month",
+        "volume": "Closed volume per month",
+        "gci": "Gross commission per month"
+      },
+      "col": {
+        "month": "Month",
+        "closed": "Closings",
+        "volume": "Volume",
+        "gci": "Gross commission",
+        "contracts": "Contracts written",
+        "listingsTaken": "Listings taken",
+        "deal": "Deal",
+        "status": "Status",
+        "due": "Due",
+        "price": "Price"
+      },
+      "marketTitle": "Market and pipeline",
+      "days": "{{count}} days",
+      "domNote": "median · average {{avg}} · {{n}} listings",
+      "sample": "{{n}} listings",
+      "noSample": "No closed listings with dates yet",
+      "fallThroughNote": "{{count}} fell through in the year",
+      "perProducer": "{{n}} closings per producing agent",
+      "sidesNote": "closings in the trailing year",
+      "healthTitle": "Pipeline health",
+      "healthSub": "Every open deal, graded on its contingency deadlines and closing date.",
+      "health": {
+        "on_track": "On track",
+        "due_soon": "Due this week",
+        "at_risk": "At risk"
+      },
+      "issue": {
+        "inspection": "Inspection",
+        "appraisal": "Appraisal",
+        "loan": "Loan contingency",
+        "closing": "Closing date"
+      },
+      "daysLate": "{{count}} days late",
+      "daysLeft": "{{count}} days left",
+      "noAddress": "No address on the deal",
+      "allOnTrack": "Every open deal is on track.",
+      "nothingOpen": "No open deals right now.",
+      "note": "Closings are deals with an actual closing date in the month; volume is their purchase price and gross commission is the deal's gross. Days on market runs from the listing's start date to mutual acceptance on the office's own listings. A deal is at risk when a contingency deadline or the closing date has passed without being cleared."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",

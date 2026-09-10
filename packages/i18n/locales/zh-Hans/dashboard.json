@@ -8616,6 +8616,70 @@
       "empty": "还没有帖子。来当第一个：一套即将上市的房源、一位在找房的买家、一个问题。",
       "note": "团队里的每个人都能看到这个留言板。自己的帖子可以自己移除；经理可以移除任何帖子。"
     },
+    "teamScorecard": {
+      "title": "经纪公司计分卡",
+      "subtitle": "公司每月的成交，过去 12 个月与再前 12 个月的对比，市场指标，以及交易管道。",
+      "tableView": "表格",
+      "vsPriorYear": "较上一年",
+      "stat": {
+        "closed": "成交数",
+        "volume": "成交额",
+        "gci": "总佣金",
+        "avgPrice": "平均成交价",
+        "dom": "在售天数",
+        "saleToList": "成交价 / 挂牌价",
+        "inventory": "在售房源",
+        "underContract": "已签约",
+        "closing30": "30 天内交割",
+        "fallThrough": "交易流失率",
+        "producing": "有业绩的经纪人",
+        "sides": "卖方 / 买方代理"
+      },
+      "chart": {
+        "closed": "每月成交数",
+        "volume": "每月成交额",
+        "gci": "每月总佣金"
+      },
+      "col": {
+        "month": "月份",
+        "closed": "成交数",
+        "volume": "成交额",
+        "gci": "总佣金",
+        "contracts": "签约数",
+        "listingsTaken": "新增挂牌",
+        "deal": "交易",
+        "status": "状态",
+        "due": "截止",
+        "price": "价格"
+      },
+      "marketTitle": "市场与交易管道",
+      "days": "{{count}} 天",
+      "domNote": "中位数 · 平均 {{avg}} · {{n}} 套房源",
+      "sample": "{{n}} 套房源",
+      "noSample": "还没有带日期的已成交房源",
+      "fallThroughNote": "年内流失 {{count}} 笔",
+      "perProducer": "每位有业绩的经纪人成交 {{n}} 笔",
+      "sidesNote": "过去一年的成交",
+      "healthTitle": "交易管道健康度",
+      "healthSub": "每一笔进行中的交易，按附带条件期限和交割日期评级。",
+      "health": {
+        "on_track": "正常",
+        "due_soon": "本周到期",
+        "at_risk": "有风险"
+      },
+      "issue": {
+        "inspection": "验房",
+        "appraisal": "估价",
+        "loan": "贷款条件",
+        "closing": "交割日期"
+      },
+      "daysLate": "逾期 {{count}} 天",
+      "daysLeft": "剩 {{count}} 天",
+      "noAddress": "交易未填地址",
+      "allOnTrack": "所有进行中的交易都正常。",
+      "nothingOpen": "目前没有进行中的交易。",
+      "note": "成交指当月有实际交割日期的交易；成交额为其购买价，总佣金为交易的毛佣金。在售天数按公司自有房源从挂牌日到双方接受计算。附带条件期限或交割日期已过而未完成的交易记为有风险。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",
