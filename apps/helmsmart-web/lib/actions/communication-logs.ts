@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import type { ClientCommunicationPreferences } from "@/lib/communication-preferences";
 
 export interface LogCommunicationInput {
   clientId: string;
@@ -136,45 +137,65 @@ export async function getClientPreferences(clientId: string) {
 }
 
 /**
- * Update communication preferences for a client
+ * Update communication preferences for a client, and PROVE a row changed.
+ *
+ * These are consent flags on outbound messaging, so a save that reports success
+ * without writing anything is the worst possible failure: the panel says "do not
+ * text this client" was recorded and the next campaign texts them anyway.
+ *
+ * Two things guard that. The payload keys come from
+ * `ClientCommunicationPreferences`, whose field names ARE the column names — the
+ * mapping below is a 1:1 read, and a rename on either side stops compiling. And
+ * the write goes through the RLS-enforced client with `.select("id")`, because a
+ * policy-refused update is not an error: it matches zero rows and comes back
+ * clean. See CLAUDE.md, "A save that reports success must have changed a row",
+ * and `lib/actions/org-update.ts` for the same shape.
  */
 export async function updateClientPreferences(
   clientId: string,
-  preferences: {
-    optedOutSms?: boolean;
-    optedOutEmail?: boolean;
-    optedOutCalls?: boolean;
-    preferredContactMethod?: string;
-    bestTimeToContact?: string;
-    notes?: string;
-  }
+  preferences: ClientCommunicationPreferences
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
   if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
-  const db = await createServiceClient();
+  // RLS-enforced, not the service client: the org id comes from a cookie, and
+  // the policies on communication_preferences are what confine this write to an
+  // org the signed-in user actually belongs to.
+  const supabase = await createClient();
 
-  const { error } = await db
+  const { data, error } = await supabase
     .from("communication_preferences")
     .upsert(
       {
         organization_id: orgId,
         client_id: clientId,
-        opted_out_sms: preferences.optedOutSms,
-        opted_out_email: preferences.optedOutEmail,
-        opted_out_calls: preferences.optedOutCalls,
-        preferred_contact_method: preferences.preferredContactMethod,
-        best_time_to_contact: preferences.bestTimeToContact,
+        opted_out_sms: preferences.opted_out_sms,
+        opted_out_email: preferences.opted_out_email,
+        opted_out_calls: preferences.opted_out_calls,
+        preferred_contact_method: preferences.preferred_contact_method,
+        best_time_to_contact: preferences.best_time_to_contact,
         notes: preferences.notes,
+        updated_at: new Date().toISOString(),
       },
       { onConflict: "organization_id,client_id" }
-    );
+    )
+    .select("id"); // ← load-bearing: without it a refusal is indistinguishable from a save
 
   if (error) {
     console.error("[communication-prefs] update error:", error);
     return { ok: false, error: t("errors.preferencesFailed") };
+  }
+
+  if (!data || data.length === 0) {
+    // No error and no rows: the existing row is not one this user may write, or
+    // the org id in the cookie does not resolve. Either way nothing was saved.
+    console.error("[communication-prefs] update changed no rows", {
+      orgId,
+      clientId,
+    });
+    return { ok: false, error: t("errors.preferencesRefused") };
   }
 
   revalidatePath(`/clients/${clientId}`);

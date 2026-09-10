@@ -348,6 +348,7 @@
     "updateFailed": "Couldn't update the client. Try again.",
     "deleteFailed": "Couldn't delete the client. Try again.",
     "logFailed": "Couldn't log this communication. Try again.",
+    "preferencesRefused": "Couldn't save — you may not have permission for this client.",
     "preferencesFailed": "Couldn't save these preferences. Try again.",
     "aiNotConfigured": "AI isn't configured yet.",
     "clientNotFound": "That client no longer exists.",

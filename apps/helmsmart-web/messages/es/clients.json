@@ -348,6 +348,7 @@
     "updateFailed": "No se pudo actualizar el cliente. Inténtelo de nuevo.",
     "deleteFailed": "No se pudo eliminar el cliente. Inténtelo de nuevo.",
     "logFailed": "No se pudo registrar esta comunicación. Inténtelo de nuevo.",
+    "preferencesRefused": "No se pudo guardar: puede que no tenga permiso para este cliente.",
     "preferencesFailed": "No se pudieron guardar estas preferencias. Inténtelo de nuevo.",
     "aiNotConfigured": "La IA aún no está configurada.",
     "clientNotFound": "Ese cliente ya no existe.",
