@@ -1,3 +1,4 @@
+import { loadAgentIdentity } from "@/lib/cma/loadAgentIdentity";
 import { fetchListingPhoto } from "@/lib/cma/streetViewPhoto";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { buildNetToSellerPdf } from "@/lib/listing-offers/buildNetToSellerPdf";
@@ -44,58 +45,8 @@ export async function GET(
       return new Response("Parent listing not found", { status: 404 });
     }
 
-    // Agent identity — pulled best-effort; blank fields just render as "—".
-    let agentIdentity: {
-      name: string | null;
-      brokerage: string | null;
-      phone: string | null;
-      email: string | null;
-      licenseNumber: string | null;
-    } = {
-      name: null,
-      brokerage: null,
-      phone: null,
-      email: null,
-      licenseNumber: null,
-    };
-    try {
-      const { data: agentRow } = await supabaseAdmin
-        .from("agents")
-        .select("first_name, last_name, brokerage_name, auth_user_id, license_number")
-        .eq("id", agentId)
-        .maybeSingle();
-      const a = agentRow as {
-        first_name: string | null;
-        last_name: string | null;
-        brokerage_name: string | null;
-        auth_user_id: string | null;
-        license_number: string | null;
-      } | null;
-      if (a) {
-        agentIdentity = {
-          name: `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || null,
-          brokerage: a.brokerage_name ?? null,
-          phone: null,
-          email: null,
-          licenseNumber: a.license_number ?? null,
-        };
-        if (a.auth_user_id) {
-          const [{ data: authUser }, { data: profileRow }] = await Promise.all([
-            supabaseAdmin.auth.admin.getUserById(a.auth_user_id),
-            supabaseAdmin
-              .from("user_profiles")
-              .select("phone")
-              .eq("user_id", a.auth_user_id)
-              .maybeSingle(),
-          ]);
-          agentIdentity.email = authUser?.user?.email ?? null;
-          agentIdentity.phone =
-            (profileRow as { phone: string | null } | null)?.phone ?? null;
-        }
-      }
-    } catch {
-      // Non-fatal — PDF still generates with whatever we've got.
-    }
+    // Agent identity — best-effort; blank fields just render as "—".
+    const agentIdentity = await loadAgentIdentity(String(agentId));
 
     // Brokerage logo for the letterhead (best-effort; null hides it).
     let agentLogo = null;
