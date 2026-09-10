@@ -777,6 +777,19 @@
       "blurb": "我熟悉每一条街道的社区。",
       "ask": "向我的助理询问某个区域"
     },
+    "announcements": {
+      "kicker": "近期动态",
+      "title": "公告",
+      "nav": "近期动态",
+      "openHouse": "开放日",
+      "comingSoon": "即将上市",
+      "justListed": "新上市",
+      "notice": "通知",
+      "details": "查看详情",
+      "addToCalendar": "加入日历",
+      "listedOn": "上市于",
+      "availableFrom": "起售"
+    },
     "featured": {
       "kicker": "精选",
       "title": "为你精选",

@@ -8,11 +8,13 @@ import { useUnsavedChanges } from "@/lib/forms/unsaved";
 import { Plus } from "lucide-react";
 import { Toggle } from "@/components/ui/Toggle";
 import {
+  ANNOUNCEMENT_DAYS_AHEAD,
   BOOKING_MODES,
   HUB_ACCENTS,
   HUB_LAYOUTS,
   SOCIAL_NETWORKS,
   type FeaturedItem,
+  type HubAnnouncement,
   type HubConfig,
 } from "@/lib/marketing-hub/config";
 import { HUB_TOOLS } from "@/lib/marketing-hub/tools";
@@ -757,6 +759,74 @@ export function SettingsSection({ data, onSaved }: SectionProps) {
         <Link href="/dashboard/settings" className="inline-flex text-sm font-medium text-[#0072ce] hover:underline">
           {k("accountSettings")}
         </Link>
+      </Card>
+    </>
+  );
+}
+
+// ── Announcements ────────────────────────────────────────────────────────
+
+/**
+ * What the hub announces. Open houses and listings come from the agent's own
+ * records with no typing; the list below is for everything else — a client
+ * event, a milestone, a notice — dated or standing.
+ */
+export function AnnouncementsSection({ data, onSaved }: SectionProps) {
+  const { t } = useTranslation("dashboard");
+  const [d, setD] = useState(data.config.announcements);
+  const draft = { ...d, items: d.items.filter((i) => i.title.trim()) };
+  const { state, error, save, dirty } = useSave("announcements", onSaved, draft);
+  const k = (s: string) => t(`pages.hubEditor.announcements.${s}`);
+  const items = d.items;
+  const set = (i: number, patch: Partial<HubAnnouncement>) => setD({ ...d, items: items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+  const windows = ANNOUNCEMENT_DAYS_AHEAD.map((n) => ({ value: String(n), label: t("pages.hubEditor.announcements.daysAheadOption", { count: n }) }));
+  return (
+    <>
+      <Card title={k("title")} description={k("desc")}>
+        <SwitchRow checked={d.enabled} onChange={(v) => setD({ ...d, enabled: v })} label={k("enabled")} />
+        <Field label={k("headline")} hint={k("headlineHint")}>
+          <TextInput value={d.headline ?? ""} onChange={(v) => setD({ ...d, headline: v || null })} maxLength={120} />
+        </Field>
+        <SwitchRow checked={d.showOpenHouses} onChange={(v) => setD({ ...d, showOpenHouses: v })} label={k("showOpenHouses")} />
+        <Field label={k("daysAhead")} className="w-56">
+          <Select value={String(d.daysAhead)} options={windows} onChange={(v) => setD({ ...d, daysAhead: Number(v) })} />
+        </Field>
+        <SwitchRow checked={d.showListings} onChange={(v) => setD({ ...d, showListings: v })} label={k("showListings")} />
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
+      </Card>
+      <Card title={k("itemsTitle")} description={k("itemsDesc")}>
+        {items.length === 0 ? <Empty>{k("empty")}</Empty> : null}
+        <div className="space-y-3">
+          {items.map((a, i) => (
+            <div key={a.id} className="space-y-3 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+              <div className="flex items-end justify-between gap-3">
+                <Field label={k("itemTitle")} className="flex-1">
+                  <TextInput value={a.title} onChange={(v) => set(i, { title: v })} maxLength={120} placeholder={k("itemTitlePlaceholder")} />
+                </Field>
+                <RowControls index={i} count={items.length} onMove={(x, y) => setD({ ...d, items: move(items, x, y) })} onRemove={() => setD({ ...d, items: items.filter((_, j) => j !== i) })} />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Field label={k("date")} hint={k("dateHint")}>
+                  <TextInput type="date" value={a.date ?? ""} onChange={(v) => set(i, { date: v || null })} />
+                </Field>
+                <Field label={k("badge")} hint={k("badgeHint")}>
+                  <TextInput value={a.badge ?? ""} onChange={(v) => set(i, { badge: v || null })} maxLength={40} />
+                </Field>
+                <Field label={k("url")}>
+                  <TextInput type="url" value={a.url ?? ""} onChange={(v) => set(i, { url: v || null })} placeholder="https://" />
+                </Field>
+              </div>
+              <Field label={k("body")}>
+                <TextArea value={a.body ?? ""} onChange={(v) => set(i, { body: v || null })} rows={2} maxLength={400} />
+              </Field>
+            </div>
+          ))}
+        </div>
+        <AddButton disabled={items.length >= 8} onClick={() => setD({ ...d, items: [...items, { id: newId("ann"), title: "", body: null, date: null, url: null, badge: null }] })}>
+          <Plus className="h-4 w-4" aria-hidden />
+          {k("add")}
+        </AddButton>
+        <SaveButton state={state} error={error} dirty={dirty} onClick={() => void save(draft)} />
       </Card>
     </>
   );

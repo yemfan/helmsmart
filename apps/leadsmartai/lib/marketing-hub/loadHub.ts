@@ -78,7 +78,69 @@ export type Hub = {
   booking: ResolvedBooking;
   /** Real 30-day counts for "watch my AI work", when the agent opted in and there is anything to show. */
   activity: HubActivity | null;
+  /** Open houses inside the announcement window, soonest first. */
+  openHouses: HubOpenHouse[];
+  /** Listings coming soon (start date ahead) or just listed (started in the last two weeks). */
+  listings: HubListing[];
+  /** The agent's IANA timezone, for printing event times the way they read locally. */
+  timezone: string | null;
 };
+
+export type HubOpenHouse = { id: string; address: string; city: string | null; startAt: string; endAt: string; listPrice: number | null; slug: string | null };
+export type HubListing = { id: string; kind: "coming_soon" | "just_listed"; address: string; city: string | null; startedOn: string | null; listPrice: number | null; url: string | null };
+
+/** The events a hub announces: the agent's open houses inside the window, and listings about to start or just started. */
+async function loadHubEvents(agentId: number, daysAhead: number, wantOpenHouses: boolean, wantListings: boolean): Promise<{ openHouses: HubOpenHouse[]; listings: HubListing[] }> {
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const ahead = new Date(now.getTime() + daysAhead * 86_400_000).toISOString();
+  const today = nowIso.slice(0, 10);
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 86_400_000).toISOString().slice(0, 10);
+  const [oh, ls] = await Promise.all([
+    wantOpenHouses
+      ? supabaseAdmin
+          .from("open_houses")
+          .select("id, property_address, city, start_at, end_at, list_price, signin_slug")
+          .eq("agent_id", agentId as never)
+          .in("status", ["scheduled", "in_progress"])
+          .gte("end_at", nowIso)
+          .lte("start_at", ahead)
+          .order("start_at", { ascending: true })
+          .limit(6)
+      : Promise.resolve({ data: [] as unknown[] }),
+    wantListings
+      ? supabaseAdmin
+          .from("listings")
+          .select("id, property_address, city, status, listing_start_date, list_price, mls_url")
+          .eq("agent_id", agentId as never)
+          .in("status", ["draft", "active"])
+          .gte("listing_start_date", twoWeeksAgo)
+          .order("listing_start_date", { ascending: true })
+          .limit(8)
+      : Promise.resolve({ data: [] as unknown[] }),
+  ]);
+  const openHouses = ((oh.data as Record<string, unknown>[] | null) ?? []).map((r) => ({
+    id: String(r.id),
+    address: String(r.property_address ?? ""),
+    city: (r.city as string | null) ?? null,
+    startAt: String(r.start_at),
+    endAt: String(r.end_at),
+    listPrice: r.list_price == null ? null : Number(r.list_price),
+    slug: (r.signin_slug as string | null) ?? null,
+  }));
+  const listings = ((ls.data as Record<string, unknown>[] | null) ?? [])
+    .map((r) => {
+      const startedOn = (r.listing_start_date as string | null) ?? null;
+      const status = String(r.status ?? "");
+      const kind: HubListing["kind"] | null = startedOn && startedOn > today ? "coming_soon" : status === "active" && startedOn ? "just_listed" : null;
+      return kind
+        ? { id: String(r.id), kind, address: String(r.property_address ?? ""), city: (r.city as string | null) ?? null, startedOn, listPrice: r.list_price == null ? null : Number(r.list_price), url: (r.mls_url as string | null) ?? null }
+        : null;
+    })
+    .filter((x): x is HubListing => x !== null)
+    .slice(0, 6);
+  return { openHouses, listings };
+}
 
 /** What the AI team actually did for this agent recently. Real rows, counted. */
 export type HubActivity = {
@@ -114,6 +176,9 @@ const NOT_FOUND: Hub = {
   assistantAvailable: false,
   booking: { mode: "request", externalUrl: null },
   activity: null,
+  openHouses: [],
+  listings: [],
+  timezone: null,
 };
 
 /**
@@ -339,7 +404,7 @@ export async function loadHubByUsername(
     const { data, error } = await supabaseAdmin
       .from("agents")
       .select(
-        "id, username, hub_published, bio, specialties, brand_name, service_areas, service_areas_v2, dt_brand_profile, dt_avatar_video_url, deleted_at",
+        "id, username, hub_published, bio, specialties, brand_name, service_areas, service_areas_v2, dt_brand_profile, dt_avatar_video_url, deleted_at, timezone",
       )
       .eq("username", username)
       .maybeSingle();
@@ -408,6 +473,12 @@ export async function loadHubByUsername(
     // One extra round trip, only for agents who chose to show it.
     const activity =
       config.workforce.enabled && config.workforce.showActivity ? await loadHubActivity(agentId) : null;
+    const events = config.announcements.enabled
+      ? await loadHubEvents(agentId, config.announcements.daysAhead, config.announcements.showOpenHouses, config.announcements.showListings).catch((e) => {
+          console.warn("[marketing-hub] events failed:", e instanceof Error ? e.message : e);
+          return { openHouses: [], listings: [] };
+        })
+      : { openHouses: [], listings: [] };
 
     const knowledge: string[] = [];
     const recNotes = String((receptionist.data as { extra_notes?: unknown } | null)?.extra_notes ?? "").trim();
@@ -439,6 +510,9 @@ export async function loadHubByUsername(
       ),
       config,
       hasSavedConfig,
+      openHouses: events.openHouses,
+      listings: events.listings,
+      timezone: String(row.timezone ?? "").trim() || null,
       testimonials: ((testimonials.data as Record<string, unknown>[] | null) ?? [])
         .map((t) => ({
           id: String(t.id),

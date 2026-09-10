@@ -28,6 +28,7 @@ import {
   HubHeader,
   MobileStickyBar,
   Section,
+  Announcements,
   Services,
   Tools,
   Trust,
@@ -283,6 +284,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         {pagesLayout ? (
           <>
             <Hero {...props} bio="excerpt" />
+            <Announcements {...props} locale={locale} />
             {assistant}
             <HomeValueBand {...props} />
             <Services {...props} limit={3} />
@@ -294,6 +296,7 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         ) : (
           <>
             <Hero {...props} />
+            <Announcements {...props} locale={locale} />
             {assistant}
             <Workforce {...props} />
             <Services {...props} />

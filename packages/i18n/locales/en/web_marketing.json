@@ -777,6 +777,19 @@
       "blurb": "Neighborhoods I know street by street.",
       "ask": "Ask my assistant about an area"
     },
+    "announcements": {
+      "kicker": "Coming up",
+      "title": "Announcements",
+      "nav": "Coming up",
+      "openHouse": "Open house",
+      "comingSoon": "Coming soon",
+      "justListed": "Just listed",
+      "notice": "Notice",
+      "details": "Details",
+      "addToCalendar": "Add to calendar",
+      "listedOn": "Listed",
+      "availableFrom": "From"
+    },
     "featured": {
       "kicker": "Featured",
       "title": "Featured for you",
