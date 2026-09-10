@@ -29,10 +29,17 @@ by `20260702000000_realtyboss_rename_comments.sql`.
   the rename may contain "realtorboss" strings. Read-side code treats the two
   names as the same product; never mass-update historical rows.
 
-## Local asset folders (untracked)
+## Design sources (now tracked)
 
-- `apps/RealtorBoss-Avatars/`, `apps/RealtorBoss-Logo/` — untracked design
-  sources on the owner's machine; rename at the owner's discretion.
+- `docs/branding/realtorboss/` — the vector masters and export sets, moved in
+  from `apps/RealtorBoss-Avatars/` and `apps/RealtorBoss-Logo/` on 2026-09-10.
+  They were untracked design sources on one machine, and 44 of the 61 files
+  existed in no commit anywhere — including every SVG logo master and the
+  Play Store header for `com.realtybossai.app`.
+
+  The folder keeps the pre-rename name deliberately: the artwork was renamed,
+  not redrawn. See `docs/branding/realtorboss/README.md` for which source file
+  is the origin of which shipped asset.
 
 ## Brand artwork note
 
