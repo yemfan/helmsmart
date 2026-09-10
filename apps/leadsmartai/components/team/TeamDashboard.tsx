@@ -17,6 +17,7 @@ import type { TeamInvite, TeamMembership, TeamRoster } from "@/lib/teams/types";
 import type { OnboardingBoard } from "@/lib/teams/onboarding.server";
 import { OnboardingBoardCard, RosterImportCard } from "./OnboardingPanels";
 import { TeamPerformancePanel } from "./TeamPerformancePanel";
+import { TeamScorecardPanel } from "./TeamScorecardPanel";
 import { TeamMarketingPanel } from "./TeamMarketingPanel";
 import { TeamRetentionPanel } from "./TeamRetentionPanel";
 import { TeamCompliancePanel } from "./TeamCompliancePanel";
@@ -135,6 +136,8 @@ export function TeamDashboard({
         members={roster.members}
         directory={directory}
       />
+
+      <TeamScorecardPanel teamId={roster.team.id} directory={directory} />
 
       <TeamPerformancePanel teamId={roster.team.id} />
 
