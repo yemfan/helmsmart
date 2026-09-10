@@ -8564,6 +8564,58 @@
       "empty": "Nothing posted yet.",
       "emptyManager": "Nothing posted yet. Start with the one thing every agent should know this week."
     },
+    "teamBoard": {
+      "title": "Office board",
+      "subtitle": "The unofficial one. Post a listing before it hits the MLS, a buyer you need a home for, a question, a tip, or anything. Colleagues reply.",
+      "openComposer": "New post",
+      "closeComposer": "Close",
+      "kindLabel": "Kind",
+      "kind": {
+        "listing": "Listing",
+        "buyer_need": "Buyer need",
+        "question": "Question",
+        "tip": "Tip",
+        "other": "Anything"
+      },
+      "all": "All",
+      "titleLabel": "Headline",
+      "titlePlaceholder": {
+        "listing": "e.g. Coming soon: 3/2 in Arcadia, pool",
+        "buyer_need": "e.g. Buyer needs 4 beds in Pasadena, yard, good schools",
+        "question": "e.g. Anyone used this inspector?",
+        "tip": "e.g. The county recorder's new portal is faster",
+        "other": "What is on your mind?"
+      },
+      "priceLabel": "Asking price",
+      "budgetLabel": "Budget up to",
+      "bodyLabel": "Details (optional)",
+      "bodyPlaceholder": "Beds, baths, area, timing, whatever helps a colleague act.",
+      "linkLabel": "Link (optional)",
+      "post": "Post",
+      "posting": "Posting…",
+      "posted": "Posted!",
+      "error": {
+        "kind_required": "Choose a kind.",
+        "title_required": "Give it a headline.",
+        "title_too_long": "That headline is too long.",
+        "body_too_long": "That is too long (3,000 characters).",
+        "linkUrl_bad_url": "That does not look like a web address.",
+        "price_range": "That does not look like a price."
+      },
+      "upTo": "up to {{price}}",
+      "openLink": "Open link",
+      "matchBuyers": "Buyers on the board who may fit ({{count}}):",
+      "matchListings": "Listings on the board that may fit ({{count}}):",
+      "replies": "Replies ({{count}})",
+      "replyPlaceholder": "Reply…",
+      "reply": "Reply",
+      "replying": "Sending…",
+      "remove": "Remove",
+      "removing": "Removing…",
+      "byOn": "{{name}} · {{date}}",
+      "empty": "Nothing posted yet. Be the first: a coming-soon listing, a buyer you need a home for, a question.",
+      "note": "Everyone on the team sees this board. Posts are yours to remove; managers can remove any."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",

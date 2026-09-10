@@ -16,6 +16,8 @@ import type { Referral } from "@/lib/teams/referrals";
 import { loadAgentLicense } from "@/lib/teams/license.server";
 import { listBillboard } from "@/lib/teams/billboard.server";
 import type { Announcement } from "@/lib/teams/billboard";
+import { listBoard } from "@/lib/teams/board.server";
+import type { BoardPost } from "@/lib/teams/board";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -51,6 +53,7 @@ export default async function TeamPage() {
   let library: LibraryItem[] = [];
   let referrals: Referral[] = [];
   let billboard: Announcement[] = [];
+  let boardPosts: BoardPost[] = [];
   let seatUsage: { used: number; cap: number | null; full: boolean } | null = null;
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
@@ -62,7 +65,7 @@ export default async function TeamPage() {
     const r = await getRoster(team.id);
     const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
     canManage = canManageTeam(myRole);
-    const [seat, dir, b, br, lib, refs, posts] = await Promise.all([
+    const [seat, dir, b, br, lib, refs, posts, bp] = await Promise.all([
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
@@ -70,6 +73,7 @@ export default async function TeamPage() {
       listLibrary(team.id),
       listReferrals(team.id, ctx.agentId, canManage),
       listBillboard(team.id, ctx.agentId),
+      listBoard(team.id, ctx.agentId),
     ]);
     directory = dir;
     roster = r;
@@ -79,6 +83,7 @@ export default async function TeamPage() {
     library = lib;
     referrals = refs;
     billboard = posts;
+    boardPosts = bp;
   }
 
   return (
@@ -94,6 +99,7 @@ export default async function TeamPage() {
       library={library}
       referrals={referrals}
       billboard={billboard}
+      board_posts={boardPosts}
       myLicense={await loadAgentLicense(ctx.agentId)}
       directory={directory}
     />

@@ -31,6 +31,8 @@ import type { AgentLicense } from "@/lib/teams/license";
 import { LicenseForm } from "./LicenseForm";
 import type { Announcement } from "@/lib/teams/billboard";
 import { BillboardPanel } from "./BillboardPanel";
+import type { BoardPost } from "@/lib/teams/board";
+import { OfficeBoardPanel } from "./OfficeBoardPanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -59,6 +61,7 @@ export function TeamDashboard({
   referrals = [],
   myLicense = null,
   billboard = [],
+  board_posts = [],
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -79,6 +82,8 @@ export function TeamDashboard({
   myLicense?: AgentLicense | null;
   /** Everyone: the brokerage billboard, live posts only. */
   billboard?: Announcement[];
+  /** Everyone: the office board, newest first. */
+  board_posts?: BoardPost[];
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -146,6 +151,8 @@ export function TeamDashboard({
       <TeamLibraryPanel teamId={roster.team.id} initial={library} canManage={canManage} directory={directory} />
 
       <TeamReferralsPanel teamId={roster.team.id} currentAgentId={currentAgentId} canManage={canManage} members={roster.members} directory={directory} initial={referrals} />
+
+      <OfficeBoardPanel teamId={roster.team.id} currentAgentId={currentAgentId} canManage={canManage} directory={directory} initial={board_posts} />
 
       {canManage ? <BrokerageBrandCard teamId={roster.team.id} brand={brand ?? null} /> : null}
 
