@@ -39,6 +39,10 @@
     }
   },
   "invoices": {
+    "printToolbar": {
+      "back": "← Volver a la factura",
+      "print": "Imprimir / Guardar como PDF"
+    },
     "frequency": {
       "weekly": "Semanal",
       "monthly": "Mensual",

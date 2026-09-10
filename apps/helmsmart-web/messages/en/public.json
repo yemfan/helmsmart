@@ -35,6 +35,24 @@
       "error": "We couldn't accept this invitation. Please try again."
     }
   },
+  "invoice": {
+    "documentTitle": "Invoice {{number}}",
+    "label": "Invoice",
+    "paid": "PAID",
+    "billTo": "Bill to",
+    "issueDate": "Issue date",
+    "dueDate": "Due date",
+    "paidOn": "Paid on",
+    "description": "Description",
+    "qty": "Qty",
+    "unitPrice": "Unit price",
+    "amount": "Amount",
+    "subtotal": "Subtotal",
+    "tax": "Tax ({{rate}}%)",
+    "total": "Total",
+    "notes": "Notes",
+    "footer": "{{org}} · Invoice {{number}} · Generated {{date}}"
+  },
   "pay": {
     "metaTitle": "Invoice Payment",
     "paid": {
