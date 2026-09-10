@@ -619,6 +619,15 @@
       "subtitle": "Sociedad operadora y dirección postal",
       "dba": "HelmSmart es un nombre comercial de MAXY Investment Inc.",
       "country": "Estados Unidos"
+    },
+    "confirmationEmail": {
+      "subject": "Hemos recibido su mensaje — HelmSmart",
+      "heading": "¡Gracias por escribirnos!",
+      "greeting": "Hola {{name}}:",
+      "body": "Hemos recibido su mensaje y le responderemos en un día hábil.",
+      "subjectLabel": "Asunto:",
+      "signoff": "Un saludo,",
+      "team": "El equipo de HelmSmart"
     }
   },
   "sales": {
@@ -707,6 +716,14 @@
       "email": "Indique una dirección de correo válida",
       "interest": "Seleccione al menos un producto de interés",
       "failed": "No se pudo enviar la solicitud. Inténtelo de nuevo o escríbanos a contact@helmsmart.ai"
+    },
+    "confirmationEmail": {
+      "subject": "¡Gracias por su interés en HelmSmart!",
+      "heading": "¡Nos alegra ponernos en contacto!",
+      "greeting": "Hola {{name}}:",
+      "body": "Gracias por escribir al equipo de ventas de HelmSmart. Revisaremos su consulta y le responderemos en un día hábil con un plan personalizado para {{company}}.",
+      "signoff": "Un saludo,",
+      "team": "El equipo de HelmSmart"
     }
   },
   "privacy": {

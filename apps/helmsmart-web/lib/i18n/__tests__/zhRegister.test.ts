@@ -59,6 +59,21 @@ const CUSTOMER_FACING: Record<string, string> = {
     "a public reply to a reviewer, read by everyone who reads the review",
   "marketing:publicForm.redirecting":
     "shown to the visitor submitting a public lead form",
+  /*
+   * The confirmation emails the public contact and sales forms send back. The
+   * reader is a VISITOR who has not signed up for anything — the same stranger
+   * as the receptionist's caller, one channel over. The notification that goes
+   * to the HelmSmart team about the same submission is English and never
+   * appears here, which is the distinction this list exists to record.
+   */
+  "site:contact.confirmationEmail.subject": "emailed to the visitor who used the contact form",
+  "site:contact.confirmationEmail.heading": "emailed to the visitor who used the contact form",
+  "site:contact.confirmationEmail.greeting": "emailed to the visitor who used the contact form",
+  "site:contact.confirmationEmail.body": "emailed to the visitor who used the contact form",
+  "site:sales.confirmationEmail.subject": "emailed to the visitor who asked about pricing",
+  "site:sales.confirmationEmail.heading": "emailed to the visitor who asked about pricing",
+  "site:sales.confirmationEmail.greeting": "emailed to the visitor who asked about pricing",
+  "site:sales.confirmationEmail.body": "emailed to the visitor who asked about pricing",
 };
 
 const FORMAL = "您";

@@ -44,17 +44,22 @@ export async function submitContactForm(
       `,
     });
 
-    // Send confirmation to user
+    /*
+     * The VISITOR reads this, and they just filled in a form on a page that
+     * was in their language — so it follows their locale, which the
+     * translator above already holds. The notification to the HelmSmart team
+     * stays English on purpose: we read it, not them.
+     */
     await sendEmail({
       to: email,
-      subject: "We received your message — HelmSmart",
+      subject: t("contact.confirmationEmail.subject"),
       html: `
-        <h2>Thanks for reaching out!</h2>
-        <p>Hi ${name},</p>
-        <p>We received your message and will get back to you within one business day.</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <h2>${t("contact.confirmationEmail.heading")}</h2>
+        <p>${t("contact.confirmationEmail.greeting", { name })}</p>
+        <p>${t("contact.confirmationEmail.body")}</p>
+        <p><strong>${t("contact.confirmationEmail.subjectLabel")}</strong> ${subject}</p>
         <hr />
-        <p>Best,<br />The HelmSmart team</p>
+        <p>${t("contact.confirmationEmail.signoff")}<br />${t("contact.confirmationEmail.team")}</p>
       `,
     });
 
