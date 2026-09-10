@@ -27,6 +27,8 @@ import { markLicenseVerified, saveAgentLicense } from "@/lib/teams/license.serve
 import { lookupLicenseRecord } from "@/lib/licenses/lookup.server";
 import { checkLicenseFormat } from "@/lib/teams/license";
 import type { BrandLicenseRecord } from "@/lib/teams/brand";
+import { parseAnnouncementInput, REACTIONS, type Reaction } from "@/lib/teams/billboard";
+import { createAnnouncement, markRead, react as svcReact, removeAnnouncement as svcRemoveAnnouncement, setPinned } from "@/lib/teams/billboard.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -312,6 +314,100 @@ export async function verifyMemberLicense(formData: FormData) {
   } catch (e) {
     console.error("[team.license.verify]", e instanceof Error ? e.message : e);
     return { ok: false as const, error: "We could not save that right now." };
+  }
+}
+
+/** Post to the brokerage billboard. Owner or manager. */
+export async function postAnnouncement(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null, reason: null };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can post to the billboard.", field: null, reason: null };
+  const parsed = parseAnnouncementInput({
+    kind: formData.get("kind"),
+    title: formData.get("title"),
+    body: formData.get("body"),
+    linkUrl: formData.get("linkUrl"),
+    shoutoutAgentId: formData.get("shoutoutAgentId"),
+    pinned: formData.get("pinned"),
+    expiresAt: formData.get("expiresAt"),
+    email: formData.get("email"),
+  });
+  if (!parsed.ok) return { ok: false as const, error: "Check the form.", field: parsed.field, reason: parsed.reason };
+  try {
+    const announcement = await createAnnouncement({ teamId, authorAgentId: ctx.agentId, input: parsed.input });
+    revalidatePath("/dashboard/team");
+    revalidatePath("/dashboard");
+    return { ok: true as const, announcement };
+  } catch (e) {
+    console.error("[team.billboard.post]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not post that right now.", field: null, reason: null };
+  }
+}
+
+export async function pinAnnouncement(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  const pinned = String(formData.get("pinned") ?? "") === "true";
+  if (!teamId || !id) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can pin posts." };
+  try {
+    const done = await setPinned(teamId, id, pinned);
+    revalidatePath("/dashboard/team");
+    return done ? { ok: true as const } : { ok: false as const, error: "That post is gone." };
+  } catch (e) {
+    console.error("[team.billboard.pin]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not save that right now." };
+  }
+}
+
+export async function removeAnnouncement(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  if (!teamId || !id) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can remove posts." };
+  try {
+    const done = await svcRemoveAnnouncement(teamId, id);
+    revalidatePath("/dashboard/team");
+    revalidatePath("/dashboard");
+    return done ? { ok: true as const } : { ok: false as const, error: "That post is already gone." };
+  } catch (e) {
+    console.error("[team.billboard.remove]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not remove that right now." };
+  }
+}
+
+/** The viewer opened the board: record what they saw. Any member, own reads only. */
+export async function markAnnouncementsRead(formData: FormData) {
+  const ids = String(formData.get("ids") ?? "").split(",").map((s) => s.trim()).filter((s) => /^[0-9a-f-]{36}$/i.test(s)).slice(0, 200);
+  if (!ids.length) return { ok: true as const };
+  try {
+    const ctx = await getCurrentAgentContext();
+    await markRead(ctx.agentId, ids);
+    return { ok: true as const };
+  } catch (e) {
+    console.warn("[team.billboard.read]", e instanceof Error ? e.message : e);
+    return { ok: false as const };
+  }
+}
+
+export async function reactToAnnouncement(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const raw = String(formData.get("reaction") ?? "");
+  const reaction = (REACTIONS as readonly string[]).includes(raw) ? (raw as Reaction) : null;
+  if (!id) return { ok: false as const };
+  try {
+    const ctx = await getCurrentAgentContext();
+    await svcReact(ctx.agentId, id, reaction);
+    return { ok: true as const };
+  } catch (e) {
+    console.warn("[team.billboard.react]", e instanceof Error ? e.message : e);
+    return { ok: false as const };
   }
 }
 

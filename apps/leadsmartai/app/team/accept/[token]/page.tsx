@@ -5,6 +5,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
 import { provisionHubUsername } from "@/lib/teams/provisionHub.server";
 import { loadAgentLicense } from "@/lib/teams/license.server";
+import { postWelcome } from "@/lib/teams/billboard.server";
 import { getServerT } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -46,6 +47,7 @@ export default async function AcceptInvitePage({
   if (result.ok) {
     // A hub address from their name, so "hub live" on the broker's board is one click away.
     await provisionHubUsername(agentId);
+    await postWelcome(result.membership.teamId, agentId);
     // The brokerage requires the agent's license: it goes on every post and
     // the hub footer. Ask once, here, before anything else.
     const license = await loadAgentLicense(agentId);
