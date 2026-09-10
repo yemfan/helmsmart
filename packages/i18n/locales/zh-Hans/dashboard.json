@@ -8131,7 +8131,7 @@
     },
     "teamOnboarding": {
       "importTitle": "邀请您的经纪人名单",
-      "importSub": "粘贴经纪人名单或选择 CSV 文件。文件中有姓名和电话时会一并导入；每位经纪人都会收到邀请邮件。",
+      "importSub": "粘贴经纪人名单或选择 CSV 文件，Lofty、kvCORE 或 Follow Up Boss 导出的用户列表可直接使用。文件中有姓名和电话时会一并导入；每位经纪人都会收到邀请邮件。",
       "importPlaceholder": "姓名, 邮箱, 电话\nGrace Lin, grace@example.com, (626) 555-2101\n或每行一个邮箱",
       "chooseFile": "选择文件",
       "import": "发送邀请",

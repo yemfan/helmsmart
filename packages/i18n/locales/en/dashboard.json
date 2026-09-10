@@ -8131,7 +8131,7 @@
     },
     "teamOnboarding": {
       "importTitle": "Invite your roster",
-      "importSub": "Paste your agent list or choose a CSV. Names and phone numbers come along when the file has them; every agent gets an emailed invitation.",
+      "importSub": "Paste your agent list or choose a CSV, including the user export from Lofty, kvCORE or Follow Up Boss as it downloads. Names and phone numbers come along when the file has them; every agent gets an emailed invitation.",
       "importPlaceholder": "Name, Email, Phone\nGrace Lin, grace@example.com, (626) 555-2101\nor one email per line",
       "chooseFile": "Choose a file",
       "import": "Send invitations",
