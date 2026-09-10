@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { brokerageLine, canVerifyViaArello, checkLicenseFormat, ensureBrokerageLine, licenseLabel, normalizeLicenseNumber, verificationOutcome } from "../license";
+import { brokerageLine, checkLicenseFormat, ensureBrokerageLine, hasPublicRecord, licenseLabel, normalizeLicenseNumber, statusFromLookup } from "../license";
 
 describe("normalizeLicenseNumber", () => {
   it("strips the label, the hash and spaces, and upper-cases", () => {
@@ -25,17 +25,13 @@ describe("checkLicenseFormat", () => {
   });
 });
 
-describe("verificationOutcome", () => {
-  const hits = [
-    { licenseNumber: "01234567", licenseStatus: "Licensed", lastName: "Ye", licenseExpirationDate: "2099-01-01" },
-    { licenseNumber: "01234568", licenseStatus: "Expired", lastName: "Ye" },
-  ];
-  it("verifies only an exact number that is active, and names the other cases", () => {
-    expect(verificationOutcome(hits, { number: "0123 4567", lastName: "Ye" }).status).toBe("verified");
-    expect(verificationOutcome(hits, { number: "01234567", lastName: "Lee" }).status).toBe("mismatch");
-    expect(verificationOutcome(hits, { number: "01234568" }).status).toBe("inactive");
-    expect(verificationOutcome(hits, { number: "09999999" }).status).toBe("not_found");
-    expect(verificationOutcome([{ licenseNumber: "5", licenseStatus: "Active", licenseExpirationDate: "2001-01-01" }], { number: "5" }).status).toBe("inactive");
+describe("statusFromLookup", () => {
+  it("confirms a current record, names the rest, and leaves a failed fetch alone", () => {
+    expect(statusFromLookup("found", { active: true })).toBe("verified");
+    expect(statusFromLookup("found", { active: false })).toBe("inactive");
+    expect(statusFromLookup("not_found")).toBe("not_found");
+    expect(statusFromLookup("unsupported")).toBe("unavailable");
+    expect(statusFromLookup("error")).toBeNull();
   });
 });
 
@@ -54,10 +50,10 @@ describe("brokerage line", () => {
     expect(brokerageLine({ brandName: null, brandLicense: null, agentName: null, agentLicense: { number: "0612345", state: "TX" } })).toBe("TREC #0612345");
   });
 
-  it("labels by state and knows which states ARELLO can check", () => {
+  it("labels by state and knows which states publish a record", () => {
     expect(licenseLabel("CA")).toBe("DRE #");
     expect(licenseLabel("ND")).toBe("Lic. #");
-    expect(canVerifyViaArello("CA")).toBe(true);
-    expect(canVerifyViaArello("NY")).toBe(false);
+    expect(hasPublicRecord("CA")).toBe(true);
+    expect(hasPublicRecord("NY")).toBe(false);
   });
 });

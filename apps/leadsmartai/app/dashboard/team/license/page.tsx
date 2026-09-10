@@ -3,7 +3,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { listTeamsForAgent } from "@/lib/teams/service";
 import { loadTeamBrand } from "@/lib/teams/brand.server";
-import { arelloConfigured, loadAgentLicense } from "@/lib/teams/license.server";
+import { loadAgentLicense } from "@/lib/teams/license.server";
 import { LicenseForm } from "@/components/team/LicenseForm";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +34,7 @@ export default async function TeamLicensePage() {
           {brokerage ? t("pages.teamLicense.introBrokerage", { ns: "dashboard", brokerage }) : t("pages.teamLicense.intro", { ns: "dashboard" })}
         </p>
         <div className="mt-4">
-          <LicenseForm initial={license} required continueHref="/dashboard/team" arelloOn={arelloConfigured()} />
+          <LicenseForm initial={license} required continueHref="/dashboard/team" />
         </div>
         <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">{t("pages.teamLicense.note", { ns: "dashboard" })}</p>
       </section>

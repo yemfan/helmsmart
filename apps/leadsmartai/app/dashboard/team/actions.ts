@@ -24,6 +24,9 @@ import { addLibraryItem as svcAddLibraryItem, removeLibraryItem as svcRemoveLibr
 import { parseReferralInput, type ReferralMove } from "@/lib/teams/referrals";
 import { createReferral as svcCreateReferral, moveReferral as svcMoveReferral, searchContacts } from "@/lib/teams/referrals.server";
 import { markLicenseVerified, saveAgentLicense } from "@/lib/teams/license.server";
+import { lookupLicenseRecord } from "@/lib/licenses/lookup.server";
+import { checkLicenseFormat } from "@/lib/teams/license";
+import type { BrandLicenseRecord } from "@/lib/teams/brand";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -319,18 +322,33 @@ export async function saveBrand(formData: FormData) {
   const ctx = await getCurrentAgentContext();
   const role = await getRole({ teamId, agentId: ctx.agentId });
   if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can set the brokerage brand.", field: null };
+  // The brokerage license has a public record too (a California corporation
+  // or broker id): read it once, and let it fill in a name the owner left
+  // blank. The record rides along so the card can show what the state says.
+  let name = String(formData.get("name") ?? "");
+  const licenseRaw = String(formData.get("license") ?? "");
+  let licenseRecord: BrandLicenseRecord | null = null;
+  const shaped = checkLicenseFormat("CA", licenseRaw.replace(/^dre\s*#?\s*/i, ""));
+  if (shaped.ok) {
+    const found = await lookupLicenseRecord("CA", shaped.number);
+    if (found.kind === "found") {
+      licenseRecord = { name: found.record.displayName, type: found.record.licenseType || null, statusRaw: found.record.statusRaw || null, active: found.record.active, expiresOn: found.record.expiresOn, lookedUpAt: new Date().toISOString() };
+      if (!name.trim()) name = found.record.displayName;
+    }
+  }
   const parsed = parseBrandInput({
-    name: formData.get("name"),
+    name,
     logoUrl: formData.get("logoUrl"),
     website: formData.get("website"),
     license: formData.get("license"),
     disclosure: formData.get("disclosure"),
   });
   if (!parsed.ok) return { ok: false as const, error: "invalid", field: parsed.field };
+  const brand = parsed.brand ? { ...parsed.brand, licenseRecord } : null;
   try {
-    await saveTeamBrand(teamId, parsed.brand);
+    await saveTeamBrand(teamId, brand);
     revalidatePath("/dashboard/team");
-    return { ok: true as const };
+    return { ok: true as const, brand };
   } catch (e) {
     return { ok: false as const, error: e instanceof Error ? e.message : "Save failed", field: null };
   }

@@ -14,12 +14,13 @@ import { useUnsavedChanges } from "@/lib/forms/unsaved";
  */
 export function BrokerageBrandCard({ teamId, brand }: { teamId: string; brand: TeamBrand | null }) {
   const { t } = useTranslation("dashboard");
-  const k = (s: string) => t(`pages.teamBrand.${s}`);
+  const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamBrand.${s}`, vars);
   const initial = { name: brand?.name ?? "", logoUrl: brand?.logoUrl ?? "", website: brand?.website ?? "", license: brand?.license ?? "", disclosure: brand?.disclosure ?? "" };
   const [form, setForm] = useState(initial);
   const [saved, setSaved] = useState(initial);
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [badField, setBadField] = useState<string | null>(null);
+  const [record, setRecord] = useState(brand?.licenseRecord ?? null);
   const [pending, startTransition] = useTransition();
   const dirty = JSON.stringify(form) !== JSON.stringify(saved);
   useUnsavedChanges(dirty);
@@ -33,7 +34,10 @@ export function BrokerageBrandCard({ teamId, brand }: { teamId: string; brand: T
       for (const [key, value] of Object.entries(form)) fd.set(key, value);
       const r = await saveBrand(fd);
       if (r.ok) {
-        setSaved(form);
+        const next = { ...form, name: r.brand?.name ?? form.name };
+        setForm(next);
+        setSaved(next);
+        setRecord(r.brand?.licenseRecord ?? null);
         setState("saved");
       } else {
         setBadField(r.field ?? null);
@@ -61,7 +65,15 @@ export function BrokerageBrandCard({ teamId, brand }: { teamId: string; brand: T
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{k("subtitle")}</p>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {field("name", k("name"), k("nameHint"))}
-        {field("license", k("license"), k("licenseHint"))}
+        <div>
+          {field("license", k("license"), k("licenseHint"))}
+          {record ? (
+            <span className="mt-1 block text-xs text-slate-600 dark:text-slate-400">
+              {k("licenseRecord", { name: record.name, type: (record.type ?? "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()), status: (record.statusRaw ?? "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) })}
+              {record.expiresOn ? ` · ${k("licenseExpires", { date: record.expiresOn })}` : ""}
+            </span>
+          ) : null}
+        </div>
         {field("logoUrl", k("logo"), k("logoHint"))}
         {field("website", k("website"), k("websiteHint"))}
       </div>

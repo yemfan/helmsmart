@@ -22,7 +22,17 @@ export const TeamBrandSchema = z.object({
   disclosure: z.string().trim().max(1000).transform((v) => v || null),
 });
 
-export type TeamBrand = z.infer<typeof TeamBrandSchema>;
+/** What the regulator's public record says about the brokerage license, read at save time. */
+export type BrandLicenseRecord = { name: string; type: string | null; statusRaw: string | null; active: boolean; expiresOn: string | null; lookedUpAt: string };
+
+export type TeamBrand = z.infer<typeof TeamBrandSchema> & { licenseRecord?: BrandLicenseRecord | null };
+
+function recordOf(v: unknown): BrandLicenseRecord | null {
+  if (!v || typeof v !== "object") return null;
+  const r = v as Record<string, unknown>;
+  if (typeof r.name !== "string" || typeof r.lookedUpAt !== "string") return null;
+  return { name: r.name, type: typeof r.type === "string" ? r.type : null, statusRaw: typeof r.statusRaw === "string" ? r.statusRaw : null, active: Boolean(r.active), expiresOn: typeof r.expiresOn === "string" ? r.expiresOn : null, lookedUpAt: r.lookedUpAt };
+}
 
 export function emptyBrand(): TeamBrand {
   return { name: null, logoUrl: null, website: null, license: null, disclosure: null };
@@ -40,7 +50,8 @@ export function normalizeBrand(raw: unknown): TeamBrand | null {
     license: str(src.license),
     disclosure: str(src.disclosure),
   });
-  const b = parsed.success ? parsed.data : emptyBrand();
+  const record = recordOf(src.licenseRecord);
+  const b: TeamBrand = parsed.success ? (record ? { ...parsed.data, licenseRecord: record } : parsed.data) : emptyBrand();
   return b.name || b.logoUrl || b.website || b.license || b.disclosure ? b : null;
 }
 

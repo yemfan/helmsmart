@@ -3,14 +3,16 @@
 import { useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { saveMyLicense } from "@/app/dashboard/team/actions";
-import { canVerifyViaArello, licenseExample, licenseLabel, licenseLookupUrl, LICENSE_STATES, US_STATES, type AgentLicense } from "@/lib/teams/license";
+import { intlLocale } from "@/lib/i18n/locale";
+import { hasPublicRecord, licenseExample, licenseLabel, licenseLookupUrl, licenseRegulator, LICENSE_STATES, US_STATES, type AgentLicense } from "@/lib/teams/license";
 
 /**
  * The agent's license, required by the brokerage at onboarding: state,
- * number, and what verification said. The Save button carries its own
- * outcome; the status line under it says whether the number was checked
- * against the regulator (ARELLO) or only for shape, with the regulator's
- * own lookup for a person to confirm.
+ * number, and what the regulator's public record says about it. The Save
+ * button carries its own outcome; the lines under it show the record
+ * (who it belongs to, whether it is current, when it expires, which broker
+ * it hangs with) or, where no public record exists, the regulator's own
+ * lookup for a person to check.
  */
 
 const STATUS_TONE: Record<AgentLicense["status"], string> = {
@@ -22,12 +24,35 @@ const STATUS_TONE: Record<AgentLicense["status"], string> = {
   mismatch: "bg-amber-50 text-amber-800 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900",
 };
 
+/** SALESPERSON → Salesperson; anything else title-cased the same way. */
+function typeLabel(raw: string | null): string {
+  if (!raw) return "";
+  return raw.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function LicenseStatusChip({ license }: { license: AgentLicense }) {
   const { t } = useTranslation("dashboard");
   return <span className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-xs ring-1 ${STATUS_TONE[license.status]}`}>{t(`pages.teamLicense.status.${license.status}`)}</span>;
 }
 
-export function LicenseForm({ initial, required, continueHref, arelloOn }: { initial: AgentLicense | null; required: boolean; continueHref?: string; arelloOn: boolean }) {
+/** What the public record says, one line, for the form and the board. */
+export function LicenseRecordLine({ license }: { license: AgentLicense }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamLicense.${s}`, vars);
+  const r = license.record;
+  if (!r) return null;
+  const date = r.expiresOn ? new Date(`${r.expiresOn}T00:00:00Z`).toLocaleDateString(intlLocale(i18n.language), { dateStyle: "medium", timeZone: "UTC" }) : null;
+  return (
+    <span className="block text-xs text-slate-600 dark:text-slate-400">
+      {k("record.line", { regulator: licenseRegulator(license.state) ?? license.state, name: r.holderName ?? "—", type: typeLabel(r.licenseType), status: typeLabel(r.statusRaw) })}
+      {date ? ` · ${k("record.expires", { date })}` : ""}
+      {r.responsibleBroker?.name ? ` · ${k("record.broker", { name: r.responsibleBroker.name })}` : ""}
+      {r.discipline ? <span className="ml-1 text-rose-700 dark:text-rose-400">{k("record.discipline")}</span> : null}
+    </span>
+  );
+}
+
+export function LicenseForm({ initial, required, continueHref }: { initial: AgentLicense | null; required: boolean; continueHref?: string }) {
   const { t } = useTranslation("dashboard");
   const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamLicense.${s}`, vars);
   const [state, setState] = useState(initial?.state ?? "CA");
@@ -76,21 +101,21 @@ export function LicenseForm({ initial, required, continueHref, arelloOn }: { ini
           <span className="font-medium text-slate-800 dark:text-slate-200">{k("numberLabel", { label: rule ? rule.regulator : k("genericRegulator") })}</span>
           <input className={input} value={number} onChange={(e) => setNumber(e.target.value)} placeholder={licenseExample(state) ?? ""} required={required} autoComplete="off" />
           <span className={`mt-0.5 block text-xs ${error ? "text-red-700 dark:text-red-400" : "text-slate-500 dark:text-slate-400"}`} role={error ? "alert" : undefined}>
-            {error ?? k("numberHint", { label: licenseLabel(state) })}
+            {error ?? (hasPublicRecord(state) ? k("numberHintRecord", { label: licenseLabel(state), regulator: rule?.regulator ?? state }) : k("numberHint", { label: licenseLabel(state) }))}
           </span>
         </label>
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={pending || (!dirty && !saved)} className="inline-flex min-h-9 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
-          {pending ? k("saving") : saved ? k("saved") : k("save")}
+          {pending ? (hasPublicRecord(state) ? k("lookingUp") : k("saving")) : saved ? k("saved") : k("save")}
         </button>
         {license ? (
           <span className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
             <LicenseStatusChip license={license} />
-            <span>{k(`statusHint.${license.status}`, { via: license.verifiedBy === "manager" ? k("byManager") : k("byArello") })}</span>
+            <span>{k(`statusHint.${license.status}`, { via: license.verifiedBy === "manager" ? k("byManager") : k("byRecord", { regulator: licenseRegulator(license.state) ?? license.state }) })}</span>
             {lookup && license.status !== "verified" ? (
               <a href={lookup} target="_blank" rel="noreferrer" className="text-blue-700 underline-offset-2 hover:underline dark:text-blue-400">
-                {k("checkOnRegulator", { regulator: LICENSE_STATES[license.state]?.regulator ?? license.state })}
+                {k("checkOnRegulator", { regulator: licenseRegulator(license.state) ?? license.state })}
               </a>
             ) : null}
           </span>
@@ -101,7 +126,8 @@ export function LicenseForm({ initial, required, continueHref, arelloOn }: { ini
           </a>
         ) : null}
       </div>
-      {!arelloOn && canVerifyViaArello(state) ? <p className="text-xs text-slate-500 dark:text-slate-400">{k("arelloOff")}</p> : null}
+      {license ? <LicenseRecordLine license={license} /> : null}
+      {!hasPublicRecord(state) ? <p className="text-xs text-slate-500 dark:text-slate-400">{k("lookupNone")}</p> : null}
     </form>
   );
 }

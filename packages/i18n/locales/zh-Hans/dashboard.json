@@ -8462,6 +8462,8 @@
       "numberLabel": "执照号（{{label}}）",
       "genericRegulator": "州监管机构",
       "numberHint": "在广告中显示为 {{label}}",
+      "numberHintRecord": "在广告中显示为 {{label}}。保存时会读取你在 {{regulator}} 的公开记录并自动填入信息。",
+      "lookingUp": "查询中…",
       "save": "保存执照",
       "saving": "保存中…",
       "saved": "已保存！",
@@ -8486,13 +8488,19 @@
         "not_found": "监管机构记录中没有这个号码的执照。",
         "inactive": "监管机构显示此执照已过期或未生效。",
         "mismatch": "此号码登记在另一个姓氏名下。",
-        "unavailable": "该州不共享记录，可由经理人工确认。"
+        "unavailable": "该州没有可读取的公开记录，可由经理人工确认。"
       },
-      "byArello": "通过州记录",
+      "byRecord": "通过 {{regulator}} 公开记录",
       "byManager": "由经纪公司",
       "checkOnRegulator": "在 {{regulator}} 网站查询",
-      "arelloOff": "自动核实尚未接入，由经纪公司人工确认执照。",
-      "note": "只保存你的州和执照号。号码会印在你的帖子和获客主页上，查询结果中的其他信息不会显示。"
+      "lookupNone": "该州暂无可读取的公开记录，由经纪公司人工确认执照。",
+      "record": {
+        "line": "{{regulator}} 记录：{{name}} · {{type}} · {{status}}",
+        "expires": "{{date}} 到期",
+        "broker": "挂靠经纪 {{name}}",
+        "discipline": "记录中有处分备注"
+      },
+      "note": "保存你的州、执照号以及公开记录中的信息。号码会印在你的帖子和获客主页上；记录只用于填补空白的姓名和经纪公司，不会覆盖你填写的内容。"
     },
     "teamBrand": {
       "title": "经纪公司品牌",
@@ -8500,7 +8508,9 @@
       "name": "经纪公司名称",
       "nameHint": "在经纪人页面上应显示的名称。",
       "license": "经纪公司执照",
-      "licenseHint": "必填。经纪公司的 DRE 或州执照号，会显示在每位经纪人的页面和帖子上。",
+      "licenseHint": "必填。经纪公司的 DRE 或州执照号，会显示在每位经纪人的页面和帖子上。加州号码会从 DRE 记录自动填入名称。",
+      "licenseRecord": "DRE 记录：{{name}} · {{type}} · {{status}}",
+      "licenseExpires": "{{date}} 到期",
       "logo": "标志链接",
       "logoHint": "白底 PNG 或 SVG 的链接。",
       "website": "网站",
