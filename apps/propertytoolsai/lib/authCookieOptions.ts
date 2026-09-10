@@ -1,6 +1,6 @@
 import type { CookieOptionsWithName } from "@supabase/ssr";
 
-/** Suffix for `cookieOptions.name` — must differ from LeadSmart AI so sessions stay isolated. */
+/** Suffix for `cookieOptions.name` — must differ from CloseBoss so sessions stay isolated. */
 const APP_AUTH_TAG = "propertytools";
 
 /**
@@ -22,7 +22,7 @@ function supabaseProjectRef(): string {
 /**
  * Cookie options for `@supabase/ssr`.
  *
- * **Default (isolated sessions):** sets a unique `name` so Property Tools and LeadSmart AI
+ * **Default (isolated sessions):** sets a unique `name` so Property Tools and CloseBoss
  * each keep their own login, even with the same Supabase project and
  * `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` (subdomains).
  *

@@ -41,7 +41,7 @@ export function getSiteUrl(): string {
  * Base URL for Supabase OAuth `redirectTo` (Google / Apple).
  *
  * **Always uses the current browser tab origin** when this runs on the client, so OAuth never
- * bounces to another app if `NEXT_PUBLIC_SITE_URL` was copied from the wrong `.env` (e.g. LeadSmart
+ * bounces to another app if `NEXT_PUBLIC_SITE_URL` was copied from the wrong `.env` (e.g. CloseBoss
  * URL on Property Tools). Add every dev/prod origin you use under Supabase → Authentication →
  * URL Configuration → Redirect URLs.
  *

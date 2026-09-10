@@ -166,7 +166,7 @@ export default function AssignedAgentChatDialog({
         <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-slate-900">Chat with {agentDisplayName}</p>
-            <p className="text-xs text-slate-500">Messages sync with LeadSmart support.</p>
+            <p className="text-xs text-slate-500">Messages sync with CloseBoss support.</p>
           </div>
           <button
             type="button"

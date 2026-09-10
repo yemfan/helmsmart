@@ -691,7 +691,7 @@ export default function PropertyToolsHomePage() {
         </div>
       </section>
 
-      {/* LeadSmart cross-promo was previously a hero-sized section here.
+      {/* CloseBoss cross-promo was previously a hero-sized section here.
           Demoted to footer per validation report UX-05 — consumer homepage
           shouldn't route consumers to the agent product as a primary CTA.
           See components/Footer.tsx "For Agents" column. */}

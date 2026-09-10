@@ -7,7 +7,7 @@
 | `lib/access.ts` | `resolveAccessTier`, `canUseTool`, `DEFAULT_LIMITS`, RPC tool mapping |
 | `lib/usage.ts` | `getUsage()`, `incrementUsage()`, guest `localStorage` daily counters |
 | `app/api/access/usage/route.ts` | `GET` — tier + usage for the signed-in user (or guest defaults) |
-| `components/AuthProvider.tsx` | Supabase session (`user`, `loading`, `refresh`, `openAuth` / `closeAuth`); embeds `AuthModal` (same pattern as LeadSmart AI) |
+| `components/AuthProvider.tsx` | Supabase session (`user`, `loading`, `refresh`, `openAuth` / `closeAuth`); embeds `AuthModal` (same pattern as CloseBoss) |
 | `components/AuthModal.tsx` | Email/password login + signup (Supabase Auth) |
 | `components/PaywallModal.tsx` | Premium upsell (links to `/pricing`) |
 | `components/AccessProvider.tsx` | Wraps auth; `useAccess()` — tier, usage, `refresh` (auth + usage), `openAuth`, `openPaywall` |
@@ -17,7 +17,7 @@
 - **Guest** — not signed in; daily limits enforced client-side (`localStorage` key `propertytoolsai:guest_tool_usage:v1`).
 - **Free** — signed in; monthly limits for `estimator` / `cma` via Supabase `increment_usage` RPC (see `20260319_usage_limits.sql`).
 - **Premium** — any of:
-  - `user_profiles.role` in `PREMIUM_GRANT_ROLES` (`lib/access.ts`) — e.g. `agent`, `broker`, `admin`, `support`, plus broker leadership roles shared with LeadSmart AI; or
+  - `user_profiles.role` in `PREMIUM_GRANT_ROLES` (`lib/access.ts`) — e.g. `agent`, `broker`, `admin`, `support`, plus broker leadership roles shared with CloseBoss; or
   - `subscription_status` in `active` / `trialing`, or `plan` in `premium` / `elite`.
 
 ## Usage in UI

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * “Close More Deals with Less Work” card style (LeadSmart AI landing #features):
+ * “Close More Deals with Less Work” card style (CloseBoss landing #features):
  * top brand accent bar + soft gradient into slate-50.
  */
 export const featureHighlightAccents = {

@@ -123,7 +123,7 @@ export type CreateConversationInput = {
   source?: string;
   /** Logged-in PropertyTools user (Supabase auth id). */
   customerUserId?: string | null;
-  /** Assigned agent — same id used on LeadSmart support (`assigned_agent_id` = auth user id). */
+  /** Assigned agent — same id used on CloseBoss support (`assigned_agent_id` = auth user id). */
   assignedAgentAuthUserId?: string | null;
   assignedAgentName?: string | null;
 };

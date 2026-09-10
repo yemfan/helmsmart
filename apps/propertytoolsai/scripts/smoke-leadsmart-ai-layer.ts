@@ -30,7 +30,7 @@ async function main() {
 
   const supabase = createClient(url, key);
 
-  console.log("Checking LeadSmart AI layer migration (20260327_leadsmart_ai_layer)...\n");
+  console.log("Checking CloseBoss layer migration (20260327_leadsmart_ai_layer)...\n");
 
   const { error: cacheErr } = await supabase
     .from("ai_cache")
@@ -54,7 +54,7 @@ async function main() {
   }
   console.log("✓ ai_usage");
 
-  console.log("\nLeadSmart layer migration is present and queryable.");
+  console.log("\nCloseBoss layer migration is present and queryable.");
 }
 
 main().catch((e) => {

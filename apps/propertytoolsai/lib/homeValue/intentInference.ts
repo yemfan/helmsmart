@@ -1,5 +1,5 @@
 /**
- * Infer seller / buyer / investor for recommendations + LeadSmart AI routing.
+ * Infer seller / buyer / investor for recommendations + CloseBoss routing.
  * Combines explicit user choice (optional), behavioral signals, and light property heuristics.
  */
 

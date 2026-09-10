@@ -13,7 +13,7 @@
 | `leadCapture.ts` | When to prompt: no gate before preview; soft banner after useful estimate / refine; unlock gate for full report |
 | `runEstimate.ts` | `runHomeValueEstimatePipeline` — enrichment → estimate → confidence → session + events |
 | `funnelPersistence.ts` | `home_value_sessions`, `tool_events`, `market_snapshots` |
-| `leadSmartRouting.ts` | `buildLeadSmartHomeValueNotes` (optional CRM notes shape) |
+| `closeBossRouting.ts` | `buildCloseBossHomeValueNotes` (optional CRM notes shape) |
 | `toolEventsClient.ts` | Browser `trackToolEvent` → `POST /api/events` |
 
 ## API (canonical routes)
@@ -32,7 +32,7 @@
 - Baseline PPSF: **comps** (if sold prices present) else **city** median PPSF else **245** fallback.
 - Guests allowed (lead-gen).
 
-## CRM / LeadSmart AI
+## CRM / CloseBoss
 
 **`LeadRecord`** (`lib/leads/leadRecord.ts`) — canonical shape returned on unlock (`leadRecord` in JSON): `source: "home_value_estimator"`, value band, confidence, `likelyIntent`, engagement, optional timeline / buying vs selling.
 

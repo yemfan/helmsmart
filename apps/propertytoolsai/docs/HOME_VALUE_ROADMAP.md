@@ -4,7 +4,7 @@
 
 - Heuristic AVM + local median $/sqft
 - Simple adjustment model (type, beds/baths, age, lot, condition, renovation, trend)
-- Lead capture + routing (unlock report, `persistToolLead`, LeadSmart AI notes)
+- Lead capture + routing (unlock report, `persistToolLead`, CloseBoss notes)
 - Confidence engine + intent inference from signals
 - UI state machine + funnel analytics events
 

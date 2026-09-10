@@ -10,7 +10,7 @@ type Props = {
 };
 
 /**
- * Legal / simple marketing text pages — card on soft gradient (LeadSmart AI-adjacent).
+ * Legal / simple marketing text pages — card on soft gradient (CloseBoss-adjacent).
  */
 export default function MarketingContentLayout({ title, eyebrow, intro, children }: Props) {
   return (

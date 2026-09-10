@@ -2,7 +2,7 @@
   "name": "propertytoolsai",
   "version": "0.1.0",
   "private": true,
-  "description": "Public LeadSmart AI lead-gen app (Next.js). Workspace path: apps/propertytoolsai.",
+  "description": "PropertyTools AI — public consumer real-estate tools (Next.js). Workspace path: apps/propertytoolsai.",
   "type": "module",
   "engines": {
     "node": "24.x"

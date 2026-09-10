@@ -14,15 +14,15 @@ export type CreateLeadInput = {
   tool?: string;
   /** Saved to CRM as `property_value` when present */
   property_value?: number;
-  /** 0–100 for scoring / LeadSmart AI routing */
+  /** 0–100 for scoring / CloseBoss routing */
   confidence_score?: number;
-  /** 0–100 engagement / funnel depth for LeadSmart AI routing */
+  /** 0–100 engagement / funnel depth for CloseBoss routing */
   engagement_score?: number;
   /** Extra structured context (stored in `notes` JSON on server) */
   metadata?: Record<string, unknown>;
   /** Funnel session id → `leads.session_id` + `tool_events` */
   session_id?: string;
-  /** First-class address fields (LeadSmart AI schema) */
+  /** First-class address fields (CloseBoss schema) */
   full_address?: string;
   city?: string;
   state?: string;

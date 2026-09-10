@@ -128,7 +128,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* For Agents — LeadSmart cross-promo. Demoted here from a hero-
+          {/* For Agents — CloseBoss cross-promo. Demoted here from a hero-
               sized mid-page section per validation report UX-05 (the consumer
               homepage shouldn't route consumers to the agent product as a
               primary CTA). External link to a separate domain. */}

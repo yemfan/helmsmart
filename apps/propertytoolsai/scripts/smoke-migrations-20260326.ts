@@ -1,5 +1,5 @@
 /**
- * Verifies 20260326_* migrations (LeadSmart AI backend, city market, pricing, scoring, SMS auto-follow).
+ * Verifies 20260326_* migrations (CloseBoss backend, city market, pricing, scoring, SMS auto-follow).
  *
  * Usage (from repo root):
  *   npm run smoke:migrations-20260326 -w propertytoolsai
@@ -40,7 +40,7 @@ async function main() {
 
   const supabase = createClient(url, key);
 
-  console.log("Checking 20260326_* migrations (LeadSmart AI backend + AI bundle tables)...\n");
+  console.log("Checking 20260326_* migrations (CloseBoss backend + AI bundle tables)...\n");
 
   for (const { table, select } of TABLES) {
     const { error } = await supabase.from(table).select(select).limit(1);

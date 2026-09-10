@@ -24,7 +24,7 @@ export default function AccountMenu() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  /* Fetch avatar from /api/me (same approach as LeadSmart TopBar) */
+  /* Fetch avatar from /api/me (same approach as CloseBoss TopBar) */
   useEffect(() => {
     if (!user) return;
     let cancelled = false;

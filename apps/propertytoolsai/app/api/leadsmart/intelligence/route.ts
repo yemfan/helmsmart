@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/authFromRequest";
-import { buildLeadSmartIntelligence } from "@/lib/leadsmart/service";
+import { buildCloseBossIntelligence } from "@/lib/closeboss/service";
 
 export const runtime = "nodejs";
 
@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     if (!leadId) {
       return NextResponse.json({ ok: false, error: "lead_id is required" }, { status: 400 });
     }
-    const data = await buildLeadSmartIntelligence(leadId);
+    const data = await buildCloseBossIntelligence(leadId);
     return NextResponse.json({ ok: true, data });
   } catch (e: any) {
     return NextResponse.json(

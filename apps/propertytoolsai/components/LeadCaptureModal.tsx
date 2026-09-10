@@ -34,7 +34,7 @@ export type LeadCaptureModalProps = {
   title?: string;
   subtitle?: string;
   submitLabel?: string;
-  /** Extra CRM fields (home value, confidence, engagement metadata for LeadSmart AI) */
+  /** Extra CRM fields (home value, confidence, engagement metadata for CloseBoss) */
   leadExtras?: Pick<
     CreateLeadInput,
     "property_value" | "confidence_score" | "engagement_score" | "metadata"

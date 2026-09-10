@@ -81,7 +81,7 @@ export function isPremiumPlan(plan: string | null | undefined): boolean {
 
 /**
  * `leadsmart_users.role` values that grant PropertyTools premium tool access without a paid
- * subscription (same Supabase project as LeadSmart AI). DB may store `user` for consumers (not premium).
+ * subscription (same Supabase project as CloseBoss). DB may store `user` for consumers (not premium).
  */
 export const PREMIUM_GRANT_ROLES = new Set([
   "agent",

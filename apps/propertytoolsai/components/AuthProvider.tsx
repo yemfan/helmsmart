@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Supabase session + login/signup modal — same pattern as LeadSmart AI (`apps/leadsmartai/components/AuthProvider.tsx`).
+ * Supabase session + login/signup modal — same pattern as CloseBoss (`apps/leadsmartai/components/AuthProvider.tsx`).
  * PropertyTools-specific tier/plan/paywall logic lives in {@link AccessProvider}.
  */
 import {

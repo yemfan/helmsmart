@@ -168,7 +168,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Part of a Smarter Real Estate Ecosystem</h2>
 
           <p className="mt-6 leading-relaxed text-slate-300">
-            PropertyTools AI connects seamlessly with LeadSmart AI — enabling a smarter flow from user insights to real-world
+            PropertyTools AI connects seamlessly with CloseBoss — enabling a smarter flow from user insights to real-world
             transactions.
           </p>
 

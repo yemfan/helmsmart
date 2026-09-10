@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { refreshLeadSmartBatch } from "@/lib/leadsmart/service";
+import { refreshCloseBossBatch } from "@/lib/closeboss/service";
 import { verifyCronRequest } from "@/lib/seoOptimization/cronAuth";
 
 export const runtime = "nodejs";
@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const result = await refreshLeadSmartBatch();
+    const result = await refreshCloseBossBatch();
     return NextResponse.json({ ok: true, ...result });
   } catch (e: any) {
     return NextResponse.json(

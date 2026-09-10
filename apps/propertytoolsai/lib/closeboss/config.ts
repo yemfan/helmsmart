@@ -1,4 +1,4 @@
-export function getLeadSmartConfig() {
+export function getCloseBossConfig() {
   const openaiModel = process.env.OPENAI_MODEL || "gpt-4o-mini";
   const openaiApiKey = process.env.OPENAI_API_KEY || "";
   const aiTimeoutMs = Math.max(3000, Number(process.env.LEADSMART_AI_TIMEOUT_MS || "12000"));
