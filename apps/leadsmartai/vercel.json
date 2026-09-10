@@ -22,6 +22,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/team-billboard-mailer",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/materialize-recurring-posts",
       "schedule": "*/15 * * * *"
     },

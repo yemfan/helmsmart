@@ -8502,6 +8502,68 @@
       },
       "note": "保存你的州、执照号以及公开记录中的信息。号码会印在你的帖子和获客主页上；记录只用于填补空白的姓名和经纪公司，不会覆盖你填写的内容。"
     },
+    "teamBillboard": {
+      "title": "公告板",
+      "subtitle": "公司希望你了解的事。新帖会显示在你的工作台上，直到你看过为止。",
+      "subtitleManager": "让每位经纪人都知道的事，出现在他们常看的地方：这里和他们的工作台。发布新闻、喜报、活动、提醒或政策；置顶必须常驻的内容；需要人人收到的就同时发邮件。",
+      "fromBrokerage": "来自 {{brokerage}}",
+      "seeAll": "全部帖子（{{count}}）",
+      "unread": "新",
+      "openComposer": "发布新帖",
+      "closeComposer": "收起",
+      "kindLabel": "类型",
+      "kind": {
+        "news": "新闻",
+        "win": "喜报",
+        "event": "活动",
+        "reminder": "提醒",
+        "policy": "政策",
+        "welcome": "欢迎"
+      },
+      "titleLabel": "标题",
+      "titlePlaceholder": {
+        "news": "例如：十月起启用新的佣金方案",
+        "win": "例如：Main St 12 号以 120 万美元成交",
+        "event": "例如：合同培训，周四上午 10 点",
+        "reminder": "例如：第三季度披露文件周五截止",
+        "policy": "例如：广告政策更新，请务必阅读"
+      },
+      "shoutoutLabel": "这是关于谁的？",
+      "shoutoutNone": "全公司",
+      "bodyLabel": "详情（可选）",
+      "bodyPlaceholder": "写几句就好。经纪人会在带看间隙用手机阅读。",
+      "linkLabel": "链接（可选）",
+      "expiresLabel": "到期自动撤下（可选）",
+      "pinLabel": "置顶",
+      "emailLabel": "同时发邮件给全部 {{count}} 位经纪人",
+      "post": "发布",
+      "posting": "发布中…",
+      "posted": "已发布！",
+      "error": {
+        "kind_required": "请选择类型。",
+        "title_required": "请填写标题。",
+        "title_too_long": "标题太长了。",
+        "body_too_long": "内容太长了（上限 2,000 字符）。",
+        "linkUrl_bad_url": "这看起来不是有效的网址。",
+        "expiresAt_past": "该日期已经过去了。"
+      },
+      "pinned": "已置顶",
+      "pin": "置顶",
+      "unpin": "取消置顶",
+      "remove": "移除",
+      "removing": "移除中…",
+      "openLink": "打开链接",
+      "byOn": "{{name}} 发布于 {{date}}",
+      "seenBy": "{{total}} 人中已有 {{count}} 人看过（{{pct}}%）",
+      "emailed": "已发邮件",
+      "reaction": {
+        "cheer": "庆祝",
+        "like": "赞",
+        "heart": "喜欢"
+      },
+      "empty": "还没有帖子。",
+      "emptyManager": "还没有帖子。先发布本周每位经纪人都该知道的那件事吧。"
+    },
     "teamBrand": {
       "title": "经纪公司品牌",
       "subtitle": "显示在每位成员的公开主页上：页眉的名称与标志，页脚的执照、网站和声明。",

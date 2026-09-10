@@ -29,6 +29,8 @@ import type { Referral } from "@/lib/teams/referrals";
 import { TeamReferralsPanel } from "./TeamReferralsPanel";
 import type { AgentLicense } from "@/lib/teams/license";
 import { LicenseForm } from "./LicenseForm";
+import type { Announcement } from "@/lib/teams/billboard";
+import { BillboardPanel } from "./BillboardPanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -56,6 +58,7 @@ export function TeamDashboard({
   library = [],
   referrals = [],
   myLicense = null,
+  billboard = [],
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -74,6 +77,8 @@ export function TeamDashboard({
   referrals?: Referral[];
   /** The caller's own license; null means the brokerage is still waiting for it. */
   myLicense?: AgentLicense | null;
+  /** Everyone: the brokerage billboard, live posts only. */
+  billboard?: Announcement[];
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -115,6 +120,8 @@ export function TeamDashboard({
           </div>
         </section>
       ) : null}
+
+      <BillboardPanel teamId={roster.team.id} currentAgentId={currentAgentId} canManage={canManage} members={roster.members} directory={directory} initial={billboard} />
 
       <RosterCard
         teamId={roster.team.id}

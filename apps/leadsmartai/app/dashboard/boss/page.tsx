@@ -6,6 +6,7 @@ import { listBossRecommendations } from "@/lib/closeboss/recommendations";
 import { goalKey } from "@/lib/closeboss/goal";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
+import { BrokerageBillboardCard } from "@/components/dashboard/BrokerageBillboardCard";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
@@ -81,6 +82,7 @@ export default async function BossAssistantPage() {
 
   return (
     <div className="space-y-4">
+      <BrokerageBillboardCard agentId={agentId} />
       <BossAssistantClient greetingName={greetingName} goal={goal} initial={initial} />
     </div>
   );

@@ -8502,6 +8502,68 @@
       },
       "note": "Your state and number are stored with what the public record says about them. The number is printed on your posts and your lead page; the record fills in your name and brokerage where they were blank, and never overwrites what you typed."
     },
+    "teamBillboard": {
+      "title": "Billboard",
+      "subtitle": "What the office wants you to know. New posts show on your dashboard until you have seen them.",
+      "subtitleManager": "What every agent should know, where they already look: here and on their dashboard. Post news, a win, an event, a reminder or policy; pin what must stay on top; email what must reach everyone.",
+      "fromBrokerage": "From {{brokerage}}",
+      "seeAll": "All posts ({{count}})",
+      "unread": "New",
+      "openComposer": "New post",
+      "closeComposer": "Close",
+      "kindLabel": "Kind",
+      "kind": {
+        "news": "News",
+        "win": "Win",
+        "event": "Event",
+        "reminder": "Reminder",
+        "policy": "Policy",
+        "welcome": "Welcome"
+      },
+      "titleLabel": "Headline",
+      "titlePlaceholder": {
+        "news": "e.g. New commission schedule from October",
+        "win": "e.g. 12 Main St closed at $1.2M",
+        "event": "e.g. Contracts training, Thursday 10am",
+        "reminder": "e.g. Q3 disclosures due Friday",
+        "policy": "e.g. Updated advertising policy — please read"
+      },
+      "shoutoutLabel": "Who is this about?",
+      "shoutoutNone": "The whole office",
+      "bodyLabel": "Details (optional)",
+      "bodyPlaceholder": "A few lines. Agents read this on their phone between showings.",
+      "linkLabel": "Link (optional)",
+      "expiresLabel": "Take down after (optional)",
+      "pinLabel": "Pin to the top",
+      "emailLabel": "Also email all {{count}} agents",
+      "post": "Post",
+      "posting": "Posting…",
+      "posted": "Posted!",
+      "error": {
+        "kind_required": "Choose a kind.",
+        "title_required": "Give it a headline.",
+        "title_too_long": "That headline is too long.",
+        "body_too_long": "That is too long (2,000 characters).",
+        "linkUrl_bad_url": "That does not look like a web address.",
+        "expiresAt_past": "That date has already passed."
+      },
+      "pinned": "Pinned",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "remove": "Remove",
+      "removing": "Removing…",
+      "openLink": "Open link",
+      "byOn": "{{name}} · {{date}}",
+      "seenBy": "Seen by {{count}} of {{total}} ({{pct}}%)",
+      "emailed": "emailed",
+      "reaction": {
+        "cheer": "Cheer",
+        "like": "Like",
+        "heart": "Love"
+      },
+      "empty": "Nothing posted yet.",
+      "emptyManager": "Nothing posted yet. Start with the one thing every agent should know this week."
+    },
     "teamBrand": {
       "title": "Brokerage brand",
       "subtitle": "Shown on every member's public hub: the name and logo in the header, the license, website and disclosure in the footer.",
