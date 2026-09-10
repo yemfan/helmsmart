@@ -41,7 +41,7 @@
     }
   },
   "clientAssistant": {
-    "subtitle": "AI 代您致电联系人——跟进、预约提醒、回访和通知"
+    "subtitle": "AI 代你致电联系人——跟进、预约提醒、回访和通知"
   },
   "recording": {
     "label": "录音"
@@ -120,7 +120,7 @@
     "disclosure": "通话中会主动说明身份为 AI，且仅在当地时间 8:00–21:00 拨号。",
     "surveyDetailRequired": "请先填写回访问题。",
     "promoDetailRequired": "请先填写通知内容。",
-    "confirmOne": "确定由 AI 致电 {{name}}（{{phone}}）？\n\nAI 助理将立即代您拨打。",
+    "confirmOne": "确定由 AI 致电 {{name}}（{{phone}}）？\n\nAI 助理将立即代你拨打。",
     "confirmAll_other": "确定由 AI 致电 {{count}} 个联系人？\n\n系统会在后台错峰拨号，并且只在可拨打时段内进行。",
     "calling": "正在致电 {{name}}——AI 助理已开始拨号。",
     "queued_other": "已排入 {{count}} 通电话——正在错峰拨号，且仅在可拨打时段内进行。",
@@ -132,7 +132,7 @@
       "contactNoPhone": "该联系人没有电话号码。",
       "noNumber": "请先在「设置 → AI 语音助理」中关联一个电话号码。",
       "outsideHours": "当前不在可拨打时段（当地时间 8:00–21:00），请稍后再试。",
-      "noAgent": "您的号码尚未关联语音助理。",
+      "noAgent": "你的号码尚未关联语音助理。",
       "noneSelected": "未选择任何联系人。",
       "noneReachable": "没有可拨打的联系人 —— 他们需要有电话号码。",
       "alreadyQueued": "这些联系人已在队列中或正在拨打。"
@@ -140,13 +140,13 @@
   },
   "settings": {
     "title": "AI 语音助理",
-    "subtitle": "您不方便接听时，由 Claude 代接来电",
+    "subtitle": "你不方便接听时，由 Claude 代接来电",
     "toggleNeedsNumber": "请先添加电话号码——助理还没有可接听的号码。",
     "needsNumber": "语音助理需要一个电话号码才能接听来电。",
     "connected": "已连接到 {{number}}",
-    "notAnswered": "拨打 {{number}} 的来电并非由您的前台接待接听",
-    "sharedWarning_other": "该号码还被另外 {{count}} 个账户使用，并且由其中一个账户接听——所以来电方听到的是那家企业，而不是您。下方的设置会保存，但在该号码归您独享之前不会生效。",
-    "sharedNotice_other": "请注意：该号码还被另外 {{count}} 个账户使用。目前来电以您的企业名义接听，但对方修改设置后可能发生变化。",
+    "notAnswered": "拨打 {{number}} 的来电并非由你的前台接待接听",
+    "sharedWarning_other": "该号码还被另外 {{count}} 个账户使用，并且由其中一个账户接听——所以来电方听到的是那家企业，而不是你。下方的设置会保存，但在该号码归你独享之前不会生效。",
+    "sharedNotice_other": "请注意：该号码还被另外 {{count}} 个账户使用。目前来电以你的企业名义接听，但对方修改设置后可能发生变化。",
     "agentName": {
       "label": "助理名称",
       "hint": "（前台接待如何称呼自己）",
@@ -156,7 +156,7 @@
     "dba": {
       "label": "对外商号",
       "hint": "（对外使用的经营名称，选填）",
-      "placeholder": "您的企业名称",
+      "placeholder": "你的企业名称",
       "help": "前台接待对外报出的商号。留空则使用账户名称——账单与发票始终使用账户名称。",
       "helpWithName": "前台接待对外报出的商号。留空则使用账户名称（{{name}}）——账单与发票始终使用账户名称。"
     },
@@ -174,7 +174,7 @@
     "bookingAlert": {
       "label": "预约成功时给我发短信",
       "hint": "（选填）",
-      "help": "填您本人的手机号。预约一旦成功，前台接待会立即短信告知您，无需一直盯着应用。留空则不发短信。"
+      "help": "填你本人的手机号。预约一旦成功，前台接待会立即短信告知你，无需一直盯着应用。留空则不发短信。"
     },
     "save": "保存设置",
     "saved": "已保存！",
@@ -183,7 +183,7 @@
   "config": {
     "calendar": {
       "title": "日历",
-      "description": "连接 Google 日历，让前台接待直接写入您的真实日历，并只提供您确实空闲的时段。",
+      "description": "连接 Google 日历，让前台接待直接写入你的真实日历，并只提供你确实空闲的时段。",
       "notConfigured": "服务端尚未配置 Google 日历。在配置之前，预约使用 HelmSmart 自带的日历。",
       "connected": "已连接",
       "connectedWithEmail": "已连接 · {{email}}",
@@ -251,7 +251,7 @@
       "agentFix": "打开上方的“AI 语音助理”开关。",
       "calendarOk": "已连接 Google 日历",
       "calendarOptional": "Google 日历（选填）",
-      "calendarFix": "在下方连接 Google 日历，只提供您确实空闲的时段。",
+      "calendarFix": "在下方连接 Google 日历，只提供你确实空闲的时段。",
       "calendarFixUnconfigured": "选填——连接日历可避免重复预约。"
     },
     "verify": "验证配置",
@@ -265,7 +265,7 @@
     "manual": {
       "summary": "想手动配置 Retell？",
       "step1": "在 Retell 号码的 Inbound Call Agent 中，选择共享助理。",
-      "step2": "勾选“Add an inbound webhook”，粘贴下方的 URL，并将其中的密钥替换为您的 RETELL_FUNCTION_SECRET。",
+      "step2": "勾选“Add an inbound webhook”，粘贴下方的 URL，并将其中的密钥替换为你的 RETELL_FUNCTION_SECRET。",
       "step3": "将每个自定义函数指向函数 URL。",
       "inboundLabel": "入线 Webhook（配在电话号码上）",
       "functionLabel": "自定义函数端点",
@@ -274,7 +274,7 @@
     }
   },
   "number": {
-    "label": "您的电话号码",
+    "label": "你的电话号码",
     "help": "来电方拨打的号码。先在运营商控制台将它指向本平台，再在这里输入。",
     "save": "保存号码",
     "saving": "保存中…",
@@ -287,15 +287,15 @@
   },
   "wizard": {
     "connectedTitle": "号码已连接——{{number}}",
-    "connectedBody": "已自动绑定到您的助理。完成下方的清单后，拨个电话测试一下。",
+    "connectedBody": "已自动绑定到你的助理。完成下方的清单后，拨个电话测试一下。",
     "buyTab": "购买号码",
     "importTab": "连接已有号码",
-    "buyHint": "我们会购买一个号码并自动绑定到您的前台接待。费用约 $2/月。",
+    "buyHint": "我们会购买一个号码并自动绑定到你的前台接待。费用约 $2/月。",
     "areaCode": "区号",
     "tollFree": "免费电话",
     "getNumber": "获取号码",
     "gettingNumber": "正在获取号码…",
-    "importHint": "已有号码？通过它的 Twilio SIP 中继连接——我们会帮您绑定助理。",
+    "importHint": "已有号码？通过它的 Twilio SIP 中继连接——我们会帮你绑定助理。",
     "phoneNumber": "电话号码",
     "terminationUri": "SIP 终接 URI",
     "sipUser": "SIP 用户名（选填）",
@@ -310,7 +310,7 @@
     "numberHelp": "以 E.164 格式保存（例如 {{example}}）。必须与路由到助理的 Twilio 号码一致。",
     "numberInvalid": "电话号码无效。",
     "toggleTitle": "对漏接来电自动回复",
-    "toggleHint": "您未接听时自动发送一条短信",
+    "toggleHint": "你未接听时自动发送一条短信",
     "messageLabel": "自动回复内容",
     "messageHint": "通过短信发送到来电方号码",
     "save": "保存更改",
@@ -341,7 +341,7 @@
     "alreadyHasNumber": "该企业已经连接了一个号码。",
     "invalidAreaCode": "请输入有效的 3 位美国区号（例如 626）。",
     "buyFailed": "暂时无法购买号码。",
-    "terminationUriRequired": "请输入您的 SIP 终接 URI（例如 yourtrunk.pstn.twilio.com）。",
+    "terminationUriRequired": "请输入你的 SIP 终接 URI（例如 yourtrunk.pstn.twilio.com）。",
     "importFailed": "无法导入该号码。",
     "noNumberConnected": "尚未连接号码。",
     "verifyFailed": "无法在 Retell 中校验该号码。",

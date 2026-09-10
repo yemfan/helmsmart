@@ -229,7 +229,7 @@
       "previewSubject": "主题：{{subject}}",
       "noSubject": "无主题",
       "sampleName": "小明",
-      "sampleOrg": "您的公司",
+      "sampleOrg": "你的公司",
       "tabs": {
         "content": "内容",
         "audience": "受众",
@@ -265,7 +265,7 @@
       "audienceNote": "退订始终会被遵守，已退订的联系人会自动排除。",
       "senderTitle": "发件人",
       "fromNameLabel": "发件人名称",
-      "fromNamePlaceholder": "例如：您公司的小王",
+      "fromNamePlaceholder": "例如：你公司的小王",
       "replyToLabel": "回复邮箱",
       "replyToPlaceholder": "jane@yourbusiness.com",
       "scheduleTitle": "排期",
@@ -448,7 +448,7 @@
     "page": {
       "linkedinConnected": "LinkedIn 已连接。已排期的 LinkedIn 帖子将自动发布。",
       "metaConnected": "已连接到 {{page}}。已排期的 Facebook 帖子将自动发布。",
-      "defaultFacebookPage": "您的 Facebook 主页",
+      "defaultFacebookPage": "你的 Facebook 主页",
       "igUnlinked": "Instagram 暂不可用——该主页尚未关联 Instagram 商业账号。请先在 Meta Business Suite 中关联，然后重新连接。",
       "noPagesGranted": "没有任何 Facebook 主页授权给本应用。请重新连接，并在 Meta 的权限页面勾选要发帖的主页。",
       "threadsConnected": "Threads 已连接。已排期的 Threads 帖子将自动发布。",
@@ -491,7 +491,7 @@
       "fallback": "如果一天都没有勾选，将自动回退为每周 {{count}} 次分散发布。",
       "timeOfDay": "发布时间",
       "defaultTime": "默认（美东中午）",
-      "hourOption": "{{ampm}}{{hour}}点（您的时间）",
+      "hourOption": "{{ampm}}{{hour}}点（你的时间）",
       "am": "上午",
       "pm": "下午",
       "appliesInAuto": "仅在完全自动模式下生效。",
@@ -600,8 +600,8 @@
       "notConfigured": "{{provider}} 尚未在本站配置 —— 缺少应用凭据。这需要管理员配置，重试无法解决。",
       "expired": "本次 {{provider}} 连接尝试在完成前已过期。请重新点击「连接 {{provider}}」。",
       "signInFailed": "{{provider}} 登录未能完成。请重新尝试连接。",
-      "accessDenied": "您取消了 {{provider}} 连接，或未授予所需权限。请重新连接并同意所请求的权限。",
-      "unknown": "无法连接 {{provider}}（{{code}}）。请重新尝试连接 —— 如果持续失败，该应用可能仍需 {{provider}} 审核，或需要将您的账号添加为测试人员。"
+      "accessDenied": "你取消了 {{provider}} 连接，或未授予所需权限。请重新连接并同意所请求的权限。",
+      "unknown": "无法连接 {{provider}}（{{code}}）。请重新尝试连接 —— 如果持续失败，该应用可能仍需 {{provider}} 审核，或需要将你的账号添加为测试人员。"
     },
     "channelNote": {
       "manual": "手动发布",

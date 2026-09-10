@@ -34,7 +34,7 @@
     "title": "审批工作流",
     "subtitle": "为报价单、支出等事项设置多级顺序审批",
     "newWorkflow": "新建工作流",
-    "pendingBanner_other": "有 {{count}} 项审批等待您处理",
+    "pendingBanner_other": "有 {{count}} 项审批等待你处理",
     "morePending": "还有 {{count}} 项",
     "configured": "已配置的工作流",
     "emptyTitle": "还没有工作流",
@@ -58,12 +58,12 @@
     "requestedOn": "提交于 {{date}}",
     "stepsTitle": "审批步骤",
     "waiting": "等待中",
-    "awaitingDecision": "等待您的决定",
+    "awaitingDecision": "等待你的决定",
     "rejectionTitle": "拒绝原因",
     "detailsTitle": "申请详情"
   },
   "decision": {
-    "title": "您的决定",
+    "title": "你的决定",
     "rejectReasonLabel": "拒绝原因（选填）",
     "rejectReasonPlaceholder": "说明拒绝的原因…",
     "noteLabel": "备注（选填）",
@@ -238,8 +238,8 @@
     }
   },
   "errors": {
-    "unauthorized": "您已退出登录，请重新登录后继续。",
-    "noSession": "您已退出登录，请重新登录后继续。",
+    "unauthorized": "你已退出登录，请重新登录后继续。",
+    "noSession": "你已退出登录，请重新登录后继续。",
     "workflowNotFound": "该审批流程已不存在。",
     "workflowInactive": "该审批流程已停用。请在「工作流」中启用后再使用。",
     "workflowNoSteps": "该审批流程还没有任何步骤，请至少添加一位审批人。",
