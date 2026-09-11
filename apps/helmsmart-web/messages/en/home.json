@@ -321,10 +321,9 @@
     "requestFailed": "Request failed",
     "threadLoadFailed": "Could not load thread.",
     "threadNetworkError": "Network error loading thread.",
-    "draftFailed": "Draft failed.",
-    "sendFailed": "Send failed.",
-    "toggleFailed": "Toggle failed.",
-    "sent": "Sent.",
+    "draftFailed": "The draft couldn't be written. Try again.",
+    "sendFailed": "The text wasn't sent. Try again.",
+    "dialogLabel": "{{product}} AI assistant",
     "contact": {
       "newTab": "New contact tab",
       "fallbackName": "Contact",
@@ -343,12 +342,13 @@
       "drafting": "Drafting…"
     },
     "draft": {
-      "label": "Draft (editable)",
-      "send": "Send SMS",
+      "label": "Message (editable)",
+      "placeholder": "Generate a draft above, or type your own message.",
+      "sendTo": "Send to {{name}} · {{phone}}",
+      "sendToNumber": "Send to {{phone}}",
       "sending": "Sending…",
-      "noPhone": "No phone on file",
-      "autoPilotSending": "Auto Pilot sending…",
-      "autoPilotWill": "Auto Pilot will send this draft."
+      "sentBang": "Sent!",
+      "noPhone": "No phone on file"
     },
     "thread": {
       "label": "SMS thread",
@@ -359,7 +359,21 @@
     },
     "autoPilot": {
       "label": "Auto Pilot",
-      "title": "Auto Pilot — auto-send drafts and auto-reply to this client's inbound SMS."
+      "switchLabel": "Auto Pilot for {{name}}",
+      "onHint": "Replying to {{name}}'s texts automatically.",
+      "confirmTitle": "Turn on Auto Pilot for {{name}}?",
+      "confirmReplies": "Auto Pilot will reply to {{name}}'s texts automatically, in their language.",
+      "confirmLabelled": "Each reply is labelled “Auto Pilot” in this thread and listed in AI activity on your dashboard.",
+      "confirmOptOut": "Contacts who have opted out of texts are never messaged.",
+      "confirmTurnOn": "Turn on Auto Pilot",
+      "enableFailed": "Auto Pilot wasn't turned on for {{name}} — it's still off. Try again.",
+      "disableFailed": "Auto Pilot wasn't turned off for {{name}} — it's still on. Try again."
+    },
+    "sentBy": {
+      "autoReply": "Auto-reply",
+      "missedCallText": "Missed-call text",
+      "reminder": "Automatic reminder",
+      "receptionist": "AI receptionist"
     },
     "smsStatus": {
       "delivered": "Delivered",
@@ -373,6 +387,46 @@
       "scheduled": "Scheduled",
       "sending": "Sending",
       "sent": "Sent"
+    }
+  },
+  "aiActivity": {
+    "title": "AI activity",
+    "window": "Last 7 days",
+    "empty": "Your AI team hasn't handled anything in the last 7 days — it starts once a phone number is connected.",
+    "setUpReceptionist": "Set up the AI receptionist",
+    "emptyConnected": "Nothing from your AI team in the last 7 days. Answered calls, bookings and automatic texts show up here as they happen.",
+    "openReceptionist": "Open the AI receptionist",
+    "someone": "someone",
+    "platformGeneral": "social media",
+    "row": {
+      "answeredCall": "{{who}} answered a call from {{caller}}",
+      "calledContact": "{{who}} called {{name}}",
+      "reminderCall": "Reminder call to {{name}}",
+      "reminderText": "Reminder text sent to {{name}}",
+      "missedCallText": "Missed-call text sent to {{caller}}",
+      "published": "{{who}} published a post to {{platform}}",
+      "draftedForApproval": "{{who}} drafted a text to {{name}} for your approval",
+      "remindersForApproval": "{{who}} lined up payment reminders for your approval",
+      "waitingApproval": "{{who}} is waiting for your approval",
+      "bookedByText": "{{who}} booked {{name}} by text",
+      "autoPilotReplied": "Auto Pilot replied to {{name}}",
+      "callNotPlaced": "{{who}}'s call to {{name}} wasn't placed",
+      "reminderCallNotPlaced": "Reminder call to {{name}} wasn't placed",
+      "reminderTextNotSent": "Reminder text to {{name}} wasn't sent",
+      "bookingConfirmationText": "{{who}} texted {{name}} a booking confirmation",
+      "paymentReminderText": "Payment reminder texted to {{name}}"
+    },
+    "detail": {
+      "booked": "booked {{when}}",
+      "bookedNoTime": "booked an appointment",
+      "texts_one": "{{count}} text",
+      "texts_other": "{{count}} texts"
+    },
+    "purpose": {
+      "follow_up": "follow-up",
+      "survey": "survey",
+      "promo": "promotion",
+      "demo": "demo"
     }
   },
   "search": {

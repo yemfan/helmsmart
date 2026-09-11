@@ -26,12 +26,19 @@ export async function PATCH(request: NextRequest) {
   if (!orgId) return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("clients")
     .update({ auto_pilot: enabled })
     .eq("id", clientId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    // Load-bearing: an update RLS refuses matches zero rows and returns no
+    // error, so without the rows back "not changed" would report as saved and
+    // the panel would show Auto Pilot on while the webhook reads it as off.
+    .select("id");
 
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  if (!data || data.length === 0) {
+    return NextResponse.json({ ok: false, error: "Not changed" }, { status: 404 });
+  }
   return NextResponse.json({ ok: true, autoPilot: enabled });
 }

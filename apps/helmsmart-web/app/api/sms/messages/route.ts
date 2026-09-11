@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("messages")
-    .select("id, body, direction, sent_at, created_at, twilio_status")
+    .select("id, body, direction, sent_at, created_at, twilio_status, sent_by")
     .eq("organization_id", orgId)
     .eq("client_id", clientId)
     .eq("channel", "sms")
@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
     direction: m.direction,
     created_at: m.sent_at ?? m.created_at,
     twilio_status: m.twilio_status ?? null,
+    // Who sent an outbound text (lib/message-provenance.ts) — the panel labels
+    // Auto Pilot's and the other automatic sends under the bubble.
+    sent_by: m.sent_by ?? null,
   }));
 
   return NextResponse.json({ ok: true, autoPilot, messages });

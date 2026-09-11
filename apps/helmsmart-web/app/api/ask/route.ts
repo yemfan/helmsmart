@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     async start(controller) {
       try {
         const stream = anthropic.messages.stream({
-          model: "claude-3-5-haiku-20241022",
+          model: "claude-haiku-4-5",
           max_tokens: 1024,
           // The owner reads this answer, so it comes back in their language.
           system: `You are an AI business assistant with access to real-time data from the user's business. Answer concisely and specifically. Format currency as ${currency}. Use bullet points for lists.${languageDirective(
