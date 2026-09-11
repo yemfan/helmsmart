@@ -2,8 +2,7 @@
   "meta": {
     "listTitle": "Clients",
     "detailTitle": "Client",
-    "importTitle": "Import clients",
-    "statementTitle": "Client statement"
+    "importTitle": "Import clients"
   },
   "statuses": {
     "all": "All",
@@ -319,25 +318,8 @@
     }
   },
   "statement": {
-    "label": "Statement",
-    "title": "Account statement",
-    "documentTitle": "Statement — {{name}}",
-    "asOf": "As of {{date}}",
     "back": "← Back to client",
-    "print": "Print / Save PDF",
-    "statementFor": "Statement for",
-    "balanceDue": "Balance due",
-    "totalBilled": "Total billed",
-    "totalPaid": "Total paid",
-    "empty": "No invoices on record for this client.",
-    "columns": {
-      "date": "Date",
-      "invoice": "Invoice",
-      "due": "Due",
-      "status": "Status",
-      "amount": "Amount"
-    },
-    "footer": "{{org}} · Statement for {{name}} · Generated {{date}}"
+    "print": "Print / Save PDF"
   },
   "errors": {
     "unauthorized": "Please sign in again.",

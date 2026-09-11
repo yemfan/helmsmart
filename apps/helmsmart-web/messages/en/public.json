@@ -53,6 +53,31 @@
     "notes": "Notes",
     "footer": "{{org}} · Invoice {{number}} · Generated {{date}}"
   },
+  "statement": {
+    "documentTitle": "Statement — {{name}}",
+    "label": "Statement",
+    "title": "Account statement",
+    "asOf": "As of {{date}}",
+    "statementFor": "Statement for",
+    "fallbackName": "Client",
+    "balanceDue": "Balance due",
+    "totalBilled": "Total billed",
+    "totalPaid": "Total paid",
+    "empty": "No invoices on record for this client.",
+    "columns": {
+      "date": "Date",
+      "invoice": "Invoice",
+      "due": "Due",
+      "status": "Status",
+      "amount": "Amount"
+    },
+    "status": {
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue"
+    },
+    "footer": "{{org}} · Statement for {{name}} · Generated {{date}}"
+  },
   "pay": {
     "metaTitle": "Invoice Payment",
     "paid": {

@@ -21,7 +21,7 @@
  *   auth       login, signup, forgot/reset password, accept invite, onboarding
  *   home       Home, Command Center, Insights
  *   inbox      Inbox + compose
- *   clients    Clients list, detail, statement, import
+ *   clients    Clients list, detail, import, the statement's owner toolbar
  *   tasks      Tasks + Calendar
  *   pipeline   Pipeline
  *   projects   Projects + Timesheets
@@ -33,9 +33,12 @@
  *   emails     owner-facing email subjects and bodies
  *   public     the pages a visitor reaches from a link without signing in
  *              — join an invitation, pay an invoice, the client portal,
- *              reschedule an appointment. Not `auth`: the reader is a
- *              customer or a colleague who may have no HelmSmart account,
- *              and `auth` is about authenticating one.
+ *              reschedule an appointment — and the documents the owner
+ *              prints FOR a customer, the invoice and the statement, which
+ *              are rendered in the contact's language through
+ *              `translatorFor`. Not `auth`: the reader is a customer or a
+ *              colleague who may have no HelmSmart account, and `auth` is
+ *              about authenticating one.
  *
  * There is deliberately no `errors` namespace. An error string belongs to the
  * screen that shows it, so each surface keeps its own `errors.*` group and a
