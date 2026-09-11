@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
+import { phoneMatchVariants } from "@/lib/phone";
 import { getGoogleFreeBusy, upsertGoogleEvent, deleteGoogleEvent, type BusyInterval } from "@/lib/google-calendar";
 import { defaultBusinessHours, type BusinessHours } from "@/lib/receptionist";
 import { zonedToUtc, normalizeDateStr, resolveStartMs, safeTimezone, spokenDateTimeLabel, todayInTimezone } from "@repo/voice/datetime";
@@ -206,16 +207,31 @@ export async function bookAppointment(
   return { ok: true, startISO, label: spokenDateTimeLabel(startMs, timezone), eventId: evt?.id, title, rescheduleToken: evt?.reschedule_token as string | undefined };
 }
 
-/** Match a caller to a client by phone, creating a lightweight one if new. */
+/**
+ * Match a caller to a client by phone, creating a lightweight one if new.
+ *
+ * Found by phoneMatchVariants, not an exact string: caller ID arrives as
+ * "+14155550143", and a client the owner typed in as "(415) 555-0143" is the
+ * same person. An exact match missed them, so their first call created a
+ * "Caller" lead beside the real client, and every later call and booking
+ * attached to that lead instead. When several rows match — as they will where
+ * such a lead already exists — the oldest wins: that is the client someone
+ * entered, not a lead a call made.
+ */
 export async function matchOrCreateClient(orgId: string, phone: string, name?: string | null): Promise<string | null> {
   const db = await createServiceClient();
-  const { data: existing } = await db
-    .from("clients")
-    .select("id")
-    .eq("organization_id", orgId)
-    .eq("phone", phone)
-    .maybeSingle();
-  if (existing) return existing.id;
+  const variants = phoneMatchVariants(phone);
+  if (variants.length) {
+    const { data: existing } = await db
+      .from("clients")
+      .select("id")
+      .eq("organization_id", orgId)
+      .in("phone", variants)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (existing) return existing.id;
+  }
 
   const { firstName, lastName } = splitCallerName(name);
   const { data: created } = await db

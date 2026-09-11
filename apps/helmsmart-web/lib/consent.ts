@@ -30,7 +30,7 @@ import {
   type ConsentPurpose,
   type UnsubscribeRecord,
 } from "@helm/dna-communication";
-import { normalizePhoneE164, phoneLast10 } from "@/lib/phone";
+import { normalizePhoneE164, phoneLast10, phoneMatchVariants } from "@/lib/phone";
 
 type Db = SupabaseClient;
 export type Translate = (key: string, opts?: Record<string, unknown>) => string;
@@ -72,32 +72,6 @@ export class ConsentLookupError extends Error {
 
 const CLIENT_COLUMNS = "id, first_name, last_name, phone, email";
 
-/**
- * The shapes one phone number is stored in across a tenant's data — E.164 from
- * caller ID, "(626) 755-7917" typed by hand, "626-755-7917" from an import — so
- * an exact-match lookup finds the client and the unsubscribe however it was
- * written.
- */
-export function phoneVariants(raw: string | null | undefined): string[] {
-  const trimmed = (raw ?? "").trim();
-  if (!trimmed) return [];
-  const out = new Set<string>([trimmed]);
-  const e164 = normalizePhoneE164(trimmed);
-  if (e164.ok) out.add(e164.value);
-  const ten = phoneLast10(trimmed);
-  if (ten) {
-    const [a, b, c] = [ten.slice(0, 3), ten.slice(3, 6), ten.slice(6)];
-    out.add(ten);
-    out.add(`1${ten}`);
-    out.add(`+1${ten}`);
-    out.add(`(${a}) ${b}-${c}`);
-    out.add(`${a}-${b}-${c}`);
-    out.add(`${a}.${b}.${c}`);
-    out.add(`${a} ${b} ${c}`);
-  }
-  return [...out];
-}
-
 /** The key an unsubscribe is matched on in bulk: last ten digits, else the raw value. */
 export function phoneKey(raw: string | null | undefined): string {
   return phoneLast10(raw) || (raw ?? "").trim();
@@ -132,7 +106,7 @@ export async function loadConsent(db: Db, orgId: string, target: ConsentTarget):
     if (error) throw new ConsentLookupError("the client", error);
     client = (data as ConsentClient | null) ?? null;
   } else if (target.phone || target.email) {
-    const byPhone = target.phone ? phoneVariants(target.phone) : [];
+    const byPhone = target.phone ? phoneMatchVariants(target.phone) : [];
     const query = db.from("clients").select(CLIENT_COLUMNS).eq("organization_id", orgId);
     const { data, error } = await (byPhone.length
       ? query.in("phone", byPhone)
@@ -144,7 +118,7 @@ export async function loadConsent(db: Db, orgId: string, target: ConsentTarget):
 
   const phone = target.phone?.trim() || client?.phone?.trim() || null;
   const email = target.email?.trim() || client?.email?.trim() || null;
-  const phones = phoneVariants(phone);
+  const phones = phoneMatchVariants(phone);
   const emails = emailVariants(email);
 
   const [prefs, smsUnsub, emailUnsub] = await Promise.all([
@@ -264,7 +238,7 @@ async function clientIdsForPhone(db: Db, orgId: string, phone: string): Promise<
     .from("clients")
     .select("id")
     .eq("organization_id", orgId)
-    .in("phone", phoneVariants(phone));
+    .in("phone", phoneMatchVariants(phone));
   if (error) {
     console.error("[consent] client lookup by phone failed:", error);
     return [];
@@ -321,7 +295,7 @@ export async function clearSmsOptOut(db: Db, orgId: string, phone: string): Prom
     .from("sms_unsubscribes")
     .delete()
     .eq("organization_id", orgId)
-    .in("phone_number", phoneVariants(phone));
+    .in("phone_number", phoneMatchVariants(phone));
   if (unsubError) console.error("[consent] clearing SMS unsubscribe failed:", unsubError);
 
   const clientIds = await clientIdsForPhone(db, orgId, phone);

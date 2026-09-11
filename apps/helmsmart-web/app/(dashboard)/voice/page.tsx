@@ -9,20 +9,18 @@ import { intlLocale } from "@leadsmart/i18n";
 import { safeTimezone } from "@repo/voice/datetime";
 import { MissedCallTextBack } from "@/components/missed-call-text-back";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
-import { phoneLast10 } from "@/lib/phone";
+import { phoneLast10, phoneMatchVariants } from "@/lib/phone";
 import {
   VOICE_PERIOD_DAYS,
   VOICE_RATE_CENTS_PER_MINUTE,
   classifyCall,
   mergeCallLog,
-  phoneMatchVariants,
-  summarizeCalls,
   talkMinutes,
   voicePeriodStart,
   type CallLike,
   type SessionLike,
-  type VoiceStats,
 } from "@/lib/voice-stats";
+import { loadWindowStats } from "@/lib/voice-window";
 import { RecentCalls, type RecentCallRow } from "./recent-calls";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,74 +30,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** How many calls the list shows. No total on the page is computed from it. */
 const RECENT_LIMIT = 25;
-/** Rows per request when counting; fetchAll keeps asking until a page comes back short. */
-const PAGE_SIZE = 1000;
-/** jsonb containment: the transcript holds at least one turn from the caller. */
-const CALLER_SPOKE = JSON.stringify([{ role: "user" }]);
 /** Phone variants per client lookup — keeps the request URL well inside limits. */
 const VARIANTS_PER_QUERY = 90;
 
 type Db = Awaited<ReturnType<typeof createClient>>;
 type ClientEmbed = { id: string; first_name: string | null; last_name: string | null };
 type Transcript = { role: string; content: string }[];
-
-/** Every row a query matches, one page at a time — counted, never capped. */
-async function fetchAll<T>(
-  page: (from: number, to: number) => PromiseLike<{ data: unknown; error: unknown }>,
-): Promise<T[]> {
-  const out: T[] = [];
-  for (let from = 0; ; from += PAGE_SIZE) {
-    const { data, error } = await page(from, from + PAGE_SIZE - 1);
-    if (error) throw error;
-    const rows = (data ?? []) as T[];
-    out.push(...rows);
-    if (rows.length < PAGE_SIZE) return out;
-  }
-}
-
-/**
- * The totals for the window: every inbound AI session and every missed-call
- * row since `sinceIso`, merged into one row per call and classified by
- * lib/voice-stats — the same functions the list below uses.
- */
-async function loadWindowStats(db: Db, orgId: string, sinceIso: string): Promise<VoiceStats> {
-  const [sessions, spoke, calls] = await Promise.all([
-    fetchAll<Omit<SessionLike, "spoke">>((from, to) =>
-      db
-        .from("voice_sessions")
-        .select("id, call_sid, created_at, status, booked_event_id, duration_seconds")
-        .eq("organization_id", orgId)
-        .eq("direction", "inbound")
-        .gte("created_at", sinceIso)
-        .order("created_at", { ascending: true })
-        .order("id", { ascending: true })
-        .range(from, to),
-    ),
-    fetchAll<{ id: string }>((from, to) =>
-      db
-        .from("voice_sessions")
-        .select("id")
-        .eq("organization_id", orgId)
-        .eq("direction", "inbound")
-        .gte("created_at", sinceIso)
-        .contains("messages", CALLER_SPOKE)
-        .order("id", { ascending: true })
-        .range(from, to),
-    ),
-    fetchAll<CallLike>((from, to) =>
-      db
-        .from("calls")
-        .select("id, twilio_call_sid, called_at, status, auto_replied")
-        .eq("organization_id", orgId)
-        .gte("called_at", sinceIso)
-        .order("called_at", { ascending: true })
-        .order("id", { ascending: true })
-        .range(from, to),
-    ),
-  ]);
-  const spokeIds = new Set(spoke.map((r) => r.id));
-  return summarizeCalls(mergeCallLog(sessions.map((s) => ({ ...s, spoke: spokeIds.has(s.id) })), calls));
-}
 
 function one<T>(v: T | T[] | null | undefined): T | null {
   return Array.isArray(v) ? (v[0] ?? null) : (v ?? null);
@@ -174,10 +110,8 @@ export default async function AiReceptionistPage() {
   const sinceIso = since.toISOString();
 
   const [stats, smsBooked, recentSessions, recentCalls] = await Promise.all([
-    loadWindowStats(supabase, orgId, sinceIso).catch((e) => {
-      console.error("[voice] loading call totals failed", e);
-      return null;
-    }),
+    // The same loader the Marketing overview reads, so the two cannot disagree.
+    loadWindowStats(supabase, orgId, since),
     // SMS conversations Emma booked in the window (from real run accounting).
     supabase
       .from("ai_employee_runs")
@@ -219,7 +153,7 @@ export default async function AiReceptionistPage() {
   };
   const sessions = ((recentSessions.data ?? []) as RecentSession[]).map((s) => {
     const transcript: Transcript = Array.isArray(s.messages) ? (s.messages as Transcript) : [];
-    // Same test as CALLER_SPOKE, so a row reads the way the totals counted it.
+    // Same test as lib/voice-window's CALLER_SPOKE, so a row reads the way the totals counted it.
     return { ...s, transcript, spoke: transcript.some((m) => m?.role === "user") };
   });
   const merged = mergeCallLog(sessions, (recentCalls.data ?? []) as RecentCall[]).slice(0, RECENT_LIMIT);

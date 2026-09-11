@@ -37,7 +37,9 @@
       "notSetUp": "Sin configurar",
       "configure": "Configurar",
       "monitorTitle": "Supervisar las llamadas virtuales",
-      "monitorLabel": "llamadas atendidas en total",
+      "monitorLabel_one": "atendidas por la IA · último {{count}} día",
+      "monitorLabel_other": "atendidas por la IA · últimos {{count}} días",
+      "statsError": "No pudimos cargar los totales de llamadas. Actualice la página para intentarlo de nuevo.",
       "viewCalls": "Ver las llamadas"
     },
     "sms": {

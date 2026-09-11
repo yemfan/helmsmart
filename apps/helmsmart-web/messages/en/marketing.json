@@ -37,7 +37,9 @@
       "notSetUp": "Not set up",
       "configure": "Configure",
       "monitorTitle": "Monitor virtual calls",
-      "monitorLabel": "calls handled, all time",
+      "monitorLabel_one": "answered by AI · last {{count}} day",
+      "monitorLabel_other": "answered by AI · last {{count}} days",
+      "statsError": "We couldn't load your call totals just now. Refresh the page to try again.",
       "viewCalls": "View calls"
     },
     "sms": {

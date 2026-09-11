@@ -7,6 +7,8 @@ import { Plus, Mail, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { MarketingOverview } from "@/components/marketing-overview";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { intlLocale } from "@leadsmart/i18n";
+import { VOICE_PERIOD_DAYS, voicePeriodStart } from "@/lib/voice-stats";
+import { loadWindowStats } from "@/lib/voice-window";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("marketing");
@@ -28,14 +30,23 @@ export default async function MarketingPage() {
   const supabase = await createClient();
   const [t, locale] = await Promise.all([getServerT("marketing"), getServerLocale()]);
 
-  const [{ data: campaigns }, { data: org }, { count: callsHandled }] = await Promise.all([
+  // The org first: the voice window is the business's last 30 days in its own
+  // timezone, the same one /voice reports.
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("twilio_number, voice_agent_enabled, auto_reply, timezone")
+    .eq("id", orgId)
+    .single();
+
+  const [{ data: campaigns }, voiceStats] = await Promise.all([
     supabase
       .from("campaigns")
       .select("id, name, subject, status, recipient_filter, recipient_count, sent_at, created_at")
       .eq("organization_id", orgId)
       .order("created_at", { ascending: false }),
-    supabase.from("organizations").select("twilio_number, voice_agent_enabled, auto_reply").eq("id", orgId).single(),
-    supabase.from("voice_sessions").select("id", { count: "exact", head: true }).eq("organization_id", orgId),
+    // Not a count of voice_sessions: that table also holds the outbound calls the
+    // AI Client Assistant places. Same loader, window and definitions as /voice.
+    loadWindowStats(supabase, orgId, voicePeriodStart(org?.timezone)),
   ]);
 
   const all = campaigns ?? [];
@@ -59,7 +70,11 @@ export default async function MarketingPage() {
       </div>
 
       <MarketingOverview
-        voice={{ configured: Boolean(org?.twilio_number), callsHandled: callsHandled ?? 0 }}
+        voice={{
+          configured: Boolean(org?.twilio_number),
+          answeredByAi: voiceStats?.answeredByAi ?? null,
+          periodDays: VOICE_PERIOD_DAYS,
+        }}
         sms={{ active: org?.auto_reply ?? false, number: org?.twilio_number ?? null }}
         email={{ sent: sentCampaigns.length, reached: totalReached }}
       />
