@@ -44,10 +44,23 @@ export interface NavSection {
 
 export interface AiEmployeeBadge {
   /**
-   * Display name, e.g. "Mark, AI COO". Rendered as a static label — the pill
-   * makes no claim about what the employee is doing right now.
+   * Display name, e.g. "Mark, AI COO" — or, with `onClick`, the button's
+   * label, e.g. "Ask Mark". Either way the pill makes no claim about what the
+   * employee is doing right now.
    */
   name: string;
+  /**
+   * Makes the pill a button that runs this (e.g. opens an "Ask Mark" panel).
+   * Below `lg` the drawer closes first, so whatever it opens is not left
+   * behind the menu. Without it the pill is a static label.
+   */
+  onClick?: () => void;
+  /** Leading visual, e.g. the employee's avatar. Decorative — `name` is the label. */
+  icon?: React.ReactNode;
+  /** Hover hint for the button, e.g. "Ask Mark (Ctrl+/)". */
+  hint?: string;
+  /** `aria-keyshortcuts` for the button, e.g. "Control+/ Meta+/". */
+  keyShortcuts?: string;
 }
 
 /** Accessible names for the shell's own controls, in the reader's language. */
@@ -178,6 +191,28 @@ const SIDEBAR_CSS = `
   transition: transform 220ms ease;
 }
 .helm-sidebar__link { padding: 11px 12px 11px 14px; }
+.helm-sidebar__ai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px 6px 7px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+.helm-sidebar__ai:hover { background: rgba(255,255,255,0.11); color: #ffffff; }
+.helm-sidebar__ai:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .helm-sidebar__overlay,
   .helm-sidebar__drawer,
@@ -215,6 +250,7 @@ const SIDEBAR_CSS = `
     transition: none;
   }
   .helm-sidebar__link { padding: 6px 12px 6px 14px; }
+  .helm-sidebar__ai { min-height: 36px; font-size: 12px; }
 }
 `;
 
@@ -507,8 +543,10 @@ export function Sidebar({
             ))}
           </div>
 
-          {/* AI Employee badge — a static label. It used to carry a pulsing
-              "active" dot hard-wired on, which claimed activity nothing measured. */}
+          {/* AI Employee pill — a button when the host gives it something to
+              do (e.g. open "Ask Mark"), otherwise a static label. It used to
+              carry a pulsing "active" dot hard-wired on, which claimed activity
+              nothing measured. */}
           {aiEmployee && (
             <div
               style={{
@@ -517,6 +555,30 @@ export function Sidebar({
                 flexShrink: 0,
               }}
             >
+              {aiEmployee.onClick ? (
+                <button
+                  type="button"
+                  className="helm-sidebar__ai"
+                  title={aiEmployee.hint}
+                  aria-keyshortcuts={aiEmployee.keyShortcuts}
+                  onClick={() => {
+                    // Below `lg` the drawer covers the page: close it so what
+                    // this opens is not hidden behind the menu. Focus is left
+                    // to whatever opens (at `lg` and up `open` is already false).
+                    setOpen(false);
+                    aiEmployee.onClick?.();
+                  }}
+                >
+                  {aiEmployee.icon && (
+                    <span aria-hidden="true" style={{ display: 'inline-flex', flexShrink: 0 }}>
+                      {aiEmployee.icon}
+                    </span>
+                  )}
+                  <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {aiEmployee.name}
+                  </span>
+                </button>
+              ) : (
               <div
                 style={{
                   padding: '7px 10px',
@@ -536,6 +598,7 @@ export function Sidebar({
               >
                 {aiEmployee.name}
               </div>
+              )}
             </div>
           )}
 

@@ -65,6 +65,8 @@ const EXEMPT: Record<string, string> = {
     "composes the sidebar, bell and AI panel; every string belongs to those components",
   "app/(onboarding)/layout.tsx": "renders the brand wordmark and a slot; no sentences",
   "app/(dashboard)/reception/page.tsx": "a bare redirect() to /voice, kept so old links land",
+  "app/(dashboard)/ask/page.tsx":
+    "a bare redirect() to /home?ask=1, which opens the Ask Mark panel; every string is in components/helmsmart-ai-panel.tsx",
   /*
    * The printable invoice used to sit here as "deliberately English — the
    * CUSTOMER receives it". The design doc says the opposite: a document the
