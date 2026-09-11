@@ -216,7 +216,7 @@ function RecurringRow({
               ? t("bills.recurring.paused")
               : t("bills.recurring.next", { date: fmtDate(rec.next_run_date) })}
           </span>
-          <span>{t("bills.recurring.net", { days: rec.due_days })}</span>
+          <span>{t("bills.recurring.net", { days: rec.due_days, count: rec.due_days })}</span>
           {rec.last_generated_at && (
             <span>
               {t("bills.recurring.last", { date: fmtShortDate(new Date(rec.last_generated_at)) })}

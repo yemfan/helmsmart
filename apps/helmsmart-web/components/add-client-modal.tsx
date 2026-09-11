@@ -5,12 +5,18 @@ import { X, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createClient_ } from "@/lib/actions/clients";
 import type { ClientState } from "@/lib/actions/clients";
+import { CONTACT_LANGUAGES, CONTACT_LANGUAGE_NAMES, contactLanguageFor } from "@/lib/i18n/contactLocale";
 
 // The values are what the database stores; only the labels are copy.
 const STATUS_VALUES = ["lead", "prospect", "active", "inactive"] as const;
 
 export function AddClientModal() {
-  const { t } = useTranslation("clients");
+  const { t, i18n } = useTranslation("clients");
+  // A new client starts in the owner's own language when that isn't English —
+  // a Spanish-speaking owner's clients mostly are too. Otherwise it starts on
+  // "detect from their messages", which is what an empty value has always meant.
+  const ownerLanguage = contactLanguageFor(i18n.language);
+  const defaultLanguage = ownerLanguage === "en" ? "" : ownerLanguage;
   const [open, setOpen] = useState(false);
   const [state, action, isPending] = useActionState<ClientState, FormData>(
     createClient_,
@@ -135,6 +141,22 @@ export function AddClientModal() {
                     placeholder={t("form.placeholders.source")}
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">{t("form.language")}</label>
+                <select
+                  name="preferred_language"
+                  defaultValue={defaultLanguage}
+                  disabled={isPending}
+                  className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
+                >
+                  <option value="">{t("form.languageOptions.auto")}</option>
+                  {CONTACT_LANGUAGES.map((l) => (
+                    <option key={l} value={l}>{CONTACT_LANGUAGE_NAMES[l]}</option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-400 mt-1">{t("form.languageHint")}</p>
               </div>
 
               <div>

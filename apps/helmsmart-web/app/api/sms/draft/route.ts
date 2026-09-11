@@ -10,7 +10,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { languageName, type Lang } from "@/lib/language";
+import { replyLanguageRule, type Lang } from "@/lib/language";
+import { getServerLocale } from "@/lib/i18n/server";
+import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 
 export async function POST(request: NextRequest) {
   let clientId = "";
@@ -46,6 +48,7 @@ export async function POST(request: NextRequest) {
   const orgName = org?.name?.trim() || "our business";
   const lang = (client.preferred_language as Lang | null) ?? "en";
   const assist = !!org?.owner_english_assist;
+  const ownerLang = contactLanguageFor(await getServerLocale());
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -53,12 +56,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, draft: `Hi${firstName ? " " + firstName : ""} — ${prompt}` });
   }
 
-  const langRule =
-    lang === "en"
-      ? "Write the message in English."
-      : assist
-        ? `Write the message in ${languageName(lang)}, then add an English translation after a blank line.`
-        : `Write the message entirely in ${languageName(lang)}.`;
+  const langRule = replyLanguageRule(lang, ownerLang, assist, "the message");
 
   const system = `You draft short, warm, professional SMS messages on behalf of the business "${orgName}". Keep it under 320 characters. ${langRule} Return ONLY the message text — no quotes, no labels, no subject line, no signature block.`;
   const userMsg = `Draft an SMS to ${firstName || "the customer"} that does this: ${prompt}`;

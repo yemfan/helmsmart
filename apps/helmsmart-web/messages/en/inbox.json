@@ -39,7 +39,7 @@
     },
     "addAsClient": "Add as client",
     "addAsClientTitle": "Create a client from this conversation",
-    "translationLabel": "EN",
+    "translationLabel": "Translation",
     "draftWithAi": "Draft with AI",
     "replyPlaceholder": {
       "email": "Reply by email… (⌘↵ to send)",

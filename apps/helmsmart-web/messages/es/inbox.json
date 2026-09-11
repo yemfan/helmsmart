@@ -37,9 +37,9 @@
       "email": "Correo",
       "sms": "SMS"
     },
-    "addAsClient": "Añadir como cliente",
+    "addAsClient": "Agregar como cliente",
     "addAsClientTitle": "Crear un cliente a partir de esta conversación",
-    "translationLabel": "Inglés",
+    "translationLabel": "Traducción",
     "draftWithAi": "Redactar con IA",
     "replyPlaceholder": {
       "email": "Responder por correo… (⌘↵ para enviar)",

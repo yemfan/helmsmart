@@ -11,13 +11,30 @@ export const SUPPORTED_LANGS: Lang[] = ["en", "es", "zh"];
 
 const LANG_NAME: Record<Lang, string> = {
   en: "English",
-  es: "Spanish",
+  // US customers: the dialect their banks, schools and phones use.
+  es: "Spanish (US Latin American, not Castilian)",
   zh: "Chinese (Simplified)",
 };
 
 /** Human-readable name for a language code (for prompts/UI). */
 export function languageName(l: Lang): string {
   return LANG_NAME[l];
+}
+
+/**
+ * The language instruction for an AI-written message to a customer: in the
+ * customer's language, and — when the owner has multi-language assist on and
+ * reads a different language — followed by a translation into the owner's, so
+ * they can check it. An English customer gets English alone, as they always
+ * have. `subject` is the prompt's own noun ("the message", "replies").
+ */
+export function replyLanguageRule(customer: Lang, owner: Lang, assist: boolean, subject: string): string {
+  if (customer === "en") return `Write ${subject} in English.`;
+  if (assist && owner !== customer) {
+    const translation = owner === "en" ? "an English" : `a ${LANG_NAME[owner]}`;
+    return `Write ${subject} in ${LANG_NAME[customer]}, then add ${translation} translation after a blank line.`;
+  }
+  return `Write ${subject} entirely in ${LANG_NAME[customer]}.`;
 }
 
 function firstText(res: { content: Array<{ type: string; text?: string }> }): string {
@@ -56,8 +73,8 @@ export async function detectLanguage(text: string): Promise<Lang> {
   }
 }
 
-/** Translate arbitrary text to English (for the owner to read inbound). */
-export async function translateToEnglish(text: string): Promise<string | null> {
+/** Translate arbitrary text into `target` — the owner's language, so they can read an inbound. */
+export async function translateTo(text: string, target: Lang): Promise<string | null> {
   const t = text.trim();
   if (!t) return null;
   try {
@@ -67,7 +84,7 @@ export async function translateToEnglish(text: string): Promise<string | null> {
       messages: [
         {
           role: "user",
-          content: `Translate the following message to English. Return ONLY the translation, with no preamble:\n\n${t}`,
+          content: `Translate the following message to ${LANG_NAME[target]}. Return ONLY the translation, with no preamble:\n\n${t}`,
         },
       ],
     });
@@ -78,20 +95,25 @@ export async function translateToEnglish(text: string): Promise<string | null> {
 }
 
 /**
- * Render an English source message in the target language. When bilingual, the
- * target language comes first, then the original English on a new block — so the
- * customer reads their language and the owner can still verify what went out.
+ * Render an English source message in the target language. When `verifyIn` is
+ * another language — the owner's, with multi-language assist on — a copy in it
+ * follows on a new block, so the customer reads theirs first and the owner can
+ * still check what went out. An English-reading owner gets the original English,
+ * exactly as before; a Spanish-reading owner is no longer handed English.
  */
 export async function localizeOutbound(
   englishMessage: string,
   target: Lang,
-  bilingual: boolean
+  verifyIn: Lang | null
 ): Promise<string> {
   if (target === "en") return englishMessage;
   const name = LANG_NAME[target];
-  const instruction = bilingual
-    ? `Rewrite the message below in ${name}, then add the original English after it separated by a blank line. Return only the result, no preamble.`
-    : `Rewrite the message below in ${name}. Return only the ${name} text, no preamble.`;
+  const copy = verifyIn && verifyIn !== target ? verifyIn : null;
+  const instruction = !copy
+    ? `Rewrite the message below in ${name}. Return only the ${name} text, no preamble.`
+    : copy === "en"
+      ? `Rewrite the message below in ${name}, then add the original English after it separated by a blank line. Return only the result, no preamble.`
+      : `Rewrite the message below in ${name}, then add a ${LANG_NAME[copy]} version after it separated by a blank line. Return only the result, no preamble.`;
   try {
     const res = await anthropic.messages.create({
       model: MODEL,

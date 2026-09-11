@@ -3,8 +3,8 @@
     "title": "Embudo de ventas"
   },
   "stages": {
-    "lead": "Cliente potencial",
-    "qualified": "Cualificado",
+    "lead": "Contacto nuevo",
+    "qualified": "Calificado",
     "proposal": "Propuesta",
     "negotiation": "Negociación",
     "won": "Ganado",

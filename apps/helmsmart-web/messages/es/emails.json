@@ -22,7 +22,8 @@
     },
     "tasks": {
       "label": "Tareas abiertas",
-      "overdue": "{{count}} vencidas",
+      "overdue_one": "{{count}} vencida",
+      "overdue_other": "{{count}} vencidas",
       "onTrack": "al día"
     },
     "openDashboard": "Abrir el panel →",
@@ -42,21 +43,21 @@
   },
   "invite": {
     "fromName": "{{org}} a través de HelmSmart",
-    "subject": "Le han invitado a unirse a {{org}} en HelmSmart",
-    "heading": "¡Está invitado!",
-    "body": "<strong>{{org}}</strong> le ha invitado a unirse a su espacio de trabajo en HelmSmart como <strong>{{role}}</strong>.",
+    "subject": "Invitación para unirse a {{org}} en HelmSmart",
+    "heading": "¡Tiene una invitación!",
+    "body": "<strong>{{org}}</strong> le envió una invitación para unirse a su espacio de trabajo en HelmSmart como <strong>{{role}}</strong>.",
     "accept": "Aceptar la invitación",
-    "expiry": "Esta invitación caduca en 7 días. Si no la esperaba, puede ignorar este correo.",
+    "expiry": "Esta invitación expira en 7 días. Si no la esperaba, puede ignorar este correo.",
     "footer": "Con tecnología de HelmSmart",
     "roles": {
       "admin": "administrador",
-      "bookkeeper": "contable",
+      "bookkeeper": "contador",
       "viewer": "lector"
     },
     "text": {
-      "body": "Le han invitado a unirse a {{org}} en HelmSmart como {{role}}.",
+      "body": "Recibió una invitación para unirse a {{org}} en HelmSmart como {{role}}.",
       "accept": "Acéptela aquí: {{url}}",
-      "expiry": "Este enlace caduca en 7 días."
+      "expiry": "Este enlace expira en 7 días."
     }
   },
   "formAlert": {

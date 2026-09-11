@@ -22,7 +22,8 @@
     },
     "tasks": {
       "label": "Open tasks",
-      "overdue": "{{count}} overdue",
+      "overdue_one": "{{count}} overdue",
+      "overdue_other": "{{count}} overdue",
       "onTrack": "on track"
     },
     "openDashboard": "Open dashboard →",

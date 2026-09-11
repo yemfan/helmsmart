@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslation } from "react-i18next";
 import { updateClient } from "@/lib/actions/clients";
 import type { ClientState } from "@/lib/actions/clients";
+import { CONTACT_LANGUAGES, CONTACT_LANGUAGE_NAMES } from "@/lib/i18n/contactLocale";
 
 // The values are what the database stores; only the labels are copy.
 const STATUS_VALUES = ["lead", "prospect", "active", "inactive", "archived"] as const;
@@ -20,6 +21,8 @@ interface Props {
     source: string;
     notes: string;
     tags: string;
+    /** "" = detect from their messages. */
+    preferred_language: string;
   };
 }
 
@@ -115,6 +118,22 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
             placeholder={t("form.placeholders.source")}
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-[11px] font-medium text-slate-500 mb-1">{t("form.language")}</label>
+        <select
+          name="preferred_language"
+          defaultValue={initialValues.preferred_language}
+          disabled={isPending}
+          className="w-full text-sm border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50"
+        >
+          <option value="">{t("form.languageOptions.auto")}</option>
+          {CONTACT_LANGUAGES.map((l) => (
+            <option key={l} value={l}>{CONTACT_LANGUAGE_NAMES[l]}</option>
+          ))}
+        </select>
+        <p className="text-[10px] text-slate-400 mt-1">{t("form.languageHint")}</p>
       </div>
 
       <div>

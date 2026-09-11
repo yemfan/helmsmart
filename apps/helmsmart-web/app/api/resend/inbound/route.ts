@@ -21,7 +21,8 @@ import { Resend } from "resend";
 import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import { createServiceClient } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
-import { analyzeInbound, translateToEnglish, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
+import { analyzeInbound, translateTo, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
+import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 
 export const runtime = "nodejs";
 
@@ -158,13 +159,17 @@ export async function POST(request: NextRequest) {
 
   // One Haiku call classifies language + intent + urgency together.
   const assist = !!org.owner_english_assist;
+  // The owner's language: what a translation for them is written in.
+  const ownerLocale = await orgWriteLocale(org.id, supabase);
+  const ownerLang = contactLanguageFor(ownerLocale);
   const analysis = await analyzeInbound(body);
   const lang: Lang = (client?.preferred_language as Lang | null) ?? analysis.lang;
   if (client && !client.preferred_language) {
     await supabase.from("clients").update({ preferred_language: lang }).eq("id", client.id);
   }
-  // Translate a non-English inbound to English so the owner can read it.
-  const translationEn = assist && lang !== "en" && body ? await translateToEnglish(body) : null;
+  // Translate an inbound the owner can't read into the language they can. The
+  // column is still called translation_en; it holds the owner's language.
+  const translationEn = assist && lang !== ownerLang && body ? await translateTo(body, ownerLang) : null;
 
   await supabase.from("messages").insert({
     organization_id: org.id,
@@ -188,7 +193,7 @@ export async function POST(request: NextRequest) {
    * language now rather than stored as a key — see lib/i18n/userLocale.ts.
    * The message body quoted into `notes` stays in the sender's own words.
    */
-  const taskT = translatorFor(await orgWriteLocale(org.id, supabase), "tasks");
+  const taskT = translatorFor(ownerLocale, "tasks");
 
   // Triage: auto-create a task for messages that need the owner to act.
   if (analysis.priority === "high" || ["booking", "billing", "complaint"].includes(analysis.intent)) {
@@ -232,7 +237,7 @@ export async function POST(request: NextRequest) {
       const ackEnglish =
         org.auto_reply_msg?.trim() ||
         "Thanks for reaching out! We got your message and will get back to you shortly.";
-      const ackBody = await localizeOutbound(ackEnglish, lang, assist);
+      const ackBody = await localizeOutbound(ackEnglish, lang, assist ? ownerLang : null);
       const fromEmail = FROM_ADDRESS;
       const ackSubject = data.subject ? `Re: ${data.subject}` : "We received your message";
       try {

@@ -15,7 +15,9 @@ import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { cachedSystem, markTranscriptCached, readCacheUsage } from "@/lib/promptCache";
 import { shouldStopMessaging } from "@helm/dna-communication";
 import { createNotificationService } from "@/lib/actions/notifications";
-import { analyzeInbound, translateToEnglish, localizeOutbound, intentLabel, languageName, type Lang } from "@/lib/language";
+import { analyzeInbound, translateTo, localizeOutbound, intentLabel, replyLanguageRule, type Lang } from "@/lib/language";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
 import { cancelAppointment, getUpcomingAppointment } from "@/lib/booking";
 import { isAffirmative, isCancelRequest } from "@/lib/sms-intent";
@@ -116,13 +118,16 @@ export async function POST(request: NextRequest) {
 
     // One Haiku call classifies language + intent + urgency together.
     const assist = !!org.owner_english_assist;
+    // The owner's language: what a translation for them is written in.
+    const ownerLang = contactLanguageFor(await orgWriteLocale(org.id, supabase));
     const analysis = await analyzeInbound(body);
     const lang: Lang = (client?.preferred_language as Lang | null) ?? analysis.lang;
     if (client && !client.preferred_language) {
       await supabase.from("clients").update({ preferred_language: lang }).eq("id", client.id);
     }
-    // Translate a non-English inbound to English so the owner can read it.
-    const translationEn = assist && lang !== "en" ? await translateToEnglish(body) : null;
+    // Translate an inbound the owner can't read into the language they can. The
+    // column is still called translation_en; it holds the owner's language.
+    const translationEn = assist && lang !== ownerLang ? await translateTo(body, ownerLang) : null;
 
     await supabase.from("messages").insert({
       organization_id: org.id,
@@ -215,6 +220,7 @@ export async function POST(request: NextRequest) {
         to,
         lang,
         assist,
+        ownerLang,
       });
     } else if (org.auto_reply && !shouldStopMessaging(body)) {
       // Opt-out (STOP/unsubscribe/…): message is still captured + triaged, but no auto-reply (TCPA).
@@ -230,7 +236,7 @@ export async function POST(request: NextRequest) {
         const ackEnglish =
           org.auto_reply_msg?.trim() ||
           "Thanks for reaching out! We got your message and will get back to you shortly.";
-        const ackBody = await localizeOutbound(ackEnglish, lang, assist);
+        const ackBody = await localizeOutbound(ackEnglish, lang, assist ? ownerLang : null);
         try {
           const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
           await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), ...twilioStatusCallback(), to: from, body: ackBody });
@@ -408,8 +414,9 @@ async function runAutoPilotReply(opts: {
   to: string;
   lang: Lang;
   assist: boolean;
+  ownerLang: Lang;
 }) {
-  const { supabase, orgId, orgName, clientId, from, to, lang, assist } = opts;
+  const { supabase, orgId, orgName, clientId, from, to, lang, assist, ownerLang } = opts;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return;
@@ -440,12 +447,7 @@ async function runAutoPilotReply(opts: {
     .map((m) => `${m.direction === "inbound" ? "Customer" : orgName}: ${m.body}`)
     .join("\n");
 
-  const langRule =
-    lang === "en"
-      ? "Write replies in English."
-      : assist
-        ? `Write replies in ${languageName(lang)}, then add an English translation after a blank line.`
-        : `Write replies entirely in ${languageName(lang)}.`;
+  const langRule = replyLanguageRule(lang, ownerLang, assist, "replies");
   const todayISO = new Intl.DateTimeFormat("en-CA").format(new Date());
   const system =
     `You are the receptionist for "${orgName}", helping a customer over SMS. Be warm and concise (under 320 characters) and ask ONE question at a time. ` +

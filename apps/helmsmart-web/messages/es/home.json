@@ -62,7 +62,7 @@
       "allInvoicedHint": "No hay horas facturables pendientes de facturar.",
       "billable": "{{hours}} facturables",
       "notYetInvoiced": "aún sin facturar",
-      "goToTimesheets": "Ir a partes de horas",
+      "goToTimesheets": "Ir a hojas de horas",
       "createInvoice": "Crear factura"
     },
     "recentInvoices": {
@@ -74,7 +74,7 @@
       "title": "Clientes recientes",
       "viewAll": "Ver todo",
       "empty": "Aún no hay clientes",
-      "added": "Añadido el {{date}}"
+      "added": "Agregado el {{date}}"
     },
     "approvals": {
       "title": "Aprobaciones pendientes",
@@ -115,17 +115,17 @@
     "void": "Anulada"
   },
   "clientStatus": {
-    "lead": "Cliente potencial",
+    "lead": "Contacto nuevo",
     "prospect": "Prospecto",
     "active": "Activo",
     "inactive": "Inactivo"
   },
   "estimateStatus": {
     "draft": "Borrador",
-    "sent": "Enviado",
-    "accepted": "Aceptado",
-    "declined": "Rechazado",
-    "expired": "Caducado"
+    "sent": "Enviada",
+    "accepted": "Aceptada",
+    "declined": "Rechazada",
+    "expired": "Expirada"
   },
   "projectStatus": {
     "active": "Activo",
@@ -181,7 +181,7 @@
     },
     "board": {
       "emptyTitle": "Aún no hay empleados de IA",
-      "emptyBody": "Contrate en un clic su equipo administrativo de IA de seis personas: un recepcionista, un comercial y cuatro directores de departamento. Empiezan en borrador para que pueda revisar cada uno antes de activarlo.",
+      "emptyBody": "Contrate en un clic su equipo administrativo de IA de seis integrantes: una recepcionista, una ejecutiva de ventas y cuatro directores de departamento. Empiezan en borrador para que pueda revisar a cada uno antes de activarlo.",
       "noActivity": "Aún no hay actividad"
     },
     "seed": {
@@ -288,7 +288,7 @@
     "footer": "Basado en datos en vivo · Intro para enviar · Mayús+Intro para una nueva línea",
     "errors": {
       "unauthorized": "Inicie sesión de nuevo para consultar los datos de su negocio.",
-      "notConfigured": "La IA aún no está configurada: añada una clave de API de Anthropic.",
+      "notConfigured": "La IA aún no está configurada: agregue una clave de API de Anthropic.",
       "invalidRequest": "No se pudo leer esa solicitud. Inténtelo de nuevo.",
       "noMessages": "Escriba primero una pregunta.",
       "stream": "[Se produjo un error: {{message}}]"
@@ -316,7 +316,7 @@
     "resizeHeightHint": "Arrastre para ajustar la altura",
     "resizePanel": "Ajustar el tamaño del panel",
     "resizeHint": "Arrastre para ajustar el tamaño",
-    "tryAsking": "Pruebe a preguntar:",
+    "tryAsking": "Puede preguntar, por ejemplo:",
     "quickPrompts": {
       "overdue": "¿Qué facturas están vencidas?",
       "cashFlow": "¿Cómo va mi flujo de caja este mes?",
@@ -396,7 +396,7 @@
       "invoices": "Facturas",
       "transactions": "Transacciones",
       "messages": "Mensajes",
-      "estimates": "Presupuestos",
+      "estimates": "Cotizaciones",
       "projects": "Proyectos",
       "tasks": "Tareas"
     },
@@ -425,12 +425,12 @@
       "approvalAdvanced": "Paso de aprobación {{step}}: {{subject}}",
       "approvalAdvancedBody": "El paso {{previous}} fue aprobado. El paso {{step}} necesita su revisión.",
       "approvalExpired": "Aprobación vencida: {{subject}}",
-      "approvalExpiredBody": "El paso «{{step}}» venció. La solicitud ha caducado.",
+      "approvalExpiredBody": "El paso «{{step}}» venció. La solicitud ha expirado.",
       "approvalEscalated": "Aprobación escalada: {{subject}}",
       "approvalEscalatedBody": "El paso «{{step}}» venció. Se pasó al paso {{next}}.",
       "budgetNearing": "{{project}} está por agotar su presupuesto",
       "budgetOver": "{{project}} superó el presupuesto",
-      "budgetBody": "Este proyecto ha usado el {{percent}} % de su presupuesto.",
+      "budgetBody": "Este proyecto ya usó el {{percent}} % de su presupuesto.",
       "invoicePaid": "Pago recibido: {{amount}}",
       "invoicePaidBody": "Factura {{number}} marcada como pagada",
       "invoiceOverdue": "Factura vencida: {{amount}}",
@@ -439,8 +439,8 @@
       "reminderSent": "Recordatorio enviado: factura {{number}}",
       "reminderSentBody_one": "Recordatorio n.º {{reminder}} enviado — {{count}} día de retraso, {{amount}}",
       "reminderSentBody_other": "Recordatorio n.º {{reminder}} enviado — {{count}} días de retraso, {{amount}}",
-      "estimateAccepted": "Presupuesto {{number}} aceptado — factura en borrador",
-      "estimateAcceptedBody": "El cliente lo aceptó en línea. Hay una factura en borrador lista para revisar y enviar.",
+      "estimateAccepted": "Cotización {{number}} aceptada — factura en borrador",
+      "estimateAcceptedBody": "El cliente la aceptó en línea. Hay una factura en borrador lista para revisar y enviar.",
       "callbackRequested": "Llamada de vuelta solicitada",
       "callbackRequestedBody": "{{caller}}: {{reason}}",
       "bookingByReceptionist": "Cita agendada por la recepcionista",
@@ -471,7 +471,8 @@
     "bookedSub": "Citas recuperadas",
     "conversion": "Conversión",
     "noMissedCalls": "Aún no hay llamadas perdidas",
-    "conversionSub": "{{booked}} de {{total}} clientes potenciales con cita"
+    "conversionSub_one": "{{booked}} de {{total}} cliente potencial con cita",
+    "conversionSub_other": "{{booked}} de {{total}} clientes potenciales con cita"
   },
   "revenueChart": {
     "empty": "Aún no hay datos de transacciones",

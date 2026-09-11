@@ -23,7 +23,8 @@
     "title": "Tareas",
     "count_one": "{{count}} tarea",
     "count_other": "{{count}} tareas",
-    "overdue": "· {{count}} vencidas",
+    "overdue_one": "· {{count}} vencida",
+    "overdue_other": "· {{count}} vencidas",
     "recurringLink": "Recurrentes",
     "allPriorities": "Todas las prioridades",
     "tabs": {
@@ -47,7 +48,7 @@
     "inDays": "{{count}} d"
   },
   "add": {
-    "trigger": "Añadir tarea",
+    "trigger": "Agregar tarea",
     "title": "Nueva tarea",
     "taskLabel": "Tarea",
     "taskPlaceholder": "¿Qué hay que hacer?",
@@ -68,11 +69,12 @@
   },
   "recurring": {
     "title": "Tareas recurrentes",
-    "subtitle": "{{count}} activas · crean tareas automáticamente según un calendario",
+    "subtitle_one": "{{count}} activa · crea tareas automáticamente según un calendario",
+    "subtitle_other": "{{count}} activas · crean tareas automáticamente según un calendario",
     "backToTasks": "Tareas",
     "new": "Nueva recurrente",
     "emptyTitle": "Todavía no hay tareas recurrentes",
-    "emptyBody": "Configure una sola vez las tareas que se repiten —la nómina, las declaraciones trimestrales, la renovación de licencias— y cada ciclo añadiremos una tarea nueva para que no se le escape nada.",
+    "emptyBody": "Configure una sola vez las tareas que se repiten —la nómina, las declaraciones trimestrales, la renovación de licencias— y cada ciclo agregaremos una tarea nueva para que no se le escape nada.",
     "createFirst": "Crear la primera plantilla",
     "footnote": "Las plantillas activas se revisan a diario. Cuando llega la siguiente fecha de una plantilla, se crea una tarea abierta nueva (con vencimiento ese mismo día) y la fecha avanza según su frecuencia. Póngala en pausa para saltarse los próximos ciclos.",
     "paused": "En pausa",

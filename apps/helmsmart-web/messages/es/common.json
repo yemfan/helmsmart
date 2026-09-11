@@ -5,7 +5,7 @@
   "roles": {
     "owner": "Propietario",
     "admin": "Administrador",
-    "bookkeeper": "Contable",
+    "bookkeeper": "Contador",
     "viewer": "Solo lectura",
     "unknown": "desconocido"
   },
@@ -15,11 +15,11 @@
     "denied": "No tiene permiso para hacer esto. Solicite acceso al propietario o a un administrador."
   },
   "aiRoles": {
-    "AI Chief Operating Officer": "Director de Operaciones con IA",
-    "AI Chief Information Officer": "Director de Información con IA",
-    "AI Marketing Director": "Director de Marketing con IA",
-    "AI Finance Director": "Director Financiero con IA",
-    "AI Sales Development Rep": "Representante de Desarrollo de Ventas con IA",
+    "AI Chief Operating Officer": "Director de operaciones con IA",
+    "AI Chief Information Officer": "Director de información con IA",
+    "AI Marketing Director": "Directora de marketing con IA",
+    "AI Finance Director": "Director financiero con IA",
+    "AI Sales Development Rep": "Ejecutiva de ventas con IA",
     "AI Receptionist": "Recepcionista con IA"
   }
 }

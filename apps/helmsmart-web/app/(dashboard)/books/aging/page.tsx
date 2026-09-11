@@ -158,7 +158,7 @@ async function AgingTable({
                       >
                         {row.bucket === "current"
                           ? t("aging.status.current")
-                          : t("aging.status.daysOverdue", { days: row.daysOverdue })}
+                          : t("aging.status.daysOverdue", { days: row.daysOverdue, count: row.daysOverdue })}
                       </span>
                     </td>
                   </tr>

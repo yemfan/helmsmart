@@ -190,7 +190,9 @@ export default async function ClientDetailPage({
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
-        <div className="flex-1">
+        {/* The name keeps a readable width; the actions wrap onto a second row
+            before they squeeze it — Spanish labels run ~40% longer. */}
+        <div className="flex-1 min-w-[14rem]">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl font-semibold text-slate-900">{displayName}</h1>
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLORS[client.status] ?? STATUS_COLORS.lead}`}>
@@ -205,7 +207,7 @@ export default async function ClientDetailPage({
           )}
         </div>
         {/* Quick actions */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <EditClientButton
             clientId={client.id}
             initialValues={{
@@ -218,6 +220,7 @@ export default async function ClientDetailPage({
               source: client.source ?? "",
               notes: client.notes ?? "",
               tags: (client.tags as string[] | null)?.join(", ") ?? "",
+              preferred_language: client.preferred_language ?? "",
             }}
           />
           {client.email && (
@@ -529,6 +532,7 @@ export default async function ClientDetailPage({
                   source: client.source ?? "",
                   notes: client.notes ?? "",
                   tags: (client.tags as string[] | null)?.join(", ") ?? "",
+                  preferred_language: client.preferred_language ?? "",
                 }}
               />
             </div>

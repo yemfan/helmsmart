@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
-import { intlLocale } from "@leadsmart/i18n";
+import { DEFAULT_LOCALE, intlLocale } from "@leadsmart/i18n";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -38,6 +38,10 @@ export async function getClientBrief(clientId: string): Promise<ClientBrief | nu
     .single();
 
   if (!cached) return null;
+  // A brief is prose in the language of whoever asked for it; one in another
+  // language is not this reader's brief. Briefs from before the column existed
+  // were English.
+  if ((cached.locale ?? DEFAULT_LOCALE) !== (await getServerLocale())) return null;
 
   const ageHours =
     (Date.now() - new Date(cached.generated_at).getTime()) / 3_600_000;
@@ -317,6 +321,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
       key_facts:       parsed.key_facts ?? [],
       model:           "claude-haiku-4-5",
       generated_at:    now,
+      locale,
     },
     { onConflict: "organization_id,client_id" }
   );

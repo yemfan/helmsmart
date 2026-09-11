@@ -43,7 +43,12 @@
     "daysAgo": "{{n}}d ago"
   },
   "list": {
-    "summary": "{{active}} active · {{leads}} leads · {{prospects}} prospects",
+    "summaryActive_one": "{{count}} active",
+    "summaryActive_other": "{{count}} active",
+    "summaryLeads_one": "{{count}} lead",
+    "summaryLeads_other": "{{count}} leads",
+    "summaryProspects_one": "{{count}} prospect",
+    "summaryProspects_other": "{{count}} prospects",
     "import": "Import",
     "export": "Export",
     "searchPlaceholder": "Search clients…",
@@ -154,7 +159,12 @@
       "notes": "Any additional context…",
       "notesShort": "Any context about this client…"
     },
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "language": "Language",
+    "languageHint": "What this client's texts, emails, invoices and reminders are written in.",
+    "languageOptions": {
+      "auto": "Detect from their messages"
+    }
   },
   "notes": {
     "title": "Notes & Activity",
@@ -274,7 +284,8 @@
       "optional": "Optional:",
       "statusValues": "(lead/prospect/active/inactive)",
       "tagsHint": "(comma-separated)",
-      "downloadTemplate": "Download template"
+      "downloadTemplate": "Download template",
+      "moreColumns": "Also: language (en, es or zh). Spanish column names work too — nombre, apellido, correo, teléfono, estado (contacto nuevo, prospecto, activo, inactivo), etiquetas, notas, idioma."
     },
     "drop": {
       "hint": "Drop your CSV here, or click to browse",
@@ -282,7 +293,8 @@
     },
     "preview": {
       "title": "Preview",
-      "valid": "{{n}} valid",
+      "valid_one": "{{n}} valid",
+      "valid_other": "{{n}} valid",
       "willSkip": "{{n}} will skip",
       "showing": "Showing first 50 of {{n}} rows",
       "rowError": "A first name or a company is required",

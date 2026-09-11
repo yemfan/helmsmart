@@ -168,7 +168,7 @@
       "items": {
         "pain": {
           "title": "Primero el problema, después la función",
-          "description": "Cada herramienta que creamos nace de un problema real que nos contaron dueños de pequeñas empresas. No añadimos funciones por añadirlas."
+          "description": "Cada herramienta que creamos nace de un problema real que nos contaron dueños de pequeñas empresas. No agregamos funciones por agregarlas."
         },
         "works": {
           "title": "IA que funciona de verdad",
@@ -617,7 +617,7 @@
       "email": "Indique una dirección de correo válida",
       "failed": "No se pudo enviar el mensaje. Inténtelo de nuevo o escríbanos a contact@helmsmart.ai"
     },
-    "demoNote": "¿Quiere agendar una demostración? <a>Solicite un presupuesto personalizado</a> o consulte nuestras <a>preguntas frecuentes</a>.",
+    "demoNote": "¿Quiere agendar una demostración? <a>Solicite una cotización personalizada</a> o consulte nuestras <a>preguntas frecuentes</a>.",
     "business": {
       "title": "Información de la empresa",
       "subtitle": "Sociedad operadora y dirección postal",
@@ -625,10 +625,10 @@
       "country": "Estados Unidos"
     },
     "confirmationEmail": {
-      "subject": "Hemos recibido su mensaje — HelmSmart",
+      "subject": "Recibimos su mensaje — HelmSmart",
       "heading": "¡Gracias por escribirnos!",
       "greeting": "Hola {{name}}:",
-      "body": "Hemos recibido su mensaje y le responderemos en un día hábil.",
+      "body": "Recibimos su mensaje y le responderemos en un día hábil.",
       "subjectLabel": "Asunto:",
       "signoff": "Un saludo,",
       "team": "El equipo de HelmSmart"
@@ -744,7 +744,7 @@
       },
       "collect": {
         "title": "2. Información que recopilamos",
-        "intro": "Recopilamos la información que usted nos facilita directamente:",
+        "intro": "Recopilamos la información que usted nos proporciona directamente:",
         "items": {
           "i1": "Datos de la cuenta (nombre, correo electrónico, empresa)",
           "i2": "Preferencias de contacto e historial de comunicaciones",
@@ -780,9 +780,9 @@
         }
       },
       "sms": {
-        "title": "6. Información móvil y mensajes de texto",
-        "p1": "Si acepta recibir mensajes de texto, recopilamos su número de teléfono móvil y su consentimiento. Los usamos únicamente para enviarle los mensajes que solicitó: recordatorios y confirmaciones de citas, seguimientos, avisos sobre su cuenta y sus documentos, y respuestas a sus consultas. La frecuencia de los mensajes varía y pueden aplicarse tarifas de mensajes y datos. Puede darse de baja en cualquier momento respondiendo STOP, u obtener ayuda respondiendo HELP.",
-        "p2": "Ninguna información móvil (incluidos su número de teléfono y su aceptación o consentimiento para recibir SMS) se comparte ni se vende a terceros ni a filiales con fines de marketing o promocionales. Los números de teléfono se comparten únicamente con nuestro proveedor de envío de SMS (Twilio) y estrictamente para transmitir los mensajes que usted solicitó, nunca para ningún otro fin."
+        "title": "6. Información del celular y mensajes de texto",
+        "p1": "Si acepta recibir mensajes de texto, recopilamos su número de celular y su consentimiento. Los usamos únicamente para enviarle los mensajes que solicitó: recordatorios y confirmaciones de citas, seguimientos, avisos sobre su cuenta y sus documentos, y respuestas a sus consultas. La frecuencia de los mensajes varía y pueden aplicarse tarifas de mensajes y datos. Puede darse de baja en cualquier momento respondiendo STOP, u obtener ayuda respondiendo HELP.",
+        "p2": "Ninguna información de su celular (incluidos su número de teléfono y su aceptación o consentimiento para recibir SMS) se comparte ni se vende a terceros ni a filiales con fines de marketing o promocionales. Los números de teléfono se comparten únicamente con nuestro proveedor de envío de SMS (Twilio) y estrictamente para transmitir los mensajes que usted solicitó, nunca para ningún otro fin."
       },
       "rights": {
         "title": "7. Derechos del usuario",
@@ -811,7 +811,7 @@
     "sections": {
       "acceptance": {
         "title": "1. Aceptación de los términos",
-        "p": "Al acceder a HelmSmart, un nombre comercial de MAXY Investment Inc («el Servicio»), y utilizarlo, usted acepta quedar vinculado por los términos y disposiciones de este acuerdo. Si no está de acuerdo con lo anterior, le rogamos que no utilice este servicio."
+        "p": "Al acceder a HelmSmart, un nombre comercial de MAXY Investment Inc («el Servicio»), y utilizarlo, usted acepta quedar vinculado por los términos y disposiciones de este acuerdo. Si no está de acuerdo con lo anterior, le pedimos que no utilice este servicio."
       },
       "license": {
         "title": "2. Concesión de licencia",
@@ -860,7 +860,7 @@
       },
       "sms": {
         "title": "10. Programa de SMS / mensajes de texto",
-        "intro": "Si facilita su número de teléfono móvil y da su consentimiento, acepta recibir mensajes de texto de HelmSmart (un nombre comercial de MAXY Investment Inc) y, cuando corresponda, de los negocios que usan la plataforma HelmSmart para comunicarse con sus propios clientes. Las condiciones de nuestro programa de SMS son:",
+        "intro": "Si proporciona su número de celular y da su consentimiento, acepta recibir mensajes de texto de HelmSmart (un nombre comercial de MAXY Investment Inc) y, cuando corresponda, de los negocios que usan la plataforma HelmSmart para comunicarse con sus propios clientes. Las condiciones de nuestro programa de SMS son:",
         "items": {
           "i1": "<b>Descripción del programa:</b> mensajes recurrentes como recordatorios y confirmaciones de citas, seguimientos de conversaciones previas, avisos sobre su cuenta y sus documentos, y respuestas a sus consultas.",
           "i2": "<b>Frecuencia de los mensajes:</b> la frecuencia varía según sus interacciones.",
@@ -869,7 +869,7 @@
           "i5": "<b>Ayuda:</b> responda <b>HELP</b> para obtener asistencia, o escríbanos a contact@helmsmart.ai.",
           "i6": "El consentimiento para recibir mensajes de texto no es condición para ninguna compra. Los operadores no se hacen responsables de los mensajes retrasados o no entregados."
         },
-        "outro": "La información de aceptación y el consentimiento para recibir mensajes móviles nunca se comparten con terceros ni con filiales con fines de marketing o promocionales. Consulte nuestra <a>Política de privacidad</a> para más detalles."
+        "outro": "La información de aceptación y el consentimiento para recibir mensajes de texto nunca se comparten con terceros ni con filiales con fines de marketing o promocionales. Consulte nuestra <a>Política de privacidad</a> para más detalles."
       },
       "related": {
         "title": "11. Productos relacionados",
@@ -924,7 +924,7 @@
   },
   "notFound": {
     "title": "Esta página no existe.",
-    "body": "Puede que el enlace haya caducado o que la página se haya movido.",
+    "body": "Puede que el enlace haya expirado o que la página se haya movido.",
     "backHome": "Volver al inicio"
   }
 }

@@ -468,7 +468,7 @@
     "bookedSub": "挽回的预约",
     "conversion": "转化率",
     "noMissedCalls": "还没有未接来电",
-    "conversionSub": "{{total}} 条线索中有 {{booked}} 条成功预约"
+    "conversionSub_other": "{{total}} 条线索中有 {{booked}} 条成功预约"
   },
   "revenueChart": {
     "empty": "还没有交易数据",

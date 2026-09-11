@@ -4,6 +4,8 @@ import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, X, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { CLIENT_HEADER_ALIASES, canonicalHeaders, clientStatusFromCell, contactLanguageFromCell } from "@/lib/csv-headers";
+import { contactLanguageFor, type ContactLanguage } from "@/lib/i18n/contactLocale";
 
 type Status = "lead" | "prospect" | "active" | "inactive";
 
@@ -16,6 +18,7 @@ interface ParsedRow {
   status: Status;
   tags: string;
   notes: string;
+  preferred_language: ContactLanguage | null;
   _valid: boolean;
 }
 
@@ -52,20 +55,17 @@ function parseRows(text: string): ParsedRow[] {
   const lines = parseCsv(text);
   if (lines.length < 2) return [];
 
-  // Normalise header names
-  const headers = lines[0].map((h) => h.toLowerCase().trim().replace(/\s+/g, "_"));
+  // Header names in English or Spanish, compared without case or accents.
+  const headers = canonicalHeaders(lines[0], CLIENT_HEADER_ALIASES);
 
   const col = (row: string[], name: string) => {
     const idx = headers.indexOf(name);
     return idx >= 0 ? (row[idx] ?? "").trim() : "";
   };
 
-  const VALID_STATUSES = ["lead", "prospect", "active", "inactive"];
-
   return lines.slice(1).map((row) => {
     const firstName = col(row, "first_name");
     const company   = col(row, "company");
-    const statusRaw = col(row, "status").toLowerCase();
     const valid = !!(firstName || company);
     return {
       first_name: firstName,
@@ -73,9 +73,10 @@ function parseRows(text: string): ParsedRow[] {
       company,
       email:      col(row, "email"),
       phone:      col(row, "phone"),
-      status:     (VALID_STATUSES.includes(statusRaw) ? statusRaw : "lead") as Status,
+      status:     clientStatusFromCell(col(row, "status")) ?? "lead",
       tags:       col(row, "tags"),
       notes:      col(row, "notes"),
+      preferred_language: contactLanguageFromCell(col(row, "language")),
       _valid:     valid,
     };
   });
@@ -103,6 +104,7 @@ function toRow(c: ExtractedContact): ParsedRow {
     status: "lead",
     tags: "",
     notes: c.notes,
+    preferred_language: null,
     _valid: valid,
   };
 }
@@ -128,7 +130,10 @@ Bob,Jones,,bob@example.com,,lead,,Met at conference
 
 export function ImportForm() {
   const router = useRouter();
-  const { t } = useTranslation("clients");
+  const { t, i18n } = useTranslation("clients");
+  // Rows with no language column take the owner's own language when it isn't
+  // English — the same default the Add client form starts on.
+  const ownerLanguage = contactLanguageFor(i18n.language);
   const fileRef = useRef<HTMLInputElement>(null);
   const imgRef  = useRef<HTMLInputElement>(null);
   const [rows, setRows]         = useState<ParsedRow[]>([]);
@@ -168,7 +173,12 @@ export function ImportForm() {
         const res = await fetch("/api/clients/import", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rows: valid }),
+          body: JSON.stringify({
+            rows: valid.map((r) => ({
+              ...r,
+              preferred_language: r.preferred_language ?? (ownerLanguage === "en" ? null : ownerLanguage),
+            })),
+          }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? t("import.errors.importFailed"));
@@ -263,6 +273,7 @@ export function ImportForm() {
             {t("import.csv.required")} <code className="bg-indigo-100 px-1 rounded">first_name</code> {t("import.csv.or")} <code className="bg-indigo-100 px-1 rounded">company</code>.
             {" "}{t("import.csv.optional")} <code className="bg-indigo-100 px-1 rounded">last_name</code>, <code className="bg-indigo-100 px-1 rounded">email</code>, <code className="bg-indigo-100 px-1 rounded">phone</code>, <code className="bg-indigo-100 px-1 rounded">status</code> {t("import.csv.statusValues")}, <code className="bg-indigo-100 px-1 rounded">tags</code> {t("import.csv.tagsHint")}, <code className="bg-indigo-100 px-1 rounded">notes</code>.
           </p>
+          <p className="text-xs text-indigo-700 leading-relaxed mt-1">{t("import.csv.moreColumns")}</p>
         </div>
         <button
           onClick={downloadTemplate}
@@ -304,7 +315,7 @@ export function ImportForm() {
             <div className="flex items-center gap-3">
               <h2 className="text-sm font-semibold text-slate-800">{t("import.preview.title")}</h2>
               <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                {t("import.preview.valid", { n: validCount })}
+                {t("import.preview.valid", { n: validCount, count: validCount })}
               </span>
               {invalidCount > 0 && (
                 <span className="text-xs text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full font-medium">

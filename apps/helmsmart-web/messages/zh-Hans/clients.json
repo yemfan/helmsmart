@@ -43,7 +43,9 @@
     "daysAgo": "{{n}} 天前"
   },
   "list": {
-    "summary": "活跃 {{active}} 位 · 线索 {{leads}} 位 · 意向客户 {{prospects}} 位",
+    "summaryActive_other": "活跃 {{count}} 位",
+    "summaryLeads_other": "线索 {{count}} 位",
+    "summaryProspects_other": "意向客户 {{count}} 位",
     "import": "导入",
     "export": "导出",
     "searchPlaceholder": "搜索客户…",
@@ -154,7 +156,12 @@
       "notes": "补充说明…",
       "notesShort": "关于该客户的任何背景…"
     },
-    "cancel": "取消"
+    "cancel": "取消",
+    "language": "语言",
+    "languageHint": "该客户收到的短信、邮件、发票和提醒所用的语言。",
+    "languageOptions": {
+      "auto": "根据其消息自动识别"
+    }
   },
   "notes": {
     "title": "备注与动态",
@@ -274,7 +281,8 @@
       "optional": "选填：",
       "statusValues": "（lead/prospect/active/inactive）",
       "tagsHint": "（用逗号分隔）",
-      "downloadTemplate": "下载模板"
+      "downloadTemplate": "下载模板",
+      "moreColumns": "另可加 language 列（en、es 或 zh）。也可使用西班牙语列名：nombre、apellido、correo、teléfono、estado（contacto nuevo、prospecto、activo、inactivo）、etiquetas、notas、idioma。"
     },
     "drop": {
       "hint": "把 CSV 文件拖到这里，或点击选择文件",
@@ -282,7 +290,7 @@
     },
     "preview": {
       "title": "预览",
-      "valid": "{{n}} 行有效",
+      "valid_other": "{{n}} 行有效",
       "willSkip": "{{n}} 行将跳过",
       "showing": "共 {{n}} 行，显示前 50 行",
       "rowError": "必须填写名或公司",

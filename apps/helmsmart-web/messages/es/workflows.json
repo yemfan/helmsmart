@@ -12,12 +12,12 @@
     "approved": "Aprobada",
     "rejected": "Rechazada",
     "cancelled": "Cancelada",
-    "expired": "Caducada",
+    "expired": "Expirada",
     "waiting": "En espera",
     "skipped": "Omitida"
   },
   "subjectType": {
-    "estimate": "Presupuesto",
+    "estimate": "Cotización",
     "expense": "Gasto",
     "invoice": "Factura",
     "bill": "Factura de proveedor",
@@ -26,20 +26,20 @@
   },
   "triggers": {
     "manual": "Activación manual",
-    "estimate_over_amount": "Presupuesto por encima del umbral",
+    "estimate_over_amount": "Cotización por encima del umbral",
     "expense_over_amount": "Gasto por encima del umbral",
     "custom": "Personalizado"
   },
   "list": {
     "title": "Flujos de trabajo de aprobación",
-    "subtitle": "Aprobaciones secuenciales de varios pasos para presupuestos, gastos y más",
+    "subtitle": "Aprobaciones secuenciales de varios pasos para cotizaciones, gastos y más",
     "newWorkflow": "Nuevo flujo de trabajo",
     "pendingBanner_one": "{{count}} aprobación pendiente espera su revisión",
     "pendingBanner_other": "{{count}} aprobaciones pendientes esperan su revisión",
     "morePending": "+{{count}} más",
     "configured": "Flujos de trabajo configurados",
     "emptyTitle": "Aún no hay flujos de trabajo",
-    "emptyBody": "Cree un flujo de trabajo de aprobación para exigir un visto bueno antes de actuar sobre presupuestos, gastos u otros elementos.",
+    "emptyBody": "Cree un flujo de trabajo de aprobación para exigir un visto bueno antes de actuar sobre cotizaciones, gastos u otros elementos.",
     "createFirst": "Crear el primer flujo de trabajo",
     "inactive": "Inactivo",
     "overThreshold": "más de ${{amount}}",
@@ -95,19 +95,19 @@
         "description": "Se inicia manualmente desde un registro"
       },
       "estimate_over_amount": {
-        "label": "Presupuesto por encima de un importe",
-        "description": "Se activa automáticamente cuando el total del presupuesto supera el umbral"
+        "label": "Cotización por encima de un monto",
+        "description": "Se activa automáticamente cuando el total de la cotización supera el umbral"
       },
       "expense_over_amount": {
-        "label": "Gasto por encima de un importe",
-        "description": "Se activa automáticamente cuando el importe del gasto supera el umbral"
+        "label": "Gasto por encima de un monto",
+        "description": "Se activa automáticamente cuando el monto del gasto supera el umbral"
       },
       "custom": {
         "label": "Personalizado",
         "description": "Para cualquier otro fin"
       }
     },
-    "amountLabel": "Umbral de importe ($)",
+    "amountLabel": "Umbral de monto ($)",
     "amountPlaceholder": "p. ej., 5000",
     "stepsTitle": "Pasos de aprobación",
     "addStep": "Agregar paso",
@@ -120,7 +120,7 @@
       "any": "Cualquier administrador o propietario",
       "owner": "Solo el propietario",
       "admin": "Administrador o propietario",
-      "bookkeeper": "Contable, administrador o propietario"
+      "bookkeeper": "Contador, administrador o propietario"
     },
     "timeoutLabel": "Escalar automáticamente después de (horas)",
     "timeoutPlaceholder": "Déjelo en blanco para desactivarlo",
@@ -131,7 +131,7 @@
     "errors": {
       "nameRequired": "El nombre del flujo de trabajo es obligatorio",
       "stepRequired": "Agregue al menos un paso de aprobación",
-      "amountRequired": "Introduzca un umbral de importe",
+      "amountRequired": "Introduzca un umbral de monto",
       "saveFailed": "No se pudo guardar ese flujo de trabajo.",
       "createFailed": "No se pudo crear ese flujo de trabajo."
     }
@@ -159,7 +159,7 @@
     "triggerLabels": {
       "invoice_overdue": "Factura vencida",
       "invoice_paid": "Factura pagada",
-      "new_lead": "Nuevo cliente potencial",
+      "new_lead": "Contacto nuevo",
       "campaign_sent": "Campaña enviada"
     },
     "actionLabels": {
@@ -175,7 +175,7 @@
       "campaign_name": "Nombre de la campaña"
     },
     "errors": {
-      "notAuthenticated": "Su sesión se ha cerrado. Vuelva a iniciar sesión para gestionar las automatizaciones.",
+      "notAuthenticated": "Su sesión se cerró. Vuelva a iniciar sesión para administrar las automatizaciones.",
       "createFailed": "No se pudo crear esa regla de automatización."
     },
     "modal": {
@@ -241,13 +241,13 @@
     }
   },
   "errors": {
-    "unauthorized": "Su sesión se ha cerrado. Vuelva a iniciar sesión para continuar.",
-    "noSession": "Su sesión se ha cerrado. Vuelva a iniciar sesión para continuar.",
+    "unauthorized": "Su sesión se cerró. Vuelva a iniciar sesión para continuar.",
+    "noSession": "Su sesión se cerró. Vuelva a iniciar sesión para continuar.",
     "workflowNotFound": "Ese flujo de trabajo de aprobación ya no existe.",
     "workflowInactive": "Ese flujo de trabajo de aprobación está desactivado. Actívelo en Flujos de trabajo para poder usarlo.",
     "workflowNoSteps": "Ese flujo de trabajo de aprobación aún no tiene pasos. Agregue al menos un aprobador.",
     "requestNotFound": "Esa solicitud de aprobación ya no existe.",
-    "requestNotPending": "Esa solicitud ya se ha resuelto.",
+    "requestNotPending": "Esa solicitud ya se resolvió.",
     "noPendingStep": "Esa solicitud no tiene ningún paso pendiente de decisión."
   }
 }

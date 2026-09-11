@@ -53,8 +53,8 @@
       "help": "A Monday summary of cash, receivables, bills, and tasks — emailed to owners & admins."
     },
     "englishAssist": {
-      "label": "Show me English (multi-language assist)",
-      "help": "Translate non-English customer messages to English in your inbox, and send replies & reminders bilingually (their language + English) so you can read what went out."
+      "label": "Translate for me (multi-language assist)",
+      "help": "Translate customer messages into your language in the inbox, and follow replies in another language with a copy in yours so you can check what went out."
     },
     "save": "Save changes"
   },
