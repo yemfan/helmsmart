@@ -402,12 +402,15 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                             {preview.body}
                           </p>
                         </div>
-                        {(thread.lastMessage.priority === "high" || (thread.lastMessage.intent && thread.lastMessage.intent !== "other")) && (
+                        {/* The intent badge is inbound triage. An outbound row's intent is a
+                            marker the product set for itself (sms_reminder, approved_reply)
+                            and has no label — it would render raw. */}
+                        {(thread.lastMessage.priority === "high" || (thread.lastMessage.direction === "inbound" && thread.lastMessage.intent && thread.lastMessage.intent !== "other")) && (
                           <div className="flex items-center gap-1 mt-1">
                             {thread.lastMessage.priority === "high" && (
                               <span className="text-[10px] font-semibold text-rose-600 bg-rose-50 rounded px-1.5 py-0.5">{t("badges.urgent")}</span>
                             )}
-                            {thread.lastMessage.intent && thread.lastMessage.intent !== "other" && (
+                            {thread.lastMessage.direction === "inbound" && thread.lastMessage.intent && thread.lastMessage.intent !== "other" && (
                               <span className="text-[10px] font-medium text-slate-500 bg-slate-100 rounded px-1.5 py-0.5">
                                 {t(`badges.intent.${thread.lastMessage.intent}`, { defaultValue: thread.lastMessage.intent })}
                               </span>

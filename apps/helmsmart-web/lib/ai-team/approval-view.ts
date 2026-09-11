@@ -48,13 +48,26 @@ export const ACTION_KEYS = {
   handOffToOwner: "hand_off_to_owner",
   sendInvoiceReminder: "send_invoice_reminder",
   textClient: "text_client",
+  /** Emma's reply to a customer's text, parked by her autonomy gate — never one of Mark's tools. */
+  replyToText: "reply_to_text",
 } as const;
 
 /** Outbound actions: they only ever become approvals, and approving runs them. */
-export const APPROVABLE_ACTIONS: ReadonlySet<string> = new Set([ACTION_KEYS.sendInvoiceReminder, ACTION_KEYS.textClient]);
+export const APPROVABLE_ACTIONS: ReadonlySet<string> = new Set([
+  ACTION_KEYS.sendInvoiceReminder,
+  ACTION_KEYS.textClient,
+  ACTION_KEYS.replyToText,
+]);
 
 /** Approvals whose text the owner may change before saying yes. */
-export const EDITABLE_ACTIONS: ReadonlySet<string> = new Set([ACTION_KEYS.textClient]);
+export const EDITABLE_ACTIONS: ReadonlySet<string> = new Set([ACTION_KEYS.textClient, ACTION_KEYS.replyToText]);
+
+/**
+ * `messages.intent` on a reply of Emma's that the owner approved. Her other
+ * texts (`sent_by` "receptionist") are booking confirmations; this tells the
+ * AI activity feed the approval already has its line.
+ */
+export const APPROVED_REPLY_INTENT = "approved_reply";
 
 /** What the owner is shown before deciding. Every field optional: it is read back from jsonb. */
 export type ApprovalDetails = {

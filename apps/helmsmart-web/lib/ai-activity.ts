@@ -11,6 +11,7 @@
 
 import { formatPhoneDisplay } from "@/lib/phone-display";
 import { MESSAGE_SENDERS, isMessageSender, type MessageSender } from "@/lib/message-provenance";
+import { ACTION_KEYS, APPROVED_REPLY_INTENT } from "@/lib/ai-team/approval-view";
 
 export type Translate = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -47,6 +48,9 @@ type TextKind = "autoPilot" | "receptionist" | "reminder";
  *                     answers; a line from here too would count it twice
  *   ai_team           listed from `ai_approvals`, which knows which specialist
  *                     proposed it and that the owner approved it
+ *
+ * `receptionist` is listed, except a reply of Emma's the owner approved
+ * (intent APPROVED_REPLY_INTENT): that one is listed from `ai_approvals` too.
  */
 const TEXT_KIND: Record<MessageSender, TextKind | null> = {
   person: null,
@@ -331,17 +335,21 @@ export function buildActivityFeed(
   }
 
   // What the owner approved and the team then did. The specialist's run and
-  // the `messages` row (sent_by "ai_team") record the same send, so neither
-  // gets a line of its own — this one says whose work it was AND who said yes.
+  // the `messages` row (sent_by "ai_team", or Emma's approved reply) record
+  // the same send, so neither gets a line of its own — this one says whose
+  // work it was AND who said yes.
   for (const a of input.approvals ?? []) {
     const who = employee(a.employee_slug);
     const name = a.client_name || t("aiActivity.someone");
+    const isText = a.action_key === ACTION_KEYS.textClient || a.action_key === ACTION_KEYS.replyToText;
     const text =
-      a.action_key === "text_client"
+      a.action_key === ACTION_KEYS.textClient
         ? t("aiActivity.row.approvedText", { who: who.name, name })
-        : a.action_key === "send_invoice_reminder"
-          ? t("aiActivity.row.approvedReminder", { who: who.name, name })
-          : null;
+        : a.action_key === ACTION_KEYS.replyToText
+          ? t("aiActivity.row.approvedReply", { who: who.name, name })
+          : a.action_key === ACTION_KEYS.sendInvoiceReminder
+            ? t("aiActivity.row.approvedReminder", { who: who.name, name })
+            : null;
     if (!text) continue;
     rows.push({
       key: `approval:${a.id}`,
@@ -352,7 +360,7 @@ export function buildActivityFeed(
         a.decided_by && a.decided_by === input.viewerId
           ? t("aiActivity.detail.approvedByYou")
           : t("aiActivity.detail.approvedByTeammate"),
-      href: a.action_key === "text_client" ? "/inbox" : "/books/invoices",
+      href: isText ? "/inbox" : "/books/invoices",
     });
   }
 
@@ -410,6 +418,8 @@ export function buildActivityFeed(
     // The receptionist's text with no client is the booking alert to the
     // business's own phone — a note to the owner, not work done for a customer.
     if (kind === "receptionist" && !m.client_id) continue;
+    // A reply of hers the owner approved has its line from `ai_approvals`.
+    if (kind === "receptionist" && m.intent === APPROVED_REPLY_INTENT) continue;
     const payment = kind === "reminder" && m.intent !== APPOINTMENT_REMINDER_INTENT;
     const k = `${kind}:${payment ? "payment" : ""}:${m.client_id ?? m.to_address ?? m.id}`;
     const g = groups.get(k);

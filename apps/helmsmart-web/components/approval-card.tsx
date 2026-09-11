@@ -64,7 +64,9 @@ export function ApprovalCard({
       ? t("aiApprovals.summary.sendInvoiceReminder", { who, name: d.clientName, invoice: d.invoiceNumber, amount })
       : view.actionKey === ACTION_KEYS.textClient && d.clientName && d.phone
         ? t("aiApprovals.summary.textClient", { who, name: d.clientName, phone: d.phone })
-        : view.summary;
+        : view.actionKey === ACTION_KEYS.replyToText && d.clientName && d.phone
+          ? t("aiApprovals.summary.replyToText", { who, name: d.clientName, phone: d.phone })
+          : view.summary;
 
   const proposed = view.status === "proposed";
   const unconfirmed = view.status === "unconfirmed";
@@ -160,7 +162,7 @@ export function ApprovalCard({
             </p>
           ) : null}
 
-          {view.actionKey === ACTION_KEYS.textClient ? (
+          {d.kind === "text" ? (
             proposed && view.editable ? (
               <div>
                 <label htmlFor={messageId} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">

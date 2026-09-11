@@ -278,7 +278,8 @@
     "title": "等待你批准",
     "summary": {
       "sendInvoiceReminder": "{{who}} 将通过邮件向 {{name}} 发送 {{invoice}} 的付款提醒 · {{amount}}",
-      "textClient": "{{who}} 将给 {{name}}（{{phone}}）发短信"
+      "textClient": "{{who}} 将给 {{name}}（{{phone}}）发短信",
+      "replyToText": "{{who}} 将回复 {{name}}（{{phone}}）的短信"
     },
     "card": {
       "emailTo": "邮件发给 {{name}} · {{email}}",
@@ -450,6 +451,7 @@
       "bookingConfirmationText": "{{who}} 向 {{name}} 发送了预约确认短信",
       "paymentReminderText": "已向 {{name}} 发送付款提醒短信",
       "approvedText": "{{who}} 给 {{name}} 发了短信",
+      "approvedReply": "{{who}} 回复了 {{name}}",
       "approvedReminder": "{{who}} 向 {{name}} 发送了付款提醒",
       "taskAdded": "{{who}} 添加了任务：{{title}}",
       "handedOff": "{{who}} 把一项任务交给了你：{{title}}"
