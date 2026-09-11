@@ -1218,7 +1218,10 @@
       "linkTokenFailed": "Couldn't start the bank connection. Try again.",
       "saveConnectionFailed": "Couldn't save the bank connection. Try again.",
       "exchangeFailed": "Couldn't finish connecting your bank. Try again.",
-      "syncFailed": "Couldn't sync your bank transactions. Try again in a few minutes."
+      "syncFailed": "Couldn't sync your bank transactions. Try again in a few minutes.",
+      "webhookUnverified": "This request couldn't be verified as coming from Plaid, so nothing was changed.",
+      "webhookMalformed": "This bank update couldn't be read, so nothing was changed.",
+      "webhookFailed": "Couldn't record this bank update right now, so nothing was changed."
     },
     "errors": {
       "missingId": "Missing transaction ID.",

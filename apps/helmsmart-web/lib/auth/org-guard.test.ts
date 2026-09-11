@@ -62,6 +62,7 @@ const NO_MEMBER_ROUTES: Record<string, string> = {
   "app/api/retell/inbound/route.ts": "Retell inbound-call webhook — ?k= secret, org from the number",
   "app/api/retell/function/route.ts": "Retell agent function calls — ?k= secret, org from the call",
   "app/api/stripe/webhook/route.ts": "Stripe webhook — signature-verified, org from event metadata",
+  "app/api/plaid/webhook/route.ts": "Plaid webhook — JWT signature-verified, org from the Item's bank_connections row",
   "app/api/resend/inbound/route.ts": "Resend inbound-email webhook — org from the recipient address",
   // ── Vercel cron: CRON_SECRET bearer, iterate every org ──
   "app/api/cron/approvals/timeout/route.ts": "cron (CRON_SECRET)",
