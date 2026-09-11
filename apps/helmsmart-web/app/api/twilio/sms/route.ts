@@ -20,6 +20,7 @@ import { analyzeInbound, translateTo, localizeOutbound, intentLabel, replyLangua
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
+import { phoneMatchVariants } from "@/lib/phone";
 import { cancelAppointment, getUpcomingAppointment } from "@/lib/booking";
 import { isAffirmative, isCancelRequest } from "@/lib/sms-intent";
 import { notifyBooking } from "@/lib/receptionist-agent";
@@ -102,13 +103,19 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (org) {
-    // Find client by phone number
-    const { data: client } = await supabase
-      .from("clients")
-      .select("id, preferred_language")
-      .eq("organization_id", org.id)
-      .eq("phone", from)
-      .maybeSingle();
+    // Find client by phone number, in whatever shape it was typed in. More than
+    // one can match; the oldest is the client, not a later lead.
+    const variants = phoneMatchVariants(from);
+    const { data: client } = variants.length
+      ? await supabase
+          .from("clients")
+          .select("id, preferred_language")
+          .eq("organization_id", org.id)
+          .in("phone", variants)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle()
+      : { data: null };
 
     // Appointment self-service (CANCEL → confirm → YES) runs BEFORE the opt-out /
     // auto-reply branches so a customer's "cancel" manages their appointment (with
