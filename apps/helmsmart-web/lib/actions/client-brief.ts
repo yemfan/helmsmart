@@ -184,15 +184,19 @@ export async function generateClientBrief(
   // 2026-10-11" it wrote "overdue on October 10": a draft has not been sent, so
   // it cannot be late, and a due date is stated relative to today so there is
   // no date arithmetic left for it to get wrong.
+  // A date the model may repeat is given with its weekday, so it never works
+  // one out: it once paired a note's "sábado" with the task's 18th, a Friday.
+  const withWeekday = (date: string) =>
+    `${new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" })} ${date}`;
   const daysFromToday = (date: string) => Math.round((Date.parse(date) - Date.parse(today)) / 86_400_000);
   const dueNote = (date: string) => {
     const days = daysFromToday(date);
     if (days === 0) return `due today (${date})`;
-    return days > 0 ? `due ${date}, in ${days} day(s)` : `due ${date}, ${-days} day(s) ago`;
+    return days > 0 ? `due ${withWeekday(date)}, in ${days} day(s)` : `due ${withWeekday(date)}, ${-days} day(s) ago`;
   };
   const invoiceLine = (i: { invoice_number: string; status: string; total: number | string; due_date: string }) =>
     i.status === "draft"
-      ? `- ${i.invoice_number}: DRAFT, not sent to the client yet, ${fmt(Number(i.total))}, due date set to ${i.due_date}`
+      ? `- ${i.invoice_number}: DRAFT, not sent to the client yet, ${fmt(Number(i.total))}, due date set to ${withWeekday(i.due_date)}`
       : `- ${i.invoice_number}: ${i.status.toUpperCase()} ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
 
   const contextParts: string[] = [
@@ -219,7 +223,7 @@ export async function generateClientBrief(
           .join("\n")
       : "No invoices.",
     "",
-    `## Open Estimates`,
+    `## Open Quotes (estimates)`,
     estimates.filter((e) => e.status === "sent").length
       ? estimates
           .filter((e) => e.status === "sent")
@@ -234,13 +238,13 @@ export async function generateClientBrief(
     "",
     `## Open Tasks`,
     tasks.length
-      ? tasks.map((t) => `- [${t.priority}] ${t.title}${t.due_date ? ` (due ${t.due_date})` : ""}`).join("\n")
+      ? tasks.map((t) => `- [${t.priority}] ${t.title}${t.due_date ? ` (due ${withWeekday(t.due_date)})` : ""}`).join("\n")
       : "No open tasks.",
     "",
     `## Upcoming Events`,
     events.length
       ? events
-          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`)
+          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString(intlLocale(locale), { weekday: "long", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`)
           .join("\n")
       : "No upcoming appointments.",
     "",
@@ -264,10 +268,20 @@ export async function generateClientBrief(
 
   // ── Call Claude ─────────────────────────────────────────────────────────────
 
+  // The app's own words, so the brief agrees with the screen around it. Left
+  // to itself the model wrote "valor de vida útil" (an asset's useful life),
+  // "estimaciones" for quotes, and "lifetime value" in English mid-sentence.
+  const terms =
+    locale === DEFAULT_LOCALE
+      ? ""
+      : `
+Use the app's own words for these, exactly as written, and never leave them in English: lifetime value = "${t("detail.stats.lifetimeValue")}"; quotes or estimates = "${t("detail.estimates.title")}"; invoices = "${t("detail.invoices.title")}".`;
+
   const systemPrompt =
     `You are an AI business advisor analyzing a client relationship for a small business owner.
 Be direct, concise, and actionable. Focus on what matters most right now.
-Today's date: ${today}` + languageDirectiveForJson(locale);
+Today's date: ${withWeekday(today)}.
+Dates in the context carry their weekday. Never state a weekday that disagrees with its date: if a note says "Saturday", say Saturday without attaching a different date to it.${terms}` + languageDirectiveForJson(locale);
 
   const userPrompt = `Analyze this client and produce a JSON brief. Be concise and business-focused.
 
@@ -281,10 +295,10 @@ Respond with ONLY valid JSON (no markdown, no comments):
   "health_score": <integer 1-10, where 1=at risk, 10=excellent>,
   "health_label": <a code, exactly one of these English values whatever language the rest is in: "At risk" | "Needs attention" | "Good" | "Strong" | "Excellent">,
   "key_facts": [
-    {"label": "Lifetime value", "value": "$X,XXX"},
-    {"label": "Last contact", "value": "X days ago"},
-    {"label": "Open invoices", "value": "X totaling $X"},
-    {"label": "Status", "value": "..."}
+    {"label": "${t("detail.stats.lifetimeValue")}", "value": "$X,XXX"},
+    {"label": "${t("brief.factLabels.lastContact")}", "value": "X days ago"},
+    {"label": "${t("brief.factLabels.openInvoices")}", "value": "X totaling $X"},
+    {"label": "${t("form.status")}", "value": "..."}
   ]
 }`;
 

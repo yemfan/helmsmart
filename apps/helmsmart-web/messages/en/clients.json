@@ -269,6 +269,10 @@
       "good": "Good",
       "strong": "Strong",
       "excellent": "Excellent"
+    },
+    "factLabels": {
+      "lastContact": "Last contact",
+      "openInvoices": "Open invoices"
     }
   },
   "import": {
