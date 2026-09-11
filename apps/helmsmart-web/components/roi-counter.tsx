@@ -1,63 +1,63 @@
-import { TrendingUp, PhoneMissed, CalendarCheck } from "lucide-react";
-import { getServerT } from "@/lib/i18n/server";
+import { TrendingUp, PhoneMissed, MessageSquare, CalendarCheck } from "lucide-react";
+import { intlLocale } from "@leadsmart/i18n";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
 type Props = {
-  /** Missed calls that were auto-texted in the last 7 days. */
-  autoTexted: number;
-  /** SMS conversations that resulted in a booking in the last 7 days (from ai_employee_runs). */
-  bookedViaSms: number;
+  /** Missed, voicemail, or hung up before speaking — lib/voice-stats classifyCall. */
+  missed: number | null;
+  /** Of those, the ones the auto-reply texted (calls.auto_replied). */
+  autoTexted: number | null;
+  /** SMS conversations Emma booked (ai_employee_runs.outcome.booked). */
+  bookedViaSms: number | null;
+  periodDays: number;
 };
 
 /**
- * Shows the missed-call → SMS → booked conversion funnel for the last 7 days.
- * The "booked via SMS" number comes from real ai_employee_runs.outcome.booked
- * set by Emma's tool-use loop (Phase 3), so it reflects actual bookings, not estimates.
+ * The missed-call → text → booked funnel, over the same window and the same
+ * definition of "missed" as the stat cards above it on /voice. A null is a
+ * count that failed to load, shown as a dash rather than a zero that would
+ * read as real.
  */
-export async function RoiCounter({ autoTexted, bookedViaSms }: Props) {
-  const t = await getServerT("home");
-  const pct = autoTexted > 0 ? Math.round((bookedViaSms / autoTexted) * 100) : 0;
+export async function RoiCounter({ missed, autoTexted, bookedViaSms, periodDays }: Props) {
+  const t = await getServerT("voice");
+  const locale = await getServerLocale();
+  const num = new Intl.NumberFormat(intlLocale(locale));
+  const dash = t("receptionist.duration.none");
+  const show = (n: number | null) => (n === null ? dash : num.format(n));
+  const texted = autoTexted ?? 0;
+  const booked = bookedViaSms ?? 0;
+  const pct = texted > 0 ? Math.round((booked / texted) * 100) : 0;
+
+  const cards = [
+    { label: t("roi.missed"), icon: <PhoneMissed className="w-4 h-4 text-rose-400" />, value: show(missed), sub: t("roi.missedSub") },
+    { label: t("roi.autoTexted"), icon: <MessageSquare className="w-4 h-4 text-indigo-400" />, value: show(autoTexted), sub: t("roi.autoTextedSub") },
+    { label: t("roi.booked"), icon: <CalendarCheck className="w-4 h-4 text-emerald-400" />, value: show(bookedViaSms), sub: t("roi.bookedSub") },
+    {
+      label: t("roi.conversion"),
+      icon: <TrendingUp className="w-4 h-4 text-indigo-400" />,
+      value: autoTexted === null || bookedViaSms === null || texted === 0 ? dash : `${pct}%`,
+      sub:
+        texted === 0
+          ? t("roi.noTextsYet")
+          : t("roi.conversionSub", { booked: num.format(booked), total: num.format(texted), count: texted }),
+    },
+  ];
 
   return (
-    <section>
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="w-4 h-4 text-emerald-500" />
-        <h2 className="text-sm font-semibold text-slate-700">{t("roi.title")}</h2>
+    <div>
+      <p className="text-xs text-slate-500 mb-3">{t("receptionist.period", { count: periodDays })}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {cards.map((c) => (
+          <div key={c.label} className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{c.label}</span>
+              {c.icon}
+            </div>
+            <p className="text-2xl font-semibold text-slate-800 font-mono">{c.value}</p>
+            <p className="text-xs text-slate-400 mt-0.5">{c.sub}</p>
+          </div>
+        ))}
       </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("roi.autoTexted")}</span>
-            <PhoneMissed className="w-4 h-4 text-rose-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">{autoTexted}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("roi.autoTextedSub")}</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("roi.booked")}</span>
-            <CalendarCheck className="w-4 h-4 text-emerald-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">{bookedViaSms}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("roi.bookedSub")}</p>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("roi.conversion")}</span>
-            <TrendingUp className="w-4 h-4 text-indigo-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">
-            {autoTexted === 0 ? "—" : `${pct}%`}
-          </p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {autoTexted === 0
-              ? t("roi.noMissedCalls")
-              : t("roi.conversionSub", { booked: bookedViaSms, total: autoTexted, count: autoTexted })}
-          </p>
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }

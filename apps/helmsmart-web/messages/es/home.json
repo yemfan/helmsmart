@@ -454,17 +454,6 @@
   "comingSoon": {
     "eta": "Disponible en {{eta}}"
   },
-  "roi": {
-    "title": "Recuperación de llamadas perdidas: últimos 7 días",
-    "autoTexted": "SMS automáticos",
-    "autoTextedSub": "Llamadas perdidas con SMS de vuelta",
-    "booked": "Citas agendadas por SMS",
-    "bookedSub": "Citas recuperadas",
-    "conversion": "Conversión",
-    "noMissedCalls": "Aún no hay llamadas perdidas",
-    "conversionSub_one": "{{booked}} de {{total}} cliente potencial con cita",
-    "conversionSub_other": "{{booked}} de {{total}} clientes potenciales con cita"
-  },
   "revenueChart": {
     "empty": "Aún no hay datos de transacciones",
     "revenue": "Ingresos",

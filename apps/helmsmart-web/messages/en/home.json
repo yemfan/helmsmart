@@ -454,17 +454,6 @@
   "comingSoon": {
     "eta": "Coming {{eta}}"
   },
-  "roi": {
-    "title": "Missed-call recovery — last 7 days",
-    "autoTexted": "Auto-texted",
-    "autoTextedSub": "Missed calls texted back",
-    "booked": "Booked via SMS",
-    "bookedSub": "Appointments recovered",
-    "conversion": "Conversion",
-    "noMissedCalls": "No missed calls yet",
-    "conversionSub_one": "{{booked}} of {{total}} lead booked",
-    "conversionSub_other": "{{booked}} of {{total}} leads booked"
-  },
   "revenueChart": {
     "empty": "No transaction data yet",
     "revenue": "Revenue",
