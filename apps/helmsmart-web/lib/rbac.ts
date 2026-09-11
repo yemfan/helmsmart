@@ -26,9 +26,8 @@
  *   reports.read                ✓      ✓      ✓           ✓
  */
 
-import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { requireOrgMember } from "@/lib/auth/org-context";
 
 export type OrgRole = "owner" | "admin" | "bookkeeper" | "viewer";
 
@@ -94,28 +93,11 @@ export function hasPermission(role: OrgRole, permission: Permission): boolean {
 /**
  * Get the current user's role in the active org.
  * Returns null if not authenticated or not a member.
+ * Same lookup as `requireOrgMember()` — there is one membership check, not two.
  */
 export async function getMyRole(): Promise<OrgRole | null> {
-  try {
-    const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
-    if (!orgId) return null;
-
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
-
-    const { data: membership } = await supabase
-      .from("organization_members")
-      .select("role")
-      .eq("organization_id", orgId)
-      .eq("user_id", user.id)
-      .single();
-
-    return (membership?.role as OrgRole) ?? null;
-  } catch {
-    return null;
-  }
+  const access = await requireOrgMember();
+  return access.ok ? access.role : null;
 }
 
 /**

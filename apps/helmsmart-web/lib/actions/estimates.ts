@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import {
@@ -16,6 +15,7 @@ import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { money } from "@/lib/books-format";
 import { orgCurrency } from "@/lib/books-currency";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -41,8 +41,7 @@ export async function createEstimate(data: {
   const t = await getServerT("books");
   const denied = await checkActionPermission("invoices.write");
   if (denied) throw new Error(denied.error);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
@@ -74,8 +73,7 @@ export async function createEstimate(data: {
 
 export async function sendEstimate(estimateId: string) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
@@ -237,8 +235,7 @@ export async function setEstimateStatus(
   status: "accepted" | "declined" | "expired"
 ) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
@@ -254,8 +251,7 @@ export async function convertEstimateToInvoice(
   estimateId: string
 ): Promise<string> {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
@@ -281,8 +277,7 @@ export async function convertEstimateToProject(
   estimateId: string
 ): Promise<string> {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
@@ -378,8 +373,7 @@ function parseEstimate(raw: string): GeneratedEstimate {
 export async function generateEstimateLines(input: { prompt: string }): Promise<GeneratedEstimate> {
   const t = await getServerT("books");
   const locale = await getServerLocale();
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
   if (!input.prompt.trim()) throw new Error(t("estimates.errors.describeJob"));
 

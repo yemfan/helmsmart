@@ -1,13 +1,13 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { notifySlackApprovalPending } from "@/lib/integrations/slack";
 import { findCurrentPendingStep, computeApprovalTransition } from "@/lib/approval-state";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,8 +32,7 @@ export interface ApprovalWorkflow {
 // ─── Workflow CRUD ────────────────────────────────────────────────────────────
 
 export async function listApprovalWorkflows(): Promise<ApprovalWorkflow[]> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -56,8 +55,7 @@ export async function createApprovalWorkflow(input: {
   const denied = await checkActionPermission("settings.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
@@ -112,8 +110,7 @@ export async function updateApprovalWorkflow(
   const denied = await checkActionPermission("settings.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
@@ -165,8 +162,7 @@ export async function deleteApprovalWorkflow(
   const denied = await checkActionPermission("settings.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const db = await createServiceClient();
@@ -190,8 +186,7 @@ export async function submitApprovalRequest(input: {
   subjectLabel: string;
   subjectData?: Record<string, unknown>;
 }): Promise<{ ok: boolean; requestId?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const supabase = await createClient();
@@ -286,8 +281,7 @@ export async function respondToApprovalStep(
   decision: "approved" | "rejected",
   note?: string
 ): Promise<{ ok: boolean; error?: string; requestStatus?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("workflows"))("errors.unauthorized") };
 
   const supabase = await createClient();
@@ -420,8 +414,7 @@ export async function respondToApprovalStep(
 }
 
 export async function listApprovalRequests(status?: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -442,8 +435,7 @@ export async function listApprovalRequests(status?: string) {
 }
 
 export async function getApprovalRequest(requestId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();

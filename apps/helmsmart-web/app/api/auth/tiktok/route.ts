@@ -5,9 +5,9 @@
  * callback (never from a spoofable state param). Mirrors the LinkedIn start route.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getTikTokConfig, isTikTokConfigured, tiktokAuthorizeUrl } from "@/lib/tiktok";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET() {
   const { baseUrl } = getTikTokConfig();
@@ -15,8 +15,7 @@ export async function GET() {
     return NextResponse.redirect(`${baseUrl}/social?tiktok_error=not_configured`);
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const supabase = await createClient();
   const {
     data: { user },

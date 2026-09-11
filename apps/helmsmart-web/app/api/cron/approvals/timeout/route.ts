@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { notifySlackApprovalPending } from "@/lib/integrations/slack";
 
 export async function GET(request: NextRequest) {

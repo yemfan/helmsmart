@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET(request: NextRequest) {
   const q     = request.nextUrl.searchParams.get("q")?.trim() ?? "";
@@ -17,8 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ clients: [], invoices: [], transactions: [], messages: [], estimates: [], projects: [], tasks: [] });
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const supabase = await createClient();

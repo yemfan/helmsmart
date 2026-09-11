@@ -7,12 +7,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { replyLanguageRule, type Lang } from "@/lib/language";
 import { getServerLocale } from "@/lib/i18n/server";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function POST(request: NextRequest) {
   let clientId = "";
@@ -28,8 +28,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Pick a contact and say what you want to text." }, { status: 400 });
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
 
   const supabase = await createClient();

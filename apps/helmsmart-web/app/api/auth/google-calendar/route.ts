@@ -5,9 +5,9 @@
  * the callback (never from a spoofable state param).
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getGoogleCalendarConfig, GOOGLE_CALENDAR_SCOPES, isGoogleCalendarConfigured } from "@/lib/google-calendar";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET() {
   const { clientId, redirectUri, baseUrl } = getGoogleCalendarConfig();
@@ -16,8 +16,7 @@ export async function GET() {
     return NextResponse.redirect(`${baseUrl}/voice?gcal_error=not_configured`);
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const supabase = await createClient();
   const {
     data: { user },

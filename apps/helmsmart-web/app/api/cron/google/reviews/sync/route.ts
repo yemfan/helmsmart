@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { syncGoogleBusinessReviews } from "@/lib/google-business";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 

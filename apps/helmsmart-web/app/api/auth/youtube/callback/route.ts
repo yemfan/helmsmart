@@ -14,6 +14,7 @@ import {
   encryptYouTubeToken,
   YOUTUBE_SCOPES,
 } from "@/lib/youtube";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET(req: Request) {
   const { baseUrl } = getYouTubeConfig();
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
     if (oauthError) return back(`youtube_error=${encodeURIComponent(oauthError)}`);
 
     const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     const stateCookie = cookieStore.get("youtube_oauth_state")?.value;
     const supabase = await createClient();
     const {

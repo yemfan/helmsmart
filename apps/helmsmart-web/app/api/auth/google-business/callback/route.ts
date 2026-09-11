@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getGoogleBusinessConfig } from "@/lib/google-business";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET(req: Request) {
   const { clientId, clientSecret, redirectUri, baseUrl } = getGoogleBusinessConfig();
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
     if (oauthError) return back(`gmb_error=${encodeURIComponent(oauthError)}`);
 
     const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     const stateCookie = cookieStore.get("gmb_oauth_state")?.value;
     const supabase = await createClient();
     const {

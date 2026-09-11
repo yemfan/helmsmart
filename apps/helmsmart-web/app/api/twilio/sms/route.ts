@@ -15,7 +15,7 @@ import { OPT_OUT_REASON, shouldStartMessaging, shouldStopMessaging } from "@helm
 import { checkConsent, clearSmsOptOut, recordSmsOptOut } from "@/lib/consent";
 import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import type { MessageSender } from "@/lib/message-provenance";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { analyzeInbound, translateTo, localizeOutbound, intentLabel, replyLanguageRule, type Lang } from "@/lib/language";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";

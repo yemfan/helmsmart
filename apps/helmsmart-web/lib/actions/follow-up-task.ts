@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { normalizePhoneE164 } from "@/lib/phone";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
  * Create a follow-up task for a pipeline client, with a suggested text to send.
@@ -21,7 +21,7 @@ import { normalizePhoneE164 } from "@/lib/phone";
 export async function createFollowUpTask(
   clientId: string,
 ): Promise<{ status: "created" | "no_phone" | "error" }> {
-  const orgId = (await cookies()).get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { status: "error" };
   const supabase = await createClient();
 

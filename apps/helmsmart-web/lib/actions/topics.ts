@@ -10,11 +10,11 @@
  * Anthropic conventions in lib/actions/social.ts.
  */
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -33,8 +33,7 @@ export type SocialTopic = {
 const TOPIC_COLS = "id, topic, theme, source, status, used_count, created_at";
 
 async function requireOrgId(): Promise<string> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
   return orgId;
 }

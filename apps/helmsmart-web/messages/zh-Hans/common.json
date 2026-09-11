@@ -17,6 +17,12 @@
     "readOnlyBody": "你的角色（{{role}}）没有在此处进行修改的权限。如需权限，请联系管理员。",
     "denied": "你没有执行此操作的权限。请向所有者或管理员申请。"
   },
+  "orgAccess": {
+    "notSignedIn": "你的登录已过期。请重新登录后继续。",
+    "noOrg": "尚未选择企业。请打开控制台后重试。",
+    "notMember": "你无权访问此企业。请切换到你所属的企业，或向其所有者申请邀请。",
+    "lookupFailed": "暂时无法确认你对此企业的访问权限。请稍后重试。"
+  },
   "aiRoles": {
     "AI Chief Operating Officer": "AI 首席运营官",
     "AI Chief Information Officer": "AI 首席信息官",

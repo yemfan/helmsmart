@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { EstimateLine } from "@/lib/actions/estimates";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type EstimateTemplate = {
   id: string;
@@ -15,8 +15,7 @@ export type EstimateTemplate = {
 };
 
 async function getOrgId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get("helmsmart-org-id")?.value ?? null;
+  return getMemberOrgId();
 }
 
 export async function listEstimateTemplates(): Promise<EstimateTemplate[]> {

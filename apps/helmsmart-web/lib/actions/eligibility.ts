@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getActivePack } from "@/lib/packs";
 import { checkEligibility, type EligibilityResult } from "@/lib/integrations/stedi";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
  * Run a real-time insurance eligibility check for a patient and store the result.
@@ -16,8 +16,7 @@ export async function checkPatientEligibility(clientId: string): Promise<Eligibi
     throw new Error("Eligibility checks are a DoctorSmart feature.");
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("Not authenticated");
 
   const supabase = await createClient();
@@ -76,8 +75,7 @@ export async function updateClientInsurance(
   const pack = await getActivePack();
   if (pack.id !== "medical") throw new Error("Insurance is a DoctorSmart feature.");
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("Not authenticated");
 
   const supabase = await createClient();
@@ -101,8 +99,7 @@ export async function updateOrgNpi(npi: string): Promise<void> {
   const pack = await getActivePack();
   if (pack.id !== "medical") throw new Error("NPI is a DoctorSmart feature.");
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("Not authenticated");
 
   const supabase = await createClient();

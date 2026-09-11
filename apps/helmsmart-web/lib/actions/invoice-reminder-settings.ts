@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function saveReminderSettings(input: {
   autoSend: boolean;
@@ -11,8 +11,7 @@ export async function saveReminderSettings(input: {
   maxCount: number;
 }): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("invoices.errors.notAuthenticated") };
 
   const db = await createServiceClient();

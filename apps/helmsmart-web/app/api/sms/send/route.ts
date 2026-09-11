@@ -8,10 +8,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { sendSmsAsOrg, toSendMessageResult } from "@/lib/outbound-send";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const STATUS: Record<string, number> = {
   opted_out: 403,
@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
   if (!to) return NextResponse.json({ success: false, error: t("errors.noPhone") }, { status: 400 });
   if (!body) return NextResponse.json({ success: false, error: t("errors.emptyMessage") }, { status: 400 });
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return NextResponse.json({ success: false, error: t("errors.noOrganization") }, { status: 401 });
 
   const supabase = await createClient();

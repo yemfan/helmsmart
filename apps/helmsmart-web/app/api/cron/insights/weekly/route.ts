@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { generateBusinessInsight } from "@/lib/business-insights";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { userUiLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/server";
 import { DEFAULT_CURRENCY } from "@/lib/books-format";

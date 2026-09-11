@@ -19,7 +19,7 @@ vi.mock("twilio", () => ({ default: () => ({ messages: { create: twilioCreate } 
 vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(), FROM_ADDRESS: "noreply@example.com" }));
 vi.mock("@/lib/supabase/server", () => ({ createServiceClient: vi.fn() }));
 vi.mock("@/lib/i18n/userLocale", () => ({ orgWriteLocale: async () => null, userUiLocales: async () => new Map() }));
-vi.mock("@/lib/actions/notifications", () => ({ createNotificationService: vi.fn() }));
+vi.mock("@/lib/notifications-service", () => ({ createNotificationService: vi.fn() }));
 vi.mock("@/lib/booking", () => ({ matchOrCreateClient: async () => "c1", getAvailability: vi.fn(), bookAppointment: vi.fn() }));
 vi.mock("@/lib/workforce-attribution", () => ({ recordEmmaBooking: vi.fn() }));
 vi.mock("@/lib/org-recipients", () => ({ orgOwnerRecipients: async () => [] }));

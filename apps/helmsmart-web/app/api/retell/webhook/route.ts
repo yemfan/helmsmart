@@ -25,7 +25,7 @@ import { matchOrCreateClient } from "@/lib/booking";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import { attributeCallToEmma } from "@/lib/workforce-attribution";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { classifyMissed } from "@/lib/missed-call";
 import { logCallCommunication } from "@/lib/integrations/communication-auto-logger";
 import { notifySlackMissedCall } from "@/lib/integrations/slack";

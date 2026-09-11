@@ -6,9 +6,10 @@
  * route.
  */
 import { NextResponse } from "next/server";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getMetaConfig, isMetaConfigured, metaAuthUrl } from "@/lib/meta";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET() {
   // Verticals are host-routed, so everything here must stay on the host the
@@ -21,8 +22,7 @@ export async function GET() {
     return NextResponse.redirect(`${baseUrl}/social?meta_error=not_configured`);
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const supabase = await createClient();
   const {
     data: { user },

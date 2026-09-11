@@ -14,6 +14,12 @@
     "readOnlyBody": "Su rol ({{role}}) no tiene permiso para hacer cambios aquí. Solicite acceso a un administrador.",
     "denied": "No tiene permiso para hacer esto. Solicite acceso al propietario o a un administrador."
   },
+  "orgAccess": {
+    "notSignedIn": "Su sesión ha terminado. Inicie sesión de nuevo para continuar.",
+    "noOrg": "No hay ningún negocio seleccionado. Abra su panel e inténtelo de nuevo.",
+    "notMember": "No tiene acceso a este negocio. Cambie a uno al que pertenezca o pida una invitación a su propietario.",
+    "lookupFailed": "No pudimos confirmar su acceso a este negocio. Inténtelo de nuevo en un momento."
+  },
   "aiRoles": {
     "AI Chief Operating Officer": "Director de operaciones con IA",
     "AI Chief Information Officer": "Director de información con IA",

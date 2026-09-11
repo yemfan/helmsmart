@@ -7,8 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 function csvEscape(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return "";
@@ -24,8 +24,7 @@ function row(...cols: (string | number | null | undefined)[]): string {
 }
 
 export async function GET(request: NextRequest) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const { searchParams } = request.nextUrl;

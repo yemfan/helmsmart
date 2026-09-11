@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
 import { updateOrg as writeOrg } from "@/lib/actions/org-update";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type SettingsState = { error?: string; success?: boolean } | null;
 
@@ -15,8 +15,7 @@ export async function updateOrg(
   formData: FormData
 ): Promise<SettingsState> {
   const t = await getServerT("settings");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -53,8 +52,7 @@ export async function saveBillingRates(input: {
   laborCostRate: number | null;
 }): Promise<SettingsState> {
   const t = await getServerT("settings");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();

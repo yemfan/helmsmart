@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
 import twilio from "twilio";
 

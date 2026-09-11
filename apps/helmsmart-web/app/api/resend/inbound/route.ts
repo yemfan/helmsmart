@@ -20,7 +20,7 @@ import { translatorFor } from "@/lib/i18n/translator";
 import { Resend } from "resend";
 import { outcomeForLog, sendEmailGuarded } from "@/lib/outbound-send";
 import { createServiceClient } from "@/lib/supabase/server";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { analyzeInbound, translateTo, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 

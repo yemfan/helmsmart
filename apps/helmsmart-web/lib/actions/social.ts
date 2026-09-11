@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -13,6 +12,7 @@ import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-pla
 // in the module.
 import type { Platform } from "@/lib/social-platforms";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
@@ -259,8 +259,7 @@ export async function createSocialPost(data: {
   /** Public image URL (from uploadSocialImage). Required for Instagram. */
   mediaUrl?: string | null;
 }) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
 
   // Instagram has no text-only post — refuse here rather than let it sit queued and
@@ -294,8 +293,7 @@ export async function updateSocialPost(postId: string, data: {
   scheduledAt?: string | null;
   publishedUrl?: string | null;
 }) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
 
   const supabase = await createClient();
@@ -325,8 +323,7 @@ export async function updateSocialPost(postId: string, data: {
 export async function publishSocialPost(
   postId: string,
 ): Promise<{ ok: boolean; error?: string; url?: string | null }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
 
   const supabase = await createClient();
@@ -382,8 +379,7 @@ export async function publishSocialPost(
 // ─── Delete post ──────────────────────────────────────────────────────────────
 
 export async function deleteSocialPost(postId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
 
   const supabase = await createClient();
@@ -401,8 +397,7 @@ export async function saveVoiceSettings(data: {
   prompt: string;
   bookingAlertPhone?: string;
 }) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error("No org");
 
   // Store the alert number in E.164, because that is what Twilio is handed. A

@@ -1,8 +1,8 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createNotification } from "./notifications";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
  * Checks whether a project has newly crossed a budget threshold (80% / 100%
@@ -16,8 +16,7 @@ import { createNotification } from "./notifications";
  * import with expenses.ts, which calls this from createExpense.
  */
 export async function checkProjectBudgetAlert(projectId: string): Promise<void> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return;
 
   const supabase = await createClient();

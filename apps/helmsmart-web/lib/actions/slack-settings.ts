@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { notifySlack } from "@/lib/integrations/slack";
 import { updateOrg } from "@/lib/actions/org-update";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // Both writes go through `updateOrg`: the RLS client, with the changed rows
 // asked back. They used the service client and discarded the result, so a
@@ -18,8 +18,7 @@ export async function saveSlackWebhook(
   webhookUrl: string
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("settings");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
   // Basic URL validation
@@ -50,8 +49,7 @@ export async function saveSlackNotifyToggle(
   value: boolean
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("settings");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
   const res = await updateOrg(orgId, { [field]: value }, "slack-settings.saveSlackNotifyToggle");
@@ -66,8 +64,7 @@ export async function saveSlackNotifyToggle(
  */
 export async function testSlackWebhook(): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("settings");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
   // This lands in the owner's own workspace, not a customer's inbox, so it

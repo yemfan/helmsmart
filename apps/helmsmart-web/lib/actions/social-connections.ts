@@ -6,10 +6,10 @@
  * this is the counterpart the Settings → Marketing UI calls to disconnect.
  */
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const PROVIDERS = new Set(["linkedin", "meta", "threads", "tiktok", "youtube"]);
 
@@ -19,8 +19,7 @@ export async function disconnectSocialProvider(
   const t = await getServerT("marketing");
   if (!PROVIDERS.has(provider)) return { ok: false, error: t("errors.social.unknownChannel") };
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   const db = await createClient();

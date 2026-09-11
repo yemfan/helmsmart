@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { syncEventToGoogle, deleteGoogleEvent, isGoogleCalendarConnected } from "@/lib/google-calendar";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function createEvent(data: {
   title: string;
@@ -17,8 +17,7 @@ export async function createEvent(data: {
   allDay: boolean;
   clientId?: string | null;
 }) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
@@ -87,8 +86,7 @@ export async function updateEvent(
     client_id: string | null;
   }>
 ) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
 
   const supabase = await createClient();
@@ -135,8 +133,7 @@ export async function updateEvent(
 
 export async function deleteEvent(eventId: string): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("tasks");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrg") };
 
   const supabase = await createClient();
@@ -181,8 +178,7 @@ export async function toggleEventComplete(
   completed: boolean,
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("tasks");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrg") };
 
   const supabase = await createClient();

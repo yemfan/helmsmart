@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
@@ -9,6 +8,7 @@ import {
   deleteClientNote as deleteClientNoteKnowledge,
   type NoteKind,
 } from "@helm/dna-knowledge";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // NOTE: this is a "use server" module — it may only export async functions.
 // NoteKind is re-exported for consumers from @helm/dna-knowledge directly;
@@ -21,8 +21,7 @@ export async function addClientNote(
   body: string,
   kind: NoteKind = "note"
 ): Promise<{ id: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   // The notes panel renders `err.message` verbatim, so this string is copy the
   // owner reads — not an internal code. Server actions run inside a request,
   // so `getServerT` resolves their language here the same way a page does.
@@ -46,8 +45,7 @@ export async function deleteClientNote(
   clientId: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const supabase = await createClient();
