@@ -7,7 +7,17 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { toJsonSchema } from "../json-schema";
 import { createAskEventParser, encodeAskEvent, historyForModel, sanitizeHistory } from "../ask-stream";
-import { effectiveStatus, isExpired, pickDetails, toApprovalView, type ApprovalView } from "../approval-view";
+import {
+  approvalFingerprint,
+  effectiveStatus,
+  isExpired,
+  isUnconfirmed,
+  pickDetails,
+  toApprovalView,
+  type ApprovalDetails,
+  type ApprovalRow,
+  type ApprovalView,
+} from "../approval-view";
 import { announceApprovalsChanged, applyApprovalDelta, onApprovalsChanged } from "@/lib/approval-events";
 import { textProposal } from "./seed";
 
@@ -117,6 +127,56 @@ describe("the approval view", () => {
     expect(view).toMatchObject({ status: "proposed", executable: true, editable: true, employee: { name: "Sarah", avatar: "persona-05" } });
     const manual = toApprovalView(textProposal({ action_key: "service.book_appointment" }), {}, now);
     expect(manual).toMatchObject({ executable: false, editable: false });
+  });
+
+  it("calls an approved send unconfirmed only once it had time to finish and didn't", () => {
+    const approved = (over: Partial<ApprovalRow>) =>
+      textProposal({ status: "approved", decided_at: "2026-09-11T16:30:00.000Z", decided_by: "u", ...over });
+    // 30 minutes, no outcome: it didn't finish.
+    expect(isUnconfirmed(approved({}), now)).toBe(true);
+    expect(effectiveStatus(approved({}), now)).toBe("unconfirmed");
+    expect(toApprovalView(approved({}), {}, now)).toMatchObject({ status: "unconfirmed", dismissed: false });
+    // 14 minutes: may still be sending.
+    expect(isUnconfirmed(approved({ decided_at: "2026-09-11T16:46:00.000Z" }), now)).toBe(false);
+    expect(effectiveStatus(approved({ decided_at: "2026-09-11T16:46:00.000Z" }), now)).toBe("approved");
+    // It reported back — either way.
+    expect(isUnconfirmed(approved({ executed_at: "2026-09-11T16:30:05.000Z" }), now)).toBe(false);
+    expect(isUnconfirmed(approved({ error: "Priya opted out." }), now)).toBe(false);
+    // A manual row's approval IS its end state.
+    expect(isUnconfirmed(approved({ action_key: "service.book_appointment" }), now)).toBe(false);
+    // Not approved at all.
+    expect(isUnconfirmed(textProposal({ created_at: "2026-09-11T10:00:00.000Z" }), now)).toBe(false);
+    // Once dismissed it is failed, and the card knows it may have gone.
+    const dismissed = approved({ status: "failed", error: "Dismissed…", result: { status: "unconfirmed" } });
+    expect(toApprovalView(dismissed, {}, now)).toMatchObject({ status: "failed", dismissed: true });
+    expect(toApprovalView(approved({ status: "failed", result: { status: "rejected" } }), {}, now).dismissed).toBe(false);
+  });
+});
+
+describe("the approval fingerprint", () => {
+  const shown = pickDetails(textProposal().details);
+  const fp = (d: Partial<ApprovalDetails>) => approvalFingerprint("text_client", { ...shown, ...d });
+
+  it("is stable, and blind to whitespace around the message and to descriptive fields", () => {
+    expect(fp({})).toMatch(/^[0-9a-f]{64}$/);
+    expect(fp({ message: "  Running 10 minutes late!\n" })).toBe(fp({}));
+    expect(fp({ clientName: "P. Shah", daysOverdue: 3 })).toBe(fp({}));
+  });
+
+  it("changes with the recipient, the destination, the amount, the invoice and the message", () => {
+    const base = fp({});
+    for (const change of [
+      { clientId: "aaaaaaaa-0000-4000-8000-000000000001" },
+      { phone: "(415) 555-0999" },
+      { email: "priya@example.com" },
+      { amount: 1200 },
+      { currency: "EUR" },
+      { invoiceId: "bbbbbbbb-0000-4000-8000-000000001042" },
+      { message: "Running 15 minutes late!" },
+    ]) {
+      expect(fp(change), JSON.stringify(change)).not.toBe(base);
+    }
+    expect(approvalFingerprint("send_invoice_reminder", shown)).not.toBe(base);
   });
 });
 

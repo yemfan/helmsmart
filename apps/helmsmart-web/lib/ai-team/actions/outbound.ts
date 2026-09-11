@@ -52,19 +52,44 @@ export const sendInvoiceReminder = defineAction({
   }),
   subjectOf: (p: { invoice_id: string }) => ({ type: "invoice" as const, id: p.invoice_id }),
   async preview({ invoice_id }, ctx) {
+    const t = ctx.i18n.home;
     const inv = await orgInvoice(ctx.db, ctx.orgId, invoice_id);
-    if (!inv) return { ok: false, reason: "No invoice with that id in this business. Use list_overdue_invoices." };
+    if (!inv) {
+      return {
+        ok: false,
+        reason: "No invoice with that id in this business. Use list_overdue_invoices.",
+        ownerReason: t("aiApprovals.errors.invoiceGone"),
+      };
+    }
     if (!UNPAID_INVOICE_STATUSES.includes(inv.status)) {
-      return { ok: false, reason: `${inv.invoice_number} is ${inv.status}, not waiting on payment — there is nothing to remind.` };
+      return {
+        ok: false,
+        reason: `${inv.invoice_number} is ${inv.status}, not waiting on payment — there is nothing to remind.`,
+        ownerReason: t("aiApprovals.errors.notUnpaid", { invoice: inv.invoice_number }),
+      };
     }
     const client = await orgClient(ctx.db, ctx.orgId, inv.client_id);
-    if (!client) return { ok: false, reason: `${inv.invoice_number} has no client in this business to remind.` };
+    if (!client) {
+      return {
+        ok: false,
+        reason: `${inv.invoice_number} has no client in this business to remind.`,
+        ownerReason: t("aiApprovals.errors.clientGone"),
+      };
+    }
     const name = clientName(client);
     if (!client.email) {
-      return { ok: false, reason: `${name} has no email address on file, so a payment reminder can't be sent. Suggest the owner adds one.` };
+      return {
+        ok: false,
+        reason: `${name} has no email address on file, so a payment reminder can't be sent. Suggest the owner adds one.`,
+        ownerReason: t("aiApprovals.errors.noEmail", { name }),
+      };
     }
     if (inv.last_reminder_sent_at?.slice(0, 10) === ctx.today) {
-      return { ok: false, reason: `${name} was already reminded about ${inv.invoice_number} today.` };
+      return {
+        ok: false,
+        reason: `${name} was already reminded about ${inv.invoice_number} today.`,
+        ownerReason: t("aiApprovals.errors.remindedToday", { name, invoice: inv.invoice_number }),
+      };
     }
     const amount = moneyFormatter(ctx.locale, ctx.currency)(Number(inv.total));
     return {
@@ -73,9 +98,11 @@ export const sendInvoiceReminder = defineAction({
       subject: { type: "invoice", id: inv.id },
       details: {
         kind: "invoice_reminder",
+        clientId: client.id,
         clientName: name,
         email: client.email,
         phone: client.phone ? formatPhoneDisplay(client.phone) : null,
+        invoiceId: inv.id,
         invoiceNumber: inv.invoice_number,
         amount: Number(inv.total),
         currency: ctx.currency,
@@ -154,18 +181,32 @@ export const textClient = defineAction({
     message: typeof edits.message === "string" ? edits.message : params.message,
   }),
   async preview({ client_id, message }, ctx) {
+    const t = ctx.i18n.home;
     const client = await orgClient(ctx.db, ctx.orgId, client_id);
-    if (!client) return { ok: false, reason: "That client id is not a client of this business. Look them up with find_clients." };
+    if (!client) {
+      return {
+        ok: false,
+        reason: "That client id is not a client of this business. Look them up with find_clients.",
+        ownerReason: t("aiApprovals.errors.clientGone"),
+      };
+    }
     const name = clientName(client);
-    if (!client.phone) return { ok: false, reason: `${name} has no phone number on file, so they can't be texted.` };
+    if (!client.phone) {
+      return {
+        ok: false,
+        reason: `${name} has no phone number on file, so they can't be texted.`,
+        ownerReason: t("aiApprovals.errors.noPhone", { name }),
+      };
+    }
+    // Already a sentence in the owner's language (describeDenial / consentUnavailable).
     const refusal = await smsRefusal(ctx, client);
-    if (refusal) return { ok: false, reason: `${name} can't be texted: ${refusal}` };
+    if (refusal) return { ok: false, reason: `${name} can't be texted: ${refusal}`, ownerReason: refusal };
     const phone = formatPhoneDisplay(client.phone);
     return {
       ok: true,
       summary: `${nameOf(ctx, "sarah")} will text ${name} at ${phone}`,
       subject: { type: "contact", id: client.id },
-      details: { kind: "text", clientName: name, phone, message },
+      details: { kind: "text", clientId: client.id, clientName: name, phone, message },
     };
   },
   async execute({ client_id, message }, ctx) {

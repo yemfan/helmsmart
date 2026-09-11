@@ -4,12 +4,13 @@ import { useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Avatar } from "@helm/ui";
-import { decideApproval } from "@/lib/actions/approvals";
+import { decideApproval, dismissUnconfirmedApproval } from "@/lib/actions/approvals";
 import { announceApprovalsChanged } from "@/lib/approval-events";
 import { moneyFormatter } from "@/lib/books-format";
 import {
   ACTION_KEYS,
   MESSAGE_MAX,
+  approvalFingerprint,
   type ApprovalView,
   type DecideApprovalResult,
 } from "@/lib/ai-team/approval-view";
@@ -25,6 +26,11 @@ import {
  * it didn't go (an opt-out, a missing email) below the buttons in rose. A
  * decision is final, so the confirmation stays on the button rather than
  * fading back to "Approve".
+ *
+ * Approving sends a fingerprint of exactly what this card shows (recipient,
+ * number or email, amount, and the message as typed); the server refuses if
+ * that is no longer what would go out. A send that never reported back is
+ * shown as unconfirmed and can only be dismissed — never re-sent.
  */
 export function ApprovalCard({
   approval,
@@ -43,7 +49,7 @@ export function ApprovalCard({
 
   const [view, setView] = useState(approval);
   const [message, setMessage] = useState(approval.details.message ?? "");
-  const [pending, setPending] = useState<"approve" | "decline" | null>(null);
+  const [pending, setPending] = useState<"approve" | "decline" | "dismiss" | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     setView(approval);
@@ -61,7 +67,20 @@ export function ApprovalCard({
         : view.summary;
 
   const proposed = view.status === "proposed";
-  const shownError = error ?? (view.status === "failed" ? view.error : null);
+  const unconfirmed = view.status === "unconfirmed";
+  // A dismissed send isn't a failure to act on — its note reads in slate below.
+  const shownError = error ?? (view.status === "failed" && !view.dismissed ? view.error : null);
+
+  function settle(res: DecideApprovalResult, wasWaiting: boolean) {
+    if (res.view) {
+      setView(res.view);
+      onDecided?.(res.view);
+      if (wasWaiting && res.view.status !== "proposed") announceApprovalsChanged(-1);
+    }
+    // Already translated where it was written (the server action).
+    if (!res.ok) setError(res.error);
+    if (refreshOnDecide) router.refresh();
+  }
 
   async function decide(decision: "approve" | "decline") {
     if (pending || !proposed) return;
@@ -69,11 +88,16 @@ export function ApprovalCard({
       setError(t("aiApprovals.errors.emptyMessage"));
       return;
     }
+    // What this card shows, with the message as the owner left it.
+    const fingerprint =
+      decision === "approve" && view.executable
+        ? approvalFingerprint(view.actionKey, { ...d, message: view.editable ? message : d.message })
+        : undefined;
     setPending(decision);
     setError(null);
     let res: DecideApprovalResult;
     try {
-      res = await decideApproval(view.id, decision, view.editable ? { message } : undefined);
+      res = await decideApproval(view.id, decision, { message: view.editable ? message : undefined, fingerprint });
     } catch (e) {
       console.error("deciding an approval", e);
       setPending(null);
@@ -81,14 +105,25 @@ export function ApprovalCard({
       return;
     }
     setPending(null);
-    if (res.view) {
-      setView(res.view);
-      onDecided?.(res.view);
-      if (res.view.status !== "proposed") announceApprovalsChanged(-1);
+    settle(res, true);
+  }
+
+  async function dismiss() {
+    if (pending || !unconfirmed) return;
+    setPending("dismiss");
+    setError(null);
+    let res: DecideApprovalResult;
+    try {
+      res = await dismissUnconfirmedApproval(view.id);
+    } catch (e) {
+      console.error("dismissing an unconfirmed approval", e);
+      setPending(null);
+      setError(t("aiApprovals.errors.network"));
+      return;
     }
-    // Already translated where it was written (the server action).
-    if (!res.ok) setError(res.error);
-    if (refreshOnDecide) router.refresh();
+    setPending(null);
+    // It was never in the waiting count, so the badge doesn't move.
+    settle(res, false);
   }
 
   const approveLabel =
@@ -99,7 +134,10 @@ export function ApprovalCard({
       : view.status === "executed"
         ? t("aiApprovals.card.sent")
         : view.status === "approved"
-          ? t("aiApprovals.card.done")
+          ? // Someone's approval is sending right now; a manual row's approval is its end.
+            view.executable
+            ? t("aiApprovals.card.approving")
+            : t("aiApprovals.card.done")
           : view.executable
             ? t("aiApprovals.card.approve")
             : t("aiApprovals.card.markDone");
@@ -152,10 +190,24 @@ export function ApprovalCard({
             <p className="text-xs text-slate-500">{t("aiApprovals.card.manualHint", { who })}</p>
           ) : null}
           {view.status === "expired" ? <p className="text-xs text-slate-500">{t("aiApprovals.card.expired")}</p> : null}
+          {unconfirmed ? <p className="text-xs font-medium text-amber-700">{t("aiApprovals.card.unconfirmed")}</p> : null}
         </div>
       </div>
 
-      {view.status !== "expired" && view.status !== "failed" ? (
+      {unconfirmed ? (
+        // No retry: it may already have reached the customer.
+        <div className="mt-2.5 flex flex-wrap items-center gap-2 pl-0 sm:pl-[38px]">
+          <button
+            type="button"
+            onClick={() => void dismiss()}
+            disabled={!!pending}
+            aria-describedby={shownError ? `${messageId}-error` : undefined}
+            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+          >
+            {pending === "dismiss" ? t("aiApprovals.card.dismissing") : t("aiApprovals.card.dismiss")}
+          </button>
+        </div>
+      ) : view.status !== "expired" && view.status !== "failed" ? (
         <div className="mt-2.5 flex flex-wrap items-center gap-2 pl-0 sm:pl-[38px]">
           {view.status !== "declined" ? (
             <button
@@ -188,8 +240,12 @@ export function ApprovalCard({
           ) : null}
         </div>
       ) : view.status === "failed" ? (
-        <p className="mt-2 text-xs font-medium text-slate-500 sm:pl-[38px]">{t("aiApprovals.card.failed")}</p>
+        <p className="mt-2 text-xs font-medium text-slate-500 sm:pl-[38px]">
+          {view.dismissed ? t("aiApprovals.card.dismissed") : t("aiApprovals.card.failed")}
+        </p>
       ) : null}
+
+      {view.dismissed && view.error ? <p className="mt-1 text-xs text-slate-500 sm:pl-[38px]">{view.error}</p> : null}
 
       {shownError ? (
         <p id={`${messageId}-error`} className="mt-1.5 text-xs text-rose-600 sm:pl-[38px]" role="alert">

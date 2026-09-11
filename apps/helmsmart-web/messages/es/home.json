@@ -295,7 +295,11 @@
       "done": "Hecho",
       "manualHint": "{{who}} todavía no puede hacer esto desde aquí: encárguese usted y luego márquelo como hecho.",
       "expired": "Expiró: esta propuesta tiene más de 7 días. Pregúntele de nuevo a Mark si todavía hace falta.",
-      "failed": "No se envió"
+      "failed": "No se envió",
+      "unconfirmed": "No pudimos confirmar que se envió. Revise la conversación antes de intentarlo de nuevo.",
+      "dismiss": "Descartar",
+      "dismissing": "Descartando…",
+      "dismissed": "Descartado"
     },
     "errors": {
       "notFound": "Esa propuesta ya no existe.",
@@ -312,7 +316,12 @@
       "clientGone": "Ese cliente ya no está en este negocio.",
       "invoiceGone": "Esa factura ya no está en este negocio.",
       "unavailable": "Las aprobaciones no están disponibles en este momento. Inténtelo más tarde.",
-      "network": "Error de red. Inténtelo de nuevo."
+      "network": "Error de red. Inténtelo de nuevo.",
+      "changed": "Esta propuesta cambió después de que se la mostramos, así que no se envió nada. Pregúntele de nuevo a Mark.",
+      "remindedToday": "A {{name}} ya se le recordó {{invoice}} hoy, así que no se envió ningún recordatorio.",
+      "dismissedUnconfirmed": "Se descartó sin confirmar si se envió. Revise la conversación antes de pedírselo de nuevo a Mark.",
+      "stillSending": "Esto todavía se está enviando. Vuelva a revisar en unos minutos.",
+      "nothingToDismiss": "No hay nada que descartar: esto ya terminó."
     },
     "handoff": {
       "nextStep": "Siguiente paso: {{step}}"

@@ -294,7 +294,11 @@
       "done": "已完成",
       "manualHint": "{{who}} 暂时无法在这里完成这件事 —— 请你亲自处理，然后标记为已完成。",
       "expired": "已过期 —— 这项提议已超过 7 天。如果仍然需要，请再问一次 Mark。",
-      "failed": "未发送"
+      "failed": "未发送",
+      "unconfirmed": "我们无法确认这条是否已发出 —— 请先查看对话记录，再决定是否重试。",
+      "dismiss": "忽略",
+      "dismissing": "处理中…",
+      "dismissed": "已忽略"
     },
     "errors": {
       "notFound": "这项提议已不存在。",
@@ -311,7 +315,12 @@
       "clientGone": "该客户已不在这家公司的客户列表中。",
       "invoiceGone": "该发票已不在这家公司名下。",
       "unavailable": "审批功能暂时不可用，请稍后再试。",
-      "network": "网络错误，请再试一次。"
+      "network": "网络错误，请再试一次。",
+      "changed": "这项提议在显示给你之后被改动过，所以没有发送任何内容。请再问一次 Mark。",
+      "remindedToday": "{{name}} 今天已经收到过 {{invoice}} 的提醒，所以没有再次发送。",
+      "dismissedUnconfirmed": "已忽略，但无法确认是否已发出。再问 Mark 之前，请先查看对话记录。",
+      "stillSending": "这项操作仍在发送中，请过几分钟再查看。",
+      "nothingToDismiss": "没有需要忽略的内容 —— 这项操作已经结束。"
     },
     "handoff": {
       "nextStep": "下一步：{{step}}"

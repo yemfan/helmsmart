@@ -1,7 +1,7 @@
 /**
  * A small in-memory stand-in for the Supabase query builder — enough of it for
  * the AI team's actions and approvals: select / insert / update with eq, neq,
- * in, lt/lte/gt/gte, ilike, a PostgREST `or(...)` of ilikes, order, limit,
+ * is, in, lt/lte/gt/gte, ilike, a PostgREST `or(...)` of ilikes, order, limit,
  * single / maybeSingle, head counts, and `select()` after a write returning
  * the rows it touched.
  *
@@ -88,6 +88,11 @@ class Query implements PromiseLike<{ data: unknown; error: { message: string } |
   }
   neq(c: string, v: unknown) {
     this.filters.push((r) => r[c] !== v);
+    return this;
+  }
+  /** `is.null` / `is.true` — a missing column reads as null, as in Postgres. */
+  is(c: string, v: null | boolean) {
+    this.filters.push((r) => (r[c] ?? null) === v);
     return this;
   }
   in(c: string, vs: unknown[]) {
