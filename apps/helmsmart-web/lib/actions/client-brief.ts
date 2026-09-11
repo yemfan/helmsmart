@@ -184,10 +184,20 @@ export async function generateClientBrief(
   // 2026-10-11" it wrote "overdue on October 10": a draft has not been sent, so
   // it cannot be late, and a due date is stated relative to today so there is
   // no date arithmetic left for it to get wrong.
-  // A date the model may repeat is given with its weekday, so it never works
-  // one out: it once paired a note's "sábado" with the task's 18th, a Friday.
+  // A date the model may repeat is written out the way the reader writes one,
+  // weekday included ("viernes, 18 de septiembre de 2026"). The model copies
+  // the format it is given — ISO dates ended up in the prose — and a weekday
+  // inside the date is one it cannot pair with a different day.
   const withWeekday = (date: string) =>
-    `${new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" })} ${date}`;
+    new Date(`${date}T12:00:00Z`).toLocaleDateString(intlLocale(locale), {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  // The app's own status word, so the prose does not quote "DRAFT" in English.
+  const invoiceStatus = (status: string) => t(`invoiceStatus.${status}`, { defaultValue: status });
   const daysFromToday = (date: string) => Math.round((Date.parse(date) - Date.parse(today)) / 86_400_000);
   const dueNote = (date: string) => {
     const days = daysFromToday(date);
@@ -196,8 +206,8 @@ export async function generateClientBrief(
   };
   const invoiceLine = (i: { invoice_number: string; status: string; total: number | string; due_date: string }) =>
     i.status === "draft"
-      ? `- ${i.invoice_number}: DRAFT, not sent to the client yet, ${fmt(Number(i.total))}, due date set to ${withWeekday(i.due_date)}`
-      : `- ${i.invoice_number}: ${i.status.toUpperCase()} ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
+      ? `- ${i.invoice_number}: ${invoiceStatus(i.status)} (a draft, not sent to the client yet), ${fmt(Number(i.total))}, due date set to ${withWeekday(i.due_date)}`
+      : `- ${i.invoice_number}: ${invoiceStatus(i.status)}, ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
 
   const contextParts: string[] = [
     `## Client: ${clientName}`,
@@ -288,7 +298,7 @@ Use the app's own words for these and never leave them in English: lifetime valu
     `You are an AI business advisor analyzing a client relationship for a small business owner.
 Be direct, concise, and actionable. Focus on what matters most right now.
 Today's date: ${withWeekday(today)}.
-Dates in the context carry their weekday. Never state a weekday that disagrees with its date: if a note says "Saturday", say Saturday without attaching a different date to it.${terms}` + languageDirectiveForJson(locale);
+Dates in the context are written out with their weekday; copy them as written. A weekday a note mentions ("el sábado") and a date from a task or an invoice are separate facts: never combine them into one date, and never give a date any weekday but the one written with it.${terms}` + languageDirectiveForJson(locale);
 
   const userPrompt = `Analyze this client and produce a JSON brief. Be concise and business-focused.
 
