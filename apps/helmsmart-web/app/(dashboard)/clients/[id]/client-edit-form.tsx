@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { updateClient } from "@/lib/actions/clients";
 import type { ClientState } from "@/lib/actions/clients";
@@ -33,8 +33,21 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
     null
   );
 
+  // The save reports itself on its own button, then clears.
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    if (!state?.success) return;
+    setSaved(true);
+    const timer = setTimeout(() => setSaved(false), 2500);
+    return () => clearTimeout(timer);
+  }, [state]);
+
+  // Keyed by what the database holds. React resets a form after its action,
+  // which put every select back to the value the form opened with — a saved
+  // "Español" read "Detect from their messages" until the page was reloaded.
+  // The revalidated props carry the saved values; a new key remounts on them.
   return (
-    <form action={action} className="space-y-3">
+    <form key={JSON.stringify(initialValues)} action={action} className="space-y-3">
       <input type="hidden" name="client_id" value={clientId} />
 
       <div className="grid grid-cols-2 gap-2">
@@ -160,20 +173,14 @@ export function ClientEditForm({ clientId, initialValues }: Props) {
         />
       </div>
 
-      {state?.error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded px-2.5 py-1.5">{state.error}</p>
-      )}
-      {state?.success && (
-        <p className="text-xs text-emerald-700 bg-emerald-50 rounded px-2.5 py-1.5">{t("form.saved")}</p>
-      )}
-
       <button
         type="submit"
         disabled={isPending}
         className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors"
       >
-        {isPending ? t("common:status.saving") : t("form.saveChanges")}
+        {isPending ? t("common:status.saving") : saved ? t("common:actions.saved_bang") : t("form.saveChanges")}
       </button>
+      {state?.error && <p className="text-xs text-rose-600" role="alert">{state.error}</p>}
     </form>
   );
 }
