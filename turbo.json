@@ -99,6 +99,7 @@
         "USE_API",
         "INTEGRATION_TEST_*",
         "SMOKE_*",
+        "MARK_EVAL_*",
         "TEMPLATES_JSON"
       ]
     },
