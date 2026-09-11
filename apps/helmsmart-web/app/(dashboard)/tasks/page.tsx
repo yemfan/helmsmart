@@ -1,4 +1,3 @@
-import { ResponsibleEmployee } from "@/components/responsible-employee";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -8,7 +7,6 @@ import { TaskRow } from "@/components/task-row";
 import { PriorityFilter } from "./priority-filter";
 import Link from "next/link";
 import { CheckSquare, Filter, Repeat } from "lucide-react";
-import { MarkTaskButton } from "@/components/mark-task-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("tasks");
@@ -83,7 +81,6 @@ export default async function TasksPage({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <ResponsibleEmployee slug="mark" className="mb-3" />
           <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             {t("list.count", { count: tasks.length })}
@@ -93,7 +90,6 @@ export default async function TasksPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <MarkTaskButton />
           <Link
             href="/tasks/recurring"
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"

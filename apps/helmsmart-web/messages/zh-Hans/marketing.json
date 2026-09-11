@@ -586,11 +586,6 @@
       "previewEmpty": "帖子预览会显示在这里",
       "published": "已发布"
     },
-    "emily": {
-      "draftCreated": "草稿已创建——可在此编辑并发布",
-      "ask": "让 Emily 写一条帖子",
-      "error": "出了点问题。"
-    },
     "connections": {
       "connected": "已连接",
       "notConnected": "未连接",

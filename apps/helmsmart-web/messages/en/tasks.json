@@ -62,11 +62,6 @@
     "submit": "Create task",
     "titleRequired": "Title is required"
   },
-  "mark": {
-    "ask": "Ask Mark to create a task",
-    "created": "Task created",
-    "viewIt": "view it"
-  },
   "recurring": {
     "title": "Recurring tasks",
     "subtitle_one": "{{count}} active · auto-create to-dos on a schedule",
@@ -174,13 +169,6 @@
       "failed": "Failed"
     }
   },
-  "alexReminder": {
-    "queued": "Alex created a task for you",
-    "seeTasks": "see Tasks",
-    "summary_one": "<b>{{count}} overdue invoice</b> totaling <b>{{total}}</b> with no reminders sent yet.",
-    "summary_other": "<b>{{count}} overdue invoices</b> totaling <b>{{total}}</b> with no reminders sent yet.",
-    "ask": "Ask Alex to remind them"
-  },
   "errors": {
     "notAuthenticated": "Your session has expired. Sign in again to continue.",
     "noOrg": "No business is selected. Sign in again to continue.",
@@ -188,11 +176,11 @@
     "firstRunDateRequired": "First run date is required"
   },
   "generated": {
-    "reviewOpenItems": "Review and prioritise open items — update this title",
-    "reviewOpenItemsNotes": "Mark created this task. Edit the title, assign it, and set a due date.",
     "callBack": "Call back {{who}}",
     "followUpAiCall": "Follow up: AI call from {{who}}",
     "replyNeeded": "{{intent}} from {{sender}} — reply needed",
-    "followUpWithClient": "Follow up with {{client_name}}"
+    "followUpWithClient": "Follow up with {{client_name}}",
+    "followUpNote": "Suggested text to send to {{phone}}:\n\n“{{message}}”",
+    "followUpMessage": "Hi {{client_name}}! Checking in from {{org}} — we'd love to connect and see how we can help. Are you free for a quick chat this week?"
   }
 }

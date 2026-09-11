@@ -65,6 +65,20 @@
       "emptyTitle": "还没有发票",
       "emptyBody": "创建第一张发票，并通过电子邮件直接发送给客户。",
       "createInvoice": "创建发票",
+      "overdueReminders": {
+        "summary_other": "<b>{{count}} 张逾期发票</b>，共计 <b>{{total}}</b>。",
+        "review": "发送催款提醒…",
+        "intro": "下列每位客户都会收到一封催款提醒邮件；如果客户留有电话号码且你的企业号码已设置好，还会同时收到一条短信。",
+        "neverReminded": "尚未提醒",
+        "lastReminded": "上次提醒：{{date}}",
+        "remindedToday": "今天已提醒过 —— 将跳过",
+        "noEmail": "没有邮箱地址 —— 将跳过",
+        "send_other": "发送 {{count}} 条提醒",
+        "sending": "发送中… {{done}}/{{total}}",
+        "sent_other": "已发送 {{count}} 条提醒",
+        "failed": "以下发票未能发送：{{invoices}}。请打开各张发票重试。",
+        "nothingToSend": "目前这些发票都无法发送提醒。"
+      },
       "columns": {
         "client": "客户 / 编号",
         "issued": "开具日期",

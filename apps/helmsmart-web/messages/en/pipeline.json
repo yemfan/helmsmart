@@ -35,12 +35,13 @@
     "contact": "Contact",
     "moveToStage": "Move to stage",
     "viewProfile": "View full profile",
-    "sarah": {
-      "queued": "Sarah created a task for you",
+    "followUp": {
+      "create": "Create follow-up task",
+      "creating": "Creating…",
+      "created": "Follow-up task created",
       "seeTasks": "see Tasks",
-      "noPhone": "No phone number on file.",
-      "drafting": "Drafting…",
-      "ask": "Ask Sarah to follow up"
+      "invalidPhone": "That phone number doesn't look valid — check it on the client's profile.",
+      "failed": "Couldn't create the task. Try again."
     }
   }
 }

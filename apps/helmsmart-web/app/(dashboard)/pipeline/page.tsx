@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { PipelineBoard } from "./pipeline-board";
 import { term } from "@/lib/packs";
 import { getServerT } from "@/lib/i18n/server";
-import { ResponsibleEmployee } from "@/components/responsible-employee";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("pipeline");
@@ -51,7 +50,6 @@ export default async function PipelinePage() {
     <PipelineBoard
       initialClients={(clients ?? []) as PipelineClient[]}
       title={title}
-      owner={<ResponsibleEmployee slug="sarah" />}
     />
   );
 }
