@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { supabaseAuthCookieOptions } from "@/lib/authCookieOptions";
+import { KEEP_SIGNED_IN_COOKIE, keepSignedInFrom, withSessionLifetime } from "@/lib/auth/keepSignedIn";
 import { requireSupabasePublicEnv } from "@/lib/supabasePublicEnv";
 
 export function supabaseServerClient() {
@@ -47,7 +48,8 @@ export function supabaseServerClient() {
           const cookieStore = await cookieStorePromise;
           cookiesToSet.forEach(({ name, value, options }) => {
             // `cookies()` in route handlers supports set(). In some contexts it might not.
-            cookieStore.set?.(name, value, options);
+            const keep = keepSignedInFrom(cookieStore.get?.(KEEP_SIGNED_IN_COOKIE)?.value);
+            cookieStore.set?.(name, value, withSessionLifetime(options, keep));
           });
         } catch {
           // Server Components may throw when setting cookies; ignore.

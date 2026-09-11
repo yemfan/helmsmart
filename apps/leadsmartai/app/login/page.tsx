@@ -10,6 +10,7 @@ import { isRealEstateProfessionalRole } from "@/lib/paidSubscriptionEligibility"
 import { resolveRoleHomePath, START_FREE_AGENT_PATH } from "@/lib/rolePortalPaths";
 import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 import { useAuth } from "@/components/AuthProvider";
+import { KeepSignedInCheckbox } from "@/components/KeepSignedInCheckbox";
 
 export default function LoginPage() {
   return (
@@ -289,7 +290,8 @@ function LoginPageInner() {
                 )}
               </button>
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2 pt-0.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <KeepSignedInCheckbox label={t("pages.loginPage.keepSignedIn")} />
               <Link
                 href="/forgot-password"
                 className="text-xs font-semibold text-blue-700 hover:underline"

@@ -439,6 +439,7 @@
       "resetBody": "Enter the email you use for CloseBoss and we'll send you a reset link.",
       "sendResetLink": "Send reset link",
       "backToLogin": "Back to log in",
+      "keepSignedIn": "Keep me signed in on this device",
       "emailResetLink": "Email me a reset link",
       "sending": "Sending…",
       "loggingIn": "Logging in…",

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { supabaseAuthCookieOptions } from "@/lib/authCookieOptions";
+import { KEEP_SIGNED_IN_COOKIE, keepSignedInFrom, withSessionLifetime } from "@/lib/auth/keepSignedIn";
 import { PRODUCT_LEADSMART_AGENT } from "@/lib/entitlements/product";
 import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsumerUrl";
 import { getSupabasePublicEnv } from "@/lib/supabasePublicEnv";
@@ -88,6 +89,8 @@ export async function proxy(req: NextRequest) {
   });
 
   const cookieOptions = supabaseAuthCookieOptions();
+  // "Keep me signed in on this device": unticked means session cookies that end with the browser.
+  const keepSignedIn = keepSignedInFrom(req.cookies.get(KEEP_SIGNED_IN_COOKIE)?.value);
 
   const supabase = createServerClient(env.url, env.anonKey, {
     ...(cookieOptions ? { cookieOptions } : {}),
@@ -97,7 +100,7 @@ export async function proxy(req: NextRequest) {
       },
       setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
         cookiesToSet.forEach(({ name, value, options }) => {
-          res.cookies.set(name, value, options);
+          res.cookies.set(name, value, withSessionLifetime(options, keepSignedIn));
         });
       },
     },
