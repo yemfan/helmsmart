@@ -34,3 +34,8 @@ export const MESSAGE_SENDERS = [
 ] as const;
 
 export type MessageSender = (typeof MESSAGE_SENDERS)[number];
+
+/** A `sent_by` value read back from the database, narrowed; null and unknown values are not senders. */
+export function isMessageSender(v: unknown): v is MessageSender {
+  return typeof v === "string" && (MESSAGE_SENDERS as readonly string[]).includes(v);
+}

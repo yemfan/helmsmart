@@ -1,8 +1,7 @@
 /**
  * POST /api/sms/send  { clientId, to, body }
  *
- * Sends an SMS for the HelmSmart AI panel — both its Send button and its Auto
- * Pilot, which posts here on its own once a draft is ready. Goes through the
+ * Sends an SMS for the HelmSmart AI panel's Send button. Goes through the
  * consent guard in lib/outbound-send.ts, so a client who opted out of texts is
  * refused here with the reason, which the panel shows as-is. Returns the
  * { success } envelope the widget expects.
@@ -45,28 +44,18 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   /*
-   * Who is sending. With Auto Pilot on, the panel has no Send button — it
-   * sends each draft by itself — so a send for an Auto Pilot client from this
-   * route is Auto Pilot's, not a person's. Everything else here is a person
-   * pressing Send on a draft they read.
+   * Always a person's send. The panel never sends by itself — a draft goes out
+   * only when someone presses the Send button that names the recipient, Auto
+   * Pilot or not. Auto Pilot's own replies come from the inbound webhook
+   * (/api/twilio/sms), which labels them itself; labelling a Send here
+   * "auto_pilot" would list the owner's own text as the AI's work.
    */
-  let sentBy: "person" | "auto_pilot" = "person";
-  if (clientId) {
-    const { data: client } = await supabase
-      .from("clients")
-      .select("auto_pilot")
-      .eq("id", clientId)
-      .eq("organization_id", orgId)
-      .maybeSingle();
-    if ((client as { auto_pilot?: boolean } | null)?.auto_pilot) sentBy = "auto_pilot";
-  }
-
   const outcome = await sendSmsAsOrg(supabase, orgId, {
     clientId,
     to,
     body,
-    sentBy,
-    purpose: sentBy === "auto_pilot" ? "automated" : "conversation",
+    sentBy: "person",
+    purpose: "conversation",
   });
   const result = toSendMessageResult(outcome, "sms", { inbox: t, clients: tc, locale });
   if (result.ok) return NextResponse.json({ success: true });

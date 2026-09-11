@@ -6,6 +6,7 @@ import type { TFunction } from "i18next";
 import { LogoMark } from "@helm/ui";
 import { Toggle } from "@/components/ui/toggle";
 import { formatPhoneDisplay } from "@/lib/phone-display";
+import { isMessageSender, type MessageSender } from "@/lib/message-provenance";
 
 /**
  * HelmSmart AI — a floating assistant panel (draggable + resizable on desktop,
@@ -66,8 +67,18 @@ type ContactTab = {
 /** Keys under `aiPanel.quickPrompts` — the question is translated at render. */
 const QUICK_PROMPT_KEYS = ["overdue", "cashFlow", "topClients", "focus"];
 
-/** `messages.sent_by` values that mean "Auto Pilot wrote and sent this". */
-const AUTO_PILOT_SENDERS = new Set(["auto_pilot"]);
+/**
+ * The quiet line under an outbound bubble saying what sent it, by
+ * `messages.sent_by`. A person's own send has none — that's the default.
+ */
+const SENDER_LABEL_KEY: Record<MessageSender, string | null> = {
+  person: null,
+  auto_pilot: "aiPanel.autoPilot.label",
+  auto_reply: "aiPanel.sentBy.autoReply",
+  missed_call_text: "aiPanel.sentBy.missedCallText",
+  reminder: "aiPanel.sentBy.reminder",
+  receptionist: "aiPanel.sentBy.receptionist",
+};
 
 /** How long the send button says "Sent!" before returning to its resting label. */
 const SENT_LABEL_MS = 2500;
@@ -1158,7 +1169,8 @@ function ContactTabBody({
                 )}
                 {tab.thread.map((m) => {
                   const badge = m.direction === "outbound" ? statusBadge(m.twilio_status, t) : null;
-                  const byAutoPilot = m.direction === "outbound" && !!m.sent_by && AUTO_PILOT_SENDERS.has(m.sent_by);
+                  const senderKey =
+                    m.direction === "outbound" && isMessageSender(m.sent_by) ? SENDER_LABEL_KEY[m.sent_by] : null;
                   return (
                     <div key={m.id} className={`max-w-[85%] ${m.direction === "outbound" ? "ml-auto" : "mr-auto"}`}>
                       <div
@@ -1172,9 +1184,9 @@ function ContactTabBody({
                       >
                         <div className="whitespace-pre-wrap">{m.message}</div>
                       </div>
-                      {badge || byAutoPilot ? (
+                      {badge || senderKey ? (
                         <div className="mt-0.5 flex justify-end gap-1.5 pr-0.5 text-[10px] font-medium">
-                          {byAutoPilot ? <span className="text-gray-500">{t("aiPanel.autoPilot.label")}</span> : null}
+                          {senderKey ? <span className="text-gray-500">{t(senderKey)}</span> : null}
                           {badge ? (
                             <span
                               className={

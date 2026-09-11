@@ -369,6 +369,12 @@
       "enableFailed": "Auto Pilot wasn't turned on for {{name}} — it's still off. Try again.",
       "disableFailed": "Auto Pilot wasn't turned off for {{name}} — it's still on. Try again."
     },
+    "sentBy": {
+      "autoReply": "Auto-reply",
+      "missedCallText": "Missed-call text",
+      "reminder": "Automatic reminder",
+      "receptionist": "AI receptionist"
+    },
     "smsStatus": {
       "delivered": "Delivered",
       "received": "Received",
@@ -406,7 +412,9 @@
       "autoPilotReplied": "Auto Pilot replied to {{name}}",
       "callNotPlaced": "{{who}}'s call to {{name}} wasn't placed",
       "reminderCallNotPlaced": "Reminder call to {{name}} wasn't placed",
-      "reminderTextNotSent": "Reminder text to {{name}} wasn't sent"
+      "reminderTextNotSent": "Reminder text to {{name}} wasn't sent",
+      "bookingConfirmationText": "{{who}} texted {{name}} a booking confirmation",
+      "paymentReminderText": "Payment reminder texted to {{name}}"
     },
     "detail": {
       "booked": "booked {{when}}",

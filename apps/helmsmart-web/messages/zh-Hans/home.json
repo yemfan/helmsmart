@@ -369,6 +369,12 @@
       "enableFailed": "没能为 {{name}} 开启自动驾驶，目前仍是关闭状态。请再试一次。",
       "disableFailed": "没能为 {{name}} 关闭自动驾驶，目前仍在开启状态。请再试一次。"
     },
+    "sentBy": {
+      "autoReply": "自动回复",
+      "missedCallText": "未接来电短信",
+      "reminder": "自动提醒",
+      "receptionist": "AI 前台接待"
+    },
     "smsStatus": {
       "delivered": "已送达",
       "received": "已收到",
@@ -406,7 +412,9 @@
       "autoPilotReplied": "自动驾驶回复了 {{name}}",
       "callNotPlaced": "{{who}} 给 {{name}} 的电话没有拨出",
       "reminderCallNotPlaced": "给 {{name}} 的提醒电话没有拨出",
-      "reminderTextNotSent": "给 {{name}} 的提醒短信没有发出"
+      "reminderTextNotSent": "给 {{name}} 的提醒短信没有发出",
+      "bookingConfirmationText": "{{who}} 向 {{name}} 发送了预约确认短信",
+      "paymentReminderText": "已向 {{name}} 发送付款提醒短信"
     },
     "detail": {
       "booked": "已预约 {{when}}",

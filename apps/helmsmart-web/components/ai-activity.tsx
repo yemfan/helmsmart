@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import {
   ACTIVITY_WINDOW_DAYS,
+  FEED_TEXT_SENDERS,
   buildActivityFeed,
   clientDisplayName,
   type ActivityRow,
@@ -49,7 +50,7 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     const supabase = await createClient();
     const since = new Date(now.getTime() - ACTIVITY_WINDOW_DAYS * 86_400_000).toISOString();
 
-    const [voiceRes, callsRes, postsRes, runsRes, queueRes, orgRes, employees] = await Promise.all([
+    const [voiceRes, callsRes, postsRes, runsRes, queueRes, textsRes, orgRes, employees] = await Promise.all([
       supabase
         .from("voice_sessions")
         .select("id, call_sid, direction, purpose, status, from_number, to_number, client_id, booked_event_id, created_at")
@@ -89,11 +90,24 @@ export async function AiActivity({ orgId }: { orgId: string }) {
         .gte("updated_at", since)
         .order("updated_at", { ascending: false })
         .limit(40),
+      // Texts the AI team sent, told apart from the owner's own by `sent_by`.
+      // More rows than lines on purpose: the mapper folds a conversation's
+      // texts into one line with a count.
+      supabase
+        .from("messages")
+        .select("id, client_id, to_address, sent_by, intent, sent_at")
+        .eq("organization_id", orgId)
+        .eq("direction", "outbound")
+        .eq("channel", "sms")
+        .in("sent_by", FEED_TEXT_SENDERS)
+        .gte("sent_at", since)
+        .order("sent_at", { ascending: false })
+        .limit(200),
       supabase.from("organizations").select("timezone, twilio_number").eq("id", orgId).maybeSingle(),
       listEmployees(supabase, orgId).catch(() => []),
     ]);
 
-    for (const [name, res] of Object.entries({ voiceRes, callsRes, postsRes, runsRes, queueRes })) {
+    for (const [name, res] of Object.entries({ voiceRes, callsRes, postsRes, runsRes, queueRes, textsRes })) {
       if (res.error) console.error(`[ai-activity] ${name}:`, res.error.message);
     }
 
@@ -101,9 +115,7 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     const calls = (callsRes.data ?? []) as unknown as CallRow[];
     const socialPosts = (postsRes.data ?? []) as unknown as SocialPostRow[];
     const queue = (queueRes.data ?? []) as unknown as QueueRow[];
-    // No text source yet: `messages.sent_by` is what tells an Auto Pilot reply
-    // from the owner's own send, and until it exists this list has none.
-    const texts: TextRow[] = [];
+    const texts = (textsRes.data ?? []) as unknown as TextRow[];
 
     const slugById = new Map(employees.map((e) => [e.id, e.slug]));
     const runs = ((runsRes.data ?? []) as unknown as (Omit<RunRow, "employee_slug"> & { employee_id: string })[])
@@ -114,6 +126,7 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     for (const s of voiceSessions) if (s.client_id) clientIds.add(s.client_id);
     for (const c of calls) if (c.client_id) clientIds.add(c.client_id);
     for (const q of queue) clientIds.add(q.client_id);
+    for (const m of texts) if (m.client_id) clientIds.add(m.client_id);
     for (const r of runs) if (r.subject_type === "contact" && r.subject_id) clientIds.add(r.subject_id);
     const eventIds = new Set(voiceSessions.map((s) => s.booked_event_id).filter((id): id is string => !!id));
 

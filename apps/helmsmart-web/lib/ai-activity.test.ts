@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import en from "../messages/en/home.json";
 import {
+  FEED_TEXT_SENDERS,
   buildActivityFeed,
   clientDisplayName,
   type ActivityInput,
   type ActivityFormat,
+  type TextRow,
 } from "./ai-activity";
 import { formatPhoneDisplay } from "./phone-display";
 
@@ -56,6 +58,16 @@ const voice = (over: Partial<ActivityInput["voiceSessions"][number]>) => ({
   client_id: null,
   booked_event_id: null,
   created_at: hoursAgo(1),
+  ...over,
+});
+
+const text = (over: Partial<TextRow>): TextRow => ({
+  id: "m1",
+  client_id: "c1",
+  to_address: "+14155550121",
+  sent_by: "auto_pilot",
+  intent: null,
+  sent_at: hoursAgo(1),
   ...over,
 });
 
@@ -175,13 +187,15 @@ describe("buildActivityFeed", () => {
     ]);
   });
 
-  it("adds reminder texts and unplaced calls from the queue, marking failures", () => {
+  it("takes only what never went out from the queue, marking it as a warning", () => {
     const rows = buildActivityFeed(
       input({
         queue: [
+          // Sent: the reminder text is a `messages` row and the call a voice session — not lines from here.
           { id: "q1", purpose: "appointment_reminder_sms", status: "done", client_id: "c1", updated_at: hoursAgo(1) },
           { id: "q2", purpose: "appointment_reminder", status: "done", client_id: "c1", updated_at: hoursAgo(2) },
           { id: "q3", purpose: "follow_up", status: "failed", client_id: "c1", updated_at: hoursAgo(3) },
+          { id: "q4", purpose: "appointment_reminder_sms", status: "failed", client_id: "c1", updated_at: hoursAgo(4) },
         ],
         clientNames: { c1: "Amanda Reyes" },
       }),
@@ -189,8 +203,39 @@ describe("buildActivityFeed", () => {
       { now: NOW },
     );
     expect(rows.map((r) => [r.text, r.tone ?? null])).toEqual([
-      ["Reminder text sent to Amanda Reyes", null],
       ["Sarah's call to Amanda Reyes wasn't placed", "warning"],
+      ["Reminder text to Amanda Reyes wasn't sent", "warning"],
+    ]);
+  });
+
+  it("lists a sent reminder text once — from `messages`, not again from the queue", () => {
+    const rows = buildActivityFeed(
+      input({
+        queue: [{ id: "q1", purpose: "appointment_reminder_sms", status: "done", client_id: "c1", updated_at: hoursAgo(1) }],
+        texts: [text({ id: "m1", sent_by: "reminder", intent: "sms_reminder", sent_at: hoursAgo(1) })],
+        clientNames: { c1: "Amanda Reyes" },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => [r.who.kind, r.text, r.href])).toEqual([["automatic", "Reminder text sent to Amanda Reyes", "/calendar"]]);
+  });
+
+  it("tells an invoice's payment reminder from an appointment reminder", () => {
+    const rows = buildActivityFeed(
+      input({
+        texts: [
+          text({ id: "m1", sent_by: "reminder", intent: "sms_reminder", sent_at: hoursAgo(2) }),
+          text({ id: "m2", sent_by: "reminder", intent: null, sent_at: hoursAgo(1) }),
+        ],
+        clientNames: { c1: "Amanda Reyes" },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => [r.text, r.href, r.detail])).toEqual([
+      ["Payment reminder texted to Amanda Reyes", "/books/invoices", null],
+      ["Reminder text sent to Amanda Reyes", "/calendar", null],
     ]);
   });
 
@@ -198,9 +243,9 @@ describe("buildActivityFeed", () => {
     const rows = buildActivityFeed(
       input({
         texts: [
-          { id: "m1", client_id: "c1", to_address: "+14155550121", sent_by: "auto_pilot", sent_at: hoursAgo(3) },
-          { id: "m2", client_id: "c1", to_address: "+14155550121", sent_by: "auto_pilot", sent_at: hoursAgo(1) },
-          { id: "m3", client_id: "c1", to_address: "+14155550121", sent_by: "owner", sent_at: hoursAgo(2) },
+          text({ id: "m1", sent_at: hoursAgo(3) }),
+          text({ id: "m2", sent_at: hoursAgo(1) }),
+          text({ id: "m3", sent_by: "person", sent_at: hoursAgo(2) }),
         ],
         clientNames: { c1: "Priya Patel" },
       }),
@@ -214,7 +259,73 @@ describe("buildActivityFeed", () => {
       text: "Auto Pilot replied to Priya Patel",
       detail: "2 texts",
       at: hoursAgo(1),
+      href: "/inbox",
     });
+  });
+
+  it("keeps one line per contact: two people on Auto Pilot are two lines", () => {
+    const rows = buildActivityFeed(
+      input({
+        texts: [
+          text({ id: "m1", client_id: "c1", sent_at: hoursAgo(2) }),
+          text({ id: "m2", client_id: "c2", to_address: "+14155550199", sent_at: hoursAgo(1) }),
+        ],
+        clientNames: { c1: "Priya Patel", c2: "Luis Ortega" },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => [r.text, r.detail])).toEqual([
+      ["Auto Pilot replied to Luis Ortega", null],
+      ["Auto Pilot replied to Priya Patel", null],
+    ]);
+  });
+
+  it("gives the receptionist's booking confirmation to her, and skips her alert to the business", () => {
+    const rows = buildActivityFeed(
+      input({
+        texts: [
+          text({ id: "m1", sent_by: "receptionist", client_id: "c1", sent_at: hoursAgo(1) }),
+          // The alert to the business's own phone: no client, and not work done for a customer.
+          text({ id: "m2", sent_by: "receptionist", client_id: null, to_address: "+16265550199", sent_at: hoursAgo(1) }),
+        ],
+        clientNames: { c1: "Priya Patel" },
+        employees: { emma: { name: "Rosa", avatar: "persona-09" } },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      who: { kind: "employee", slug: "emma", name: "Rosa" },
+      text: "Rosa texted Priya Patel a booking confirmation",
+      href: "/calendar",
+    });
+  });
+
+  it("leaves out the owner's sends, canned auto-replies, and missed-call texts (those come from the call log)", () => {
+    const rows = buildActivityFeed(
+      input({
+        texts: [
+          text({ id: "m1", sent_by: "person" }),
+          text({ id: "m2", sent_by: "auto_reply" }),
+          text({ id: "m3", sent_by: "missed_call_text" }),
+          text({ id: "m4", sent_by: null }),
+          text({ id: "m5", sent_by: "something_new" }),
+        ],
+        calls: [
+          { id: "k1", twilio_call_sid: "call_1", from_number: "+14155550121", client_id: "c1", status: "missed", auto_replied: true, called_at: hoursAgo(1) },
+        ],
+        clientNames: { c1: "Priya Patel" },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => r.text)).toEqual(["Missed-call text sent to Priya Patel"]);
+  });
+
+  it("selects exactly the senders it lists", () => {
+    expect([...FEED_TEXT_SENDERS].sort()).toEqual(["auto_pilot", "receptionist", "reminder"]);
   });
 
   it("keeps the last 7 days, newest first, at most 8 lines", () => {
@@ -244,9 +355,25 @@ describe("buildActivityFeed", () => {
           { id: "q1", purpose: "appointment_reminder_sms", status: "failed", client_id: "c1", updated_at: hoursAgo(1) },
           { id: "q2", purpose: "appointment_reminder", status: "failed", client_id: "c1", updated_at: hoursAgo(1) },
         ],
+        texts: [
+          text({ id: "m1", sent_by: "auto_pilot", client_id: "c1" }),
+          text({ id: "m2", sent_by: "receptionist", client_id: "c2" }),
+          text({ id: "m3", sent_by: "reminder", intent: "sms_reminder", client_id: "c3" }),
+          text({ id: "m4", sent_by: "reminder", intent: null, client_id: "c4" }),
+          text({ id: "m5", sent_by: "auto_pilot", client_id: "c5" }),
+          text({ id: "m6", sent_by: "auto_pilot", client_id: "c5" }),
+        ],
       }),
       fmt,
-      { now: NOW },
+      { now: NOW, limit: 50 },
+    );
+    expect(rows.map((r) => r.text)).toEqual(
+      expect.arrayContaining([
+        "Auto Pilot replied to (415) 555-0121",
+        "Emma texted (415) 555-0121 a booking confirmation",
+        "Reminder text sent to (415) 555-0121",
+        "Payment reminder texted to (415) 555-0121",
+      ]),
     );
     for (const r of rows) {
       expect(r.text).not.toMatch(/MISSING/);

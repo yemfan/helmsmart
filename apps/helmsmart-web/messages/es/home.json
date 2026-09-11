@@ -369,6 +369,12 @@
       "enableFailed": "No se activó el piloto automático para {{name}}; sigue desactivado. Inténtelo de nuevo.",
       "disableFailed": "No se desactivó el piloto automático para {{name}}; sigue activado. Inténtelo de nuevo."
     },
+    "sentBy": {
+      "autoReply": "Respuesta automática",
+      "missedCallText": "Mensaje por llamada perdida",
+      "reminder": "Recordatorio automático",
+      "receptionist": "Recepcionista con IA"
+    },
     "smsStatus": {
       "delivered": "Entregado",
       "received": "Recibido",
@@ -406,7 +412,9 @@
       "autoPilotReplied": "El piloto automático respondió a {{name}}",
       "callNotPlaced": "No se realizó la llamada de {{who}} a {{name}}",
       "reminderCallNotPlaced": "No se realizó la llamada de recordatorio a {{name}}",
-      "reminderTextNotSent": "No se envió el recordatorio por mensaje a {{name}}"
+      "reminderTextNotSent": "No se envió el recordatorio por mensaje a {{name}}",
+      "bookingConfirmationText": "{{who}} envió a {{name}} la confirmación de su cita por mensaje",
+      "paymentReminderText": "Recordatorio de pago por mensaje enviado a {{name}}"
     },
     "detail": {
       "booked": "cita: {{when}}",

@@ -10,6 +10,7 @@
  */
 
 import { formatPhoneDisplay } from "@/lib/phone-display";
+import { MESSAGE_SENDERS, isMessageSender, type MessageSender } from "@/lib/message-provenance";
 
 export type Translate = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -33,14 +34,32 @@ const PLATFORM_NAMES: Record<string, string> = {
 /** Outbound-call purposes with a label; a purpose not listed gets no detail rather than a raw key. */
 const CALL_PURPOSES = new Set(["follow_up", "survey", "promo", "demo"]);
 
+type TextKind = "autoPilot" | "receptionist" | "reminder";
+
 /**
- * `messages.sent_by` values that are AI work, and how the feed names them.
- * Values not listed (the owner, a campaign) are the owner's own sends and
- * stay out of a list about what the AI did.
+ * Which `messages.sent_by` values this feed lists, and as whose work. Keyed by
+ * every sender, so a new one added to MESSAGE_SENDERS doesn't compile until
+ * someone decides here whether it is AI work.
+ *
+ *   person            the owner's own send — not something the AI did
+ *   auto_reply        the business's canned reply: the owner wrote it once
+ *   missed_call_text  listed from `calls.auto_replied`, which knows the call it
+ *                     answers; a line from here too would count it twice
  */
-const TEXT_SENDERS: Record<string, "autoPilot"> = {
+const TEXT_KIND: Record<MessageSender, TextKind | null> = {
+  person: null,
   auto_pilot: "autoPilot",
+  auto_reply: null,
+  missed_call_text: null,
+  reminder: "reminder",
+  receptionist: "receptionist",
 };
+
+/** The `sent_by` values worth selecting for the feed — the component filters on these. */
+export const FEED_TEXT_SENDERS: MessageSender[] = MESSAGE_SENDERS.filter((s) => TEXT_KIND[s] !== null);
+
+/** `messages.intent` on an appointment reminder text; a reminder without it is an invoice's. */
+const APPOINTMENT_REMINDER_INTENT = "sms_reminder";
 
 // ── Input rows (as selected by the component) ────────────────────────────────
 
@@ -95,11 +114,13 @@ export type QueueRow = {
   updated_at: string;
 };
 
+/** An outbound SMS from `messages`. */
 export type TextRow = {
   id: string;
   client_id: string | null;
   to_address: string | null;
   sent_by: string | null;
+  intent: string | null;
   sent_at: string;
 };
 
@@ -282,21 +303,14 @@ export function buildActivityFeed(
     }
   }
 
-  // A placed call ("done") is already a voice-session line; the queue adds
-  // what only it knows — reminder texts, and calls that never went out.
+  // The queue adds only what nothing else records: work that never went out.
+  // A placed call ("done") is a voice-session line, and a sent reminder text is
+  // a `messages` row (sent_by "reminder") listed below — a line from the queue
+  // too would count each twice.
   for (const q of input.queue) {
     const name = person(q.client_id, null);
     if (q.purpose === "appointment_reminder_sms") {
-      if (q.status === "done") {
-        rows.push({
-          key: `queue:${q.id}`,
-          at: q.updated_at,
-          who: { kind: "automatic" },
-          text: t("aiActivity.row.reminderText", { name }),
-          detail: null,
-          href: "/calendar",
-        });
-      } else if (q.status === "failed") {
+      if (q.status === "failed") {
         rows.push({
           key: `queue:${q.id}`,
           at: q.updated_at,
@@ -333,28 +347,42 @@ export function buildActivityFeed(
     }
   }
 
-  // One line per conversation, not per text: five Auto Pilot replies to one
-  // person are one thing that happened.
-  const threads = new Map<string, { latest: TextRow; count: number }>();
+  // One line per contact and kind of text, not per text: five Auto Pilot
+  // replies to one person are one thing that happened.
+  type TextGroup = { kind: TextKind; payment: boolean; latest: TextRow; count: number };
+  const groups = new Map<string, TextGroup>();
   for (const m of input.texts) {
-    if (!m.sent_by || !TEXT_SENDERS[m.sent_by]) continue;
-    const k = `${m.sent_by}:${m.client_id ?? m.to_address ?? m.id}`;
-    const g = threads.get(k);
-    if (!g) threads.set(k, { latest: m, count: 1 });
+    const kind = isMessageSender(m.sent_by) ? TEXT_KIND[m.sent_by] : null;
+    if (!kind) continue;
+    // The receptionist's text with no client is the booking alert to the
+    // business's own phone — a note to the owner, not work done for a customer.
+    if (kind === "receptionist" && !m.client_id) continue;
+    const payment = kind === "reminder" && m.intent !== APPOINTMENT_REMINDER_INTENT;
+    const k = `${kind}:${payment ? "payment" : ""}:${m.client_id ?? m.to_address ?? m.id}`;
+    const g = groups.get(k);
+    if (!g) groups.set(k, { kind, payment, latest: m, count: 1 });
     else {
       g.count += 1;
       if (Date.parse(m.sent_at) > Date.parse(g.latest.sent_at)) g.latest = m;
     }
   }
-  for (const { latest, count } of threads.values()) {
-    rows.push({
+  for (const { kind, payment, latest, count } of groups.values()) {
+    const name = person(latest.client_id, latest.to_address);
+    const base = {
       key: `text:${latest.id}`,
       at: latest.sent_at,
-      who: { kind: "autoPilot" },
-      text: t("aiActivity.row.autoPilotReplied", { name: person(latest.client_id, latest.to_address) }),
       detail: count > 1 ? t("aiActivity.detail.texts", { count }) : null,
-      href: "/inbox",
-    });
+    };
+    if (kind === "autoPilot") {
+      rows.push({ ...base, who: { kind: "autoPilot" }, text: t("aiActivity.row.autoPilotReplied", { name }), href: "/inbox" });
+    } else if (kind === "receptionist") {
+      const who = employee(RECEPTIONIST_SLUG);
+      rows.push({ ...base, who, text: t("aiActivity.row.bookingConfirmationText", { who: who.name, name }), href: "/calendar" });
+    } else if (payment) {
+      rows.push({ ...base, who: { kind: "automatic" }, text: t("aiActivity.row.paymentReminderText", { name }), href: "/books/invoices" });
+    } else {
+      rows.push({ ...base, who: { kind: "automatic" }, text: t("aiActivity.row.reminderText", { name }), href: "/calendar" });
+    }
   }
 
   return rows

@@ -181,7 +181,7 @@ describe("inbox: sendSms / sendEmail server actions", () => {
   });
 });
 
-describe("AI panel: POST /api/sms/send (Send and Auto Pilot)", () => {
+describe("AI panel: POST /api/sms/send (the Send button)", () => {
   const post = (body: unknown) =>
     smsSendRoute.POST(new Request("https://app.test/api/sms/send", { method: "POST", body: JSON.stringify(body) }) as never);
 
@@ -193,11 +193,13 @@ describe("AI panel: POST /api/sms/send (Send and Auto Pilot)", () => {
     expect(twilioCreate).not.toHaveBeenCalled();
   });
 
-  it("labels an Auto Pilot client's send as Auto Pilot's", async () => {
+  // The panel never sends by itself: a Send pressed for an Auto Pilot client
+  // is still the person's, or AI activity would list the owner's text as the AI's.
+  it("labels a Send as a person's even when the client is on Auto Pilot", async () => {
     f.rows("clients").find((c) => c.id === "c2")!.auto_pilot = true;
     const res = await post({ clientId: "c2", to: "+16265550102", body: "Draft" });
     expect(await res.json()).toEqual({ success: true });
-    expect(f.rows("messages")[0]).toMatchObject({ sent_by: "auto_pilot" });
+    expect(f.rows("messages")[0]).toMatchObject({ sent_by: "person" });
   });
 
   it("labels a person's Send as a person's", async () => {
