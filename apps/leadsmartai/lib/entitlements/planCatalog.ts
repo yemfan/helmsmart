@@ -120,8 +120,9 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     maxContacts: null,
     alertsLevel: "advanced",
     reportsDownloadLevel: "unlimited",
-    teamAccess: true,
-    teamSeatCap: 10,
+    // Teams are a Signature feature (Michael, 2026-09-11).
+    teamAccess: false,
+    teamSeatCap: 0,
     aiActionsPerMonth: null,
     voiceMinutesPerMonth: 300,
     allowsVoiceOverage: true,

@@ -19,10 +19,10 @@ type Row =
  * type "cma" and it shows the CMA page under Sales Assistant; type a question
  * and the last row asks Max.
  */
-export function CommandPalette() {
+export function CommandPalette({ showTeam = false }: { showTeam?: boolean } = {}) {
   const { t } = useTranslation("dashboard");
   // Derived from the sidebar config + team actions — see useNavCommands.
-  const COMMANDS = useNavCommands();
+  const COMMANDS = useNavCommands(showTeam);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);

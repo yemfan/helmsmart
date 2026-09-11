@@ -4,6 +4,7 @@ import { AgentWorkspaceProviders } from "@/components/entitlements/AgentWorkspac
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { isPaidPlanCached } from "@/lib/credits/cachedPlan";
+import { teamNavVisibleFor } from "@/lib/teams/visibility.server";
 
 /**
  * Account settings (profile, billing) use the same workspace chrome as `/dashboard`,
@@ -55,11 +56,11 @@ export default async function AccountLayout({
     // Non-blocking — falls back to the email-derived label.
   }
 
-  const isPaid = await isPaidPlanCached(user.id);
+  const [isPaid, showTeam] = await Promise.all([isPaidPlanCached(user.id), teamNavVisibleFor({ userId: user.id })]);
 
   return (
     <AgentWorkspaceProviders>
-      <DashboardShell email={user.email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} isPaid={isPaid}>
+      <DashboardShell email={user.email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} isPaid={isPaid} showTeam={showTeam}>
         {children}
       </DashboardShell>
     </AgentWorkspaceProviders>

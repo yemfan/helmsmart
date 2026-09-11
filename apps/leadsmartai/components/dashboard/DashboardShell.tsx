@@ -12,6 +12,7 @@ import brokerNavConfig from "@/brokerNav.config";
 import TopBar from "@/components/dashboard/TopBar";
 import SiteTour from "@/components/tour/SiteTour";
 import { isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
+import { hideTeamNav } from "@/lib/teams/navVisibility";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 
 // CloseBoss brand — product and marketing site both carry it (the
@@ -71,6 +72,7 @@ export default function AppDashboardShell({
   fullName,
   avatarUrl,
   isPaid = false,
+  showTeam = false,
   children,
   navConfigOverride,
 }: {
@@ -85,6 +87,8 @@ export default function AppDashboardShell({
   children: ReactNode;
   /** Pass "broker" to use the loan broker sidebar instead of the agent sidebar. */
   navConfigOverride?: "broker" | null;
+  /** Signature owners and team members see the Team row; decided on the server. */
+  showTeam?: boolean;
 }) {
   // The nav config is authored in English; translate at render time keyed by
   // the English label, so a new nav entry keeps working (it falls back to its
@@ -95,12 +99,12 @@ export default function AppDashboardShell({
     const raw =
       navConfigOverride === "broker"
         ? brokerNavConfig.sections
-        : filterNavSectionsByRole(leadSmartNav, appRole);
+        : hideTeamNav(filterNavSectionsByRole(leadSmartNav, appRole), showTeam);
     return translateNavSections(raw as NavSection[], (s) => t(s, { defaultValue: s }));
     // i18n.language is a dependency in substance: `t` is stable across a
     // language change, so without it the sidebar would keep the old labels.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appRole, navConfigOverride, t, i18n.language]);
+  }, [appRole, navConfigOverride, showTeam, t, i18n.language]);
 
   const activeNavConfig = navConfigOverride === "broker" ? brokerNavConfig : navConfig;
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole) && !isPaid;
@@ -141,7 +145,7 @@ export default function AppDashboardShell({
       {/* Right: header then scrollable content */}
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
         <div className="shrink-0">
-          <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} isPaid={isPaid} />
+          <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} isPaid={isPaid} showTeam={showTeam} />
         </div>
         <main
           id="agent-portal-main"
