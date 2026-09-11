@@ -81,9 +81,9 @@ export default async function ClientsPage({
   const allTags = Object.keys(tagCounts).sort();
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <PageTitle base="Clients" />
           <p className="text-sm text-slate-500 mt-0.5">
@@ -125,7 +125,7 @@ export default async function ClientsPage({
           {tagFilter && <input type="hidden" name="tag" value={tagFilter} />}
         </form>
 
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {(["", "lead", "prospect", "active", "inactive"] as const).map((s) => (
             <a
               key={s}

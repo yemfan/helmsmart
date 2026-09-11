@@ -464,10 +464,10 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-8">
       {/* ── Header ── */}
-      <div className="flex items-start justify-between gap-6">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-6">
+        <div className="min-w-0">
           <h1 className="text-2xl font-semibold text-slate-900">{greeting} 👋</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             {t("dashboard.clientSummary", { count: activeClients, total: totalClients })}
@@ -516,7 +516,7 @@ export default async function HomePage() {
       </div>
 
       {/* ── KPI cards ── */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(({ label, value, icon: Icon, sub, color, href }) => (
           <Link
             key={label}
@@ -573,7 +573,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Cash on hand */}
             <div>
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{t("dashboard.cashFlow.cashOnHand")}</p>
@@ -625,9 +625,9 @@ export default async function HomePage() {
       )}
 
       {/* ── Active Projects + Uninvoiced Time ── */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Active projects — spans 2 cols */}
-        <div className="col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <FolderOpen className="w-4 h-4 text-indigo-500" />
@@ -764,7 +764,7 @@ export default async function HomePage() {
       </div>
 
       {/* ── Recent activity ── */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent invoices */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
@@ -895,7 +895,7 @@ export default async function HomePage() {
 
       {/* ── Pending Approvals + Form Submissions ── */}
       {(pendingApprovals.length > 0 || recentSubmissions.length > 0) && (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Pending approvals */}
           {pendingApprovals.length > 0 && (
             <div className="bg-amber-50 rounded-xl border border-amber-200 overflow-hidden">
@@ -986,7 +986,7 @@ export default async function HomePage() {
       )}
 
       {/* ── Tasks + Events ── */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Open tasks due this week */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">

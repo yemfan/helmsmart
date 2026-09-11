@@ -61,5 +61,10 @@
   "aiEmployee": {
     "coo": "Mark, director de operaciones con IA"
   },
+  "menu": {
+    "navigation": "Navegación principal",
+    "open": "Abrir el menú",
+    "close": "Cerrar el menú"
+  },
   "skipToContent": "Saltar al contenido"
 }

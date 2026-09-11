@@ -387,7 +387,7 @@ export function ReportsClient({
         >
           {pending ? t("common:actions.loading") : t("reports.business.range.apply")}
         </button>
-        <div className="flex items-center gap-2 ml-2">
+        <div className="flex flex-wrap items-center gap-2 ml-2">
           {PRESETS.map((p) => (
             <button
               key={p.key}
@@ -419,7 +419,7 @@ export function ReportsClient({
       {/* P&L Report */}
       {tab === "pnl" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard label={t("reports.business.pnl.totalRevenue")} value={fmt(pnl.grossRevenue)} positive={true} />
             <StatCard label={t("reports.business.pnl.totalExpenses")} value={fmt(pnl.totalExpenses)} positive={false} />
             <StatCard
@@ -516,7 +516,7 @@ export function ReportsClient({
       {/* Cash Flow Report */}
       {tab === "cash" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard
               label={t("reports.business.cash.moneyIn")}
               value={fmt(cash.totalIn)}
@@ -573,7 +573,7 @@ export function ReportsClient({
       {tab === "time" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
           {/* KPI cards */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label={t("reports.business.time.totalHours")} value={fmtHours(time.totalMinutes)} />
             <StatCard label={t("reports.business.time.billableHours")} value={fmtHours(time.billableMinutes)} positive={true} />
             <StatCard label={t("reports.business.time.billableAmount")} value={fmt(time.billableAmount)} positive={true} />
@@ -691,7 +691,7 @@ export function ReportsClient({
       {/* Project Profitability Report (Week 29) */}
       {tab === "projects" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label={t("reports.business.projects.revenue")} value={fmt(projTotals.revenue)} positive={true} />
             <StatCard label={t("reports.business.projects.laborCost")} value={fmt(projTotals.laborCost)} positive={false} />
             <StatCard label={t("reports.business.projects.expenses")} value={fmt(projTotals.expensesTotal)} positive={false} />
@@ -772,7 +772,7 @@ export function ReportsClient({
       {/* Client Profitability Report (Week 33) */}
       {tab === "clients" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label={t("reports.business.clients.revenue")} value={fmt(clientTotals.revenue)} positive={true} />
             <StatCard label={t("reports.business.clients.laborCost")} value={fmt(clientTotals.laborCost)} positive={false} />
             <StatCard label={t("reports.business.clients.expenses")} value={fmt(clientTotals.expensesTotal)} positive={false} />
@@ -850,7 +850,7 @@ export function ReportsClient({
       {/* Accounts Receivable Aging (Week 37) */}
       {tab === "receivables" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               label={t("reports.business.receivables.outstanding")}
               value={fmt(initialReceivables.totalOutstanding)}
@@ -967,7 +967,7 @@ export function ReportsClient({
             </div>
           )}
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               label={t("reports.business.forecast.cashOnHand")}
               value={fmt(initialForecast.startingBalance)}
@@ -1071,7 +1071,7 @@ export function ReportsClient({
       {/* Sales Tax Liability (Week 42) */}
       {tab === "tax" && (
         <div className={`space-y-6 ${pending ? "opacity-60 pointer-events-none" : ""}`}>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               label={t("reports.business.tax.collected")}
               value={fmt(salesTax.taxCollected)}

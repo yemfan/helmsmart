@@ -129,8 +129,9 @@ export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarU
       activeHref={activeHref}
       linkComponent={Link}
       notificationsSlot={notificationsSlot}
-      aiEmployee={{ name: t("aiEmployee.coo"), status: "active" }}
+      aiEmployee={{ name: t("aiEmployee.coo") }}
       footer={userEmail ? <UserFooter userEmail={userEmail} avatarUrl={avatarUrl} /> : undefined}
+      labels={{ navigation: t("menu.navigation"), openMenu: t("menu.open"), closeMenu: t("menu.close") }}
     />
   );
 }

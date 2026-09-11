@@ -61,5 +61,10 @@
   "aiEmployee": {
     "coo": "Mark, AI COO"
   },
+  "menu": {
+    "navigation": "Main navigation",
+    "open": "Open menu",
+    "close": "Close menu"
+  },
   "skipToContent": "Skip to content"
 }

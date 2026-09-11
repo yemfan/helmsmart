@@ -76,7 +76,7 @@ export function EmailCampaignAnalytics({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {[
           { key: "delivered",    label: t("email.analytics.delivered"),    value: delivered.toLocaleString(intl), sub: t("email.analytics.deliveredSub", { total: campaign.total_recipients }), icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
           { key: "openRate",     label: t("email.analytics.openRate"),     value: pct(opens, delivered),          sub: t("email.analytics.opensSub", { count: opens }),                        icon: Eye,          color: "text-blue-600",    bg: "bg-blue-50" },

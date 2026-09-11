@@ -22,7 +22,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const pack = await getActivePack();
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    // Below `lg` the sidebar is a top bar with a drawer, so the shell stacks.
+    <div className="flex flex-col lg:flex-row h-dvh lg:h-screen bg-slate-50 overflow-hidden">
       <Sidebar
         unreadCount={unreadCount}
         userEmail={user?.email ?? null}
@@ -38,7 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           />
         }
       />
-      <main id="main-content" className="flex-1 overflow-auto">
+      <main id="main-content" className="flex-1 min-w-0 min-h-0 overflow-auto">
         {children}
       </main>
       {orgId ? <HelmSmartAiPanel productName={pack.productName} logoLetter={pack.logoLetter} /> : null}

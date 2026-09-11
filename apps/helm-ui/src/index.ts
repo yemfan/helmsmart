@@ -31,8 +31,8 @@ export type { KpiCardProps } from './components/KpiCard';
 export { AiEmployeeCard } from './components/AiEmployeeCard';
 export type { AiEmployeeCardProps, AiAction } from './components/AiEmployeeCard';
 
-export { Sidebar } from './components/Sidebar';
-export type { SidebarProps, NavItem, NavSection, AiEmployeeBadge } from './components/Sidebar';
+export { Sidebar, SIDEBAR_DESKTOP_QUERY } from './components/Sidebar';
+export type { SidebarProps, SidebarLabels, NavItem, NavSection, AiEmployeeBadge } from './components/Sidebar';
 
 export { AppShell } from './components/AppShell';
 export type { AppShellProps } from './components/AppShell';

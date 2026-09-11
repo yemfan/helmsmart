@@ -401,23 +401,14 @@ export function CommandCenterGrid({
       {/* Alerts */}
       <AlertRail alerts={visibleAlerts} onDismiss={dismiss} />
 
-      {/* Grid + briefing */}
+      {/* Grid + briefing — the briefing sits beside the nodes only once
+          there is room for four node columns next to it (xl); below that
+          it stacks under them. */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: briefing ? '1fr 280px' : '1fr',
-          gap: 16,
-          alignItems: 'start',
-        } as React.CSSProperties}
+        className={`grid grid-cols-1 items-start gap-4 ${briefing ? 'xl:grid-cols-[minmax(0,1fr)_280px]' : ''}`}
       >
-        {/* Node grid — 4 columns */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 12,
-          } as React.CSSProperties}
-        >
+        {/* Node grid — 1 column on a phone, 2 on a tablet, 4 at xl */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {nodes.map((node) => (
             <DnaNodeCard key={node.id} node={node} />
           ))}
@@ -425,7 +416,7 @@ export function CommandCenterGrid({
 
         {/* Briefing panel */}
         {briefing && (
-          <div style={{ position: 'sticky', top: 20 }}>
+          <div className="xl:sticky xl:top-5">
             <BriefingPanel briefing={briefing} window={win} />
           </div>
         )}

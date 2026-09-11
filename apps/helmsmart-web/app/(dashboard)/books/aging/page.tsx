@@ -89,7 +89,7 @@ async function AgingTable({
       </div>
 
       {/* Bucket summary bar */}
-      <div className="grid grid-cols-5 gap-0 border-b border-slate-100">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 border-b border-slate-100">
         {BUCKET_ORDER.map((bucket) => (
           <div key={bucket} className={`p-4 text-center ${totals[bucket] > 0 ? "" : "opacity-40"}`}>
             <p className={`text-xs font-semibold px-2 py-0.5 rounded-full border inline-block ${BUCKET_COLORS[bucket]}`}>
@@ -270,7 +270,7 @@ export default async function AgingPage() {
   ];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-slate-900">{t("aging.title")}</h1>
         <p className="text-sm text-slate-500 mt-0.5">
@@ -281,7 +281,7 @@ export default async function AgingPage() {
       <BooksNav />
 
       {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {cards.map(({ key, value, sub, color, warn }) => (
           <div
             key={key}

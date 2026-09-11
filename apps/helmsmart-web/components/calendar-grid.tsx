@@ -180,11 +180,11 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
   return (
     <div className="flex h-full flex-col">
       {/* Calendar header */}
-      <div className="flex items-center justify-between px-8 py-5 border-b border-slate-200 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-8 py-5 border-b border-slate-200 bg-white">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-semibold text-slate-900">{monthName}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => openCreate(isoDate(new Date()))}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
@@ -233,7 +233,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
       </div>
 
       {/* Type filter chips */}
-      <div className="flex items-center gap-2 px-8 py-3 border-b border-slate-200 bg-white overflow-x-auto">
+      <div className="flex items-center gap-2 px-4 sm:px-8 py-3 border-b border-slate-200 bg-white overflow-x-auto">
         {TYPE_FILTERS.map((f) => {
           const active = typeFilter === f;
           return (
