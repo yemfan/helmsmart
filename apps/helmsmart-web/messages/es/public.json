@@ -69,7 +69,7 @@
       "invoice": "Factura",
       "due": "Vencimiento",
       "status": "Estado",
-      "amount": "Importe"
+      "amount": "Monto"
     },
     "status": {
       "sent": "Enviada",
