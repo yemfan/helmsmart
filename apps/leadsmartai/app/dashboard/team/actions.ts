@@ -31,6 +31,8 @@ import { parseAnnouncementInput, REACTIONS, type Reaction } from "@/lib/teams/bi
 import { createAnnouncement, markRead, react as svcReact, removeAnnouncement as svcRemoveAnnouncement, setPinned } from "@/lib/teams/billboard.server";
 import { parseBoardInput, parseReply } from "@/lib/teams/board";
 import { addReply, createBoardPost, removeBoardPost as svcRemoveBoardPost, removeReply, setLike } from "@/lib/teams/board.server";
+import { parseTrainingInput } from "@/lib/teams/training";
+import { addTraining as svcAddTraining, removeTraining as svcRemoveTraining, setCompletion as svcSetCompletion } from "@/lib/teams/training.server";
 
 /**
  * Server actions for the /dashboard/team UI.
@@ -550,4 +552,82 @@ export async function setRole(formData: FormData) {
   await svcSetMemberRole({ teamId, agentId, role });
   revalidatePath("/dashboard/team");
   return { ok: true as const };
+}
+
+/** Post a training class, mandatory or optional. Owner or manager. */
+export async function addTraining(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  if (!teamId) return { ok: false as const, error: "Missing team", field: null, reason: null };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can add a class.", field: null, reason: null };
+  const parsed = parseTrainingInput({
+    title: formData.get("title"),
+    description: formData.get("description"),
+    required: formData.get("required"),
+    startsAt: formData.get("startsAt"),
+    location: formData.get("location"),
+    materialsUrl: formData.get("materialsUrl"),
+    dueOn: formData.get("dueOn"),
+  });
+  if (!parsed.ok) return { ok: false as const, error: "Check the form.", field: parsed.field, reason: parsed.reason };
+  try {
+    const training = await svcAddTraining(teamId, ctx.agentId, parsed.training);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, training };
+  } catch (e) {
+    console.error("[team.training.add]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not save that right now.", field: null, reason: null };
+  }
+}
+
+/** Remove a class and its attendance record. Owner or manager. */
+export async function removeTraining(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const id = String(formData.get("id") ?? "");
+  if (!teamId || !id) return { ok: false as const, error: "Missing args" };
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!canManageTeam(role)) return { ok: false as const, error: "Only the team owner or a manager can remove a class." };
+  try {
+    const removed = await svcRemoveTraining(teamId, id);
+    revalidatePath("/dashboard/team");
+    return removed ? { ok: true as const } : { ok: false as const, error: "That class is already gone." };
+  } catch (e) {
+    console.error("[team.training.remove]", e instanceof Error ? e.message : e);
+    return { ok: false as const, error: "We could not remove that right now." };
+  }
+}
+
+/**
+ * Record or clear a completion. Any member for themselves; the owner or a
+ * manager for anyone on the team. A member cannot clear attendance a manager
+ * recorded for them.
+ */
+export async function setTrainingDone(formData: FormData) {
+  const teamId = String(formData.get("teamId") ?? "");
+  const trainingId = String(formData.get("trainingId") ?? "");
+  const target = String(formData.get("agentId") ?? "");
+  const done = formData.get("done") === "1";
+  type Code = "not_found" | "not_yours" | "forbidden" | "not_member" | "failed";
+  const fail = (code: Code) => ({ ok: false as const, code });
+  if (!teamId || !trainingId) return fail("failed");
+  const ctx = await getCurrentAgentContext();
+  const role = await getRole({ teamId, agentId: ctx.agentId });
+  if (!role) return fail("not_member");
+  const manager = canManageTeam(role);
+  const agentId = target || ctx.agentId;
+  if (agentId !== ctx.agentId) {
+    if (!manager) return fail("forbidden");
+    if (!(await getRole({ teamId, agentId }))) return fail("not_member");
+  }
+  try {
+    const r = await svcSetCompletion({ teamId, trainingId, agentId, done, byAgentId: ctx.agentId, asManager: manager });
+    if (!r.ok) return fail(r.reason);
+    revalidatePath("/dashboard/team");
+    return { ok: true as const, completion: r.completion };
+  } catch (e) {
+    console.error("[team.training.done]", e instanceof Error ? e.message : e);
+    return fail("failed");
+  }
 }

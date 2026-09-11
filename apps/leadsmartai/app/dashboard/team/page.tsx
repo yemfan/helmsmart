@@ -18,6 +18,9 @@ import { listBillboard } from "@/lib/teams/billboard.server";
 import type { Announcement } from "@/lib/teams/billboard";
 import { listBoard } from "@/lib/teams/board.server";
 import type { BoardPost } from "@/lib/teams/board";
+import { listCompletions, listTrainings } from "@/lib/teams/training.server";
+import { dateIn, type Completion, type Training } from "@/lib/teams/training";
+import { getAccountTimezone } from "@/lib/agent/accountTimezone";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
@@ -42,9 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function TeamPage() {
   const ctx = await getCurrentAgentContext();
-  const [teams, access] = await Promise.all([
+  const [teams, access, timeZone] = await Promise.all([
     listTeamsForAgent(ctx.agentId),
     getTeamAccessStatus(ctx.agentId),
+    getAccountTimezone(ctx.agentId),
   ]);
 
   let roster: TeamRoster | null = null;
@@ -58,6 +62,8 @@ export default async function TeamPage() {
   let board: OnboardingBoard | null = null;
   let brand: TeamBrand | null = null;
   let directory: MemberDirectory = {};
+  let trainings: Training[] = [];
+  let trainingCompletions: Completion[] = [];
 
   if (teams.length > 0) {
     const team = teams[0];
@@ -65,7 +71,7 @@ export default async function TeamPage() {
     const r = await getRoster(team.id);
     const myRole = isOwner ? "owner" : (r?.members.find((m) => m.agentId === ctx.agentId)?.role ?? null);
     canManage = canManageTeam(myRole);
-    const [seat, dir, b, br, lib, refs, posts, bp] = await Promise.all([
+    const [seat, dir, b, br, lib, refs, posts, bp, tr, comps] = await Promise.all([
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
@@ -74,6 +80,9 @@ export default async function TeamPage() {
       listReferrals(team.id, ctx.agentId, canManage),
       listBillboard(team.id, ctx.agentId),
       listBoard(team.id, ctx.agentId),
+      listTrainings(team.id),
+      // Managers see the whole office's record; a member, only their own.
+      listCompletions(team.id, canManage ? null : ctx.agentId),
     ]);
     directory = dir;
     roster = r;
@@ -84,6 +93,8 @@ export default async function TeamPage() {
     referrals = refs;
     billboard = posts;
     boardPosts = bp;
+    trainings = tr;
+    trainingCompletions = comps;
   }
 
   return (
@@ -102,6 +113,10 @@ export default async function TeamPage() {
       board_posts={boardPosts}
       myLicense={await loadAgentLicense(ctx.agentId)}
       directory={directory}
+      trainings={trainings}
+      trainingCompletions={trainingCompletions}
+      today={dateIn(new Date().toISOString(), timeZone)}
+      timeZone={timeZone}
     />
   );
 }
