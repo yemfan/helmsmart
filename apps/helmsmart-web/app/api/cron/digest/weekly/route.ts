@@ -24,6 +24,7 @@ import { moneyFormatter } from "@/lib/books-format";
 import { translatorFor } from "@/lib/i18n/translator";
 import { userUiLocales } from "@/lib/i18n/userLocale";
 import { orgOwnerRecipients } from "@/lib/org-recipients";
+import { addDays, calendarDate } from "@/lib/org-date";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +39,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ skipped: "not monday" });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const weekOut = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);
+  const now = new Date();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
   let sent = 0;
@@ -51,12 +51,15 @@ export async function GET(request: NextRequest) {
     const db = createServiceClientFor(conn);
     const { data: orgs } = await db
       .from("organizations")
-      .select("id, name, weekly_digest_enabled, currency");
+      .select("id, name, weekly_digest_enabled, currency, timezone");
     orgCount += orgs?.length ?? 0;
 
     for (const org of orgs ?? []) {
     try {
       if (org.weekly_digest_enabled === false) continue;
+      // Overdue and due-this-week are counted from the org's own date.
+      const today = calendarDate(org.timezone as string | null, now);
+      const weekOut = addDays(today, 7);
       // Recipients: owners + admins.
       //
       // This was an embed — .select("role, user:user_id(email)") — which

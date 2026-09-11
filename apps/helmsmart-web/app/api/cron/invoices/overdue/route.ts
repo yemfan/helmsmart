@@ -14,6 +14,7 @@ import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server"
 import { createNotificationService } from "@/lib/notifications-service";
 import { runAutomations } from "@/lib/automation-engine";
 import { DEFAULT_CURRENCY, money } from "@/lib/books-format";
+import { calendarDate, latestCalendarDate } from "@/lib/org-date";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Past due means past due in the invoice's own org's day. The query takes the
+  // latest date any zone can be on; each row is then held to its org's date.
+  const now = new Date();
+  const horizon = latestCalendarDate(now);
   let processed = 0;
   const errors: string[] = [];
 
@@ -33,18 +37,38 @@ export async function GET(request: NextRequest) {
   for (const conn of packServiceConns()) {
     const supabase = createServiceClientFor(conn);
 
-    // Find all sent invoices past their due date
-    const { data: overdueInvoices, error } = await supabase
+    // Find sent invoices that may be past their due date
+    const { data: candidates, error } = await supabase
       .from("invoices")
-      .select("id, invoice_number, total, organization_id, clients(first_name, last_name, company)")
+      .select("id, invoice_number, total, due_date, organization_id, clients(first_name, last_name, company)")
       .eq("status", "sent")
-      .lt("due_date", today);
+      .lt("due_date", horizon);
 
     if (error) {
       errors.push(error.message);
       continue;
     }
-    if (!overdueInvoices?.length) continue;
+    if (!candidates?.length) continue;
+
+    /*
+     * The amount goes into the notification as a formatted STRING, because the
+     * reader's language decides the sentence and the org's ledger decides the
+     * currency — and only this side knows the second one. One query for the
+     * whole batch; a missing row means USD, the column's own default. The same
+     * rows carry each org's timezone, which decides whether it is overdue yet.
+     */
+    const { data: orgs } = await supabase
+      .from("organizations")
+      .select("id, currency, timezone")
+      .in("id", [...new Set(candidates.map((i) => i.organization_id))]);
+    const currencyOf = new Map(
+      (orgs ?? []).map((o) => [o.id as string, (o.currency as string | null) || DEFAULT_CURRENCY]),
+    );
+    const timezoneOf = new Map((orgs ?? []).map((o) => [o.id as string, o.timezone as string | null]));
+    const overdueInvoices = candidates.filter(
+      (i) => (i.due_date as string) < calendarDate(timezoneOf.get(i.organization_id), now),
+    );
+    if (!overdueInvoices.length) continue;
 
     // Mark all as overdue in one update
     const ids = overdueInvoices.map((i) => i.id);
@@ -52,20 +76,6 @@ export async function GET(request: NextRequest) {
       .from("invoices")
       .update({ status: "overdue", updated_at: new Date().toISOString() })
       .in("id", ids);
-
-    /*
-     * The amount goes into the notification as a formatted STRING, because the
-     * reader's language decides the sentence and the org's ledger decides the
-     * currency — and only this side knows the second one. One query for the
-     * whole batch; a missing row means USD, the column's own default.
-     */
-    const { data: orgs } = await supabase
-      .from("organizations")
-      .select("id, currency")
-      .in("id", [...new Set(overdueInvoices.map((i) => i.organization_id))]);
-    const currencyOf = new Map(
-      (orgs ?? []).map((o) => [o.id as string, (o.currency as string | null) || DEFAULT_CURRENCY]),
-    );
 
     // Fire one notification per invoice
     for (const inv of overdueInvoices) {

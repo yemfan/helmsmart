@@ -14,6 +14,7 @@ import { createNotificationService } from "@/lib/notifications-service";
 import { userUiLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/server";
 import { DEFAULT_CURRENCY } from "@/lib/books-format";
+import { calendarDate } from "@/lib/org-date";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     const { data: orgs } = await db
       .from("organizations")
-      .select("id, subscription_status, currency")
+      .select("id, subscription_status, currency, timezone")
       .limit(500);
 
     for (const org of orgs ?? []) {
@@ -111,7 +112,8 @@ export async function GET(request: NextRequest) {
           .eq("slug", "tim")
           .maybeSingle();
         if (tim) {
-          const metricDate = now.toISOString().slice(0, 10);
+          // The org's day, the same one the dashboard's metrics are read in.
+          const metricDate = calendarDate(org.timezone as string | null, now);
           const { data: existing } = await db
             .from("ai_employee_metrics")
             .select("metric_value")

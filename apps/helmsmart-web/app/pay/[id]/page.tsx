@@ -17,6 +17,7 @@ import { notFound } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { calendarDate } from "@/lib/org-date";
 import { Building2, CheckCircle2, CreditCard, Calendar, FileText } from "lucide-react";
 import { PayButton } from "./pay-button";
 import { StripeResultBanner } from "@/components/stripe-result-banner";
@@ -47,7 +48,7 @@ export default async function PayInvoicePage({
       subtotal, tax_rate, tax_amount, total, notes, paid_at,
       invoice_lines(id, description, quantity, unit_price, amount, sort_order),
       clients(first_name, last_name, company, email),
-      organizations(name, currency)
+      organizations(name, currency, timezone)
     `)
     .eq("id", id)
     .single();
@@ -64,6 +65,7 @@ export default async function PayInvoicePage({
   const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as {
     name: string;
     currency: string | null;
+    timezone: string | null;
   } | null;
 
   // Built once, called per row — constructing an Intl formatter is the
@@ -83,7 +85,8 @@ export default async function PayInvoicePage({
       t("pay.clientFallback")
     : t("pay.clientFallback");
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Overdue by the business's date — the one its dashboard and reminders use.
+  const today = calendarDate(org?.timezone);
   const isOverdue = inv.status === "sent" && inv.due_date < today;
   const isPaid    = inv.status === "paid";
   const isVoid    = inv.status === "void";

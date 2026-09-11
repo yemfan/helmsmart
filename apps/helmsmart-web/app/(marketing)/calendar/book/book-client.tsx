@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import { ChevronLeft, Check, Calendar, Clock, User } from "lucide-react";
 import { createEvent } from "@/lib/actions/events";
+import { addDays, calendarDate } from "@/lib/org-date";
 import type { BusinessHours, AppointmentType } from "@/lib/receptionist";
 import { rich } from "../../_rich";
 
@@ -32,21 +33,23 @@ interface ExistingEvent {
 }
 
 function computeSlots(
+  timeZone: string,
   hours: BusinessHours,
   events: ExistingEvent[],
   durationMinutes: number
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
-  const today = new Date();
+  // The next 14 days of the business's calendar. Each date and its weekday come
+  // from the same string: a local Date run through toISOString() gave, every US
+  // evening, tomorrow's date under today's opening hours.
+  const today = calendarDate(timeZone);
 
   for (let i = 1; i <= 14; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const dayKey = JS_DAY_TO_KEY[d.getDay()];
+    const dateStr = addDays(today, i);
+    const dayKey = JS_DAY_TO_KEY[new Date(`${dateStr}T12:00:00Z`).getUTCDay()];
     const bh = hours[dayKey];
     if (!bh) continue;
 
-    const dateStr = d.toISOString().slice(0, 10);
     const [oH, oM] = bh.open.split(":").map(Number);
     const [cH, cM] = bh.close.split(":").map(Number);
     let cur = oH * 60 + oM;
@@ -89,11 +92,14 @@ export function BookClient({
   appointmentTypes,
   businessHours,
   existingEvents,
+  timeZone,
 }: {
   clients: Client[];
   appointmentTypes: AppointmentType[];
   businessHours: BusinessHours;
   existingEvents: ExistingEvent[];
+  /** `organizations.timezone` — which days count as the next two weeks. */
+  timeZone: string;
 }) {
   const { t, i18n } = useTranslation("site");
   const locale = i18n.language;
@@ -110,8 +116,8 @@ export function BookClient({
   const [done, setDone] = useState(false);
 
   const slots = useMemo(
-    () => computeSlots(businessHours, existingEvents, selectedType?.duration_minutes ?? 60),
-    [businessHours, existingEvents, selectedType]
+    () => computeSlots(timeZone, businessHours, existingEvents, selectedType?.duration_minutes ?? 60),
+    [timeZone, businessHours, existingEvents, selectedType]
   );
 
   const slotsByDate = useMemo(

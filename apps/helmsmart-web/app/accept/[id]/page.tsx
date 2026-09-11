@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { intlLocale } from "@leadsmart/i18n";
+import { calendarDate } from "@/lib/org-date";
 import { AcceptButtons } from "./accept-buttons";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 
@@ -48,16 +49,12 @@ export default async function AcceptEstimatePage({
       subtotal, tax_rate, tax_amount, total, notes,
       clients(first_name, last_name, company),
       estimate_lines(description, quantity, unit_price, amount, sort_order),
-      organizations(name, currency)
+      organizations(name, currency, timezone)
     `)
     .eq("id", id)
     .single();
 
   if (!est) notFound();
-
-  const today = new Date().toISOString().slice(0, 10);
-  const isExpired = est.expiry_date < today;
-  const effectiveStatus = isExpired && est.status === "sent" ? "expired" : est.status;
 
   const clientRaw = est.clients;
   const client = (Array.isArray(clientRaw) ? clientRaw[0] : clientRaw) as {
@@ -74,9 +71,16 @@ export default async function AcceptEstimatePage({
   const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as {
     name: string;
     currency: string | null;
+    timezone: string | null;
   } | null;
   // The org's own currency, defaulting to USD only when it has never set one.
   const currency = org?.currency?.trim() || "USD";
+
+  // Expired by the business's date, not the server's — the same day
+  // `/api/estimates/[id]/respond` checks when the client clicks Accept.
+  const today = calendarDate(org?.timezone);
+  const isExpired = est.expiry_date < today;
+  const effectiveStatus = isExpired && est.status === "sent" ? "expired" : est.status;
 
   const lines = (
     Array.isArray(est.estimate_lines) ? est.estimate_lines : []

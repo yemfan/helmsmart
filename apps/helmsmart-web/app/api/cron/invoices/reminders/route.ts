@@ -13,11 +13,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/notifications-service";
 import { DEFAULT_CURRENCY, money } from "@/lib/books-format";
-import {
-  sendReminderForInvoice,
-  daysOverdue,
-  type ReminderInvoice,
-} from "@/lib/invoice-reminders";
+import { sendReminderForInvoice, type ReminderInvoice } from "@/lib/invoice-reminders";
+import { calendarDate, daysBetween, latestCalendarDate } from "@/lib/org-date";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +25,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Overdue by each org's own date. The query takes the latest date any zone
+  // can be on; each invoice is then held to its org's date below.
+  const now = new Date();
+  const horizon = latestCalendarDate(now);
   let sent = 0;
   let skipped = 0;
   const errors: string[] = [];
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         "id, invoice_number, total, due_date, client_id, reminder_count, last_reminder_sent_at, organization_id, clients(first_name, last_name, email, phone, preferred_language)"
       )
       .in("status", ["sent", "overdue"])
-      .lt("due_date", today);
+      .lt("due_date", horizon);
 
     if (error) {
       errors.push(error.message);
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     const orgIds = [...new Set(invoices.map((i) => i.organization_id))];
     const { data: orgs } = await db
       .from("organizations")
-      .select("id, auto_send_reminders, reminder_days_intervals, reminder_max_count, currency")
+      .select("id, auto_send_reminders, reminder_days_intervals, reminder_max_count, currency, timezone")
       .in("id", orgIds);
 
     const orgMap = new Map(
@@ -69,6 +69,7 @@ export async function GET(request: NextRequest) {
           // The ledger's currency, so the notification's amount is not
           // relabelled as dollars for an org that bills in anything else.
           currency:      (o.currency as string | null) || DEFAULT_CURRENCY,
+          timeZone:      o.timezone as string | null,
         },
       ])
     );
@@ -79,7 +80,12 @@ export async function GET(request: NextRequest) {
         intervals: [3, 7, 14, 30],
         maxCount: 4,
         currency: DEFAULT_CURRENCY,
+        timeZone: null,
       };
+
+      // Not overdue yet in the org's own day — the query above only bounded it.
+      const today = calendarDate(settings.timeZone, now);
+      if ((inv.due_date as string) >= today) continue;
 
       // Respect org-level toggle
       if (!settings.autoSend) {
@@ -95,7 +101,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Check if today matches a scheduled interval
-      const overduedays = daysOverdue(inv.due_date);
+      const overduedays = daysBetween(inv.due_date as string, today);
       const shouldSendToday = settings.intervals.some((intervalDay) => {
         // Send if overdue days matches the interval exactly,
         // or if we're past it and haven't sent since the previous interval
@@ -122,9 +128,10 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      // Also gate by last_reminder_sent_at to avoid double-sends on same day
+      // Also gate by last_reminder_sent_at to avoid double-sends on same day —
+      // the org's day, the same one `today` is.
       if (inv.last_reminder_sent_at) {
-        const lastSentDate = inv.last_reminder_sent_at.slice(0, 10);
+        const lastSentDate = calendarDate(settings.timeZone, new Date(inv.last_reminder_sent_at));
         if (lastSentDate === today) {
           skipped++;
           continue;
@@ -135,7 +142,7 @@ export async function GET(request: NextRequest) {
       // recipient doesn't abort the rest of this org's dunning run.
       let res: { sent: boolean };
       try {
-        res = await sendReminderForInvoice(db, inv as ReminderInvoice);
+        res = await sendReminderForInvoice(db, inv as ReminderInvoice, { today });
       } catch (e) {
         errors.push(
           `invoice ${inv.invoice_number}: ${e instanceof Error ? e.message : String(e)}`

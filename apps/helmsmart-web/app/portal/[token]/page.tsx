@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { intlLocale } from "@leadsmart/i18n";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { calendarDate } from "@/lib/org-date";
 import { FileText, CheckCircle2, Clock, AlertCircle, XCircle, Calendar, ChevronRight } from "lucide-react";
 
 /**
@@ -84,7 +85,7 @@ export default async function ClientPortalPage({
     t("portal.clientFallback");
 
   const [orgRes, invoicesRes, estimatesRes, eventsRes] = await Promise.all([
-    sb.from("organizations").select("name, currency").eq("id", client.organization_id).single(),
+    sb.from("organizations").select("name, currency, timezone").eq("id", client.organization_id).single(),
     sb.from("invoices")
       .select("id, invoice_number, status, issue_date, due_date, total, paid_at")
       .eq("client_id", client.id)
@@ -110,7 +111,8 @@ export default async function ClientPortalPage({
   const estimates = estimatesRes.data ?? [];
   const events    = eventsRes.data ?? [];
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The business's date: overdue and expired here match its own dashboard.
+  const today = calendarDate(orgRes.data?.timezone as string | null | undefined);
   const totalPaid        = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + Number(i.total), 0);
   const totalOutstanding = invoices.filter((i) => i.status === "sent" || i.status === "overdue").reduce((s, i) => s + Number(i.total), 0);
   const openEstimates    = estimates.filter((e) => e.status === "sent");
@@ -190,6 +192,9 @@ export default async function ClientPortalPage({
           <Section title={t("portal.sections.appointments")}>
             {events.map((evt, i) => {
               const evtDate = new Date(evt.start_at);
+              // UTC slice on purpose: the calendar saves the typed time with no
+              // offset, which Postgres reads as UTC, so this is the day picked.
+              // Same rule as the dashboard's home page.
               const isToday = evtDate.toISOString().slice(0, 10) === today;
               const dateStr = isToday
                 ? t("portal.todayAt", {
@@ -259,9 +264,8 @@ export default async function ClientPortalPage({
         {estimates.length > 0 && (
           <Section title={t("portal.sections.estimates")}>
             {estimates.map((est, i) => {
-              const today2 = new Date().toISOString().slice(0, 10);
               const effectiveStatus =
-                est.status === "sent" && est.expiry_date && est.expiry_date < today2
+                est.status === "sent" && est.expiry_date && est.expiry_date < today
                   ? "expired"
                   : est.status;
               const cfg = EST_STATUS[effectiveStatus] ?? EST_STATUS.sent;
