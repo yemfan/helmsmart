@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, CheckCircle2, AlertCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bell } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import { Toggle } from "@/components/ui/toggle";
@@ -13,7 +13,11 @@ import {
 import type { ChannelOptOut } from "@/lib/consent";
 
 type Preferences = ClientCommunicationPreferences;
+type Field = keyof Preferences;
 type OptOutKey = "opted_out_sms" | "opted_out_email" | "opted_out_calls";
+
+/** How long "Saved!" stays before the label goes back to rest. */
+const SAVED_FOR_MS = 2500;
 
 interface Props {
   clientId: string;
@@ -35,42 +39,80 @@ export function CommunicationPreferences({
   const [preferences, setPreferences] = useState<Preferences>(
     initialPreferences ?? DEFAULT_CLIENT_COMMUNICATION_PREFERENCES
   );
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  // The notes as the database holds them, so a blur with nothing new writes nothing.
+  const savedNotes = useRef(preferences.notes ?? "");
+  const [savingField, setSavingField] = useState<Field | null>(null);
+  const [savedField, setSavedField] = useState<Field | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Switches the owner has changed here: their "since" line describes the
   // state the page loaded with, so it stops applying once they are touched.
   const [touched, setTouched] = useState<Set<OptOutKey>>(new Set());
 
-  const handleToggle = async (
-    key: keyof Preferences,
-    value: boolean | string
-  ) => {
-    const previous = preferences;
-    const updated = { ...preferences, [key]: value };
-    setPreferences(updated);
-    setSaved(false);
+  useEffect(() => () => {
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+  }, []);
 
-    setSaving(true);
+  async function save(field: Field, updated: Preferences, undo: () => void) {
+    setSavingField(field);
+    setSavedField(null);
     setError(null);
 
-    const result = await updateClientPreferences(clientId, updated);
-    setSaving(false);
-
-    if (result.ok) {
-      if (key === "opted_out_sms" || key === "opted_out_email" || key === "opted_out_calls") {
-        setTouched((prev) => new Set(prev).add(key));
-      }
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } else {
-      // The row did not change, so the control must not keep showing the new
-      // value — a switch left flipped over a refused write tells the same lie
-      // the silent save did.
-      setPreferences(previous);
-      setError(result.error || t("errors.preferencesFailed"));
+    let result: { ok: boolean; error?: string };
+    try {
+      result = await updateClientPreferences(clientId, updated);
+    } catch (e) {
+      console.error("saving communication preferences", e);
+      result = { ok: false };
     }
+    setSavingField(null);
+
+    if (!result.ok) {
+      undo();
+      setError(result.error || t("errors.preferencesFailed"));
+      return;
+    }
+    savedNotes.current = updated.notes ?? "";
+    if (field === "opted_out_sms" || field === "opted_out_email" || field === "opted_out_calls") {
+      setTouched((prev) => new Set(prev).add(field));
+    }
+    setSavedField(field);
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+    savedTimer.current = setTimeout(() => setSavedField(null), SAVED_FOR_MS);
+  }
+
+  /** A switch or a choice: saved at once. */
+  const handleChange = (key: Exclude<Field, "notes">, value: boolean | string) => {
+    const previous = preferences[key];
+    const updated = { ...preferences, [key]: value };
+    setPreferences(updated);
+    // The row did not change, so the control must not keep showing the new
+    // value — a switch left flipped over a refused write tells the same lie
+    // the silent save did.
+    void save(key, updated, () => setPreferences((cur) => ({ ...cur, [key]: previous })));
   };
+
+  /**
+   * The notes save when the box loses focus. They used to save on every
+   * keystroke — a write per letter, each one flashing the status line.
+   */
+  const saveNotes = () => {
+    const notes = preferences.notes ?? "";
+    if (notes === savedNotes.current || savingField === "notes") return;
+    // A refused note keeps its text: losing what was typed is worse than an
+    // unsaved box, and the error below says it did not save. The next blur
+    // tries again.
+    void save("notes", preferences, () => {});
+  };
+
+  const statusLabel = (saving: boolean, saved: boolean) =>
+    saving ? (
+      <span className="text-xs text-slate-500" aria-live="polite">{t("common:status.saving")}</span>
+    ) : saved ? (
+      <span className="text-xs text-emerald-600" aria-live="polite">{t("preferences.saved")}</span>
+    ) : null;
+
+  const busy = savingField !== null && savingField !== "notes";
 
   const sinceLine = (key: OptOutKey, info: ChannelOptOut | undefined): string | null => {
     if (!info?.optedOut || !info.since || info.via === "marked") return null;
@@ -111,6 +153,8 @@ export function CommunicationPreferences({
         <h3 className="text-lg font-semibold text-slate-900">
           {t("preferences.title")}
         </h3>
+        {/* A switch or a choice reports its save here, beside the heading, not in a line that appears under it. */}
+        {statusLabel(busy, savedField !== null && savedField !== "notes")}
       </div>
 
       <div className="space-y-6">
@@ -125,8 +169,8 @@ export function CommunicationPreferences({
                 <div className="pt-0.5">
                   <Toggle
                     checked={preferences[item.key] === true}
-                    onChange={(next) => handleToggle(item.key, next)}
-                    disabled={saving}
+                    onChange={(next) => handleChange(item.key, next)}
+                    disabled={busy}
                     label={item.label}
                   />
                 </div>
@@ -154,9 +198,9 @@ export function CommunicationPreferences({
               <select
                 value={preferences.preferred_contact_method || "any"}
                 onChange={(e) =>
-                  handleToggle("preferred_contact_method", e.target.value)
+                  handleChange("preferred_contact_method", e.target.value)
                 }
-                disabled={saving}
+                disabled={busy}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               >
                 <option value="any">{t("preferences.contact.methods.any")}</option>
@@ -174,9 +218,9 @@ export function CommunicationPreferences({
               <select
                 value={preferences.best_time_to_contact || ""}
                 onChange={(e) =>
-                  handleToggle("best_time_to_contact", e.target.value)
+                  handleChange("best_time_to_contact", e.target.value)
                 }
-                disabled={saving}
+                disabled={busy}
                 className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               >
                 <option value="">{t("preferences.contact.times.none")}</option>
@@ -188,41 +232,30 @@ export function CommunicationPreferences({
               </select>
             </div>
 
-            {/* Notes */}
+            {/* Notes — saved when the box loses focus; the label says so. */}
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-2">
-                {t("preferences.contact.notes")}
-              </label>
+              <div className="flex items-center gap-2 mb-2">
+                <label htmlFor={`comm-notes-${clientId}`} className="block text-xs font-medium text-slate-700">
+                  {t("preferences.contact.notes")}
+                </label>
+                {statusLabel(savingField === "notes", savedField === "notes")}
+              </div>
               <textarea
+                id={`comm-notes-${clientId}`}
                 value={preferences.notes || ""}
-                onChange={(e) => handleToggle("notes", e.target.value)}
-                disabled={saving}
+                onChange={(e) => setPreferences((cur) => ({ ...cur, notes: e.target.value }))}
+                onBlur={saveNotes}
                 placeholder={t("preferences.contact.notesPlaceholder")}
                 rows={3}
-                className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none disabled:opacity-50"
+                className="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
               />
             </div>
           </div>
         </div>
 
-        {/* Status messages */}
-        <div className="flex items-center gap-2 min-h-6">
-          {saved && (
-            <div className="flex items-center gap-2 text-sm text-emerald-600">
-              <CheckCircle2 className="w-4 h-4" />
-              {t("preferences.saved")}
-            </div>
-          )}
-          {error && (
-            <div className="flex items-center gap-2 text-sm text-rose-600" role="alert">
-              <AlertCircle className="w-4 h-4" />
-              {error}
-            </div>
-          )}
-          {saving && (
-            <div className="text-sm text-slate-500">{t("common:status.saving")}</div>
-          )}
-        </div>
+        {error && (
+          <p className="text-xs text-rose-600" role="alert">{error}</p>
+        )}
       </div>
     </div>
   );

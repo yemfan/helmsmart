@@ -15,6 +15,7 @@ import { detectLanguage, replyLanguageRule, type Lang } from "@/lib/language";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import type { DraftReplyResult, MarkReadResult } from "@/lib/inbox/reply";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -79,24 +80,54 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
 
 // ─── Mark messages read ───────────────────────────────────────────────────────
 
-export async function markThreadRead(clientId: string | null, address?: string | null) {
+/**
+ * Mark a conversation's unread messages read, and say whether they are.
+ *
+ * The inbox clears the unread dot the moment a thread opens. Through the RLS
+ * client a refused update comes back as zero rows and no error, so this asks
+ * for the rows back — and, when there are none, whether anything is still
+ * unread: zero rows because a teammate already read it is fine; zero rows over
+ * messages that are still unread is a refusal, and the dot goes back.
+ */
+export async function markThreadRead(clientId: string | null, address?: string | null): Promise<MarkReadResult> {
+  const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return;
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
+  if (!clientId && !address) return { ok: true };
 
   const supabase = await createClient();
-  const base = supabase
+  const update = supabase.from("messages").update({ read: true }).eq("organization_id", orgId).eq("read", false);
+  const { data, error } = await (
+    clientId
+      ? update.eq("client_id", clientId)
+      : // Unmatched sender thread: its inbound messages, by who sent them.
+        update.is("client_id", null).eq("from_address", address as string)
+  ).select("id"); // ← load-bearing: a refusal is otherwise indistinguishable from a save
+
+  if (error) {
+    console.error("[messages] mark read failed:", error);
+    return { ok: false, error: t("errors.markReadFailed") };
+  }
+  if (data && data.length > 0) return { ok: true };
+
+  const remaining = supabase
     .from("messages")
-    .update({ read: true })
+    .select("id", { count: "exact", head: true })
     .eq("organization_id", orgId)
     .eq("read", false);
-
-  if (clientId) {
-    await base.eq("client_id", clientId);
-  } else if (address) {
-    // Unmatched sender thread: mark its inbound messages read.
-    await base.is("client_id", null).eq("from_address", address);
+  const { count, error: countError } = await (clientId
+    ? remaining.eq("client_id", clientId)
+    : remaining.is("client_id", null).eq("from_address", address as string));
+  if (countError) {
+    console.error("[messages] mark read: unread recount failed:", countError);
+    return { ok: false, error: t("errors.markReadFailed") };
   }
+  if (count && count > 0) {
+    console.error("[messages] mark read changed no rows", { orgId, clientId, address, unread: count });
+    return { ok: false, error: t("errors.markReadRefused") };
+  }
+  return { ok: true };
 }
 
 // ─── Toggle auto-reply ────────────────────────────────────────────────────────
@@ -145,16 +176,40 @@ export async function saveTwilioNumber(
 
 // ─── AI reply draft (Week 57) ─────────────────────────────────────────────────
 
+/** A reason the draft cannot be written, already translated, for the owner to read as-is. */
+class DraftRefusal extends Error {}
+
+/**
+ * Draft a reply with AI. Returns the reason instead of throwing: a thrown
+ * server-action error is replaced by Next's own English text in production, so
+ * "Draft with AI" used to fail with nothing on screen at all.
+ */
 export async function draftReply(
   clientId: string | null,
   channel: "email" | "sms",
   address?: string | null
-): Promise<string> {
+): Promise<DraftReplyResult> {
   const t = await getServerT("inbox");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error(t("errors.noOrganization"));
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
+  try {
+    return { ok: true, text: await composeDraft(t, orgId, clientId, channel, address) };
+  } catch (e) {
+    if (e instanceof DraftRefusal) return { ok: false, error: e.message };
+    console.error("[messages] draft reply failed:", e);
+    return { ok: false, error: t("errors.draftFailed") };
+  }
+}
+
+async function composeDraft(
+  t: (key: string) => string,
+  orgId: string,
+  clientId: string | null,
+  channel: "email" | "sms",
+  address?: string | null
+): Promise<string> {
   const supabase = await createClient();
 
   const base = supabase
@@ -190,7 +245,7 @@ export async function draftReply(
   const ownerLang = contactLanguageFor(await getServerLocale());
 
   const recent = (msgs ?? []).slice().reverse(); // chronological
-  if (!recent.length) throw new Error(t("errors.nothingToReplyTo"));
+  if (!recent.length) throw new DraftRefusal(t("errors.nothingToReplyTo"));
 
   // Unmatched threads have no stored client language — detect from their last inbound.
   if (!clientId) {

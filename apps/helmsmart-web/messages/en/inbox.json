@@ -6,7 +6,7 @@
     "title": "Inbox",
     "newConversation": "New conversation",
     "unknownSender": "Unknown",
-    "outboundPrefix": "You: ",
+    "previewFrom": "{{sender}}: ",
     "filters": {
       "all": "All",
       "sms": "SMS",
@@ -44,6 +44,39 @@
     "replyPlaceholder": {
       "email": "Reply by email… (⌘↵ to send)",
       "sms": "Reply by text… (⌘↵ to send)"
+    },
+    "back": "Back to conversations",
+    "replyVia": "Reply by",
+    "replySubject": "Re: {{subject}}",
+    "sentByTime": "{{sender}} · {{time}}",
+    "notSent": "Not sent — {{reason}}",
+    "sendUnconfirmed": "We couldn't confirm the message went out. Check the conversation before you retry.",
+    "blocked": {
+      "noAddress": "There's no phone number or email address to reply to.",
+      "noPhone": "This contact has no phone number to text.",
+      "noEmail": "This contact has no email address.",
+      "optedOutSms": "You can't text this contact. {{reason}}.",
+      "optedOutEmail": "You can't email this contact. {{reason}}."
+    }
+  },
+  "provenance": {
+    "person": "You",
+    "auto_pilot": "Auto Pilot",
+    "auto_reply": "Auto-reply",
+    "missed_call_text": "Missed-call text",
+    "reminder": "Automatic reminder",
+    "receptionist": "AI receptionist"
+  },
+  "consent": {
+    "sms": {
+      "stopReply": "Opted out of texts since {{date}} · replied STOP",
+      "carrier": "Opted out of texts since {{date}} · their carrier reported STOP",
+      "since": "Opted out of texts since {{date}}",
+      "marked": "Opted out of texts"
+    },
+    "email": {
+      "since": "Unsubscribed from email since {{date}}",
+      "marked": "Opted out of email"
     }
   },
   "unselected": {
@@ -94,6 +127,8 @@
     "emailNotConfigured": "Email sending isn't set up for this account yet.",
     "invalidRequest": "That request couldn't be read.",
     "noPhone": "This contact has no phone number.",
-    "emptyMessage": "Write a message first."
+    "emptyMessage": "Write a message first.",
+    "markReadFailed": "Couldn't mark this conversation as read. Try again.",
+    "markReadRefused": "This conversation couldn't be marked as read — your account doesn't have permission to change it."
   }
 }

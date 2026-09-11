@@ -6,7 +6,7 @@
     "title": "Bandeja de entrada",
     "newConversation": "Nueva conversación",
     "unknownSender": "Desconocido",
-    "outboundPrefix": "Usted: ",
+    "previewFrom": "{{sender}}: ",
     "filters": {
       "all": "Todos",
       "sms": "SMS",
@@ -44,6 +44,39 @@
     "replyPlaceholder": {
       "email": "Responder por correo… (⌘↵ para enviar)",
       "sms": "Responder por SMS… (⌘↵ para enviar)"
+    },
+    "back": "Volver a las conversaciones",
+    "replyVia": "Responder por",
+    "replySubject": "RE: {{subject}}",
+    "sentByTime": "{{sender}} · {{time}}",
+    "notSent": "No se envió: {{reason}}",
+    "sendUnconfirmed": "No pudimos confirmar que el mensaje se envió. Revise la conversación antes de intentarlo de nuevo.",
+    "blocked": {
+      "noAddress": "No hay ningún número de teléfono ni correo al que responder.",
+      "noPhone": "Este contacto no tiene un número de teléfono para enviarle textos.",
+      "noEmail": "Este contacto no tiene dirección de correo.",
+      "optedOutSms": "No puede enviarle textos a este contacto. {{reason}}.",
+      "optedOutEmail": "No puede enviarle correos a este contacto. {{reason}}."
+    }
+  },
+  "provenance": {
+    "person": "Usted",
+    "auto_pilot": "Piloto automático",
+    "auto_reply": "Respuesta automática",
+    "missed_call_text": "Texto por llamada perdida",
+    "reminder": "Recordatorio automático",
+    "receptionist": "Recepcionista con IA"
+  },
+  "consent": {
+    "sms": {
+      "stopReply": "No quiere recibir textos desde el {{date}} · respondió STOP",
+      "carrier": "No quiere recibir textos desde el {{date}} · su operador informó STOP",
+      "since": "No quiere recibir textos desde el {{date}}",
+      "marked": "No quiere recibir textos"
+    },
+    "email": {
+      "since": "Se dio de baja del correo el {{date}}",
+      "marked": "No quiere recibir correos"
     }
   },
   "unselected": {
@@ -94,6 +127,8 @@
     "emailNotConfigured": "El envío de correos todavía no está configurado en esta cuenta.",
     "invalidRequest": "No se pudo leer la solicitud.",
     "noPhone": "Este contacto no tiene número de teléfono.",
-    "emptyMessage": "Escriba un mensaje primero."
+    "emptyMessage": "Escriba un mensaje primero.",
+    "markReadFailed": "No se pudo marcar esta conversación como leída. Inténtelo de nuevo.",
+    "markReadRefused": "No se pudo marcar esta conversación como leída: su cuenta no tiene permiso para modificarla."
   }
 }

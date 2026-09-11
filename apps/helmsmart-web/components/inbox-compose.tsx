@@ -17,12 +17,15 @@ interface Props {
   clients: Client[];
   onClose: () => void;
   onSent: () => void;
+  /** Opened from a client's page ("Send email"): that client, on that channel. */
+  initialClientId?: string;
+  initialChannel?: "email" | "sms";
 }
 
-export function InboxCompose({ clients, onClose, onSent }: Props) {
+export function InboxCompose({ clients, onClose, onSent, initialClientId, initialChannel }: Props) {
   const { t } = useTranslation("inbox");
-  const [channel, setChannel] = useState<"email" | "sms">("email");
-  const [clientId, setClientId] = useState("");
+  const [channel, setChannel] = useState<"email" | "sms">(initialChannel ?? "email");
+  const [clientId, setClientId] = useState(initialClientId ?? "");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
