@@ -33,6 +33,7 @@ import { translateNavSections } from "@/lib/i18n/navLabels";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { leadSmartMobileNav } from "@/nav.config";
+import { hideTeamNav } from "@/lib/teams/navVisibility";
 import { CloseBossLogo, CloseBossMark } from "@/components/brand/CloseBossLogo";
 import { NotificationsBell } from "@/components/dashboard/NotificationsBell";
 import { CreditBalancePill } from "@/components/dashboard/CreditBalancePill";
@@ -421,6 +422,7 @@ export default function TopBar({
   fullName: fullNameProp,
   avatarUrl: avatarUrlProp,
   isPaid = false,
+  showTeam = false,
 }: {
   email: string | null | undefined;
   appRole?: string | null;
@@ -431,6 +433,8 @@ export default function TopBar({
   avatarUrl?: string | null;
   /** Live subscription on the account — no Upgrade pill, no upsell promo. */
   isPaid?: boolean;
+  /** Signature owners and team members see the Team row. */
+  showTeam?: boolean;
 }) {
   // Same English-keyed translation the desktop sidebar uses, so the mobile
   // drawer doesn't stay English after the agent switches language.
@@ -438,12 +442,12 @@ export default function TopBar({
   const { t } = useTranslation("dashboard");
   const navSections = useMemo(
     () =>
-      translateNavSections(filterNavSectionsByRole(leadSmartMobileNav, appRole) as NavSection[], (s) =>
+      translateNavSections(hideTeamNav(filterNavSectionsByRole(leadSmartMobileNav, appRole), showTeam) as NavSection[], (s) =>
         tNav(s, { defaultValue: s }),
       ),
     // `t` is stable across a language change; i18n.language is what actually moves.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [appRole, tNav, i18n.language]
+    [appRole, showTeam, tNav, i18n.language]
   );
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole) && !isPaid;
   const hideCommercialPricing = isAdminOrSupportRole(appRole);

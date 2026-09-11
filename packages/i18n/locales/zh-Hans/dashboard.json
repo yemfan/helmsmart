@@ -2032,7 +2032,7 @@
       "requestSeats": "申请更多席位",
       "teamFeature": "团队功能",
       "requiresBefore": "团队功能需要",
-      "requiresAfter": "方案，含最多 10 个席位、整个团队在仪表盘上的汇总数据，以及成员之间的轮流分配客源。",
+      "requiresAfter": "，含最多 10 个席位、整个团队在仪表盘上的汇总数据，以及成员之间的轮流分配客源。",
       "createTeam": "创建您的团队",
       "createSub": "把经纪人集中到一处。作为所有者，您可以和自己的数据一起看到他们的成交流程、客源和业绩。成员的日常使用不受影响。",
       "namePlaceholder": "例如：湾区房产团队",
@@ -2048,7 +2048,7 @@
       "you": "（您）",
       "makeManager": "设为经理",
       "makeMember": "设为成员",
-      "requiresPlan": "Premium 或 Signature"
+      "requiresPlan": "Signature 方案"
     },
     "reports": {
       "metaTitle": "报告",

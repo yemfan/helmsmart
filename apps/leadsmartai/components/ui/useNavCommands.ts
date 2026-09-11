@@ -11,6 +11,7 @@ import {
 } from "@repo/ui";
 import { leadSmartNav } from "@/nav.config";
 import { TEAM_ACTIONS } from "@/lib/team-actions";
+import { hideTeamNav } from "@/lib/teams/navVisibility";
 
 /**
  * Command-palette entries, DERIVED from the sidebar config so the two can
@@ -105,19 +106,19 @@ function commandsFromActions(label: (english: string) => string, taken: Set<stri
   return out;
 }
 
-export function useNavCommands(): NavCommand[] {
+export function useNavCommands(showTeam = false): NavCommand[] {
   const { t, i18n } = useTranslation("dashboard_nav");
   return useMemo(
     () => {
       const label = (s: string) => t(s, { defaultValue: s });
       // Role-gated entries (Admin, Support) are left out: the palette has no
       // role context, and those readers still have the sidebar.
-      const pages = commandsFromNav(filterNavSectionsByRole(leadSmartNav as NavSection[], null), label);
+      const pages = commandsFromNav(hideTeamNav(filterNavSectionsByRole(leadSmartNav as NavSection[], null), showTeam), label);
       const taken = new Set(pages.map((p) => p.path));
       return [...pages, ...commandsFromActions(label, taken)];
     },
     // i18n.language is the real dependency; `t` is stable across a switch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [i18n.language],
+    [i18n.language, showTeam],
   );
 }

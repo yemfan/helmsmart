@@ -15,6 +15,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { KeyboardShortcuts } from "@/components/ui/KeyboardShortcuts";
 import { getServerT } from "@/lib/i18n/server";
+import { teamNavVisibleFor } from "@/lib/teams/visibility.server";
 
 export default async function DashboardLayout({
   children,
@@ -165,6 +166,9 @@ export default async function DashboardLayout({
   // critical path.
   const isPaid = Boolean(activeEntitlement?.plan && activeEntitlement.plan !== "starter");
 
+  // The Team row: Signature owners, and anyone already on a team.
+  const showTeam = await teamNavVisibleFor({ userId: ctx.userId, agentId: String(ctx.agentId), plan: activeEntitlement?.plan ?? null });
+
   return (
     <AgentWorkspaceProviders>
       <ToastProvider>
@@ -176,11 +180,12 @@ export default async function DashboardLayout({
           fullName={fullName}
           avatarUrl={avatarUrl}
           isPaid={isPaid}
+          showTeam={showTeam}
         >
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-          <CommandPalette />
+          <CommandPalette showTeam={showTeam} />
           <KeyboardShortcuts />
         </DashboardShell>
        </UnsavedChangesProvider>
