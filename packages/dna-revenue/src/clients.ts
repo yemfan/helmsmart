@@ -14,14 +14,18 @@ export interface ClientPatch {
 /**
  * Patch a client's pipeline fields. Auto-stamps stage_changed_at when the pipeline
  * stage moves. Org-scoped (RLS-enforced); caller revalidates.
+ *
+ * Returns how many rows changed. Through the RLS client a refused update is not
+ * an error — it matches zero rows — so `updated: 0` is the caller's only signal
+ * that nothing was saved. Throws on a database error.
  */
 export async function patchClient(
   db: Db,
   orgId: string,
   clientId: string,
   patch: ClientPatch
-): Promise<void> {
-  await db
+): Promise<{ updated: number }> {
+  const { data, error } = await db
     .from("clients")
     .update({
       ...patch,
@@ -29,7 +33,10 @@ export async function patchClient(
       ...(patch.pipeline_stage ? { stage_changed_at: new Date().toISOString() } : {}),
     })
     .eq("id", clientId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    .select("id");
+  if (error) throw new Error(error.message);
+  return { updated: data?.length ?? 0 };
 }
 
 /** Delete a client. Org-scoped (the caller owns auth + revalidation). */

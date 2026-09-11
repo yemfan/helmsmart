@@ -165,7 +165,7 @@
     "empty": "No hay citas próximas con un número de teléfono.",
     "unnamed": "Sin nombre",
     "when": "Cita {{start}} · recordatorio {{reminder}}",
-    "off": "Los recordatorios están desactivados: active el interruptor de arriba y guarde para empezar a llamar automáticamente.",
+    "off": "Los recordatorios están desactivados: active el interruptor de arriba para empezar a llamar automáticamente.",
     "status": {
       "pending": "Programada",
       "queued": "Se marcará en breve",
@@ -185,7 +185,12 @@
     "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
     "noOrg": "No hay ninguna empresa seleccionada. Vuelva a iniciar sesión para continuar.",
     "titleRequired": "El título es obligatorio",
-    "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria"
+    "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria",
+    "taskFailed": "No se pudo actualizar esa tarea. Inténtelo de nuevo.",
+    "taskRefused": "Esa tarea no se modificó: puede que se haya eliminado o que su función no le permita editarla.",
+    "eventCreateFailed": "No se pudo crear ese evento. Inténtelo de nuevo.",
+    "eventFailed": "No se pudo actualizar ese evento. Inténtelo de nuevo.",
+    "eventRefused": "Ese evento no se modificó: puede que se haya eliminado o que su función no le permita editarlo."
   },
   "generated": {
     "reviewOpenItems": "Revise y priorice los pendientes — cambie este título",

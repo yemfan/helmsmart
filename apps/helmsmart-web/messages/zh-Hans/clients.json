@@ -177,7 +177,9 @@
     },
     "errors": {
       "empty": "备注内容不能为空。",
-      "saveFailed": "备注保存失败，请重试。"
+      "saveFailed": "备注保存失败，请重试。",
+      "deleteFailed": "备注删除失败，请重试。",
+      "deleteRefused": "备注未能删除——可能已不存在，或你的角色无权删除。"
     }
   },
   "timeline": {
@@ -347,6 +349,7 @@
     "missingClientId": "缺少客户 ID。",
     "createFailed": "创建客户失败，请重试。",
     "updateFailed": "更新客户失败，请重试。",
+    "updateRefused": "保存失败——该客户可能已被删除，或你的角色无权编辑。",
     "deleteFailed": "删除客户失败，请重试。",
     "logFailed": "记录这条沟通失败，请重试。",
     "preferencesRefused": "保存失败——可能没有此客户的操作权限。",

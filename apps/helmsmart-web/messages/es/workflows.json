@@ -176,7 +176,10 @@
     },
     "errors": {
       "notAuthenticated": "Su sesión se cerró. Vuelva a iniciar sesión para administrar las automatizaciones.",
-      "createFailed": "No se pudo crear esa regla de automatización."
+      "createFailed": "No se pudo crear esa regla de automatización.",
+      "toggleFailed": "No se pudo activar ni desactivar esa automatización. Inténtelo de nuevo.",
+      "deleteFailed": "No se pudo eliminar esa automatización. Inténtelo de nuevo.",
+      "refused": "Esa automatización no se modificó: puede que se haya eliminado o que su función no le permita editar automatizaciones."
     },
     "modal": {
       "title": "Nueva automatización",

@@ -91,41 +91,67 @@ export async function createAutomationRule(params: {
     .single();
 
   if (error || !rule) {
+    // The database's own words are logged, not shown: they are English and
+    // name nothing the owner can fix.
+    if (error) console.error("[automations] create error:", error.message);
     const t = await getServerT("workflows");
-    throw new Error(error?.message ?? t("automations.errors.createFailed"));
+    throw new Error(t("automations.errors.createFailed"));
   }
   revalidatePath("/automations");
   return (rule as { id: string }).id;
 }
 
 // ─── Toggle enabled ───────────────────────────────────────────────────────────
+//
+// The toggle and delete return a result instead of throwing, for the rows
+// check: through the RLS client a refused write matches zero rows and is not
+// an error, so the switch has to be told to go back — and why.
 
-export async function toggleAutomationRule(ruleId: string, enabled: boolean) {
-  const orgId = await getOrgId();
+export async function toggleAutomationRule(
+  ruleId: string,
+  enabled: boolean,
+): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("workflows");
+  let orgId: string;
+  try { orgId = await getOrgId(); } catch { return { ok: false, error: t("automations.errors.notAuthenticated") }; }
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("automation_rules")
     .update({ enabled, updated_at: new Date().toISOString() })
     .eq("id", ruleId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    .select("id");
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[automations] toggle error:", error.message);
+    return { ok: false, error: t("automations.errors.toggleFailed") };
+  }
+  if (!data || data.length === 0) return { ok: false, error: t("automations.errors.refused") };
   revalidatePath("/automations");
+  return { ok: true };
 }
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
-export async function deleteAutomationRule(ruleId: string) {
-  const orgId = await getOrgId();
+export async function deleteAutomationRule(ruleId: string): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("workflows");
+  let orgId: string;
+  try { orgId = await getOrgId(); } catch { return { ok: false, error: t("automations.errors.notAuthenticated") }; }
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("automation_rules")
     .delete()
     .eq("id", ruleId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    .select("id");
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[automations] delete error:", error.message);
+    return { ok: false, error: t("automations.errors.deleteFailed") };
+  }
+  if (!data || data.length === 0) return { ok: false, error: t("automations.errors.refused") };
   revalidatePath("/automations");
+  return { ok: true };
 }

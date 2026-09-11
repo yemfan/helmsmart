@@ -180,7 +180,9 @@
     },
     "errors": {
       "empty": "A note can't be empty.",
-      "saveFailed": "Couldn't save the note. Try again."
+      "saveFailed": "Couldn't save the note. Try again.",
+      "deleteFailed": "Couldn't delete the note. Try again.",
+      "deleteRefused": "The note wasn't deleted — it may already be gone, or your role can't remove it."
     }
   },
   "timeline": {
@@ -351,6 +353,7 @@
     "missingClientId": "Missing client ID.",
     "createFailed": "Couldn't create the client. Try again.",
     "updateFailed": "Couldn't update the client. Try again.",
+    "updateRefused": "Couldn't save — this client may have been removed, or your role can't edit it.",
     "deleteFailed": "Couldn't delete the client. Try again.",
     "logFailed": "Couldn't log this communication. Try again.",
     "preferencesRefused": "Couldn't save — you may not have permission for this client.",

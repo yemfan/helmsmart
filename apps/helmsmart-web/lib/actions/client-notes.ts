@@ -20,7 +20,7 @@ export async function addClientNote(
   clientId: string,
   body: string,
   kind: NoteKind = "note"
-) {
+): Promise<{ id: string }> {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   // The notes panel renders `err.message` verbatim, so this string is copy the
@@ -31,19 +31,35 @@ export async function addClientNote(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  await insertClientNote(supabase, orgId, { clientId, body, kind, authorId: user?.id ?? null });
+  const { id } = await insertClientNote(supabase, orgId, { clientId, body, kind, authorId: user?.id ?? null });
   revalidatePath(`/clients/${clientId}`);
+  return { id };
 }
 
-export async function deleteClientNote(noteId: string, clientId: string) {
+/**
+ * Returns a result rather than throwing: the panel removes the note before the
+ * delete lands and must put it back, with a reason, if nothing was deleted.
+ * Through the RLS client a refused delete matches zero rows without erroring.
+ */
+export async function deleteClientNote(
+  noteId: string,
+  clientId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  // The notes panel renders `err.message` verbatim, so this string is copy the
-  // owner reads — not an internal code. Server actions run inside a request,
-  // so `getServerT` resolves their language here the same way a page does.
-  if (!orgId) throw new Error((await getServerT("clients"))("errors.unauthorized"));
+  if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const supabase = await createClient();
-  await deleteClientNoteKnowledge(supabase, orgId, noteId);
+  let deleted: number;
+  try {
+    ({ deleted } = await deleteClientNoteKnowledge(supabase, orgId, noteId));
+  } catch (e) {
+    console.error("[client-notes] delete failed:", e);
+    return { ok: false, error: t("notes.errors.deleteFailed") };
+  }
+  if (deleted === 0) return { ok: false, error: t("notes.errors.deleteRefused") };
+
   revalidatePath(`/clients/${clientId}`);
+  return { ok: true };
 }

@@ -35,24 +35,51 @@ export async function createTask(data: {
   if (data.client_id) revalidatePath(`/clients/${data.client_id}`);
 }
 
-export async function updateTaskStatus(taskId: string, status: TaskStatus) {
+// Status and delete return a result: the task row shows the new state before
+// the write lands, and through the RLS client a refused write matches zero rows
+// without erroring — so "found" is the only proof anything changed.
+
+export async function updateTaskStatus(
+  taskId: string,
+  status: TaskStatus,
+): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("tasks");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error((await getServerT("tasks"))("errors.notAuthenticated"));
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
-  const { clientId } = await setTaskStatus(supabase, orgId, taskId, status);
+  let res: { found: boolean; clientId: string | null };
+  try {
+    res = await setTaskStatus(supabase, orgId, taskId, status);
+  } catch (e) {
+    console.error("[tasks] status update failed:", e);
+    return { ok: false, error: t("errors.taskFailed") };
+  }
+  if (!res.found) return { ok: false, error: t("errors.taskRefused") };
+
   revalidatePath("/tasks");
-  if (clientId) revalidatePath(`/clients/${clientId}`);
+  if (res.clientId) revalidatePath(`/clients/${res.clientId}`);
+  return { ok: true };
 }
 
-export async function deleteTask(taskId: string) {
+export async function deleteTask(taskId: string): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("tasks");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  if (!orgId) throw new Error((await getServerT("tasks"))("errors.notAuthenticated"));
+  if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
-  const { clientId } = await deleteTaskOps(supabase, orgId, taskId);
+  let res: { found: boolean; clientId: string | null };
+  try {
+    res = await deleteTaskOps(supabase, orgId, taskId);
+  } catch (e) {
+    console.error("[tasks] delete failed:", e);
+    return { ok: false, error: t("errors.taskFailed") };
+  }
+  if (!res.found) return { ok: false, error: t("errors.taskRefused") };
+
   revalidatePath("/tasks");
-  if (clientId) revalidatePath(`/clients/${clientId}`);
+  if (res.clientId) revalidatePath(`/clients/${res.clientId}`);
+  return { ok: true };
 }

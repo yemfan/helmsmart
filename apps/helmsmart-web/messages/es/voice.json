@@ -340,6 +340,8 @@
     "saveKnowledge": "No se pudo guardar esa entrada de conocimiento.",
     "createKnowledge": "No se pudo crear esa entrada de conocimiento.",
     "deleteKnowledge": "No se pudo eliminar esa entrada de conocimiento.",
+    "apptTypeRefused": "Ese tipo de cita no se modificó: puede que se haya eliminado o que su función no le permita editar la recepcionista.",
+    "knowledgeRefused": "Esa entrada de conocimiento no se modificó: puede que se haya eliminado o que su función no le permita editar la recepcionista.",
     "disconnectCalendar": "No se pudo desconectar Google Calendar.",
     "missingApiKey": "RETELL_API_KEY no está definida en el servidor.",
     "missingFunctionSecret": "RETELL_FUNCTION_SECRET no está definida en el servidor.",

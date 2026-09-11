@@ -1,10 +1,15 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { createServiceClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { notifySlack } from "@/lib/integrations/slack";
+import { updateOrg } from "@/lib/actions/org-update";
+
+// Both writes go through `updateOrg`: the RLS client, with the changed rows
+// asked back. They used the service client and discarded the result, so a
+// switch flipped on screen stayed flipped whether or not the column changed —
+// and the service client trusted whatever org id the cookie carried.
 
 /**
  * Save Slack webhook URL for the current org
@@ -22,16 +27,12 @@ export async function saveSlackWebhook(
     return { ok: false, error: t("slack.errors.invalidUrl") };
   }
 
-  const db = await createServiceClient();
-  const { error } = await db
-    .from("organizations")
-    .update({ slack_webhook_url: webhookUrl || null })
-    .eq("id", orgId);
-
-  if (error) {
-    console.error("[slack-settings] save error:", error);
-    return { ok: false, error: t("slack.errors.saveFailed") };
-  }
+  const res = await updateOrg(
+    orgId,
+    { slack_webhook_url: webhookUrl || null },
+    "slack-settings.saveSlackWebhook",
+  );
+  if (!res.ok) return { ok: false, error: res.error };
 
   revalidatePath("/settings");
   return { ok: true };
@@ -47,16 +48,14 @@ export async function saveSlackNotifyToggle(
     | "slack_notify_missed_call"
     | "slack_notify_form_submission",
   value: boolean
-): Promise<{ ok: boolean }> {
+): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("settings");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) return { ok: false };
+  if (!orgId) return { ok: false, error: t("slack.errors.notAuthenticated") };
 
-  const db = await createServiceClient();
-  await db
-    .from("organizations")
-    .update({ [field]: value })
-    .eq("id", orgId);
+  const res = await updateOrg(orgId, { [field]: value }, "slack-settings.saveSlackNotifyToggle");
+  if (!res.ok) return { ok: false, error: res.error };
 
   revalidatePath("/settings");
   return { ok: true };

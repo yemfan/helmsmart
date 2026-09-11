@@ -241,7 +241,8 @@
     "businessNameRequired": "El nombre de la empresa es obligatorio.",
     "missingBankAccount": "Falta la cuenta bancaria.",
     "bankLinkFailed": "No se pudo actualizar la vinculación de la cuenta.",
-    "orgUpdateRefused": "No se pudo guardar: puede que no tenga permisos sobre esta empresa."
+    "orgUpdateRefused": "No se pudo guardar: puede que no tenga permisos sobre esta empresa.",
+    "orgUpdateFailed": "No se pudieron guardar sus cambios. Inténtelo de nuevo."
   },
   "org": {
     "errors": {

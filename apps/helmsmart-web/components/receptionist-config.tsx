@@ -90,7 +90,23 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
   const { t } = useTranslation("voice");
   const [hours, setHours] = useState<BusinessHours>(initial);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+
+  function save() {
+    setError(null);
+    start(async () => {
+      try {
+        const res = await saveBusinessHours(hours);
+        if (res.error) { setError(res.error); return; }
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      } catch (e) {
+        console.error("saving business hours", e);
+        setError(t("common:errors.generic"));
+      }
+    });
+  }
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -143,13 +159,14 @@ function BusinessHoursCard({ initial }: { initial: BusinessHours }) {
         })}
       </div>
       <button
-        onClick={() => start(async () => { await saveBusinessHours(hours); setSaved(true); setTimeout(() => setSaved(false), 2500); })}
+        onClick={save}
         disabled={pending}
         className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
       >
         {saved && <Check className="w-4 h-4" />}
         {pending ? t("config.hours.saving") : saved ? t("config.hours.saved") : t("config.hours.save")}
       </button>
+      {error && <p className="mt-2 text-xs text-rose-600" role="alert">{error}</p>}
     </div>
   );
 }
@@ -161,24 +178,41 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
   const [types, setTypes] = useState(initial);
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   function add() {
     if (!name.trim()) return;
+    setError(null);
     start(async () => {
-      const res = await upsertAppointmentType({ name, durationMinutes: duration });
-      if (res.id) {
-        setTypes((t) => [...t, { id: res.id!, name: name.trim(), duration_minutes: duration, description: null, active: true, sort: 0 }]);
-        setName("");
-        setDuration(30);
+      try {
+        const res = await upsertAppointmentType({ name, durationMinutes: duration });
+        if (res.id) {
+          setTypes((t) => [...t, { id: res.id!, name: name.trim(), duration_minutes: duration, description: null, active: true, sort: 0 }]);
+          setName("");
+          setDuration(30);
+        } else {
+          setError(res.error ?? t("common:errors.generic"));
+        }
+      } catch (e) {
+        console.error("adding an appointment type", e);
+        setError(t("common:errors.generic"));
       }
     });
   }
 
+  // Removed from the list only once the database says the row is gone.
   function remove(id: string) {
+    setError(null);
     start(async () => {
-      await deleteAppointmentType(id);
-      setTypes((t) => t.filter((x) => x.id !== id));
+      try {
+        const res = await deleteAppointmentType(id);
+        if (res.error) { setError(res.error); return; }
+        setTypes((t) => t.filter((x) => x.id !== id));
+      } catch (e) {
+        console.error("deleting an appointment type", e);
+        setError(t("common:errors.generic"));
+      }
     });
   }
 
@@ -231,6 +265,7 @@ function AppointmentTypesCard({ initial }: { initial: AppointmentType[] }) {
           <Plus className="w-3.5 h-3.5" /> {t("config.appointmentTypes.add")}
         </button>
       </div>
+      {error && <p className="mt-2 text-xs text-rose-600" role="alert">{error}</p>}
     </div>
   );
 }
@@ -242,24 +277,41 @@ function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
   const [entries, setEntries] = useState(initial);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   function add() {
     if (!title.trim() || !content.trim()) return;
+    setError(null);
     start(async () => {
-      const res = await upsertKnowledgeEntry({ title, content });
-      if (res.id) {
-        setEntries((e) => [...e, { id: res.id!, title: title.trim(), content: content.trim(), active: true, sort: 0 }]);
-        setTitle("");
-        setContent("");
+      try {
+        const res = await upsertKnowledgeEntry({ title, content });
+        if (res.id) {
+          setEntries((e) => [...e, { id: res.id!, title: title.trim(), content: content.trim(), active: true, sort: 0 }]);
+          setTitle("");
+          setContent("");
+        } else {
+          setError(res.error ?? t("common:errors.generic"));
+        }
+      } catch (e) {
+        console.error("adding a knowledge entry", e);
+        setError(t("common:errors.generic"));
       }
     });
   }
 
+  // Removed from the list only once the database says the row is gone.
   function remove(id: string) {
+    setError(null);
     start(async () => {
-      await deleteKnowledgeEntry(id);
-      setEntries((e) => e.filter((x) => x.id !== id));
+      try {
+        const res = await deleteKnowledgeEntry(id);
+        if (res.error) { setError(res.error); return; }
+        setEntries((e) => e.filter((x) => x.id !== id));
+      } catch (e) {
+        console.error("deleting a knowledge entry", e);
+        setError(t("common:errors.generic"));
+      }
     });
   }
 
@@ -312,6 +364,7 @@ function KnowledgeCard({ initial }: { initial: KnowledgeEntry[] }) {
         >
           <Plus className="w-3.5 h-3.5" /> {t("config.knowledge.add")}
         </button>
+        {error && <p className="text-xs text-rose-600" role="alert">{error}</p>}
       </div>
     </div>
   );

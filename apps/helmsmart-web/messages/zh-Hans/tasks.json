@@ -163,7 +163,7 @@
     "empty": "没有留有电话号码的近期预约。",
     "unnamed": "未命名",
     "when": "预约 {{start}} · 提醒 {{reminder}}",
-    "off": "提醒已关闭——打开上方的开关并保存，即可开始自动致电。",
+    "off": "提醒已关闭——打开上方的开关即可开始自动致电。",
     "status": {
       "pending": "已排期",
       "queued": "即将拨出",
@@ -183,7 +183,12 @@
     "notAuthenticated": "登录已过期，请重新登录后继续。",
     "noOrg": "尚未选择企业，请重新登录后继续。",
     "titleRequired": "请填写标题",
-    "firstRunDateRequired": "请填写首次执行日期"
+    "firstRunDateRequired": "请填写首次执行日期",
+    "taskFailed": "任务更新失败，请重试。",
+    "taskRefused": "该任务未能修改——可能已被删除，或你的角色无权编辑。",
+    "eventCreateFailed": "日程创建失败，请重试。",
+    "eventFailed": "日程更新失败，请重试。",
+    "eventRefused": "该日程未能修改——可能已被删除，或你的角色无权编辑。"
   },
   "generated": {
     "reviewOpenItems": "查看并排列待办事项的优先级 —— 请修改此标题",

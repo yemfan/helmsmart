@@ -241,7 +241,8 @@
     "businessNameRequired": "请填写企业名称。",
     "missingBankAccount": "缺少银行账户。",
     "bankLinkFailed": "更新账户映射失败。",
-    "orgUpdateRefused": "保存失败 —— 你可能没有该企业的操作权限。"
+    "orgUpdateRefused": "保存失败 —— 你可能没有该企业的操作权限。",
+    "orgUpdateFailed": "更改保存失败，请重试。"
   },
   "org": {
     "errors": {

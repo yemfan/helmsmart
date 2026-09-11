@@ -121,6 +121,10 @@ export async function updateClient(
   const clientId = formData.get("client_id") as string;
   if (!clientId) return { error: t("errors.missingClientId") };
 
+  const cookieStore = await cookies();
+  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  if (!orgId) return { error: t("errors.noOrganization") };
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: t("errors.unauthorized") };
@@ -128,7 +132,10 @@ export async function updateClient(
   const tagsRaw = (formData.get("tags") as string)?.trim();
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
 
-  const { error } = await supabase
+  // Scoped to the current organization, and the rows asked back: through the
+  // RLS client a refused update matches zero rows and is not an error, so
+  // without `.select("id")` the form said "Saved!" over an unchanged row.
+  const { data, error } = await supabase
     .from("clients")
     .update({
       first_name: (formData.get("first_name") as string)?.trim(),
@@ -142,9 +149,15 @@ export async function updateClient(
       tags: tags.length ? tags : null,
       preferred_language: parseContactLanguage(formData.get("preferred_language")),
     })
-    .eq("id", clientId);
+    .eq("id", clientId)
+    .eq("organization_id", orgId)
+    .select("id");
 
-  if (error) return { error: t("errors.updateFailed") };
+  if (error) {
+    console.error("[clients] update error:", error);
+    return { error: t("errors.updateFailed") };
+  }
+  if (!data || data.length === 0) return { error: t("errors.updateRefused") };
 
   revalidatePath("/clients");
   revalidatePath(`/clients/${clientId}`);
@@ -154,6 +167,10 @@ export async function updateClient(
 // ── Patch (lightweight field update) ─────────────────────────────────────────
 // Used by pipeline board and other components that need to update specific fields
 // without going through the full FormData flow.
+//
+// Returns a result rather than throwing: the pipeline board moves a card before
+// the write lands, and it needs to know — in the owner's language — whether to
+// put the card back. A thrown message never reaches a production client intact.
 
 export async function patchClient(
   clientId: string,
@@ -164,17 +181,25 @@ export async function patchClient(
     status: string;
     stage_changed_at: string;
   }>
-): Promise<void> {
+): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("clients");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error(t("errors.noOrganization"));
+  if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   const supabase = await createClient();
-  await patchClientRevenue(supabase, orgId, clientId, patch);
+  let updated: number;
+  try {
+    ({ updated } = await patchClientRevenue(supabase, orgId, clientId, patch));
+  } catch (e) {
+    console.error("[clients] patch error:", e);
+    return { ok: false, error: t("errors.updateFailed") };
+  }
+  if (updated === 0) return { ok: false, error: t("errors.updateRefused") };
 
   revalidatePath("/pipeline");
   revalidatePath(`/clients/${clientId}`);
+  return { ok: true };
 }
 
 // ── Delete ────────────────────────────────────────────────────────────────────

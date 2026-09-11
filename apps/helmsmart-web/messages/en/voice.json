@@ -340,6 +340,8 @@
     "saveKnowledge": "Couldn't save that knowledge entry.",
     "createKnowledge": "Couldn't create that knowledge entry.",
     "deleteKnowledge": "Couldn't delete that knowledge entry.",
+    "apptTypeRefused": "That appointment type wasn't changed — it may have been removed, or your role can't edit the receptionist.",
+    "knowledgeRefused": "That knowledge entry wasn't changed — it may have been removed, or your role can't edit the receptionist.",
     "disconnectCalendar": "Couldn't disconnect Google Calendar.",
     "missingApiKey": "RETELL_API_KEY isn't set on the server.",
     "missingFunctionSecret": "RETELL_FUNCTION_SECRET isn't set on the server.",

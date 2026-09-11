@@ -35,7 +35,12 @@ export async function createEvent(data: {
     all_day: data.allDay,
   }).select("id").single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    // Logged in full; the caller shows its own copy. A Postgres sentence is
+    // English and names nothing the owner can act on.
+    console.error("[createEvent] insert failed:", error.message);
+    throw new Error((await getServerT("tasks"))("errors.eventCreateFailed"));
+  }
 
   // Sync to Google Calendar if connected
   const connected = await isGoogleCalendarConnected(orgId);
@@ -124,10 +129,15 @@ export async function updateEvent(
   revalidatePath("/calendar");
 }
 
-export async function deleteEvent(eventId: string) {
+// Delete and complete return a result, and ask for their rows back: through
+// the RLS client a refused write matches zero rows and is not an error, so the
+// calendar closed the event as if it were done while the row stood unchanged.
+
+export async function deleteEvent(eventId: string): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("tasks");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
+  if (!orgId) return { ok: false, error: t("errors.noOrg") };
 
   const supabase = await createClient();
 
@@ -140,13 +150,19 @@ export async function deleteEvent(eventId: string) {
     .maybeSingle();
 
   // Delete from Supabase
-  await supabase
+  const { data: deleted, error } = await supabase
     .from("events")
     .delete()
     .eq("id", eventId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    .select("id");
+  if (error) {
+    console.error("[deleteEvent] delete failed:", error.message);
+    return { ok: false, error: t("errors.eventFailed") };
+  }
+  if (!deleted || deleted.length === 0) return { ok: false, error: t("errors.eventRefused") };
 
-  // Delete from Google Calendar if synced
+  // Delete from Google Calendar if synced — only once our own row is gone.
   if (event?.google_event_id) {
     try {
       await deleteGoogleEvent(orgId, event.google_event_id);
@@ -157,19 +173,31 @@ export async function deleteEvent(eventId: string) {
   }
 
   revalidatePath("/calendar");
+  return { ok: true };
 }
 
-export async function toggleEventComplete(eventId: string, completed: boolean) {
+export async function toggleEventComplete(
+  eventId: string,
+  completed: boolean,
+): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerT("tasks");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
+  if (!orgId) return { ok: false, error: t("errors.noOrg") };
 
   const supabase = await createClient();
-  await supabase
+  const { data, error } = await supabase
     .from("events")
     .update({ completed, updated_at: new Date().toISOString() })
     .eq("id", eventId)
-    .eq("organization_id", orgId);
+    .eq("organization_id", orgId)
+    .select("id");
+  if (error) {
+    console.error("[toggleEventComplete] update failed:", error.message);
+    return { ok: false, error: t("errors.eventFailed") };
+  }
+  if (!data || data.length === 0) return { ok: false, error: t("errors.eventRefused") };
 
   revalidatePath("/calendar");
+  return { ok: true };
 }

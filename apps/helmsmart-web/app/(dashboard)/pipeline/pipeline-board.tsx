@@ -33,6 +33,27 @@ function daysInStage(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 }
 
+type PatchOutcome = { ok: true } | { ok: false; error: string };
+
+/**
+ * `patchClient`, with a thrown failure (network, a redacted server error)
+ * folded into the same shape as a refusal. Every caller here shows something
+ * before the write lands, so every caller needs one answer: keep it or undo it.
+ */
+async function tryPatch(
+  id: string,
+  patch: Parameters<typeof patchClient>[1],
+  fallback: string,
+): Promise<PatchOutcome> {
+  try {
+    const res = await patchClient(id, patch);
+    return res.ok ? { ok: true } : { ok: false, error: res.error ?? fallback };
+  } catch (e) {
+    console.error("updating a pipeline client", e);
+    return { ok: false, error: fallback };
+  }
+}
+
 // ─── Client card ──────────────────────────────────────────────────────────────
 
 function ClientCard({
@@ -123,6 +144,8 @@ function DetailPanel({
   const [note, setNote] = useState(client.pipeline_note ?? "");
   const [value, setValue] = useState(client.expected_value?.toString() ?? "");
   const [editNote, setEditNote] = useState(false);
+  const [valueStatus, setValueStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [patchError, setPatchError] = useState<{ at: "value" | "note" | "stage"; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [sarahStatus, setSarahStatus] = useState<"idle" | "queued" | "no_phone" | "error">("idle");
 
@@ -136,24 +159,42 @@ function DetailPanel({
   }
 
   function saveNote() {
+    setPatchError(null);
     startTransition(async () => {
-      await patchClient(client.id, { pipeline_note: note || null });
+      const res = await tryPatch(client.id, { pipeline_note: note || null }, t("common:errors.generic"));
+      if (!res.ok) { setPatchError({ at: "note", message: res.error }); return; }
       onUpdate(client.id, { pipeline_note: note || null });
       setEditNote(false);
     });
   }
 
+  // Saves on blur, so the field reports itself beside its label — there is no
+  // button to carry "Saved!" — and goes back to the stored value if refused.
   function saveValue() {
     const num = value ? parseFloat(value) : null;
+    const stored = client.expected_value ?? null;
+    if (num === stored || (num !== null && Number.isNaN(num))) return;
+    setPatchError(null);
+    setValueStatus("saving");
     startTransition(async () => {
-      await patchClient(client.id, { expected_value: num });
+      const res = await tryPatch(client.id, { expected_value: num }, t("common:errors.generic"));
+      if (!res.ok) {
+        setValueStatus("idle");
+        setValue(stored?.toString() ?? "");
+        setPatchError({ at: "value", message: res.error });
+        return;
+      }
       onUpdate(client.id, { expected_value: num });
+      setValueStatus("saved");
+      setTimeout(() => setValueStatus("idle"), 2500);
     });
   }
 
   function moveStage(stage: PipelineStage) {
+    setPatchError(null);
     startTransition(async () => {
-      await patchClient(client.id, { pipeline_stage: stage });
+      const res = await tryPatch(client.id, { pipeline_stage: stage }, t("common:errors.generic"));
+      if (!res.ok) { setPatchError({ at: "stage", message: res.error }); return; }
       onUpdate(client.id, { pipeline_stage: stage, stage_changed_at: new Date().toISOString() });
       onClose();
     });
@@ -194,7 +235,14 @@ function DetailPanel({
 
           {/* Expected value */}
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("detail.expectedValue")}</label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <label className="text-xs font-medium text-slate-500">{t("detail.expectedValue")}</label>
+              {valueStatus !== "idle" && (
+                <span className="text-xs text-slate-400" aria-live="polite">
+                  {valueStatus === "saving" ? t("common:status.saving") : t("common:actions.saved_bang")}
+                </span>
+              )}
+            </div>
             <div className="relative flex items-center gap-2">
               <span className="absolute left-3 text-slate-400 text-sm">$</span>
               <input
@@ -208,6 +256,9 @@ function DetailPanel({
                 className="w-full rounded-lg border border-slate-200 pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
+            {patchError?.at === "value" && (
+              <p className="mt-1 text-xs text-rose-600" role="alert">{patchError.message}</p>
+            )}
           </div>
 
           {/* Note */}
@@ -241,6 +292,9 @@ function DetailPanel({
                     {t("common:actions.cancel")}
                   </button>
                 </div>
+                {patchError?.at === "note" && (
+                  <p className="text-xs text-rose-600" role="alert">{patchError.message}</p>
+                )}
               </div>
             ) : (
               <p className="text-sm text-slate-600 whitespace-pre-wrap">
@@ -281,6 +335,9 @@ function DetailPanel({
                 </button>
               ))}
             </div>
+            {patchError?.at === "stage" && (
+              <p className="mt-2 text-xs text-rose-600" role="alert">{patchError.message}</p>
+            )}
           </div>
         </div>
 
@@ -402,6 +459,7 @@ export function PipelineBoard({ initialClients, title, owner }: { initialClients
   const locale = intlLocale(i18n.language);
   const [clients, setClients] = useState<PipelineClient[]>(initialClients);
   const [selected, setSelected] = useState<PipelineClient | null>(null);
+  const [moveError, setMoveError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const draggingId = useRef<string | null>(null);
 
@@ -417,14 +475,20 @@ export function PipelineBoard({ initialClients, title, owner }: { initialClients
     const client = clients.find((c) => c.id === id);
     if (!client || client.pipeline_stage === stage) return;
 
-    // Optimistic update
+    // Optimistic update — undone, with the reason, if the row did not change.
     const now = new Date().toISOString();
+    const previous = { pipeline_stage: client.pipeline_stage, stage_changed_at: client.stage_changed_at };
+    setMoveError(null);
     setClients((prev) =>
       prev.map((c) => c.id === id ? { ...c, pipeline_stage: stage, stage_changed_at: now } : c)
     );
 
     startTransition(async () => {
-      await patchClient(id, { pipeline_stage: stage });
+      const res = await tryPatch(id, { pipeline_stage: stage }, t("common:errors.generic"));
+      if (!res.ok) {
+        setClients((prev) => prev.map((c) => c.id === id ? { ...c, ...previous } : c));
+        setMoveError(res.error);
+      }
     });
   }
 
@@ -474,6 +538,10 @@ export function PipelineBoard({ initialClients, title, owner }: { initialClients
           </div>
         </div>
       </div>
+
+      {moveError && (
+        <p className="px-8 pt-4 text-xs text-rose-600" role="alert">{moveError}</p>
+      )}
 
       {/* Board */}
       <div className="flex-1 overflow-x-auto p-8">

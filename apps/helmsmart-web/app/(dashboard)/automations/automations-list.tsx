@@ -53,6 +53,7 @@ function RuleRow({
 }) {
   const { t } = useTranslation("workflows");
   const [enabled, setEnabled] = useState(rule.enabled);
+  const [error, setError] = useState<string | null>(null);
   const [toggling, startToggle] = useTransition();
   const [deleting, startDelete] = useTransition();
 
@@ -61,26 +62,39 @@ function RuleRow({
   const actionLabel = t(`automations.actionLabels.${rule.action}`, { defaultValue: rule.action });
   const actionColor = ACTION_COLORS[rule.action] ?? "bg-slate-100 text-slate-500";
 
+  // Rolls back — and says why — when the row did not change. A refused write
+  // through the RLS client is not an error, so this used to stay flipped.
   function handleToggle() {
     const next = !enabled;
     setEnabled(next);
+    setError(null);
     startToggle(async () => {
       try {
-        await toggleAutomationRule(rule.id, next);
-      } catch {
-        setEnabled(!next); // roll back
+        const res = await toggleAutomationRule(rule.id, next);
+        if (!res.ok) {
+          setEnabled(!next);
+          setError(res.error ?? t("automations.errors.toggleFailed"));
+        }
+      } catch (err) {
+        console.error("toggling an automation", err);
+        setEnabled(!next);
+        setError(t("automations.errors.toggleFailed"));
       }
     });
   }
 
+  // Leaves the list only once the database says the rule is gone.
   function handleDelete() {
     if (!window.confirm(t("automations.deleteConfirm", { name: rule.name }))) return;
-    onDelete(rule.id);
+    setError(null);
     startDelete(async () => {
       try {
-        await deleteAutomationRule(rule.id);
+        const res = await deleteAutomationRule(rule.id);
+        if (!res.ok) { setError(res.error ?? t("automations.errors.deleteFailed")); return; }
+        onDelete(rule.id);
       } catch (err) {
-        console.error(err);
+        console.error("deleting an automation", err);
+        setError(t("automations.errors.deleteFailed"));
       }
     });
   }
@@ -115,6 +129,7 @@ function RuleRow({
             {actionLabel}
           </span>
         </div>
+        {error && <p className="mt-1 text-xs text-rose-600" role="alert">{error}</p>}
       </div>
 
       {/* Stats */}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle2, AlertCircle, Send, ExternalLink } from "lucide-react";
+import { Send, ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { saveSlackWebhook, saveSlackNotifyToggle, testSlackWebhook } from "@/lib/actions/slack-settings";
+import { Toggle } from "@/components/ui/toggle";
 
 interface Props {
   webhookUrl: string | null;
@@ -43,6 +44,7 @@ export function SlackSettings({
   const [saved, setSaved] = useState(false);
   const [testSent, setTestSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const isConnected = !!webhookUrl;
@@ -56,7 +58,7 @@ export function SlackSettings({
         setError(result.error ?? t("slack.errors.saveFailed"));
       } else {
         setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        setTimeout(() => setSaved(false), 2500);
       }
     });
   };
@@ -75,10 +77,24 @@ export function SlackSettings({
     });
   };
 
+  // Flips at once, and flips back — with the reason — if the column did not
+  // change. It used to stay flipped whatever the server said.
   const handleToggle = (key: keyof typeof toggles, value: boolean) => {
     setToggles((prev) => ({ ...prev, [key]: value }));
+    setToggleError(null);
     startTransition(async () => {
-      await saveSlackNotifyToggle(key, value);
+      let message: string | null = null;
+      try {
+        const result = await saveSlackNotifyToggle(key, value);
+        if (!result.ok) message = result.error ?? t("slack.errors.saveFailed");
+      } catch (e) {
+        console.error("saving a Slack alert switch", e);
+        message = t("slack.errors.saveFailed");
+      }
+      if (message) {
+        setToggles((prev) => ({ ...prev, [key]: !value }));
+        setToggleError(message);
+      }
     });
   };
 
@@ -151,12 +167,7 @@ export function SlackSettings({
           </button>
         )}
 
-        {error && (
-          <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            {error}
-          </div>
-        )}
+        {error && <p className="text-xs text-rose-600" role="alert">{error}</p>}
 
         {/* Notification toggles */}
         {isConnected && (
@@ -166,29 +177,23 @@ export function SlackSettings({
             </p>
             <div className="space-y-3">
               {NOTIFY_TOGGLES.map((key) => (
-                <label
-                  key={key}
-                  className="flex items-start gap-3 cursor-pointer"
-                >
-                  <div
-                    onClick={() => handleToggle(key, !toggles[key])}
-                    className={`relative mt-0.5 w-9 h-5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
-                      toggles[key] ? "bg-indigo-600" : "bg-slate-200"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                        toggles[key] ? "translate-x-4" : "translate-x-0.5"
-                      }`}
+                <div key={key} className="flex items-start gap-3">
+                  <div className="mt-0.5">
+                    <Toggle
+                      checked={toggles[key]}
+                      onChange={(next) => handleToggle(key, next)}
+                      disabled={isPending}
+                      label={t(`slack.toggles.${key}.label`)}
                     />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-800">{t(`slack.toggles.${key}.label`)}</p>
                     <p className="text-xs text-slate-500">{t(`slack.toggles.${key}.description`)}</p>
                   </div>
-                </label>
+                </div>
               ))}
             </div>
+            {toggleError && <p className="mt-3 text-xs text-rose-600" role="alert">{toggleError}</p>}
           </div>
         )}
       </div>

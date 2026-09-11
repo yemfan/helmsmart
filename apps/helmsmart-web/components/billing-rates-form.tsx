@@ -21,13 +21,21 @@ export function BillingRatesForm({
   const [hr, setHr] = useState(hourlyRate?.toString() ?? "");
   const [lc, setLc] = useState(laborCostRate?.toString() ?? "");
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   function save() {
+    setError(null);
     start(async () => {
-      await saveBillingRates({ hourlyRate: toNum(hr), laborCostRate: toNum(lc) });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      try {
+        const res = await saveBillingRates({ hourlyRate: toNum(hr), laborCostRate: toNum(lc) });
+        if (res?.error) { setError(res.error); return; }
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      } catch (e) {
+        console.error("saving billing rates", e);
+        setError(t("common:errors.generic"));
+      }
     });
   }
 
@@ -81,6 +89,7 @@ export function BillingRatesForm({
           {pending ? t("actions.saving") : saved ? t("actions.saved") : t("financial.rates.save")}
         </button>
       </div>
+      {error && <p className="text-xs text-rose-600 text-right" role="alert">{error}</p>}
     </div>
   );
 }
