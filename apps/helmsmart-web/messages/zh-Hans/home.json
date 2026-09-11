@@ -184,9 +184,8 @@
       "change": "更换 {{name}} 的头像",
       "choose": "为 {{name}} 选择一个头像"
     },
-    "tim": {
-      "role": "Tim · AI 首席信息官",
-      "todaysBriefing": "今日简报",
+    "today": {
+      "heading": "今日摘要",
       "overdue_one": "{{count}} 张发票已逾期 —— {{amount}} 未收回",
       "overdue_other": "{{count}} 张发票已逾期 —— {{amount}} 未收回",
       "urgentTasks_one": "{{count}} 项紧急任务待处理",
@@ -368,12 +367,6 @@
       "confirmTurnOn": "开启自动驾驶",
       "enableFailed": "没能为 {{name}} 开启自动驾驶，目前仍是关闭状态。请再试一次。",
       "disableFailed": "没能为 {{name}} 关闭自动驾驶，目前仍在开启状态。请再试一次。"
-    },
-    "sentBy": {
-      "autoReply": "自动回复",
-      "missedCallText": "未接来电短信",
-      "reminder": "自动提醒",
-      "receptionist": "AI 前台接待"
     },
     "smsStatus": {
       "delivered": "已送达",

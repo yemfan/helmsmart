@@ -40,8 +40,15 @@ export function isMessageSender(v: unknown): v is MessageSender {
   return typeof v === "string" && (MESSAGE_SENDERS as readonly string[]).includes(v);
 }
 
+/** The namespace the sender names live in, whoever is asking for them. */
+export const SENDER_LABEL_NS = "inbox";
+
 /**
- * The name the inbox shows for each sender, as a key in the `inbox` namespace.
+ * The name shown for each sender — the ONE set, read by the inbox's thread and
+ * list and by the AI panel's SMS thread alike. The panel's `t` is bound to
+ * `home`, and it used to keep a second copy of these strings there, which had
+ * already drifted in Spanish. Keys in {@link SENDER_LABEL_NS}.
+ *
  * Literal keys, not `provenance.${value}`: a key built from a database value
  * renders itself raw the day a new value lands, and no guard can see it.
  */
@@ -59,11 +66,13 @@ export const SENDER_LABEL_KEYS: Record<MessageSender, string> = {
  * "Automatic reminder". A null `sent_by` is a row from before the column
  * existed (every one of those was signed "You:"), so it keeps saying "You".
  *
- * `t` is bound to the `inbox` namespace.
+ * `t` may be bound to any namespace: the lookup names its own with `{ ns }`,
+ * which both react-i18next and the server translator honour. (The `inbox:key`
+ * prefix is client-only — the server translator would print it raw.)
  */
 export function senderLabel(
   sentBy: string | null | undefined,
   t: (key: string, opts?: Record<string, unknown>) => string,
 ): string {
-  return t(SENDER_LABEL_KEYS[isMessageSender(sentBy) ? sentBy : "person"]);
+  return t(SENDER_LABEL_KEYS[isMessageSender(sentBy) ? sentBy : "person"], { ns: SENDER_LABEL_NS });
 }

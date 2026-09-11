@@ -6,7 +6,7 @@ import { getWorkforceSummary, getWorkforce } from "@/lib/actions/workforce";
 import { createClient } from "@/lib/supabase/server";
 import { CommandCenterView } from "./command-center-view";
 import { WorkforceBoard } from "./workforce-board";
-import { TimBriefing } from "@/components/tim-briefing";
+import { TodaySummary } from "@/components/today-summary";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
 import { moneyFormatter } from "@/lib/books-format";
@@ -45,7 +45,7 @@ export default async function CommandCenterPage() {
   const fmt = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
   const overdueInvoices = overdueRes.data ?? [];
   const allTasks = tasksRes.data ?? [];
-  const timData = {
+  const todayData = {
     overdueInvoices: overdueInvoices.length,
     overdueTotal: fmt(overdueInvoices.reduce((s, i) => s + Number(i.total), 0)),
     openTasks: allTasks.length,
@@ -75,7 +75,7 @@ export default async function CommandCenterPage() {
         <WorkforceBoard summary={summary} avatarById={avatarById} />
       </div>
 
-      <TimBriefing data={timData} />
+      <TodaySummary data={todayData} />
     </div>
   );
 }

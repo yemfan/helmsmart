@@ -184,9 +184,8 @@
       "change": "Change {{name}}'s avatar",
       "choose": "Choose an avatar for {{name}}"
     },
-    "tim": {
-      "role": "Tim · AI CIO",
-      "todaysBriefing": "Today's briefing",
+    "today": {
+      "heading": "Today's summary",
       "overdue_one": "{{count}} invoice overdue — {{amount}} uncollected",
       "overdue_other": "{{count}} invoices overdue — {{amount}} uncollected",
       "urgentTasks_one": "{{count}} urgent task open",
@@ -368,12 +367,6 @@
       "confirmTurnOn": "Turn on Auto Pilot",
       "enableFailed": "Auto Pilot wasn't turned on for {{name}} — it's still off. Try again.",
       "disableFailed": "Auto Pilot wasn't turned off for {{name}} — it's still on. Try again."
-    },
-    "sentBy": {
-      "autoReply": "Auto-reply",
-      "missedCallText": "Missed-call text",
-      "reminder": "Automatic reminder",
-      "receptionist": "AI receptionist"
     },
     "smsStatus": {
       "delivered": "Delivered",
