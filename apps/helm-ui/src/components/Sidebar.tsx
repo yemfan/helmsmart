@@ -419,17 +419,15 @@ export function Sidebar({
         ...Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE)),
       ].filter((el): el is HTMLElement => !!el && isTabbable(el));
       if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-      const inside = !!active && items.includes(active);
-      if (e.shiftKey && (active === first || !inside)) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (active === last || !inside)) {
-        e.preventDefault();
-        first.focus();
-      }
+      // Move focus ourselves on every Tab: the menu button and the drawer are
+      // not adjacent in the DOM (the logo and bell sit between them), so the
+      // browser's own order would walk out of the menu from the button.
+      e.preventDefault();
+      const idx = items.indexOf(document.activeElement as HTMLElement);
+      const next = e.shiftKey
+        ? (idx <= 0 ? items.length - 1 : idx - 1)
+        : (idx === -1 || idx === items.length - 1 ? 0 : idx + 1);
+      items[next].focus();
     };
     document.addEventListener('keydown', onKey);
     return () => {
