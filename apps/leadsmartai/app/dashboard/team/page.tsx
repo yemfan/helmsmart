@@ -75,7 +75,7 @@ export default async function TeamPage() {
       getSeatUsageForTeam(team.id),
       loadMemberDirectory(team.id),
       canManage ? getOnboardingBoard(team.id).catch(() => null) : Promise.resolve(null),
-      canManage ? loadTeamBrand(team.id).catch(() => null) : Promise.resolve(null),
+      loadTeamBrand(team.id).catch(() => null),
       listLibrary(team.id),
       listReferrals(team.id, ctx.agentId, canManage),
       listBillboard(team.id, ctx.agentId),

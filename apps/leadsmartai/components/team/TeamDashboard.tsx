@@ -114,12 +114,10 @@ export function TeamDashboard({
 
   return (
     <div className="space-y-6">
-      <header className="flex items-baseline justify-between gap-3">
-        <div>
+      <header className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t("pages.team.title")}</p>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-            {roster.team.name}
-          </h1>
+          <TeamHeading name={roster.team.name} brandName={brand?.name ?? null} logoUrl={brand?.logoUrl ?? null} />
         </div>
         {isOwner ? (
           <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("pages.team.owner")}</span>
@@ -522,6 +520,24 @@ function RevokeInviteButton({ teamId, inviteId }: { teamId: string; inviteId: st
         className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
       >{t("pages.team.revoke")}</button>
     </form>
+  );
+}
+
+// ── Heading: the brokerage logo when the brand has one ──────────
+
+/**
+ * The brand logo stands in for the team name, which stays the image's alt
+ * text (the brand name when set), so the page heading reads the same to a
+ * screen reader. A logo that fails to load falls back to the name.
+ */
+function TeamHeading({ name, brandName, logoUrl }: { name: string; brandName: string | null; logoUrl: string | null }) {
+  const [failed, setFailed] = useState(false);
+  if (!logoUrl || failed) return <h1 className="mt-1 text-2xl font-semibold text-slate-900">{name}</h1>;
+  return (
+    <h1 className="mt-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logoUrl} alt={brandName ?? name} onError={() => setFailed(true)} className="h-10 w-auto max-w-[16rem] object-contain sm:h-12 sm:max-w-[20rem]" />
+    </h1>
   );
 }
 
