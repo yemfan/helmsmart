@@ -11,27 +11,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
+import { advanceByFrequency, latestCalendarDate } from "@/lib/org-date";
+import { orgTodays } from "@/lib/org-timezone";
 
 export const dynamic = "force-dynamic";
-
-function advanceDate(dateStr: string, frequency: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  switch (frequency) {
-    case "weekly":
-      d.setDate(d.getDate() + 7);
-      break;
-    case "monthly":
-      d.setMonth(d.getMonth() + 1);
-      break;
-    case "quarterly":
-      d.setMonth(d.getMonth() + 3);
-      break;
-    case "annually":
-      d.setFullYear(d.getFullYear() + 1);
-      break;
-  }
-  return d.toISOString().slice(0, 10);
-}
 
 export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
@@ -39,7 +22,10 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // A template is due by its own org's date, not the server's. The query takes
+  // the latest date any zone can be on; the filter below holds each row to its org.
+  const now = new Date();
+  const horizon = latestCalendarDate(now);
   let processed = 0;
   let generated = 0;
   const errors: string[] = [];
@@ -52,15 +38,17 @@ export async function GET(request: NextRequest) {
       .from("recurring_projects")
       .select("*")
       .eq("status", "active")
-      .lte("next_run_date", today);
+      .lte("next_run_date", horizon);
 
     if (error) {
       errors.push(error.message);
       continue;
     }
-    processed += (due ?? []).length;
+    const todayOf = await orgTodays(supabase, (due ?? []).map((r) => r.organization_id as string), now);
+    const ready = (due ?? []).filter((r) => (r.next_run_date as string) <= todayOf(r.organization_id as string));
+    processed += ready.length;
 
-    for (const rec of due ?? []) {
+    for (const rec of ready) {
       try {
         const period = new Date(rec.next_run_date + "T00:00:00").toLocaleDateString("en-US", {
           month: "short",
@@ -83,7 +71,7 @@ export async function GET(request: NextRequest) {
         await supabase
           .from("recurring_projects")
           .update({
-            next_run_date: advanceDate(rec.next_run_date, rec.frequency),
+            next_run_date: advanceByFrequency(rec.next_run_date, rec.frequency),
             last_generated_at: new Date().toISOString(),
           })
           .eq("id", rec.id);

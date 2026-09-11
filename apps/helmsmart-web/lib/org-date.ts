@@ -76,3 +76,34 @@ export function mondayOf(ymd: string): string {
 export function daysBetween(from: string, to: string): number {
   return Math.round((parse(to).getTime() - parse(from).getTime()) / 86_400_000);
 }
+
+/**
+ * The latest calendar date any timezone is on at `at` — the date in UTC+14.
+ *
+ * For a cron that serves every org at once: query up to this bound, then hold
+ * each row to its own org's `calendarDate`. No org can be further ahead, so
+ * nothing due is missed, and nothing is acted on early.
+ */
+export function latestCalendarDate(at: Date = new Date()): string {
+  return calendarDate("Pacific/Kiritimati", at);
+}
+
+/** `ymd` advanced by one recurrence period. An unknown frequency returns `ymd`. */
+export function advanceByFrequency(ymd: string, frequency: string): string {
+  const d = parse(ymd);
+  switch (frequency) {
+    case "weekly":
+      d.setUTCDate(d.getUTCDate() + 7);
+      break;
+    case "monthly":
+      d.setUTCMonth(d.getUTCMonth() + 1);
+      break;
+    case "quarterly":
+      d.setUTCMonth(d.getUTCMonth() + 3);
+      break;
+    case "annually":
+      d.setUTCFullYear(d.getUTCFullYear() + 1);
+      break;
+  }
+  return format(d);
+}

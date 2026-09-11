@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { convertEstimateToInvoice } from "@helm/dna-finance";
 import { createNotificationService } from "@/lib/notifications-service";
+import { calendarDate } from "@/lib/org-date";
 
 export async function POST(
   request: NextRequest,
@@ -32,13 +33,16 @@ export async function POST(
   // Verify estimate exists and is in a respondable state
   const { data: est } = await supabase
     .from("estimates")
-    .select("id, organization_id, estimate_number, status, expiry_date")
+    .select("id, organization_id, estimate_number, status, expiry_date, organizations(timezone)")
     .eq("id", id)
     .single();
 
   if (!est) return new NextResponse("Not found", { status: 404 });
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The business's date decides expiry, and is the issue date of the invoice
+  // drafted below — not the server's, which is tomorrow every US evening.
+  const orgRaw = est.organizations as { timezone: string | null } | { timezone: string | null }[] | null;
+  const today = calendarDate((Array.isArray(orgRaw) ? orgRaw[0] : orgRaw)?.timezone);
   if (est.expiry_date < today) {
     return new NextResponse("Estimate has expired", { status: 410 });
   }
@@ -65,7 +69,8 @@ export async function POST(
       const { invoiceId } = await convertEstimateToInvoice(
         supabase,
         est.organization_id,
-        id
+        id,
+        { today }
       );
       await createNotificationService(
         est.organization_id,

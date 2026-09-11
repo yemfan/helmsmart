@@ -8,6 +8,7 @@ import {
   type AppointmentType,
 } from "@/lib/receptionist";
 import { getServerT } from "@/lib/i18n/server";
+import { safeTimezone } from "@repo/voice/datetime";
 import { BookClient } from "./book-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,7 +30,7 @@ export default async function BookPage() {
     await Promise.all([
       supabase
         .from("organizations")
-        .select("business_hours")
+        .select("business_hours, timezone")
         .eq("id", orgId)
         .single(),
       supabase
@@ -71,6 +72,7 @@ export default async function BookPage() {
       existingEvents={
         (events ?? []) as { start_at: string; end_at: string | null }[]
       }
+      timeZone={safeTimezone(org?.timezone as string | null)}
     />
   );
 }

@@ -3,6 +3,7 @@ import { localizeOutbound, type Lang } from "@/lib/language";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { daysBetween } from "@/lib/org-date";
 
 // Plain server module (NOT "use server") so it can take a Supabase client
 // argument and be shared by both the manual server action (cookie client) and
@@ -44,14 +45,16 @@ function reminderTone(overdue: number): { label: string; line: string; urgent: b
  */
 export async function sendReminderForInvoice(
   db: SupabaseClient,
-  inv: ReminderInvoice
+  inv: ReminderInvoice,
+  /** The org's date (`YYYY-MM-DD`), so "N days past due" counts in its day, not UTC's. */
+  opts?: { today?: string }
 ): Promise<{ sent: boolean; reason?: string }> {
   const clientRaw = inv.clients;
   const client = Array.isArray(clientRaw) ? clientRaw[0] : clientRaw;
   if (!client?.email) return { sent: false, reason: "Client has no email address" };
 
   const clientName = [client.first_name, client.last_name].filter(Boolean).join(" ") || "there";
-  const overdue = daysOverdue(inv.due_date);
+  const overdue = opts?.today ? daysBetween(inv.due_date, opts.today) : daysOverdue(inv.due_date);
   const nextCount = (inv.reminder_count ?? 0) + 1;
   const amount = Number(inv.total).toFixed(2);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";

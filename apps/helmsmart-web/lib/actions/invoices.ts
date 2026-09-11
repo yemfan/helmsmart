@@ -253,7 +253,7 @@ export async function sendInvoiceReminder(invoiceId: string) {
 
   if (!inv) throw new Error(t("invoices.errors.notFound"));
 
-  const res = await sendReminderForInvoice(supabase, inv as ReminderInvoice);
+  const res = await sendReminderForInvoice(supabase, inv as ReminderInvoice, { today: await orgToday(orgId) });
   if (!res.sent) throw new Error(res.reason ?? t("invoices.errors.reminderFailed"));
 
   revalidatePath("/books/invoices");

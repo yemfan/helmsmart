@@ -2,10 +2,12 @@ import { describe, it, expect } from "vitest";
 import {
   DEFAULT_ORG_TIMEZONE,
   addDays,
+  advanceByFrequency,
   calendarDate,
   daysBetween,
   firstOfMonth,
   lastOfMonth,
+  latestCalendarDate,
   mondayOf,
 } from "./org-date";
 
@@ -63,6 +65,25 @@ describe("calendarDate — around the UTC day boundary", () => {
   });
 });
 
+describe("latestCalendarDate — the bound a cross-org cron queries up to", () => {
+  it("is the date at UTC+14, which rolls over at 10:00 UTC", () => {
+    expect(latestCalendarDate(new Date("2026-09-11T09:59:59.999Z"))).toBe("2026-09-11");
+    expect(latestCalendarDate(new Date("2026-09-11T10:00:00.000Z"))).toBe("2026-09-12");
+  });
+
+  it("is never earlier than any org's own date, so no due row is left out", () => {
+    const zones = [
+      "Pacific/Pago_Pago", "Pacific/Honolulu", "America/Los_Angeles", "America/New_York",
+      "UTC", "Europe/London", "Asia/Shanghai", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland",
+    ];
+    for (let h = 0; h < 48; h++) {
+      const at = new Date(Date.UTC(2026, 11, 31, h, 30));
+      const bound = latestCalendarDate(at);
+      for (const z of zones) expect(calendarDate(z, at) <= bound).toBe(true);
+    }
+  });
+});
+
 describe("calendar math on YYYY-MM-DD", () => {
   it("addDays crosses month, year and leap-day boundaries in both directions", () => {
     expect(addDays("2026-09-10", 30)).toBe("2026-10-10");
@@ -91,6 +112,16 @@ describe("calendar math on YYYY-MM-DD", () => {
     expect(mondayOf("2026-09-07")).toBe("2026-09-07"); // Monday itself
     expect(mondayOf("2026-09-13")).toBe("2026-09-07"); // Sunday belongs to the week before
     expect(mondayOf("2027-01-02")).toBe("2026-12-28"); // across a year
+  });
+
+  it("advanceByFrequency steps one period, across years", () => {
+    expect(advanceByFrequency("2026-09-10", "weekly")).toBe("2026-09-17");
+    expect(advanceByFrequency("2026-12-28", "weekly")).toBe("2027-01-04");
+    expect(advanceByFrequency("2026-09-01", "monthly")).toBe("2026-10-01");
+    expect(advanceByFrequency("2026-12-01", "monthly")).toBe("2027-01-01");
+    expect(advanceByFrequency("2026-11-15", "quarterly")).toBe("2027-02-15");
+    expect(advanceByFrequency("2026-09-10", "annually")).toBe("2027-09-10");
+    expect(advanceByFrequency("2026-09-10", "fortnightly")).toBe("2026-09-10");
   });
 
   it("daysBetween counts calendar days, signed", () => {
