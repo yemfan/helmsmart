@@ -48,6 +48,7 @@ export function TransactionReviewRow({ transaction: txn, coa, currency = "USD" }
     null
   );
   const [skipping, setSkipping] = useState(false);
+  const [skipError, setSkipError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
 
   const isPosted = !!txn.journal_entry_id;
@@ -87,9 +88,14 @@ export function TransactionReviewRow({ transaction: txn, coa, currency = "USD" }
 
   const handleSkip = async () => {
     setSkipping(true);
-    await skipTransaction(txn.id);
+    setSkipError(null);
+    // A refused skip (no permission, not in this org) leaves the row as it
+    // was; say why rather than doing nothing.
+    const res = await skipTransaction(txn.id);
     setSkipping(false);
+    if (res.error) setSkipError(res.error);
   };
+  const rowError = skipError ?? state?.error;
 
   if (txn.reviewed && !expanded) {
     return (
@@ -254,8 +260,8 @@ export function TransactionReviewRow({ transaction: txn, coa, currency = "USD" }
             </div>
           </form>
 
-          {state?.error && (
-            <p className="mt-2 text-xs text-rose-600" role="alert">{state.error}</p>
+          {rowError && (
+            <p className="mt-2 text-xs text-rose-600" role="alert">{rowError}</p>
           )}
           {state?.success && (
             <p className="mt-2 text-xs text-emerald-600">{t("transactions.row.approved")}</p>

@@ -22,6 +22,10 @@
       "signUp": "Crear una cuenta y unirse",
       "signIn": "Iniciar sesión con una cuenta existente"
     },
+    "wrongAccount": {
+      "body": "Esta invitación se envió a {{invited}}, pero inició sesión como {{current}}. Cierre sesión e inicie sesión como {{invited}} para aceptarla. Si prefiere unirse como {{current}}, pida a quien le invitó que envíe una nueva invitación a esa dirección.",
+      "signOut": "Cerrar sesión y cambiar de cuenta"
+    },
     "roles": {
       "owner": "propietario",
       "admin": "administrador",
@@ -32,7 +36,11 @@
       "button": "Aceptar y unirse a {{org}}",
       "joining": "Uniéndose…",
       "done": "¡Listo! Redirigiendo a su espacio de trabajo…",
-      "error": "No pudimos aceptar esta invitación. Inténtelo de nuevo."
+      "error": "No pudimos aceptar esta invitación. Inténtelo de nuevo.",
+      "errors": {
+        "signIn": "Inicie sesión para aceptar esta invitación.",
+        "unconfirmed": "Primero confirme su correo electrónico: abra el enlace de confirmación que le enviamos y luego vuelva a esta invitación."
+      }
     }
   },
   "invoice": {

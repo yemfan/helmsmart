@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import type { NextRequest } from "next/server";
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import { createClient } from "@/lib/supabase/server";
 import { encrypt } from "@/lib/crypto";
 import { getServerT } from "@/lib/i18n/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { syncBankConnections } from "@/lib/plaid-sync";
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -130,12 +131,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Kick off initial transaction sync (fire-and-forget — client will poll)
-    void fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/plaid/sync`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Cookie: `helmsmart-org-id=${orgId}` },
-      body: JSON.stringify({ connection_id: connection.id }),
-    }).catch((e) => console.error("[plaid] initial sync error:", e));
+    // Import the first transactions once the response is on its way, in this
+    // process, for the org checked above. This used to be a fetch to
+    // /api/plaid/sync that sent the org cookie but no session, so that route
+    // answered 401 and the first import never ran.
+    after(() =>
+      syncBankConnections(orgId, connection.id)
+        .then(() => undefined)
+        .catch((e) => console.error("[plaid] initial sync error:", e))
+    );
 
     return NextResponse.json({ connection_id: connection.id });
   } catch (err) {

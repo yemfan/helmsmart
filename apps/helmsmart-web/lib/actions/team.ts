@@ -9,6 +9,7 @@ import { intlLocale } from "@leadsmart/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
 import { translatorFor } from "@/lib/i18n/translator";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { isInvitee } from "@/lib/team-invitations";
 
 type Role = "admin" | "bookkeeper" | "viewer";
 
@@ -260,10 +261,30 @@ export async function removeMember(memberId: string) {
 
 // ─── Accept invitation (called from /join/[token] page) ──────────────────────
 
-export async function acceptInvitation(token: string): Promise<{ orgId: string; orgName: string }> {
+export type AcceptInvitationResult =
+  | { ok: true; orgId: string; orgName: string }
+  | { ok: false; error: string };
+
+/**
+ * Join the org an invitation is for — only as the person it was sent to.
+ *
+ * Holding the link is not enough: the signed-in account's email must be the
+ * invitation's (`isInvitee`), and confirmed, since an address nobody has proved
+ * they own proves nothing. A refusal writes nothing, so the invitation stays
+ * pending in Settings → Team, where the owner can revoke it and invite the
+ * right address.
+ *
+ * Refusals are returned rather than thrown: Next.js replaces a thrown action
+ * error's message in production, so a thrown reason never reaches the page.
+ * They are in the VISITOR's language, the same locale `/join/[token]` renders
+ * in — the invitee has no stored preference yet.
+ */
+export async function acceptInvitation(token: string): Promise<AcceptInvitationResult> {
+  const t = translatorFor(await getServerLocale(), "public");
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("You must be signed in to accept an invitation");
+  if (!user) return { ok: false, error: t("join.accept.errors.signIn") };
 
   // Use service client for the token lookup (invitations table is RLS-restricted to admins)
   const serviceSb = await createServiceClient();
@@ -272,11 +293,19 @@ export async function acceptInvitation(token: string): Promise<{ orgId: string; 
     .from("team_invitations")
     .select("id, organization_id, role, email, expires_at, accepted_at")
     .eq("token", token)
-    .single();
+    .maybeSingle();
 
-  if (!invite) throw new Error("Invitation not found or already used");
-  if (invite.accepted_at) throw new Error("This invitation has already been accepted");
-  if (new Date(invite.expires_at) < new Date()) throw new Error("This invitation has expired");
+  if (!invite) return { ok: false, error: t("join.error.invalid.body") };
+  if (invite.accepted_at) return { ok: false, error: t("join.error.accepted.body") };
+  if (new Date(invite.expires_at) < new Date()) return { ok: false, error: t("join.error.expired.body") };
+
+  if (!isInvitee(invite.email, user.email)) {
+    return {
+      ok: false,
+      error: t("join.wrongAccount.body", { invited: invite.email, current: user.email ?? "" }),
+    };
+  }
+  if (!user.email_confirmed_at) return { ok: false, error: t("join.accept.errors.unconfirmed") };
 
   // Add member
   const { error: memberError } = await serviceSb
@@ -291,15 +320,17 @@ export async function acceptInvitation(token: string): Promise<{ orgId: string; 
     .single();
 
   // Ignore duplicate (already a member)
-  if (memberError && !memberError.message.includes("duplicate")) {
-    throw new Error(memberError.message);
+  if (memberError && memberError.code !== "23505" && !memberError.message.includes("duplicate")) {
+    console.error("[team] accept invitation: member insert failed:", memberError.message);
+    return { ok: false, error: t("join.accept.error") };
   }
 
   // Mark accepted
   await serviceSb
     .from("team_invitations")
     .update({ accepted_at: new Date().toISOString() })
-    .eq("id", invite.id);
+    .eq("id", invite.id)
+    .is("accepted_at", null);
 
   // Look up org name
   const { data: org } = await serviceSb
@@ -308,5 +339,5 @@ export async function acceptInvitation(token: string): Promise<{ orgId: string; 
     .eq("id", invite.organization_id)
     .single();
 
-  return { orgId: invite.organization_id, orgName: org?.name ?? "HelmSmart" };
+  return { ok: true, orgId: invite.organization_id, orgName: org?.name ?? "HelmSmart" };
 }

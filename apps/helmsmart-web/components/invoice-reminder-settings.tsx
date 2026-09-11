@@ -3,9 +3,8 @@
 import { useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Bell, BellOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { createServiceClient } from "@/lib/supabase/server";
 
-// server action is defined below; component is client-side
+// A "use server" action: importing it here gives the client a reference to call.
 import { saveReminderSettings } from "@/lib/actions/invoice-reminder-settings";
 
 interface Props {

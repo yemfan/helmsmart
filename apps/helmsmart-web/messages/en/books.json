@@ -1217,12 +1217,14 @@
       "missingPublicToken": "That bank link didn't complete. Try connecting again.",
       "linkTokenFailed": "Couldn't start the bank connection. Try again.",
       "saveConnectionFailed": "Couldn't save the bank connection. Try again.",
-      "exchangeFailed": "Couldn't finish connecting your bank. Try again."
+      "exchangeFailed": "Couldn't finish connecting your bank. Try again.",
+      "syncFailed": "Couldn't sync your bank transactions. Try again in a few minutes."
     },
     "errors": {
       "missingId": "Missing transaction ID.",
       "approveFailed": "Failed to approve transaction.",
       "skipFailed": "Failed to skip transaction.",
+      "notFound": "That transaction isn't in this workspace. Refresh the page and try again.",
       "orgNotFound": "Organization not found.",
       "noChartOfAccounts": "No chart of accounts found.",
       "categorizeFailed": "AI categorization failed."

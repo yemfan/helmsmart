@@ -11,6 +11,8 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getServerT } from "@/lib/i18n/server";
+import { signOut } from "@/lib/actions/auth";
+import { isInvitee } from "@/lib/team-invitations";
 import { AcceptButton } from "./accept-client";
 import { Building2 } from "lucide-react";
 
@@ -140,7 +142,38 @@ export default async function JoinPage({
               {t("join.invited.sentTo", { email: invite.email })}
             </p>
 
-            {user ? (
+            {user && !isInvitee(invite.email, user.email) ? (
+              /*
+               * Signed in as someone else. Only the invited address can accept
+               * (`acceptInvitation` enforces it), so say so before they press a
+               * button that would refuse them, and offer the way through:
+               * switch accounts and come straight back here.
+               */
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <p style={{ fontSize: 14, color: "#475569", margin: 0, lineHeight: 1.6 }}>
+                  {t("join.wrongAccount.body", { invited: invite.email, current: user.email ?? "" })}
+                </p>
+                <form action={signOut}>
+                  <input type="hidden" name="next" value={`/join/${token}`} />
+                  <button
+                    type="submit"
+                    style={{
+                      width: "100%",
+                      padding: "12px 24px",
+                      background: "#1e88e5",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 10,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {t("join.wrongAccount.signOut")}
+                  </button>
+                </form>
+              </div>
+            ) : user ? (
               /* Signed in — show accept button */
               <AcceptButton token={token} orgName={orgName} />
             ) : (
@@ -162,7 +195,7 @@ export default async function JoinPage({
                   {t("join.invited.signUp")}
                 </a>
                 <a
-                  href={`/login?return=/join/${token}`}
+                  href={`/login?next=${encodeURIComponent(`/join/${token}`)}`}
                   style={{
                     display: "block",
                     padding: "12px 24px",

@@ -17,19 +17,19 @@ export function AcceptButton({ token, orgName }: { token: string; orgName: strin
     setError("");
     start(async () => {
       try {
-        const { orgId } = await acceptInvitation(token);
+        // A refusal comes back as a value, already in the reader's language.
+        const res = await acceptInvitation(token);
+        if (!res.ok) {
+          setError(res.error);
+          return;
+        }
         setDone(true);
         // Set org cookie then redirect to home
-        document.cookie = `helmsmart-org-id=${orgId}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        document.cookie = `helmsmart-org-id=${res.orgId}; path=/; max-age=${60 * 60 * 24 * 365}`;
         setTimeout(() => router.push("/home"), 1500);
-      } catch (err) {
-        /*
-         * `acceptInvitation` throws its own English sentences from
-         * `lib/actions/team.ts`, which this page does not own. Showing one is
-         * still better than showing nothing — the fallback below is the string
-         * this component is responsible for.
-         */
-        setError(err instanceof Error ? err.message : t("join.accept.error"));
+      } catch {
+        // The request itself failed (network, deploy mid-flight).
+        setError(t("join.accept.error"));
       }
     });
   }
@@ -57,7 +57,7 @@ export function AcceptButton({ token, orgName }: { token: string; orgName: strin
         )}
       </button>
       {error && (
-        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-2 text-center">{error}</p>
+        <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-4 py-2 text-center" role="alert">{error}</p>
       )}
     </div>
   );
