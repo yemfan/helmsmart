@@ -4,6 +4,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { ensureSharedUserTablesAfterOAuth } from "@/lib/auth/bootstrapSharedUserTables";
 import { oauthBackfillFullName } from "@/lib/auth/canonicalUserContact";
 import { supabaseAuthCookieOptions } from "@/lib/authCookieOptions";
+import { KEEP_SIGNED_IN_COOKIE, keepSignedInFrom, withSessionLifetime } from "@/lib/auth/keepSignedIn";
 import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsumerUrl";
 import { fetchUserPortalContext } from "@/lib/rolePortalServer";
 import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
@@ -43,6 +44,8 @@ export async function GET(request: Request) {
     const response = NextResponse.redirect(redirectUrl);
     const { url: supabaseUrl, anonKey } = requireSupabasePublicEnv();
     const cookieOptions = supabaseAuthCookieOptions();
+    // Set by the sign-in form before it left for the provider.
+    const keepSignedIn = keepSignedInFrom(cookieStore.get(KEEP_SIGNED_IN_COOKIE)?.value);
 
     const supabase = createServerClient(supabaseUrl, anonKey, {
       ...(cookieOptions ? { cookieOptions } : {}),
@@ -52,7 +55,7 @@ export async function GET(request: Request) {
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, withSessionLifetime(options, keepSignedIn));
           });
         },
       },

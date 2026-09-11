@@ -1,5 +1,6 @@
 "use client";
 
+import { KeepSignedInCheckbox } from "@/components/KeepSignedInCheckbox";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -426,6 +427,7 @@ export default function AuthModal({
               />
               {mode === "login" ? (
                 <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                  <KeepSignedInCheckbox label={t("pages.authModal.keepSignedIn")} />
                   <button
                     type="button"
                     onClick={() => {

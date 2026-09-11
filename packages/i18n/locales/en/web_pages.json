@@ -1806,6 +1806,7 @@
       "password": "Password",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
+      "keepSignedIn": "Keep me signed in on this device",
       "forgotPassword": "Forgot password?",
       "loggingIn": "Logging in…",
       "logIn": "Log in",

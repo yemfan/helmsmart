@@ -4944,6 +4944,7 @@
       "resetBody": "填写您在 CloseBoss 使用的邮箱，我们会给您发送重设密码的链接。",
       "sendResetLink": "发送重设链接",
       "backToLogin": "返回登录",
+      "keepSignedIn": "在此设备上保持登录",
       "emailResetLink": "把重设密码链接发到我邮箱",
       "sending": "发送中…",
       "loggingIn": "正在登录…",
