@@ -278,7 +278,8 @@
     "title": "Needs your approval",
     "summary": {
       "sendInvoiceReminder": "{{who}} will email a payment reminder to {{name}} for {{invoice}} · {{amount}}",
-      "textClient": "{{who}} will text {{name}} at {{phone}}"
+      "textClient": "{{who}} will text {{name}} at {{phone}}",
+      "replyToText": "{{who}} will reply to {{name}} at {{phone}}"
     },
     "card": {
       "emailTo": "Email to {{name}} · {{email}}",
@@ -452,6 +453,7 @@
       "bookingConfirmationText": "{{who}} texted {{name}} a booking confirmation",
       "paymentReminderText": "Payment reminder texted to {{name}}",
       "approvedText": "{{who}} texted {{name}}",
+      "approvedReply": "{{who}} replied to {{name}}",
       "approvedReminder": "{{who}} sent a payment reminder to {{name}}",
       "taskAdded": "{{who}} added a task: {{title}}",
       "handedOff": "{{who}} handed you a task: {{title}}"

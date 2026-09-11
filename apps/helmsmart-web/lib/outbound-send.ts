@@ -272,7 +272,15 @@ export async function sendEmailGuarded(opts: GuardedEmail): Promise<SendOutcome>
 export async function sendSmsAsOrg(
   db: Db,
   orgId: string,
-  input: { clientId: string | null; to: string; body: string; sentBy: MessageSender; purpose: ConsentPurpose },
+  input: {
+    clientId: string | null;
+    to: string;
+    body: string;
+    sentBy: MessageSender;
+    purpose: ConsentPurpose;
+    /** `messages.intent` for the row, when the sender needs to recognise it later. */
+    intent?: string | null;
+  },
 ): Promise<SendOutcome> {
   const { data: org } = await db.from("organizations").select("twilio_number").eq("id", orgId).maybeSingle();
   return sendSmsGuarded({
@@ -284,6 +292,7 @@ export async function sendSmsAsOrg(
     fromNumber: (org as { twilio_number?: string | null } | null)?.twilio_number ?? null,
     purpose: input.purpose,
     sentBy: input.sentBy,
+    intent: input.intent ?? null,
   });
 }
 

@@ -220,6 +220,34 @@ describe("buildActivityFeed", () => {
     ]);
   });
 
+  it("lists Emma's approved reply once — from the approval, not again as a booking confirmation", () => {
+    const rows = buildActivityFeed(
+      input({
+        viewerId: "me",
+        approvals: [
+          { id: "a1", employee_slug: "emma", action_key: "reply_to_text", client_name: "Priya Shah", decided_by: "me", executed_at: hoursAgo(1) },
+        ],
+        runs: [
+          // Her run for the approved send: the approval line covers it.
+          { id: "r1", employee_slug: "emma", channel: "sms", subject_type: "contact", subject_id: "c1", status: "succeeded", outcome: { action: "reply_to_text" }, started_at: hoursAgo(1) },
+        ],
+        texts: [
+          // The `messages` row of that reply…
+          text({ id: "m1", sent_by: "receptionist", client_id: "c1", intent: "approved_reply", sent_at: hoursAgo(1) }),
+          // …and a booking confirmation of hers to someone else, which is still its own line.
+          text({ id: "m2", sent_by: "receptionist", client_id: "c2", sent_at: hoursAgo(2) }),
+        ],
+        clientNames: { c1: "Priya Shah", c2: "Luis Ortega" },
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => [r.who.kind === "employee" ? r.who.slug : r.who.kind, r.text, r.detail, r.href])).toEqual([
+      ["emma", "Emma replied to Priya Shah", "approved by you", "/inbox"],
+      ["emma", "Emma texted Luis Ortega a booking confirmation", null, "/calendar"],
+    ]);
+  });
+
   it("takes only what never went out from the queue, marking it as a warning", () => {
     const rows = buildActivityFeed(
       input({

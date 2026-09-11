@@ -27,6 +27,7 @@ import { notifyBooking } from "@/lib/receptionist-agent";
 import { dispatchTool } from "@helm/ai-workforce";
 import { createSmsReceptionistRegistry, type ToolTextResult } from "@/lib/workforce-tools";
 import { enforceAutonomy } from "@/lib/workforce-gating";
+import { receptionistReplyProposal } from "@/lib/ai-team/actions/outbound";
 import { logInboundSMSCommunication, logSMSCommunication } from "@/lib/integrations/communication-auto-logger";
 import { orgTodayFor } from "@/lib/org-timezone";
 
@@ -76,6 +77,17 @@ const SMS_TOOLS: Anthropic.Tool[] = [
     },
   },
 ];
+
+/**
+ * When Emma needs approval she only drafts: she may look up openings, but a
+ * booking or a callback would happen before anyone said yes.
+ */
+const SMS_DRAFT_TOOLS: Anthropic.Tool[] = SMS_TOOLS.filter((t) => t.name === "check_availability");
+
+/** The model's reply as it would go out: no wrapping quotes, no stray space. */
+function cleanReply(text: string): string {
+  return text.replace(/^["']|["']$/g, "").trim();
+}
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -491,13 +503,21 @@ async function runAutoPilotReply(opts: {
     `You are the receptionist for "${orgName}", helping a customer over SMS. Be warm and concise (under 320 characters) and ask ONE question at a time. ` +
     `Your goal is to understand what they need and book an appointment. Qualify briefly (what service, preferred day/time), then ALWAYS call check_availability before offering times, and book with book_appointment using an exact "start" it returned. ` +
     `Today is ${todayISO}. ${langRule} If you can't help over text or they ask for a person, use create_callback. Never invent availability. Return only the message text — no "[Name]" placeholder, no signature.`;
+  // The same receptionist when a person approves each reply before it goes:
+  // she can offer real openings, but cannot book or log a callback.
+  const draftSystem =
+    `You are the receptionist for "${orgName}", helping a customer over SMS. Be warm and concise (under 320 characters) and ask ONE question at a time. ` +
+    `Your goal is to understand what they need and move them toward an appointment. Qualify briefly (what service, preferred day/time), and ALWAYS call check_availability before offering times. ` +
+    `A team member reads your reply before it is sent, and you can't book appointments or log callbacks yourself: if the customer has picked a time or asks for a person, say the team will confirm with them shortly — never say it is booked. ` +
+    `Today is ${todayISO}. ${langRule} Never invent availability. Return only the message text — no "[Name]" placeholder, no signature.`;
 
   // Tool registry built around this caller's phone number.
   const registry = createSmsReceptionistRegistry(from);
 
   // The agent loop — unchanged logic, but tool calls go through dispatchTool
   // (real ToolRegistry) instead of the hand-rolled runReceptionistTool.
-  async function runAgentLoop(): Promise<{ replyText: string; bookedNote: string | null; bookedLabel: string | null; bookedRescheduleToken: string | null; tokensUsed: number; costCents: number }> {
+  // `draftOnly`: compose the reply without acting (see SMS_DRAFT_TOOLS).
+  async function runAgentLoop(draftOnly = false): Promise<{ replyText: string; bookedNote: string | null; bookedLabel: string | null; bookedRescheduleToken: string | null; tokensUsed: number; costCents: number }> {
     const messages: Anthropic.MessageParam[] = [
       {
         role: "user",
@@ -528,8 +548,8 @@ async function runAutoPilotReply(opts: {
       const resp = await anthropic.messages.create({
         model: SMS_BOOKING_MODEL,
         max_tokens: 500,
-        system: cachedSystem(system) as never,
-        tools: SMS_TOOLS,
+        system: cachedSystem(draftOnly ? draftSystem : system) as never,
+        tools: draftOnly ? SMS_DRAFT_TOOLS : SMS_TOOLS,
         messages,
       });
       const usage = readCacheUsage(resp.usage);
@@ -551,6 +571,16 @@ async function runAutoPilotReply(opts: {
       messages.push({ role: "assistant", content: resp.content as Anthropic.ContentBlockParam[] });
       const results: Anthropic.ToolResultBlockParam[] = [];
       for (const tu of toolUses) {
+        if (draftOnly && !SMS_DRAFT_TOOLS.some((t) => t.name === tu.name)) {
+          // Never offered while drafting — and never run: it would act before approval.
+          results.push({
+            type: "tool_result",
+            tool_use_id: tu.id,
+            content: "Not available: a team member confirms bookings and callbacks. Tell the customer the team will confirm shortly.",
+            is_error: true,
+          });
+          continue;
+        }
         // dispatchTool routes through the real ToolRegistry — not the hand-rolled dispatcher.
         const out = await dispatchTool<ToolTextResult>(registry, tu.name, tu.input, {
           db: supabase,
@@ -586,6 +616,15 @@ async function runAutoPilotReply(opts: {
     toolKey: "service.book_appointment",
     toolInput: { from, orgId },
     description: `Emma wants to qualify and book an appointment for ${from} over SMS.`,
+    // With approval: draft the reply she would send (nothing booked, nothing
+    // sent) and park it as `reply_to_text` — the owner's Approve sends it.
+    propose: async ({ employeeName }) => {
+      const draft = await runAgentLoop(true);
+      const usage = { tokensUsed: draft.tokensUsed, costCents: draft.costCents };
+      const message = cleanReply(draft.replyText);
+      if (!message) return { proposal: null, usage };
+      return { proposal: await receptionistReplyProposal(supabase, orgId, { clientId, message, employeeName }), usage };
+    },
     execute: async () => {
       const result = await runAgentLoop();
       // Side-effects after a successful run: send reply or confirmation.
@@ -596,7 +635,7 @@ async function runAutoPilotReply(opts: {
           rescheduleToken: result.bookedRescheduleToken,
         });
       } else {
-        const replyText = result.replyText.replace(/^["']|["']$/g, "").trim();
+        const replyText = cleanReply(result.replyText);
         if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText, sentBy: "auto_pilot" });
       }
       return {
@@ -607,8 +646,11 @@ async function runAutoPilotReply(opts: {
       };
     },
   }).catch((e) => {
-    console.error("[sms autopilot] gating error:", e);
-    return { status: "no_employee" as const };
+    // Fail closed. The legacy path below replies without asking anyone, so
+    // falling through to it here would let an employee who needs approval
+    // (say, when her approval couldn't be written) send on her own.
+    console.error("[sms autopilot] gating error; not replying:", e);
+    return { status: "error" as const };
   });
 
   // Legacy fallback: if Emma isn't in the registry yet, run the loop directly
@@ -623,7 +665,7 @@ async function runAutoPilotReply(opts: {
           rescheduleToken: result.bookedRescheduleToken,
         });
       } else {
-        const replyText = result.replyText.replace(/^["']|["']$/g, "").trim();
+        const replyText = cleanReply(result.replyText);
         if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText, sentBy: "auto_pilot" });
       }
     } catch (e) {

@@ -6,7 +6,7 @@
  * and the @helm/ai-workforce functions). The real DB and real employee records
  * are not involved — we're testing the decision tree, not the infra.
  */
-import { describe, it, expect, vi, type MockedFunction } from "vitest";
+import { beforeEach, describe, it, expect, vi, type MockedFunction } from "vitest";
 
 // ── Lightweight mock for @helm/ai-workforce ──────────────────────────────────
 
@@ -90,7 +90,27 @@ const baseOpts = {
   description: "Emma wants to book an appointment",
 };
 
+/** Emma's drafted reply, in `reply_to_text`'s shape (see lib/ai-team/actions/outbound.ts). */
+const proposal = {
+  actionKey: "reply_to_text",
+  params: { client_id: "client-1", message: "Tuesday at 3 or Wednesday at 10?" },
+  summary: "Emma will reply to Priya Shah at (626) 555-1234",
+  details: {
+    kind: "text" as const,
+    clientId: "client-1",
+    clientName: "Priya Shah",
+    phone: "(626) 555-1234",
+    message: "Tuesday at 3 or Wednesday at 10?",
+  },
+};
+
+type InsertSpy = { _insertFn: MockedFunction<(row: Record<string, unknown>) => unknown> };
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("enforceAutonomy", () => {
   it("returns no_employee when getEmployee returns null", async () => {
@@ -121,7 +141,83 @@ describe("enforceAutonomy", () => {
     expect(startRun).not.toHaveBeenCalled();
   });
 
-  it("parks an ai_approvals row (no execute, no task) for act_with_approval", async () => {
+  it("parks the drafted action itself for act_with_approval with propose — an approval the registry runs", async () => {
+    (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("act_with_approval"));
+    const execute = vi.fn();
+    const propose = vi.fn().mockResolvedValue({ proposal, usage: { tokensUsed: 900, costCents: 2 } });
+    const db = makeDb();
+    const result = await enforceAutonomy(db, "org-1", "emma", { ...baseOpts, propose, execute });
+
+    expect(result).toEqual({ status: "escalated", runId: "run-123", approvalId: "approval-1" });
+    expect(propose).toHaveBeenCalledWith({ runId: "run-123", employeeName: "Emma" });
+    expect(execute).not.toHaveBeenCalled();
+
+    const inserted = (db as unknown as InsertSpy)._insertFn.mock.calls[0][0];
+    expect(inserted).toMatchObject({
+      organization_id: "org-1",
+      employee_slug: "emma",
+      action_key: "reply_to_text",
+      params: proposal.params,
+      summary: proposal.summary,
+      details: proposal.details,
+      status: "proposed",
+      source: expect.objectContaining({ kind: "autonomy_gate", run_id: "run-123", subject_type: "contact", subject_id: "client-1" }),
+    });
+    // Drafting cost is the run's; the run waits on the approval.
+    expect(escalateRun).toHaveBeenCalledWith(expect.anything(), "org-1", "run-123", expect.stringContaining("reply_to_text"), {
+      tokensUsed: 900,
+      costCents: 2,
+      outcome: { approval_id: "approval-1" },
+    });
+    expect(createNotificationService).toHaveBeenCalledWith(
+      "org-1",
+      expect.objectContaining({ titleKey: "notifications.events.employeeNeedsApproval", body: proposal.summary, link: "/home" }),
+    );
+  });
+
+  it("parks nothing when there is nothing to propose, and closes the run", async () => {
+    (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("act_with_approval"));
+    const execute = vi.fn();
+    const propose = vi.fn().mockResolvedValue({ proposal: null, usage: { tokensUsed: 400, costCents: 1 } });
+    const db = makeDb();
+    const result = await enforceAutonomy(db, "org-1", "emma", { ...baseOpts, propose, execute });
+
+    expect(result).toEqual({ status: "skipped", runId: "run-123" });
+    expect(db.from).not.toHaveBeenCalled();
+    expect(completeRun).toHaveBeenCalledWith(expect.anything(), "org-1", "run-123", {
+      status: "succeeded",
+      tokensUsed: 400,
+      costCents: 1,
+      outcome: { proposed: false },
+    });
+    expect(escalateRun).not.toHaveBeenCalled();
+    expect(createNotificationService).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("fails the run and parks nothing when drafting fails — and never falls back to executing", async () => {
+    (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("act_with_approval"));
+    const execute = vi.fn();
+    const propose = vi.fn().mockRejectedValue(new Error("Anthropic timeout"));
+    const db = makeDb();
+    const result = await enforceAutonomy(db, "org-1", "emma", { ...baseOpts, propose, execute });
+
+    expect(result).toEqual({ status: "skipped", runId: "run-123" });
+    expect(failRun).toHaveBeenCalledWith(expect.anything(), "org-1", "run-123", "Anthropic timeout");
+    expect(db.from).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("never drafts for an autonomous employee — propose is the approval path only", async () => {
+    (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("autonomous"));
+    const propose = vi.fn();
+    const execute = vi.fn().mockResolvedValue({ value: null });
+    const result = await enforceAutonomy(makeDb(), "org-1", "emma", { ...baseOpts, propose, execute });
+    expect(result.status).toBe("executed");
+    expect(propose).not.toHaveBeenCalled();
+  });
+
+  it("parks a manual ai_approvals row (no execute, no task) for act_with_approval without propose", async () => {
     (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("act_with_approval"));
     const execute = vi.fn();
     const db = makeDb();

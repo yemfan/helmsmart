@@ -13,35 +13,47 @@ vi.mock("twilio", () => ({ default: () => ({ messages: { create: vi.fn() } }) })
 vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(), FROM_ADDRESS: "noreply@example.com" }));
 vi.mock("@/lib/invoice-reminders", () => ({ sendReminderForInvoice: vi.fn() }));
 
-import { AI_TEAM_ACTIONS, getAction, toolsForModel } from "../registry";
+import { AI_TEAM_ACTIONS, ALL_ACTIONS, GATED_ACTIONS, defaultRunDeps, getAction, getToolAction, toolsForModel } from "../registry";
 import { ACTION_KEYS, APPROVABLE_ACTIONS, EDITABLE_ACTIONS } from "../approval-view";
 import { teamFaces } from "../faces";
 import { loadNamespace, resolvesIn } from "@/lib/i18n/__tests__/bundles";
 
 describe("the AI team's registry", () => {
   it("has one action per key, and only keys the card knows", () => {
-    const keys = AI_TEAM_ACTIONS.map((a) => a.key);
+    const keys = ALL_ACTIONS.map((a) => a.key);
     expect(new Set(keys).size).toBe(keys.length);
     expect([...keys].sort()).toEqual(Object.values(ACTION_KEYS).sort());
   });
 
   it("marks exactly the outbound actions as approvable, and only those with edits as editable", () => {
-    const outbound = AI_TEAM_ACTIONS.filter((a) => a.riskClass === "outbound").map((a) => a.key);
+    const outbound = ALL_ACTIONS.filter((a) => a.riskClass === "outbound").map((a) => a.key);
     expect([...APPROVABLE_ACTIONS].sort()).toEqual(outbound.sort());
     for (const key of EDITABLE_ACTIONS) {
       expect(APPROVABLE_ACTIONS.has(key)).toBe(true);
       expect(getAction(key)?.applyEdits).toBeTypeOf("function");
     }
-    for (const a of AI_TEAM_ACTIONS.filter((x) => x.riskClass === "outbound")) {
+    for (const a of ALL_ACTIONS.filter((x) => x.riskClass === "outbound")) {
       expect(a.preview, `${a.key} must preview`).toBeTypeOf("function");
     }
   });
 
+  it("keeps gate-only actions out of the model's reach, and deciding can still run them", () => {
+    for (const a of GATED_ACTIONS) {
+      expect(a.riskClass, `${a.key} is only ever approved`).toBe("outbound");
+      expect(toolsForModel(AI_TEAM_ACTIONS, teamFaces([])).map((t) => t.name)).not.toContain(a.key);
+      expect(getToolAction(a.key)).toBeNull();
+      expect(defaultRunDeps.getAction(a.key)).toBeNull();
+      expect(getAction(a.key)).toBe(a);
+    }
+    expect(GATED_ACTIONS.map((a) => a.key)).toEqual(["reply_to_text"]);
+  });
+
   it("routes each action to the specialist whose domain it is", () => {
-    const owner = Object.fromEntries(AI_TEAM_ACTIONS.map((a) => [a.key, a.employee]));
+    const owner = Object.fromEntries(ALL_ACTIONS.map((a) => [a.key, a.employee]));
     expect(owner).toMatchObject({
       send_invoice_reminder: "alex",
       text_client: "sarah",
+      reply_to_text: "emma",
       create_task: "mark",
       hand_off_to_owner: "mark",
       list_recent_calls: "emma",

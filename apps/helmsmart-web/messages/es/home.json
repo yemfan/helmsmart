@@ -278,7 +278,8 @@
     "title": "Necesita su aprobación",
     "summary": {
       "sendInvoiceReminder": "{{who}} enviará por correo un recordatorio de pago a {{name}} por {{invoice}} · {{amount}}",
-      "textClient": "{{who}} le enviará un texto a {{name}} al {{phone}}"
+      "textClient": "{{who}} le enviará un texto a {{name}} al {{phone}}",
+      "replyToText": "{{who}} le responderá a {{name}} al {{phone}}"
     },
     "card": {
       "emailTo": "Correo para {{name}} · {{email}}",
@@ -452,6 +453,7 @@
       "bookingConfirmationText": "{{who}} envió a {{name}} la confirmación de su cita por mensaje",
       "paymentReminderText": "Recordatorio de pago por mensaje enviado a {{name}}",
       "approvedText": "{{who}} le envió un texto a {{name}}",
+      "approvedReply": "{{who}} le respondió a {{name}}",
       "approvedReminder": "{{who}} le envió un recordatorio de pago a {{name}}",
       "taskAdded": "{{who}} agregó una tarea: {{title}}",
       "handedOff": "{{who}} le pasó una tarea: {{title}}"
