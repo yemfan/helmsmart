@@ -92,7 +92,7 @@ export function textProposal(over: Partial<ApprovalRow> = {}): ApprovalRow {
     action_key: "text_client",
     params: { client_id: PRIYA, message: "Running 10 minutes late!" },
     summary: "Sarah will text Priya Shah at (415) 555-0143",
-    details: { kind: "text", clientName: "Priya Shah", phone: "(415) 555-0143", message: "Running 10 minutes late!" },
+    details: { kind: "text", clientId: PRIYA, clientName: "Priya Shah", phone: "(415) 555-0143", message: "Running 10 minutes late!" },
     status: "proposed",
     source: {},
     created_at: "2026-09-11T16:00:00.000Z",
@@ -112,7 +112,18 @@ export function reminderProposal(over: Partial<ApprovalRow> = {}): ApprovalRow {
     action_key: "send_invoice_reminder",
     params: { invoice_id: INV_1042 },
     summary: "Alex will email a payment reminder to Dana Lee for INV-1042 · $1,200.00",
-    details: { kind: "invoice_reminder", clientName: "Dana Lee", email: "dana@example.com", invoiceNumber: "INV-1042", amount: 1200, currency: "USD", daysOverdue: 12 },
+    details: {
+      kind: "invoice_reminder",
+      clientId: DANA,
+      clientName: "Dana Lee",
+      email: "dana@example.com",
+      phone: "(415) 555-0101",
+      invoiceId: INV_1042,
+      invoiceNumber: "INV-1042",
+      amount: 1200,
+      currency: "USD",
+      daysOverdue: 12,
+    },
     ...over,
   });
 }

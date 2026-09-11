@@ -57,7 +57,12 @@ export type Subject = { type: "contact" | "invoice" | "task"; id: string };
 
 export type PreviewResult =
   | { ok: true; summary: string; details: ApprovalDetails; subject?: Subject | null }
-  | { ok: false; reason: string };
+  /**
+   * `reason` is for the model (English, says what to do next). `ownerReason`
+   * is the same refusal for the person approving, in their language — used
+   * when the preview is re-run at the moment of approval.
+   */
+  | { ok: false; reason: string; ownerReason?: string };
 
 /** How an action's work is recorded as its employee's run (`ai_employee_runs`). */
 export interface RunRecord {

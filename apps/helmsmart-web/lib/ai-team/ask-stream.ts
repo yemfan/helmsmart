@@ -56,6 +56,8 @@ const STATE_FOR_MODEL: Record<string, string> = {
   declined: "declined by the owner",
   failed: "approved by the owner but not sent",
   expired: "expired without a decision",
+  unconfirmed:
+    "approved by the owner, but it could not be confirmed whether it was sent — do not propose it again until the owner has checked the conversation",
 };
 
 /**
@@ -68,7 +70,10 @@ export function historyForModel(
 ): Array<{ role: "user" | "assistant"; content: string }> {
   return messages.map((m) => {
     if (m.role !== "assistant" || !m.proposals?.length) return { role: m.role, content: m.content };
-    const notes = m.proposals.map((p) => `[${p.summary} — ${STATE_FOR_MODEL[p.status] ?? p.status}]`).join("\n");
+    // A dismissed unconfirmed send is stored as failed, but it may have gone out.
+    const notes = m.proposals
+      .map((p) => `[${p.summary} — ${(p.dismissed ? STATE_FOR_MODEL.unconfirmed : STATE_FOR_MODEL[p.status]) ?? p.status}]`)
+      .join("\n");
     return { role: m.role, content: m.content.trim() ? `${m.content}\n\n${notes}` : notes };
   });
 }

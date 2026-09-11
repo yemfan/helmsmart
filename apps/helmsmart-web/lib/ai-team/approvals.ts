@@ -8,7 +8,15 @@
  * and no read ever offers one for approval.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { expiryCutoff, isExpired, type ApprovalDetails, type ApprovalRow } from "./approval-view";
+import {
+  APPROVABLE_ACTIONS,
+  expiryCutoff,
+  isExpired,
+  isUnconfirmed,
+  unconfirmedCutoff,
+  type ApprovalDetails,
+  type ApprovalRow,
+} from "./approval-view";
 import { isUuid } from "./entities";
 
 type Db = SupabaseClient;
@@ -87,6 +95,30 @@ export async function listProposedApprovals(db: Db, orgId: string, now: Date, li
     return [];
   }
   return ((data ?? []) as ApprovalRow[]).filter((r) => !isExpired(r, now));
+}
+
+/**
+ * Approved sends that never reported back (`isUnconfirmed`), newest first —
+ * shown on /home so the owner can check the conversation and dismiss them.
+ * Never retried. Never throws: a failed read is an empty list.
+ */
+export async function listUnconfirmedApprovals(db: Db, orgId: string, now: Date, limit = 20): Promise<ApprovalRow[]> {
+  const { data, error } = await db
+    .from("ai_approvals")
+    .select(APPROVAL_COLUMNS)
+    .eq("organization_id", orgId)
+    .eq("status", "approved")
+    .in("action_key", [...APPROVABLE_ACTIONS])
+    .is("executed_at", null)
+    .is("error", null)
+    .lt("decided_at", unconfirmedCutoff(now))
+    .order("decided_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("[ai-approvals] listing unconfirmed approvals failed:", error.message);
+    return [];
+  }
+  return ((data ?? []) as ApprovalRow[]).filter((r) => isUnconfirmed(r, now));
 }
 
 /** How many proposals are waiting — the badge on Ask Mark. 0 on any failure. */

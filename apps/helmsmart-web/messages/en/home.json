@@ -295,7 +295,11 @@
       "done": "Done",
       "manualHint": "{{who}} can't do this from here yet — take care of it, then mark it done.",
       "expired": "Expired — this proposal is more than 7 days old. Ask Mark again if it's still needed.",
-      "failed": "Not sent"
+      "failed": "Not sent",
+      "unconfirmed": "We couldn't confirm this was sent — check the conversation before trying again.",
+      "dismiss": "Dismiss",
+      "dismissing": "Dismissing…",
+      "dismissed": "Dismissed"
     },
     "errors": {
       "notFound": "That proposal no longer exists.",
@@ -312,7 +316,12 @@
       "clientGone": "That client is no longer in this business.",
       "invoiceGone": "That invoice is no longer in this business.",
       "unavailable": "Approvals aren't available right now. Try again later.",
-      "network": "Network error. Try again."
+      "network": "Network error. Try again.",
+      "changed": "This proposal changed after it was shown to you, so nothing was sent. Ask Mark again.",
+      "remindedToday": "{{name}} was already reminded about {{invoice}} today, so no reminder was sent.",
+      "dismissedUnconfirmed": "Dismissed without confirming it was sent. Check the conversation before asking Mark again.",
+      "stillSending": "This is still being sent. Check back in a few minutes.",
+      "nothingToDismiss": "There's nothing to dismiss — this one already finished."
     },
     "handoff": {
       "nextStep": "Next step: {{step}}"
