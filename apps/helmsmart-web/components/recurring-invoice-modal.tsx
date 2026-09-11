@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCcw, X, Plus, Trash2 } from "lucide-react";
 import { moneyFormatter } from "@/lib/books-format";
+import { calendarDate, firstOfMonth } from "@/lib/org-date";
 import { createRecurringInvoice } from "@/lib/actions/recurring";
 import type { RecurringLineItem } from "@/lib/actions/recurring";
 
@@ -20,16 +21,16 @@ interface Props {
   clients: Client[];
   /** `organizations.currency` — the ledger's currency, not the reader's country. */
   currency: string;
+  /** `organizations.timezone` — the first run defaults to the 1st of the org's next month. */
+  timeZone: string;
 }
 
 type Frequency = "weekly" | "monthly" | "quarterly" | "annually";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function defaultStartDate(): string {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1, 1);
-  return d.toISOString().slice(0, 10);
+function defaultStartDate(timeZone: string): string {
+  return firstOfMonth(calendarDate(timeZone), 1);
 }
 
 function emptyLine(): RecurringLineItem {
@@ -38,7 +39,7 @@ function emptyLine(): RecurringLineItem {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function RecurringInvoiceModal({ clients, currency }: Props) {
+export function RecurringInvoiceModal({ clients, currency, timeZone }: Props) {
   const { t, i18n } = useTranslation("books");
   const fmt = moneyFormatter(i18n.language, currency);
   const [open, setOpen] = useState(false);
@@ -46,7 +47,7 @@ export function RecurringInvoiceModal({ clients, currency }: Props) {
   // Form state
   const [clientId, setClientId] = useState("");
   const [frequency, setFrequency] = useState<Frequency>("monthly");
-  const [startDate, setStartDate] = useState(defaultStartDate());
+  const [startDate, setStartDate] = useState(() => defaultStartDate(timeZone));
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [taxRatePct, setTaxRatePct] = useState("0");
@@ -80,7 +81,7 @@ export function RecurringInvoiceModal({ clients, currency }: Props) {
   function resetForm() {
     setClientId("");
     setFrequency("monthly");
-    setStartDate(defaultStartDate());
+    setStartDate(defaultStartDate(timeZone));
     setTitle("");
     setNotes("");
     setTaxRatePct("0");

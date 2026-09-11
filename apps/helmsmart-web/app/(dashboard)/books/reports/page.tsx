@@ -8,6 +8,8 @@ import { TrendingUp, TrendingDown, Scale, DollarSign, Clock, ArrowRight } from "
 import Link from "next/link";
 import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
+import { firstOfMonth, lastOfMonth } from "@/lib/org-date";
 import { moneyFormatter, dateFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -84,27 +86,28 @@ async function getBalances(
  */
 function getPeriod(
   period: string,
+  today: string,
   t: T,
   fmtMonth: (value: Date | string) => string,
 ): { label: string; start: string; end: string } {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth();
+  // `today` is the org's date. Every bound is built from that string — a local
+  // Date run through toISOString() lands a day early east of UTC, and the
+  // server's own "now" is already next month on the last evening of a month.
+  const y = Number(today.slice(0, 4));
 
   if (period === "ytd") {
     return {
       label: t("reports.financial.periodLabels.ytd", { year: y }),
       start: `${y}-01-01`,
-      end: now.toISOString().slice(0, 10),
+      end: today,
     };
   }
   if (period === "last_month") {
-    const d = new Date(y, m - 1, 1);
-    const last = new Date(y, m, 0);
+    const start = firstOfMonth(today, -1);
     return {
-      label: fmtMonth(d),
-      start: d.toISOString().slice(0, 10),
-      end: last.toISOString().slice(0, 10),
+      label: fmtMonth(start),
+      start,
+      end: lastOfMonth(start),
     };
   }
   if (period === "q1" || period === "q2" || period === "q3" || period === "q4") {
@@ -119,12 +122,11 @@ function getPeriod(
   }
 
   // Default: current month
-  const first = new Date(y, m, 1);
-  const last  = new Date(y, m + 1, 0);
+  const start = firstOfMonth(today);
   return {
-    label: fmtMonth(first),
-    start: first.toISOString().slice(0, 10),
-    end:   last.toISOString().slice(0, 10),
+    label: fmtMonth(start),
+    start,
+    end: lastOfMonth(today),
   };
 }
 
@@ -207,7 +209,7 @@ export default async function ReportsPage({
   const fmtMonth = dateFormatter(locale, { month: "long", year: "numeric" });
   const fmtDay = dateFormatter(locale, { year: "numeric", month: "short", day: "numeric" });
 
-  const { label, start, end } = getPeriod(period, t, fmtMonth);
+  const { label, start, end } = getPeriod(period, await orgToday(orgId), t, fmtMonth);
   const balances = await getBalances(orgId, start, end);
 
   const byType = (type: AccountType) => balances.filter((b) => b.type === type);

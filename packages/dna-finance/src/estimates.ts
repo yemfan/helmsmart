@@ -15,6 +15,8 @@ export interface EstimateLineInput {
 
 export interface CreateEstimateInput {
   clientId: string | null;
+  /** `YYYY-MM-DD` in the org's timezone; falls back to the UTC date. */
+  issueDate?: string;
   expiryDate: string;
   taxRate: number;
   notes: string;
@@ -46,7 +48,7 @@ export async function insertEstimateWithLines(
       client_id: input.clientId || null,
       estimate_number: estimateNumber,
       status: "draft",
-      issue_date: new Date().toISOString().slice(0, 10),
+      issue_date: input.issueDate ?? new Date().toISOString().slice(0, 10),
       expiry_date: input.expiryDate,
       subtotal,
       tax_rate: input.taxRate,
@@ -102,7 +104,11 @@ export async function convertEstimateToInvoice(
   db: Db,
   orgId: string,
   estimateId: string,
-  opts?: { dueInDays?: number }
+  opts?: {
+    dueInDays?: number;
+    /** `YYYY-MM-DD` in the org's timezone — the issue date, and the base for the due date. */
+    today?: string;
+  }
 ): Promise<{ invoiceId: string; alreadyConverted: boolean }> {
   const { data: est, error } = await db
     .from("estimates")
@@ -128,12 +134,16 @@ export async function convertEstimateToInvoice(
       amount: Number(l.amount),
     }));
 
-  const due = new Date();
-  due.setDate(due.getDate() + (opts?.dueInDays ?? 30));
+  // Calendar math on the date string: `setDate` on a Date and then
+  // `toISOString()` lands a day off anywhere that is not UTC.
+  const today = opts?.today ?? new Date().toISOString().slice(0, 10);
+  const due = new Date(`${today}T00:00:00Z`);
+  due.setUTCDate(due.getUTCDate() + (opts?.dueInDays ?? 30));
   const dueDate = due.toISOString().slice(0, 10);
 
   const invoiceId = await insertInvoiceWithLines(db, orgId, {
     clientId: (est.client_id as string | null) ?? null,
+    issueDate: today,
     dueDate,
     taxRate: Number(est.tax_rate),
     notes: (est.notes as string | null) ?? "",

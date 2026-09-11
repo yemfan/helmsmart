@@ -16,7 +16,9 @@ import { getReceivablesAging, getCashFlowForecast } from "@/lib/actions/reports"
 import { getOrCreateDailyBriefing } from "@/lib/briefing";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
-import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { dateFormatter, dateOnly, moneyFormatter } from "@/lib/books-format";
+import { orgTimezone } from "@/lib/org-timezone";
+import { addDays, calendarDate, firstOfMonth } from "@/lib/org-date";
 import { intlLocale } from "@leadsmart/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -59,24 +61,20 @@ function formatters(
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-async function getDashboardData(orgId: string, locale: string) {
+async function getDashboardData(orgId: string, locale: string, timeZone: string) {
   const supabase = await createClient();
 
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
-    .toISOString()
-    .slice(0, 10);
+  // The business's today, not the server's: UTC is already tomorrow every
+  // evening in the US, which moved "due today" to overdue and, on the last
+  // evening of a month, rolled month-to-date into the next month.
+  const todayStr = calendarDate(timeZone);
+  const monthStart = firstOfMonth(todayStr);
 
   // 6-month window for chart
-  const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1)
-    .toISOString()
-    .slice(0, 10);
+  const sixMonthsAgo = firstOfMonth(todayStr, -5);
 
   // Upcoming window: today → 7 days out
-  const sevenDaysOut = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7)
-    .toISOString()
-    .slice(0, 10);
+  const sevenDaysOut = addDays(todayStr, 7);
 
   const [
     bankRes,
@@ -168,7 +166,8 @@ async function getDashboardData(orgId: string, locale: string) {
       .eq("organization_id", orgId)
       .eq("completed", false)
       .gte("start_at", new Date().toISOString())
-      .lte("start_at", new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7, 23, 59).toISOString())
+      // Wall-clock-as-UTC, like the start_at values the calendar writes (see below).
+      .lte("start_at", `${sevenDaysOut}T23:59:59.999Z`)
       .order("start_at", { ascending: true })
       .limit(6),
 
@@ -258,9 +257,9 @@ async function getDashboardData(orgId: string, locale: string) {
 
   const chartData: ChartMonth[] = [];
   for (let i = 5; i >= 0; i--) {
-    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString(intlLocale(locale), { month: "short" });
+    const first = firstOfMonth(todayStr, -i);
+    const key = first.slice(0, 7); // YYYY-MM
+    const label = dateOnly(first).toLocaleDateString(intlLocale(locale), { month: "short" });
     const { revenue = 0, expenses = 0 } = monthMap.get(key) ?? {};
     chartData.push({ month: label, revenue, expenses });
   }
@@ -349,7 +348,7 @@ export default async function HomePage() {
   // Member-checked: the daily briefing below is read and written with the
   // service client, which would answer for any org the cookie named.
   const orgId = (await getMemberOrgId()) ?? "";
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
   const { money: fmt, date: fmtDate, hours: fmtHours } = formatters(locale, currency, t);
 
   const {
@@ -378,7 +377,7 @@ export default async function HomePage() {
     todayStr,
     pendingApprovals,
     recentSubmissions,
-  } = await getDashboardData(orgId, locale);
+  } = await getDashboardData(orgId, locale, timeZone);
 
   const cashOnHand      = forecast.startingBalance;
   const expectedIn      = forecast.totalInflow;
@@ -1092,6 +1091,11 @@ export default async function HomePage() {
                   : null;
 
                 const evtDate = new Date(evt.start_at);
+                // UTC slice on purpose. The calendar saves the time the owner
+                // typed with no offset (`${date}T09:00:00`, calendar-grid.tsx),
+                // which Postgres reads as UTC — so this recovers the day they
+                // picked. Converting to the org zone would move evening events
+                // back a day.
                 const evtDateStr = evtDate.toISOString().slice(0, 10);
                 const isEvtToday = evtDateStr === todayStr;
                 const timeStr = evt.all_day

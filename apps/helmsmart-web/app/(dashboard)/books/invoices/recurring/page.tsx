@@ -8,6 +8,7 @@ import { RecurringRow } from "./recurring-row";
 import { RefreshCcw } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("books");
@@ -20,7 +21,7 @@ export default async function RecurringPage() {
   const supabase = await createClient();
 
   const t = await getServerT("books");
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
 
   const [recurringRes, clientsRes] = await Promise.all([
     supabase
@@ -52,6 +53,7 @@ export default async function RecurringPage() {
         </div>
         <RecurringInvoiceModal
           currency={currency}
+          timeZone={timeZone}
           clients={
             clients as {
               id: string;
@@ -98,6 +100,7 @@ export default async function RecurringPage() {
             </p>
             <RecurringInvoiceModal
               currency={currency}
+              timeZone={timeZone}
               clients={
                 clients as {
                   id: string;

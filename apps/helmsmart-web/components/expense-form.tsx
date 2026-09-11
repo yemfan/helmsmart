@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { createExpense } from "@/lib/actions/expenses";
 import { suggestExpenseAccount } from "@/lib/actions/expense-categorize";
+import { calendarDate } from "@/lib/org-date";
 import { DollarSign, ScanLine, X, Loader2, ImagePlus, CheckCircle2, Camera, Sparkles } from "lucide-react";
 
 interface CoAAccount {
@@ -32,6 +33,8 @@ interface Props {
   onSuccess?: () => void;
   /** Overrides the default Cancel behavior (router.back) — e.g. close the host modal. */
   onCancel?: () => void;
+  /** `organizations.timezone` — the expense date defaults to the org's today. */
+  timeZone: string;
 }
 
 /**
@@ -71,10 +74,10 @@ function findBestAccount(category: string | null, accounts: CoAAccount[]): strin
   return accounts[0]?.id ?? "";
 }
 
-export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess, onCancel }: Props) {
+export function ExpenseForm({ expenseAccounts, bankAccounts, projects, onSuccess, onCancel, timeZone }: Props) {
   const router = useRouter();
   const { t } = useTranslation("books");
-  const today = new Date().toISOString().slice(0, 10);
+  const today = calendarDate(timeZone);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
 

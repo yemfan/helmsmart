@@ -7,6 +7,7 @@ import { listRecurringBills } from "@/lib/actions/recurring-bills";
 import { listVendorNames } from "@/lib/actions/vendors";
 import { getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 import { RecurringBillsClient } from "./recurring-bills-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export default async function RecurringBillsPage() {
   const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
   const supabase = await createClient();
 
   const [recurring, expenseAccountsRes, vendorNames] = await Promise.all([
@@ -47,6 +48,7 @@ export default async function RecurringBillsPage() {
         expenseAccounts={(expenseAccountsRes.data ?? []) as { id: string; code: string; name: string }[]}
         vendorNames={vendorNames}
         currency={currency}
+        timeZone={timeZone}
       />
     </div>
   );

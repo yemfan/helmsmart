@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createTask } from "@/lib/actions/tasks";
+import { addDays, calendarDate } from "@/lib/org-date";
 
 interface Client {
   id: string;
@@ -16,22 +17,22 @@ interface Props {
   clients?: Client[];
   preselectedClientId?: string;
   label?: string;
+  /** `organizations.timezone` — the due date defaults to a week from the org's today. */
+  timeZone: string;
 }
 
 type Priority = "low" | "normal" | "high" | "urgent";
 
-function defaultDue(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  return d.toISOString().slice(0, 10);
+function defaultDue(timeZone: string): string {
+  return addDays(calendarDate(timeZone), 7);
 }
 
-export function AddTaskModal({ clients = [], preselectedClientId, label }: Props) {
+export function AddTaskModal({ clients = [], preselectedClientId, label, timeZone }: Props) {
   const { t } = useTranslation("tasks");
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
-  const [dueDate, setDueDate] = useState(defaultDue());
+  const [dueDate, setDueDate] = useState(defaultDue(timeZone));
   const [clientId, setClientId] = useState(preselectedClientId ?? "");
   const [priority, setPriority] = useState<Priority>("normal");
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ export function AddTaskModal({ clients = [], preselectedClientId, label }: Props
   function reset() {
     setTitle("");
     setNotes("");
-    setDueDate(defaultDue());
+    setDueDate(defaultDue(timeZone));
     setClientId(preselectedClientId ?? "");
     setPriority("normal");
     setError("");

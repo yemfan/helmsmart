@@ -21,6 +21,7 @@ import { getClientCommunications, getClientPreferences } from "@/lib/actions/com
 import { loadConsent, optOutState } from "@/lib/consent";
 import { getClientBrief } from "@/lib/actions/client-brief";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { orgToday } from "@/lib/org-timezone";
 import { intlLocale } from "@leadsmart/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -176,7 +177,7 @@ export default async function ClientDetailPage({
         .maybeSingle()
     : { data: null };
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const fullName = [client.first_name, client.last_name].filter(Boolean).join(" ");
   const displayName = fullName || client.company || t("detail.fallbackName");
 

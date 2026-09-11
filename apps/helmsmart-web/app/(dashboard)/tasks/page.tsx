@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { AddTaskModal } from "@/components/add-task-modal";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate } from "@/lib/org-date";
 import { TaskRow } from "@/components/task-row";
 import { PriorityFilter } from "./priority-filter";
 import Link from "next/link";
@@ -66,14 +68,11 @@ export default async function TasksPage({
   const tasks = tasksRes.data ?? [];
   const clients = clientsRes.data ?? [];
 
-  // Overdue count (for badge)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Overdue count (for badge) — against the org's today, not the server's.
+  const timeZone = await orgTimezone(orgId);
+  const today = calendarDate(timeZone);
   const overdueCount = tasks.filter(
-    (t) =>
-      t.due_date &&
-      new Date(t.due_date + "T00:00:00") < today &&
-      t.status === "open"
+    (t) => t.due_date && t.due_date < today && t.status === "open"
   ).length;
 
   return (
@@ -98,6 +97,7 @@ export default async function TasksPage({
             {t("list.recurringLink")}
           </Link>
           <AddTaskModal
+            timeZone={timeZone}
             clients={clients as {
               id: string;
               first_name: string | null;
@@ -158,6 +158,7 @@ export default async function TasksPage({
             )}
             {!statusFilter && (
               <AddTaskModal
+                timeZone={timeZone}
                 clients={clients as {
                   id: string;
                   first_name: string | null;

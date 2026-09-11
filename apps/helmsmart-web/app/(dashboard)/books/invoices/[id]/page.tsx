@@ -9,6 +9,7 @@ import { StripeResultBanner } from "@/components/stripe-result-banner";
 import { InvoiceTimesheetImport } from "@/components/invoice-timesheet-import";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -94,7 +95,7 @@ export default async function InvoiceDetailPage({
     amount: number; sort_order: number; chart_of_accounts: unknown;
   }[]).sort((a, b) => a.sort_order - b.sort_order);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const effectiveStatus =
     inv.status === "sent" && inv.due_date < today ? "overdue" : inv.status;
 

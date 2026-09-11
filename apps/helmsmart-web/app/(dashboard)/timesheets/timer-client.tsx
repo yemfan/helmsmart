@@ -12,6 +12,7 @@ import {
   type TimeEntry,
 } from "@/lib/actions/time-entries";
 import { useRouter } from "next/navigation";
+import { calendarDate } from "@/lib/org-date";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -86,12 +87,14 @@ function AddEntryModal({
   clients,
   projects,
   defaultHourlyRate,
+  timeZone,
   onClose,
   onCreated,
 }: {
   clients: { id: string; first_name: string | null; last_name: string | null; company: string | null }[];
   projects: ProjectOption[];
   defaultHourlyRate: number | null;
+  timeZone: string;
   onClose: () => void;
   onCreated: (entry: Partial<TimeEntry>) => void;
 }) {
@@ -99,7 +102,7 @@ function AddEntryModal({
   const [description, setDescription] = useState("");
   const [clientId, setClientId]       = useState("");
   const [projectId, setProjectId]     = useState("");
-  const [date, setDate]               = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate]               = useState(() => calendarDate(timeZone));
   const [hours, setHours]             = useState("0");
   const [minutes, setMinutes]         = useState("0");
   const [billable, setBillable]       = useState(true);
@@ -457,6 +460,8 @@ interface Props {
   defaultHourlyRate: number | null;
   weekFrom: string;
   weekTo: string;
+  /** `organizations.timezone` — decides what "today" is for a new entry. */
+  timeZone: string;
 }
 
 export function TimerClient({
@@ -468,6 +473,7 @@ export function TimerClient({
   defaultHourlyRate,
   weekFrom,
   weekTo,
+  timeZone,
 }: Props) {
   const { t, i18n } = useTranslation("projects");
   const locale = intlLocale(i18n.language);
@@ -723,6 +729,7 @@ export function TimerClient({
           clients={clients}
           projects={projects}
           defaultHourlyRate={defaultHourlyRate}
+          timeZone={timeZone}
           onClose={() => setShowAdd(false)}
           onCreated={(partial) => {
             handleCreated(partial);

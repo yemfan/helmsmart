@@ -16,6 +16,7 @@ import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { money } from "@/lib/books-format";
 import { orgCurrency } from "@/lib/books-currency";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -45,7 +46,7 @@ export async function createEstimate(data: {
   if (!orgId) throw new Error(t("estimates.errors.noOrg"));
 
   const supabase = await createClient();
-  const id = await insertEstimateWithLines(supabase, orgId, data);
+  const id = await insertEstimateWithLines(supabase, orgId, { ...data, issueDate: await orgToday(orgId) });
 
   // Compute total for workflow threshold check
   const total = data.lines.reduce((s, l) => s + l.amount, 0);
@@ -258,7 +259,8 @@ export async function convertEstimateToInvoice(
   const { invoiceId } = await convertEstimateToInvoiceFinance(
     supabase,
     orgId,
-    estimateId
+    estimateId,
+    { today: await orgToday(orgId) }
   );
 
   revalidatePath("/books/estimates");

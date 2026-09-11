@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
 import { ExpenseForm } from "@/components/expense-form";
+import { orgTimezone } from "@/lib/org-timezone";
 import { getServerT } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export default async function NewExpensePage() {
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
 
-  const [{ data: expenseAccounts }, { data: bankAccounts }, { data: projects }] = await Promise.all([
+  const [{ data: expenseAccounts }, { data: bankAccounts }, { data: projects }, timeZone] = await Promise.all([
     supabase
       .from("chart_of_accounts")
       .select("id, code, name")
@@ -38,6 +39,7 @@ export default async function NewExpensePage() {
       .eq("organization_id", orgId)
       .in("status", ["active", "paused"])
       .order("created_at", { ascending: false }),
+    orgTimezone(orgId),
   ]);
 
   return (
@@ -62,6 +64,7 @@ export default async function NewExpensePage() {
         expenseAccounts={expenseAccounts ?? []}
         bankAccounts={bankAccounts ?? []}
         projects={projects ?? []}
+        timeZone={timeZone}
       />
     </div>
   );

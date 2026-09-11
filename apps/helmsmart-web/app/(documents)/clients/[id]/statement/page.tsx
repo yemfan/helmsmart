@@ -23,6 +23,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { translatorFor } from "@/lib/i18n/translator";
 import { contactLocale } from "@/lib/i18n/contactLocale";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PrintButton } from "./print-button";
@@ -130,7 +131,7 @@ export default async function ClientStatementPage({
   const fmt = moneyFormatter(docLocale, currency);
   const fmtDate = dateFormatter(docLocale, { month: "short", day: "numeric", year: "numeric" });
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const rows = (invoices ?? []).map((inv) => ({
     ...inv,
     effectiveStatus: inv.status === "sent" && (inv.due_date as string) < today ? "overdue" : (inv.status as string),
@@ -140,7 +141,7 @@ export default async function ClientStatementPage({
   const totalPaid = rows.filter((r) => r.status === "paid").reduce((s, r) => s + Number(r.total), 0);
   const balanceDue = totalBilled - totalPaid;
 
-  const statementDate = dateFormatter(docLocale, { month: "long", day: "numeric", year: "numeric" })(new Date());
+  const statementDate = dateFormatter(docLocale, { month: "long", day: "numeric", year: "numeric" })(today);
 
   return (
     <main id="main-content" className="statement-doc">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Repeat, X, AlertCircle, Play, Pause, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
+import { addDays, calendarDate } from "@/lib/org-date";
 import {
   createRecurringTask,
   setRecurringTaskStatus,
@@ -30,20 +31,21 @@ function clientName(c: ClientLite | { first_name: string | null; last_name: stri
   if (!c) return "";
   return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "";
 }
-function defaultNextRun(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  return d.toISOString().slice(0, 10);
+/** A week from the org's today. */
+function defaultNextRun(timeZone: string): string {
+  return addDays(calendarDate(timeZone), 7);
 }
 
 // ─── New recurring task modal ───────────────────────────────────────────────────
 
 function NewRecurringTaskModal({
   clients,
+  timeZone,
   onClose,
   onSaved,
 }: {
   clients: ClientLite[];
+  timeZone: string;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -53,7 +55,7 @@ function NewRecurringTaskModal({
   const [clientId, setClientId]   = useState("");
   const [priority, setPriority]   = useState<TaskPriority>("normal");
   const [frequency, setFreq]      = useState<RecurringFrequency>("weekly");
-  const [nextRunDate, setNextRun] = useState(defaultNextRun());
+  const [nextRunDate, setNextRun] = useState(() => defaultNextRun(timeZone));
   const [error, setError]         = useState("");
   const [isPending, start]        = useTransition();
 
@@ -239,9 +241,11 @@ function RecurringRow({
 interface Props {
   initialRecurring: RecurringTask[];
   clients: ClientLite[];
+  /** `organizations.timezone` — decides the first-run default. */
+  timeZone: string;
 }
 
-export function RecurringTasksClient({ initialRecurring, clients }: Props) {
+export function RecurringTasksClient({ initialRecurring, clients, timeZone }: Props) {
   const { t } = useTranslation("tasks");
   const [recurring, setRecurring] = useState<RecurringTask[]>(initialRecurring);
   const [showNew, setShowNew]     = useState(false);
@@ -301,6 +305,7 @@ export function RecurringTasksClient({ initialRecurring, clients }: Props) {
       {showNew && (
         <NewRecurringTaskModal
           clients={clients}
+          timeZone={timeZone}
           onClose={() => setShowNew(false)}
           onSaved={() => {
             setShowNew(false);

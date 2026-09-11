@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Sparkles } from "lucide-react";
 import { moneyFormatter } from "@/lib/books-format";
+import { addDays, calendarDate } from "@/lib/org-date";
 import { createEstimate, generateEstimateLines, type EstimateLine } from "@/lib/actions/estimates";
 import { createEstimateTemplate, type EstimateTemplate } from "@/lib/actions/estimate-templates";
 
@@ -22,6 +23,8 @@ interface Props {
   templates: EstimateTemplate[];
   /** `organizations.currency`, resolved on the server by the page. */
   currency: string;
+  /** `organizations.timezone` — the expiry defaults to 30 days from the org's today. */
+  timeZone: string;
 }
 
 function emptyLine(): EstimateLine & { key: string } {
@@ -34,13 +37,11 @@ function emptyLine(): EstimateLine & { key: string } {
   };
 }
 
-function defaultExpiryDate(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 30);
-  return d.toISOString().slice(0, 10);
+function defaultExpiryDate(timeZone: string): string {
+  return addDays(calendarDate(timeZone), 30);
 }
 
-export function EstimateBuilder({ clients, preselectedClientId, templates, currency }: Props) {
+export function EstimateBuilder({ clients, preselectedClientId, templates, currency, timeZone }: Props) {
   const { t, i18n } = useTranslation("books");
   const fmt = moneyFormatter(i18n.language, currency);
   const router = useRouter();
@@ -48,7 +49,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
   const [error, setError] = useState<string | null>(null);
 
   const [clientId, setClientId] = useState(preselectedClientId ?? "");
-  const [expiryDate, setExpiryDate] = useState(defaultExpiryDate());
+  const [expiryDate, setExpiryDate] = useState(() => defaultExpiryDate(timeZone));
   const [taxRate, setTaxRate] = useState(0);
   const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<(EstimateLine & { key: string })[]>([

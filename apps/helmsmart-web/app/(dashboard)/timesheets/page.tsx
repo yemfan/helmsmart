@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { listTimeEntries, getActiveTimer, getTimeStats } from "@/lib/actions/time-entries";
 import { listProjects } from "@/lib/actions/projects";
+import { orgTimezone } from "@/lib/org-timezone";
+import { addDays, calendarDate, mondayOf } from "@/lib/org-date";
 import { TimerClient } from "./timer-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,19 +13,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("meta.timesheets") };
 }
 
-function weekBounds() {
-  const now = new Date();
-  const day = now.getDay(); // 0 = Sun
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - ((day + 6) % 7));
-  monday.setHours(0, 0, 0, 0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
-  return {
-    from: monday.toISOString().slice(0, 10),
-    to:   sunday.toISOString().slice(0, 10),
-  };
+/** Monday–Sunday of the org's current week. */
+function weekBounds(today: string) {
+  const from = mondayOf(today);
+  return { from, to: addDays(from, 6) };
 }
 
 export default async function TimesheetsPage() {
@@ -31,7 +24,8 @@ export default async function TimesheetsPage() {
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
 
-  const { from, to } = weekBounds();
+  const timeZone = await orgTimezone(orgId);
+  const { from, to } = weekBounds(calendarDate(timeZone));
 
   const [entries, activeTimer, stats, clientsRes, orgRes, projects] = await Promise.all([
     listTimeEntries({ from, to }),
@@ -69,6 +63,7 @@ export default async function TimesheetsPage() {
       defaultHourlyRate={defaultHourlyRate}
       weekFrom={from}
       weekTo={to}
+      timeZone={timeZone}
     />
   );
 }

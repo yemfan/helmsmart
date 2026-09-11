@@ -8,30 +8,23 @@ import type { TFunction } from "i18next";
 import { Plus, X, AlertCircle, Receipt, Trash2, CheckCircle2, Banknote, Repeat } from "lucide-react";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { createBill, payBill, deleteBill, type Bill } from "@/lib/actions/bills";
+import { addDays, calendarDate, daysBetween } from "@/lib/org-date";
 
 type ExpenseAccount = { id: string; code: string; name: string };
 type BankAccount = { id: string; name: string; mask: string | null; coa_account_id: string | null };
 
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
-function plusDays(n: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
-}
-function daysUntil(due: string): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Math.round((new Date(due + "T00:00:00").getTime() - today.getTime()) / 86_400_000);
-}
-/** The badge text is a whole phrase per case — never a stem plus a suffix. */
+/**
+ * The badge text is a whole phrase per case — never a stem plus a suffix.
+ * `today` is the org's date, so "due today" here agrees with every server-side
+ * overdue check rather than with the viewer's own clock.
+ */
 function dueBadge(
   due: string,
+  today: string,
   t: TFunction<"books">,
   fmtDate: (value: Date | string) => string,
 ): { label: string; cls: string } {
-  const n = daysUntil(due);
+  const n = daysBetween(today, due);
   if (n < 0) return { label: t("bills.due.overdue", { count: Math.abs(n) }), cls: "bg-rose-50 text-rose-700" };
   if (n === 0) return { label: t("bills.due.today"), cls: "bg-amber-50 text-amber-700" };
   if (n <= 7) return { label: t("bills.due.inDays", { count: n }), cls: "bg-amber-50 text-amber-700" };
@@ -47,12 +40,14 @@ function NewBillModal({
   expenseAccounts,
   vendorNames,
   currency,
+  timeZone,
   onClose,
   onSaved,
 }: {
   expenseAccounts: ExpenseAccount[];
   vendorNames: string[];
   currency: string;
+  timeZone: string;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -62,8 +57,8 @@ function NewBillModal({
   const [description, setDescription]     = useState("");
   const [expenseAccountId, setExpenseAcc] = useState(expenseAccounts[0]?.id ?? "");
   const [amount, setAmount]               = useState("");
-  const [issueDate, setIssueDate]         = useState(todayStr());
-  const [dueDate, setDueDate]             = useState(plusDays(30));
+  const [issueDate, setIssueDate]         = useState(() => calendarDate(timeZone));
+  const [dueDate, setDueDate]             = useState(() => addDays(calendarDate(timeZone), 30));
   const [error, setError]                 = useState("");
   const [isPending, start]                = useTransition();
 
@@ -176,19 +171,21 @@ function PayBillModal({
   bill,
   banks,
   currency,
+  timeZone,
   onClose,
   onPaid,
 }: {
   bill: Bill;
   banks: BankAccount[];
   currency: string;
+  timeZone: string;
   onClose: () => void;
   onPaid: () => void;
 }) {
   const { t, i18n } = useTranslation("books");
   const fmt = moneyFormatter(i18n.language, currency);
   const [bankAccountId, setBankAccountId] = useState(banks[0]?.id ?? "");
-  const [paymentDate, setPaymentDate]     = useState(todayStr());
+  const [paymentDate, setPaymentDate]     = useState(() => calendarDate(timeZone));
   const [error, setError]                 = useState("");
   const [isPending, start]                = useTransition();
 
@@ -274,12 +271,14 @@ function BillRow({
   bill,
   canPay,
   currency,
+  today,
   onPay,
   onChanged,
 }: {
   bill: Bill;
   canPay: boolean;
   currency: string;
+  today: string;
   onPay: (b: Bill) => void;
   onChanged: () => void;
 }) {
@@ -289,7 +288,7 @@ function BillRow({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isPending, start] = useTransition();
   const paid = bill.status === "paid";
-  const badge = dueBadge(bill.due_date, t, fmtDate);
+  const badge = dueBadge(bill.due_date, today, t, fmtDate);
 
   function del() {
     if (!confirmDelete) { setConfirmDelete(true); return; }
@@ -373,9 +372,11 @@ interface Props {
   bankAccounts: BankAccount[];
   vendorNames: string[];
   currency: string;
+  /** `organizations.timezone` — decides "today" for due badges and date defaults. */
+  timeZone: string;
 }
 
-export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendorNames, currency }: Props) {
+export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendorNames, currency, timeZone }: Props) {
   const { t, i18n } = useTranslation("books");
   const fmt = moneyFormatter(i18n.language, currency);
   const router = useRouter();
@@ -386,11 +387,12 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
   const mappedBanks = bankAccounts.filter((b) => b.coa_account_id);
   const canPay = mappedBanks.length > 0;
 
+  const today = calendarDate(timeZone);
   const openBills = initialBills.filter((b) => b.status === "open");
   const totalOwed = openBills.reduce((s, b) => s + b.amount, 0);
-  const overdue = openBills.filter((b) => daysUntil(b.due_date) < 0);
+  const overdue = openBills.filter((b) => daysBetween(today, b.due_date) < 0);
   const overdueAmount = overdue.reduce((s, b) => s + b.amount, 0);
-  const dueSoon = openBills.filter((b) => { const n = daysUntil(b.due_date); return n >= 0 && n <= 7; });
+  const dueSoon = openBills.filter((b) => { const n = daysBetween(today, b.due_date); return n >= 0 && n <= 7; });
   const dueSoonAmount = dueSoon.reduce((s, b) => s + b.amount, 0);
 
   const shown = filter === "all" ? initialBills : initialBills.filter((b) => b.status === filter);
@@ -484,16 +486,16 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-50">
           {shown.map((b) => (
-            <BillRow key={b.id} bill={b} canPay={canPay} currency={currency} onPay={setPayTarget} onChanged={refresh} />
+            <BillRow key={b.id} bill={b} canPay={canPay} currency={currency} today={today} onPay={setPayTarget} onChanged={refresh} />
           ))}
         </div>
       )}
 
       {showNew && (
-        <NewBillModal expenseAccounts={expenseAccounts} vendorNames={vendorNames} currency={currency} onClose={() => setShowNew(false)} onSaved={refresh} />
+        <NewBillModal expenseAccounts={expenseAccounts} vendorNames={vendorNames} currency={currency} timeZone={timeZone} onClose={() => setShowNew(false)} onSaved={refresh} />
       )}
       {payTarget && (
-        <PayBillModal bill={payTarget} banks={mappedBanks} currency={currency} onClose={() => setPayTarget(null)} onPaid={refresh} />
+        <PayBillModal bill={payTarget} banks={mappedBanks} currency={currency} timeZone={timeZone} onClose={() => setPayTarget(null)} onPaid={refresh} />
       )}
     </div>
   );
