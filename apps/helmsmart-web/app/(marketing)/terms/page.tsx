@@ -3,7 +3,9 @@ import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
 
-const LINK_CLASS = "text-indigo-600 hover:text-indigo-700";
+// Links inside running text are underlined: colour alone does not mark a link
+// for a reader who cannot tell indigo from grey (WCAG 1.4.1, link-in-text-block).
+const LINK_CLASS = "text-indigo-600 underline underline-offset-2 hover:text-indigo-700";
 const CLOSEBOSS_LINK = {
   href: "https://www.closebossai.com",
   external: true,

@@ -6,7 +6,7 @@
   "nav": {
     "product": "Producto",
     "pricing": "Precios",
-    "schedule": "Reservar",
+    "bookDemo": "Agendar una demo",
     "faq": "Preguntas frecuentes",
     "blog": "Blog",
     "signIn": "Iniciar sesión",
@@ -24,8 +24,8 @@
     "links": {
       "features": "Funciones",
       "pricing": "Precios",
-      "scheduleDemo": "Agendar demostración",
-      "startFreeTrial": "Empezar prueba gratis",
+      "bookDemo": "Agendar una demo",
+      "startFree": "Empezar gratis",
       "about": "Quiénes somos",
       "blog": "Blog",
       "contact": "Contacto",
@@ -45,12 +45,12 @@
     "copyright": "© 2026 MAXY Investment Inc. HelmSmart es un nombre comercial de MAXY Investment Inc. Todos los derechos reservados."
   },
   "landing": {
-    "badge": "Más de 500 pequeñas empresas ya confían en nosotros",
+    "badge": "Del equipo que creó CloseBoss",
     "hero": {
       "title": "Su negocio contesta cada llamada, envía cada factura y no se le escapa nada — <em>automáticamente.</em>",
       "subtitle": "HelmSmart da a las pequeñas empresas una oficina administrativa con IA disponible 24/7. Más control, menos esfuerzo.",
-      "startTrial": "Empezar prueba gratis",
-      "schedule": "Reservar cita",
+      "startFree": "Empezar gratis",
+      "bookDemo": "Agendar una demo",
       "seeHow": "Ver cómo funciona"
     },
     "how": {
@@ -114,26 +114,25 @@
         "value": "24/7",
         "label": "Recepcionista con IA siempre disponible"
       },
-      "booking": {
-        "value": "menos de 2 min",
-        "label": "Tiempo medio para reservar una cita"
+      "languages": {
+        "value": "3 idiomas",
+        "label": "HelmSmart en inglés, chino y español"
       },
-      "saved": {
-        "value": "10+ horas",
-        "label": "Tiempo de administración ahorrado cada semana"
+      "transcripts": {
+        "value": "Cada llamada",
+        "label": "Queda registrada con un resumen y la transcripción completa"
       }
     },
-    "testimonial": {
-      "title": "Negocios reales. Resultados reales.",
-      "quote": "Antes de HelmSmart perdía trabajos cada semana porque no podía contestar el teléfono mientras estaba en obra. Ahora la IA atiende todas las llamadas, agenda el trabajo y me manda un resumen. Llevo meses sin perder un solo cliente potencial, y mis facturas de verdad salen el mismo día.",
-      "author": "Sarah K.",
-      "role": "Dueña de Bright & Clean Services"
+    "example": {
+      "title": "Así se ve en la práctica",
+      "label": "Escenario de ejemplo",
+      "quote": "Antes de HelmSmart perdía trabajos cada semana porque no podía contestar el teléfono mientras estaba en obra. Ahora la IA atiende todas las llamadas, agenda el trabajo y me manda un resumen. Llevo meses sin perder un solo cliente potencial, y mis facturas de verdad salen el mismo día."
     },
     "finalCta": {
-      "badge": "14 días de prueba gratis · Sin tarjeta de crédito",
+      "badge": "Gratis durante la beta · Sin tarjeta de crédito",
       "title": "¿Listo para tomar el timón?",
-      "subtitle": "Empiece sus 14 días de prueba gratis, sin tarjeta de crédito.",
-      "cta": "Empezar prueba gratis"
+      "subtitle": "Todas las funciones son gratis mientras HelmSmart está en beta, sin tarjeta de crédito.",
+      "cta": "Empezar gratis"
     }
   },
   "about": {
@@ -148,7 +147,7 @@
     },
     "origin": {
       "title": "De dónde salió HelmSmart",
-      "p1": "Creamos <a>CloseBoss</a>, una plataforma de crecimiento con IA para agentes inmobiliarios y profesionales hipotecarios, y vimos cómo transformó la manera en que miles de profesionales gestionan sus clientes potenciales, sus seguimientos y su comunicación con los clientes.",
+      "p1": "Creamos <a>CloseBoss</a>, una plataforma de crecimiento con IA que ayuda a agentes inmobiliarios y profesionales hipotecarios a gestionar sus clientes potenciales, sus seguimientos y la comunicación con sus clientes.",
       "p2": "Por el camino no dejábamos de escuchar la misma historia de otro público: plomeros, dueños de salones de belleza, contratistas, consultores y cualquier otro dueño de una pequeña empresa que no es agente inmobiliario pero se enfrenta exactamente a los mismos problemas. Llamadas perdidas. Papeleo desbordado. Facturas que salen tarde. Servicios de contestación nocturna carísimos.",
       "p3": "HelmSmart es nuestra respuesta. La misma infraestructura de IA y la misma filosofía de producto que hay detrás de CloseBoss, reconstruidas desde cero para cualquier pequeña empresa que necesite una oficina más inteligente."
     },
@@ -186,8 +185,8 @@
     },
     "cta": {
       "title": "¿Listo para tomar el timón?",
-      "subtitle": "14 días de prueba gratis, sin tarjeta de crédito.",
-      "primary": "Empezar prueba gratis",
+      "subtitle": "Gratis durante la beta, sin tarjeta de crédito.",
+      "primary": "Empezar gratis",
       "secondary": "Hablar con nosotros"
     }
   },
@@ -288,28 +287,35 @@
       }
     },
     "cta": {
-      "title": "Empiece hoy su prueba gratis",
-      "subtitle": "Sin tarjeta de crédito. Se configura en minutos. Cancele cuando quiera.",
+      "title": "Empiece gratis hoy",
+      "subtitle": "Gratis durante la beta. Sin tarjeta de crédito. Se configura en minutos.",
       "button": "Empezar gratis"
     }
   },
   "pricing": {
     "meta": {
       "title": "Precios — HelmSmart",
-      "description": "Planes simples y transparentes para pequeñas empresas. 14 días de prueba gratis, sin tarjeta."
+      "description": "HelmSmart es gratis durante la beta: todas las funciones, sin tarjeta de crédito. Esto es lo que costarán los planes de pago después de la beta."
     },
     "hero": {
-      "title": "Precios simples y transparentes",
-      "subtitle": "Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito."
+      "title": "Gratis mientras estamos en beta",
+      "subtitle": "Todas las funciones, sin tarjeta de crédito. Los minutos de llamadas con IA también están incluidos durante la beta.",
+      "cta": "Empezar gratis",
+      "note": "Después de la beta, las llamadas con IA se cobrarán a $0.10 por minuto."
     },
-    "mostPopular": "El más popular",
+    "afterBeta": {
+      "title": "Precios previstos después de la beta",
+      "subtitle": "Los planes que ofreceremos cuando termine la beta. Durante la beta, no paga nada.",
+      "voice": "Todos los planes: llamadas con IA a $0.10 por minuto después de la beta."
+    },
+    "recommended": "Recomendado",
     "perMonth": "/mes",
     "plans": {
       "starter": {
         "name": "Starter",
         "price": "$29",
         "description": "Ideal para quien trabaja solo",
-        "cta": "Empezar prueba gratis",
+        "cta": "Empezar gratis",
         "features": {
           "f1": "Bandeja de entrada inteligente",
           "f2": "Facturación básica",
@@ -322,7 +328,7 @@
         "name": "Growth",
         "price": "$79",
         "description": "Para pequeñas empresas en crecimiento",
-        "cta": "Empezar prueba gratis",
+        "cta": "Empezar gratis",
         "features": {
           "f1": "Todo lo de Starter",
           "f2": "Recepcionista con IA",
@@ -354,25 +360,29 @@
     "faq": {
       "title": "Preguntas frecuentes",
       "items": {
+        "beta": {
+          "question": "¿Cuánto cuesta HelmSmart durante la beta?",
+          "answer": "Nada. Durante la beta todas las funciones son gratis y no se necesita tarjeta de crédito, incluidos los minutos que su recepcionista con IA pasa en llamadas."
+        },
+        "afterBeta": {
+          "question": "¿Qué pasa cuando termine la beta?",
+          "answer": "Los planes de esta página son nuestros precios previstos para después de la beta, con las llamadas con IA a $0.10 por minuto. HelmSmart no pide tarjeta durante la beta, así que no se le puede cobrar nada automáticamente. Para seguir usándolo después de la beta, elegirá un plan y agregará un método de pago."
+        },
         "cancel": {
           "question": "¿Puedo cancelar cuando quiera?",
-          "answer": "Sí. HelmSmart no tiene contratos de permanencia. Puede cancelar su suscripción en cualquier momento desde la configuración de su cuenta y no se le volverá a cobrar."
-        },
-        "afterTrial": {
-          "question": "¿Qué pasa cuando termina la prueba?",
-          "answer": "Cuando terminen sus 14 días de prueba gratis, le pediremos que agregue un método de pago para continuar. Nunca se le cobrará automáticamente durante el periodo de prueba."
+          "answer": "Sí. Los planes de pago después de la beta no tienen contrato de permanencia y puede cancelar en cualquier momento. Durante la beta no hay nada que cancelar: no se le está cobrando."
         },
         "alwaysOn": {
           "question": "¿La IA de voz está disponible de verdad 24/7?",
-          "answer": "Sí. La recepcionista de voz con IA funciona con Retell AI y contesta llamadas a toda hora — de noche, los fines de semana y los días festivos — para que no pierda ni un cliente. Además reduce el costo de los servicios de contestación fuera de horario, porque sustituye al caro personal de guardia y a los centros de llamadas externos."
+          "answer": "Sí. Una vez configurada, la recepcionista con IA contesta llamadas a toda hora — de noche, los fines de semana y los días festivos — para que no pierda ni un cliente. Además reduce el costo de los servicios de contestación fuera de horario, porque sustituye al caro personal de guardia y a los centros de llamadas externos."
         },
         "refunds": {
           "question": "¿Ofrecen reembolsos?",
-          "answer": "Ofrecemos una garantía de devolución de 30 días en todos los planes de pago. Si por cualquier motivo no queda satisfecho, escríbanos dentro de los 30 días siguientes a su primer cargo y le haremos un reembolso completo."
+          "answer": "Los planes de pago después de la beta tienen una garantía de devolución de 30 días. Si por cualquier motivo no queda satisfecho, escríbanos dentro de los 30 días siguientes a su primer cargo y le haremos un reembolso completo."
         }
       }
     },
-    "stillQuestions": "¿Le queda alguna duda? <a>Hable con nosotros.</a>"
+    "stillQuestions": "¿Le queda alguna duda? <a>Escríbanos.</a>"
   },
   "faq": {
     "meta": {
@@ -393,15 +403,15 @@
           },
           "setup": {
             "q": "¿Cómo configuro la recepcionista de voz?",
-            "a": "Conecte su número de Twilio o use Retell AI, y después defina su horario comercial y sus tipos de cita en la configuración de Voz. El asistente de configuración le guía paso a paso en unos minutos."
+            "a": "En la configuración de su recepcionista: escriba el número de teléfono de su negocio al que llaman sus clientes, defina su horario comercial, agregue los servicios que agenda (con la duración de cada uno) y active la recepcionista. Una lista le muestra lo que falta, y con un clic puede verificar que su número está conectado, para que las llamadas de verdad lleguen a la recepcionista. Conectar Google Calendar es opcional: sirve para que la recepcionista solo ofrezca los horarios en que usted está libre."
           },
           "technical": {
             "q": "¿Necesito conocimientos técnicos?",
             "a": "No. Todo se configura desde un panel sencillo. Sin programar y sin integraciones complicadas: solo complete los datos de su negocio y ya está en marcha."
           },
-          "trial": {
-            "q": "¿Hay una prueba gratis?",
-            "a": "Sí. Dispone de 14 días gratis con acceso completo a todas las funciones. No necesita tarjeta de crédito para empezar."
+          "beta": {
+            "q": "¿Puedo probar HelmSmart gratis?",
+            "a": "Sí. HelmSmart es gratis durante la beta: todas las funciones, sin tarjeta de crédito. Los minutos que su recepcionista con IA pasa en llamadas están incluidos mientras estemos en beta."
           }
         }
       },
@@ -431,15 +441,15 @@
         "items": {
           "changePlans": {
             "q": "¿Puedo cambiar de plan cuando quiera?",
-            "a": "Sí. Las mejoras de plan se aplican de inmediato. Los cambios a un plan menor se aplican al inicio de su siguiente ciclo de facturación, así que nunca pierde el acceso a mitad de periodo."
+            "a": "Después de la beta, sí: las mejoras de plan se aplican de inmediato y los cambios a un plan menor, al inicio de su siguiente ciclo de facturación, así que nunca pierde el acceso a mitad de periodo. Durante la beta todos tienen todas las funciones, así que no hay plan que cambiar."
           },
           "voiceCharge": {
             "q": "¿Qué es el cargo de voz de $0.10 por minuto?",
-            "a": "Las llamadas de voz se cobran a $0.10 por minuto, además de su plan base. Eso cubre tanto el procesamiento de la IA como los costos de telefonía. Solo paga por las llamadas que realmente se atienden."
+            "a": "Después de la beta, las llamadas que atienda su recepcionista con IA se cobrarán a $0.10 por minuto, además de su plan. Eso cubre tanto la IA como los costos de la línea telefónica, y solo paga por las llamadas que realmente se atienden. Durante la beta, los minutos de llamada están incluidos sin costo."
           },
           "contract": {
             "q": "¿Hay que firmar un contrato?",
-            "a": "Sin contratos ni compromisos. HelmSmart se paga mes a mes y puede cancelar cuando quiera desde la configuración de su cuenta."
+            "a": "Sin contratos ni compromisos. Los planes de pago después de la beta son mes a mes y puede cancelar cuando quiera. Durante la beta no hay nada que pagar."
           }
         }
       },
@@ -451,8 +461,8 @@
             "a": "Sí. HelmSmart se conecta por OAuth para una sincronización bidireccional completa. La recepcionista de voz consulta la disponibilidad en tiempo real y escribe las reservas confirmadas directamente en su calendario."
           },
           "phone": {
-            "q": "¿Qué proveedores de telefonía funcionan?",
-            "a": "Los números de Twilio funcionan de inmediato: puede traer un número que ya tenga o dar de alta uno nuevo. Retell AI impulsa la capa de voz con IA para conversaciones naturales y de baja latencia."
+            "q": "¿Qué números de teléfono funcionan?",
+            "a": "La recepcionista contesta el número de su negocio una vez que ese número está conectado al sistema de voz de HelmSmart a través de Twilio, el operador telefónico con el que trabajamos. La lista de la configuración le indica si su número está conectado y, si no lo está, qué falta. Si su número es de otro operador o quiere ayuda para conectarlo, escríbanos."
           },
           "import": {
             "q": "¿Puedo importar los clientes que ya tengo?",
@@ -557,7 +567,7 @@
     "back": "Volver al blog",
     "cta": {
       "title": "¿Listo para ponerlo en práctica?",
-      "subtitle": "Empiece sus 14 días de prueba gratis, sin tarjeta de crédito.",
+      "subtitle": "HelmSmart es gratis durante la beta, sin tarjeta de crédito.",
       "button": "Empezar gratis"
     }
   },
@@ -617,7 +627,7 @@
       "email": "Indique una dirección de correo válida",
       "failed": "No se pudo enviar el mensaje. Inténtelo de nuevo o escríbanos a contact@helmsmart.ai"
     },
-    "demoNote": "¿Quiere agendar una demostración? <a>Solicite una cotización personalizada</a> o consulte nuestras <a>preguntas frecuentes</a>.",
+    "demoNote": "¿Quiere verlo en acción? <a>Agende una demo</a> o consulte nuestras <a>preguntas frecuentes</a>.",
     "business": {
       "title": "Información de la empresa",
       "subtitle": "Sociedad operadora y dirección postal",
@@ -636,17 +646,17 @@
   },
   "sales": {
     "meta": {
-      "title": "Solicitar una demostración — HelmSmart",
+      "title": "Agendar una demo — HelmSmart",
       "description": "Agende una demostración personalizada de HelmSmart para su negocio."
     },
     "hero": {
-      "title": "Encontremos el plan adecuado para su negocio",
+      "title": "Agende una demo",
       "subtitle": "Cuéntenos qué necesita y le mostraremos cómo HelmSmart puede ahorrarle tiempo y dinero."
     },
     "stats": {
-      "trial": {
-        "value": "14 días",
-        "label": "Prueba gratis, sin tarjeta"
+      "beta": {
+        "value": "Gratis",
+        "label": "Durante la beta, sin tarjeta"
       },
       "response": {
         "value": "24 h",
@@ -654,10 +664,10 @@
       },
       "refund": {
         "value": "30 días",
-        "label": "Garantía de devolución"
+        "label": "Garantía de devolución en los planes de pago después de la beta"
       }
     },
-    "footerNote": "¿Aún no quiere hablar? <a>Consulte nuestros precios</a> o empiece con una <a>prueba gratis</a>.",
+    "footerNote": "¿Aún no quiere hablar? <a>Consulte nuestros precios</a> o <a>empiece gratis</a>.",
     "form": {
       "name": {
         "label": "Nombre completo *",

@@ -17,8 +17,8 @@ const footerLinks = [
     links: [
       { key: "features", href: "/features" },
       { key: "pricing", href: "/pricing" },
-      { key: "scheduleDemo", href: "/contact/sales" },
-      { key: "startFreeTrial", href: "/signup" },
+      { key: "bookDemo", href: "/contact/sales" },
+      { key: "startFree", href: "/signup" },
     ],
   },
   {
@@ -58,12 +58,14 @@ export async function MarketingFooter() {
               <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
                 {t(`footer.groups.${group}`)}
               </h3>
-              <ul className="mt-4 space-y-3">
+              {/* `inline-block py-0.5` turns a 20px text line into a 24px target
+                  (WCAG 2.2, 2.5.8); the list's gap drops a step to match. */}
+              <ul className="mt-4 space-y-2">
                 {links.map((link) => (
                   <li key={link.key}>
                     <a
                       href={link.href}
-                      className="text-sm text-slate-400 transition-colors hover:text-white"
+                      className="inline-block py-0.5 text-sm text-slate-400 transition-colors hover:text-white"
                     >
                       {t(`footer.links.${link.key}`)}
                     </a>
@@ -86,7 +88,7 @@ export async function MarketingFooter() {
                   href={p.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                  className="inline-block py-0.5 text-sm text-slate-400 transition-colors hover:text-white"
                 >
                   {p.label}{" "}
                   <span className="text-slate-500">· {t(`footer.partners.${p.key}`)}</span>
