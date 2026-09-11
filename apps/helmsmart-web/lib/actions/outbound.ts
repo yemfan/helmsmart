@@ -1,10 +1,11 @@
 "use server";
 
 import { after } from "next/server";
-import { getServerT } from "@/lib/i18n/server";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { updateOrg } from "@/lib/actions/org-update";
+import { decideConsent } from "@helm/dna-communication";
 import { createServiceClient } from "@/lib/supabase/server";
 import { loadReceptionistContext, type OutboundPurpose } from "@/lib/receptionist-agent";
 import {
@@ -14,9 +15,21 @@ import {
   enqueueCalls,
   drainOutboundQueue,
 } from "@/lib/outbound-queue";
+import { CallNotAllowedError } from "@/lib/outbound-send";
+import { describeDenial, inputsFor, loadOrgOptOuts, type OrgOptOuts } from "@/lib/consent";
 
 type CallResult = { ok: true; name: string } | { ok: false; error: string };
-type BulkResult = { ok: true; queued: number } | { ok: false; error: string };
+/** `optedOut`: how many of the picked contacts were left out because they opted out of calls. */
+type BulkResult = { ok: true; queued: number; optedOut: number } | { ok: false; error: string };
+
+/** The sentence the owner reads when the consent guard refuses a call. */
+async function callRefusal(e: CallNotAllowedError): Promise<string> {
+  if (e.guard.reason === "opted_out") {
+    const [tc, locale] = await Promise.all([getServerT("clients"), getServerLocale()]);
+    return describeDenial(e.guard.decision, e.guard.consent, tc, locale);
+  }
+  return (await getServerT("voice"))("outbound.errors.consentUnavailable");
+}
 
 // Cap a single "Call all" batch so the background drain finishes within the
 // function's lifetime. Larger lists are handled by clicking again (already-queued
@@ -57,6 +70,7 @@ export async function callLead(input: { clientId: string; purpose: OutboundPurpo
   try {
     await placeOutboundCall(db, ctx, client, input.purpose, agentId, input.detail);
   } catch (e) {
+    if (e instanceof CallNotAllowedError) return { ok: false, error: await callRefusal(e) };
     return { ok: false, error: e instanceof Error ? e.message : "Call failed to start." };
   }
 
@@ -94,7 +108,21 @@ export async function callAll(input: { purpose: OutboundPurpose; clientIds: stri
   const validIds = (valid ?? []).map((c) => c.id as string);
   if (!validIds.length) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noneReachable") };
 
-  const queued = await enqueueCalls(db, orgId, input.purpose, validIds, input.detail);
+  // Leave out anyone who opted out of calls rather than queue a call the
+  // guard at dial time would refuse. An unreadable opt-out list queues nobody.
+  let optOuts: OrgOptOuts;
+  try {
+    optOuts = await loadOrgOptOuts(db, orgId);
+  } catch (e) {
+    console.error("[outbound] callAll: consent lookup failed", e);
+    return { ok: false, error: (await getServerT("voice"))("outbound.errors.consentUnavailable") };
+  }
+  const callable = validIds.filter(
+    (id) => decideConsent("call", "automated", inputsFor(optOuts, { clientId: id })).allowed,
+  );
+  if (!callable.length) return { ok: false, error: (await getServerT("voice"))("outbound.errors.allOptedOut") };
+
+  const queued = await enqueueCalls(db, orgId, input.purpose, callable, input.detail);
   if (queued === 0) return { ok: false, error: (await getServerT("voice"))("outbound.errors.alreadyQueued") };
 
   // Dial the batch in the background so the click returns immediately.
@@ -102,7 +130,7 @@ export async function callAll(input: { purpose: OutboundPurpose; clientIds: stri
     await drainOutboundQueue(db, orgId, { limit: BULK_LIMIT, staggerMs: STAGGER_MS });
   });
 
-  return { ok: true, queued };
+  return { ok: true, queued, optedOut: validIds.length - callable.length };
 }
 
 /** Enable/disable automatic appointment-reminder calls and/or set how long before

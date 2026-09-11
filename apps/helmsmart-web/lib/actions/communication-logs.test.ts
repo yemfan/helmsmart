@@ -51,10 +51,26 @@ let serviceResult: { data: unknown; error: { message: string } | null } = {
   error: null,
 };
 
+/**
+ * Any other table the action reads after a save (the client's phone and email,
+ * to clear an unsubscribe when a switch goes off) answers "no row" — these
+ * tests are about the preferences payload, and the clearing has its own tests
+ * in `communication-logs.consent.test.ts`.
+ */
+function noRows() {
+  const chain: Record<string, unknown> = {};
+  for (const m of ["select", "eq", "in", "is", "order", "limit", "maybeSingle", "single", "update", "delete"]) {
+    chain[m] = () => chain;
+  }
+  chain.then = (res: (v: unknown) => unknown) => Promise.resolve({ data: null, error: null }).then(res);
+  return chain;
+}
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({
     auth: { getUser: async () => ({ data: { user: { id: "user-1" } } }) },
     from: (table: string) => {
+      if (table !== "communication_preferences") return noRows();
       rls.table = table;
       return {
         upsert: (payload: Record<string, unknown>, options: unknown) => {

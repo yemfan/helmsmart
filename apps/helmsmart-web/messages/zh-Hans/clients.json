@@ -216,16 +216,21 @@
     "optOuts": {
       "title": "退订设置",
       "sms": {
-        "label": "短信",
-        "description": "不再接收短信"
+        "label": "已拒收短信",
+        "description": "不发送任何短信：包括你本人、Auto Pilot、自动回复、未接来电短信、提醒和营销活动。对方回复 STOP 时自动开启，回复 START 时自动关闭。"
       },
       "email": {
-        "label": "邮件",
-        "description": "不再接收邮件"
+        "label": "已拒收邮件",
+        "description": "不发送营销活动、自动化、自动回复和收件箱邮件。发票、收据、报价单、对账单、付款链接和催款提醒仍会发送——这些是与你已发生业务的记录。"
       },
       "calls": {
-        "label": "电话",
-        "description": "不再接听来电"
+        "label": "已拒接电话",
+        "description": "不拨打 AI 电话，也不拨打自动提醒电话。"
+      },
+      "since": {
+        "stopReply": "对方已于 {{date}} 回复 STOP。",
+        "carrier": "运营商于 {{date}} 报告对方回复了 STOP。",
+        "unsubscribed": "已于 {{date}} 退订。"
       }
     },
     "contact": {
@@ -249,6 +254,30 @@
       "notes": "补充说明",
       "notesPlaceholder": "例如：“下午 5 点后发邮件”“周一不要来电”"
     }
+  },
+  "consent": {
+    "someone": "该联系人",
+    "denied": {
+      "sms": {
+        "stopReply": "{{name}} 已于 {{date}} 拒收短信（回复了 STOP）。",
+        "carrier": "{{name}} 已于 {{date}} 拒收短信（运营商报告对方回复了 STOP）。",
+        "unsubscribed": "{{name}} 已于 {{date}} 拒收短信。",
+        "marked": "{{name}} 已被标记为拒收短信。"
+      },
+      "email": {
+        "unsubscribed": "{{name}} 已于 {{date}} 退订邮件。",
+        "marked": "{{name}} 已被标记为拒收邮件。"
+      },
+      "call": {
+        "marked": "{{name}} 已被标记为拒接电话。"
+      }
+    },
+    "alternative": {
+      "text": "你仍可以给 {{name}} 发短信。",
+      "email": "你仍可以给 {{name}} 发邮件。",
+      "textOrEmail": "你仍可以给 {{name}} 发短信或邮件。"
+    },
+    "withAlternative": "{{reason}}{{alternative}}"
   },
   "brief": {
     "title": "AI 客户简报",

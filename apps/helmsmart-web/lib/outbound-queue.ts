@@ -13,8 +13,7 @@ import {
   type ReceptionistContext,
 } from "@/lib/receptionist-agent";
 import { normalizePhoneE164 } from "@/lib/phone";
-import twilio from "twilio";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import { CallNotAllowedError, guardCall, outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 
 type ServiceClient = Awaited<ReturnType<typeof createServiceClient>>;
 type QueueClient = { id: string; first_name: string; last_name: string | null; phone: string | null };
@@ -69,6 +68,12 @@ export async function placeOutboundCall(
   const toResult = normalizePhoneE164(client.phone);
   if (!toResult.ok) throw new Error(toResult.error);
   const to = toResult.value;
+
+  // Consent before dialing. Every AI call goes through here — "AI Call", "Call
+  // all", appointment-reminder calls — so a client who opted out of calls is
+  // refused in one place, with the reason on the error.
+  const guard = await guardCall(db, ctx.orgId, { clientId: client.id, phone: to });
+  if (!guard.ok) throw new CallNotAllowedError(guard);
 
   const leadName = `${client.first_name}${client.last_name ? ` ${client.last_name}` : ""}`.trim();
   const dynamicVariables = buildOutboundDynamicVariables(ctx, { leadName, purpose, detail });
@@ -186,7 +191,12 @@ export async function drainOutboundQueue(
     } catch (e) {
       await db
         .from("outbound_call_queue")
-        .update({ status: "failed", last_error: e instanceof Error ? e.message : "failed", updated_at: new Date().toISOString() })
+        .update({
+          status: "failed",
+          last_error:
+            e instanceof CallNotAllowedError ? outcomeForLog(e.guard) : e instanceof Error ? e.message : "failed",
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", row.id);
       failed++;
     }
@@ -326,7 +336,6 @@ export async function drainSmsReminderQueue(
     .limit(25);
   if (!rows?.length) return { sent: 0, failed: 0 };
 
-  const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const timeFmt = new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
@@ -364,24 +373,20 @@ export async function drainSmsReminderQueue(
         (link ? `, or reschedule: ${link}` : "") +
         `. — ${orgName}`;
 
-      const toResult = normalizePhoneE164(client.phone);
-      if (!toResult.ok) throw new Error(`Invalid phone: ${toResult.error}`);
-
-      const sms = await twilioClient.messages.create({ ...(twilioSender(twilioNumber) ?? { from: twilioNumber }), ...twilioStatusCallback(), to: toResult.value, body });
-
-      await db.from("messages").insert({
-        organization_id: orgId,
-        client_id: row.client_id as string,
-        channel: "sms",
-        direction: "outbound",
-        from_address: twilioNumber,
-        to_address: toResult.value,
+      // Through the consent guard: a client who opted out of texts gets no
+      // reminder text. The row is marked failed with the reason in last_error.
+      const outcome = await sendSmsGuarded({
+        db,
+        orgId,
+        clientId: row.client_id as string,
+        to: client.phone,
         body,
+        fromNumber: twilioNumber,
+        purpose: "automated",
+        sentBy: "reminder",
         intent: "sms_reminder",
-        read: true,
-        external_id: sms.sid,
-        sent_at: new Date().toISOString(),
       });
+      if (!outcome.ok) throw new Error(outcomeForLog(outcome));
 
       await db
         .from("outbound_call_queue")

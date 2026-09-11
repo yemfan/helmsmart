@@ -140,7 +140,9 @@
       "noAgent": "No voice agent is connected to your number yet.",
       "noneSelected": "No contacts selected.",
       "noneReachable": "No reachable contacts — they need a phone number.",
-      "alreadyQueued": "Those contacts are already queued or being called."
+      "alreadyQueued": "Those contacts are already queued or being called.",
+      "allOptedOut": "Everyone you picked has opted out of phone calls, so no calls were queued.",
+      "consentUnavailable": "Couldn't check who has opted out of calls, so nothing was dialed. Try again in a minute."
     }
   },
   "settings": {

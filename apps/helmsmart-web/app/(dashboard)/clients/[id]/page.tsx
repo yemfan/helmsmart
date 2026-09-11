@@ -18,6 +18,7 @@ import { CommunicationPreferences } from "@/components/communication-preferences
 import { ClientAIBrief } from "@/components/client-ai-brief";
 import { getActivePack } from "@/lib/packs";
 import { getClientCommunications, getClientPreferences } from "@/lib/actions/communication-logs";
+import { loadConsent, optOutState } from "@/lib/consent";
 import { getClientBrief } from "@/lib/actions/client-brief";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { intlLocale } from "@leadsmart/i18n";
@@ -89,7 +90,7 @@ export default async function ClientDetailPage({
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
 
-  const [clientRes, invoicesRes, messagesRes, notesRes, clientsPnL, estimatesRes, projectsRes, tasksRes, commLogs, commPrefs, aiBrief] = await Promise.all([
+  const [clientRes, invoicesRes, messagesRes, notesRes, clientsPnL, estimatesRes, projectsRes, tasksRes, commLogs, commPrefs, aiBrief, consent] = await Promise.all([
     supabase
       .from("clients")
       .select("*, portal_token")
@@ -143,7 +144,13 @@ export default async function ClientDetailPage({
     getClientCommunications(id, 50),
     getClientPreferences(id),
     getClientBrief(id),
+    // Every opt-out source, so the switches show what the send paths obey.
+    loadConsent(supabase, orgId, { clientId: id }).catch((e) => {
+      console.error("[client page] consent lookup failed:", e);
+      return null;
+    }),
   ]);
+  const optOuts = consent ? optOutState(consent.inputs) : undefined;
 
   if (!clientRes.data) notFound();
   const notes = notesRes.data ?? [];
@@ -504,16 +511,20 @@ export default async function ClientDetailPage({
             />
           )}
           <ClientNotesPanel clientId={client.id} initialNotes={notes} />
+          {/* A switch shows ON when ANY source says no — the client's own flag,
+              a STOP reply, or a campaign unsubscribe — because that is what
+              every send path now obeys. */}
           <CommunicationPreferences
             clientId={client.id}
-            initialPreferences={commPrefs ? {
-              opted_out_sms: commPrefs.opted_out_sms ?? false,
-              opted_out_email: commPrefs.opted_out_email ?? false,
-              opted_out_calls: commPrefs.opted_out_calls ?? false,
-              preferred_contact_method: commPrefs.preferred_contact_method ?? "any",
-              best_time_to_contact: commPrefs.best_time_to_contact ?? "",
-              notes: commPrefs.notes ?? "",
-            } : undefined}
+            initialPreferences={{
+              opted_out_sms: (commPrefs?.opted_out_sms ?? false) || (optOuts?.sms.optedOut ?? false),
+              opted_out_email: (commPrefs?.opted_out_email ?? false) || (optOuts?.email.optedOut ?? false),
+              opted_out_calls: commPrefs?.opted_out_calls ?? false,
+              preferred_contact_method: commPrefs?.preferred_contact_method ?? "any",
+              best_time_to_contact: commPrefs?.best_time_to_contact ?? "",
+              notes: commPrefs?.notes ?? "",
+            }}
+            optOuts={optOuts}
           />
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="px-5 py-3.5 border-b border-slate-100">

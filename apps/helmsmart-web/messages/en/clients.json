@@ -217,18 +217,23 @@
     "title": "Communication Preferences",
     "saved": "Saved!",
     "optOuts": {
-      "title": "Notification Opt-outs",
+      "title": "Opt-outs",
       "sms": {
-        "label": "SMS Messages",
-        "description": "Opt out from text messages"
+        "label": "Opted out of text messages",
+        "description": "No texts of any kind — not from you, Auto Pilot, auto-replies, missed-call texts, reminders or campaigns. Turns on by itself when they reply STOP, and off when they reply START."
       },
       "email": {
-        "label": "Email",
-        "description": "Opt out from email messages"
+        "label": "Opted out of email",
+        "description": "No campaigns, automations, automatic replies or inbox emails. Invoices, receipts, estimates, statements, payment links and payment reminders still go — they're records of business already done with you."
       },
       "calls": {
-        "label": "Phone Calls",
-        "description": "Opt out from phone calls"
+        "label": "Opted out of phone calls",
+        "description": "No AI calls and no automated reminder calls."
+      },
+      "since": {
+        "stopReply": "They replied STOP on {{date}}.",
+        "carrier": "Their carrier reported a STOP reply on {{date}}.",
+        "unsubscribed": "Unsubscribed on {{date}}."
       }
     },
     "contact": {
@@ -252,6 +257,30 @@
       "notes": "Additional Notes",
       "notesPlaceholder": "e.g., \"prefers email after 5pm\", \"do not call on Mondays\""
     }
+  },
+  "consent": {
+    "someone": "This contact",
+    "denied": {
+      "sms": {
+        "stopReply": "{{name}} opted out of text messages on {{date}} (replied STOP).",
+        "carrier": "{{name}} opted out of text messages on {{date}} (their carrier reported a STOP reply).",
+        "unsubscribed": "{{name}} opted out of text messages on {{date}}.",
+        "marked": "{{name}} is marked as opted out of text messages."
+      },
+      "email": {
+        "unsubscribed": "{{name}} unsubscribed from email on {{date}}.",
+        "marked": "{{name}} is marked as opted out of email."
+      },
+      "call": {
+        "marked": "{{name}} is marked as opted out of phone calls."
+      }
+    },
+    "alternative": {
+      "text": "You can still text {{name}}.",
+      "email": "You can still email {{name}}.",
+      "textOrEmail": "You can still text or email {{name}}."
+    },
+    "withAlternative": "{{reason}} {{alternative}}"
   },
   "brief": {
     "title": "AI Client Brief",

@@ -86,6 +86,14 @@
     "draftFailed": "No se pudo redactar la respuesta. Inténtelo de nuevo.",
     "nameRequired": "El nombre es obligatorio.",
     "unauthorized": "Vuelva a iniciar sesión.",
-    "createClientFailed": "No se pudo crear el cliente. Inténtelo de nuevo."
+    "createClientFailed": "No se pudo crear el cliente. Inténtelo de nuevo.",
+    "consentUnavailable": "No pudimos verificar las preferencias de mensajes de este contacto, así que no se envió nada. Intente de nuevo en un minuto.",
+    "invalidPhone": "{{phone}} no es un número al que podamos enviar textos. Revíselo en la página del cliente.",
+    "smsFailed": "El mensaje de texto no se envió: el proveedor de mensajes lo rechazó.",
+    "emailFailed": "El correo no se envió: el proveedor de correo lo rechazó.",
+    "emailNotConfigured": "El envío de correos todavía no está configurado en esta cuenta.",
+    "invalidRequest": "No se pudo leer la solicitud.",
+    "noPhone": "Este contacto no tiene número de teléfono.",
+    "emptyMessage": "Escriba un mensaje primero."
   }
 }

@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import type { ClientCommunicationPreferences } from "@/lib/communication-preferences";
+import { clearEmailOptOut, clearSmsOptOut } from "@/lib/consent";
 
 export interface LogCommunicationInput {
   clientId: string;
@@ -196,6 +197,27 @@ export async function updateClientPreferences(
       clientId,
     });
     return { ok: false, error: t("errors.preferencesRefused") };
+  }
+
+  /*
+   * The switch is the owner's answer for every source, not only this row. A
+   * STOP reply or a campaign unsubscribe is recorded by number/address too, and
+   * the page shows the switch ON for it — so switching it OFF has to clear
+   * those as well, or the switch would read "off" over sends that are still
+   * refused. (Twilio keeps enforcing a STOP itself until the person texts
+   * START; a refused send then records the opt-out again, with that reason.)
+   * Same RLS client: the upsert above just proved this user may write here.
+   */
+  if (!preferences.opted_out_sms || !preferences.opted_out_email) {
+    const { data: client } = await supabase
+      .from("clients")
+      .select("phone, email")
+      .eq("id", clientId)
+      .eq("organization_id", orgId)
+      .maybeSingle();
+    const row = client as { phone?: string | null; email?: string | null } | null;
+    if (!preferences.opted_out_sms && row?.phone) await clearSmsOptOut(supabase, orgId, row.phone);
+    if (!preferences.opted_out_email && row?.email) await clearEmailOptOut(supabase, orgId, row.email);
   }
 
   revalidatePath(`/clients/${clientId}`);

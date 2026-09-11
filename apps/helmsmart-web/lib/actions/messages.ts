@@ -4,10 +4,12 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { updateOrg, type OrgUpdateResult } from "@/lib/actions/org-update";
-// Aliased: this module exports its own `sendEmail` server action.
-import { sendEmail as sendEmailViaResend, FROM_ADDRESS } from "@/lib/email";
-import twilio from "twilio";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import {
+  sendEmailGuarded,
+  sendSmsAsOrg,
+  toSendMessageResult,
+  type SendMessageResult,
+} from "@/lib/outbound-send";
 import Anthropic from "@anthropic-ai/sdk";
 import { detectLanguage, replyLanguageRule, type Lang } from "@/lib/language";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
@@ -16,12 +18,18 @@ import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-function twilioClient() {
-  return twilio(
-    process.env.TWILIO_ACCOUNT_SID!,
-    process.env.TWILIO_AUTH_TOKEN!
-  );
-}
+/*
+ * Both sends below go through lib/outbound-send.ts: the client's opt-outs are
+ * checked before the provider is called, and the row records `sent_by:
+ * "person"`. They RETURN a result instead of throwing, so a refused or failed
+ * send reaches the screen as a sentence — "Priya Patel opted out of text
+ * messages on Sep 3 (replied STOP). You can still email Priya." — rather than
+ * an uncaught error that loses what was typed.
+ *
+ * The sender rule (Messaging Service, then TWILIO_FROM_NUMBER, then the org's
+ * own number) and E.164 normalization now live in the shared path too, so this
+ * file no longer carries its own copy of either.
+ */
 
 // ─── Send email ───────────────────────────────────────────────────────────────
 
@@ -30,106 +38,43 @@ export async function sendEmail(
   toEmail: string,
   subject: string,
   body: string
-) {
-  const t = await getServerT("inbox");
+): Promise<SendMessageResult> {
+  const [t, tc, locale] = await Promise.all([getServerT("inbox"), getServerT("clients"), getServerLocale()]);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error(t("errors.noOrganization"));
+  if (!orgId) return { ok: false, reason: "no_organization", error: t("errors.noOrganization") };
 
   const supabase = await createClient();
-
-  const fromAddress = FROM_ADDRESS;
-
-  // Throws if Resend rejects the send, so the messages row below is only
-  // written for mail that actually left.
-  const sent = await sendEmailViaResend({
+  const outcome = await sendEmailGuarded({
+    db: supabase,
+    orgId,
+    clientId,
     to: toEmail,
     subject,
     text: body,
+    purpose: "conversation",
+    sentBy: "person",
   });
-
-  await supabase.from("messages").insert({
-    organization_id: orgId,
-    client_id: clientId,
-    channel: "email",
-    direction: "outbound",
-    from_address: fromAddress,
-    to_address: toEmail,
-    subject,
-    body,
-    read: true,
-    external_id: sent?.id,
-    sent_at: new Date().toISOString(),
-  });
+  return toSendMessageResult(outcome, "email", { inbox: t, clients: tc, locale });
 }
 
 // ─── Send SMS ─────────────────────────────────────────────────────────────────
 
-export async function sendSms(clientId: string | null, toNumber: string, body: string) {
-  const t = await getServerT("inbox");
+export async function sendSms(clientId: string | null, toNumber: string, body: string): Promise<SendMessageResult> {
+  const [t, tc, locale] = await Promise.all([getServerT("inbox"), getServerT("clients"), getServerLocale()]);
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
-  if (!orgId) throw new Error(t("errors.noOrganization"));
+  if (!orgId) return { ok: false, reason: "no_organization", error: t("errors.noOrganization") };
 
   const supabase = await createClient();
-
-  // Get org's Twilio number
-  const { data: org } = await supabase
-    .from("organizations")
-    .select("twilio_number")
-    .eq("id", orgId)
-    .single();
-
-  /*
-   * One rule for who sends, shared with every other send in the app.
-   *
-   * This used to be `org?.twilio_number ?? process.env.TWILIO_FROM_NUMBER` —
-   * the org's own number FIRST. That is backwards, and it is the bug that made
-   * the Inbox the last broken send path: twilio_number is the line the
-   * receptionist ANSWERS on, and answering says nothing about being allowed to
-   * send. It has to belong to the Twilio account these credentials open and be
-   * A2P-registered. When those two are different numbers — which is exactly the
-   * case here — this path kept choosing the one that returns 30034 while the
-   * account's approved sender sat unused in the env.
-   *
-   * twilioSender() applies the same precedence everywhere: Messaging Service,
-   * then the configured account sender, then the org's number as a fallback for
-   * a future one-number-per-tenant setup.
-   */
-  const sender = twilioSender(org?.twilio_number ?? null);
-  if (!sender) throw new Error(t("errors.noSendingNumber"));
-
-  // Twilio only reliably delivers to E.164 numbers. A bare "6066255055" gets a
-  // SID back (so the UI says "Sent") but never actually arrives — normalize first
-  // and fail loudly so the caller sees the real problem instead of a false success.
-  const normalized = normalizePhoneE164(toNumber);
-  if (!normalized.ok) throw new Error(normalized.error);
-  const to = normalized.value;
-
-  const client = twilioClient();
-  const msg = await client.messages.create({
-    ...sender,
-    ...twilioStatusCallback(),
-    to,
+  const outcome = await sendSmsAsOrg(supabase, orgId, {
+    clientId,
+    to: toNumber,
     body,
+    sentBy: "person",
+    purpose: "conversation",
   });
-
-  await supabase.from("messages").insert({
-    organization_id: orgId,
-    client_id: clientId,
-    channel: "sms",
-    direction: "outbound",
-    // What Twilio actually sent from, preferred over what we asked for. With a
-    // Messaging Service Twilio picks the number out of the sender pool, so the
-    // intended value can differ from the one the recipient sees — and the row
-    // should say what the recipient saw.
-    from_address: msg.from ?? ("from" in sender ? sender.from : null),
-    to_address: to,
-    body,
-    read: true,
-    external_id: msg.sid,
-    sent_at: new Date().toISOString(),
-  });
+  return toSendMessageResult(outcome, "sms", { inbox: t, clients: tc, locale });
 }
 
 // ─── Mark messages read ───────────────────────────────────────────────────────

@@ -19,18 +19,16 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/translator";
-import twilio from "twilio";
 import { createServiceClient } from "@/lib/supabase/server";
 import { findOrgIdByNumber } from "@/lib/receptionist-agent";
 import { matchOrCreateClient } from "@/lib/booking";
 import { normalizePhoneE164 } from "@/lib/phone";
-import { twilioSender } from "@/lib/twilio-sender";
+import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import { attributeCallToEmma } from "@/lib/workforce-attribution";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { classifyMissed } from "@/lib/missed-call";
 import { logCallCommunication } from "@/lib/integrations/communication-auto-logger";
 import { notifySlackMissedCall } from "@/lib/integrations/slack";
-import { twilioStatusCallback } from "@/lib/twilio-sender";
 
 type TranscriptTurn = { role?: string; content?: string };
 type Db = Awaited<ReturnType<typeof createServiceClient>>;
@@ -145,25 +143,24 @@ async function maybeTextBackMissedCall(
     if (count) return;
 
     const replyBody = org.auto_reply_msg;
-    // Through the Messaging Service when one is configured: the number the call
-    // came in on may be voice-only, and a bare `from` send is filtered as
-    // unregistered (30034) — silently, since this whole path is best-effort.
-    const sender = twilioSender(args.toNumber);
-    if (!sender) return;
-    const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-    await client.messages.create({ ...sender, ...twilioStatusCallback(), to: caller.value, body: replyBody });
-
-    await db.from("messages").insert({
-      organization_id: args.orgId,
-      client_id: args.clientId,
-      channel: "sms",
-      direction: "outbound",
-      from_address: args.toNumber,
-      to_address: caller.value,
+    // Through the consent guard (and the shared sender rules — the Messaging
+    // Service when one is configured, since the number the call came in on may
+    // be voice-only). A caller who opted out of texts is not texted; the call
+    // stays logged with auto_replied=false, which the Missed-Call screen shows.
+    const sent = await sendSmsGuarded({
+      db,
+      orgId: args.orgId,
+      clientId: args.clientId,
+      to: caller.value,
       body: replyBody,
-      read: true,
-      sent_at: new Date().toISOString(),
+      fromNumber: args.toNumber,
+      purpose: "automated",
+      sentBy: "missed_call_text",
     });
+    if (!sent.ok) {
+      console.warn("[retell webhook] missed-call text not sent:", outcomeForLog(sent));
+      return;
+    }
     await db
       .from("calls")
       .update({ auto_replied: true, reply_body: replyBody })

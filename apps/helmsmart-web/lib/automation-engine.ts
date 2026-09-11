@@ -7,7 +7,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/translator";
-import { sendEmail } from "@/lib/email";
+import { outcomeForLog, sendEmailGuarded } from "@/lib/outbound-send";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,13 +99,26 @@ async function executeRule(
         .single();
       const orgName = (orgRow as { name?: string } | null)?.name ?? "HelmSmart";
 
-      await sendEmail({
+      // An automation email is automated mail: a client who opted out of
+      // email is skipped. Not an error — the rule did the right thing.
+      const sent = await sendEmailGuarded({
+        db,
+        orgId: ctx.orgId,
+        clientId: ctx.clientId ?? null,
         fromName: orgName,
         to: ctx.clientEmail,
         subject,
         text: body,
         html: `<div style="font-family:-apple-system,sans-serif;font-size:14px;color:#334155;line-height:1.6">${body.replace(/\n/g, "<br>")}</div>`,
+        purpose: "automated",
       });
+      if (!sent.ok) {
+        if (sent.reason === "opted_out") {
+          console.info(`[automations] rule ${rule.id}: not emailed — ${outcomeForLog(sent)}`);
+          break;
+        }
+        throw new Error(outcomeForLog(sent));
+      }
       break;
     }
 

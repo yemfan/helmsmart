@@ -3,30 +3,44 @@
 import { useState } from "react";
 import { Bell, CheckCircle2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@leadsmart/i18n";
+import { Toggle } from "@/components/ui/toggle";
 import { updateClientPreferences } from "@/lib/actions/communication-logs";
 import {
   DEFAULT_CLIENT_COMMUNICATION_PREFERENCES,
   type ClientCommunicationPreferences,
 } from "@/lib/communication-preferences";
+import type { ChannelOptOut } from "@/lib/consent";
 
 type Preferences = ClientCommunicationPreferences;
+type OptOutKey = "opted_out_sms" | "opted_out_email" | "opted_out_calls";
 
 interface Props {
   clientId: string;
   initialPreferences?: Preferences;
+  /**
+   * How each opt-out came about, from every source the send paths check (the
+   * switch, a STOP reply, a campaign unsubscribe). Drives the "Replied STOP on
+   * Sep 3" line under a switch.
+   */
+  optOuts?: { sms: ChannelOptOut; email: ChannelOptOut; call: ChannelOptOut };
 }
 
 export function CommunicationPreferences({
   clientId,
   initialPreferences,
+  optOuts,
 }: Props) {
-  const { t } = useTranslation("clients");
+  const { t, i18n } = useTranslation("clients");
   const [preferences, setPreferences] = useState<Preferences>(
     initialPreferences ?? DEFAULT_CLIENT_COMMUNICATION_PREFERENCES
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Switches the owner has changed here: their "since" line describes the
+  // state the page loaded with, so it stops applying once they are touched.
+  const [touched, setTouched] = useState<Set<OptOutKey>>(new Set());
 
   const handleToggle = async (
     key: keyof Preferences,
@@ -44,16 +58,51 @@ export function CommunicationPreferences({
     setSaving(false);
 
     if (result.ok) {
+      if (key === "opted_out_sms" || key === "opted_out_email" || key === "opted_out_calls") {
+        setTouched((prev) => new Set(prev).add(key));
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } else {
       // The row did not change, so the control must not keep showing the new
-      // value — a checkbox left flipped over a refused write tells the same lie
+      // value — a switch left flipped over a refused write tells the same lie
       // the silent save did.
       setPreferences(previous);
       setError(result.error || t("errors.preferencesFailed"));
     }
   };
+
+  const sinceLine = (key: OptOutKey, info: ChannelOptOut | undefined): string | null => {
+    if (!info?.optedOut || !info.since || info.via === "marked") return null;
+    if (touched.has(key) || !preferences[key]) return null;
+    const d = new Date(info.since);
+    if (Number.isNaN(d.getTime())) return null;
+    const date = d.toLocaleDateString(intlLocale(i18n.language), { month: "short", day: "numeric" });
+    if (info.via === "stop_reply") return t("preferences.optOuts.since.stopReply", { date });
+    if (info.via === "carrier") return t("preferences.optOuts.since.carrier", { date });
+    return t("preferences.optOuts.since.unsubscribed", { date });
+  };
+
+  const optOutItems: Array<{ key: OptOutKey; label: string; description: string; since: string | null }> = [
+    {
+      key: "opted_out_sms",
+      label: t("preferences.optOuts.sms.label"),
+      description: t("preferences.optOuts.sms.description"),
+      since: sinceLine("opted_out_sms", optOuts?.sms),
+    },
+    {
+      key: "opted_out_email",
+      label: t("preferences.optOuts.email.label"),
+      description: t("preferences.optOuts.email.description"),
+      since: sinceLine("opted_out_email", optOuts?.email),
+    },
+    {
+      key: "opted_out_calls",
+      label: t("preferences.optOuts.calls.label"),
+      description: t("preferences.optOuts.calls.description"),
+      since: sinceLine("opted_out_calls", optOuts?.call),
+    },
+  ];
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 p-6">
@@ -65,51 +114,28 @@ export function CommunicationPreferences({
       </div>
 
       <div className="space-y-6">
-        {/* Opt-outs */}
+        {/* Opt-outs — read by every send path (lib/outbound-send.ts). */}
         <div className="bg-slate-50 rounded-lg p-4">
           <p className="text-sm font-medium text-slate-700 mb-4">
             {t("preferences.optOuts.title")}
           </p>
-          <div className="space-y-3">
-            {[
-              {
-                key: "opted_out_sms",
-                label: t("preferences.optOuts.sms.label"),
-                description: t("preferences.optOuts.sms.description"),
-              },
-              {
-                key: "opted_out_email",
-                label: t("preferences.optOuts.email.label"),
-                description: t("preferences.optOuts.email.description"),
-              },
-              {
-                key: "opted_out_calls",
-                label: t("preferences.optOuts.calls.label"),
-                description: t("preferences.optOuts.calls.description"),
-              },
-            ].map((item) => (
-              <label
-                key={item.key}
-                className="flex items-start gap-3 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={
-                    preferences[item.key as keyof Preferences] === true
-                  }
-                  onChange={(e) =>
-                    handleToggle(item.key as keyof Preferences, e.target.checked)
-                  }
-                  disabled={saving}
-                  className="mt-1 w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer disabled:opacity-50"
-                />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-900">
-                    {item.label}
-                  </p>
-                  <p className="text-xs text-slate-500">{item.description}</p>
+          <div className="space-y-4">
+            {optOutItems.map((item) => (
+              <div key={item.key} className="flex items-start gap-3">
+                <div className="pt-0.5">
+                  <Toggle
+                    checked={preferences[item.key] === true}
+                    onChange={(next) => handleToggle(item.key, next)}
+                    disabled={saving}
+                    label={item.label}
+                  />
                 </div>
-              </label>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-900">{item.label}</p>
+                  <p className="text-xs text-slate-500">{item.description}</p>
+                  {item.since && <p className="mt-0.5 text-xs text-slate-600">{item.since}</p>}
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -188,7 +214,7 @@ export function CommunicationPreferences({
             </div>
           )}
           {error && (
-            <div className="flex items-center gap-2 text-sm text-rose-600">
+            <div className="flex items-center gap-2 text-sm text-rose-600" role="alert">
               <AlertCircle className="w-4 h-4" />
               {error}
             </div>

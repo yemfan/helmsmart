@@ -5,3 +5,4 @@
 //
 // Core package: MUST NOT import @helm/pack-* or apps/*.
 export * from "./safety";
+export * from "./consent";

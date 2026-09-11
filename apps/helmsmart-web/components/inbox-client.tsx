@@ -88,6 +88,7 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
   const [replyBody, setReplyBody] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [addingClient, setAddingClient] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -137,12 +138,21 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
     if (!selected || !replyBody.trim()) return;
     const body = replyBody.trim();
     setReplyBody("");
+    setSendError(null);
 
     startTransition(async () => {
+      let result: Awaited<ReturnType<typeof sendSms>> | null = null;
       if (selected.lastMessage.channel === "email" && selected.clientEmail) {
-        await sendEmail(selected.clientId, selected.clientEmail, "Re: " + (selected.lastMessage.subject ?? ""), body);
+        result = await sendEmail(selected.clientId, selected.clientEmail, "Re: " + (selected.lastMessage.subject ?? ""), body);
       } else if (selected.clientPhone) {
-        await sendSms(selected.clientId, selected.clientPhone, body);
+        result = await sendSms(selected.clientId, selected.clientPhone, body);
+      }
+      // Refused or failed: put the text back and say why, rather than
+      // appending a message that never left.
+      if (result && !result.ok) {
+        setReplyBody(body);
+        setSendError(result.error);
+        return;
       }
       // Optimistically append the message
       const newMsg: Message = {
@@ -418,6 +428,9 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
                   )}
                 </button>
               </div>
+              {sendError && (
+                <p className="mt-2 text-xs text-rose-600" role="alert">{sendError}</p>
+              )}
             </div>
           </div>
         ) : (

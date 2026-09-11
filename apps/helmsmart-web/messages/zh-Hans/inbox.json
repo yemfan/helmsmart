@@ -86,6 +86,14 @@
     "draftFailed": "起草回复失败，请重试。",
     "nameRequired": "请填写姓名。",
     "unauthorized": "登录已失效，请重新登录。",
-    "createClientFailed": "创建客户失败，请重试。"
+    "createClientFailed": "创建客户失败，请重试。",
+    "consentUnavailable": "暂时无法确认该联系人的消息偏好，因此没有发送。请一分钟后再试。",
+    "invalidPhone": "{{phone}} 不是可以接收短信的号码。请在客户页面上检查。",
+    "smsFailed": "短信未能发送——短信服务商拒绝了这条消息。",
+    "emailFailed": "邮件未能发送——邮件服务商拒绝了这封邮件。",
+    "emailNotConfigured": "此账户尚未设置邮件发送。",
+    "invalidRequest": "无法读取该请求。",
+    "noPhone": "该联系人没有电话号码。",
+    "emptyMessage": "请先输入消息内容。"
   }
 }

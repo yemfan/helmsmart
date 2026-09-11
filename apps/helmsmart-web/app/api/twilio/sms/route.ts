@@ -8,12 +8,13 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import twilio from "twilio";
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/server";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { cachedSystem, markTranscriptCached, readCacheUsage } from "@/lib/promptCache";
-import { shouldStopMessaging } from "@helm/dna-communication";
+import { OPT_OUT_REASON, shouldStartMessaging, shouldStopMessaging } from "@helm/dna-communication";
+import { checkConsent, clearSmsOptOut, recordSmsOptOut } from "@/lib/consent";
+import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
+import type { MessageSender } from "@/lib/message-provenance";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { analyzeInbound, translateTo, localizeOutbound, intentLabel, replyLanguageRule, type Lang } from "@/lib/language";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
@@ -145,6 +146,18 @@ export async function POST(request: NextRequest) {
       sent_at: new Date().toISOString(),
     });
 
+    /*
+     * STOP is an instruction, not just a message. It used to be captured and
+     * triaged like any other text and then forgotten — the next reminder,
+     * campaign or Auto Pilot reply went out regardless. Now it is written down
+     * on the client and in sms_unsubscribes, which every send path checks;
+     * START (or UNSTOP) takes it back.
+     */
+    const optOutKeyword = shouldStopMessaging(body);
+    const optInKeyword = !optOutKeyword && shouldStartMessaging(body);
+    if (optOutKeyword) await recordSmsOptOut(supabase, org.id, from, OPT_OUT_REASON.stopReply);
+    else if (optInKeyword) await clearSmsOptOut(supabase, org.id, from);
+
     // Log inbound SMS to communication timeline
     if (client?.id && body) {
       void logInboundSMSCommunication({
@@ -210,7 +223,10 @@ export async function POST(request: NextRequest) {
 
     // The AI receptionist (qualify + book over SMS) runs for auto_pilot clients and
     // recent missed-call leads; it takes precedence over the canned org auto-reply.
-    if (client && (clientAutoPilot || missedCallLead) && !shouldStopMessaging(body)) {
+    // A STOP or START keyword gets no reply of ours: the carrier answers both
+    // itself. Anything else still passes the consent guard inside each send.
+    const isKeyword = optOutKeyword || optInKeyword;
+    if (client && (clientAutoPilot || missedCallLead) && !isKeyword) {
       await runAutoPilotReply({
         supabase,
         orgId: org.id,
@@ -222,7 +238,7 @@ export async function POST(request: NextRequest) {
         assist,
         ownerLang,
       });
-    } else if (org.auto_reply && !shouldStopMessaging(body)) {
+    } else if (org.auto_reply && !isKeyword) {
       // Opt-out (STOP/unsubscribe/…): message is still captured + triaged, but no auto-reply (TCPA).
       const fourHoursAgo = new Date(Date.now() - 4 * 3600_000).toISOString();
       const { count } = await supabase
@@ -237,23 +253,19 @@ export async function POST(request: NextRequest) {
           org.auto_reply_msg?.trim() ||
           "Thanks for reaching out! We got your message and will get back to you shortly.";
         const ackBody = await localizeOutbound(ackEnglish, lang, assist ? ownerLang : null);
-        try {
-          const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-          await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), ...twilioStatusCallback(), to: from, body: ackBody });
-          await supabase.from("messages").insert({
-            organization_id: org.id,
-            client_id: client?.id ?? null,
-            channel: "sms",
-            direction: "outbound",
-            from_address: to,
-            to_address: from,
-            body: ackBody,
-            read: true,
-            sent_at: new Date().toISOString(),
-          });
-        } catch {
-          // ack failed — inbound is still captured + owner notified
-        }
+        const sent = await sendSmsGuarded({
+          db: supabase,
+          orgId: org.id,
+          clientId: client?.id ?? null,
+          to: from,
+          body: ackBody,
+          fromNumber: to,
+          purpose: "automated",
+          sentBy: "auto_reply",
+        });
+        // Refused (opted out of texts) or failed — the inbound is still
+        // captured and the owner notified.
+        if (!sent.ok) console.warn("[sms] auto-reply not sent:", outcomeForLog(sent));
       }
     }
   }
@@ -264,38 +276,46 @@ export async function POST(request: NextRequest) {
   });
 }
 
-/** Send an SMS via Twilio and log it to the inbox. Best-effort. */
+/**
+ * Send an automatic SMS reply through the consent guard and log it to the
+ * inbox, recording who sent it. Best-effort: a refusal or failure is logged,
+ * never thrown into the webhook.
+ */
 async function sendSms(
   supabase: Awaited<ReturnType<typeof createServiceClient>>,
-  opts: { orgId: string; clientId: string | null; from: string; to: string; body: string; intent?: string },
+  opts: {
+    orgId: string;
+    clientId: string | null;
+    from: string;
+    to: string;
+    body: string;
+    intent?: string;
+    sentBy: MessageSender;
+  },
 ): Promise<void> {
-  try {
-    const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-    const sms = await client.messages.create({ ...(twilioSender(opts.from) ?? { from: opts.from }), ...twilioStatusCallback(), to: opts.to, body: opts.body });
-    await supabase.from("messages").insert({
-      organization_id: opts.orgId,
-      client_id: opts.clientId,
-      channel: "sms",
-      direction: "outbound",
-      from_address: opts.from,
-      to_address: opts.to,
-      body: opts.body,
-      read: true,
-      intent: opts.intent ?? null,
-      external_id: sms.sid,
-      sent_at: new Date().toISOString(),
+  const sent = await sendSmsGuarded({
+    db: supabase,
+    orgId: opts.orgId,
+    clientId: opts.clientId,
+    to: opts.to,
+    body: opts.body,
+    fromNumber: opts.from,
+    purpose: "automated",
+    sentBy: opts.sentBy,
+    intent: opts.intent ?? null,
+  });
+  if (!sent.ok) {
+    console.warn("[sms] reply not sent:", outcomeForLog(sent));
+    return;
+  }
+  // Log outbound SMS to communication timeline
+  if (opts.clientId) {
+    void logSMSCommunication({
+      clientId: opts.clientId,
+      phoneNumber: opts.to,
+      messageText: opts.body,
+      twilioSid: sent.externalId ?? "",
     });
-    // Log outbound SMS to communication timeline
-    if (opts.clientId) {
-      void logSMSCommunication({
-        clientId: opts.clientId,
-        phoneNumber: opts.to,
-        messageText: opts.body,
-        twilioSid: sms.sid,
-      });
-    }
-  } catch (e) {
-    console.error("[sms] send error:", e);
   }
 }
 
@@ -344,7 +364,7 @@ async function handleAppointmentSelfService(args: {
     await logInbound();
     const link = appt.rescheduleToken ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/reschedule/${appt.rescheduleToken}` : "";
     const prompt = `You're booked for ${appt.label}. Reply YES to cancel${link ? `, or reschedule here: ${link}` : ""}. — ${orgName}`;
-    await sendSms(supabase, { orgId: org.id, clientId: client.id, from: to, to: from, body: prompt, intent: "cancel_confirm" });
+    await sendSms(supabase, { orgId: org.id, clientId: client.id, from: to, to: from, body: prompt, intent: "cancel_confirm", sentBy: "auto_reply" });
     return true;
   }
 
@@ -355,7 +375,7 @@ async function handleAppointmentSelfService(args: {
     const reply = res.ok
       ? `Done — your appointment${res.label ? ` on ${res.label}` : ""} is cancelled. Text us anytime to rebook. — ${orgName}`
       : `We couldn't find an upcoming appointment to cancel — give us a call and we'll help. — ${orgName}`;
-    await sendSms(supabase, { orgId: org.id, clientId: client.id, from: to, to: from, body: reply });
+    await sendSms(supabase, { orgId: org.id, clientId: client.id, from: to, to: from, body: reply, sentBy: "auto_reply" });
     if (res.ok) {
       await createNotificationService(org.id, {
         type: "booking",
@@ -420,6 +440,16 @@ async function runAutoPilotReply(opts: {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return;
+
+  // Don't spend an AI run composing a reply nobody may send. The send itself
+  // is guarded too; this only saves the work.
+  try {
+    const { decision } = await checkConsent(supabase, orgId, { clientId, phone: from }, "sms", "automated");
+    if (!decision.allowed) return;
+  } catch (e) {
+    console.error("[sms autopilot] consent lookup failed; not replying:", e);
+    return;
+  }
 
   // Circuit breaker: max 5 outbound SMS to this number in the last 10 minutes.
   const tenMinAgo = new Date(Date.now() - 10 * 60_000).toISOString();
@@ -559,7 +589,7 @@ async function runAutoPilotReply(opts: {
         });
       } else {
         const replyText = result.replyText.replace(/^["']|["']$/g, "").trim();
-        if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText });
+        if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText, sentBy: "auto_pilot" });
       }
       return {
         value: result.bookedNote,
@@ -586,7 +616,7 @@ async function runAutoPilotReply(opts: {
         });
       } else {
         const replyText = result.replyText.replace(/^["']|["']$/g, "").trim();
-        if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText });
+        if (replyText) await sendSms(supabase, { orgId, clientId, from: to, to: from, body: replyText, sentBy: "auto_pilot" });
       }
     } catch (e) {
       console.error("[sms autopilot] legacy loop error:", e);

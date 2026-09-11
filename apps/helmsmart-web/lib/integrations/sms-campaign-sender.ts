@@ -4,27 +4,31 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
-import twilio from "twilio";
+import { decideConsent, type ConsentInputs } from "@helm/dna-communication";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { logSMSCommunication } from "./communication-auto-logger";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import { twilioSender } from "@/lib/twilio-sender";
+import { inputsFor, loadOrgOptOuts } from "@/lib/consent";
+import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 // Whether a sender exists at all — the actual choice of sender is made per send
-// by twilioSender(), so this file no longer carries its own copy of that rule.
-// (The var is TWILIO_FROM_NUMBER; the old TWILIO_PHONE_NUMBER was never set
-// anywhere, so every campaign run logged "Twilio not configured" and no campaign
-// SMS ever sent.)
-const hasSender = twilioSender(null) !== null;
-if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !hasSender) {
+// by twilioSender() inside the shared send path, so this file no longer carries
+// its own copy of that rule. (The var is TWILIO_FROM_NUMBER; the old
+// TWILIO_PHONE_NUMBER was never set anywhere, so every campaign run logged
+// "Twilio not configured" and no campaign SMS ever sent.)
+const configured =
+  Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) && twilioSender(null) !== null;
+if (!configured) {
   console.warn("[sms-campaign-sender] Twilio not configured");
 }
 
-const twilioClient =
-  TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && hasSender
-    ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    : null;
+type Recipient = {
+  client_id: string;
+  phone_number: string;
+  recipient_name?: string;
+  recipient_email?: string;
+  consent: ConsentInputs;
+};
 
 /**
  * Send an SMS campaign to targeted recipients
@@ -34,7 +38,7 @@ export async function sendSMSCampaign(
   orgId: string,
   campaignId: string
 ): Promise<{ ok: boolean; sent: number; failed: number; error?: string }> {
-  if (!twilioClient) {
+  if (!configured) {
     return { ok: false, sent: 0, failed: 0, error: "Twilio not configured" };
   }
 
@@ -66,68 +70,64 @@ export async function sendSMSCampaign(
     const recipientIds: string[] = [];
 
     for (const recipient of recipients) {
-      try {
-        // Twilio only reliably delivers to E.164 — a bare number returns a SID
-        // (looks "sent") but never arrives. Normalize and skip the ones that can't.
-        const normalized = normalizePhoneE164(recipient.phone_number);
-        if (!normalized.ok) {
-          console.error("[sms-campaign-sender] bad phone, skipping:", normalized.error);
-          failed++;
-          continue;
-        }
-        const to = normalized.value;
-
-        // Send via Twilio — Messaging Service when set (A2P 10DLC), else the number.
-        // The same sender rules as every other send in the app, rather than a
-        // second copy of them: twilioSender prefers a Messaging Service, then an
-        // explicitly configured account sender. This file used to read the env
-        // directly and so missed the fix that made TWILIO_FROM_NUMBER win over a
-        // per-org receiving number.
-        const sender = twilioSender(null);
-        if (!sender) {
-          console.warn("[sms-campaign-sender] no usable sender — skipping campaign send");
-          failed++;
-          continue;
-        }
-        const message = await twilioClient.messages.create({
-          ...sender,
-          ...twilioStatusCallback(),
-          to,
-          body: campaign.message_text,
-        });
-
-        // Record in database
-        const { data: record } = await supabase
-          .from("sms_campaign_recipients")
-          .insert({
-            campaign_id: campaignId,
-            organization_id: orgId,
-            client_id: recipient.client_id,
-            phone_number: to,
-            recipient_name: recipient.recipient_name,
-            recipient_email: recipient.recipient_email,
-            twilio_sid: message.sid,
-            sent_at: new Date().toISOString(),
-          })
-          .select("id")
-          .single();
-
-        if (record) {
-          recipientIds.push(record.id);
-          sent++;
-
-          // Auto-log the communication
-          await logSMSCommunication({
-            clientId: recipient.client_id,
-            phoneNumber: to,
-            messageText: campaign.message_text,
-            twilioSid: message.sid,
-            campaignId: campaignId,
-          });
-        }
-      } catch (err) {
-        console.error("[sms-campaign-sender] message send error:", err);
+      // Twilio only reliably delivers to E.164 — a bare number returns a SID
+      // (looks "sent") but never arrives. Normalize and skip the ones that can't.
+      const normalized = normalizePhoneE164(recipient.phone_number);
+      if (!normalized.ok) {
+        console.error("[sms-campaign-sender] bad phone, skipping:", normalized.error);
         failed++;
+        continue;
+      }
+      const to = normalized.value;
+
+      // Through the shared send path: the consent guard (with the opt-outs
+      // loaded once for the whole list), the shared sender rules, and a carrier
+      // "unsubscribed" refusal recorded as an opt-out. No `messages` row — a
+      // campaign is recorded in sms_campaign_recipients below.
+      const outcome = await sendSmsGuarded({
+        db: supabase,
+        orgId,
+        clientId: recipient.client_id,
+        to,
+        body: campaign.message_text,
+        fromNumber: null,
+        purpose: "marketing",
+        consentInputs: recipient.consent,
+      });
+      if (!outcome.ok) {
+        console.error("[sms-campaign-sender] message not sent:", outcomeForLog(outcome));
+        failed++;
+        continue;
+      }
+
+      // Record in database
+      const { data: record } = await supabase
+        .from("sms_campaign_recipients")
+        .insert({
+          campaign_id: campaignId,
+          organization_id: orgId,
+          client_id: recipient.client_id,
+          phone_number: to,
+          recipient_name: recipient.recipient_name,
+          recipient_email: recipient.recipient_email,
+          twilio_sid: outcome.externalId,
+          sent_at: new Date().toISOString(),
+        })
+        .select("id")
+        .single();
+
+      if (record) {
+        recipientIds.push(record.id);
+        sent++;
+
+        // Auto-log the communication
+        await logSMSCommunication({
+          clientId: recipient.client_id,
+          phoneNumber: to,
+          messageText: campaign.message_text,
+          twilioSid: outcome.externalId ?? "",
+          campaignId: campaignId,
+        });
       }
     }
 
@@ -157,23 +157,18 @@ export async function sendSMSCampaign(
 async function getTargetedRecipients(
   orgId: string,
   campaign: any
-): Promise<
-  Array<{
-    client_id: string;
-    phone_number: string;
-    recipient_name?: string;
-    recipient_email?: string;
-  }>
-> {
+): Promise<Recipient[]> {
   const supabase = await createServiceClient();
 
-  // Get unsubscribed numbers
-  const { data: unsubscribed } = await supabase
-    .from("sms_unsubscribes")
-    .select("phone_number")
-    .eq("organization_id", orgId);
-
-  const unsubscribedNumbers = new Set(unsubscribed?.map((u) => u.phone_number) ?? []);
+  /*
+   * Every opt-out, not just this table's. This used to read only
+   * sms_unsubscribes — and compared its numbers to the client's phone as typed,
+   * so "(626) 755-7917" never matched "+16267557917" — while a client whose
+   * page said "Opted out of text messages" was texted anyway. Throws if the
+   * opt-outs can't be read, which fails the campaign rather than texting
+   * people who said no.
+   */
+  const optOuts = await loadOrgOptOuts(supabase, orgId);
 
   // Build query
   let query = supabase
@@ -200,7 +195,6 @@ async function getTargetedRecipients(
   if (!clients) return [];
 
   // Filter by tags if provided
-  let filtered = clients;
   if (campaign.target_tags?.length > 0) {
     // Tag filtering would need a junction table; for now include all
     // TODO: implement tags support
@@ -212,14 +206,13 @@ async function getTargetedRecipients(
     // TODO: implement tags support
   }
 
-  // Remove unsubscribed
-  filtered = filtered.filter((c) => !unsubscribedNumbers.has(c.phone));
-
-  // Map to recipient format
-  return filtered.map((c) => ({
-    client_id: c.id,
-    phone_number: c.phone,
-    recipient_name: [c.first_name, c.last_name].filter(Boolean).join(" "),
-    recipient_email: c.email,
-  }));
+  return clients
+    .map((c) => ({
+      client_id: c.id,
+      phone_number: c.phone,
+      recipient_name: [c.first_name, c.last_name].filter(Boolean).join(" "),
+      recipient_email: c.email,
+      consent: inputsFor(optOuts, { clientId: c.id, phone: c.phone }),
+    }))
+    .filter((r) => decideConsent("sms", "marketing", r.consent).allowed);
 }

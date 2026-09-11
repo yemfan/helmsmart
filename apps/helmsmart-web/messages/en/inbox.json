@@ -86,6 +86,14 @@
     "draftFailed": "Couldn't draft a reply — try again.",
     "nameRequired": "A name is required.",
     "unauthorized": "Please sign in again.",
-    "createClientFailed": "Couldn't create the client. Try again."
+    "createClientFailed": "Couldn't create the client. Try again.",
+    "consentUnavailable": "Couldn't check this contact's messaging preferences, so nothing was sent. Try again in a minute.",
+    "invalidPhone": "{{phone}} isn't a phone number we can text. Check it on the client's page.",
+    "smsFailed": "The text didn't go through — the text provider refused it.",
+    "emailFailed": "The email didn't go through — the email provider refused it.",
+    "emailNotConfigured": "Email sending isn't set up for this account yet.",
+    "invalidRequest": "That request couldn't be read.",
+    "noPhone": "This contact has no phone number.",
+    "emptyMessage": "Write a message first."
   }
 }

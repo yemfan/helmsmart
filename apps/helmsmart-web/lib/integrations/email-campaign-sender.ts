@@ -4,7 +4,10 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
-import { sendEmail, FROM_ADDRESS } from "@/lib/email";
+import { decideConsent, type ConsentInputs } from "@helm/dna-communication";
+import { FROM_ADDRESS } from "@/lib/email";
+import { inputsFor, loadOrgOptOuts } from "@/lib/consent";
+import { outcomeForLog, sendEmailGuarded } from "@/lib/outbound-send";
 
 const emailEnabled = Boolean(process.env.RESEND_API_KEY);
 
@@ -74,9 +77,14 @@ export async function sendEmailCampaign(
             orgName: fromName,
           });
 
-          // Throws on a rejected send, so the catch below records the
-          // recipient as failed instead of counting it as delivered.
-          const result = await sendEmail({
+          // Through the shared send path, with the opt-outs loaded once for
+          // the whole list. A refusal or a rejected send throws into the catch
+          // below, which records the recipient as failed instead of counting
+          // it as delivered.
+          const result = await sendEmailGuarded({
+            db,
+            orgId,
+            clientId: recipient.client_id || null,
             fromName,
             to: recipient.email,
             subject: campaign.subject,
@@ -86,7 +94,10 @@ export async function sendEmailCampaign(
             headers: {
               "List-Unsubscribe": `<mailto:unsubscribe@${FROM_DOMAIN}?subject=unsubscribe>`,
             },
+            purpose: "marketing",
+            consentInputs: recipient.consent,
           });
+          if (!result.ok) throw new Error(outcomeForLog(result));
 
           // Record recipient
           await db.from("email_campaign_recipients").insert({
@@ -95,7 +106,7 @@ export async function sendEmailCampaign(
             client_id: recipient.client_id || null,
             email: recipient.email,
             recipient_name: recipient.recipient_name,
-            resend_email_id: result.id ?? null,
+            resend_email_id: result.externalId,
             sent_at: new Date().toISOString(),
           });
 
@@ -156,20 +167,23 @@ async function getTargetedRecipients(
     target_segment: string;
     target_pipeline_stages?: string[] | null;
     target_tags?: string[] | null;
-    exclude_unsubscribed: boolean;
+    /**
+     * No longer read. It let a campaign include people who had unsubscribed;
+     * an email opt-out now stops every campaign, so there is nothing for it to
+     * switch. (No screen sets it — only the recurring-campaign cron copies it.)
+     */
+    exclude_unsubscribed?: boolean;
   }
-): Promise<Array<{ client_id: string; email: string; recipient_name?: string }>> {
+): Promise<Array<{ client_id: string; email: string; recipient_name?: string; consent: ConsentInputs }>> {
   const db = await createServiceClient();
 
-  // Get unsubscribed emails
-  const unsubscribedEmails = new Set<string>();
-  if (campaign.exclude_unsubscribed) {
-    const { data: unsubs } = await db
-      .from("email_unsubscribes")
-      .select("email")
-      .eq("organization_id", orgId);
-    (unsubs ?? []).forEach((u) => unsubscribedEmails.add(u.email));
-  }
+  /*
+   * Every opt-out, not only email_unsubscribes: a client whose page says
+   * "Opted out of email" used to be mailed every campaign. Throws if the
+   * opt-outs can't be read, which fails the campaign rather than mailing
+   * people who said no.
+   */
+  const optOuts = await loadOrgOptOuts(db, orgId);
 
   // Build query
   let query = db
@@ -196,12 +210,14 @@ async function getTargetedRecipients(
   if (!clients) return [];
 
   return clients
-    .filter((c) => c.email && !unsubscribedEmails.has(c.email))
+    .filter((c) => c.email)
     .map((c) => ({
       client_id: c.id,
       email: c.email!,
       recipient_name: [c.first_name, c.last_name].filter(Boolean).join(" ") || undefined,
-    }));
+      consent: inputsFor(optOuts, { clientId: c.id, email: c.email }),
+    }))
+    .filter((r) => decideConsent("email", "marketing", r.consent).allowed);
 }
 
 /**
