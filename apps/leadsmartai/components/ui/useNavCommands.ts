@@ -50,6 +50,7 @@ const KEYWORDS: Record<string, string> = {
   "/dashboard/billing": "billing plan credits subscription",
   "/account/profile": "profile account name photo branding",
   "/dashboard/ai-team": "team assistants pause skills",
+  "/dashboard/team": "team brokerage broker office roster agents invite onboarding billboard scorecard performance audit referrals",
   "/dashboard/cma": "cma comps valuation price pricing market analysis",
   "/dashboard/house-search": "search homes buyer listings",
   "/dashboard/calls": "call log recordings",

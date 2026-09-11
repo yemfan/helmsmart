@@ -1,6 +1,7 @@
 import type { NavConfig, NavSection } from "@repo/ui";
 import {
   BarChart3,
+  Building2,
   Calendar,
   CheckCircle2,
   ClipboardList,
@@ -203,6 +204,15 @@ const navConfig = {
     /* ── Everything else, collapsed ── */
     { kind: "divider" as const },
     {
+      // The brokerage portal: roster, onboarding, billboard, scorecard,
+      // performance, audit. An agent on no team lands on "create a team"
+      // or the upgrade card, which is how a team owner finds it first.
+      label: "Team",
+      href: "/dashboard/team",
+      match: ["/dashboard/team", "/dashboard/team/license"],
+      icon: p(<Building2 size={17} strokeWidth={STROKE} aria-hidden />),
+    },
+    {
       // The Realtor's own tools — things the human does, not the AI
       // team. Anything an agent does for you lives under that agent.
       label: "More",
@@ -378,7 +388,7 @@ export const leadSmartMobileNav: NavSection[] = [
     "Manage AI Team",
   ),
   { kind: "divider" },
-  ...pick("Leads", "Deals", "More", "Settings", "Admin"),
+  ...pick("Leads", "Deals", "Team", "More", "Settings", "Admin"),
 ];
 
 export { default as marketingNavConfig, leadSmartMarketingNav } from "./marketing.nav.config";
