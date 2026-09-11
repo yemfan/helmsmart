@@ -271,11 +271,18 @@ export async function generateClientBrief(
   // The app's own words, so the brief agrees with the screen around it. Left
   // to itself the model wrote "valor de vida útil" (an asset's useful life),
   // "estimaciones" for quotes, and "lifetime value" in English mid-sentence.
+  // Lowercased: given the bundles' title case, the model capitalised them
+  // mid-sentence ("No hay Cotizaciones abiertas").
+  const term = (key: string) => t(key).toLocaleLowerCase(intlLocale(locale));
+  // The style guide's register for the owner; left unsaid, the next action
+  // came out in tú ("Confirma la cita") in an otherwise usted brief.
+  const register =
+    locale === "es" ? " Address the owner as usted (Confirme, Envíe), never tú." : locale === "zh-Hans" ? " Address the owner as 你." : "";
   const terms =
     locale === DEFAULT_LOCALE
       ? ""
       : `
-Use the app's own words for these, exactly as written, and never leave them in English: lifetime value = "${t("detail.stats.lifetimeValue")}"; quotes or estimates = "${t("detail.estimates.title")}"; invoices = "${t("detail.invoices.title")}".`;
+Use the app's own words for these and never leave them in English: lifetime value = "${term("detail.stats.lifetimeValue")}"; quotes or estimates = "${term("detail.estimates.title")}"; invoices = "${term("detail.invoices.title")}"; a lead = "${term("statuses.lead")}". Mid-sentence they are lowercase, like any other noun.${register}`;
 
   const systemPrompt =
     `You are an AI business advisor analyzing a client relationship for a small business owner.
