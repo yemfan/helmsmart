@@ -65,7 +65,8 @@
     "auto_reply": "自动回复",
     "missed_call_text": "未接来电短信",
     "reminder": "自动提醒",
-    "receptionist": "AI 前台接待"
+    "receptionist": "AI 前台接待",
+    "ai_team": "AI 团队 · 经你批准"
   },
   "consent": {
     "sms": {

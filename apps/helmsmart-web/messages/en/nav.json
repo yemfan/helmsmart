@@ -60,7 +60,9 @@
   },
   "askMark": {
     "button": "Ask Mark",
-    "hint": "Ask Mark ({{shortcut}})"
+    "hint": "Ask Mark ({{shortcut}})",
+    "pending_one": "{{count}} waiting for your approval",
+    "pending_other": "{{count}} waiting for your approval"
   },
   "menu": {
     "navigation": "Main navigation",

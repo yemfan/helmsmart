@@ -165,7 +165,7 @@ describe("buildActivityFeed", () => {
     expect(rows.map((r) => r.text)).toEqual(["Emily published a post to Facebook"]);
   });
 
-  it("turns approval escalations into lines that point at Tasks, and skips voice runs", () => {
+  it("turns approval escalations into lines that point at the approvals on Home, and skips voice runs", () => {
     const rows = buildActivityFeed(
       input({
         runs: [
@@ -181,9 +181,42 @@ describe("buildActivityFeed", () => {
       { now: NOW },
     );
     expect(rows.map((r) => [r.text, r.href])).toEqual([
-      ["Sarah drafted a text to Amanda Reyes for your approval", "/tasks"],
-      ["Alex lined up payment reminders for your approval", "/tasks"],
+      ["Sarah drafted a text to Amanda Reyes for your approval", "/home"],
+      ["Alex lined up payment reminders for your approval", "/home"],
       ["Emma booked Priya Patel by text", "/calendar"],
+    ]);
+  });
+
+  it("lists what the owner approved, whose work it was, and who said yes — once", () => {
+    const rows = buildActivityFeed(
+      input({
+        employees: {
+          mark: { name: "Mark", avatar: "persona-13" },
+          sarah: { name: "Sarah", avatar: "persona-05" },
+          alex: { name: "Alex", avatar: "persona-06" },
+        },
+        viewerId: "me",
+        approvals: [
+          { id: "a1", employee_slug: "alex", action_key: "send_invoice_reminder", client_name: "Dana Lee", decided_by: "me", executed_at: hoursAgo(1) },
+          { id: "a2", employee_slug: "sarah", action_key: "text_client", client_name: "Priya Shah", decided_by: "teammate", executed_at: hoursAgo(2) },
+        ],
+        runs: [
+          // The specialist's own run for the approved text: the approval line covers it.
+          { id: "r0", employee_slug: "sarah", channel: "sms", subject_type: "contact", subject_id: "c1", status: "succeeded", outcome: { action: "text_client" }, started_at: hoursAgo(2) },
+          { id: "r1", employee_slug: "mark", channel: "internal", subject_type: null, subject_id: null, status: "succeeded", outcome: { action: "create_task", title: "Call the plumber supplier" }, started_at: hoursAgo(3) },
+          { id: "r2", employee_slug: "mark", channel: "internal", subject_type: null, subject_id: null, status: "escalated", outcome: { action: "hand_off_to_owner", category: "capability_gap", summary: "Post on Facebook that we're closed Monday" }, started_at: hoursAgo(4) },
+        ],
+        // The `messages` row of the same approved text: not a second line either.
+        texts: [text({ id: "m1", sent_by: "ai_team", client_id: "c1", sent_at: hoursAgo(2) })],
+      }),
+      fmt,
+      { now: NOW },
+    );
+    expect(rows.map((r) => [r.text, r.detail, r.href])).toEqual([
+      ["Alex sent a payment reminder to Dana Lee", "approved by you", "/books/invoices"],
+      ["Sarah texted Priya Shah", "approved by your team", "/inbox"],
+      ["Mark added a task: Call the plumber supplier", null, "/tasks"],
+      ["Mark handed you a task: Post on Facebook that we're closed Monday", null, "/tasks"],
     ]);
   });
 

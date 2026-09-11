@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Fragment, useCallback, useEffect, useId, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { Avatar } from "@helm/ui";
@@ -16,13 +16,21 @@ import {
   urlWithoutAskMark,
 } from "@/lib/ask-mark";
 import { useAskMarkShortcutLabel } from "@/components/use-ask-mark-shortcut";
+import { usePendingApprovals } from "@/components/use-pending-approvals";
+import { ApprovalCard } from "@/components/approval-card";
+import { announceApprovalsChanged } from "@/lib/approval-events";
+import { createAskEventParser, historyForModel, type AskEvent } from "@/lib/ai-team/ask-stream";
+import type { ApprovalView } from "@/lib/ai-team/approval-view";
 
 /**
  * Ask Mark — the one place the owner talks to the AI team. Mark, the AI COO,
  * is its face. A floating panel (draggable + resizable on desktop, a
  * full-screen sheet below `md`) with two kinds of tabs:
- *   • "Ask" — questions about the business, answered by Mark from its live
- *     data (streams from /api/ask). He answers; he doesn't act.
+ *   • "Ask" — Mark, from the business's live data (streams from /api/ask).
+ *     He answers, and he routes work to the AI team: a task is added at
+ *     once, and anything that would reach a customer (a text, a payment
+ *     reminder) comes back as an approval card — Approve / Decline — under
+ *     his answer. Nothing leaves the business without that click.
  *   • per-client SMS tabs — search a client, draft an SMS with Claude, see the
  *     thread, and send it to the recipient the button names.
  *
@@ -37,7 +45,12 @@ import { useAskMarkShortcutLabel } from "@/components/use-ask-mark-shortcut";
  * Adapted from the LeadSmart AI assistant; rewired to smbai's clients + Claude.
  */
 
-type GuideMessage = { role: "user" | "assistant"; content: string };
+type GuideMessage = {
+  role: "user" | "assistant";
+  content: string;
+  /** What the team lined up in this answer, each waiting on (or decided by) the owner. */
+  proposals?: ApprovalView[];
+};
 
 type ThreadMessage = {
   id: string;
@@ -190,11 +203,16 @@ function clampToViewport(p: PanelPosition): PanelPosition {
 
 export function HelmSmartAiPanel({
   markAvatar,
+  pendingApprovals = 0,
 }: {
   /** Mark's avatar id — the business's pick, else his roster default (`lib/mark-avatar.ts`). */
   markAvatar: string;
+  /** AI-team proposals waiting on the owner (counted on the launcher). */
+  pendingApprovals?: number;
 }) {
   const { t } = useTranslation("home");
+  const router = useRouter();
+  const pendingCount = usePendingApprovals(pendingApprovals);
   const [open, setOpen] = useState(false);
   const sheet = useIsSheet();
   const shortcut = useAskMarkShortcutLabel();
@@ -493,49 +511,71 @@ export function HelmSmartAiPanel({
       setGuideMessages([...history, { role: "assistant", content: "" }]);
       setGuideInput("");
       setGuideLoading(true);
+      const setLast = (message: GuideMessage) =>
+        setGuideMessages((prev) => {
+          const next = prev.slice();
+          next[next.length - 1] = message;
+          return next;
+        });
+      let acc = "";
+      const proposals: ApprovalView[] = [];
       try {
         const res = await fetch("/api/ask", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history }),
+          body: JSON.stringify({ messages: historyForModel(history) }),
         });
         if (!res.ok || !res.body) {
+          // /api/ask writes its refusals for the owner, in their language.
           const errText = await res.text().catch(() => "");
           throw new Error(errText || t("aiPanel.requestFailed"));
         }
+        // One JSON event per line: Mark's words as he writes them, and each
+        // proposal as the card to show under them.
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
-        let acc = "";
+        const parser = createAskEventParser();
+        const apply = (events: AskEvent[]) => {
+          if (events.length === 0) return;
+          for (const e of events) {
+            if (e.t === "text") acc += e.v;
+            else if (e.t === "error") acc += `${acc.trim() ? "\n\n" : ""}${e.v}`;
+            else {
+              proposals.push(e.approval);
+              announceApprovalsChanged(1);
+            }
+          }
+          setLast({ role: "assistant", content: acc, proposals: proposals.slice() });
+        };
         for (;;) {
           const { done, value } = await reader.read();
           if (done) break;
-          acc += decoder.decode(value, { stream: true });
-          setGuideMessages((prev) => {
-            const next = prev.slice();
-            next[next.length - 1] = { role: "assistant", content: acc };
-            return next;
-          });
+          apply(parser.push(decoder.decode(value, { stream: true })));
         }
-        if (!acc.trim()) {
-          setGuideMessages((prev) => {
-            const next = prev.slice();
-            next[next.length - 1] = { role: "assistant", content: t("aiPanel.noResponse") };
-            return next;
-          });
-        }
+        apply(parser.flush());
+        if (!acc.trim() && proposals.length === 0) setLast({ role: "assistant", content: t("aiPanel.noResponse") });
+        // The new proposals belong on /home's "Needs your approval" too.
+        if (proposals.length > 0) router.refresh();
       } catch (e) {
         const msg = e instanceof Error && e.message ? e.message : t("aiPanel.networkError");
-        setGuideMessages((prev) => {
-          const next = prev.slice();
-          next[next.length - 1] = { role: "assistant", content: msg };
-          return next;
-        });
+        setLast({ role: "assistant", content: acc.trim() ? `${acc}\n\n${msg}` : msg, proposals: proposals.slice() });
       } finally {
         setGuideLoading(false);
       }
     },
-    [guideMessages, guideLoading, t],
+    [guideMessages, guideLoading, t, router],
   );
+
+  /** A card under one of Mark's answers was decided: keep the conversation's copy in step. */
+  const onProposalDecided = useCallback((view: ApprovalView) => {
+    setGuideMessages((prev) =>
+      prev.map((m) =>
+        m.proposals?.some((p) => p.id === view.id)
+          ? { ...m, proposals: m.proposals.map((p) => (p.id === view.id ? view : p)) }
+          : m,
+      ),
+    );
+  }, []);
 
   // ── Contact tab helpers ─────────────────────────────────────────
   const updateTab = useCallback((tabId: string, patch: Partial<ContactTab>) => {
@@ -741,11 +781,19 @@ export function HelmSmartAiPanel({
         onClick={() => setOpen(true)}
         className="fixed right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B1D33] shadow-lg ring-1 ring-blue-400/30 transition-transform hover:scale-105 hover:ring-blue-300/50"
         style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
-        aria-label={t("aiPanel.open")}
+        aria-label={pendingCount > 0 ? t("aiPanel.openWithApprovals", { count: pendingCount }) : t("aiPanel.open")}
         aria-keyshortcuts={ASK_MARK_KEYSHORTCUTS}
         title={t("aiPanel.openHint", { shortcut })}
       >
         <Avatar id={markAvatar} size={52} />
+        {pendingCount > 0 ? (
+          <span
+            aria-hidden
+            className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[11px] font-bold leading-none text-slate-900 ring-2 ring-white"
+          >
+            {pendingCount > 99 ? "99+" : pendingCount}
+          </span>
+        ) : null}
       </button>
     );
   }
@@ -866,6 +914,7 @@ export function HelmSmartAiPanel({
               send={sendGuide}
               scrollRef={guideScrollRef}
               quickPrompts={QUICK_PROMPT_KEYS.map((k) => t(`aiPanel.quickPrompts.${k}`))}
+              onProposalDecided={onProposalDecided}
             />
           ) : activeContactTab ? (
             <ContactTabBody
@@ -983,6 +1032,7 @@ function GuideTabBody({
   send,
   scrollRef,
   quickPrompts,
+  onProposalDecided,
 }: {
   /** The question box — the Ask Mark entry points put the cursor here. */
   inputRef: React.RefObject<HTMLInputElement | null>;
@@ -994,6 +1044,7 @@ function GuideTabBody({
   scrollRef: React.RefObject<HTMLDivElement | null>;
   /** Already-translated questions. */
   quickPrompts: string[];
+  onProposalDecided: (view: ApprovalView) => void;
 }) {
   const { t } = useTranslation("home");
   // The last assistant bubble may be an empty placeholder while a stream
@@ -1020,24 +1071,33 @@ function GuideTabBody({
             ))}
           </div>
         )}
-        {messages.map((m, i) =>
-          m.role === "assistant" && m.content === "" ? null : (
-            <div
-              key={i}
-              className={`text-sm leading-relaxed ${
-                m.role === "user"
-                  ? "ml-8 rounded-xl rounded-br-sm bg-blue-50 px-3 py-2 text-blue-900"
-                  : "mr-8 rounded-xl rounded-bl-sm bg-gray-50 px-3 py-2 text-gray-800"
-              }`}
-            >
-              {m.role === "assistant" ? (
-                <MarkdownLite text={m.content} />
-              ) : (
-                <div className="whitespace-pre-wrap">{m.content}</div>
-              )}
-            </div>
-          ),
-        )}
+        {messages.map((m, i) => (
+          <Fragment key={i}>
+            {m.role === "assistant" && m.content === "" ? null : (
+              <div
+                className={`text-sm leading-relaxed ${
+                  m.role === "user"
+                    ? "ml-8 rounded-xl rounded-br-sm bg-blue-50 px-3 py-2 text-blue-900"
+                    : "mr-8 rounded-xl rounded-bl-sm bg-gray-50 px-3 py-2 text-gray-800"
+                }`}
+              >
+                {m.role === "assistant" ? (
+                  <MarkdownLite text={m.content} />
+                ) : (
+                  <div className="whitespace-pre-wrap">{m.content}</div>
+                )}
+              </div>
+            )}
+            {/* What the team lined up in this answer — nothing goes until the owner approves it here. */}
+            {m.proposals?.length ? (
+              <div className="mr-4 space-y-2">
+                {m.proposals.map((p) => (
+                  <ApprovalCard key={p.id} approval={p} onDecided={onProposalDecided} refreshOnDecide />
+                ))}
+              </div>
+            ) : null}
+          </Fragment>
+        ))}
         {(loading && lastIsEmptyAssistant) && (
           <div className="mr-8 rounded-xl rounded-bl-sm bg-gray-50 px-3 py-2">
             <div className="flex gap-1">

@@ -60,7 +60,8 @@
   },
   "askMark": {
     "button": "向 Mark 提问",
-    "hint": "向 Mark 提问（{{shortcut}}）"
+    "hint": "向 Mark 提问（{{shortcut}}）",
+    "pending_other": "{{count}} 项等待你批准"
   },
   "menu": {
     "navigation": "主导航",

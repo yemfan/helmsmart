@@ -18,6 +18,7 @@ import { ChangePasswordModal } from "@/components/change-password-modal";
 import { AvatarUploadModal } from "@/components/avatar-upload-modal";
 import { LanguageToggle } from "@/components/language-toggle";
 import { useAskMarkShortcutLabel } from "@/components/use-ask-mark-shortcut";
+import { usePendingApprovals } from "@/components/use-pending-approvals";
 
 const ICON = 16;
 
@@ -99,12 +100,15 @@ interface Props {
    * than no button.
    */
   askMarkAvatar?: string | null;
+  /** AI-team proposals waiting on the owner — counted on the Ask Mark button. */
+  pendingApprovals?: number;
 }
 
-export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarUrl, productName = "HelmSmart", logoLetter = "H", terms = {}, askMarkAvatar }: Props) {
+export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarUrl, productName = "HelmSmart", logoLetter = "H", terms = {}, askMarkAvatar, pendingApprovals = 0 }: Props) {
   const pathname = usePathname();
   const { t } = useTranslation("nav");
   const shortcut = useAskMarkShortcutLabel();
+  const pending = usePendingApprovals(pendingApprovals);
 
   // Longest-prefix match so e.g. /books/invoices keeps "Books" highlighted.
   const activeHref = ALL_HREFS
@@ -147,6 +151,8 @@ export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarU
               keyShortcuts: ASK_MARK_KEYSHORTCUTS,
               icon: <Avatar id={askMarkAvatar} size={22} />,
               onClick: () => requestAskMark("open"),
+              badge: pending,
+              badgeLabel: pending > 0 ? t("askMark.pending", { count: pending }) : undefined,
             }
           : undefined
       }

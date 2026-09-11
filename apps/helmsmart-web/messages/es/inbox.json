@@ -65,7 +65,8 @@
     "auto_reply": "Respuesta automática",
     "missed_call_text": "Texto por llamada perdida",
     "reminder": "Recordatorio automático",
-    "receptionist": "Recepcionista con IA"
+    "receptionist": "Recepcionista con IA",
+    "ai_team": "Equipo de IA · aprobado por usted"
   },
   "consent": {
     "sms": {

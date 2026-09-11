@@ -6,6 +6,7 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import { HelmSmartAiPanel } from "@/components/helmsmart-ai-panel";
 import { getActivePack } from "@/lib/packs";
 import { markAvatarId } from "@/lib/mark-avatar";
+import { countProposedApprovals } from "@/lib/ai-team/approvals";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -15,11 +16,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // Load notification data + current user email server-side, and Mark's avatar
   // for the Ask Mark panel (RLS-scoped; falls back to his roster default).
-  const [unreadCount, notifications, { data: { user } }, markAvatar] = await Promise.all([
+  // …and how many AI-team proposals are waiting on the owner (the count on the
+  // Ask Mark button and launcher; RLS-scoped, 0 on any failure).
+  const [unreadCount, notifications, { data: { user } }, markAvatar, pendingApprovals] = await Promise.all([
     getUnreadCount(orgId),
     getRecentNotifications(orgId, 20),
     supabase.auth.getUser(),
     orgId ? markAvatarId(supabase, orgId) : Promise.resolve(null),
+    orgId ? countProposedApprovals(supabase, orgId, new Date()) : Promise.resolve(0),
   ]);
 
   const pack = await getActivePack();
@@ -35,6 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         logoLetter={pack.logoLetter}
         terms={pack.terms}
         askMarkAvatar={markAvatar}
+        pendingApprovals={pendingApprovals}
         notificationsSlot={
           <NotificationsBell
             orgId={orgId}
@@ -47,7 +52,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {children}
       </main>
       {/* Ask Mark — the one panel; the sidebar button, the launcher, the shortcut and /ask all open it. */}
-      {markAvatar ? <HelmSmartAiPanel markAvatar={markAvatar} /> : null}
+      {markAvatar ? <HelmSmartAiPanel markAvatar={markAvatar} pendingApprovals={pendingApprovals} /> : null}
     </div>
   );
 }

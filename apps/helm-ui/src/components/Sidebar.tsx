@@ -61,6 +61,13 @@ export interface AiEmployeeBadge {
   hint?: string;
   /** `aria-keyshortcuts` for the button, e.g. "Control+/ Meta+/". */
   keyShortcuts?: string;
+  /**
+   * A count of things waiting on the owner (e.g. approvals), shown as a pill
+   * after the name. Nothing is shown for 0 or unset.
+   */
+  badge?: number;
+  /** What `badge` counts, for screen readers, e.g. "2 waiting for your approval". */
+  badgeLabel?: string;
 }
 
 /** Accessible names for the shell's own controls, in the reader's language. */
@@ -577,6 +584,41 @@ export function Sidebar({
                   <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {aiEmployee.name}
                   </span>
+                  {typeof aiEmployee.badge === 'number' && aiEmployee.badge > 0 && (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          flexShrink: 0,
+                          minWidth: 18,
+                          padding: '1px 6px',
+                          borderRadius: 999,
+                          background: '#f59e0b',
+                          color: '#0b1220',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          lineHeight: '16px',
+                          textAlign: 'center',
+                        } as React.CSSProperties}
+                      >
+                        {aiEmployee.badge > 99 ? '99+' : aiEmployee.badge}
+                      </span>
+                      {aiEmployee.badgeLabel && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            width: 1,
+                            height: 1,
+                            overflow: 'hidden',
+                            clip: 'rect(0 0 0 0)',
+                            whiteSpace: 'nowrap',
+                          } as React.CSSProperties}
+                        >
+                          {aiEmployee.badgeLabel}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </button>
               ) : (
               <div

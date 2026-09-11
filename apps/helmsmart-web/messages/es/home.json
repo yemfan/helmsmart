@@ -266,11 +266,57 @@
       "unauthorized": "Inicie sesión de nuevo para consultar los datos de su negocio.",
       "notConfigured": "La IA aún no está configurada: agregue una clave de API de Anthropic.",
       "invalidRequest": "No se pudo leer esa solicitud. Inténtelo de nuevo.",
-      "noMessages": "Escriba primero una pregunta.",
-      "stream": "[Se produjo un error: {{message}}]"
+      "noMessages": "Escriba primero una pregunta."
     },
     "yourBusiness": "su negocio",
-    "uncategorized": "Sin categoría"
+    "uncategorized": "Sin categoría",
+    "roundLimit": "Ya di todos los pasos que puedo dar en una sola solicitud. Dígame qué sigue y continúo desde aquí.",
+    "budget": "Esa solicitud es demasiado grande para terminarla de una vez. Divídala en preguntas más cortas y las atiendo una por una.",
+    "refusal": "No puedo ayudarle con eso."
+  },
+  "aiApprovals": {
+    "title": "Necesita su aprobación",
+    "summary": {
+      "sendInvoiceReminder": "{{who}} enviará por correo un recordatorio de pago a {{name}} por {{invoice}} · {{amount}}",
+      "textClient": "{{who}} le enviará un texto a {{name}} al {{phone}}"
+    },
+    "card": {
+      "emailTo": "Correo para {{name}} · {{email}}",
+      "overdue_one": "{{count}} día de retraso",
+      "overdue_other": "{{count}} días de retraso",
+      "messageLabel": "Mensaje",
+      "approve": "Aprobar",
+      "decline": "Rechazar",
+      "approving": "Enviando…",
+      "declining": "Rechazando…",
+      "sent": "¡Enviado!",
+      "declined": "Rechazado",
+      "markDone": "Marcar como hecho",
+      "done": "Hecho",
+      "manualHint": "{{who}} todavía no puede hacer esto desde aquí: encárguese usted y luego márquelo como hecho.",
+      "expired": "Expiró: esta propuesta tiene más de 7 días. Pregúntele de nuevo a Mark si todavía hace falta.",
+      "failed": "No se envió"
+    },
+    "errors": {
+      "notFound": "Esa propuesta ya no existe.",
+      "alreadyDecided": "Esta propuesta ya se decidió; no se puede aprobar dos veces.",
+      "expired": "Esta propuesta expiró a los 7 días y ya no se puede aprobar. Pregúntele de nuevo a Mark si todavía hace falta.",
+      "forbidden": "Su rol no permite aprobar esto. Pídaselo al propietario o a un administrador.",
+      "emptyMessage": "Escriba un mensaje antes de enviarlo.",
+      "messageTooLong": "El texto debe tener menos de {{max}} caracteres.",
+      "failed": "No se pudo completar. Inténtelo de nuevo.",
+      "reminderFailed": "No se envió el correo de recordatorio. Inténtelo de nuevo.",
+      "noEmail": "{{name}} no tiene correo electrónico, así que no se puede enviar el recordatorio.",
+      "noPhone": "{{name}} no tiene un número de teléfono para enviarle textos.",
+      "notUnpaid": "{{invoice}} ya no está pendiente de pago, así que no se envió ningún recordatorio.",
+      "clientGone": "Ese cliente ya no está en este negocio.",
+      "invoiceGone": "Esa factura ya no está en este negocio.",
+      "unavailable": "Las aprobaciones no están disponibles en este momento. Inténtelo más tarde.",
+      "network": "Error de red. Inténtelo de nuevo."
+    },
+    "handoff": {
+      "nextStep": "Siguiente paso: {{step}}"
+    }
   },
   "aiPanel": {
     "open": "Preguntar a Mark",
@@ -281,7 +327,9 @@
     "expandShort": "Ampliar",
     "minimizeShort": "Minimizar",
     "title": "Mark",
-    "subtitle": "Director de operaciones con IA · responde con los datos de su negocio y redacta textos para sus clientes",
+    "subtitle": "Director de operaciones con IA · responde con los datos de su negocio y reparte el trabajo al equipo",
+    "openWithApprovals_one": "Preguntar a Mark — {{count}} espera su aprobación",
+    "openWithApprovals_other": "Preguntar a Mark — {{count}} esperan su aprobación",
     "dragHint": "Arrastre para moverlo · Haga doble clic para restablecer la posición y el tamaño",
     "askTab": "Preguntar",
     "newContactTab": "Nueva pestaña de contacto",
@@ -393,9 +441,15 @@
       "reminderCallNotPlaced": "No se realizó la llamada de recordatorio a {{name}}",
       "reminderTextNotSent": "No se envió el recordatorio por mensaje a {{name}}",
       "bookingConfirmationText": "{{who}} envió a {{name}} la confirmación de su cita por mensaje",
-      "paymentReminderText": "Recordatorio de pago por mensaje enviado a {{name}}"
+      "paymentReminderText": "Recordatorio de pago por mensaje enviado a {{name}}",
+      "approvedText": "{{who}} le envió un texto a {{name}}",
+      "approvedReminder": "{{who}} le envió un recordatorio de pago a {{name}}",
+      "taskAdded": "{{who}} agregó una tarea: {{title}}",
+      "handedOff": "{{who}} le pasó una tarea: {{title}}"
     },
     "detail": {
+      "approvedByYou": "aprobado por usted",
+      "approvedByTeammate": "aprobado por su equipo",
       "booked": "cita: {{when}}",
       "bookedNoTime": "agendó una cita",
       "texts_one": "{{count}} mensaje",
@@ -471,6 +525,7 @@
       "appointmentCancelled": "Cita cancelada por el cliente",
       "appointmentCancelledBody": "{{caller}} — era {{when}}",
       "employeeCreatedTask": "{{employee}} creó una tarea para usted",
+      "employeeNeedsApproval": "{{employee}} necesita su aprobación",
       "newGoogleReviews_one": "{{count}} reseña nueva en Google Business",
       "newGoogleReviews_other": "{{count}} reseñas nuevas en Google Business",
       "newGoogleReviewsBody": "Revise su panel de Google Business para responder y mejorar su reputación.",

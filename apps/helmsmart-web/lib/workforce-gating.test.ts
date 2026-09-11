@@ -40,6 +40,7 @@ import {
   completeRun,
 } from "@helm/ai-workforce";
 import { insertTask } from "@helm/dna-operations";
+import { createNotificationService } from "@/lib/notifications-service";
 
 import { enforceAutonomy } from "./workforce-gating";
 import type { AiEmployee } from "@helm/ai-workforce";
@@ -120,7 +121,7 @@ describe("enforceAutonomy", () => {
     expect(startRun).not.toHaveBeenCalled();
   });
 
-  it("creates a task (no execute, no approval row) for act_with_approval", async () => {
+  it("parks an ai_approvals row (no execute, no task) for act_with_approval", async () => {
     (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("act_with_approval"));
     const execute = vi.fn();
     const db = makeDb();
@@ -131,15 +132,33 @@ describe("enforceAutonomy", () => {
     });
     expect(result.status).toBe("escalated");
     expect(result.runId).toBe("run-123");
+    expect(result.approvalId).toBe("approval-1");
     expect(execute).not.toHaveBeenCalled();
-    expect(escalateRun).toHaveBeenCalledWith(expect.anything(), "org-1", "run-123", expect.any(String));
-    // A to-do task is created for the owner — and crucially NOT an approval row.
-    expect(insertTask).toHaveBeenCalledWith(
-      expect.anything(),
-      "org-1",
-      expect.objectContaining({ title: baseOpts.description, client_id: "client-1" }),
-    );
+
+    // The one approvals object — the same the Ask Mark panel and /home show.
+    expect(db.from).toHaveBeenCalledWith("ai_approvals");
+    const inserted = (db as unknown as { _insertFn: MockedFunction<(row: Record<string, unknown>) => unknown> })._insertFn.mock.calls[0][0];
+    expect(inserted).toMatchObject({
+      organization_id: "org-1",
+      employee_slug: "emma",
+      action_key: "service.book_appointment",
+      params: baseOpts.toolInput,
+      summary: baseOpts.description,
+      status: "proposed",
+      details: { kind: "manual", note: "drafted message" },
+      source: expect.objectContaining({ kind: "autonomy_gate", run_id: "run-123", subject_type: "contact", subject_id: "client-1" }),
+    });
+    // …and no longer a task, nor the legacy table.
+    expect(insertTask).not.toHaveBeenCalled();
     expect(db.from).not.toHaveBeenCalledWith("ai_employee_approvals");
+
+    expect(escalateRun).toHaveBeenCalledWith(expect.anything(), "org-1", "run-123", expect.any(String), {
+      outcome: { approval_id: "approval-1" },
+    });
+    expect(createNotificationService).toHaveBeenCalledWith(
+      "org-1",
+      expect.objectContaining({ titleKey: "notifications.events.employeeNeedsApproval", params: { employee: "Emma" }, link: "/home" }),
+    );
   });
 
   it("calls execute and returns executed for autonomous", async () => {

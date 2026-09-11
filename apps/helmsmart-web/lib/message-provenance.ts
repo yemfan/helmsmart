@@ -18,6 +18,9 @@
  *   reminder          appointment reminder texts and invoice payment reminders
  *   receptionist      the AI receptionist confirming a booking it made (voice or
  *                     text), and the booking alert it texts the business
+ *   ai_team           an AI-team action the owner approved: a text Sarah drafted,
+ *                     a payment reminder Alex lined up (migration
+ *                     20260913000000_ai_approvals.sql; `lib/ai-team/`)
  *
  * Campaigns and automation rules send too, but write no `messages` rows — they
  * are recorded in their own tables — so they are not values here. Adding one is
@@ -31,6 +34,7 @@ export const MESSAGE_SENDERS = [
   "missed_call_text",
   "reminder",
   "receptionist",
+  "ai_team",
 ] as const;
 
 export type MessageSender = (typeof MESSAGE_SENDERS)[number];
@@ -59,6 +63,7 @@ export const SENDER_LABEL_KEYS: Record<MessageSender, string> = {
   missed_call_text: "provenance.missed_call_text",
   reminder: "provenance.reminder",
   receptionist: "provenance.receptionist",
+  ai_team: "provenance.ai_team",
 };
 
 /**

@@ -266,11 +266,57 @@
       "unauthorized": "Sign in again to ask about your business.",
       "notConfigured": "AI is not configured yet — add an Anthropic API key.",
       "invalidRequest": "That request could not be read. Please try again.",
-      "noMessages": "Type a question first.",
-      "stream": "[Error: {{message}}]"
+      "noMessages": "Type a question first."
     },
     "yourBusiness": "your business",
-    "uncategorized": "Uncategorized"
+    "uncategorized": "Uncategorized",
+    "roundLimit": "I've taken as many steps as I can for one request. Tell me what to do next and I'll pick it up from here.",
+    "budget": "That request is too big to finish in one go. Break it into smaller questions and I'll take them one at a time.",
+    "refusal": "I can't help with that one."
+  },
+  "aiApprovals": {
+    "title": "Needs your approval",
+    "summary": {
+      "sendInvoiceReminder": "{{who}} will email a payment reminder to {{name}} for {{invoice}} · {{amount}}",
+      "textClient": "{{who}} will text {{name}} at {{phone}}"
+    },
+    "card": {
+      "emailTo": "Email to {{name}} · {{email}}",
+      "overdue_one": "{{count}} day overdue",
+      "overdue_other": "{{count}} days overdue",
+      "messageLabel": "Message",
+      "approve": "Approve",
+      "decline": "Decline",
+      "approving": "Sending…",
+      "declining": "Declining…",
+      "sent": "Sent!",
+      "declined": "Declined",
+      "markDone": "Mark done",
+      "done": "Done",
+      "manualHint": "{{who}} can't do this from here yet — take care of it, then mark it done.",
+      "expired": "Expired — this proposal is more than 7 days old. Ask Mark again if it's still needed.",
+      "failed": "Not sent"
+    },
+    "errors": {
+      "notFound": "That proposal no longer exists.",
+      "alreadyDecided": "This one was already decided — it can't be approved twice.",
+      "expired": "This proposal expired after 7 days and can't be approved. Ask Mark again if it's still needed.",
+      "forbidden": "Your role can't approve this. Ask the owner or an admin.",
+      "emptyMessage": "Write a message before sending.",
+      "messageTooLong": "Keep the text under {{max}} characters.",
+      "failed": "That didn't go through. Try again.",
+      "reminderFailed": "The reminder email didn't go out. Try again.",
+      "noEmail": "{{name}} has no email address, so the reminder can't be sent.",
+      "noPhone": "{{name}} has no phone number to text.",
+      "notUnpaid": "{{invoice}} isn't waiting on payment any more, so no reminder was sent.",
+      "clientGone": "That client is no longer in this business.",
+      "invoiceGone": "That invoice is no longer in this business.",
+      "unavailable": "Approvals aren't available right now. Try again later.",
+      "network": "Network error. Try again."
+    },
+    "handoff": {
+      "nextStep": "Next step: {{step}}"
+    }
   },
   "aiPanel": {
     "open": "Ask Mark",
@@ -281,7 +327,9 @@
     "expandShort": "Expand",
     "minimizeShort": "Minimize",
     "title": "Mark",
-    "subtitle": "AI COO · answers from your business data, drafts texts to clients",
+    "subtitle": "AI COO · answers from your business data, hands work to the team",
+    "openWithApprovals_one": "Ask Mark — {{count}} waiting for your approval",
+    "openWithApprovals_other": "Ask Mark — {{count}} waiting for your approval",
     "dragHint": "Drag to reposition · Double-click to reset position + size",
     "askTab": "Ask",
     "newContactTab": "New contact tab",
@@ -393,9 +441,15 @@
       "reminderCallNotPlaced": "Reminder call to {{name}} wasn't placed",
       "reminderTextNotSent": "Reminder text to {{name}} wasn't sent",
       "bookingConfirmationText": "{{who}} texted {{name}} a booking confirmation",
-      "paymentReminderText": "Payment reminder texted to {{name}}"
+      "paymentReminderText": "Payment reminder texted to {{name}}",
+      "approvedText": "{{who}} texted {{name}}",
+      "approvedReminder": "{{who}} sent a payment reminder to {{name}}",
+      "taskAdded": "{{who}} added a task: {{title}}",
+      "handedOff": "{{who}} handed you a task: {{title}}"
     },
     "detail": {
+      "approvedByYou": "approved by you",
+      "approvedByTeammate": "approved by your team",
       "booked": "booked {{when}}",
       "bookedNoTime": "booked an appointment",
       "texts_one": "{{count}} text",
@@ -471,6 +525,7 @@
       "appointmentCancelled": "Appointment cancelled by customer",
       "appointmentCancelledBody": "{{caller}} — was {{when}}",
       "employeeCreatedTask": "{{employee}} created a task for you",
+      "employeeNeedsApproval": "{{employee}} needs your approval",
       "newGoogleReviews_one": "{{count}} new review on Google Business",
       "newGoogleReviews_other": "{{count}} new reviews on Google Business",
       "newGoogleReviewsBody": "Check your Google Business dashboard to respond and boost your reputation.",

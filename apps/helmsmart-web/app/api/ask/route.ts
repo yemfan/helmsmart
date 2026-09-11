@@ -1,25 +1,37 @@
 /**
  * POST /api/ask
  *
- * Mark's answers in the Ask Mark panel. Injects live business data from
- * Supabase into the system prompt, then streams a Claude response back as
- * plain text. A complete answer is counted as Mark's work (`questions_answered`)
+ * Mark in the Ask Mark panel. He answers from live business data (injected
+ * into his system prompt, as before), and now he can act: a tool loop over the
+ * AI team's actions (`lib/ai-team/`) routes work to the specialists. Reads and
+ * internal work (a task) run at once; anything that reaches a customer — a
+ * text, a payment reminder — comes back as a proposal the owner approves in
+ * the panel, never as a send.
+ *
+ * The response is newline-delimited JSON (`lib/ai-team/ask-stream.ts`): Mark's
+ * words stream as he writes them, and each proposal arrives as the card to
+ * render. A complete answer is counted as Mark's work (`questions_answered`)
  * after the response has finished.
  */
 
 import { NextRequest, NextResponse, after } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { getServerLocale, getServerT } from "@/lib/i18n/server";
-import { orgCurrency } from "@/lib/books-currency";
+import { getServerT } from "@/lib/i18n/server";
 import { moneyFormatter } from "@/lib/books-format";
 import { languageDirective } from "@/lib/i18n/directives";
-import { getMemberOrgId } from "@/lib/auth/org-context";
-import { orgToday } from "@/lib/org-timezone";
+import { requireOrgMember } from "@/lib/auth/org-context";
 import { firstOfMonth } from "@/lib/org-date";
 import { recordMarkAnswer } from "@/lib/workforce-attribution";
+import { buildActionContext } from "@/lib/ai-team/context";
+import { AI_TEAM_ACTIONS, defaultRunDeps, toolsForModel } from "@/lib/ai-team/registry";
+import { runAction } from "@/lib/ai-team/run-action";
+import { MARK_AGENT_MODEL, runMarkLoop } from "@/lib/ai-team/mark-loop";
+import { anthropicMarkModel } from "@/lib/ai-team/mark-model";
+import { buildMarkSystemPrompt } from "@/lib/ai-team/mark-prompt";
+import { toApprovalView } from "@/lib/ai-team/approval-view";
+import { ASK_CONTENT_TYPE, encodeAskEvent, sanitizeHistory, type AskEvent } from "@/lib/ai-team/ask-stream";
 
-type Message = { role: "user" | "assistant"; content: string };
 type Db = Awaited<ReturnType<typeof createClient>>;
 
 // ─── Business context builder ──────────────────────────────────────────────────
@@ -27,12 +39,14 @@ type Db = Awaited<ReturnType<typeof createClient>>;
 async function buildContext(
   supabase: Db,
   orgId: string,
+  /** The business's date, `YYYY-MM-DD`. */
+  todayStr: string,
   tr: (key: string, opts?: Record<string, unknown>) => string,
   money: (value: number) => string,
 ): Promise<string> {
   // The org's date: Mark's "Today:", the overdue check and month-to-date all
-  // count in the business's day, the one its dashboard shows.
-  const todayStr = await orgToday(orgId);
+  // count in the business's day, the one its dashboard shows. `todayStr` is
+  // `orgToday` from the action context, so Mark's tools count in the same day.
   const monthStart = firstOfMonth(todayStr);
 
   const [orgRes, clientsRes, invoicesRes, txnsRes] = await Promise.all([
@@ -120,34 +134,48 @@ ${topCats ? `\n  Top expense categories:\n${topCats}` : ""}`;
 export async function POST(request: NextRequest) {
   /*
    * Every string below is rendered straight into the assistant panel, so the
-   * owner reads it: the failures are translated here rather than at the two
-   * call sites that show whatever text came back.
+   * owner reads it: the failures are translated here rather than at the call
+   * site that shows whatever text came back.
    */
   const t = await getServerT("home");
-  const locale = await getServerLocale();
 
-  const orgId = (await getMemberOrgId()) ?? "";
-  if (!orgId) return new NextResponse(t("ask.errors.unauthorized"), { status: 401 });
+  // Membership, and the role the actions are gated on.
+  const access = await requireOrgMember();
+  if (!access.ok) return new NextResponse(t("ask.errors.unauthorized"), { status: 401 });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new NextResponse(t("ask.errors.notConfigured"), { status: 503 });
   }
 
-  let messages: Message[] = [];
+  let raw: unknown;
   try {
-    const body = await request.json();
-    messages = (body.messages ?? []) as Message[];
+    raw = ((await request.json()) as { messages?: unknown } | null)?.messages;
   } catch {
     return new NextResponse(t("ask.errors.invalidRequest"), { status: 400 });
   }
-  if (!messages.length) return new NextResponse(t("ask.errors.noMessages"), { status: 400 });
+  const history = sanitizeHistory(raw);
+  if (!history.length) return new NextResponse(t("ask.errors.noMessages"), { status: 400 });
 
-  const currency = await orgCurrency(orgId);
-  const money = moneyFormatter(locale, currency);
   const supabase = await createClient();
-  const context = await buildContext(supabase, orgId, t, money);
-  const anthropic = new Anthropic({ apiKey });
+  const ctx = await buildActionContext({
+    db: supabase,
+    orgId: access.orgId,
+    userId: access.userId,
+    role: access.role,
+  });
+  const money = moneyFormatter(ctx.locale, ctx.currency);
+  const snapshot = await buildContext(supabase, ctx.orgId, ctx.today, t, money);
+  const system = buildMarkSystemPrompt({
+    snapshot,
+    currency: ctx.currency,
+    today: ctx.today,
+    team: ctx.team,
+    // The owner reads Mark's words, so they come back in the owner's language.
+    languageDirective: languageDirective(ctx.locale),
+  });
+  const tools = toolsForModel(AI_TEAM_ACTIONS, ctx.team);
+  const model = anthropicMarkModel(new Anthropic({ apiKey }), MARK_AGENT_MODEL);
 
   /*
    * A complete answer is Mark's work, and the Command Center counts it. The
@@ -162,55 +190,54 @@ export async function POST(request: NextRequest) {
     settle = resolve;
   });
   after(async () => {
-    if (await answered) await recordMarkAnswer(supabase, orgId);
+    if (await answered) await recordMarkAnswer(supabase, ctx.orgId);
   });
 
   const encoder = new TextEncoder();
+  let cancelled = false;
   const readable = new ReadableStream({
     async start(controller) {
-      let text = "";
+      const send = (event: AskEvent) => {
+        if (!cancelled) controller.enqueue(encoder.encode(encodeAskEvent(event)));
+      };
       let ok = false;
       try {
-        const stream = anthropic.messages.stream({
-          model: "claude-haiku-4-5",
-          max_tokens: 1024,
-          // The owner reads this answer, so it comes back in their language.
-          // Mark answers; he does not act (yet), and must not say he did.
-          system: `You are Mark, the AI Chief Operating Officer on this business's AI team, answering the owner's questions about their business. Answer from the live snapshot below, concisely and specifically; if it doesn't hold what they asked, say so instead of guessing. Format currency as ${currency}. Use bullet points for lists. You can't take actions from this chat — you don't send messages, change records or hand work to other AI employees — so never say you did or will; if asked, say plainly that you can't do that from here yet.${languageDirective(
-            locale,
-          )}\n\nToday's live business snapshot:\n\n${context}`,
-          messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        const result = await runMarkLoop({
+          model,
+          system,
+          tools,
+          history,
+          dispatch: (name, input) => runAction(ctx, name, input, defaultRunDeps, { surface: "ask" }),
+          emit: (event) =>
+            event.type === "text"
+              ? send({ t: "text", v: event.text })
+              : send({ t: "proposal", approval: toApprovalView(event.outcome.approval, ctx.team, ctx.now) }),
+          copy: {
+            roundLimit: t("ask.roundLimit"),
+            budget: t("ask.budget"),
+            refusal: t("ask.refusal"),
+          },
         });
-
-        for await (const chunk of stream) {
-          if (
-            chunk.type === "content_block_delta" &&
-            chunk.delta.type === "text_delta"
-          ) {
-            text += chunk.delta.text;
-            controller.enqueue(encoder.encode(chunk.delta.text));
-          }
-        }
-        ok = text.trim().length > 0;
+        ok = result.stop !== "refusal" && (result.text.trim().length > 0 || result.toolCalls.length > 0);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "";
-        controller.enqueue(
-          encoder.encode(`\n\n${t("ask.errors.stream", { message: msg || t("ask.error") })}`),
-        );
+        // The provider's own error is for the log, not for the owner.
+        console.error("[ask] Mark's loop failed:", err);
+        send({ t: "error", v: t("ask.error") });
       } finally {
         settle(ok);
-        controller.close();
+        if (!cancelled) controller.close();
       }
     },
     cancel() {
       // The owner closed the panel mid-answer: not an answer they received.
+      cancelled = true;
       settle(false);
     },
   });
 
   return new NextResponse(readable, {
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Type": ASK_CONTENT_TYPE,
       "X-Content-Type-Options": "nosniff",
       "Cache-Control": "no-cache",
     },

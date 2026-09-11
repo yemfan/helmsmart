@@ -60,7 +60,9 @@
   },
   "askMark": {
     "button": "Preguntar a Mark",
-    "hint": "Preguntar a Mark ({{shortcut}})"
+    "hint": "Preguntar a Mark ({{shortcut}})",
+    "pending_one": "{{count}} espera su aprobación",
+    "pending_other": "{{count}} esperan su aprobación"
   },
   "menu": {
     "navigation": "Navegación principal",

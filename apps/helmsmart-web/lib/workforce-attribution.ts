@@ -33,6 +33,41 @@ export async function recordMarkAnswer(db: Db, orgId: string): Promise<void> {
   }
 }
 
+export interface EmployeeRunRecord {
+  status: "succeeded" | "failed" | "escalated";
+  channel: string;
+  subjectType?: string | null;
+  subjectId?: string | null;
+  outcome: Record<string, unknown>;
+}
+
+/**
+ * Record one finished piece of an AI employee's work — a task Mark added, a
+ * hand-off, a text Sarah sent once the owner approved it. Best-effort like the
+ * rest of this file: no employee row (an unseeded workforce) or a failed write
+ * is logged and swallowed, never raised into the action that did the work.
+ */
+export async function recordEmployeeRun(
+  db: Db,
+  orgId: string,
+  slug: string,
+  run: EmployeeRunRecord,
+): Promise<void> {
+  try {
+    const employee = await getEmployee(db, orgId, slug);
+    if (!employee) return;
+    const runId = await startRun(db, orgId, {
+      employeeId: employee.id,
+      channel: run.channel,
+      subjectType: run.subjectType ?? null,
+      subjectId: run.subjectId ?? null,
+    });
+    await completeRun(db, orgId, runId, { status: run.status, outcome: run.outcome });
+  } catch (e) {
+    console.error(`[workforce] recordEmployeeRun(${slug}) failed:`, e);
+  }
+}
+
 /** Bump Emma's appointments_booked KPI for one successful receptionist booking. */
 export async function recordEmmaBooking(db: Db, orgId: string): Promise<void> {
   try {
