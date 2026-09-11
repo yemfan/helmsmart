@@ -86,8 +86,11 @@ export function LicenseForm({ initial, required, continueHref }: { initial: Agen
         });
       }}
     >
-      <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
-        <label className="block text-sm">
+      {/* Sized to what goes in them: a two-letter state and a license number
+          of a dozen characters at most. The hint sits under both, full width,
+          so it does not wrap inside the narrow field. */}
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="block w-28 text-sm">
           <span className="font-medium text-slate-800 dark:text-slate-200">{k("stateLabel")}</span>
           <select className={input} value={state} onChange={(e) => setState(e.target.value)} required>
             {US_STATES.map((s) => (
@@ -97,14 +100,23 @@ export function LicenseForm({ initial, required, continueHref }: { initial: Agen
             ))}
           </select>
         </label>
-        <label className="block text-sm">
+        <label className="block w-64 max-w-full text-sm">
           <span className="font-medium text-slate-800 dark:text-slate-200">{k("numberLabel", { label: rule ? rule.regulator : k("genericRegulator") })}</span>
-          <input className={input} value={number} onChange={(e) => setNumber(e.target.value)} placeholder={licenseExample(state) ?? ""} required={required} autoComplete="off" />
-          <span className={`mt-0.5 block text-xs ${error ? "text-red-700 dark:text-red-400" : "text-slate-500 dark:text-slate-400"}`} role={error ? "alert" : undefined}>
-            {error ?? (hasPublicRecord(state) ? k("numberHintRecord", { label: licenseLabel(state), regulator: rule?.regulator ?? state }) : k("numberHint", { label: licenseLabel(state) }))}
-          </span>
+          <input
+            className={`${input} font-mono tracking-wide`}
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            placeholder={licenseExample(state) ?? ""}
+            required={required}
+            autoComplete="off"
+            maxLength={20}
+            inputMode={state === "CA" ? "numeric" : undefined}
+          />
         </label>
       </div>
+      <p className={`-mt-1 text-xs ${error ? "text-red-700 dark:text-red-400" : "text-slate-500 dark:text-slate-400"}`} role={error ? "alert" : undefined}>
+        {error ?? (hasPublicRecord(state) ? k("numberHintRecord", { label: licenseLabel(state), regulator: rule?.regulator ?? state }) : k("numberHint", { label: licenseLabel(state) }))}
+      </p>
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={pending || (!dirty && !saved)} className="inline-flex min-h-9 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
           {pending ? (hasPublicRecord(state) ? k("lookingUp") : k("saving")) : saved ? k("saved") : k("save")}
