@@ -262,7 +262,14 @@
     "health": "{{label}} ({{score}}/10)",
     "nextAction": "Siguiente acción recomendada",
     "generatedAt": "Generado el {{date}}",
-    "noHeadline": "No se generó ninguna conclusión"
+    "noHeadline": "No se generó ninguna conclusión",
+    "healthLabels": {
+      "atRisk": "En riesgo",
+      "needsAttention": "Requiere atención",
+      "good": "Buena",
+      "strong": "Sólida",
+      "excellent": "Excelente"
+    }
   },
   "import": {
     "title": "Importar clientes",

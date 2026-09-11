@@ -180,9 +180,27 @@ export async function generateClientBrief(
   const fmt = (n: number) =>
     new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
+  // Invoices are spelled out for the model. Given a bare "DRAFT $350 due
+  // 2026-10-11" it wrote "overdue on October 10": a draft has not been sent, so
+  // it cannot be late, and a due date is stated relative to today so there is
+  // no date arithmetic left for it to get wrong.
+  const daysFromToday = (date: string) => Math.round((Date.parse(date) - Date.parse(today)) / 86_400_000);
+  const dueNote = (date: string) => {
+    const days = daysFromToday(date);
+    if (days === 0) return `due today (${date})`;
+    return days > 0 ? `due ${date}, in ${days} day(s)` : `due ${date}, ${-days} day(s) ago`;
+  };
+  const invoiceLine = (i: { invoice_number: string; status: string; total: number | string; due_date: string }) =>
+    i.status === "draft"
+      ? `- ${i.invoice_number}: DRAFT, not sent to the client yet, ${fmt(Number(i.total))}, due date set to ${i.due_date}`
+      : `- ${i.invoice_number}: ${i.status.toUpperCase()} ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
+
   const contextParts: string[] = [
     `## Client: ${clientName}`,
-    `Status: ${client.status} | Source: ${client.source ?? "unknown"} | Member since: ${client.created_at.slice(0, 10)}`,
+    // The app's own label for the status, in the reader's language — given the
+    // raw "lead", the model translated it itself ("Cliente potencial") and
+    // disagreed with every other screen ("Contacto nuevo").
+    `Status: ${t(`statuses.${client.status}`, { defaultValue: client.status })} | Source: ${client.source ?? "unknown"} | Member since: ${client.created_at.slice(0, 10)}`,
     client.tags?.length ? `Tags: ${(client.tags as string[]).join(", ")}` : "",
     client.notes ? `Notes on file: "${client.notes}"` : "",
     "",
@@ -197,10 +215,7 @@ export async function generateClientBrief(
     invoices.length
       ? invoices
           .slice(0, 5)
-          .map(
-            (i) =>
-              `- ${i.invoice_number}: ${i.status.toUpperCase()} ${fmt(Number(i.total))} due ${i.due_date}`
-          )
+          .map(invoiceLine)
           .join("\n")
       : "No invoices.",
     "",
@@ -264,7 +279,7 @@ Respond with ONLY valid JSON (no markdown, no comments):
   "summary": "2-3 short paragraphs. Cover: (1) relationship overview and history, (2) current financial/project status, (3) any risks or opportunities",
   "next_action": "The single most important thing the business should do with this client right now (1 sentence)",
   "health_score": <integer 1-10, where 1=at risk, 10=excellent>,
-  "health_label": <"At risk" | "Needs attention" | "Good" | "Strong" | "Excellent">,
+  "health_label": <a code, exactly one of these English values whatever language the rest is in: "At risk" | "Needs attention" | "Good" | "Strong" | "Excellent">,
   "key_facts": [
     {"label": "Lifetime value", "value": "$X,XXX"},
     {"label": "Last contact", "value": "X days ago"},
