@@ -935,6 +935,9 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   packages/tokens:
     devDependencies:
@@ -980,7 +983,11 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
 
-  packages/voice: {}
+  packages/voice:
+    devDependencies:
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
 packages:
 
