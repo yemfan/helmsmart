@@ -266,6 +266,10 @@
       "good": "良好",
       "strong": "稳固",
       "excellent": "极佳"
+    },
+    "factLabels": {
+      "lastContact": "最近联系",
+      "openInvoices": "未结发票"
     }
   },
   "import": {
