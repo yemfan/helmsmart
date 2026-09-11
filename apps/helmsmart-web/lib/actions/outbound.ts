@@ -2,7 +2,6 @@
 
 import { after } from "next/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { updateOrg } from "@/lib/actions/org-update";
 import { decideConsent } from "@helm/dna-communication";
@@ -19,6 +18,7 @@ import {
 // a refused call, and the send path would drag Twilio and the `server-only`
 // email helper into every importer of these actions.
 import { CallNotAllowedError, describeDenial, inputsFor, loadOrgOptOuts, type OrgOptOuts } from "@/lib/consent";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 type CallResult = { ok: true; name: string } | { ok: false; error: string };
 /** `optedOut`: how many of the picked contacts were left out because they opted out of calls. */
@@ -45,8 +45,7 @@ const STAGGER_MS = 1500;
  * phone, connected number, and 8am–9pm in the business's timezone.
  */
 export async function callLead(input: { clientId: string; purpose: OutboundPurpose; detail?: string }): Promise<CallResult> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const db = await createServiceClient();
@@ -85,8 +84,7 @@ export async function callLead(input: { clientId: string; purpose: OutboundPurpo
  * many were newly queued (already-pending contacts are skipped).
  */
 export async function callAll(input: { purpose: OutboundPurpose; clientIds: string[]; detail?: string }): Promise<BulkResult> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const db = await createServiceClient();
@@ -147,8 +145,7 @@ export async function saveReminderSettings(input: {
   enabled?: boolean;
   leadMinutes?: number;
 }): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("voice"))("outbound.errors.noOrganization") };
 
   const patch: Record<string, unknown> = {};

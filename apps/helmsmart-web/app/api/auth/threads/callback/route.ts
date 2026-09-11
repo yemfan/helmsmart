@@ -14,6 +14,7 @@ import {
   fetchThreadsProfile,
   encryptThreadsToken,
 } from "@/lib/threads";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
  * Strip credential-like tokens from an error string before it ever reaches a
@@ -39,7 +40,7 @@ export async function GET(req: Request) {
     if (oauthError) return back(`threads_error=${encodeURIComponent(oauthError)}`);
 
     const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     const stateCookie = cookieStore.get("threads_oauth_state")?.value;
     const supabase = await createClient();
     const {

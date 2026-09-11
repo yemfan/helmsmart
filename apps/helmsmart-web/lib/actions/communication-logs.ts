@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import type { ClientCommunicationPreferences } from "@/lib/communication-preferences";
 import { clearEmailOptOut, clearSmsOptOut } from "@/lib/consent";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface LogCommunicationInput {
   clientId: string;
@@ -35,8 +35,7 @@ export async function logCommunication(
   input: LogCommunicationInput
 ): Promise<{ ok: boolean; logId?: string; error?: string }> {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const supabase = await createClient();
@@ -90,8 +89,7 @@ export async function getClientCommunications(
   limit = 100,
   type?: string
 ) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -121,8 +119,7 @@ export async function getClientCommunications(
  * Get communication preferences for a client
  */
 export async function getClientPreferences(clientId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();
@@ -157,8 +154,7 @@ export async function updateClientPreferences(
   preferences: ClientCommunicationPreferences
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   // RLS-enforced, not the service client: the org id comes from a cookie, and
@@ -228,8 +224,7 @@ export async function updateClientPreferences(
  * Get communication stats for a client
  */
 export async function getClientCommunicationStats(clientId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();

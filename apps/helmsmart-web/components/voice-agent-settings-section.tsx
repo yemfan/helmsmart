@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 import { describeNumberSharing } from "@/lib/receptionist-agent";
 import { VoiceSettings } from "@/components/voice-settings";
 import { ReceptionistConfig } from "@/components/receptionist-config";
@@ -16,8 +16,9 @@ import { getActivePack } from "@/lib/packs";
  * then renders the existing config cards.
  */
 export async function VoiceAgentSettingsSection() {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  // Member-checked: the number-sharing and Google lookups below use the
+  // service client, which would answer for any org the cookie named.
+  const orgId = (await getMemberOrgId()) ?? "";
   const supabase = await createClient();
 
   const [{ data: org }, { data: apptTypes }, { data: knowledge }] = await Promise.all([

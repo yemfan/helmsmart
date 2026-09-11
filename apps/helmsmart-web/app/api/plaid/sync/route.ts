@@ -4,6 +4,7 @@ import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { decrypt } from "@/lib/crypto";
 import { categorizeTransactions } from "@/lib/actions/categorize";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const orgId = request.cookies.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     if (!orgId) {
       return NextResponse.json({ error: "No organization found." }, { status: 400 });
     }

@@ -1,12 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { DEFAULT_LOCALE, intlLocale } from "@leadsmart/i18n";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -25,8 +25,7 @@ export interface ClientBrief {
  * Get a cached AI brief for a client, or generate a new one.
  */
 export async function getClientBrief(clientId: string): Promise<ClientBrief | null> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();
@@ -66,8 +65,7 @@ export async function generateClientBrief(
   clientId: string
 ): Promise<{ ok: boolean; brief?: ClientBrief; error?: string }> {
   const [t, locale] = await Promise.all([getServerT("clients"), getServerLocale()]);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.unauthorized") };
 
   const apiKey = process.env.ANTHROPIC_API_KEY;

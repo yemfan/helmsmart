@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { aggregatePnL, agingBucket, daysPastDue, type PnLJournalLine } from "@helm/dna-intelligence";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface PnLRow {
   account_id: string;
@@ -26,8 +26,7 @@ export interface PnLReport {
 // ─── Profit & Loss ────────────────────────────────────────────────────────────
 
 export async function getPnLReport(from: string, to: string): Promise<PnLReport> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("books");
   if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
@@ -94,8 +93,7 @@ export interface CashFlowSummary {
 }
 
 export async function getCashFlowSummary(from: string, to: string): Promise<CashFlowSummary> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("books");
   if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
@@ -168,8 +166,7 @@ export interface TimeReport {
 }
 
 export async function getTimeReport(from: string, to: string): Promise<TimeReport> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("books");
   if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 
@@ -292,8 +289,7 @@ export interface ReceivablesAging {
 
 export async function getReceivablesAging(): Promise<ReceivablesAging> {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const today = new Date().toISOString().slice(0, 10);
   const emptyTotals: AgingTotals = { current: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90_plus: 0, total: 0 };
 
@@ -396,8 +392,7 @@ function forecastBucket(daysUntilDue: number): ForecastBucket {
 }
 
 export async function getCashFlowForecast(): Promise<CashFlowForecast> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const today = new Date().toISOString().slice(0, 10);
 
   const emptyPeriods: ForecastPeriod[] = FORECAST_ORDER.map((k) => ({
@@ -480,8 +475,7 @@ export interface SalesTaxReport {
 }
 
 export async function getSalesTaxReport(from: string, to: string): Promise<SalesTaxReport> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("books");
   if (!orgId) throw new Error(t("reports.business.errors.notAuthenticated"));
 

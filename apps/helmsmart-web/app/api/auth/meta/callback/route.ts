@@ -18,6 +18,7 @@ import {
   getMetaConfig,
   saveMetaConnection,
 } from "@/lib/meta";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET(req: Request) {
   // Same host the flow started on — the redirect_uri sent to the token exchange
@@ -36,7 +37,7 @@ export async function GET(req: Request) {
     if (oauthError) return back(`meta_error=${encodeURIComponent(oauthError)}`);
 
     const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     const stateCookie = cookieStore.get("meta_oauth_state")?.value;
     const supabase = await createClient();
     const {

@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -41,8 +41,7 @@ export interface AutomationRule {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function getOrgId(): Promise<string> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) {
     const t = await getServerT("workflows");
     throw new Error(t("automations.errors.notAuthenticated"));

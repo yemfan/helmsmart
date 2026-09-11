@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import { createProject } from "./projects";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface TemplateTask {
   title: string;
@@ -29,8 +29,7 @@ export interface ProjectTemplate {
  * List all project templates for the current org
  */
 export async function listProjectTemplates(): Promise<ProjectTemplate[]> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -55,8 +54,7 @@ export async function createProjectTemplate(input: {
   defaultDurationDays?: number;
   defaultTasks?: TemplateTask[];
 }): Promise<{ ok: boolean; templateId?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
@@ -100,8 +98,7 @@ export async function updateProjectTemplate(
     defaultTasks?: TemplateTask[];
   }
 ): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
@@ -132,8 +129,7 @@ export async function updateProjectTemplate(
 export async function deleteProjectTemplate(
   templateId: string
 ): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const db = await createServiceClient();
@@ -160,8 +156,7 @@ export async function createProjectFromTemplate(
     startDate?: string;
   }
 ): Promise<{ ok: boolean; projectId?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: (await getServerT("projects"))("errors.notAuthenticated") };
 
   const supabase = await createClient();

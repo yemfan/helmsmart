@@ -1,6 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
 import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";

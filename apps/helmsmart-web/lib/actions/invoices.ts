@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { insertInvoiceWithLines } from "@helm/dna-finance";
 import { revalidatePath } from "next/cache";
@@ -13,6 +12,7 @@ import { sendReminderForInvoice, type ReminderInvoice } from "@/lib/invoice-remi
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
 import { money } from "@/lib/books-format";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,8 +39,7 @@ export async function createInvoice(data: {
   const t = await getServerT("books");
   const denied = await checkActionPermission("invoices.write");
   if (denied) throw new Error(denied.error);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
@@ -54,8 +53,7 @@ export async function createInvoice(data: {
 
 export async function sendInvoice(invoiceId: string) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
@@ -236,8 +234,7 @@ export async function sendInvoice(invoiceId: string) {
 
 export async function sendInvoiceReminder(invoiceId: string) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
@@ -263,8 +260,7 @@ export async function sendInvoiceReminder(invoiceId: string) {
 
 export async function markInvoicePaid(invoiceId: string, bankAccountId: string) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
@@ -416,8 +412,7 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
 
 export async function voidInvoice(invoiceId: string) {
   const t = await getServerT("books");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();

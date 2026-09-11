@@ -1,12 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { recordExpense } from "@helm/dna-finance";
 import { checkProjectBudgetAlert } from "./budget-alerts";
 import { checkActionPermission } from "@/components/role-guard";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface ExpenseInput {
   date: string;              // YYYY-MM-DD
@@ -22,8 +22,7 @@ export interface ExpenseInput {
 export async function createExpense(input: ExpenseInput) {
   const denied = await checkActionPermission("books.write");
   if (denied) throw new Error(denied.error);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) {
     const t = await getServerT("books");
     throw new Error(t("expenses.errors.noOrg"));
@@ -49,8 +48,7 @@ export async function createExpense(input: ExpenseInput) {
 // ─── List expense journal entries ─────────────────────────────────────────────
 
 export async function listExpenses(limit = 100) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -114,8 +112,7 @@ export type ProjectExpense = {
 
 /** Expense journal entries attributed to a given project. */
 export async function listProjectExpenses(projectId: string): Promise<ProjectExpense[]> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();

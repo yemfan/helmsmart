@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { convertEstimateToInvoice } from "@helm/dna-finance";
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 
 export async function POST(
   request: NextRequest,

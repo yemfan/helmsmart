@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -9,6 +8,7 @@ import { assertCanManageTeam, assertCanModifyMember } from "@helm/dna-people";
 import { intlLocale } from "@leadsmart/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
 import { translatorFor } from "@/lib/i18n/translator";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 type Role = "admin" | "bookkeeper" | "viewer";
 
@@ -27,8 +27,7 @@ async function settingsT() {
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
 async function getOrgAndUser() {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!orgId || !user) {

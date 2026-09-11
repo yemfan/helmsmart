@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import { getProjectExpenseTotal } from "./expenses";
 import { checkActionPermission } from "@/components/role-guard";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type ProjectStatus = "active" | "paused" | "completed" | "cancelled";
 export type ProjectColor  = "indigo" | "emerald" | "rose" | "amber" | "violet" | "slate";
@@ -28,8 +28,7 @@ export type Project = {
 };
 
 async function getOrgId(): Promise<string> {
-  const cookieStore = await cookies();
-  const id = cookieStore.get("helmsmart-org-id")?.value;
+  const id = await getMemberOrgId();
   if (!id) throw new Error((await getServerT("projects"))("errors.noOrg"));
   return id;
 }

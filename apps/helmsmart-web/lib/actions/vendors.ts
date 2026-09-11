@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { insertVendor, updateVendor as updateVendorFinance, deleteVendor as deleteVendorFinance } from "@helm/dna-finance";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type Vendor = {
   id: string;
@@ -25,8 +25,7 @@ export type VendorWithSpend = Vendor & {
 };
 
 async function getOrgId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get("helmsmart-org-id")?.value ?? null;
+  return getMemberOrgId();
 }
 
 /** Vendors with spend matched from bills by (case-insensitive) name. */

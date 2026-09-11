@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type RecurringFrequency = "weekly" | "monthly" | "quarterly" | "annually";
 
@@ -22,8 +22,7 @@ export type RecurringBill = {
 };
 
 async function getOrgId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get("helmsmart-org-id")?.value ?? null;
+  return getMemberOrgId();
 }
 
 export async function listRecurringBills(): Promise<RecurringBill[]> {

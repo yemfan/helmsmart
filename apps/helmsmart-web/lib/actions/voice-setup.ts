@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { updateOrg } from "@/lib/actions/org-update";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { createRetellNumber, importRetellNumber, getRetellNumber } from "@/lib/retell";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 type ActionResult = { ok: boolean; number?: string; error?: string };
 
@@ -35,8 +35,7 @@ async function retellEnv(): Promise<{ ok: true; agentId: string } | { ok: false;
 }
 
 async function currentOrg(): Promise<{ id: string; name: string; twilio_number: string | null } | null> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
   const supabase = await createClient();
   const { data } = await supabase

@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendSMSCampaign } from "@/lib/integrations/sms-campaign-sender";
 import { checkActionPermission } from "@/components/role-guard";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface CreateCampaignInput {
   name: string;
@@ -27,8 +27,7 @@ export async function createSMSCampaign(
   const denied = await checkActionPermission("campaigns.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -76,8 +75,7 @@ export async function createSMSCampaign(
  * Get list of campaigns for an organization
  */
 export async function listSMSCampaigns(limit = 50) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -100,8 +98,7 @@ export async function listSMSCampaigns(limit = 50) {
  * Get campaign details including recipient stats
  */
 export async function getSMSCampaign(campaignId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();
@@ -124,8 +121,7 @@ export async function getSMSCampaign(campaignId: string) {
  * Send an SMS campaign immediately or at scheduled time
  */
 export async function sendSMSCampaignNow(campaignId: string): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -158,8 +154,7 @@ export async function sendSMSCampaignNow(campaignId: string): Promise<{ ok: bool
  * Delete an SMS campaign (only if draft)
  */
 export async function deleteSMSCampaign(campaignId: string): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -201,8 +196,7 @@ export async function updateSMSCampaign(
   campaignId: string,
   input: Partial<CreateCampaignInput>
 ): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -255,8 +249,7 @@ export async function updateSMSCampaign(
  * Unsubscribe a phone number from SMS campaigns
  */
 export async function unsubscribeFromSMS(phoneNumber: string): Promise<{ ok: boolean }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false };
 
   const db = await createServiceClient();

@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { BusinessHours } from "@/lib/receptionist";
 import { getServerT } from "@/lib/i18n/server";
 import { updateOrg } from "@/lib/actions/org-update";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // Every write below asks for its rows back. Through the RLS client a refused
 // update or delete is not an error — it matches zero rows — so without
@@ -13,8 +13,7 @@ import { updateOrg } from "@/lib/actions/org-update";
 // over a database that never changed.
 
 async function ctx() {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? null;
+  const orgId = await getMemberOrgId();
   const supabase = await createClient();
   const {
     data: { user },

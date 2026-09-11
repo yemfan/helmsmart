@@ -1,12 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendEmailCampaign } from "@/lib/integrations/email-campaign-sender";
 import { checkActionPermission } from "@/components/role-guard";
 import { computeNextRun, type RecurrenceInterval } from "@/lib/recurrence";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface CreateEmailCampaignInput {
   name: string;
@@ -34,8 +34,7 @@ export async function createEmailCampaign(
   const denied = await checkActionPermission("campaigns.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -100,8 +99,7 @@ export async function updateEmailCampaign(
   const denied = await checkActionPermission("campaigns.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -140,8 +138,7 @@ export async function sendEmailCampaignNow(
   const denied = await checkActionPermission("campaigns.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -171,8 +168,7 @@ export async function deleteEmailCampaign(
   const denied = await checkActionPermission("campaigns.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -195,8 +191,7 @@ export async function deleteEmailCampaign(
 }
 
 export async function listEmailCampaigns() {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -211,8 +206,7 @@ export async function listEmailCampaigns() {
 }
 
 export async function getEmailCampaign(campaignId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();
@@ -227,8 +221,7 @@ export async function getEmailCampaign(campaignId: string) {
 }
 
 export async function getEmailCampaignRecipients(campaignId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();

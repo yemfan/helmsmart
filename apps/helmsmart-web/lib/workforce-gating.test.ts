@@ -18,7 +18,7 @@ vi.mock("@helm/ai-workforce", () => ({
   failRun: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("@/lib/actions/notifications", () => ({
+vi.mock("@/lib/notifications-service", () => ({
   createNotificationService: vi.fn().mockResolvedValue(undefined),
 }));
 

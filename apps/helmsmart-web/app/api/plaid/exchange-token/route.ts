@@ -4,6 +4,7 @@ import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import { createClient } from "@/lib/supabase/server";
 import { encrypt } from "@/lib/crypto";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -47,8 +48,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Resolve org from cookie
-    const orgId = request.cookies.get("helmsmart-org-id")?.value;
+    // The active org — only if this user is a member of it
+    const orgId = await getMemberOrgId();
     if (!orgId) {
       return NextResponse.json(
         { error: (await getServerT("books"))("transactions.plaid.noOrganization") },

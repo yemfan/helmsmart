@@ -17,6 +17,12 @@ import { translatorFor } from "@/lib/i18n/translator";
 const cookieStore = { get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
 
+// The membership guard has its own tests (lib/auth/org-context.test.ts). Here
+// the caller is a member of whatever org the cookie names.
+vi.mock("@/lib/auth/org-context", () => ({
+  getMemberOrgId: async () => cookieStore.get()?.value ?? null,
+}));
+
 /* `getServerT` is backed by the real bundles, so the refusal message asserted
  * below is the Chinese a user would actually read — not a mock echoing a key. */
 let locale: "en" | "zh-Hans" = "zh-Hans";

@@ -10,6 +10,16 @@ import { fakeSupabase, type FakeDb } from "../__tests__/fake-supabase";
 
 const cookieStore = { get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
+// The membership guard has its own tests (lib/auth/org-context.test.ts). Here
+// the caller is a member of whatever org the cookie names.
+vi.mock("@/lib/auth/org-context", () => {
+  const orgId = (): string | null => cookieStore.get()?.value ?? null;
+  const member = async () => {
+    const o = orgId();
+    return o ? { ok: true, orgId: o, userId: "user-1", role: "owner" } : { ok: false, reason: "no-org", error: "no org" };
+  };
+  return { getMemberOrgId: async () => orgId(), requireOrgMember: member, requireMemberOf: member };
+});
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/i18n/server", () => ({
   getServerT: async (ns = "common") => translatorFor("en", ns),

@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
@@ -13,10 +12,10 @@ import {
   type AiEmployeeMetric,
 } from "@helm/ai-workforce";
 import { rollUpWorkforce, type WorkforceSummary } from "@helm/dna-intelligence";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 async function orgScope() {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) throw new Error((await getServerT("home"))("errors.notAuthenticated"));
   const supabase = await createClient();
   return { orgId, supabase };

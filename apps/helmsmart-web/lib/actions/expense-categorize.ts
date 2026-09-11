@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getServerLocale } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -18,8 +18,7 @@ export async function suggestExpenseAccount(
   text: string
 ): Promise<{ accountId: string; accountName: string; reason: string } | null> {
   const locale = await getServerLocale();
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
   if (!text.trim()) return null;
   if (!process.env.ANTHROPIC_API_KEY) return null;

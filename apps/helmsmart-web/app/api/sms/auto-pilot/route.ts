@@ -6,8 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function PATCH(request: NextRequest) {
   let clientId = "";
@@ -21,8 +21,7 @@ export async function PATCH(request: NextRequest) {
   }
   if (!clientId) return NextResponse.json({ ok: false, error: "Missing clientId" }, { status: 400 });
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
 
   const supabase = await createClient();

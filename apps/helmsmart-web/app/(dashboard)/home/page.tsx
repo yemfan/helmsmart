@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 import { listProjectsPnL } from "@/lib/actions/projects";
 import {
   DollarSign, TrendingUp, TrendingDown, FileText,
@@ -346,8 +346,9 @@ export default async function HomePage() {
   const t = await getServerT("home");
   const locale = await getServerLocale();
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  // Member-checked: the daily briefing below is read and written with the
+  // service client, which would answer for any org the cookie named.
+  const orgId = (await getMemberOrgId()) ?? "";
   const currency = await orgCurrency(orgId);
   const { money: fmt, date: fmtDate, hours: fmtHours } = formatters(locale, currency, t);
 

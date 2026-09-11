@@ -6,7 +6,6 @@
  * without clobbering the rest. NULL on a which/when field means "no preference".
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -14,6 +13,7 @@ import {
   DEFAULT_AUTOPILOT_SETTINGS,
   normalizeSettings,
 } from "@/lib/social-autopilot";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const SELECT_COLUMNS =
   "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, day_topics";
@@ -59,8 +59,7 @@ function sanitizeDayTopics(v: Record<string, string>): Record<string, string> {
 }
 
 async function getOrgId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get("helmsmart-org-id")?.value ?? null;
+  return getMemberOrgId();
 }
 
 export async function GET() {

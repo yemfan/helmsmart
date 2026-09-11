@@ -59,7 +59,7 @@ vi.mock("@/lib/language", () => ({
 }));
 vi.mock("@/lib/i18n/userLocale", () => ({ orgWriteLocale: async () => null }));
 vi.mock("@/lib/i18n/contactLocale", () => ({ contactLanguageFor: () => "en" }));
-vi.mock("@/lib/actions/notifications", () => ({ createNotificationService: vi.fn() }));
+vi.mock("@/lib/notifications-service", () => ({ createNotificationService: vi.fn() }));
 vi.mock("@/lib/booking", () => ({
   cancelAppointment: vi.fn(),
   getUpcomingAppointment: async () => null,

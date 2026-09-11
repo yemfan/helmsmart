@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { runAutomations } from "@/lib/automation-engine";
@@ -13,12 +12,16 @@ import {
 } from "@helm/dna-revenue";
 import { getServerT } from "@/lib/i18n/server";
 import { parseContactLanguage } from "@/lib/i18n/contactLocale";
+import { getMemberOrgId, requireMemberOf } from "@/lib/auth/org-context";
 
 /**
  * Recalculates and updates a client's lifetime_value from paid invoices.
  * Called after marking an invoice paid (session auth or service role).
  */
 export async function refreshClientLifetimeValue(clientId: string, orgId: string) {
+  // Exported from a "use server" module, so callable on its own with any orgId:
+  // the caller must belong to that org before the service client touches it.
+  if (!(await requireMemberOf(orgId)).ok) return;
   const supabase = await createServiceClient();
   const { data } = await supabase
     .from("invoices")
@@ -50,8 +53,7 @@ export async function createClient_(
   const firstName = (formData.get("first_name") as string)?.trim();
   if (!firstName) return { error: t("errors.firstNameRequired") };
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -121,8 +123,7 @@ export async function updateClient(
   const clientId = formData.get("client_id") as string;
   if (!clientId) return { error: t("errors.missingClientId") };
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -183,8 +184,7 @@ export async function patchClient(
   }>
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -206,8 +206,7 @@ export async function patchClient(
 
 export async function deleteClient(clientId: string): Promise<{ error?: string }> {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.unauthorized") };
 
   const supabase = await createClient();

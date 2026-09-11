@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { normalizePayee } from "@/lib/payee";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
+import { requireMemberOf } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -55,10 +56,16 @@ export async function categorizeTransactions(
   orgId: string,
   limit = 50
 ): Promise<{ categorized: number; error?: string }> {
-  // Read the locale FIRST: the Plaid sync route fires this off without
-  // awaiting it, so the cookie has to be read while the request is still up.
-  const locale = await getServerLocale();
-  const t = await getServerT("books");
+  // Read the cookies FIRST, all at once: the Plaid sync route fires this off
+  // without awaiting it, so they have to be read while the request is still
+  // up. The membership check is one of them — as a "use server" export this is
+  // callable with any orgId, and everything below uses the service client.
+  const [access, locale, t] = await Promise.all([
+    requireMemberOf(orgId),
+    getServerLocale(),
+    getServerT("books"),
+  ]);
+  if (!access.ok) return { categorized: 0, error: access.error };
   const service = await createServiceClient();
 
   // 1. Fetch org metadata for context

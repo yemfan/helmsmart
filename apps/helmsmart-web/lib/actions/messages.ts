@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { updateOrg, type OrgUpdateResult } from "@/lib/actions/org-update";
 import {
@@ -16,6 +15,7 @@ import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import type { DraftReplyResult, MarkReadResult } from "@/lib/inbox/reply";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -41,8 +41,7 @@ export async function sendEmail(
   body: string
 ): Promise<SendMessageResult> {
   const [t, tc, locale] = await Promise.all([getServerT("inbox"), getServerT("clients"), getServerLocale()]);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, reason: "no_organization", error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -63,8 +62,7 @@ export async function sendEmail(
 
 export async function sendSms(clientId: string | null, toNumber: string, body: string): Promise<SendMessageResult> {
   const [t, tc, locale] = await Promise.all([getServerT("inbox"), getServerT("clients"), getServerLocale()]);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, reason: "no_organization", error: t("errors.noOrganization") };
 
   const supabase = await createClient();
@@ -91,8 +89,7 @@ export async function sendSms(clientId: string | null, toNumber: string, body: s
  */
 export async function markThreadRead(clientId: string | null, address?: string | null): Promise<MarkReadResult> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
   if (!clientId && !address) return { ok: true };
 
@@ -134,8 +131,7 @@ export async function markThreadRead(clientId: string | null, address?: string |
 
 export async function toggleAutoReply(enabled: boolean): Promise<OrgUpdateResult> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   return updateOrg(orgId, { auto_reply: enabled }, "toggleAutoReply");
@@ -143,8 +139,7 @@ export async function toggleAutoReply(enabled: boolean): Promise<OrgUpdateResult
 
 export async function saveAutoReplyMsg(msg: string): Promise<OrgUpdateResult> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   return updateOrg(orgId, { auto_reply_msg: msg }, "saveAutoReplyMsg");
@@ -154,8 +149,7 @@ export async function saveTwilioNumber(
   number: string
 ): Promise<{ ok: boolean; value?: string; error?: string }> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   // Blank clears the number (lets a user save other settings without one).
@@ -190,8 +184,7 @@ export async function draftReply(
   address?: string | null
 ): Promise<DraftReplyResult> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { ok: false, error: t("errors.noOrganization") };
 
   try {
@@ -299,8 +292,7 @@ export async function createClientFromConversation(opts: {
   lastName?: string | null;
 }): Promise<{ error?: string; clientId?: string }> {
   const t = await getServerT("inbox");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return { error: t("errors.noOrganization") };
 
   const firstName = opts.firstName.trim();

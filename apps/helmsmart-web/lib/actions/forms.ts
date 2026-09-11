@@ -1,10 +1,10 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export interface FormField {
   id: string;
@@ -35,8 +35,7 @@ export interface FormDefinition {
  * List all forms for the current org
  */
 export async function listForms(): Promise<FormDefinition[]> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();
@@ -54,8 +53,7 @@ export async function listForms(): Promise<FormDefinition[]> {
  * Get a single form by ID
  */
 export async function getForm(formId: string): Promise<FormDefinition | null> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return null;
 
   const supabase = await createClient();
@@ -87,8 +85,7 @@ export async function createForm(input: {
   const denied = await checkActionPermission("forms.write");
   if (denied) return denied;
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -138,8 +135,7 @@ export async function updateForm(
     isActive: boolean;
   }>
 ): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -177,8 +173,7 @@ export async function updateForm(
  * Delete a form
  */
 export async function deleteForm(formId: string): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -203,8 +198,7 @@ export async function deleteForm(formId: string): Promise<{ ok: boolean; error?:
  * Get submissions for a form
  */
 export async function getFormSubmissions(formId: string, limit = 100) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   if (!orgId) return [];
 
   const supabase = await createClient();

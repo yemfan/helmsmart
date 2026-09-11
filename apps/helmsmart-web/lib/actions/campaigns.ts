@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
@@ -18,6 +17,7 @@ import {
   type RefineMode,
   type RecipientFilter,
 } from "@helm/dna-marketing";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type { CampaignTone, RefineMode };
 
@@ -33,8 +33,7 @@ export async function createCampaign(data: {
   recipient_filter: RecipientFilter;
   recipient_tag?: string | null;
 }): Promise<string> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
@@ -63,8 +62,7 @@ export async function createCampaign(data: {
 // ─── Send campaign ────────────────────────────────────────────────────────────
 
 export async function sendCampaign(campaignId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
@@ -206,8 +204,7 @@ export async function sendCampaign(campaignId: string) {
 // ─── Delete draft ─────────────────────────────────────────────────────────────
 
 export async function deleteCampaign(campaignId: string) {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
 
@@ -231,8 +228,7 @@ export async function generateCampaignCopy(input: {
   prompt: string;
   tone: CampaignTone;
 }): Promise<{ subject: string; body: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
   if (!input.prompt.trim()) throw new Error(t("errors.campaigns.describeFirst"));
@@ -273,8 +269,7 @@ export async function generateSubjectLines(input: {
   context: string;
   tone: CampaignTone;
 }): Promise<string[]> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
   if (!input.context.trim()) throw new Error(t("errors.campaigns.contextFirst"));
@@ -313,8 +308,7 @@ Respond with ONLY a JSON array of 5 strings, e.g.:
 }
 
 export async function refineCampaignBody(input: { body: string; mode: RefineMode }): Promise<string> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   const t = await getServerT("marketing");
   if (!orgId) throw new Error(t("errors.notAuthenticated"));
   if (!input.body.trim()) throw new Error(t("errors.campaigns.nothingToRefine"));

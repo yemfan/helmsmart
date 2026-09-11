@@ -13,11 +13,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { recordExpense } from "@helm/dna-finance";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // Map AI category → CoA account name fragment (case-insensitive partial match).
 // Lookup data on both sides — the keys are the category enum and the hints
@@ -69,8 +69,7 @@ interface ImportRow {
 export async function POST(request: NextRequest) {
   const t = await getServerT("books");
   try {
-    const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     if (!orgId) {
       return NextResponse.json({ error: t("errors.unauthorized", { ns: "common" }) }, { status: 401 });
     }

@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
@@ -12,6 +11,7 @@ import {
   type TaskPriority,
 } from "@helm/dna-operations";
 import { checkActionPermission } from "@/components/role-guard";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 // Org-scoped task CRUD lives in @helm/dna-operations (Operations DNA). These server
 // actions own org resolution + revalidation.
@@ -25,8 +25,7 @@ export async function createTask(data: {
 }) {
   const denied = await checkActionPermission("pipeline.write");
   if (denied) throw new Error(denied.error);
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) throw new Error((await getServerT("tasks"))("errors.notAuthenticated"));
 
   const supabase = await createClient();
@@ -44,8 +43,7 @@ export async function updateTaskStatus(
   status: TaskStatus,
 ): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("tasks");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();
@@ -65,8 +63,7 @@ export async function updateTaskStatus(
 
 export async function deleteTask(taskId: string): Promise<{ ok: boolean; error?: string }> {
   const t = await getServerT("tasks");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
   const supabase = await createClient();

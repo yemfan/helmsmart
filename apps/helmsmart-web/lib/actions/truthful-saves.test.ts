@@ -20,6 +20,12 @@ import { translatorFor } from "@/lib/i18n/translator";
 const cookieStore = { get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
 
+// The membership guard has its own tests (lib/auth/org-context.test.ts). Here
+// the caller is a member of whatever org the cookie names.
+vi.mock("@/lib/auth/org-context", () => ({
+  getMemberOrgId: async () => cookieStore.get()?.value ?? null,
+}));
+
 vi.mock("@/lib/i18n/server", () => ({
   getServerT: async (ns = "common") => translatorFor("en", ns),
   getServerLocale: async () => "en",

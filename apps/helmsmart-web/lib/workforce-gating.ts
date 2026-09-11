@@ -20,7 +20,7 @@
  * a config problem, not a transient failure).
  */
 
-import { createNotificationService } from "@/lib/actions/notifications";
+import { createNotificationService } from "@/lib/notifications-service";
 import { insertTask } from "@helm/dna-operations";
 import { notifySlackApprovalPending } from "@/lib/integrations/slack";
 import {

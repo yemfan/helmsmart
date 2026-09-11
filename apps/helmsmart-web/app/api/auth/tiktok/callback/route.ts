@@ -14,6 +14,7 @@ import {
   encryptTikTokToken,
   TIKTOK_SCOPES,
 } from "@/lib/tiktok";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET(req: Request) {
   const { baseUrl } = getTikTokConfig();
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
     if (oauthError) return back(`tiktok_error=${encodeURIComponent(oauthError)}`);
 
     const cookieStore = await cookies();
-    const orgId = cookieStore.get("helmsmart-org-id")?.value;
+    const orgId = await getMemberOrgId();
     const stateCookie = cookieStore.get("tiktok_oauth_state")?.value;
     const supabase = await createClient();
     const {

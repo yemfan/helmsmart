@@ -14,6 +14,12 @@
     "readOnlyBody": "Your role ({{role}}) does not have permission to make changes here. Contact an admin to request access.",
     "denied": "You don't have permission to do that. Ask an owner or admin for access."
   },
+  "orgAccess": {
+    "notSignedIn": "Your session has ended. Sign in again to continue.",
+    "noOrg": "No business is selected. Open your dashboard and try again.",
+    "notMember": "You don't have access to this business. Switch to one you belong to, or ask its owner for an invite.",
+    "lookupFailed": "We couldn't confirm your access to this business. Try again in a moment."
+  },
   "aiRoles": {
     "AI Chief Operating Officer": "AI Chief Operating Officer",
     "AI Chief Information Officer": "AI Chief Information Officer",

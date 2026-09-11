@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { parseContactLanguage } from "@/lib/i18n/contactLocale";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 type Status = "lead" | "prospect" | "active" | "inactive" | "archived";
 const VALID_STATUSES: Status[] = ["lead", "prospect", "active", "inactive", "archived"];
@@ -21,8 +21,7 @@ interface ClientRow {
 
 export async function POST(req: NextRequest) {
   const t = await getServerT("clients");
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return NextResponse.json({ error: t("errors.unauthorized") }, { status: 401 });
 
   const supabase = await createClient();

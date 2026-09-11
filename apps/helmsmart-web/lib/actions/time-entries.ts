@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { checkProjectBudgetAlert } from "./budget-alerts";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export type TimeEntry = {
   id: string;
@@ -39,8 +39,7 @@ function normalizeEntry(row: Record<string, unknown>): TimeEntry {
 }
 
 async function getOrgId(): Promise<string> {
-  const cookieStore = await cookies();
-  const id = cookieStore.get("helmsmart-org-id")?.value;
+  const id = await getMemberOrgId();
   if (!id) throw new Error((await getServerT("projects"))("errors.noOrg"));
   return id;
 }

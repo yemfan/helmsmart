@@ -6,9 +6,9 @@
  * start route.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getLinkedInConfig, isLinkedInConfigured, LINKEDIN_SCOPES } from "@/lib/linkedin";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 export async function GET() {
   const { clientId, redirectUri, baseUrl } = getLinkedInConfig();
@@ -17,8 +17,7 @@ export async function GET() {
     return NextResponse.redirect(`${baseUrl}/social?linkedin_error=not_configured`);
   }
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const supabase = await createClient();
   const {
     data: { user },

@@ -1,11 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { replyToGoogleReview } from "@/lib/google-business";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import { updateOrg } from "@/lib/actions/org-update";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
  * Reply to a Google review
@@ -14,8 +14,7 @@ export async function replyToReview(
   reviewId: string,
   replyText: string
 ): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
@@ -60,8 +59,7 @@ export async function replyToReview(
  * Sync Google Business reviews for an organization
  */
 export async function syncGoogleReviews(): Promise<{ ok: boolean; synced: number; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, synced: 0, error: t("errors.notAuthenticated") };
 
@@ -93,8 +91,7 @@ export async function syncGoogleReviews(): Promise<{ ok: boolean; synced: number
  * Toggle auto-request reviews setting for an organization
  */
 export async function toggleAutoRequestReviews(enabled: boolean): Promise<{ ok: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  const orgId = await getMemberOrgId();
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 

@@ -6,13 +6,13 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
 import { moneyFormatter } from "@/lib/books-format";
 import { languageDirective } from "@/lib/i18n/directives";
+import { getMemberOrgId } from "@/lib/auth/org-context";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -121,8 +121,7 @@ export async function POST(request: NextRequest) {
   const t = await getServerT("home");
   const locale = await getServerLocale();
 
-  const cookieStore = await cookies();
-  const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
+  const orgId = (await getMemberOrgId()) ?? "";
   if (!orgId) return new NextResponse(t("ask.errors.unauthorized"), { status: 401 });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
