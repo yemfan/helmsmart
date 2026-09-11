@@ -53,6 +53,31 @@
     "notes": "Notas",
     "footer": "{{org}} · Factura {{number}} · Generada el {{date}}"
   },
+  "statement": {
+    "documentTitle": "Estado de cuenta — {{name}}",
+    "label": "Estado de cuenta",
+    "title": "Estado de cuenta",
+    "asOf": "Al {{date}}",
+    "statementFor": "Estado de cuenta de",
+    "fallbackName": "Cliente",
+    "balanceDue": "Saldo pendiente",
+    "totalBilled": "Total facturado",
+    "totalPaid": "Total pagado",
+    "empty": "No hay facturas registradas para este cliente.",
+    "columns": {
+      "date": "Fecha",
+      "invoice": "Factura",
+      "due": "Vencimiento",
+      "status": "Estado",
+      "amount": "Importe"
+    },
+    "status": {
+      "sent": "Enviada",
+      "paid": "Pagada",
+      "overdue": "Vencida"
+    },
+    "footer": "{{org}} · Estado de cuenta de {{name}} · Generado el {{date}}"
+  },
   "pay": {
     "metaTitle": "Pago de la factura",
     "paid": {

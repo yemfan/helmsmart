@@ -53,6 +53,31 @@
     "notes": "备注",
     "footer": "{{org}} · 发票 {{number}} · 生成于 {{date}}"
   },
+  "statement": {
+    "documentTitle": "对账单 — {{name}}",
+    "label": "对账单",
+    "title": "客户对账单",
+    "asOf": "截至 {{date}}",
+    "statementFor": "对账客户",
+    "fallbackName": "客户",
+    "balanceDue": "应付余额",
+    "totalBilled": "开票合计",
+    "totalPaid": "已付合计",
+    "empty": "该客户名下没有发票记录。",
+    "columns": {
+      "date": "日期",
+      "invoice": "发票号",
+      "due": "到期日",
+      "status": "状态",
+      "amount": "金额"
+    },
+    "status": {
+      "sent": "已发送",
+      "paid": "已付款",
+      "overdue": "已逾期"
+    },
+    "footer": "{{org}} · {{name}} 的对账单 · 生成于 {{date}}"
+  },
   "pay": {
     "metaTitle": "发票支付",
     "paid": {

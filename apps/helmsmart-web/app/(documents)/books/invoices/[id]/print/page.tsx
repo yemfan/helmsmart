@@ -2,13 +2,27 @@
  * Print-friendly invoice view — /books/invoices/[id]/print
  *
  * Opens in a new tab. User clicks "Print" or uses browser print-to-PDF.
- * No sidebar, no auth guards beyond the org cookie (same as detail page).
+ * No sidebar, no auth guards beyond the org cookie (same as detail page) —
+ * `proxy.ts` gates `/books` by URL, so living outside `(dashboard)` changes
+ * nothing about who can open it.
+ *
+ * WHY `(documents)`, NOT `(dashboard)`. This page used to sit in `(dashboard)`
+ * and return its own `<html>`, `<head>` and `<body>`. But the root layout
+ * already renders `<html>`, and the dashboard layout wraps every page in the
+ * sidebar and a `<main>` — so the invoice arrived as a second `<html>` nested
+ * inside `<main>`, which is not a document React can hydrate. Production threw
+ * React #418, the invoice existed only in the RSC payload, and `<main>` had
+ * no children: a blank page in every language. `(documents)` has no layout of
+ * its own, so this renders straight into the root layout's `<body>` with
+ * nothing around it.
  *
  * TWO READERS, ON ONE PAGE. The document is the thing the CLIENT receives, so
- * every word inside it — and its `<html lang>` — comes from that client's
+ * every word inside it — and its `lang` — comes from that client's
  * `preferred_language`, per `docs/i18n-design.md`. The toolbar above it is
  * `.no-print`: the owner is the only person who ever sees it, so it speaks the
- * owner's UI locale like the rest of Books.
+ * owner's UI locale like the rest of Books, and inherits the owner's
+ * `<html lang>` from the root layout. The document's language is declared on
+ * the `<article>`, which is where it is true.
  *
  * That split is why `getServerLocale()` cannot serve this page on its own. The
  * request belongs to the OWNER — they clicked Print — so using it for the
@@ -25,6 +39,7 @@
  */
 
 import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
@@ -36,18 +51,8 @@ import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PrintButton } from "./print-button";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // The tab title belongs to the owner's browser, not to the document.
-  const t = await getServerT("books");
-  return { title: t("invoices.printToolbar.print") };
-}
-
-export default async function InvoicePrintPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+/** One read per request, shared by the title and the page. */
+const loadInvoice = cache(async (id: string) => {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
@@ -70,14 +75,172 @@ export default async function InvoicePrintPage({
       .single(),
   ]);
 
-  if (!inv) notFound();
-
-  const clientRaw = inv.clients;
-  const client = (Array.isArray(clientRaw) ? clientRaw[0] : clientRaw) as {
+  const clientRaw = inv?.clients;
+  const client = ((Array.isArray(clientRaw) ? clientRaw[0] : clientRaw) ?? null) as {
     first_name: string | null; last_name: string | null;
     company: string | null; email: string | null; phone: string | null;
     preferred_language: string | null;
   } | null;
+
+  // The document speaks the client's language; the toolbar speaks the owner's.
+  // `coerceContactLocale` maps the stored "en" | "es" | "zh" onto app locales —
+  // a bare "zh" resolves to nothing and would render English at a Chinese reader.
+  const docLocale = contactLocale(client?.preferred_language) ?? DEFAULT_LOCALE;
+
+  return { orgId, inv, org, client, docLocale };
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const { inv, docLocale } = await loadInvoice(id);
+  if (!inv) return {};
+  // The title belongs to the document, not the dashboard: print-to-PDF names
+  // the file after it, and that file goes to the client. So it is in their
+  // language, and `absolute` keeps the product's suffix off an invoice that is
+  // the org's, not ours.
+  const doc = translatorFor(docLocale, "public");
+  return { title: { absolute: doc("invoice.documentTitle", { number: inv.invoice_number }) } };
+}
+
+const STYLES = `
+  .invoice-doc {
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #0f172a;
+    background: #fff;
+    font-size: 13px;
+  }
+  :where(.invoice-doc *) { box-sizing: border-box; margin: 0; padding: 0; }
+  .invoice-doc .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 48px;
+  }
+  .invoice-doc .no-print {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0 28px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 40px;
+  }
+  .invoice-doc .no-print button {
+    background: #1e88e5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .invoice-doc .no-print a {
+    font-size: 13px;
+    color: #64748b;
+    text-decoration: none;
+  }
+  .invoice-doc .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+  .invoice-doc .org-name { font-size: 20px; font-weight: 700; color: #0f172a; }
+  .invoice-doc .inv-num  { font-size: 28px; font-weight: 800; color: #1e88e5; font-variant-numeric: tabular-nums; }
+  .invoice-doc .label    { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: 3px; }
+  .invoice-doc .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .invoice-doc .dates { display: flex; gap: 32px; }
+  .invoice-doc .date-val { font-size: 14px; color: #334155; }
+  .invoice-doc .overdue-val { color: #dc2626; font-weight: 600; }
+  .invoice-doc table { width: 100%; border-collapse: collapse; }
+  .invoice-doc th {
+    text-align: left; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: #94a3b8; padding: 0 0 10px; border-bottom: 2px solid #e2e8f0;
+  }
+  .invoice-doc th.r, .invoice-doc td.r { text-align: right; }
+  .invoice-doc td {
+    padding: 11px 0;
+    font-size: 13px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .invoice-doc .totals {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  .invoice-doc .totals-inner { width: 260px; }
+  .invoice-doc .totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .invoice-doc .totals-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0 0;
+    margin-top: 8px;
+    border-top: 2px solid #0f172a;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .invoice-doc .notes {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .invoice-doc .notes p { font-size: 13px; color: #64748b; margin-top: 6px; white-space: pre-wrap; }
+  .invoice-doc .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+  .invoice-doc .paid-stamp {
+    display: inline-block;
+    border: 3px solid #16a34a;
+    color: #16a34a;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    transform: rotate(-8deg);
+    opacity: .7;
+  }
+  @media print {
+    .invoice-doc .no-print { display: none !important; }
+    .invoice-doc { min-height: 0; font-size: 12px; }
+    .invoice-doc .page { padding: 0; }
+  }
+`;
+
+export default async function InvoicePrintPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const { orgId, inv, org, client, docLocale } = await loadInvoice(id);
+
+  if (!inv) notFound();
 
   const linesRaw = Array.isArray(inv.invoice_lines) ? inv.invoice_lines : [];
   const lines = (linesRaw as {
@@ -85,10 +248,6 @@ export default async function InvoicePrintPage({
     unit_price: number; amount: number; sort_order: number;
   }[]).sort((a, b) => a.sort_order - b.sort_order);
 
-  // The document speaks the client's language; the toolbar speaks the owner's.
-  // `coerceContactLocale` maps the stored "en" | "es" | "zh" onto app locales —
-  // a bare "zh" resolves to nothing and would render English at a Chinese reader.
-  const docLocale = contactLocale(client?.preferred_language) ?? DEFAULT_LOCALE;
   const doc = translatorFor(docLocale, "public");
   const [owner, currency] = await Promise.all([getServerT("books"), orgCurrency(orgId)]);
 
@@ -102,146 +261,20 @@ export default async function InvoicePrintPage({
   const today = new Date().toISOString().slice(0, 10);
   const isOverdue = inv.status === "sent" && inv.due_date < today;
 
+  // These styles share `<body>` with the root layout now, so every rule is
+  // scoped to the page: a bare `body {}` loses to the layout's Tailwind classes,
+  // and a bare `*` reset would outrank nothing but still reach everything.
   return (
-    <html lang={docLocale}>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{doc("invoice.documentTitle", { number: inv.invoice_number })}</title>
-        <style>{`
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: #0f172a;
-            background: #fff;
-            font-size: 13px;
-          }
-          .page {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 48px 48px;
-          }
-          .no-print {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0 28px;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 40px;
-          }
-          .no-print button {
-            background: #1e88e5;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 9px 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-          }
-          .no-print a {
-            font-size: 13px;
-            color: #64748b;
-            text-decoration: none;
-          }
-          .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 40px;
-          }
-          .org-name { font-size: 20px; font-weight: 700; color: #0f172a; }
-          .inv-num  { font-size: 28px; font-weight: 800; color: #1e88e5; font-variant-numeric: tabular-nums; }
-          .label    { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: 3px; }
-          .meta-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 40px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid #e2e8f0;
-          }
-          .dates { display: flex; gap: 32px; }
-          .date-block {}
-          .date-val { font-size: 14px; color: #334155; }
-          .overdue-val { color: #dc2626; font-weight: 600; }
-          table { width: 100%; border-collapse: collapse; }
-          th {
-            text-align: left; font-size: 10px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: .06em;
-            color: #94a3b8; padding: 0 0 10px; border-bottom: 2px solid #e2e8f0;
-          }
-          th.r, td.r { text-align: right; }
-          td {
-            padding: 11px 0;
-            font-size: 13px;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-          }
-          .totals {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 24px;
-          }
-          .totals-inner { width: 260px; }
-          .totals-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            font-size: 13px;
-            color: #64748b;
-          }
-          .totals-total {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0 0;
-            margin-top: 8px;
-            border-top: 2px solid #0f172a;
-            font-size: 16px;
-            font-weight: 700;
-            color: #0f172a;
-          }
-          .notes {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
-          }
-          .notes p { font-size: 13px; color: #64748b; margin-top: 6px; white-space: pre-wrap; }
-          .footer {
-            margin-top: 48px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            font-size: 11px;
-            color: #94a3b8;
-          }
-          .paid-stamp {
-            display: inline-block;
-            border: 3px solid #16a34a;
-            color: #16a34a;
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: .12em;
-            padding: 4px 12px;
-            border-radius: 4px;
-            transform: rotate(-8deg);
-            opacity: .7;
-          }
-          @media print {
-            .no-print { display: none !important; }
-            body { font-size: 12px; }
-            .page { padding: 0; }
-          }
-        `}</style>
-      </head>
-      <body>
-        <div className="page">
-          {/* Print toolbar */}
-          <div className="no-print">
-            <a href={`/books/invoices/${id}`}>{owner("invoices.printToolbar.back")}</a>
-            <PrintButton label={owner("invoices.printToolbar.print")} />
-          </div>
+    <main id="main-content" className="invoice-doc">
+      <style>{STYLES}</style>
+      <div className="page">
+        {/* Print toolbar — the owner's, in the owner's language */}
+        <div className="no-print">
+          <a href={`/books/invoices/${id}`}>{owner("invoices.printToolbar.back")}</a>
+          <PrintButton />
+        </div>
 
+        <article lang={docLocale}>
           {/* Header */}
           <div className="header">
             <div>
@@ -273,11 +306,11 @@ export default async function InvoicePrintPage({
             </div>
             <div>
               <div className="dates">
-                <div className="date-block">
+                <div>
                   <div className="label">{doc("invoice.issueDate")}</div>
                   <div className="date-val">{fmtDate(inv.issue_date)}</div>
                 </div>
-                <div className="date-block">
+                <div>
                   <div className="label">{doc("invoice.dueDate")}</div>
                   <div className={`date-val ${isOverdue ? "overdue-val" : ""}`}>
                     {fmtDate(inv.due_date)}
@@ -353,8 +386,8 @@ export default async function InvoicePrintPage({
               date: fmtDate(new Date().toISOString().slice(0, 10)),
             })}
           </div>
-        </div>
-      </body>
-    </html>
+        </article>
+      </div>
+    </main>
   );
 }

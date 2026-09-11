@@ -51,8 +51,12 @@ const RENDERS_UI = /\.tsx$/;
  * it belongs in a bundle.
  */
 const EXEMPT: Record<string, string> = {
-  "app/(dashboard)/books/invoices/[id]/print/print-button.tsx":
-    "renders one label, which the server page translates in the OWNER's locale and passes in — the page is its own <html> document, so there is no I18nProvider to hook",
+  // The invoice's print button sat here on "the page is its own <html>
+  // document, so there is no I18nProvider to hook". Only the first half was
+  // true, and it was the bug: every route is under the root layout, so the
+  // nested <html> rendered blank instead. The page now renders inside the
+  // layout (`app/(documents)`), and the button reads the provider like any
+  // other client component.
   // `app/(auth)/layout.tsx` used to sit here on "no sentences". It had one — the
   // pack tagline — rendered from a TS constant, so it read as English under a
   // Chinese login form on every auth screen. The rule above was right; this

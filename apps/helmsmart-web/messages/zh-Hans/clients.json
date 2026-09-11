@@ -2,8 +2,7 @@
   "meta": {
     "listTitle": "客户",
     "detailTitle": "客户",
-    "importTitle": "导入客户",
-    "statementTitle": "客户对账单"
+    "importTitle": "导入客户"
   },
   "statuses": {
     "all": "全部",
@@ -319,25 +318,8 @@
     }
   },
   "statement": {
-    "label": "对账单",
-    "title": "客户对账单",
-    "documentTitle": "对账单 — {{name}}",
-    "asOf": "截至 {{date}}",
     "back": "← 返回客户",
-    "print": "打印 / 存为 PDF",
-    "statementFor": "对账客户",
-    "balanceDue": "应付余额",
-    "totalBilled": "开票合计",
-    "totalPaid": "已付合计",
-    "empty": "该客户名下没有发票记录。",
-    "columns": {
-      "date": "日期",
-      "invoice": "发票号",
-      "due": "到期日",
-      "status": "状态",
-      "amount": "金额"
-    },
-    "footer": "{{org}} · {{name}} 的对账单 · 生成于 {{date}}"
+    "print": "打印 / 存为 PDF"
   },
   "errors": {
     "unauthorized": "登录已失效，请重新登录。",
