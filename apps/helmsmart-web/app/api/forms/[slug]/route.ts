@@ -13,6 +13,7 @@ import { sendEmail } from "@/lib/email";
 import { translatorFor } from "@/lib/i18n/translator";
 import { userUiLocale } from "@/lib/i18n/userLocale";
 import { orgOwnerRecipients } from "@/lib/org-recipients";
+import { phoneMatchVariants } from "@/lib/phone";
 import twilio from "twilio";
 import { notifySlackFormSubmission, notifySlackNewLead } from "@/lib/integrations/slack";
 
@@ -108,7 +109,10 @@ export async function POST(
     // Auto-create/match client if enabled
     let clientId: string | null = null;
     if (form.auto_create_client && (email || phone)) {
-      // Try to find existing client
+      // Try to find existing client. A phone typed into a form is rarely in the
+      // shape the client was stored in, so it is matched in every common shape.
+      // More than one can match; the oldest is the client, not a later lead.
+      const phoneVariants = email ? [] : phoneMatchVariants(phone == null ? null : String(phone));
       let clientQuery = db
         .from("clients")
         .select("id")
@@ -116,11 +120,14 @@ export async function POST(
 
       if (email) {
         clientQuery = clientQuery.eq("email", email);
-      } else if (phone) {
-        clientQuery = clientQuery.eq("phone", phone);
+      } else {
+        clientQuery = clientQuery.in("phone", phoneVariants);
       }
 
-      const { data: existing } = await clientQuery.maybeSingle();
+      const { data: existing } =
+        email || phoneVariants.length
+          ? await clientQuery.order("created_at", { ascending: true }).limit(1).maybeSingle()
+          : { data: null };
 
       if (existing) {
         clientId = existing.id;

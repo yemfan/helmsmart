@@ -14,6 +14,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import { createNotificationService } from "@/lib/notifications-service";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
+import { phoneMatchVariants } from "@/lib/phone";
 import twilio from "twilio";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
@@ -70,13 +71,20 @@ async function handleRequest(request: NextRequest) {
   if (org && callSid) {
     after(async () => {
       try {
-        // Log the call
-        const { data: client } = await supabase
-          .from("clients")
-          .select("id")
-          .eq("organization_id", org.id)
-          .eq("phone", from)
-          .maybeSingle();
+        // Log the call against the client, however their number was typed in:
+        // caller ID is "+14155550143", a hand-entered client "(415) 555-0143".
+        // More than one can match; the oldest is the client, not a later lead.
+        const variants = phoneMatchVariants(from);
+        const { data: client } = variants.length
+          ? await supabase
+              .from("clients")
+              .select("id")
+              .eq("organization_id", org.id)
+              .in("phone", variants)
+              .order("created_at", { ascending: true })
+              .limit(1)
+              .maybeSingle()
+          : { data: null };
 
         await supabase.from("calls").insert({
           organization_id: org.id,
