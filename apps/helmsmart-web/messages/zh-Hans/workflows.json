@@ -173,7 +173,10 @@
     },
     "errors": {
       "notAuthenticated": "登录已失效，请重新登录后再管理自动化规则。",
-      "createFailed": "无法创建该自动化规则。"
+      "createFailed": "无法创建该自动化规则。",
+      "toggleFailed": "无法开启或关闭该自动化规则，请重试。",
+      "deleteFailed": "无法删除该自动化规则，请重试。",
+      "refused": "该自动化规则未能修改——可能已被删除，或你的角色无权编辑自动化规则。"
     },
     "modal": {
       "title": "新建自动化",

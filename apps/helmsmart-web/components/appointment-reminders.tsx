@@ -5,6 +5,7 @@ import { BellRing, Loader2, Save } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import { saveReminderSettings } from "@/lib/actions/outbound";
+import { Toggle } from "@/components/ui/toggle";
 
 type Reminder = { key: string; name: string; phone: string | null; startAt: string; reminderAt: string; status: string };
 
@@ -34,35 +35,64 @@ export function AppointmentReminders({
   const [value, setValue] = useState(initValue || 1);
   const [unit, setUnit] = useState<"hours" | "days">(initUnit);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const [toggling, startToggle] = useTransition();
 
   const fmt = (iso: string) =>
     new Date(iso).toLocaleString(intlLocale(i18n.language), { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
+  // The switch saves itself. It used to change only local state until the
+  // separate Save button was pressed, so "on" on screen was not "on" anywhere.
+  // A refused write puts it back and says why.
+  function toggle(next: boolean) {
+    setIsOn(next);
+    setToggleError(null);
+    startToggle(async () => {
+      try {
+        const res = await saveReminderSettings({ enabled: next });
+        if (!res.ok) {
+          setIsOn(!next);
+          setToggleError(res.error ?? t("common:errors.generic"));
+        }
+      } catch (e) {
+        console.error("switching appointment reminders", e);
+        setIsOn(!next);
+        setToggleError(t("common:errors.generic"));
+      }
+    });
+  }
+
+  // Save writes the lead time only — never the switch.
   function save() {
     const mins = unit === "days" ? value * 1440 : value * 60;
+    setSaveError(null);
     start(async () => {
-      await saveReminderSettings({ enabled: isOn, leadMinutes: mins });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      try {
+        const res = await saveReminderSettings({ leadMinutes: mins });
+        if (!res.ok) { setSaveError(res.error ?? t("common:errors.generic")); return; }
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      } catch (e) {
+        console.error("saving the reminder lead time", e);
+        setSaveError(t("common:errors.generic"));
+      }
     });
   }
 
   return (
     <div className="bg-white rounded-xl border border-slate-200">
-      <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
-        <BellRing className="w-4 h-4 text-indigo-500" />
+      <div className="px-6 py-4 border-b border-slate-100 flex items-start gap-2">
+        <BellRing className="w-4 h-4 text-indigo-500 mt-0.5" />
         <div className="flex-1">
-          <h2 className="text-sm font-semibold text-slate-700">{t("reminders.title")}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-slate-700">{t("reminders.title")}</h2>
+            <Toggle checked={isOn} onChange={toggle} disabled={toggling} label={t("reminders.title")} />
+          </div>
           <p className="text-xs text-slate-400">{t("reminders.subtitle")}</p>
+          {toggleError && <p className="mt-1 text-xs text-rose-600" role="alert">{toggleError}</p>}
         </div>
-        <button
-          onClick={() => setIsOn((v) => !v)}
-          aria-label={t("reminders.title")}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isOn ? "bg-indigo-600" : "bg-slate-200"}`}
-        >
-          <span className={`inline-block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${isOn ? "translate-x-6" : "translate-x-1"}`} />
-        </button>
       </div>
 
       <div className="p-6 space-y-4">
@@ -91,9 +121,10 @@ export function AppointmentReminders({
             className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors"
           >
             {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            {saved ? t("reminders.saved") : t("reminders.save")}
+            {pending ? t("common:status.saving") : saved ? t("reminders.saved") : t("reminders.save")}
           </button>
         </div>
+        {saveError && <p className="text-xs text-rose-600 text-right" role="alert">{saveError}</p>}
 
         {!hasNumber && (
           <div className="rounded-lg bg-amber-50 border border-amber-100 px-3 py-2 text-xs text-amber-700">

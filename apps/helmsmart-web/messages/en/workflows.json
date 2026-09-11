@@ -176,7 +176,10 @@
     },
     "errors": {
       "notAuthenticated": "You're signed out. Sign in again to manage automations.",
-      "createFailed": "Couldn't create that automation rule."
+      "createFailed": "Couldn't create that automation rule.",
+      "toggleFailed": "Couldn't switch that automation on or off. Try again.",
+      "deleteFailed": "Couldn't delete that automation. Try again.",
+      "refused": "That automation wasn't changed — it may have been deleted, or your role can't edit automations."
     },
     "modal": {
       "title": "New automation",

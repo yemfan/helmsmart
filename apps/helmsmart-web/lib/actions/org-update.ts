@@ -37,8 +37,11 @@ export async function updateOrg(
     .select("id");
 
   if (error) {
+    // Logged in full, shown in the owner's language: a Postgres sentence is
+    // not something the owner can act on, and it is always English.
     console.error(`[${context}] organizations update failed:`, error.message);
-    return { ok: false, error: error.message };
+    const t = await getServerT("settings");
+    return { ok: false, error: t("errors.orgUpdateFailed") };
   }
 
   if (!data || data.length === 0) {

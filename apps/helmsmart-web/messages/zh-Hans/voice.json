@@ -333,6 +333,8 @@
     "saveKnowledge": "无法保存该知识库条目。",
     "createKnowledge": "无法创建该知识库条目。",
     "deleteKnowledge": "无法删除该知识库条目。",
+    "apptTypeRefused": "该预约类型未能修改——可能已被删除，或你的角色无权编辑前台接待设置。",
+    "knowledgeRefused": "该知识库条目未能修改——可能已被删除，或你的角色无权编辑前台接待设置。",
     "disconnectCalendar": "无法断开 Google 日历。",
     "missingApiKey": "服务端未设置 RETELL_API_KEY。",
     "missingFunctionSecret": "服务端未设置 RETELL_FUNCTION_SECRET。",

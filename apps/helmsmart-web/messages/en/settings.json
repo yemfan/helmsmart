@@ -241,7 +241,8 @@
     "businessNameRequired": "Business name is required.",
     "missingBankAccount": "Missing bank account.",
     "bankLinkFailed": "Failed to update account link.",
-    "orgUpdateRefused": "Couldn't save — you may not have permission for this organization."
+    "orgUpdateRefused": "Couldn't save — you may not have permission for this organization.",
+    "orgUpdateFailed": "Couldn't save your changes. Try again."
   },
   "org": {
     "errors": {

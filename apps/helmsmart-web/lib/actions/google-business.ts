@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { replyToGoogleReview } from "@/lib/google-business";
 import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
+import { updateOrg } from "@/lib/actions/org-update";
 
 /**
  * Reply to a Google review
@@ -97,17 +98,10 @@ export async function toggleAutoRequestReviews(enabled: boolean): Promise<{ ok: 
   const t = await getServerT("marketing");
   if (!orgId) return { ok: false, error: t("errors.notAuthenticated") };
 
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("organizations")
-    .update({ auto_request_reviews: enabled })
-    .eq("id", orgId);
-
-  if (error) {
-    console.error("[toggle-auto-request] error:", error);
-    return { ok: false, error: error.message };
-  }
+  // Through `updateOrg`, which asks for the row back: a refused update matched
+  // zero rows and read as saved, and a failed one showed Postgres's English.
+  const res = await updateOrg(orgId, { auto_request_reviews: enabled }, "google-business.toggleAutoRequestReviews");
+  if (!res.ok) return { ok: false, error: res.error };
 
   revalidatePath("/google");
   return { ok: true };

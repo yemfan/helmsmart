@@ -49,6 +49,7 @@ export function ClientNotesPanel({ clientId, initialNotes }: Props) {
   const [body, setBody]       = useState("");
   const [kind, setKind]       = useState<NoteKind>("note");
   const [error, setError]     = useState("");
+  const [deleteError, setDeleteError] = useState("");
   const [addPending, startAdd]    = useTransition();
   const [delPending, startDelete] = useTransition();
 
@@ -62,7 +63,10 @@ export function ClientNotesPanel({ clientId, initialNotes }: Props) {
     setBody("");
     startAdd(async () => {
       try {
-        await addClientNote(clientId, savedBody, savedKind);
+        const { id } = await addClientNote(clientId, savedBody, savedKind);
+        // Swap the placeholder id for the row's real one, or a delete of this
+        // note would target an id the database never had.
+        setNotes((prev) => prev.map((n) => (n.id === optimistic.id ? { ...n, id } : n)));
       } catch (err) {
         console.error("save client note", err);
         setError(t("notes.errors.saveFailed"));
@@ -72,13 +76,29 @@ export function ClientNotesPanel({ clientId, initialNotes }: Props) {
   }
 
   function handleDelete(noteId: string) {
+    const index = notes.findIndex((n) => n.id === noteId);
+    const removed = notes[index];
+    if (!removed) return;
+    setDeleteError("");
     setNotes((prev) => prev.filter((n) => n.id !== noteId));
     startDelete(async () => {
+      let message = "";
       try {
-        await deleteClientNote(noteId, clientId);
-      } catch {
-        // Silent — already removed from UI
+        const res = await deleteClientNote(noteId, clientId);
+        if (!res.ok) message = res.error ?? t("notes.errors.deleteFailed");
+      } catch (err) {
+        console.error("delete client note", err);
+        message = t("notes.errors.deleteFailed");
       }
+      if (!message) return;
+      // The note is still in the database, so it goes back where it was.
+      setNotes((prev) => {
+        if (prev.some((n) => n.id === noteId)) return prev;
+        const next = [...prev];
+        next.splice(Math.min(index, next.length), 0, removed);
+        return next;
+      });
+      setDeleteError(message);
     });
   }
 
@@ -119,6 +139,10 @@ export function ClientNotesPanel({ clientId, initialNotes }: Props) {
           </button>
         </div>
       </div>
+
+      {deleteError && (
+        <p className="px-4 pt-3 text-xs text-rose-600" role="alert">{deleteError}</p>
+      )}
 
       {/* Notes list */}
       <div className="max-h-80 overflow-y-auto divide-y divide-slate-50">

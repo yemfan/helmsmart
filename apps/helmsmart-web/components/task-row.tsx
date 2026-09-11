@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, Trash2, Building2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -41,8 +41,14 @@ const PRIORITY_DOT: Record<string, string> = {
 export function TaskRow({ task }: Props) {
   const { t, i18n } = useTranslation("tasks");
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
-  const isDone = task.status === "done" || task.status === "cancelled";
+  // The checkbox shows the new state while the write is in flight. When the
+  // transition ends React drops the optimistic value and shows what the
+  // server's revalidated row says — the new state if it saved, the old one if
+  // it did not. It never keeps a state the database does not hold.
+  const storedDone = task.status === "done" || task.status === "cancelled";
+  const [isDone, setOptimisticDone] = useOptimistic(storedDone);
 
   const clientRaw = task.clients;
   const client = Array.isArray(clientRaw) ? clientRaw[0] : clientRaw;
@@ -70,15 +76,31 @@ export function TaskRow({ task }: Props) {
   }
 
   function handleToggle() {
-    startTransition(() => {
-      updateTaskStatus(task.id, isDone ? "open" : "done");
+    const next = !isDone;
+    setError(null);
+    startTransition(async () => {
+      setOptimisticDone(next);
+      try {
+        const res = await updateTaskStatus(task.id, next ? "done" : "open");
+        if (!res.ok) setError(res.error ?? t("common:errors.generic"));
+      } catch (e) {
+        console.error("updating a task", e);
+        setError(t("common:errors.generic"));
+      }
     });
   }
 
   function handleDelete() {
     if (!window.confirm(t("row.confirmDelete"))) return;
-    startTransition(() => {
-      deleteTask(task.id);
+    setError(null);
+    startTransition(async () => {
+      try {
+        const res = await deleteTask(task.id);
+        if (!res.ok) setError(res.error ?? t("common:errors.generic"));
+      } catch (e) {
+        console.error("deleting a task", e);
+        setError(t("common:errors.generic"));
+      }
     });
   }
 
@@ -145,6 +167,7 @@ export function TaskRow({ task }: Props) {
             </span>
           )}
         </div>
+        {error && <p className="mt-1 text-xs text-rose-600" role="alert">{error}</p>}
       </div>
 
       {/* Delete */}

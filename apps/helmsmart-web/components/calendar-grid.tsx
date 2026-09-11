@@ -64,6 +64,8 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
   const [form, setForm] = useState({ title: "", type: "appointment" as EventType, color: "indigo" as EventColor, date: isoDate(now), time: "09:00", duration: 60, allDay: false, clientId: "", description: "" });
   const [isPending, startTransition] = useTransition();
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [eventError, setEventError] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<"all" | EventType>("all");
 
   // Weekday headers in the reader's language, Sunday first (2024-01-07 was a Sunday).
@@ -99,6 +101,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
 
   function openCreate(iso: string) {
     setForm({ title: "", type: "appointment", color: "indigo", date: iso, time: "09:00", duration: 60, allDay: false, clientId: "", description: "" });
+    setCreateError(null);
     setCreating(true);
   }
 
@@ -120,18 +123,55 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
           return `${form.date}T${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}:00`;
         })();
 
+    setCreateError(null);
     startTransition(async () => {
-      await createEvent({
-        title: form.title,
-        type: form.type,
-        color: form.color,
-        startAt,
-        endAt: endAt ?? undefined,
-        allDay: form.allDay,
-        clientId: form.clientId || null,
-        description: form.description || undefined,
-      });
-      setCreating(false);
+      try {
+        await createEvent({
+          title: form.title,
+          type: form.type,
+          color: form.color,
+          startAt,
+          endAt: endAt ?? undefined,
+          allDay: form.allDay,
+          clientId: form.clientId || null,
+          description: form.description || undefined,
+        });
+        setCreating(false);
+      } catch (e) {
+        // The server's message is not shown: a production build redacts it.
+        console.error("creating an event", e);
+        setCreateError(t("errors.eventCreateFailed"));
+      }
+    });
+  }
+
+  // Complete and delete close the popover only once the row really changed.
+  function completeSelected(ev: CalEvent) {
+    setEventError(null);
+    startTransition(async () => {
+      try {
+        const res = await toggleEventComplete(ev.id, !ev.completed);
+        if (!res.ok) { setEventError(res.error ?? t("errors.eventFailed")); return; }
+        setSelectedEvent(null);
+      } catch (e) {
+        console.error("completing an event", e);
+        setEventError(t("errors.eventFailed"));
+      }
+    });
+  }
+
+  function deleteSelected(ev: CalEvent) {
+    if (!confirm(t("calendar.detail.confirmDelete"))) return;
+    setEventError(null);
+    startTransition(async () => {
+      try {
+        const res = await deleteEvent(ev.id);
+        if (!res.ok) { setEventError(res.error ?? t("errors.eventFailed")); return; }
+        setSelectedEvent(null);
+      } catch (e) {
+        console.error("deleting an event", e);
+        setEventError(t("errors.eventFailed"));
+      }
     });
   }
 
@@ -483,6 +523,9 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 {isPending ? t("common:status.saving") : t("calendar.modal.submit")}
               </button>
             </div>
+            {createError && (
+              <p className="px-6 pb-4 -mt-2 text-right text-xs text-rose-600" role="alert">{createError}</p>
+            )}
           </div>
         </div>
       )}
@@ -510,38 +553,30 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                   </p>
                 )}
               </div>
-              <button onClick={() => setSelectedEvent(null)} className="p-1.5 hover:bg-slate-100 rounded-lg">
+              <button onClick={() => { setSelectedEvent(null); setEventError(null); }} className="p-1.5 hover:bg-slate-100 rounded-lg">
                 <X className="w-4 h-4 text-slate-500" />
               </button>
             </div>
 
             <div className="flex gap-2">
               <button
-                onClick={() => {
-                  startTransition(async () => {
-                    await toggleEventComplete(selectedEvent.id, !selectedEvent.completed);
-                    setSelectedEvent(null);
-                  });
-                }}
-                className="flex-1 flex items-center justify-center gap-2 py-2 border border-slate-200 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50"
+                onClick={() => completeSelected(selectedEvent)}
+                disabled={isPending}
+                className="flex-1 flex items-center justify-center gap-2 py-2 border border-slate-200 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
                 {selectedEvent.completed ? t("calendar.detail.reopen") : t("calendar.detail.complete")}
               </button>
               <button
-                onClick={() => {
-                  if (!confirm(t("calendar.detail.confirmDelete"))) return;
-                  startTransition(async () => {
-                    await deleteEvent(selectedEvent.id);
-                    setSelectedEvent(null);
-                  });
-                }}
+                onClick={() => deleteSelected(selectedEvent)}
+                disabled={isPending}
                 aria-label={t("common:actions.delete")}
-                className="p-2 border border-rose-200 text-rose-500 rounded-lg hover:bg-rose-50 transition-colors"
+                className="p-2 border border-rose-200 text-rose-500 rounded-lg hover:bg-rose-50 transition-colors disabled:opacity-50"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
+            {eventError && <p className="mt-3 text-xs text-rose-600" role="alert">{eventError}</p>}
           </div>
         </div>
       )}

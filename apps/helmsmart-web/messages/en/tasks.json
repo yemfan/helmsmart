@@ -160,7 +160,7 @@
     "empty": "No upcoming appointments with a phone number.",
     "unnamed": "Unnamed",
     "when": "Appt {{start}} · reminder {{reminder}}",
-    "off": "Reminders are off — turn on the toggle above and Save to start auto-calling.",
+    "off": "Reminders are off — turn on the switch above to start auto-calling.",
     "status": {
       "pending": "Scheduled",
       "queued": "Dialing soon",
@@ -173,7 +173,12 @@
     "notAuthenticated": "Your session has expired. Sign in again to continue.",
     "noOrg": "No business is selected. Sign in again to continue.",
     "titleRequired": "Title is required",
-    "firstRunDateRequired": "First run date is required"
+    "firstRunDateRequired": "First run date is required",
+    "taskFailed": "Couldn't update that task. Try again.",
+    "taskRefused": "That task wasn't changed — it may have been deleted, or your role can't edit it.",
+    "eventCreateFailed": "Couldn't create that event. Try again.",
+    "eventFailed": "Couldn't update that event. Try again.",
+    "eventRefused": "That event wasn't changed — it may have been deleted, or your role can't edit it."
   },
   "generated": {
     "callBack": "Call back {{who}}",
