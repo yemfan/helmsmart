@@ -121,6 +121,27 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
     setThreads(initialThreads);
   }, [initialThreads]);
 
+  /*
+   * A conversation opened from its URL — a shared link, a reload, Back or
+   * Forward — is read, the same as one tapped in the list, through the same
+   * row-checked write. Once per opening: a refused write puts the dot back,
+   * and must not retry itself on the re-render that causes.
+   */
+  const readOnOpen = useRef<string | null>(null);
+  useEffect(() => {
+    if (!openKey) {
+      readOnOpen.current = null;
+      return;
+    }
+    if (readOnOpen.current === openKey) return;
+    const thread = threads.find((x) => x.key === openKey);
+    if (!thread) return; // not in this page's threads yet — a refresh may bring it
+    readOnOpen.current = openKey;
+    markRead(thread);
+    // markRead is recreated every render; openKey + threads are what decide.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openKey, threads]);
+
   // Supabase Realtime — pull in new messages live, no manual refresh.
   useEffect(() => {
     if (!orgId) return;
@@ -155,11 +176,15 @@ export function InboxClient({ threads: initialThreads, clients, orgId, inboundAd
       window.history.pushState(null, "", urlWith({ thread: key, compose: null }));
       pushedThread.current = true;
     }
+    readOnOpen.current = key;
     const thread = threads.find((x) => x.key === key);
-    if (!thread || thread.unreadCount === 0) return;
+    if (thread) markRead(thread);
+  }
 
-    // Clear the dot now; put it back if the write did not happen.
-    const before = thread.unreadCount;
+  /** Clear the unread dot now; put it back, and say why, if the write did not happen. */
+  function markRead(thread: InboxThread) {
+    if (thread.unreadCount === 0) return;
+    const { key, unreadCount: before } = thread;
     setReadError(null);
     setThreads((prev) => setUnread(prev, key, 0));
     markThreadRead(thread.clientId, thread.contactAddress)

@@ -184,9 +184,8 @@
       "change": "Cambiar el avatar de {{name}}",
       "choose": "Elegir un avatar para {{name}}"
     },
-    "tim": {
-      "role": "Tim · director de información con IA",
-      "todaysBriefing": "Resumen de hoy",
+    "today": {
+      "heading": "Resumen de hoy",
       "overdue_one": "{{count}} factura vencida — {{amount}} sin cobrar",
       "overdue_other": "{{count}} facturas vencidas — {{amount}} sin cobrar",
       "urgentTasks_one": "{{count}} tarea urgente abierta",
@@ -368,12 +367,6 @@
       "confirmTurnOn": "Activar el piloto automático",
       "enableFailed": "No se activó el piloto automático para {{name}}; sigue desactivado. Inténtelo de nuevo.",
       "disableFailed": "No se desactivó el piloto automático para {{name}}; sigue activado. Inténtelo de nuevo."
-    },
-    "sentBy": {
-      "autoReply": "Respuesta automática",
-      "missedCallText": "Mensaje por llamada perdida",
-      "reminder": "Recordatorio automático",
-      "receptionist": "Recepcionista con IA"
     },
     "smsStatus": {
       "delivered": "Entregado",
