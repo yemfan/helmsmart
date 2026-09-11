@@ -15,6 +15,8 @@ import { orgCurrency } from "@/lib/books-currency";
 import { moneyFormatter } from "@/lib/books-format";
 import { languageDirective } from "@/lib/i18n/directives";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
+import { firstOfMonth } from "@/lib/org-date";
 import { recordMarkAnswer } from "@/lib/workforce-attribution";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -28,11 +30,10 @@ async function buildContext(
   tr: (key: string, opts?: Record<string, unknown>) => string,
   money: (value: number) => string,
 ): Promise<string> {
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
-    .toISOString()
-    .slice(0, 10);
+  // The org's date: Mark's "Today:", the overdue check and month-to-date all
+  // count in the business's day, the one its dashboard shows.
+  const todayStr = await orgToday(orgId);
+  const monthStart = firstOfMonth(todayStr);
 
   const [orgRes, clientsRes, invoicesRes, txnsRes] = await Promise.all([
     supabase.from("organizations").select("name").eq("id", orgId).single(),

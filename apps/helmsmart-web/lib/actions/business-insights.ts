@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { generateBusinessInsight, type BusinessInsight, type InsightItem } from "@/lib/business-insights";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 import { getMemberOrgId } from "@/lib/auth/org-context";
 
 /**
@@ -50,6 +51,7 @@ export async function refreshInsight(): Promise<{ ok: boolean; insight?: Busines
   const result = await generateBusinessInsight(db, orgId, new Date(), {
     locale: await getServerLocale(),
     currency: await orgCurrency(orgId),
+    timeZone: await orgTimezone(orgId),
   });
 
   if (result.ok) {

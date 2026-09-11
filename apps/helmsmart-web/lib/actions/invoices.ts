@@ -319,7 +319,8 @@ export async function markInvoicePaid(invoiceId: string, bankAccountId: string) 
     .from("journal_entries")
     .insert({
       organization_id: orgId,
-      date: new Date().toISOString().slice(0, 10),
+      // The payment's day in the org's books, not the UTC date.
+      date: await orgToday(orgId),
       memo: `Invoice ${inv.invoice_number} — payment received`,
       source_type: "invoice",
     })

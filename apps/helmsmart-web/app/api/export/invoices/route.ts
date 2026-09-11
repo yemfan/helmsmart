@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 function csvEscape(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return "";
@@ -47,7 +48,8 @@ export async function GET(request: NextRequest) {
   const { data: invoices, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Overdue by the org's own date, the same one its Books screens use.
+  const today = await orgToday(orgId);
 
   const lines = [
     row("Invoice #", "Client", "Email", "Status", "Issue Date", "Due Date", "Subtotal", "Tax", "Total", "Paid At"),
@@ -81,8 +83,7 @@ export async function GET(request: NextRequest) {
   }
 
   const csv = lines.join("\r\n");
-  const now  = new Date().toISOString().slice(0, 10);
-  const filename = `invoices-${now}.csv`;
+  const filename = `invoices-${today}.csv`;
 
   return new NextResponse(csv, {
     headers: {

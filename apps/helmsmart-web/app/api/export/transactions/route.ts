@@ -3,14 +3,16 @@
  *
  * Returns a CSV of all bank transactions for the authenticated org.
  * Query params:
- *   ?from=YYYY-MM-DD  (optional, default: 90 days ago)
- *   ?to=YYYY-MM-DD    (optional, default: today)
+ *   ?from=YYYY-MM-DD  (optional, default: 365 days before `to`'s default)
+ *   ?to=YYYY-MM-DD    (optional, default: today in the org's timezone)
  *   ?reviewed=true|false (optional, filter by review status)
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
+import { addDays } from "@/lib/org-date";
 
 function csvEscape(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return "";
@@ -30,12 +32,10 @@ export async function GET(request: NextRequest) {
   if (!orgId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const { searchParams } = request.nextUrl;
-  const from = searchParams.get("from") ?? (() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 365);
-    return d.toISOString().slice(0, 10);
-  })();
-  const to      = searchParams.get("to")  ?? new Date().toISOString().slice(0, 10);
+  // The defaults are the org's dates: the year up to its own today.
+  const today   = await orgToday(orgId);
+  const from    = searchParams.get("from") ?? addDays(today, -365);
+  const to      = searchParams.get("to")  ?? today;
   const reviewed = searchParams.get("reviewed");
 
   const supabase = await createClient();

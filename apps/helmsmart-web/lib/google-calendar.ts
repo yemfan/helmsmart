@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
+import { addDays } from "@/lib/org-date";
 
 // Per-org Google Calendar integration — OAuth token refresh, event upsert/delete,
 // and free/busy availability. Mirrors LeadSmart's lib/google-calendar but keyed
@@ -160,11 +161,9 @@ export async function syncEventToGoogle(params: {
     const dateStr = params.startAt.split("T")[0];
     startSpec = { date: dateStr };
 
-    // For all-day events, end date should be the day after
-    const startDate = new Date(dateStr);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1);
-    endSpec = { date: endDate.toISOString().split("T")[0] };
+    // For all-day events, end date should be the day after — as date-string
+    // math, so it is right whatever timezone the server runs in.
+    endSpec = { date: addDays(dateStr, 1) };
   } else {
     startSpec = { dateTime: params.startAt, timeZone: tz };
     endSpec = { dateTime: params.endAt || params.startAt, timeZone: tz };

@@ -45,6 +45,7 @@ vi.mock("@/lib/i18n/server", () => ({
 }));
 vi.mock("@/lib/i18n/directives", () => ({ languageDirective: () => "" }));
 vi.mock("@/lib/books-currency", () => ({ orgCurrency: async () => "USD" }));
+vi.mock("@/lib/org-timezone", () => ({ orgToday: async () => "2026-09-11" }));
 vi.mock("@/lib/books-format", () => ({ moneyFormatter: () => (n: number) => `$${n}` }));
 
 const recordMarkAnswer = vi.hoisted(() => vi.fn());
