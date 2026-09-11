@@ -6,6 +6,19 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import { generateClientBrief, type ClientBrief } from "@/lib/actions/client-brief";
 
+/**
+ * `health_label` is a code the model picks from a fixed English list, so the
+ * badge translates it here; it used to print "Strong" inside a Spanish brief.
+ * A value off the list shows as written.
+ */
+const HEALTH_LABEL_KEYS: Record<string, string> = {
+  "At risk": "atRisk",
+  "Needs attention": "needsAttention",
+  Good: "good",
+  Strong: "strong",
+  Excellent: "excellent",
+};
+
 interface Props {
   clientId: string;
   initialBrief?: ClientBrief | null;
@@ -70,7 +83,12 @@ export function ClientAIBrief({ clientId, initialBrief }: Props) {
               <HealthBadge
                 score={brief.healthScore}
                 label={brief.healthLabel}
-                text={t("brief.health", { label: brief.healthLabel, score: brief.healthScore })}
+                text={t("brief.health", {
+                  label: t(`brief.healthLabels.${HEALTH_LABEL_KEYS[brief.healthLabel] ?? "unlisted"}`, {
+                    defaultValue: brief.healthLabel,
+                  }),
+                  score: brief.healthScore,
+                })}
               />
             )}
             {showStaleWarning && (

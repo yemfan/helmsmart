@@ -262,7 +262,14 @@
     "health": "{{label}} ({{score}}/10)",
     "nextAction": "Recommended next action",
     "generatedAt": "Generated {{date}}",
-    "noHeadline": "No headline generated"
+    "noHeadline": "No headline generated",
+    "healthLabels": {
+      "atRisk": "At risk",
+      "needsAttention": "Needs attention",
+      "good": "Good",
+      "strong": "Strong",
+      "excellent": "Excellent"
+    }
   },
   "import": {
     "title": "Import clients",

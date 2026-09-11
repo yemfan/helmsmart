@@ -259,7 +259,14 @@
     "health": "{{label}}（{{score}}/10）",
     "nextAction": "建议的下一步",
     "generatedAt": "生成于 {{date}}",
-    "noHeadline": "未生成结论"
+    "noHeadline": "未生成结论",
+    "healthLabels": {
+      "atRisk": "有风险",
+      "needsAttention": "需关注",
+      "good": "良好",
+      "strong": "稳固",
+      "excellent": "极佳"
+    }
   },
   "import": {
     "title": "导入客户",
