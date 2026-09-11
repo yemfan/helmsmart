@@ -8,6 +8,7 @@ import { EstimateBuilder } from "@/components/estimate-builder";
 import { listEstimateTemplates } from "@/lib/actions/estimate-templates";
 import { getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 import { ArrowLeft } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,7 +25,7 @@ export default async function NewEstimatePage({
   const { client: clientParam } = await searchParams;
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
   const supabase = await createClient();
 
   const [{ data: clients }, templates] = await Promise.all([
@@ -77,6 +78,7 @@ export default async function NewEstimatePage({
         preselectedClientId={clientParam}
         templates={templates}
         currency={currency}
+        timeZone={timeZone}
       />
     </div>
   );

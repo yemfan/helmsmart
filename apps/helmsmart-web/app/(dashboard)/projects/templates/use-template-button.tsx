@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Rocket, X, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createProjectFromTemplate } from "@/lib/actions/project-templates";
+import { calendarDate } from "@/lib/org-date";
 
 interface Client {
   id: string;
@@ -17,15 +18,17 @@ interface Props {
   templateId: string;
   templateName: string;
   clients: Client[];
+  /** `organizations.timezone` — the start date defaults to the org's today. */
+  timeZone: string;
 }
 
-export function UseTemplateButton({ templateId, templateName, clients }: Props) {
+export function UseTemplateButton({ templateId, templateName, clients, timeZone }: Props) {
   const { t } = useTranslation("projects");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(templateName);
   const [clientId, setClientId] = useState("");
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(() => calendarDate(timeZone));
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 

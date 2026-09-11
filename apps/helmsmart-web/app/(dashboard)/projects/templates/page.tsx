@@ -8,6 +8,7 @@ import { listProjectTemplates } from "@/lib/actions/project-templates";
 import { ProjectTemplateActions } from "./template-actions";
 import { ImportStarterButton } from "./import-starter-button";
 import { UseTemplateButton } from "./use-template-button";
+import { orgTimezone } from "@/lib/org-timezone";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("projects");
@@ -78,13 +79,14 @@ export default async function ProjectTemplatesPage() {
   const supabase = await createClient();
   const t = await getServerT("projects");
 
-  const [templates, clientsRes] = await Promise.all([
+  const [templates, clientsRes, timeZone] = await Promise.all([
     listProjectTemplates(),
     supabase
       .from("clients")
       .select("id, first_name, last_name, company")
       .eq("organization_id", orgId)
       .order("first_name"),
+    orgTimezone(orgId),
   ]);
 
   const clients = (clientsRes.data ?? []) as {
@@ -172,7 +174,7 @@ export default async function ProjectTemplatesPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 flex-shrink-0 items-center">
-                    <UseTemplateButton templateId={tpl.id} templateName={tpl.name} clients={clients} />
+                    <UseTemplateButton templateId={tpl.id} templateName={tpl.name} clients={clients} timeZone={timeZone} />
                     <Link
                       href={`/projects/templates/${tpl.id}`}
                       className="text-xs px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors font-medium"

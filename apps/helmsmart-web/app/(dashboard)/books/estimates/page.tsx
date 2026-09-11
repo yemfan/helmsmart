@@ -7,6 +7,7 @@ import { BooksNav } from "@/components/books-nav";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { Plus, FileSignature, CheckCircle2, Send, XCircle, Clock } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,7 +36,7 @@ export default async function EstimatesPage() {
   const fmtExpiry = dateFormatter(locale, { month: "short", day: "numeric" });
   const supabase = await createClient();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
 
   const { data: estimates } = await supabase
     .from("estimates")

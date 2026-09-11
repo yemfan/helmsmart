@@ -47,6 +47,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { translatorFor } from "@/lib/i18n/translator";
 import { contactLocale } from "@/lib/i18n/contactLocale";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PrintButton } from "./print-button";
@@ -267,7 +268,7 @@ export default async function InvoicePrintPage({
     ? [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "—"
     : "—";
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const isOverdue = inv.status === "sent" && inv.due_date < today;
 
   // These styles share `<body>` with the root layout now, so every rule is
@@ -394,7 +395,7 @@ export default async function InvoicePrintPage({
             {doc("invoice.footer", {
               org: org?.name ?? "",
               number: inv.invoice_number,
-              date: fmtDate(new Date().toISOString().slice(0, 10)),
+              date: fmtDate(today),
             })}
           </div>
         </article>

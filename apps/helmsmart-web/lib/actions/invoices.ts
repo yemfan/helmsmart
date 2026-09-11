@@ -11,6 +11,7 @@ import { runAutomations } from "@/lib/automation-engine";
 import { sendReminderForInvoice, type ReminderInvoice } from "@/lib/invoice-reminders";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { money } from "@/lib/books-format";
 import { getMemberOrgId } from "@/lib/auth/org-context";
 
@@ -43,7 +44,10 @@ export async function createInvoice(data: {
   if (!orgId) throw new Error(t("invoices.errors.noOrg"));
 
   const supabase = await createClient();
-  const id = await insertInvoiceWithLines(supabase, orgId, data);
+  // The issue date is the business's today, decided here rather than trusted
+  // from the form — the schema's `current_date` and the UTC date are both
+  // tomorrow for a US business every evening.
+  const id = await insertInvoiceWithLines(supabase, orgId, { ...data, issueDate: await orgToday(orgId) });
 
   revalidatePath("/books/invoices");
   return id;

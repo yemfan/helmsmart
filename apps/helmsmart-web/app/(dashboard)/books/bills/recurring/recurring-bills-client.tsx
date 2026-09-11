@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Plus, Repeat, X, AlertCircle, Play, Pause, Calendar } from "lucide-react";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
+import { calendarDate, firstOfMonth } from "@/lib/org-date";
 import {
   createRecurringBill,
   setRecurringBillStatus,
@@ -19,11 +20,9 @@ type ExpenseAccount = { id: string; code: string; name: string };
 // bundle under `bills.recurring.frequency.<value>`.
 const FREQUENCIES: RecurringFrequency[] = ["weekly", "monthly", "quarterly", "annually"];
 
-function defaultNextRun(): string {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().slice(0, 10);
+/** The 1st of the org's next month. */
+function defaultNextRun(timeZone: string): string {
+  return firstOfMonth(calendarDate(timeZone), 1);
 }
 
 // ─── New recurring bill modal ───────────────────────────────────────────────────
@@ -32,12 +31,14 @@ function NewRecurringBillModal({
   expenseAccounts,
   vendorNames,
   currency,
+  timeZone,
   onClose,
   onSaved,
 }: {
   expenseAccounts: ExpenseAccount[];
   vendorNames: string[];
   currency: string;
+  timeZone: string;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -48,7 +49,7 @@ function NewRecurringBillModal({
   const [amount, setAmount]               = useState("");
   const [dueDays, setDueDays]             = useState("30");
   const [frequency, setFreq]              = useState<RecurringFrequency>("monthly");
-  const [nextRunDate, setNextRun]         = useState(defaultNextRun());
+  const [nextRunDate, setNextRun]         = useState(() => defaultNextRun(timeZone));
   const [error, setError]                 = useState("");
   const [isPending, start]                = useTransition();
 
@@ -259,9 +260,11 @@ interface Props {
   expenseAccounts: ExpenseAccount[];
   vendorNames: string[];
   currency: string;
+  /** `organizations.timezone` — decides the first-run default. */
+  timeZone: string;
 }
 
-export function RecurringBillsClient({ initialRecurring, expenseAccounts, vendorNames, currency }: Props) {
+export function RecurringBillsClient({ initialRecurring, expenseAccounts, vendorNames, currency, timeZone }: Props) {
   const { t, i18n } = useTranslation("books");
   const fmt = moneyFormatter(i18n.language, currency);
   const [recurring, setRecurring] = useState<RecurringBill[]>(initialRecurring);
@@ -333,6 +336,7 @@ export function RecurringBillsClient({ initialRecurring, expenseAccounts, vendor
           expenseAccounts={expenseAccounts}
           vendorNames={vendorNames}
           currency={currency}
+          timeZone={timeZone}
           onClose={() => setShowNew(false)}
           onSaved={() => {
             setShowNew(false);

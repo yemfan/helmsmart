@@ -8,6 +8,7 @@ import { BooksNav } from "@/components/books-nav";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { dateFormatter, moneyFormatter, numberFormatter } from "@/lib/books-format";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { EstimateActions } from "./estimate-actions";
 import {
   ArrowLeft, Building2, Mail, FileSignature,
@@ -60,7 +61,7 @@ export default async function EstimateDetailPage({
 
   if (!est) notFound();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const effectiveStatus =
     est.status === "sent" && est.expiry_date < today
       ? "expired"

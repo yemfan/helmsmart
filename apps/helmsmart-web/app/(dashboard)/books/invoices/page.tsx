@@ -9,6 +9,7 @@ import { OverdueRemindersBanner } from "@/components/overdue-reminders";
 import type { OverdueInvoiceRow } from "@/lib/overdue-reminders-plan";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -40,7 +41,7 @@ export default async function InvoicesPage() {
   const issuedDate = dateFormatter(locale, { month: "short", day: "numeric", year: "numeric" });
   const dueDate = dateFormatter(locale, { month: "short", day: "numeric" });
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
 
   const { data: invoices } = await supabase
     .from("invoices")

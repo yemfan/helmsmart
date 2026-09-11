@@ -7,6 +7,7 @@ import { listBills } from "@/lib/actions/bills";
 import { listVendorNames } from "@/lib/actions/vendors";
 import { getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 import { BillsClient } from "./bills-client";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export default async function BillsPage() {
   const t = await getServerT("books");
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
   const supabase = await createClient();
 
   const [bills, expenseAccountsRes, bankAccountsRes, vendorNames] = await Promise.all([
@@ -53,6 +54,7 @@ export default async function BillsPage() {
         bankAccounts={(bankAccountsRes.data ?? []) as { id: string; name: string; mask: string | null; coa_account_id: string | null }[]}
         vendorNames={vendorNames}
         currency={currency}
+        timeZone={timeZone}
       />
     </div>
   );

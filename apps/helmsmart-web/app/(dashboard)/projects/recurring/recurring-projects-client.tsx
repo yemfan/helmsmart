@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Repeat, X, Clock, DollarSign, AlertCircle, Play, Pause, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
+import { calendarDate, firstOfMonth } from "@/lib/org-date";
 import {
   createRecurringProject,
   setRecurringProjectStatus,
@@ -33,22 +34,22 @@ function clientName(c: { first_name: string | null; last_name: string | null; co
   return [c.first_name, c.last_name].filter(Boolean).join(" ") || c.company || "";
 }
 
-function defaultNextRun(): string {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().slice(0, 10);
+/** The 1st of the org's next month. */
+function defaultNextRun(timeZone: string): string {
+  return firstOfMonth(calendarDate(timeZone), 1);
 }
 
 // ─── New recurring project modal ───────────────────────────────────────────────
 
 function NewRecurringModal({
   clients,
+  timeZone,
   onClose,
   onCreated,
 }: {
   clients: { id: string; first_name: string | null; last_name: string | null; company: string | null }[];
   onClose: () => void;
+  timeZone: string;
   onCreated: () => void;
 }) {
   const { t } = useTranslation("projects");
@@ -59,7 +60,7 @@ function NewRecurringModal({
   const [budgetHours, setBudH]    = useState("");
   const [hourlyRate, setRate]     = useState("");
   const [frequency, setFreq]      = useState<RecurringFrequency>("monthly");
-  const [nextRunDate, setNextRun] = useState(defaultNextRun());
+  const [nextRunDate, setNextRun] = useState(() => defaultNextRun(timeZone));
   const [error, setError]         = useState("");
   const [isPending, start]        = useTransition();
 
@@ -270,10 +271,12 @@ function RecurringRow({
 
 interface Props {
   initialRecurring: RecurringProject[];
+  /** `organizations.timezone` — decides the first-run default. */
+  timeZone: string;
   clients: { id: string; first_name: string | null; last_name: string | null; company: string | null }[];
 }
 
-export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
+export function RecurringProjectsClient({ initialRecurring, clients, timeZone }: Props) {
   const { t } = useTranslation("projects");
   const [recurring, setRecurring] = useState<RecurringProject[]>(initialRecurring);
   const [showNew, setShowNew]     = useState(false);
@@ -347,6 +350,7 @@ export function RecurringProjectsClient({ initialRecurring, clients }: Props) {
       {showNew && (
         <NewRecurringModal
           clients={clients}
+          timeZone={timeZone}
           onClose={() => setShowNew(false)}
           onCreated={() => {
             setShowNew(false);

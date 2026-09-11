@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { createInvoice, type InvoiceLine } from "@/lib/actions/invoices";
 import { moneyFormatter } from "@/lib/books-format";
+import { addDays, calendarDate } from "@/lib/org-date";
 
 interface Client {
   id: string;
@@ -27,6 +28,8 @@ interface Props {
   preselectedClientId?: string;
   /** `organizations.currency` — the ledger's currency, not the reader's country. */
   currency: string;
+  /** `organizations.timezone` — decides the issue date shown and the due-date default. */
+  timeZone: string;
 }
 
 const emptyLine = (): InvoiceLine & { key: string } => ({
@@ -38,20 +41,18 @@ const emptyLine = (): InvoiceLine & { key: string } => ({
   coa_account_id: null,
 });
 
-export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, currency }: Props) {
+export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, currency, timeZone }: Props) {
   const { t, i18n } = useTranslation("books");
   const money = moneyFormatter(i18n.language, currency);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  // Form state
+  // Form state. `today` is the org's date — the same one `createInvoice`
+  // stamps as the issue date on the server.
+  const [today]                   = useState(() => calendarDate(timeZone));
   const [clientId, setClientId]   = useState(preselectedClientId ?? "");
-  const [dueDate, setDueDate]     = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 30);
-    return d.toISOString().slice(0, 10);
-  });
+  const [dueDate, setDueDate]     = useState(() => addDays(today, 30));
   const [taxRate, setTaxRate]     = useState(0);
   const [notes, setNotes]         = useState("");
   const [lines, setLines]         = useState<(InvoiceLine & { key: string })[]>([emptyLine()]);
@@ -138,7 +139,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, 
               <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("invoices.builder.issueDate")}</label>
               <input
                 type="date"
-                defaultValue={new Date().toISOString().slice(0, 10)}
+                defaultValue={today}
                 readOnly
                 className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-slate-50 text-slate-500"
               />
@@ -149,7 +150,7 @@ export function InvoiceBuilder({ clients, revenueAccounts, preselectedClientId, 
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                min={new Date().toISOString().slice(0, 10)}
+                min={today}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>

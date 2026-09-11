@@ -15,6 +15,11 @@ export interface InvoiceLineInput {
 
 export interface CreateInvoiceInput {
   clientId: string | null;
+  /**
+   * `YYYY-MM-DD` in the org's timezone. Pass it: the UTC fallback is already
+   * tomorrow for a US business every evening.
+   */
+  issueDate?: string;
   dueDate: string;
   taxRate: number;
   notes: string;
@@ -50,7 +55,7 @@ export async function insertInvoiceWithLines(
       client_id: input.clientId || null,
       invoice_number: invoiceNumber,
       status: "draft",
-      issue_date: new Date().toISOString().slice(0, 10),
+      issue_date: input.issueDate ?? new Date().toISOString().slice(0, 10),
       due_date: input.dueDate,
       subtotal,
       tax_rate: input.taxRate,

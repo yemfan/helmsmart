@@ -7,6 +7,7 @@ import { RoleGuard } from "@/components/role-guard";
 import { ArrowLeft } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("books");
@@ -24,7 +25,7 @@ export default async function NewInvoicePage({
   const supabase = await createClient();
 
   const t = await getServerT("books");
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
 
   const [{ data: clients }, { data: revenueAccounts }] = await Promise.all([
     supabase
@@ -61,6 +62,7 @@ export default async function NewInvoicePage({
         revenueAccounts={(revenueAccounts ?? []) as { id: string; code: string; name: string }[]}
         preselectedClientId={preselectedClientId}
         currency={currency}
+        timeZone={timeZone}
       />
     </div>
   );

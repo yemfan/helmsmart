@@ -28,9 +28,11 @@ interface Props {
   expenseAccounts: ExpenseAccount[];
   bankAccounts: BankAccount[];
   projects?: ProjectOption[];
+  /** `organizations.timezone`, passed through to the form's date default. */
+  timeZone: string;
 }
 
-export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [] }: Props) {
+export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [], timeZone }: Props) {
   const router = useRouter();
   const { t } = useTranslation("books");
   const [open, setOpen] = useState(false);
@@ -86,6 +88,7 @@ export function ExpenseModal({ expenseAccounts, bankAccounts, projects = [] }: P
                 expenseAccounts={expenseAccounts}
                 bankAccounts={bankAccounts}
                 projects={projects}
+                timeZone={timeZone}
                 onSuccess={handleSuccess}
                 onCancel={handleClose}
               />

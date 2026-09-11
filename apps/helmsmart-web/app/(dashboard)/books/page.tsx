@@ -9,6 +9,8 @@ import { ExpenseModal } from "@/components/expense-modal";
 import { PeriodSelect } from "@/components/period-select";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate, firstOfMonth } from "@/lib/org-date";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -66,15 +68,13 @@ async function getMonthTotals(orgId: string, yearMonth: string) {
   return { revenue, expenses };
 }
 
-/** The last 12 months, labelled in the reader's locale. */
-function buildMonthOptions(locale: string): { value: string; label: string }[] {
+/** The last 12 months up to the org's `today`, labelled in the reader's locale. */
+function buildMonthOptions(locale: string, today: string): { value: string; label: string }[] {
   const monthYear = dateFormatter(locale, { month: "long", year: "numeric" });
   const opts: { value: string; label: string }[] = [];
-  const now = new Date();
   for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    opts.push({ value, label: monthYear(d) });
+    const first = firstOfMonth(today, -i);
+    opts.push({ value: first.slice(0, 7), label: monthYear(first) });
   }
   return opts;
 }
@@ -90,7 +90,7 @@ export default async function BooksPage({
 
   const t = await getServerT("books");
   const locale = await getServerLocale();
-  const currency = await orgCurrency(orgId);
+  const [currency, timeZone] = await Promise.all([orgCurrency(orgId), orgTimezone(orgId)]);
   const money = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
   const txnMoney = moneyFormatter(locale, currency);
   const monthDay = dateFormatter(locale, { month: "short", day: "numeric" });
@@ -98,15 +98,15 @@ export default async function BooksPage({
   /** A balance the org has no data for reads as an em dash, never as a confident zero. */
   const fmt = (value: number | null) => (value === null ? "—" : money(value));
 
-  const now = new Date();
-  const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const today = calendarDate(timeZone);
+  const currentYearMonth = today.slice(0, 7);
   const selectedMonth = monthParam ?? currentYearMonth;
   // Append a time component so the YYYY-MM-01 string is parsed as LOCAL midnight, not UTC.
   // Without it, behind-UTC timezones roll back to the previous month in the rendered label.
   const monthLabel = dateFormatter(locale, { month: "long", year: "numeric" })(
     new Date(selectedMonth + "-01T00:00:00"),
   );
-  const monthOptions = buildMonthOptions(locale);
+  const monthOptions = buildMonthOptions(locale, today);
 
   const supabase = await createClient();
 
@@ -221,6 +221,7 @@ export default async function BooksPage({
             expenseAccounts={expenseAccounts as { id: string; code: string; name: string }[]}
             bankAccounts={bankAccounts as { id: string; name: string; mask: string | null; coa_account_id: string | null }[]}
             projects={projects as { id: string; name: string }[]}
+            timeZone={timeZone}
           />
         </div>
       </div>

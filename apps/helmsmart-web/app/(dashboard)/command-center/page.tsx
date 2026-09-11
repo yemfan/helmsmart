@@ -9,6 +9,8 @@ import { WorkforceBoard } from "./workforce-board";
 import { TimBriefing } from "@/components/tim-briefing";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
+import { orgToday } from "@/lib/org-timezone";
+import { addDays } from "@/lib/org-date";
 import { moneyFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,14 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CommandCenterPage() {
   const t = await getServerT("home");
   const locale = await getServerLocale();
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-  const from = new Date(today.getTime() - 29 * 86_400_000);
-  const fromStr = from.toISOString().slice(0, 10);
-
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
+
+  const todayStr = await orgToday(orgId);
+  const fromStr = addDays(todayStr, -29);
 
   const [summary, employees, overdueRes, tasksRes, currency, orgRes] = await Promise.all([
     getWorkforceSummary(fromStr, todayStr),
