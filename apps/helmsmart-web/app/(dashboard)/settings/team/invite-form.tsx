@@ -53,12 +53,12 @@ export function InviteForm() {
           />
         </div>
 
-        <div>
+        <div className="min-w-0 max-w-full">
           <label className="block text-xs font-medium text-slate-500 mb-1.5">{t("team.invite.roleLabel")}</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as Role)}
-            className="text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            className="max-w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
             {ROLES.map((r) => (
               <option key={r} value={r}>

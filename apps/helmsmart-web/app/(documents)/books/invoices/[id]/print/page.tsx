@@ -225,6 +225,15 @@ const STYLES = `
     transform: rotate(-8deg);
     opacity: .7;
   }
+  /* On a phone the document narrows and the line table scrolls inside itself. */
+  .invoice-doc .table-wrap { overflow-x: auto; }
+  .invoice-doc .table-wrap table { min-width: 420px; }
+  @media screen and (max-width: 640px) {
+    .invoice-doc .page { padding: 24px 16px; }
+    .invoice-doc .header { flex-wrap: wrap; gap: 16px; }
+    .invoice-doc .meta-grid { grid-template-columns: 1fr; }
+    .invoice-doc .dates { flex-wrap: wrap; gap: 16px; }
+  }
   @media print {
     .invoice-doc .no-print { display: none !important; }
     .invoice-doc { min-height: 0; font-size: 12px; }
@@ -329,6 +338,7 @@ export default async function InvoicePrintPage({
           </div>
 
           {/* Line items */}
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -349,6 +359,7 @@ export default async function InvoicePrintPage({
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Totals */}
           <div className="totals">

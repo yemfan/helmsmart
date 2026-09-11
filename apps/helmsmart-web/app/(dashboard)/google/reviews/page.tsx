@@ -36,7 +36,7 @@ export default async function ReviewsPage() {
   const critical = reviews?.filter((r) => r.rating <= 2) ?? [];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <Link href="/google" className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 mb-4">
@@ -48,7 +48,7 @@ export default async function ReviewsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg border border-slate-200 p-4">
           <p className="text-xs font-medium text-slate-600 uppercase">{t("google.reviews.unreplied")}</p>
           <p className="text-2xl font-bold text-slate-900 mt-2">{unreplied.length}</p>

@@ -310,16 +310,16 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
   const statusLabel = filter === "all" ? "" : t(`status.${filter}`);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             {t("list.subtitle", { active: activeCount, completed: completedCount })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/projects/templates"
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
@@ -345,7 +345,7 @@ export function ProjectsClient({ initialProjects, clients }: Props) {
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex items-center gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit">
+      <div className="flex items-center gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit max-w-full overflow-x-auto">
         {STATUS_FILTERS.map((s) => (
           <button
             key={s}

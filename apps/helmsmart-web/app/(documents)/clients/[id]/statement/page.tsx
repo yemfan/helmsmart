@@ -104,6 +104,15 @@ const STYLES = `
   .statement-doc .totals-total { display: flex; justify-content: space-between; padding: 12px 0 0; margin-top: 8px; border-top: 2px solid #0f172a; font-size: 18px; font-weight: 800; color: #0f172a; }
   .statement-doc .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11px; color: #94a3b8; }
   .statement-doc .empty { text-align: center; color: #94a3b8; padding: 48px 0; font-size: 14px; }
+  /* On a phone the document narrows and the invoice table scrolls inside itself. */
+  .statement-doc .table-wrap { overflow-x: auto; }
+  .statement-doc .table-wrap table { min-width: 460px; }
+  @media screen and (max-width: 640px) {
+    .statement-doc .page { padding: 24px 16px; }
+    .statement-doc .header { flex-wrap: wrap; gap: 16px; }
+    .statement-doc .meta-grid { grid-template-columns: 1fr; }
+    .statement-doc .totals-inner { width: 100%; max-width: 280px; }
+  }
   @media print { .statement-doc .no-print { display: none !important; } .statement-doc { min-height: 0; font-size: 12px; } .statement-doc .page { padding: 0; } }
 `;
 
@@ -181,6 +190,7 @@ export default async function ClientStatementPage({
           {rows.length === 0 ? (
             <div className="empty">{doc("statement.empty")}</div>
           ) : (
+            <div className="table-wrap">
             <table>
               <thead>
                 <tr>
@@ -205,6 +215,7 @@ export default async function ClientStatementPage({
                 ))}
               </tbody>
             </table>
+            </div>
           )}
 
           {rows.length > 0 && (

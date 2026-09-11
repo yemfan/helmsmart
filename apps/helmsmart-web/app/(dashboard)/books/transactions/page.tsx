@@ -72,7 +72,7 @@ export default async function TransactionsPage({
   const pendingCount = await getPendingCount(supabase, orgId);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <PageTitle base="Books" />
@@ -85,7 +85,7 @@ export default async function TransactionsPage({
       <BooksNav />
 
       {/* Filter tabs */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
           {FILTERS.map((f) => (
             <a

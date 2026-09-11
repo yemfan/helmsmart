@@ -11,8 +11,8 @@
 
 import Stripe from "stripe";
 import { createServiceClient } from "@/lib/supabase/server";
-
-const RATE_CENTS_PER_MINUTE = 10; // $0.10/min billed to customer
+// One rate and one rounding rule, shared with the cost estimate on /voice.
+import { VOICE_RATE_CENTS_PER_MINUTE as RATE_CENTS_PER_MINUTE, billableMinutes } from "@/lib/voice-stats";
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -41,7 +41,7 @@ export async function billVoiceCall(callSid: string, durationSeconds: number): P
   if (!org?.stripe_customer_id) return;
   if (org.subscription_status !== "active") return;
 
-  const minutes = Math.ceil(durationSeconds / 60);
+  const minutes = billableMinutes(durationSeconds);
   const amountCents = minutes * RATE_CENTS_PER_MINUTE;
 
   try {

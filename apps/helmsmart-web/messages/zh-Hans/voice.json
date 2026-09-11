@@ -4,30 +4,45 @@
     "clientAssistant": "AI 客户助理"
   },
   "receptionist": {
-    "subtitle": "Claude 全天候接听来电，并向漏接的来电发送短信——预约时间、记录留言、回答常见问题",
+    "subtitle": "你的 AI 前台接待全天候接听来电，并向漏接的来电发送短信——预约时间、记录留言、回答常见问题",
     "settings": "设置",
+    "agentOff": "你的 AI 前台接待已关闭，目前不会接听来电。",
+    "agentOffLink": "前往设置开启",
+    "period_other": "最近 {{count}} 天",
+    "statsError": "暂时无法加载通话统计，请刷新页面重试。",
     "stats": {
-      "callsHandled": "已处理来电",
-      "allTime": "全部时间",
+      "answeredByAi": "AI 已接听",
+      "answeredSub_other": "共 {{total}} 通来电",
       "appointmentsBooked": "已预约",
-      "viaVoiceAgent": "通过语音助理",
+      "bookedSub": "通话中完成预约",
       "messagesTaken": "已记录留言",
-      "savedToInbox": "已存入收件箱",
-      "minutesUsed": "已用分钟数",
+      "messagesSub": "有对话，未预约",
       "talkTime": "通话时长",
+      "talkSub": "AI 通话分钟数",
       "estCost": "AI 估算费用",
-      "costRate": "按 {{rate}}/分钟",
+      "costRate": "{{rate}}/分钟，每通按整分钟向上取整",
       "hours": "{{value}} 小时",
       "minutes": "{{value}} 分钟"
     },
-    "transcripts": {
-      "title": "通话记录",
-      "emptyTitle": "还没有通话",
-      "emptyBody": "启用语音助理并配置 Twilio Webhook 后即可开始接听来电。",
-      "turns_other": "{{count}} 轮对话",
-      "appointmentBooked": "已预约",
+    "calls": {
+      "title": "最近来电",
+      "caption_other": "最近 {{count}} 通来电，按时间倒序。上方统计为最近 {{days}} 天。",
+      "olderDivider": "超过 {{days}} 天——不计入上方统计",
+      "emptyTitle": "还没有来电",
+      "emptyBody": "AI 前台接待接听或漏接的来电会显示在这里，并附通话记录。",
+      "setupLink": "设置前台接待",
+      "unknownNumber": "未知号码",
+      "textedBack": "已发短信",
       "caller": "来电方",
-      "agent": "AI 助理"
+      "agent": "AI 前台接待",
+      "outcome": {
+        "booked": "已预约",
+        "message": "已留言",
+        "missed": "漏接",
+        "voicemail": "语音留言",
+        "answered": "已接听",
+        "inProgress": "通话中"
+      }
     },
     "duration": {
       "none": "—",
@@ -49,38 +64,20 @@
   "missedCall": {
     "title": "漏接来电短信回复",
     "settingsLink": "自动回复设置",
-    "autoReply": "自动回复",
-    "active": "已启用",
-    "off": "已关闭",
-    "noNumber": "尚未配置号码",
-    "missedToday": "今日漏接",
-    "noneToday": "今日无漏接",
-    "unanswered_other": "{{count}} 通未接来电",
-    "repliesSent": "已发回复",
-    "thisWeek": "本周",
-    "recentCalls": "最近来电",
-    "emptyTitle": "还没有通话记录",
-    "emptyBody": "配置好 Twilio 号码后，漏接来电会显示在这里。",
-    "autoReplied": "已自动回复",
-    "unknownStatus": "—",
-    "status": {
-      "missed": "漏接",
-      "voicemail": "语音留言",
-      "completed": "已完成",
-      "answered": "已接听",
-      "active": "通话中",
-      "busy": "占线",
-      "failed": "失败",
-      "no-answer": "无人接听",
-      "canceled": "已取消",
-      "queued": "排队中",
-      "ringing": "振铃中"
-    },
-    "time": {
-      "justNow": "刚刚",
-      "minutesAgo": "{{count}} 分钟前",
-      "hoursAgo": "{{count}} 小时前"
-    }
+    "on": "自动回复已开启：漏接来电会收到来自 {{number}} 的短信。",
+    "onNoNumber": "自动回复已开启，但还没有可用于发送短信的号码。",
+    "off": "自动回复已关闭，漏接来电不会收到短信。"
+  },
+  "roi": {
+    "missed": "漏接来电",
+    "missedSub": "漏接、语音留言或挂断",
+    "autoTexted": "已发短信",
+    "autoTextedSub": "已收到自动回复短信",
+    "booked": "通过短信预约",
+    "bookedSub": "通过短信完成的预约",
+    "conversion": "转化率",
+    "noTextsYet": "还没有发送短信",
+    "conversionSub_other": "{{total}} 位收到短信的来电者中有 {{booked}} 位预约"
   },
   "outbound": {
     "title": "发起 AI 通话",
@@ -142,7 +139,7 @@
   },
   "settings": {
     "title": "AI 语音助理",
-    "subtitle": "你不方便接听时，由 Claude 代接来电",
+    "subtitle": "你不方便接听时，由 AI 前台接待代接来电",
     "toggleNeedsNumber": "请先添加电话号码——助理还没有可接听的号码。",
     "needsNumber": "语音助理需要一个电话号码才能接听来电。",
     "connected": "已连接到 {{number}}",
@@ -169,7 +166,7 @@
     },
     "context": {
       "label": "业务背景",
-      "hint": "（Claude 需要了解的企业信息）",
+      "hint": "（前台接待需要了解的企业信息）",
       "help": "纯文本即可。写得越详细，助理表现越好。",
       "useTemplate": "使用此模板"
     },

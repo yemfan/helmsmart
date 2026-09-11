@@ -46,9 +46,9 @@ export default async function MarketingPage() {
   );
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <ResponsibleEmployee slug="emily" className="mb-3" />
           <h1 className="text-2xl font-semibold text-slate-900">{t("campaigns.title")}</h1>
@@ -69,7 +69,7 @@ export default async function MarketingPage() {
       </h2>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {[
           { key: "sent", label: t("campaigns.stats.sentLabel"), value: String(sentCampaigns.length), sub: t("campaigns.stats.sentSub", { count: all.length }) },
           { key: "reached", label: t("campaigns.stats.reachedLabel"), value: String(totalReached), sub: t("campaigns.stats.reachedSub") },

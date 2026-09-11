@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const STATS = ["trial", "response", "refund"];
+const STATS = ["beta", "response", "refund"];
 
 export default async function SalesPage() {
   const t = await getServerT("site");
@@ -48,8 +48,8 @@ export default async function SalesPage() {
         <p className="mt-12 text-center text-sm text-gray-500">
           {rich(t("sales.footerNote"), {
             links: [
-              { href: "/pricing", className: "font-medium text-indigo-600 hover:text-indigo-700" },
-              { href: "/signup", className: "font-medium text-indigo-600 hover:text-indigo-700" },
+              { href: "/pricing", className: "font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700" },
+              { href: "/signup", className: "font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700" },
             ],
           })}
         </p>

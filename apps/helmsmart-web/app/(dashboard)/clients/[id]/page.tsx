@@ -188,9 +188,9 @@ export default async function ClientDetailPage({
   const totalOutstanding = outstanding.reduce((s, i) => s + Number(i.total), 0);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-start gap-3 mb-8">
+      <div className="flex flex-wrap items-start gap-3 mb-8">
         <Link
           href="/clients"
           className="mt-1 p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400"
@@ -263,11 +263,11 @@ export default async function ClientDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_320px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6">
         {/* Left column */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { label: t("detail.stats.lifetimeValue"), value: fmt(totalPaid, locale), icon: DollarSign, color: "text-emerald-500" },
               { label: t("detail.stats.outstanding"),   value: fmt(totalOutstanding, locale), icon: FileText,  color: "text-blue-500" },
@@ -294,7 +294,7 @@ export default async function ClientDetailPage({
                   </span>
                 )}
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                   <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{t("detail.profitability.revenue")}</p>
                   <p className="text-lg font-semibold text-slate-800 mt-1 tabular-nums">{fmt(pnl.revenue, locale)}</p>

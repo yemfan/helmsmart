@@ -58,11 +58,14 @@ export function rich(text: string, options: RichOptions = {}): ReactNode[] {
       const label = part.slice(3, -4);
       const link = links[linkIndex++];
       if (!link) return <span key={i}>{label}</span>;
+      // `py-1` grows the hit area, not the line: vertical padding on an inline
+      // box does not move the text around it, and it lifts a 14px link to a
+      // 24px+ target (WCAG 2.2, 2.5.8).
       return (
         <Link
           key={i}
           href={link.href}
-          className={link.className}
+          className={link.className ? `py-1 ${link.className}` : "py-1"}
           {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
         >
           {label}

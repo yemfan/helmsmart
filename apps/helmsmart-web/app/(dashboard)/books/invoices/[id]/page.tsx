@@ -103,21 +103,21 @@ export default async function InvoiceDetailPage({
     : "—";
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       {/* Stripe payment result banner */}
       {(stripe === "success" || stripe === "cancelled") && (
         <StripeResultBanner result={stripe} />
       )}
 
       {/* Back + header */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex flex-wrap items-center gap-3 mb-8">
         <Link
           href="/books/invoices"
           className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold text-slate-900 font-mono">{inv.invoice_number}</h1>
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLORS[effectiveStatus] ?? STATUS_COLORS.draft}`}>
@@ -158,8 +158,8 @@ export default async function InvoiceDetailPage({
       {/* Invoice document */}
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         {/* Invoice header */}
-        <div className="px-10 py-8 border-b border-slate-100">
-          <div className="flex justify-between items-start">
+        <div className="px-4 sm:px-10 py-6 sm:py-8 border-b border-slate-100">
+          <div className="flex flex-wrap justify-between items-start gap-4">
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t("invoices.detail.documentLabel")}</p>
               <p className="text-3xl font-bold text-slate-900 font-mono">{inv.invoice_number}</p>
@@ -188,7 +188,10 @@ export default async function InvoiceDetailPage({
         </div>
 
         {/* Line items */}
-        <div className="px-10 py-6">
+        <div className="px-4 sm:px-10 py-6">
+          {/* The line table keeps its columns and scrolls inside itself on a phone. */}
+          <div className="overflow-x-auto">
+          <div className="min-w-[30rem]">
           <div className="grid grid-cols-[1fr_80px_110px_110px] gap-4 mb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
             <span>{t("invoices.detail.columns.description")}</span>
             <span className="text-right">{t("invoices.detail.columns.qty")}</span>
@@ -213,10 +216,12 @@ export default async function InvoiceDetailPage({
               );
             })}
           </div>
+          </div>
+          </div>
 
           {/* Totals */}
           <div className="flex justify-end mt-6">
-            <div className="w-64 space-y-2">
+            <div className="w-full max-w-64 space-y-2">
               <div className="flex justify-between text-sm text-slate-600">
                 <span>{t("invoices.detail.subtotal")}</span>
                 <span className="tabular-nums">{fmt(Number(inv.subtotal))}</span>

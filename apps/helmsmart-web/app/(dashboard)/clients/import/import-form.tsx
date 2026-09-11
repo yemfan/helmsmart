@@ -265,9 +265,9 @@ export function ImportForm() {
       </div>
 
       {/* Instructions + template */}
-      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 flex items-start gap-4">
+      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 flex flex-wrap items-start gap-4">
         <FileSpreadsheet className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-        <div className="flex-1">
+        <div className="flex-1 min-w-[12rem]">
           <p className="text-sm font-medium text-indigo-800 mb-1">{t("import.csv.title")}</p>
           <p className="text-xs text-indigo-700 leading-relaxed">
             {t("import.csv.required")} <code className="bg-indigo-100 px-1 rounded">first_name</code> {t("import.csv.or")} <code className="bg-indigo-100 px-1 rounded">company</code>.

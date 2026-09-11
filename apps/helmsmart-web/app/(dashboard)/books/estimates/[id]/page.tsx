@@ -105,9 +105,9 @@ export default async function EstimateDetailPage({
   } | null;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <PageTitle base="Books" />
           <p className="text-sm text-slate-500 mt-0.5">{t("estimates.subtitle")}</p>
@@ -124,7 +124,7 @@ export default async function EstimateDetailPage({
       <BooksNav />
 
       {/* Estimate body */}
-      <div className="grid grid-cols-[1fr_280px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6">
         {/* Left: estimate document */}
         <div className="space-y-6">
           {/* Estimate card */}
@@ -204,7 +204,8 @@ export default async function EstimateDetailPage({
 
             {/* Line items */}
             <div className="px-6 py-4">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[26rem] text-sm">
                 <thead>
                   <tr className="border-b border-slate-200">
                     <th className="text-left pb-2 text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -238,6 +239,7 @@ export default async function EstimateDetailPage({
                   ))}
                 </tbody>
               </table>
+              </div>
 
               {/* Totals */}
               <div className="flex justify-end mt-4">

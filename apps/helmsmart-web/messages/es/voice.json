@@ -4,31 +4,48 @@
     "clientAssistant": "Asistente de clientes con IA"
   },
   "receptionist": {
-    "subtitle": "Claude atiende sus llamadas las 24 horas y responde por SMS a las que usted pierde: agenda citas, toma mensajes y resuelve preguntas frecuentes",
+    "subtitle": "Su recepcionista con IA atiende sus llamadas las 24 horas y responde por SMS a las que usted pierde: agenda citas, toma mensajes y resuelve preguntas frecuentes",
     "settings": "Configuración",
+    "agentOff": "Su recepcionista con IA está desactivada, así que en este momento no está atendiendo llamadas.",
+    "agentOffLink": "Actívela en Configuración",
+    "period_one": "Último {{count}} día",
+    "period_other": "Últimos {{count}} días",
+    "statsError": "No pudimos cargar los totales de llamadas. Actualice la página para intentarlo de nuevo.",
     "stats": {
-      "callsHandled": "Llamadas atendidas",
-      "allTime": "Desde el inicio",
+      "answeredByAi": "Atendidas por la IA",
+      "answeredSub_one": "de {{total}} llamada",
+      "answeredSub_other": "de {{total}} llamadas",
       "appointmentsBooked": "Citas agendadas",
-      "viaVoiceAgent": "Mediante el agente de voz",
+      "bookedSub": "Agendadas durante la llamada",
       "messagesTaken": "Mensajes tomados",
-      "savedToInbox": "Guardados en la bandeja de entrada",
-      "minutesUsed": "Minutos usados",
+      "messagesSub": "Hubo conversación, sin cita",
       "talkTime": "Tiempo de conversación",
+      "talkSub": "Minutos de la IA en llamadas",
       "estCost": "Costo estimado de IA",
-      "costRate": "a {{rate}}/min",
+      "costRate": "{{rate}}/min, redondeado hacia arriba por llamada",
       "hours": "{{value}} h",
       "minutes": "{{value}} min"
     },
-    "transcripts": {
-      "title": "Transcripciones de llamadas",
+    "calls": {
+      "title": "Llamadas recientes",
+      "caption_one": "La llamada más reciente. Los totales de arriba cuentan los últimos {{days}} días.",
+      "caption_other": "Las últimas {{count}} llamadas, de la más reciente a la más antigua. Los totales de arriba cuentan los últimos {{days}} días.",
+      "olderDivider": "Hace más de {{days}} días: no se incluyen en los totales de arriba",
       "emptyTitle": "Aún no hay llamadas",
-      "emptyBody": "Active el agente de voz y configure su webhook de Twilio para empezar a atender llamadas.",
-      "turns_one": "{{count}} intervención",
-      "turns_other": "{{count}} intervenciones",
-      "appointmentBooked": "Cita agendada",
+      "emptyBody": "Aquí aparecerán las llamadas que su recepcionista con IA atienda o pierda, con su transcripción.",
+      "setupLink": "Configurar su recepcionista",
+      "unknownNumber": "Número desconocido",
+      "textedBack": "Se le envió SMS",
       "caller": "Quien llama",
-      "agent": "Agente de IA"
+      "agent": "Recepcionista con IA",
+      "outcome": {
+        "booked": "Cita agendada",
+        "message": "Mensaje tomado",
+        "missed": "Perdida",
+        "voicemail": "Buzón de voz",
+        "answered": "Atendida",
+        "inProgress": "En curso"
+      }
     },
     "duration": {
       "none": "—",
@@ -50,39 +67,21 @@
   "missedCall": {
     "title": "Respuesta por SMS a llamadas perdidas",
     "settingsLink": "Configuración de la respuesta automática",
-    "autoReply": "Respuesta automática",
-    "active": "Activa",
-    "off": "Desactivada",
-    "noNumber": "Ningún número configurado",
-    "missedToday": "Perdidas hoy",
-    "noneToday": "Ninguna hoy",
-    "unanswered_one": "{{count}} llamada sin atender",
-    "unanswered_other": "{{count}} llamadas sin atender",
-    "repliesSent": "Respuestas enviadas",
-    "thisWeek": "Esta semana",
-    "recentCalls": "Llamadas recientes",
-    "emptyTitle": "Aún no hay llamadas registradas",
-    "emptyBody": "Las llamadas perdidas aparecerán aquí en cuanto configure su número de Twilio.",
-    "autoReplied": "Respondida automáticamente",
-    "unknownStatus": "—",
-    "status": {
-      "missed": "Perdida",
-      "voicemail": "Buzón de voz",
-      "completed": "Completada",
-      "answered": "Atendida",
-      "active": "En curso",
-      "busy": "Ocupado",
-      "failed": "Fallida",
-      "no-answer": "Sin respuesta",
-      "canceled": "Cancelada",
-      "queued": "En cola",
-      "ringing": "Sonando"
-    },
-    "time": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h"
-    }
+    "on": "La respuesta automática está activada: las llamadas perdidas reciben un SMS desde el {{number}}.",
+    "onNoNumber": "La respuesta automática está activada, pero aún no hay un número desde el cual enviar el SMS.",
+    "off": "La respuesta automática está desactivada, así que las llamadas perdidas no reciben un SMS."
+  },
+  "roi": {
+    "missed": "Llamadas perdidas",
+    "missedSub": "Perdidas, buzón de voz o colgaron",
+    "autoTexted": "SMS enviados",
+    "autoTextedSub": "Recibieron el SMS automático",
+    "booked": "Citas por SMS",
+    "bookedSub": "Citas agendadas por SMS",
+    "conversion": "Conversión",
+    "noTextsYet": "Aún no se ha enviado ningún SMS",
+    "conversionSub_one": "{{booked}} de {{total}} persona con SMS agendó cita",
+    "conversionSub_other": "{{booked}} de {{total}} personas con SMS agendaron cita"
   },
   "outbound": {
     "title": "Realizar llamadas con IA",
@@ -147,7 +146,7 @@
   },
   "settings": {
     "title": "Agente de voz con IA",
-    "subtitle": "Atiende sus llamadas con Claude cuando usted no está disponible",
+    "subtitle": "Atiende sus llamadas cuando usted no está disponible",
     "toggleNeedsNumber": "Agregue primero un número de teléfono: el agente no tiene dónde atender.",
     "needsNumber": "El agente de voz necesita un número de teléfono para poder atender llamadas.",
     "connected": "Conectado a {{number}}",
@@ -176,7 +175,7 @@
     },
     "context": {
       "label": "Contexto del negocio",
-      "hint": "(lo que Claude sabe de usted)",
+      "hint": "(lo que su recepcionista sabe de usted)",
       "help": "Con texto simple basta. Cuanto más detalle, mejor funciona el agente.",
       "useTemplate": "Usar esta plantilla"
     },

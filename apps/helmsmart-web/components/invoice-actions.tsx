@@ -137,7 +137,7 @@ export function InvoiceActions({ invoiceId, status, clientEmail, bankAccounts }:
         </div>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {error && !showPaidModal && (
           <p className="text-xs text-rose-600">{error}</p>
         )}

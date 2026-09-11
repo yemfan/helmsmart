@@ -53,9 +53,13 @@ export function LanguageToggle({
                 ? dark
                   ? "bg-white text-slate-900"
                   : "bg-indigo-600 text-white"
-                : dark
-                  ? "text-white/60 hover:text-white"
-                  : "text-slate-600 hover:text-slate-900"
+                : // Unselected labels are 11px, so they need the full 4.5:1.
+                  // White at 60% over the sidebar's white/10 wash failed axe on
+                  // every signed-in page; slate-200 there and slate-700 on
+                  // white clear it with room to spare.
+                  dark
+                  ? "text-slate-200 hover:text-white"
+                  : "text-slate-700 hover:text-slate-900"
             }`}
           >
             {localeShortLabel(loc)}

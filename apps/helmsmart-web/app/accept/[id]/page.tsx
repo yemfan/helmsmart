@@ -240,8 +240,9 @@ export default async function AcceptEstimatePage({
             </div>
           )}
 
-          {/* Line items table */}
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          {/* Line items table — scrolls inside itself on a narrow phone */}
+          <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: 420, borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
                 {(["description", "qty", "price", "amount"] as const).map((h, i) => (
@@ -309,6 +310,7 @@ export default async function AcceptEstimatePage({
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Totals */}
           <div

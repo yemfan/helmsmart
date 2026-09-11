@@ -235,8 +235,8 @@ export default async function ReportsPage({
   }));
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <PageTitle base="Books" />
           <p className="text-sm text-slate-500 mt-0.5">{t("reports.financial.subtitle")}</p>
@@ -267,7 +267,7 @@ export default async function ReportsPage({
       </div>
 
       {/* ── Summary cards ── */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -309,7 +309,7 @@ export default async function ReportsPage({
       </div>
 
       {/* ── Two column: P&L + Balance Sheet ── */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* P&L */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">

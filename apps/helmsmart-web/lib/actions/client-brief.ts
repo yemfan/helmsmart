@@ -180,7 +180,10 @@ export async function generateClientBrief(
   const fmt = (n: number) =>
     new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
-  // Invoices are spelled out for the model. Given a bare "DRAFT $350 due
+  // Each line names its document ("Invoice", "Quote"): a bare "INV-0001:
+  // Borrador" came back as "cotización en borrador".
+  // Invoices and tasks are spelled out for the model; a task given only its
+  // date came back as "vencida" (overdue) a week before it was due. Given a bare "DRAFT $350 due
   // 2026-10-11" it wrote "overdue on October 10": a draft has not been sent, so
   // it cannot be late, and a due date is stated relative to today so there is
   // no date arithmetic left for it to get wrong.
@@ -206,8 +209,8 @@ export async function generateClientBrief(
   };
   const invoiceLine = (i: { invoice_number: string; status: string; total: number | string; due_date: string }) =>
     i.status === "draft"
-      ? `- ${i.invoice_number}: ${invoiceStatus(i.status)} (a draft, not sent to the client yet), ${fmt(Number(i.total))}, due date set to ${withWeekday(i.due_date)}`
-      : `- ${i.invoice_number}: ${invoiceStatus(i.status)}, ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
+      ? `- Invoice ${i.invoice_number}: ${invoiceStatus(i.status)} (a draft, not sent to the client yet), ${fmt(Number(i.total))}, due date set to ${withWeekday(i.due_date)}`
+      : `- Invoice ${i.invoice_number}: ${invoiceStatus(i.status)}, ${fmt(Number(i.total))}, ${dueNote(i.due_date)}`;
 
   const contextParts: string[] = [
     `## Client: ${clientName}`,
@@ -237,7 +240,7 @@ export async function generateClientBrief(
     estimates.filter((e) => e.status === "sent").length
       ? estimates
           .filter((e) => e.status === "sent")
-          .map((e) => `- ${e.estimate_number}: ${fmt(Number(e.total))} (expires ${e.expiry_date})`)
+          .map((e) => `- Quote ${e.estimate_number}: ${fmt(Number(e.total))} (expires ${e.expiry_date})`)
           .join("\n")
       : "No open estimates.",
     "",
@@ -248,7 +251,7 @@ export async function generateClientBrief(
     "",
     `## Open Tasks`,
     tasks.length
-      ? tasks.map((t) => `- [${t.priority}] ${t.title}${t.due_date ? ` (due ${withWeekday(t.due_date)})` : ""}`).join("\n")
+      ? tasks.map((t) => `- [${t.priority}] ${t.title}${t.due_date ? ` (${dueNote(t.due_date)})` : ""}`).join("\n")
       : "No open tasks.",
     "",
     `## Upcoming Events`,

@@ -276,7 +276,7 @@ export function SocialComposer({
             </button>
           );
         })}
-        {owner ? <div className="ml-auto shrink-0 pl-4">{owner}</div> : null}
+        {owner ? <div className="ml-auto min-w-0 max-w-full pl-4">{owner}</div> : null}
       </div>
 
       {/* Say it plainly BEFORE anyone writes a post they can't send. */}

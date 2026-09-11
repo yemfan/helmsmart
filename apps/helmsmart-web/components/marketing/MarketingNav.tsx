@@ -8,10 +8,13 @@ import { HelmLogo } from "@/components/logo";
 import { LanguageToggle } from "@/components/language-toggle";
 
 // The href is a route, not copy; the label is a key into the `site` bundle.
+// "Book a demo" goes where the hero and footer send it: the public demo form.
+// It was "Schedule" → /login?next=/calendar/book, a staff-only booking page, so
+// a logged-out prospect met a sign-in form.
 const navLinks = [
   { key: "product", href: "/features" },
   { key: "pricing", href: "/pricing" },
-  { key: "schedule", href: "/login?next=/calendar/book" },
+  { key: "bookDemo", href: "/contact/sales" },
   { key: "faq", href: "/faq" },
   { key: "blog", href: "/blog" },
 ];
@@ -37,7 +40,7 @@ export function MarketingNav() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+              className="py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
             >
               {t(`nav.${link.key}`)}
             </Link>
@@ -49,7 +52,7 @@ export function MarketingNav() {
           <LanguageToggle />
           <Link
             href="/login"
-            className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+            className="py-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
           >
             {t("nav.signIn")}
           </Link>

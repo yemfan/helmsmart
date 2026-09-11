@@ -6,7 +6,9 @@ import { AutomationsList } from "./automations-list";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("workflows");
-  return { title: `${t("meta.automations")} · HelmSmart` };
+  // The root layout's template appends the brand; adding it here as well
+  // rendered "Automations · HelmSmart | HelmSmart".
+  return { title: t("meta.automations") };
 }
 
 export default async function AutomationsPage() {

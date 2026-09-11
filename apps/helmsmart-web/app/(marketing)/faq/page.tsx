@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const faqs: { category: string; questions: string[] }[] = [
   {
     category: "gettingStarted",
-    questions: ["what", "setup", "technical", "trial"],
+    questions: ["what", "setup", "technical", "beta"],
   },
   {
     category: "voice",
