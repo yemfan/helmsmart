@@ -451,16 +451,6 @@
   "comingSoon": {
     "eta": "{{eta}} 上线"
   },
-  "roi": {
-    "title": "未接来电挽回 —— 最近 7 天",
-    "autoTexted": "自动回短信",
-    "autoTextedSub": "已自动回短信的未接来电",
-    "booked": "通过短信成交预约",
-    "bookedSub": "挽回的预约",
-    "conversion": "转化率",
-    "noMissedCalls": "还没有未接来电",
-    "conversionSub_other": "{{total}} 条线索中有 {{booked}} 条成功预约"
-  },
   "revenueChart": {
     "empty": "还没有交易数据",
     "revenue": "收入",

@@ -2,46 +2,160 @@ import { ResponsibleEmployee } from "@/components/responsible-employee";
 import { PageTitle } from "@/components/page-title";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
+import type { ReactNode } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { Phone, MessageSquare, Calendar, Bot, Clock, DollarSign, Settings } from "lucide-react";
+import { Phone, MessageSquare, Calendar, Clock, DollarSign, Settings } from "lucide-react";
 import { intlLocale } from "@leadsmart/i18n";
+import { safeTimezone } from "@repo/voice/datetime";
 import { MissedCallTextBack } from "@/components/missed-call-text-back";
-import { RecordingLink } from "@/components/recording-link";
-import { RoiCounter } from "@/components/roi-counter";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
+import { phoneLast10 } from "@/lib/phone";
+import {
+  VOICE_PERIOD_DAYS,
+  VOICE_RATE_CENTS_PER_MINUTE,
+  classifyCall,
+  mergeCallLog,
+  phoneMatchVariants,
+  summarizeCalls,
+  talkMinutes,
+  voicePeriodStart,
+  type CallLike,
+  type SessionLike,
+  type VoiceStats,
+} from "@/lib/voice-stats";
+import { RecentCalls, type RecentCallRow } from "./recent-calls";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("voice");
   return { title: t("meta.receptionist") };
 }
 
-const RETELL_COST_PER_MINUTE = 0.10; // USD — billed to customers at $0.10/min (Retell cost ~$0.07)
+/** How many calls the list shows. No total on the page is computed from it. */
+const RECENT_LIMIT = 25;
+/** Rows per request when counting; fetchAll keeps asking until a page comes back short. */
+const PAGE_SIZE = 1000;
+/** jsonb containment: the transcript holds at least one turn from the caller. */
+const CALLER_SPOKE = JSON.stringify([{ role: "user" }]);
+/** Phone variants per client lookup — keeps the request URL well inside limits. */
+const VARIANTS_PER_QUERY = 90;
 
-type Translate = (key: string, opts?: Record<string, unknown>) => string;
+type Db = Awaited<ReturnType<typeof createClient>>;
+type ClientEmbed = { id: string; first_name: string | null; last_name: string | null };
+type Transcript = { role: string; content: string }[];
 
-function formatDuration(seconds: number | null | undefined, t: Translate): string {
-  if (!seconds) return t("receptionist.duration.none");
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m > 0
-    ? t("receptionist.duration.minutesSeconds", { minutes: m, seconds: s })
-    : t("receptionist.duration.seconds", { seconds: s });
-}
-
-function timeAgo(iso: string, t: Translate, locale: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1) return t("receptionist.time.justNow");
-  if (m < 60) return t("receptionist.time.minutesAgo", { count: m });
-  const h = Math.floor(m / 60);
-  if (h < 24) return t("receptionist.time.hoursAgo", { count: h });
-  return new Date(iso).toLocaleDateString(intlLocale(locale), { month: "short", day: "numeric" });
+/** Every row a query matches, one page at a time — counted, never capped. */
+async function fetchAll<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: unknown; error: unknown }>,
+): Promise<T[]> {
+  const out: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await page(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    const rows = (data ?? []) as T[];
+    out.push(...rows);
+    if (rows.length < PAGE_SIZE) return out;
+  }
 }
 
 /**
- * AI Receptionist — the INBOUND half of the front desk: Claude answers calls 24/7
- * (books appointments, takes messages, handles FAQs) and texts back missed calls.
- * Outbound calling lives on its own page (AI Client Assistant).
+ * The totals for the window: every inbound AI session and every missed-call
+ * row since `sinceIso`, merged into one row per call and classified by
+ * lib/voice-stats — the same functions the list below uses.
+ */
+async function loadWindowStats(db: Db, orgId: string, sinceIso: string): Promise<VoiceStats> {
+  const [sessions, spoke, calls] = await Promise.all([
+    fetchAll<Omit<SessionLike, "spoke">>((from, to) =>
+      db
+        .from("voice_sessions")
+        .select("id, call_sid, created_at, status, booked_event_id, duration_seconds")
+        .eq("organization_id", orgId)
+        .eq("direction", "inbound")
+        .gte("created_at", sinceIso)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to),
+    ),
+    fetchAll<{ id: string }>((from, to) =>
+      db
+        .from("voice_sessions")
+        .select("id")
+        .eq("organization_id", orgId)
+        .eq("direction", "inbound")
+        .gte("created_at", sinceIso)
+        .contains("messages", CALLER_SPOKE)
+        .order("id", { ascending: true })
+        .range(from, to),
+    ),
+    fetchAll<CallLike>((from, to) =>
+      db
+        .from("calls")
+        .select("id, twilio_call_sid, called_at, status, auto_replied")
+        .eq("organization_id", orgId)
+        .gte("called_at", sinceIso)
+        .order("called_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, to),
+    ),
+  ]);
+  const spokeIds = new Set(spoke.map((r) => r.id));
+  return summarizeCalls(mergeCallLog(sessions.map((s) => ({ ...s, spoke: spokeIds.has(s.id) })), calls));
+}
+
+function one<T>(v: T | T[] | null | undefined): T | null {
+  return Array.isArray(v) ? (v[0] ?? null) : (v ?? null);
+}
+
+/** A client's display name — null for the "Caller" placeholder matchOrCreateClient gives a stranger. */
+function displayName(c: ClientEmbed): string | null {
+  const fn = (c.first_name ?? "").trim();
+  const ln = (c.last_name ?? "").trim();
+  if (!ln && (!fn || fn.toLowerCase() === "caller")) return null;
+  return [fn, ln].filter(Boolean).join(" ");
+}
+
+/** Clients whose phone is one of these numbers in any common shape, keyed by last ten digits. */
+async function clientsByNumber(db: Db, orgId: string, numbers: string[]): Promise<Map<string, ClientEmbed>> {
+  const found = new Map<string, ClientEmbed>();
+  const variants = Array.from(new Set(numbers.flatMap(phoneMatchVariants)));
+  const chunks: string[][] = [];
+  for (let i = 0; i < variants.length; i += VARIANTS_PER_QUERY) chunks.push(variants.slice(i, i + VARIANTS_PER_QUERY));
+
+  const results = await Promise.all(
+    chunks.map((chunk) =>
+      db.from("clients").select("id, first_name, last_name, phone").eq("organization_id", orgId).in("phone", chunk),
+    ),
+  );
+  for (const result of results) {
+    for (const c of (result.data ?? []) as (ClientEmbed & { phone: string | null })[]) {
+      const key = phoneLast10(c.phone);
+      if (key && !found.has(key)) found.set(key, c);
+    }
+  }
+  return found;
+}
+
+function StatCard({ label, icon, value, sub }: { label: string; icon: ReactNode; value: string; sub: string }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
+        {icon}
+      </div>
+      <p className="text-2xl font-semibold text-slate-800 font-mono">{value}</p>
+      <p className="text-xs text-slate-400 mt-0.5">{sub}</p>
+    </div>
+  );
+}
+
+/**
+ * AI Receptionist — the INBOUND half of the front desk: the AI receptionist
+ * answers calls 24/7 (books appointments, takes messages, handles FAQs) and
+ * texts back missed calls. Outbound calling lives on its own page (AI Client
+ * Assistant), and its calls are excluded here.
+ *
+ * Every number on this page covers the same labelled window (VOICE_PERIOD_DAYS,
+ * in the business's timezone) and comes from lib/voice-stats — see that file
+ * for which table is authoritative for what.
  */
 export default async function AiReceptionistPage() {
   const t = await getServerT("voice");
@@ -50,59 +164,97 @@ export default async function AiReceptionistPage() {
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
 
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 3600_000).toISOString();
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("twilio_number, auto_reply, timezone, voice_agent_enabled")
+    .eq("id", orgId)
+    .maybeSingle();
+  const timeZone = safeTimezone(org?.timezone);
+  const since = voicePeriodStart(timeZone);
+  const sinceIso = since.toISOString();
 
-  const [{ data: org }, { data: sessions }, { data: calls }, { count: autoTexted }, { count: bookedViaSms }] = await Promise.all([
-    supabase.from("organizations").select("twilio_number, auto_reply, auto_reply_msg").eq("id", orgId).single(),
-    supabase
-      .from("voice_sessions")
-      .select("id, from_number, messages, status, booked_event_id, summary, duration_seconds, recording_url, created_at")
-      .eq("organization_id", orgId)
-      .order("created_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("calls")
-      .select(`
-        id, from_number, to_number, status, auto_replied, reply_body, called_at, duration_seconds,
-        clients(first_name, last_name)
-      `)
-      .eq("organization_id", orgId)
-      .order("called_at", { ascending: false })
-      .limit(50),
-    // Missed calls that were auto-texted in the last 7 days.
-    supabase
-      .from("calls")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", orgId)
-      .eq("auto_replied", true)
-      .gte("called_at", sevenDaysAgo),
-    // SMS conversations that Emma booked in the last 7 days (from real run accounting).
+  const [stats, smsBooked, recentSessions, recentCalls] = await Promise.all([
+    loadWindowStats(supabase, orgId, sinceIso).catch((e) => {
+      console.error("[voice] loading call totals failed", e);
+      return null;
+    }),
+    // SMS conversations Emma booked in the window (from real run accounting).
     supabase
       .from("ai_employee_runs")
       .select("id", { count: "exact", head: true })
       .eq("organization_id", orgId)
       .eq("channel", "sms")
       .filter("outcome->>booked", "eq", "true")
-      .gte("started_at", sevenDaysAgo),
+      .gte("started_at", sinceIso),
+    supabase
+      .from("voice_sessions")
+      .select(
+        "id, call_sid, from_number, messages, status, booked_event_id, summary, duration_seconds, recording_url, created_at, clients(id, first_name, last_name)",
+      )
+      .eq("organization_id", orgId)
+      .eq("direction", "inbound")
+      .order("created_at", { ascending: false })
+      .limit(RECENT_LIMIT),
+    supabase
+      .from("calls")
+      .select("id, twilio_call_sid, from_number, status, auto_replied, called_at, duration_seconds, clients(id, first_name, last_name)")
+      .eq("organization_id", orgId)
+      .order("called_at", { ascending: false })
+      .limit(RECENT_LIMIT),
   ]);
+  const bookedViaSms = smsBooked.error ? null : (smsBooked.count ?? 0);
 
-  const totalSessions = sessions?.length ?? 0;
-  const booked  = (sessions ?? []).filter((s) => s.booked_event_id).length;
-  const msgLeft = (sessions ?? []).filter(
-    (s) =>
-      (Array.isArray(s.messages) ? (s.messages as { role: string }[]) : []).some(
-        (m) => m?.role === "user",
-      ) && !s.booked_event_id,
-  ).length;
-  const totalSeconds = (sessions ?? []).reduce((sum, s) => sum + (s.duration_seconds ?? 0), 0);
-  const totalMinutes = totalSeconds / 60;
-  const estCost = totalMinutes * RETELL_COST_PER_MINUTE;
-
-  const oneDecimal = new Intl.NumberFormat(intlLocale(locale), {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+  // ── The list: the latest calls from both writers, one row per call ─────────
+  type RecentSession = Omit<SessionLike, "spoke"> & {
+    from_number: string | null;
+    messages: unknown;
+    summary: string | null;
+    recording_url: string | null;
+    clients: ClientEmbed | ClientEmbed[] | null;
+  };
+  type RecentCall = CallLike & {
+    from_number: string | null;
+    duration_seconds: number | null;
+    clients: ClientEmbed | ClientEmbed[] | null;
+  };
+  const sessions = ((recentSessions.data ?? []) as RecentSession[]).map((s) => {
+    const transcript: Transcript = Array.isArray(s.messages) ? (s.messages as Transcript) : [];
+    // Same test as CALLER_SPOKE, so a row reads the way the totals counted it.
+    return { ...s, transcript, spoke: transcript.some((m) => m?.role === "user") };
   });
+  const merged = mergeCallLog(sessions, (recentCalls.data ?? []) as RecentCall[]).slice(0, RECENT_LIMIT);
+
+  const numberOf = (r: (typeof merged)[number]) => {
+    const n = (r.session?.from_number ?? r.call?.from_number ?? "").trim();
+    return n && n !== "unknown" ? n : "";
+  };
+  const unlinked = merged.filter((r) => !one(r.session?.clients) && !one(r.call?.clients)).map(numberOf).filter(Boolean);
+  const byNumber = unlinked.length ? await clientsByNumber(supabase, orgId, unlinked) : new Map<string, ClientEmbed>();
+
+  const rows: RecentCallRow[] = merged.map((r) => {
+    const from = numberOf(r);
+    const client = one(r.session?.clients) ?? one(r.call?.clients) ?? (from ? byNumber.get(phoneLast10(from)) : undefined) ?? null;
+    return {
+      key: r.key,
+      at: r.at,
+      fromNumber: from || t("receptionist.calls.unknownNumber"),
+      outcome: classifyCall(r),
+      autoReplied: Boolean(r.call?.auto_replied),
+      durationSeconds: r.session?.duration_seconds ?? r.call?.duration_seconds ?? null,
+      summary: r.session?.summary ?? null,
+      recordingUrl: r.session?.recording_url ?? null,
+      transcript: r.session?.transcript ?? [],
+      client: client ? { id: client.id, name: displayName(client) } : null,
+      inPeriod: Date.parse(r.at) >= since.getTime(),
+    };
+  });
+
+  // ── Formatting ─────────────────────────────────────────────────────────────
+  const num = new Intl.NumberFormat(intlLocale(locale));
+  const oneDecimal = new Intl.NumberFormat(intlLocale(locale), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const money = new Intl.NumberFormat(intlLocale(locale), { style: "currency", currency: "USD" });
+  const dash = t("receptionist.duration.none");
+  const minutes = stats ? talkMinutes(stats.talkSeconds) : 0;
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -123,140 +275,76 @@ export default async function AiReceptionistPage() {
         </a>
       </div>
 
-      {/* Inbound call stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.callsHandled")}</span>
-            <Phone className="w-4 h-4 text-indigo-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">{totalSessions}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.allTime")}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.appointmentsBooked")}</span>
-            <Calendar className="w-4 h-4 text-emerald-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">{booked}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.viaVoiceAgent")}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.messagesTaken")}</span>
-            <MessageSquare className="w-4 h-4 text-amber-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">{msgLeft}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.savedToInbox")}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.minutesUsed")}</span>
-            <Clock className="w-4 h-4 text-violet-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">
-            {totalMinutes >= 60
-              ? t("receptionist.stats.hours", { value: oneDecimal.format(totalMinutes / 60) })
-              : t("receptionist.stats.minutes", { value: oneDecimal.format(totalMinutes) })}
+      {org && !org.voice_agent_enabled && (
+        <p className="mb-6 text-sm text-amber-700">
+          {t("receptionist.agentOff")}{" "}
+          <a href="/settings#voice-agent" className="font-medium underline">
+            {t("receptionist.agentOffLink")}
+          </a>
+        </p>
+      )}
+
+      {/* Inbound call stats — one labelled window */}
+      <section className="mb-8">
+        <p className="text-xs text-slate-500 mb-3">{t("receptionist.period", { count: VOICE_PERIOD_DAYS })}</p>
+        {!stats && (
+          <p className="text-xs text-rose-600 mb-3" role="alert">
+            {t("receptionist.statsError")}
           </p>
-          <p className="text-xs text-slate-400 mt-0.5">{t("receptionist.stats.talkTime")}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{t("receptionist.stats.estCost")}</span>
-            <DollarSign className="w-4 h-4 text-rose-400" />
-          </div>
-          <p className="text-2xl font-semibold text-slate-800 font-mono">
-            {money.format(estCost)}
-          </p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {t("receptionist.stats.costRate", { rate: money.format(RETELL_COST_PER_MINUTE) })}
-          </p>
-        </div>
-      </div>
-
-      {/* Missed-call recovery ROI */}
-      <div className="mb-8">
-        <RoiCounter autoTexted={autoTexted ?? 0} bookedViaSms={bookedViaSms ?? 0} />
-      </div>
-
-      {/* Missed-call text-back (inbound safety-net) */}
-      <div className="mb-8">
-        <MissedCallTextBack org={org} calls={calls ?? []} />
-      </div>
-
-      {/* Call transcript log */}
-      <div className="bg-white rounded-xl border border-slate-200">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
-          <Bot className="w-4 h-4 text-indigo-500" />
-          <h2 className="text-sm font-semibold text-slate-700">{t("receptionist.transcripts.title")}</h2>
-        </div>
-
-        {!sessions?.length ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Phone className="w-8 h-8 text-slate-300 mb-2" />
-            <p className="text-xs font-medium text-slate-500 mb-1">{t("receptionist.transcripts.emptyTitle")}</p>
-            <p className="text-xs text-slate-400">
-              {t("receptionist.transcripts.emptyBody")}
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-50">
-            {sessions.map((session) => {
-              const msgs = Array.isArray(session.messages)
-                ? (session.messages as { role: string; content: string }[])
-                : [];
-              const turns = Math.ceil(msgs.length / 2);
-              return (
-                <details key={session.id} className="group">
-                  <summary className="flex items-center gap-4 px-6 py-4 cursor-pointer hover:bg-slate-50 list-none">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${session.status === "completed" ? "bg-slate-300" : "bg-emerald-400"}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800">{session.from_number}</p>
-                      {session.summary ? (
-                        <p className="text-xs text-slate-500 truncate">{session.summary}</p>
-                      ) : (
-                        <p className="text-xs text-slate-400">{t("receptionist.transcripts.turns", { count: turns })}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      {session.booked_event_id && (
-                        <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">{t("receptionist.transcripts.appointmentBooked")}</span>
-                      )}
-                      {session.duration_seconds ? (
-                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full font-mono">
-                          {formatDuration(session.duration_seconds, t)}
-                        </span>
-                      ) : null}
-                      {session.recording_url ? (
-                        <RecordingLink href={session.recording_url} />
-                      ) : null}
-                      <span className="text-xs text-slate-400">{timeAgo(session.created_at, t, locale)}</span>
-                      <span className="text-slate-300 group-open:rotate-90 transition-transform">›</span>
-                    </div>
-                  </summary>
-                  <div className="px-6 pb-4 space-y-2 bg-slate-50/50">
-                    {msgs.map((msg, i) => (
-                      <div key={i} className={`flex gap-2 ${msg.role === "user" ? "justify-start" : "justify-end"}`}>
-                        <div className={`max-w-sm rounded-xl px-3 py-2 text-sm ${
-                          msg.role === "user"
-                            ? "bg-white border border-slate-200 text-slate-700"
-                            : "bg-indigo-600 text-white"
-                        }`}>
-                          <p className="text-xs font-semibold mb-0.5 opacity-60">
-                            {msg.role === "user" ? t("receptionist.transcripts.caller") : t("receptionist.transcripts.agent")}
-                          </p>
-                          {msg.content}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              );
-            })}
-          </div>
         )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <StatCard
+            label={t("receptionist.stats.answeredByAi")}
+            icon={<Phone className="w-4 h-4 text-indigo-400" />}
+            value={stats ? num.format(stats.answeredByAi) : dash}
+            sub={stats ? t("receptionist.stats.answeredSub", { count: stats.totalCalls, total: num.format(stats.totalCalls) }) : dash}
+          />
+          <StatCard
+            label={t("receptionist.stats.appointmentsBooked")}
+            icon={<Calendar className="w-4 h-4 text-emerald-400" />}
+            value={stats ? num.format(stats.booked) : dash}
+            sub={t("receptionist.stats.bookedSub")}
+          />
+          <StatCard
+            label={t("receptionist.stats.messagesTaken")}
+            icon={<MessageSquare className="w-4 h-4 text-amber-400" />}
+            value={stats ? num.format(stats.messagesTaken) : dash}
+            sub={t("receptionist.stats.messagesSub")}
+          />
+          <StatCard
+            label={t("receptionist.stats.talkTime")}
+            icon={<Clock className="w-4 h-4 text-violet-400" />}
+            value={
+              !stats
+                ? dash
+                : minutes >= 60
+                  ? t("receptionist.stats.hours", { value: oneDecimal.format(minutes / 60) })
+                  : t("receptionist.stats.minutes", { value: oneDecimal.format(minutes) })
+            }
+            sub={t("receptionist.stats.talkSub")}
+          />
+          <StatCard
+            label={t("receptionist.stats.estCost")}
+            icon={<DollarSign className="w-4 h-4 text-rose-400" />}
+            value={stats ? money.format(stats.estCostCents / 100) : dash}
+            sub={t("receptionist.stats.costRate", { rate: money.format(VOICE_RATE_CENTS_PER_MINUTE / 100) })}
+          />
+        </div>
+      </section>
+
+      {/* Missed-call recovery, same window */}
+      <div className="mb-8">
+        <MissedCallTextBack
+          org={org}
+          missed={stats?.missed ?? null}
+          autoTexted={stats?.autoTexted ?? null}
+          bookedViaSms={bookedViaSms}
+          periodDays={VOICE_PERIOD_DAYS}
+        />
       </div>
+
+      {/* Every inbound call, once */}
+      <RecentCalls rows={rows} periodDays={VOICE_PERIOD_DAYS} timeZone={timeZone} />
     </div>
   );
 }

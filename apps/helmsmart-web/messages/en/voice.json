@@ -4,31 +4,48 @@
     "clientAssistant": "AI Client Assistant"
   },
   "receptionist": {
-    "subtitle": "Claude answers your calls 24/7 and texts back the ones you miss — books appointments, takes messages, handles FAQs",
+    "subtitle": "Your AI receptionist answers your calls 24/7 and texts back the ones you miss — books appointments, takes messages, handles FAQs",
     "settings": "Settings",
+    "agentOff": "Your AI receptionist is switched off, so it isn't answering calls right now.",
+    "agentOffLink": "Turn it on in Settings",
+    "period_one": "Last {{count}} day",
+    "period_other": "Last {{count}} days",
+    "statsError": "We couldn't load your call totals just now. Refresh the page to try again.",
     "stats": {
-      "callsHandled": "Calls Handled",
-      "allTime": "All time",
+      "answeredByAi": "Answered by AI",
+      "answeredSub_one": "of {{total}} call",
+      "answeredSub_other": "of {{total}} calls",
       "appointmentsBooked": "Appointments Booked",
-      "viaVoiceAgent": "Via voice agent",
+      "bookedSub": "Booked during the call",
       "messagesTaken": "Messages Taken",
-      "savedToInbox": "Saved to Inbox",
-      "minutesUsed": "Minutes Used",
-      "talkTime": "Talk time",
+      "messagesSub": "Talked, nothing booked",
+      "talkTime": "Talk Time",
+      "talkSub": "Minutes the AI spent on calls",
       "estCost": "Est. AI Cost",
-      "costRate": "@ {{rate}}/min",
+      "costRate": "{{rate}}/min, rounded up per call",
       "hours": "{{value}}h",
       "minutes": "{{value}}m"
     },
-    "transcripts": {
-      "title": "Call transcripts",
+    "calls": {
+      "title": "Recent calls",
+      "caption_one": "The latest call. The totals above count the last {{days}} days.",
+      "caption_other": "The latest {{count}} calls, newest first. The totals above count the last {{days}} days.",
+      "olderDivider": "Older than {{days}} days — not in the totals above",
       "emptyTitle": "No calls yet",
-      "emptyBody": "Enable the voice agent and configure your Twilio webhook to start handling calls.",
-      "turns_one": "{{count}} turn",
-      "turns_other": "{{count}} turns",
-      "appointmentBooked": "Appointment booked",
+      "emptyBody": "Calls your AI receptionist answers or misses will show up here, with transcripts.",
+      "setupLink": "Set up your receptionist",
+      "unknownNumber": "Unknown number",
+      "textedBack": "Texted back",
       "caller": "Caller",
-      "agent": "AI Agent"
+      "agent": "AI receptionist",
+      "outcome": {
+        "booked": "Booked",
+        "message": "Message taken",
+        "missed": "Missed",
+        "voicemail": "Voicemail",
+        "answered": "Answered",
+        "inProgress": "In progress"
+      }
     },
     "duration": {
       "none": "—",
@@ -50,39 +67,21 @@
   "missedCall": {
     "title": "Missed-call text-back",
     "settingsLink": "Auto-reply settings",
-    "autoReply": "Auto-reply",
-    "active": "Active",
-    "off": "Off",
-    "noNumber": "No number configured",
-    "missedToday": "Missed Today",
-    "noneToday": "None today",
-    "unanswered_one": "{{count}} unanswered call",
-    "unanswered_other": "{{count}} unanswered calls",
-    "repliesSent": "Replies Sent",
-    "thisWeek": "This week",
-    "recentCalls": "Recent Calls",
-    "emptyTitle": "No calls recorded yet",
-    "emptyBody": "Missed calls will appear here once your Twilio number is configured.",
-    "autoReplied": "Auto-replied",
-    "unknownStatus": "—",
-    "status": {
-      "missed": "Missed",
-      "voicemail": "Voicemail",
-      "completed": "Completed",
-      "answered": "Answered",
-      "active": "In progress",
-      "busy": "Busy",
-      "failed": "Failed",
-      "no-answer": "No answer",
-      "canceled": "Canceled",
-      "queued": "Queued",
-      "ringing": "Ringing"
-    },
-    "time": {
-      "justNow": "just now",
-      "minutesAgo": "{{count}}m ago",
-      "hoursAgo": "{{count}}h ago"
-    }
+    "on": "Auto-reply is on. Missed callers get a text from {{number}}.",
+    "onNoNumber": "Auto-reply is on, but there's no phone number to text from yet.",
+    "off": "Auto-reply is off, so missed callers don't get a text."
+  },
+  "roi": {
+    "missed": "Missed Calls",
+    "missedSub": "Missed, voicemail or hung up",
+    "autoTexted": "Texted Back",
+    "autoTextedSub": "Got the auto-reply text",
+    "booked": "Booked by Text",
+    "bookedSub": "Appointments booked over SMS",
+    "conversion": "Conversion",
+    "noTextsYet": "No texts sent yet",
+    "conversionSub_one": "{{booked}} of {{total}} texted caller booked",
+    "conversionSub_other": "{{booked}} of {{total}} texted callers booked"
   },
   "outbound": {
     "title": "Place AI calls",
@@ -145,7 +144,7 @@
   },
   "settings": {
     "title": "AI Voice Agent",
-    "subtitle": "Answers your calls with Claude when you're unavailable",
+    "subtitle": "Answers your calls when you're unavailable",
     "toggleNeedsNumber": "Add a phone number first — the agent has nothing to answer on.",
     "needsNumber": "The voice agent needs a phone number before it can answer calls.",
     "connected": "Connected to {{number}}",
@@ -174,7 +173,7 @@
     },
     "context": {
       "label": "Business context",
-      "hint": "(what Claude knows about you)",
+      "hint": "(what your receptionist knows about you)",
       "help": "Plain text is fine. The more detail, the better the agent performs.",
       "useTemplate": "Use this template"
     },
