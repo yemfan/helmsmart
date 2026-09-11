@@ -61,11 +61,6 @@
     "submit": "创建任务",
     "titleRequired": "请填写标题"
   },
-  "mark": {
-    "ask": "请 Mark 创建一项任务",
-    "created": "任务已创建",
-    "viewIt": "查看"
-  },
   "recurring": {
     "title": "周期任务",
     "subtitle_other": "{{count}} 个进行中 · 按计划自动创建待办",
@@ -172,13 +167,6 @@
       "failed": "失败"
     }
   },
-  "alexReminder": {
-    "queued": "Alex 已为你创建一项任务",
-    "seeTasks": "查看任务",
-    "summary_one": "<b>{{count}} 张逾期发票</b>，共计 <b>{{total}}</b>，尚未发送任何催款提醒。",
-    "summary_other": "<b>{{count}} 张逾期发票</b>，共计 <b>{{total}}</b>，尚未发送任何催款提醒。",
-    "ask": "请 Alex 去催收"
-  },
   "errors": {
     "notAuthenticated": "登录已过期，请重新登录后继续。",
     "noOrg": "尚未选择企业，请重新登录后继续。",
@@ -186,11 +174,11 @@
     "firstRunDateRequired": "请填写首次执行日期"
   },
   "generated": {
-    "reviewOpenItems": "查看并排列待办事项的优先级 —— 请修改此标题",
-    "reviewOpenItemsNotes": "此任务由 Mark 创建。请修改标题、指派负责人并设置截止日期。",
     "callBack": "回拨 {{who}}",
     "followUpAiCall": "跟进：来自 {{who}} 的 AI 通话",
     "replyNeeded": "{{sender}} 的{{intent}} —— 需要回复",
-    "followUpWithClient": "跟进客户 {{client_name}}"
+    "followUpWithClient": "跟进客户 {{client_name}}",
+    "followUpNote": "建议发送给 {{phone}} 的短信：\n\n“{{message}}”",
+    "followUpMessage": "{{client_name}}，你好。这里是 {{org}}，想了解一下有什么可以帮到你的。这周方便简单聊几分钟吗？"
   }
 }

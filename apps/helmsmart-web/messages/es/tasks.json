@@ -62,11 +62,6 @@
     "submit": "Crear tarea",
     "titleRequired": "El título es obligatorio"
   },
-  "mark": {
-    "ask": "Pedir a Mark que cree una tarea",
-    "created": "Tarea creada",
-    "viewIt": "verla"
-  },
   "recurring": {
     "title": "Tareas recurrentes",
     "subtitle_one": "{{count}} activa · crea tareas automáticamente según un calendario",
@@ -174,13 +169,6 @@
       "failed": "Fallida"
     }
   },
-  "alexReminder": {
-    "queued": "Alex creó una tarea para usted",
-    "seeTasks": "ver Tareas",
-    "summary_one": "<b>{{count}} factura vencida</b> por un total de <b>{{total}}</b>, sin ningún recordatorio enviado todavía.",
-    "summary_other": "<b>{{count}} facturas vencidas</b> por un total de <b>{{total}}</b>, sin ningún recordatorio enviado todavía.",
-    "ask": "Pedir a Alex que les envíe un recordatorio"
-  },
   "errors": {
     "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",
     "noOrg": "No hay ninguna empresa seleccionada. Vuelva a iniciar sesión para continuar.",
@@ -188,11 +176,11 @@
     "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria"
   },
   "generated": {
-    "reviewOpenItems": "Revise y priorice los pendientes — cambie este título",
-    "reviewOpenItemsNotes": "Mark creó esta tarea. Cambie el título, asígnela y ponga una fecha de vencimiento.",
     "callBack": "Devolver la llamada a {{who}}",
     "followUpAiCall": "Seguimiento: llamada con IA de {{who}}",
     "replyNeeded": "{{intent}} de {{sender}} — requiere respuesta",
-    "followUpWithClient": "Dar seguimiento a {{client_name}}"
+    "followUpWithClient": "Dar seguimiento a {{client_name}}",
+    "followUpNote": "Mensaje sugerido para enviar al {{phone}}:\n\n“{{message}}”",
+    "followUpMessage": "¡Hola, {{client_name}}! Le escribimos de {{org}} para ver cómo podemos ayudarle. ¿Tiene unos minutos para hablar esta semana?"
   }
 }

@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { BooksNav } from "@/components/books-nav";
 import { Plus, FileText, Send, CheckCircle2, Clock, XCircle, Download } from "lucide-react";
-import { AlexReminderBanner } from "@/components/alex-reminder-button";
-import { ResponsibleEmployee } from "@/components/responsible-employee";
+import { OverdueRemindersBanner } from "@/components/overdue-reminders";
+import type { OverdueInvoiceRow } from "@/lib/overdue-reminders-plan";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
@@ -45,8 +45,8 @@ export default async function InvoicesPage() {
   const { data: invoices } = await supabase
     .from("invoices")
     .select(`
-      id, invoice_number, status, issue_date, due_date, total, paid_at,
-      clients(first_name, last_name, company)
+      id, invoice_number, status, issue_date, due_date, total, paid_at, last_reminder_sent_at,
+      clients(first_name, last_name, company, email)
     `)
     .eq("organization_id", orgId)
     .neq("status", "void")
@@ -64,11 +64,28 @@ export default async function InvoicesPage() {
   const totalOverdue     = overdue.reduce((s, i) => s + Number(i.total), 0);
   const totalPaid30      = paid30.reduce((s, i) => s + Number(i.total), 0);
 
+  // What the overdue banner lists before the owner sends anything.
+  const remindedOn = dateFormatter(locale, { month: "short", day: "numeric" });
+  const overdueRows: OverdueInvoiceRow[] = overdue.map((inv) => {
+    const c = (Array.isArray(inv.clients) ? inv.clients[0] : inv.clients) as {
+      first_name: string | null; last_name: string | null; company: string | null; email: string | null;
+    } | null;
+    const lastSent = (inv.last_reminder_sent_at as string | null) ?? null;
+    return {
+      id: inv.id,
+      invoiceNumber: inv.invoice_number,
+      clientName: (c && ([c.first_name, c.last_name].filter(Boolean).join(" ") || c.company)) || "—",
+      email: c?.email ?? null,
+      amount: fmt(Number(inv.total)),
+      lastReminderSentAt: lastSent,
+      lastReminderLabel: lastSent ? remindedOn(new Date(lastSent)) : null,
+    };
+  });
+
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <ResponsibleEmployee slug="alex" className="mb-2" />
           <PageTitle base="Books" />
           <p className="text-sm text-slate-500 mt-0.5">{t("overview.subtitle")}</p>
         </div>
@@ -120,7 +137,7 @@ export default async function InvoicesPage() {
         ))}
       </div>
 
-      <AlexReminderBanner overdueCount={overdue.length} overdueTotal={fmt(totalOverdue)} />
+      <OverdueRemindersBanner invoices={overdueRows} overdueTotal={fmt(totalOverdue)} today={today} />
 
       {/* Invoice list */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">

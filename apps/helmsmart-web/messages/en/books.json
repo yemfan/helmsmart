@@ -65,6 +65,23 @@
       "emptyTitle": "No invoices yet",
       "emptyBody": "Create your first invoice and send it directly to a client via email.",
       "createInvoice": "Create invoice",
+      "overdueReminders": {
+        "summary_one": "<b>{{count}} overdue invoice</b> totaling <b>{{total}}</b>.",
+        "summary_other": "<b>{{count}} overdue invoices</b> totaling <b>{{total}}</b>.",
+        "review": "Send payment reminders…",
+        "intro": "Each client below gets a payment reminder by email — and a text too, if they have a phone number and your business number is set up.",
+        "neverReminded": "Not reminded yet",
+        "lastReminded": "Last reminded {{date}}",
+        "remindedToday": "Already reminded today — skipped",
+        "noEmail": "No email on file — skipped",
+        "send_one": "Send {{count}} reminder",
+        "send_other": "Send {{count}} reminders",
+        "sending": "Sending… {{done}} of {{total}}",
+        "sent_one": "Sent {{count}} reminder",
+        "sent_other": "Sent {{count}} reminders",
+        "failed": "Couldn't send: {{invoices}}. Open each invoice to try again.",
+        "nothingToSend": "None of these can be reminded right now."
+      },
       "columns": {
         "client": "Client / Number",
         "issued": "Issued",

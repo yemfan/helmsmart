@@ -35,12 +35,13 @@
     "contact": "Contacto",
     "moveToStage": "Mover a la etapa",
     "viewProfile": "Ver el perfil completo",
-    "sarah": {
-      "queued": "Sarah creó una tarea para usted",
+    "followUp": {
+      "create": "Crear tarea de seguimiento",
+      "creating": "Creando…",
+      "created": "Tarea de seguimiento creada",
       "seeTasks": "ver Tareas",
-      "noPhone": "No hay ningún número de teléfono registrado.",
-      "drafting": "Redactando…",
-      "ask": "Pedir a Sarah que haga el seguimiento"
+      "invalidPhone": "Ese número de teléfono no parece válido; revíselo en el perfil del cliente.",
+      "failed": "No se pudo crear la tarea. Inténtelo de nuevo."
     }
   }
 }

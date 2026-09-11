@@ -598,11 +598,6 @@
       "previewEmpty": "Your post preview will appear here",
       "published": "Published"
     },
-    "emily": {
-      "draftCreated": "Draft created — edit and publish from here",
-      "ask": "Ask Emily to draft a post",
-      "error": "Something went wrong."
-    },
     "connections": {
       "connected": "Connected",
       "notConnected": "Not connected",

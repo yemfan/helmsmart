@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { defaultAvatarForSeed } from "@helm/ui";
+import { Avatar, defaultAvatarForSeed } from "@helm/ui";
 import { getBlueprint } from "@helm/ai-workforce";
 
 type TimData = {
@@ -34,12 +34,9 @@ export function TimBriefing({ data }: { data: TimData }) {
   return (
     <div className="mt-8 bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center gap-3 mb-4">
-        <img
-          src={`/avatars/${avatar}.png`}
-          alt="Tim"
-          className="w-9 h-9 rounded-full object-cover bg-slate-100 flex-shrink-0"
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-        />
+        {/* The shared avatar set ships as SVG; `Avatar` owns the URL, so this
+            card cannot drift from the files again (it asked for a .png → 404). */}
+        <Avatar id={avatar} size={36} alt="Tim" />
         <div>
           <p className="text-sm font-semibold text-slate-800">{t("commandCenter.tim.role")}</p>
           <p className="text-xs text-slate-400">{t("commandCenter.tim.todaysBriefing")}</p>

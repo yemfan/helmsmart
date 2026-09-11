@@ -153,27 +153,18 @@
   "commandCenter": {
     "metaTitle": "指挥中心",
     "title": "指挥中心",
-    "subtitle": "一眼看清你的业务 —— 最近 30 天的 AI 团队活动与各部门健康度",
+    "subtitle": "你的 AI 团队最近 30 天完成的工作",
     "workforceHeading": "AI 团队",
     "nodes": {
-      "aiWorkforce": "AI 团队",
-      "finance": "财务",
-      "revenue": "营收",
-      "communication": "沟通",
-      "marketing": "营销",
-      "operations": "运营",
-      "service": "客户服务",
-      "intelligence": "经营洞察",
-      "people": "人力",
-      "knowledge": "知识库"
-    },
-    "kpi": {
-      "employees": "员工数",
-      "health": "健康度"
+      "aiWorkforce": "AI 团队"
     },
     "briefing": {
-      "unconfigured": "先组建你的 AI 团队来启用指挥中心。员工上线后，他们的活动和部门指标都会汇总到这里。",
-      "active": "最近 30 天，你的 AI 团队共完成 {{actions}}，涉及 {{employees}}。部门健康度指标正在按模块陆续上线。",
+      "unconfigured": "你还没有组建 AI 团队。员工上线后，他们完成的工作会显示在这里。",
+      "idle": "最近 30 天，你的 AI 员工还没有完成任何工作。",
+      "idleNextStep": "建议先从前台接待开始 —— 她开始接听你的电话后，工作记录就会显示在这里。",
+      "setUpReceptionist": "设置前台接待",
+      "idleReceptionistLive": "你的前台接待已上线 —— 她处理完第一通电话后，工作记录就会显示在这里。",
+      "active": "最近 30 天，你的 AI 团队共完成 {{actions}}，涉及 {{employees}}。",
       "actions_one": "{{count}} 项操作",
       "actions_other": "{{count}} 项操作",
       "employees_one": "{{count}} 名员工",
@@ -218,7 +209,7 @@
       "qtd": "本季度至今",
       "ytd": "本年至今"
     },
-    "cooBriefing": "AI 首席运营官简报",
+    "cooBriefing": "团队概览",
     "alertView": "查看",
     "dismissAlert": "忽略提醒"
   },

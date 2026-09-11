@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { SocialComposer } from "@/components/social-composer";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
-import { EmilyDraftButton } from "@/components/emily-draft-button";
 import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 import { SocialTopicsPanel } from "@/components/social-topics-panel";
 import { ChannelStatusList } from "@/components/channel-status-list";
@@ -160,12 +159,7 @@ export default async function SocialPage({
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
         orgName={org?.name ?? t("social.page.defaultOrgName")}
-        owner={
-          <div className="flex items-center gap-4">
-            <ResponsibleEmployee slug="emily" />
-            <EmilyDraftButton />
-          </div>
-        }
+        owner={<ResponsibleEmployee slug="emily" />}
         connectedProviders={[...connected]}
       />
     </div>

@@ -1,4 +1,3 @@
-import { ResponsibleEmployee } from "@/components/responsible-employee";
 import type { Metadata } from "next";
 import { getPnLReport, getCashFlowSummary, getTimeReport, getReceivablesAging, getCashFlowForecast, getSalesTaxReport } from "@/lib/actions/reports";
 import { listProjectsPnL, listClientsPnL } from "@/lib/actions/projects";
@@ -39,7 +38,6 @@ export default async function ReportsPage({
     <div className="p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <ResponsibleEmployee slug="tim" className="mb-3" />
         <h1 className="text-2xl font-semibold text-slate-900">{t("reports.business.title")}</h1>
         <p className="text-sm text-slate-500 mt-0.5">{t("reports.business.subtitle")}</p>
       </div>

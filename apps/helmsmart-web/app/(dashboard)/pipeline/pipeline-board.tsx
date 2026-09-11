@@ -4,13 +4,13 @@ import { useState, useTransition, useRef } from "react";
 import Link from "next/link";
 import {
   X, Mail, Phone, ChevronRight,
-  Users, Edit2, Check, Sparkles,
+  Users, Edit2, Check, CheckSquare,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import type { PipelineStage, PipelineClient } from "./page";
 import { patchClient } from "@/lib/actions/clients";
-import { letSarahFollowUp } from "@/lib/actions/approvals";
+import { createFollowUpTask } from "@/lib/actions/follow-up-task";
 
 // ─── Stage config ─────────────────────────────────────────────────────────────
 
@@ -124,14 +124,23 @@ function DetailPanel({
   const [value, setValue] = useState(client.expected_value?.toString() ?? "");
   const [editNote, setEditNote] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [sarahStatus, setSarahStatus] = useState<"idle" | "queued" | "no_phone" | "error">("idle");
+  const [followUpPending, startFollowUp] = useTransition();
+  const [followUpStatus, setFollowUpStatus] = useState<"idle" | "created" | "no_phone" | "error">("idle");
 
   const name = [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || t("card.unnamed");
 
-  function askSarah() {
-    startTransition(async () => {
-      const res = await letSarahFollowUp(client.id);
-      setSarahStatus(res.status === "queued" ? "queued" : res.status === "no_phone" ? "no_phone" : "error");
+  // A plain task with a suggested text — no AI drafts it and nothing is sent,
+  // so no AI employee's name is on the button (it used to say "Ask Sarah").
+  function createFollowUp() {
+    setFollowUpStatus("idle");
+    startFollowUp(async () => {
+      try {
+        const res = await createFollowUpTask(client.id);
+        setFollowUpStatus(res.status);
+      } catch (e) {
+        console.error("creating a follow-up task", e);
+        setFollowUpStatus("error");
+      }
     });
   }
 
@@ -286,26 +295,30 @@ function DetailPanel({
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-100 flex-shrink-0 space-y-3">
-          {/* Sarah follow-up */}
+          {/* Follow-up task */}
           {client.phone && (
             <div>
-              {sarahStatus === "queued" ? (
+              {followUpStatus === "created" ? (
                 <p className="text-xs text-emerald-700 flex items-center gap-1.5 font-medium">
-                  <Check className="w-3.5 h-3.5" /> {t("detail.sarah.queued")} — <a href="/tasks" className="underline">{t("detail.sarah.seeTasks")}</a>
+                  <Check className="w-3.5 h-3.5" /> {t("detail.followUp.created")} — <a href="/tasks" className="underline">{t("detail.followUp.seeTasks")}</a>
                 </p>
-              ) : sarahStatus === "no_phone" ? (
-                <p className="text-xs text-slate-400">{t("detail.sarah.noPhone")}</p>
-              ) : sarahStatus === "error" ? (
-                <p className="text-xs text-rose-500" role="alert">{t("common:errors.generic")}</p>
               ) : (
-                <button
-                  onClick={askSarah}
-                  disabled={isPending}
-                  className="flex items-center gap-1.5 w-full text-left px-3 py-2 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 disabled:opacity-50 transition-colors"
-                >
-                  <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-                  {isPending ? t("detail.sarah.drafting") : t("detail.sarah.ask")}
-                </button>
+                <>
+                  <button
+                    onClick={createFollowUp}
+                    disabled={followUpPending}
+                    className="flex items-center gap-1.5 w-full text-left px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                  >
+                    <CheckSquare className="w-3.5 h-3.5 flex-shrink-0" />
+                    {followUpPending ? t("detail.followUp.creating") : t("detail.followUp.create")}
+                  </button>
+                  {followUpStatus === "no_phone" && (
+                    <p className="mt-1.5 text-xs text-rose-600" role="alert">{t("detail.followUp.invalidPhone")}</p>
+                  )}
+                  {followUpStatus === "error" && (
+                    <p className="mt-1.5 text-xs text-rose-600" role="alert">{t("detail.followUp.failed")}</p>
+                  )}
+                </>
               )}
             </div>
           )}

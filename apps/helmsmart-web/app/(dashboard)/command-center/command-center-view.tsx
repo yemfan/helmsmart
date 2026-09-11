@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import type { WorkforceSummary } from "@helm/dna-intelligence";
 import { useTranslation } from "react-i18next";
 import { CommandCenterGrid, type DnaNode } from "@/components/shell/CommandCenterGrid";
+import { commandCenterState } from "@/lib/command-center";
 
 /**
  * "calls_answered" → "Calls Answered", the last-resort label for a metric key
@@ -15,61 +17,64 @@ function humanize(key: string): string {
 }
 
 /**
- * The DNA module nodes on the executive grid. The AI Workforce node is fed live
- * from the workforce roll-up; the rest link into their live sections today and
- * gain KPIs as each module's Command Center `getHealth` feed is wired.
+ * The executive grid, showing only what has data.
  *
- * `labelKey` is a key under `commandCenter.nodes`, not a label: the grid draws
- * whatever string it is handed, so the translation happens here.
+ * It used to draw nine DNA module nodes whose only KPI was a "Health" of null
+ * — a grid of dashes and "unconfigured" labels — beside a briefing that, with
+ * no work done, read "completed 0 actions… health metrics are rolling out".
+ * Now: the AI Workforce node when the workforce did real work; otherwise a
+ * sentence that says what is true and what to do next. Module nodes come back
+ * when a module has a real health feed to put in them.
  */
-const MODULE_NODES: { id: string; labelKey: string; drillHref?: string; live: boolean }[] = [
-  { id: "finance",       labelKey: "finance",       drillHref: "/books",     live: true },
-  { id: "revenue",       labelKey: "revenue",       drillHref: "/pipeline",  live: true },
-  { id: "communication", labelKey: "communication", drillHref: "/inbox",     live: true },
-  { id: "marketing",     labelKey: "marketing",     drillHref: "/marketing", live: true },
-  { id: "operations",    labelKey: "operations",    drillHref: "/tasks",     live: true },
-  { id: "service",       labelKey: "service",       drillHref: "/reception", live: true },
-  { id: "intelligence",  labelKey: "intelligence",  drillHref: "/reports",   live: true },
-  { id: "people",        labelKey: "people",        live: false },
-  { id: "knowledge",     labelKey: "knowledge",     live: false },
-];
-
-export function CommandCenterView({ summary }: { summary: WorkforceSummary }) {
+export function CommandCenterView({
+  summary,
+  receptionistLive,
+}: {
+  summary: WorkforceSummary;
+  /** The org has a number and the AI receptionist switched on. */
+  receptionistLive: boolean;
+}) {
   const { t } = useTranslation("home");
-  const totalEntries = Object.entries(summary.totals).sort((a, b) => b[1] - a[1]);
-  const workforceKpis = totalEntries.slice(0, 3).map(([k, v]) => ({
-    label: t(`metrics.${k}`, { defaultValue: humanize(k) }),
-    value: v,
-  }));
-  const totalActions = totalEntries.reduce((sum, [, v]) => sum + v, 0);
-  const employeeCount = summary.employees.length;
+  const state = commandCenterState(summary, receptionistLive);
+
+  if (state.kind === "unconfigured") {
+    return <p className="max-w-2xl text-sm text-slate-600">{t("commandCenter.briefing.unconfigured")}</p>;
+  }
+
+  if (state.kind === "idle") {
+    return (
+      <div className="max-w-2xl space-y-1 text-sm text-slate-600">
+        <p>{t("commandCenter.briefing.idle")}</p>
+        {state.receptionistLive ? (
+          <p>{t("commandCenter.briefing.idleReceptionistLive")}</p>
+        ) : (
+          <p>
+            {t("commandCenter.briefing.idleNextStep")}{" "}
+            <Link href="/voice" className="font-medium text-indigo-600 hover:text-indigo-700">
+              {t("commandCenter.briefing.setUpReceptionist")}
+            </Link>
+          </p>
+        )}
+      </div>
+    );
+  }
 
   const nodes: DnaNode[] = [
     {
       id: "ai-workforce",
       label: t("commandCenter.nodes.aiWorkforce"),
-      status: employeeCount > 0 ? "ok" : "unconfigured",
-      kpis:
-        workforceKpis.length > 0
-          ? workforceKpis
-          : [{ label: t("commandCenter.kpi.employees"), value: employeeCount || null }],
+      status: "ok",
+      kpis: state.topMetrics.map(([k, v]) => ({
+        label: t(`metrics.${k}`, { defaultValue: humanize(k) }),
+        value: v,
+      })),
     },
-    ...MODULE_NODES.map((m): DnaNode => ({
-      id: m.id,
-      label: t(`commandCenter.nodes.${m.labelKey}`),
-      status: m.live ? "ok" : "unconfigured",
-      kpis: [{ label: t("commandCenter.kpi.health"), value: null }],
-      drillHref: m.drillHref,
-    })),
   ];
 
-  const briefing =
-    employeeCount === 0
-      ? t("commandCenter.briefing.unconfigured")
-      : t("commandCenter.briefing.active", {
-          actions: t("commandCenter.briefing.actions", { count: totalActions }),
-          employees: t("commandCenter.briefing.employees", { count: employeeCount }),
-        });
+  const briefing = t("commandCenter.briefing.active", {
+    actions: t("commandCenter.briefing.actions", { count: state.totalActions }),
+    employees: t("commandCenter.briefing.employees", { count: state.employeeCount }),
+  });
 
   return <CommandCenterGrid nodes={nodes} briefing={briefing} />;
 }

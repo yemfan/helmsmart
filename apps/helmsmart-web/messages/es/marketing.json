@@ -598,11 +598,6 @@
       "previewEmpty": "Aquí aparecerá la vista previa de su publicación",
       "published": "Publicada"
     },
-    "emily": {
-      "draftCreated": "Borrador creado: edítelo y publíquelo desde aquí",
-      "ask": "Pídale a Emily que redacte una publicación",
-      "error": "Algo salió mal."
-    },
     "connections": {
       "connected": "Conectado",
       "notConnected": "No conectado",

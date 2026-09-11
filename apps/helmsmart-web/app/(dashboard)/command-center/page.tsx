@@ -28,13 +28,19 @@ export default async function CommandCenterPage() {
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
   const supabase = await createClient();
 
-  const [summary, employees, overdueRes, tasksRes, currency] = await Promise.all([
+  const [summary, employees, overdueRes, tasksRes, currency, orgRes] = await Promise.all([
     getWorkforceSummary(fromStr, todayStr),
     getWorkforce(),
     supabase.from("invoices").select("id, total").eq("organization_id", orgId).eq("status", "sent").lt("due_date", todayStr),
     supabase.from("tasks").select("id, priority").eq("organization_id", orgId).eq("status", "open"),
     orgCurrency(orgId),
+    supabase.from("organizations").select("twilio_number, voice_agent_enabled").eq("id", orgId).maybeSingle(),
   ]);
+
+  // The receptionist answers only with a number to ring AND the agent switched
+  // on (`app/api/twilio/voice`). An idle workforce is pointed at her setup
+  // unless both are already true.
+  const receptionistLive = Boolean(orgRes.data?.twilio_number && orgRes.data?.voice_agent_enabled);
 
   const fmt = moneyFormatter(locale, currency, { maximumFractionDigits: 0 });
   const overdueInvoices = overdueRes.data ?? [];
@@ -62,7 +68,7 @@ export default async function CommandCenterPage() {
         <p className="text-sm text-slate-500 mt-0.5">{t("commandCenter.subtitle")}</p>
       </div>
 
-      <CommandCenterView summary={summary} />
+      <CommandCenterView summary={summary} receptionistLive={receptionistLive} />
 
       <div className="mt-10">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">{t("commandCenter.workforceHeading")}</h2>

@@ -153,27 +153,18 @@
   "commandCenter": {
     "metaTitle": "Centro de mando",
     "title": "Centro de mando",
-    "subtitle": "Su negocio de un vistazo: la actividad de su equipo de IA y la salud de cada departamento en los últimos 30 días",
+    "subtitle": "Lo que hizo su equipo de IA en los últimos 30 días",
     "workforceHeading": "Equipo de IA",
     "nodes": {
-      "aiWorkforce": "Equipo de IA",
-      "finance": "Finanzas",
-      "revenue": "Ingresos",
-      "communication": "Comunicación",
-      "marketing": "Marketing",
-      "operations": "Operaciones",
-      "service": "Servicio",
-      "intelligence": "Inteligencia de negocio",
-      "people": "Personas",
-      "knowledge": "Conocimiento"
-    },
-    "kpi": {
-      "employees": "Empleados",
-      "health": "Salud"
+      "aiWorkforce": "Equipo de IA"
     },
     "briefing": {
-      "unconfigured": "Contrate a su equipo de IA para activar el centro de mando. En cuanto sus empleados estén activos, su actividad y los indicadores de cada departamento se resumirán aquí.",
-      "active": "En los últimos 30 días, su equipo de IA completó {{actions}} con {{employees}}. Los indicadores de salud por departamento se van habilitando módulo a módulo.",
+      "unconfigured": "Todavía no ha formado su equipo de IA. En cuanto sus empleados estén activos, el trabajo que hagan aparecerá aquí.",
+      "idle": "Sus empleados de IA no completaron ningún trabajo en los últimos 30 días.",
+      "idleNextStep": "Empiece por la recepcionista: en cuanto conteste sus llamadas, su trabajo aparecerá aquí.",
+      "setUpReceptionist": "Configurar la recepcionista",
+      "idleReceptionistLive": "Su recepcionista está activa: su trabajo aparecerá aquí después de la primera llamada que atienda.",
+      "active": "En los últimos 30 días, su equipo de IA completó {{actions}} con {{employees}}.",
       "actions_one": "{{count}} acción",
       "actions_other": "{{count}} acciones",
       "employees_one": "{{count}} empleado",
@@ -218,7 +209,7 @@
       "qtd": "Trimestre en curso",
       "ytd": "Año en curso"
     },
-    "cooBriefing": "Resumen del director de operaciones con IA",
+    "cooBriefing": "Resumen del equipo",
     "alertView": "Ver",
     "dismissAlert": "Descartar la alerta"
   },

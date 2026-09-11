@@ -35,12 +35,13 @@
     "contact": "联系方式",
     "moveToStage": "移至阶段",
     "viewProfile": "查看完整客户档案",
-    "sarah": {
-      "queued": "Sarah 已为你创建一项任务",
+    "followUp": {
+      "create": "创建跟进任务",
+      "creating": "创建中…",
+      "created": "跟进任务已创建",
       "seeTasks": "查看任务",
-      "noPhone": "该客户没有留电话号码。",
-      "drafting": "拟稿中…",
-      "ask": "请 Sarah 去跟进"
+      "invalidPhone": "这个电话号码似乎无效，请到客户档案中核对。",
+      "failed": "任务创建失败，请重试。"
     }
   }
 }

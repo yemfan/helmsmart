@@ -65,6 +65,23 @@
       "emptyTitle": "Aún no hay facturas",
       "emptyBody": "Cree su primera factura y envíela directamente a un cliente por correo electrónico.",
       "createInvoice": "Crear factura",
+      "overdueReminders": {
+        "summary_one": "<b>{{count}} factura vencida</b> por un total de <b>{{total}}</b>.",
+        "summary_other": "<b>{{count}} facturas vencidas</b> por un total de <b>{{total}}</b>.",
+        "review": "Enviar recordatorios de pago…",
+        "intro": "Cada cliente de la lista recibirá un recordatorio de pago por correo electrónico, y también un mensaje de texto si tiene un número de teléfono y el número de su empresa está configurado.",
+        "neverReminded": "Sin recordatorios todavía",
+        "lastReminded": "Último recordatorio: {{date}}",
+        "remindedToday": "Ya recibió un recordatorio hoy; se omitirá",
+        "noEmail": "Sin correo electrónico registrado; se omitirá",
+        "send_one": "Enviar {{count}} recordatorio",
+        "send_other": "Enviar {{count}} recordatorios",
+        "sending": "Enviando… {{done}} de {{total}}",
+        "sent_one": "Se envió {{count}} recordatorio",
+        "sent_other": "Se enviaron {{count}} recordatorios",
+        "failed": "No se pudo enviar: {{invoices}}. Abra cada factura para intentarlo de nuevo.",
+        "nothingToSend": "Por ahora no se puede enviar un recordatorio para ninguna de estas facturas."
+      },
       "columns": {
         "client": "Cliente / Número",
         "issued": "Emitida",
