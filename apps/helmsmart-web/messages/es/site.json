@@ -73,7 +73,7 @@
     },
     "features": {
       "title": "Todo lo que necesita para llevar su negocio",
-      "subtitle": "Herramientas potentes en una sola plataforma.",
+      "subtitle": "Mark dirige su equipo de IA: Emma contesta las llamadas, Sarah da seguimiento, Emily redacta sus publicaciones en redes sociales, Alex mantiene las facturas al día y Tim le escribe un resumen semanal.",
       "items": {
         "receptionist": {
           "title": "Recepcionista con IA",
@@ -84,8 +84,8 @@
           "description": "Su IA hace las llamadas para las que usted no tiene tiempo: confirmaciones y recordatorios de citas, seguimiento a clientes potenciales y antiguos, encuestas y promociones. Cada llamada queda registrada."
         },
         "assistant": {
-          "title": "Asistente de IA de HelmSmart",
-          "description": "Un copiloto en cada pantalla: pregunte en lenguaje corriente por su negocio y obtenga respuestas de sus datos en vivo, o pídale que redacte y envíe el mensaje perfecto a cualquier cliente."
+          "title": "Pregúntele a Mark, su director de operaciones con IA",
+          "description": "Pregúntele cualquier cosa sobre su negocio y Mark le responde con sus datos en vivo. Pídale que le recuerde a un cliente una factura pendiente o que le escriba a un cliente, y él se lo encarga al compañero indicado: nada sale hasta que usted lo apruebe."
         },
         "inbox": {
           "title": "Bandeja de entrada inteligente",
@@ -224,14 +224,15 @@
         }
       },
       "ai-assistant": {
-        "headline": "Asistente de IA de HelmSmart",
-        "subheadline": "Su copiloto de negocio, a un toque de distancia",
+        "headline": "Pregúntele a Mark, su director de operaciones con IA",
+        "subheadline": "El capitán de su equipo de IA, a un toque de distancia",
         "bullets": {
           "b1": "Pregunte en lenguaje corriente: «¿qué está vencido?», «¿cómo va el flujo de caja?», «¿a quién le doy seguimiento?»",
           "b2": "Las respuestas salen de los datos reales de su negocio, no de consejos genéricos",
-          "b3": "Redacta en segundos el mensaje perfecto para cualquier cliente, y se lo envía por usted",
-          "b4": "El Piloto automático puede responder solo los mensajes entrantes de un cliente, en su idioma",
-          "b5": "Flota sobre cada pantalla, así la ayuda siempre está a mano"
+          "b3": "Pídale que le recuerde a un cliente una factura pendiente o que le escriba a un cliente, y él se lo encarga al compañero indicado: nada sale hasta que usted lo apruebe",
+          "b4": "El Piloto automático responde solo los mensajes entrantes, en el idioma del cliente, y únicamente para los clientes en los que usted lo activa",
+          "b5": "Flota sobre cada pantalla, así la ayuda siempre está a mano",
+          "b6": "Lo que todavía no puede hacer, se lo dice con claridad y se lo devuelve con el siguiente paso"
         }
       },
       "smart-inbox": {
@@ -333,7 +334,7 @@
           "f1": "Todo lo de Starter",
           "f2": "Recepcionista con IA",
           "f3": "Asistente de llamadas con IA (confirmaciones, seguimientos, encuestas)",
-          "f4": "Asistente de IA de HelmSmart",
+          "f4": "Pregúntele a Mark, su director de operaciones con IA",
           "f5": "SMS automático tras llamada perdida y Piloto automático",
           "f6": "Contabilidad y gastos",
           "f7": "Resumen diario con IA",
@@ -686,7 +687,7 @@
         "options": {
           "voice": "Recepcionista con IA",
           "outbound": "Asistente de llamadas con IA",
-          "ai-assistant": "Asistente de IA de HelmSmart",
+          "ai-assistant": "Pregúntele a Mark, su director de operaciones con IA",
           "inbox": "Bandeja de entrada inteligente",
           "invoicing": "Facturación y contabilidad",
           "calendar": "Calendario y agenda",
