@@ -1217,12 +1217,14 @@
       "missingPublicToken": "Esa vinculación bancaria no se completó. Intente conectarla de nuevo.",
       "linkTokenFailed": "No se pudo iniciar la conexión bancaria. Inténtelo de nuevo.",
       "saveConnectionFailed": "No se pudo guardar la conexión bancaria. Inténtelo de nuevo.",
-      "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo."
+      "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo.",
+      "syncFailed": "No se pudieron sincronizar las transacciones bancarias. Inténtelo de nuevo en unos minutos."
     },
     "errors": {
       "missingId": "Falta el ID de la transacción.",
       "approveFailed": "No se pudo aprobar la transacción.",
       "skipFailed": "No se pudo omitir la transacción.",
+      "notFound": "Esa transacción no está en este espacio de trabajo. Actualice la página e inténtelo de nuevo.",
       "orgNotFound": "No se encontró la empresa.",
       "noChartOfAccounts": "No se encontró ningún plan de cuentas.",
       "categorizeFailed": "La categorización con IA falló."

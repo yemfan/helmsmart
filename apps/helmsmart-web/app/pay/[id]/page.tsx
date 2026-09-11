@@ -1,8 +1,25 @@
 /**
  * Public client payment portal — /pay/[invoiceId]
  *
- * No session auth required. The invoice UUID acts as a capability token
- * (hard to guess). Clients can view their invoice and pay via Stripe.
+ * No sign-in, BY DESIGN: the invoice id is the credential. This is a
+ * capability link, like the client portal's `portal_token` and the reschedule
+ * token. Whoever holds the URL can view this one invoice and pay it, and
+ * nothing more: no edits, no other invoice, nothing about the org beyond its
+ * name.
+ *
+ * That holds only while the id stays unguessable and unlisted:
+ *   - `invoices.id` defaults to `gen_random_uuid()` (v4, 122 random bits; see
+ *     `supabase/migrations/00006_invoices.sql`). Never look this page up by
+ *     `invoice_number`, which is sequential and guessable.
+ *   - The id leaves the org only in links sent to that invoice's client: the
+ *     invoice email (`lib/actions/invoices.ts`), reminders
+ *     (`lib/invoice-reminders.ts`), and the client's own portal, which lists
+ *     only the invoices of the client its token belongs to. No public page,
+ *     sitemap or unauthenticated API lists invoice ids. Do not add one.
+ *   - `/api/stripe/checkout?invoice=` takes the same id and grants the same
+ *     thing: paying this invoice's total.
+ * The cost of the model: a forwarded link shows the invoice to whoever it
+ * reaches, and there is no per-link revocation.
  *
  * The reader is the CUSTOMER, so the locale is theirs — cookie, then
  * Accept-Language — the way `app/accept/[id]` resolves it, never the owner's

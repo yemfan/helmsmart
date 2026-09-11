@@ -2,8 +2,13 @@
  * GET /api/stripe/checkout?invoice=[id]
  *
  * Creates a Stripe Checkout Session for the given invoice and redirects the
- * client to the Stripe-hosted payment page. No session auth — the invoice UUID
- * acts as a capability token (same pattern as /pay/[id]).
+ * client to the Stripe-hosted payment page.
+ *
+ * No sign-in, BY DESIGN: the invoice id is a capability, the same one
+ * `/pay/[id]` takes (see the comment there for why it is safe and what would
+ * break it). It lets the holder pay this invoice's total and nothing else. The
+ * payer's details are Stripe's to collect, and the invoice is only marked paid
+ * by the signature-verified webhook, never by this route.
  *
  * Env vars required:
  *   STRIPE_SECRET_KEY      — Stripe secret key (sk_live_... or sk_test_...)

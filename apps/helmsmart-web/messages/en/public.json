@@ -22,6 +22,10 @@
       "signUp": "Create an account & join",
       "signIn": "Sign in to existing account"
     },
+    "wrongAccount": {
+      "body": "This invitation was sent to {{invited}}, but you're signed in as {{current}}. Sign out and sign in as {{invited}} to accept it. If you'd rather join as {{current}}, ask whoever invited you to send a new invitation to that address.",
+      "signOut": "Sign out and switch accounts"
+    },
     "roles": {
       "owner": "owner",
       "admin": "admin",
@@ -32,7 +36,11 @@
       "button": "Accept & join {{org}}",
       "joining": "Joining…",
       "done": "Joined! Redirecting to your workspace…",
-      "error": "We couldn't accept this invitation. Please try again."
+      "error": "We couldn't accept this invitation. Please try again.",
+      "errors": {
+        "signIn": "Sign in to accept this invitation.",
+        "unconfirmed": "Confirm your email address first: open the confirmation link we emailed you, then come back to this invitation."
+      }
     }
   },
   "invoice": {

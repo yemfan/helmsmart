@@ -64,6 +64,16 @@ async function requestOrigin(): Promise<string> {
   return `${proto}://${host}`;
 }
 
+/**
+ * A path on THIS site to send someone to after signing in or out, or null.
+ * Starting with "/" is not enough: `//evil.example` and `/\evil.example` are
+ * both read by browsers as another host, which turns `?next=` into an open
+ * redirect.
+ */
+function localPath(value: FormDataEntryValue | null | undefined): string | null {
+  return typeof value === "string" && /^\/(?![/\\])/.test(value) ? value : null;
+}
+
 // ── Sign in ──────────────────────────────────────────────────────────────────
 
 export async function signIn(
@@ -78,8 +88,7 @@ export async function signIn(
 
   if (error) return { error: await authErrorMessage(error.message) };
 
-  const next = formData.get("next") as string | null;
-  redirect(next?.startsWith("/") ? next : "/home");
+  redirect(localPath(formData.get("next")) ?? "/home");
 }
 
 // ── Sign up ──────────────────────────────────────────────────────────────────
@@ -118,7 +127,12 @@ export async function signUp(
 
 // ── Sign out ─────────────────────────────────────────────────────────────────
 
-export async function signOut(): Promise<void> {
+/**
+ * Used as a form action. A form may carry a `next` path to come back to once
+ * signed in again — `/join/[token]` does, so someone signed in as the wrong
+ * account can switch and land back on the invitation.
+ */
+export async function signOut(formData?: FormData): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
 
@@ -131,7 +145,8 @@ export async function signOut(): Promise<void> {
   cookieStore.delete("helmsmart-org-id");
   cookieStore.delete("smbai-org-id");
 
-  redirect("/login");
+  const next = localPath(formData?.get("next"));
+  redirect(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
 }
 
 // ── Password reset (step 1 — send email) ─────────────────────────────────────

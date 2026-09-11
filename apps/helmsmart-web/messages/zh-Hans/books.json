@@ -1187,12 +1187,14 @@
       "missingPublicToken": "本次银行关联未完成，请重新连接。",
       "linkTokenFailed": "无法开始关联银行，请重试。",
       "saveConnectionFailed": "保存银行连接失败，请重试。",
-      "exchangeFailed": "完成银行关联失败，请重试。"
+      "exchangeFailed": "完成银行关联失败，请重试。",
+      "syncFailed": "同步银行交易失败，请几分钟后重试。"
     },
     "errors": {
       "missingId": "缺少交易 ID。",
       "approveFailed": "批准交易失败。",
       "skipFailed": "跳过交易失败。",
+      "notFound": "此工作区中找不到这笔交易。请刷新页面后重试。",
       "orgNotFound": "未找到组织。",
       "noChartOfAccounts": "未找到会计科目表。",
       "categorizeFailed": "AI 归类失败。"
