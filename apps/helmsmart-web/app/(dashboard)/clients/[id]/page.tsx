@@ -232,7 +232,7 @@ export default async function ClientDetailPage({
           />
           {client.email && (
             <Link
-              href={`/inbox?compose=${encodeURIComponent(client.email)}`}
+              href={`/inbox?compose=${encodeURIComponent(client.id)}`}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition-colors"
             >
               <Mail className="w-3.5 h-3.5" /> {t("detail.actions.sendEmail")}

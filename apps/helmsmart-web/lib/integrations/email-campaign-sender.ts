@@ -167,12 +167,6 @@ async function getTargetedRecipients(
     target_segment: string;
     target_pipeline_stages?: string[] | null;
     target_tags?: string[] | null;
-    /**
-     * No longer read. It let a campaign include people who had unsubscribed;
-     * an email opt-out now stops every campaign, so there is nothing for it to
-     * switch. (No screen sets it — only the recurring-campaign cron copies it.)
-     */
-    exclude_unsubscribed?: boolean;
   }
 ): Promise<Array<{ client_id: string; email: string; recipient_name?: string; consent: ConsentInputs }>> {
   const db = await createServiceClient();

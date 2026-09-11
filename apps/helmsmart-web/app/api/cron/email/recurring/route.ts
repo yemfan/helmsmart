@@ -59,7 +59,6 @@ export async function GET(request: NextRequest) {
           reply_to:           parent.reply_to,
           target_segment:     parent.target_segment,
           target_pipeline_stages: parent.target_pipeline_stages,
-          exclude_unsubscribed: parent.exclude_unsubscribed,
           status:             "draft",
           is_recurring:       false,
           parent_campaign_id: parent.id,

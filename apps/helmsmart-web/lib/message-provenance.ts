@@ -39,3 +39,31 @@ export type MessageSender = (typeof MESSAGE_SENDERS)[number];
 export function isMessageSender(v: unknown): v is MessageSender {
   return typeof v === "string" && (MESSAGE_SENDERS as readonly string[]).includes(v);
 }
+
+/**
+ * The name the inbox shows for each sender, as a key in the `inbox` namespace.
+ * Literal keys, not `provenance.${value}`: a key built from a database value
+ * renders itself raw the day a new value lands, and no guard can see it.
+ */
+export const SENDER_LABEL_KEYS: Record<MessageSender, string> = {
+  person: "provenance.person",
+  auto_pilot: "provenance.auto_pilot",
+  auto_reply: "provenance.auto_reply",
+  missed_call_text: "provenance.missed_call_text",
+  reminder: "provenance.reminder",
+  receptionist: "provenance.receptionist",
+};
+
+/**
+ * Who sent an outbound message, in the reader's words — "You", "Auto Pilot",
+ * "Automatic reminder". A null `sent_by` is a row from before the column
+ * existed (every one of those was signed "You:"), so it keeps saying "You".
+ *
+ * `t` is bound to the `inbox` namespace.
+ */
+export function senderLabel(
+  sentBy: string | null | undefined,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
+  return t(SENDER_LABEL_KEYS[isMessageSender(sentBy) ? sentBy : "person"]);
+}

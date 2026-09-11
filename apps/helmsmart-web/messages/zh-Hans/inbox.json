@@ -6,7 +6,7 @@
     "title": "收件箱",
     "newConversation": "新建会话",
     "unknownSender": "未知联系人",
-    "outboundPrefix": "你：",
+    "previewFrom": "{{sender}}：",
     "filters": {
       "all": "全部",
       "sms": "短信",
@@ -44,6 +44,39 @@
     "replyPlaceholder": {
       "email": "用邮件回复…（⌘↵ 发送）",
       "sms": "用短信回复…（⌘↵ 发送）"
+    },
+    "back": "返回会话列表",
+    "replyVia": "回复方式",
+    "replySubject": "回复：{{subject}}",
+    "sentByTime": "{{sender}} · {{time}}",
+    "notSent": "未发送——{{reason}}",
+    "sendUnconfirmed": "无法确认消息是否已发出。重试前请先查看这段会话。",
+    "blocked": {
+      "noAddress": "没有可回复的电话号码或邮箱地址。",
+      "noPhone": "该联系人没有可发短信的电话号码。",
+      "noEmail": "该联系人没有邮箱地址。",
+      "optedOutSms": "无法给该联系人发短信。{{reason}}。",
+      "optedOutEmail": "无法给该联系人发邮件。{{reason}}。"
+    }
+  },
+  "provenance": {
+    "person": "你",
+    "auto_pilot": "自动驾驶",
+    "auto_reply": "自动回复",
+    "missed_call_text": "未接来电短信",
+    "reminder": "自动提醒",
+    "receptionist": "AI 前台接待"
+  },
+  "consent": {
+    "sms": {
+      "stopReply": "自 {{date}} 起拒收短信 · 回复了 STOP",
+      "carrier": "自 {{date}} 起拒收短信 · 运营商报告对方回复了 STOP",
+      "since": "自 {{date}} 起拒收短信",
+      "marked": "已拒收短信"
+    },
+    "email": {
+      "since": "自 {{date}} 起退订邮件",
+      "marked": "已拒收邮件"
     }
   },
   "unselected": {
@@ -94,6 +127,8 @@
     "emailNotConfigured": "此账户尚未设置邮件发送。",
     "invalidRequest": "无法读取该请求。",
     "noPhone": "该联系人没有电话号码。",
-    "emptyMessage": "请先输入消息内容。"
+    "emptyMessage": "请先输入消息内容。",
+    "markReadFailed": "无法将这段会话标记为已读，请重试。",
+    "markReadRefused": "无法将这段会话标记为已读——你的账户没有修改权限。"
   }
 }
