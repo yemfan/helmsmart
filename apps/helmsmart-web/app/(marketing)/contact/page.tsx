@@ -96,8 +96,8 @@ export default async function ContactPage() {
         <p className="mt-6 text-center text-sm text-gray-500">
           {rich(t("contact.demoNote"), {
             links: [
-              { href: "/contact/sales", className: "font-medium text-indigo-600 hover:text-indigo-700" },
-              { href: "/faq", className: "font-medium text-indigo-600 hover:text-indigo-700" },
+              { href: "/contact/sales", className: "font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700" },
+              { href: "/faq", className: "font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700" },
             ],
           })}
         </p>

@@ -6,7 +6,7 @@
   "nav": {
     "product": "Product",
     "pricing": "Pricing",
-    "schedule": "Schedule",
+    "bookDemo": "Book a demo",
     "faq": "FAQ",
     "blog": "Blog",
     "signIn": "Sign in",
@@ -24,8 +24,8 @@
     "links": {
       "features": "Features",
       "pricing": "Pricing",
-      "scheduleDemo": "Schedule Demo",
-      "startFreeTrial": "Start Free Trial",
+      "bookDemo": "Book a demo",
+      "startFree": "Start free",
       "about": "About",
       "blog": "Blog",
       "contact": "Contact",
@@ -45,12 +45,12 @@
     "copyright": "© 2026 MAXY Investment Inc. HelmSmart is a DBA of MAXY Investment Inc. All rights reserved."
   },
   "landing": {
-    "badge": "Trusted by 500+ small businesses",
+    "badge": "From the team behind CloseBoss",
     "hero": {
       "title": "Your business answers every call, sends every invoice, and never misses a beat — <em>automatically.</em>",
       "subtitle": "HelmSmart gives small businesses a 24/7 AI front office. More control, less effort.",
-      "startTrial": "Start free trial",
-      "schedule": "Schedule Appointment",
+      "startFree": "Start free",
+      "bookDemo": "Book a demo",
       "seeHow": "See how it works"
     },
     "how": {
@@ -114,26 +114,25 @@
         "value": "24/7",
         "label": "Always-on AI receptionist"
       },
-      "booking": {
-        "value": "< 2 min",
-        "label": "Average time to book an appointment"
+      "languages": {
+        "value": "3 languages",
+        "label": "Use HelmSmart in English, Chinese or Spanish"
       },
-      "saved": {
-        "value": "10+ hours",
-        "label": "Admin time saved per week"
+      "transcripts": {
+        "value": "Every call",
+        "label": "Logged with a summary and a full transcript"
       }
     },
-    "testimonial": {
-      "title": "Real businesses. Real results.",
-      "quote": "Before HelmSmart I was losing jobs every week because I couldn't answer the phone while on-site. Now the AI picks up every call, books the job, and sends me a summary. I haven't missed a lead in months — and my invoices actually go out the same day.",
-      "author": "Sarah K.",
-      "role": "Owner, Bright & Clean Services"
+    "example": {
+      "title": "What it looks like in practice",
+      "label": "Example scenario",
+      "quote": "Before HelmSmart I was losing jobs every week because I couldn't answer the phone while on-site. Now the AI picks up every call, books the job, and sends me a summary. I haven't missed a lead in months — and my invoices actually go out the same day."
     },
     "finalCta": {
-      "badge": "14-day free trial · No credit card required",
+      "badge": "Free during beta · No credit card required",
       "title": "Ready to take the helm?",
-      "subtitle": "Start your 14-day free trial — no credit card required.",
-      "cta": "Start free trial"
+      "subtitle": "Every feature is free while HelmSmart is in beta — no credit card required.",
+      "cta": "Start free"
     }
   },
   "about": {
@@ -148,7 +147,7 @@
     },
     "origin": {
       "title": "Where HelmSmart came from",
-      "p1": "We built <a>CloseBoss</a> — an AI growth platform for real estate agents and mortgage professionals — and watched it transform how thousands of professionals handle leads, follow-ups, and client communication.",
+      "p1": "We built <a>CloseBoss</a> — an AI growth platform that helps real estate agents and mortgage professionals handle leads, follow-ups, and client communication.",
       "p2": "Along the way, we kept hearing the same story from a different crowd: plumbers, salon owners, contractors, consultants, and every other small business owner who isn't a real estate agent but faces the exact same problems. Missed calls. Admin overload. Invoices that go out late. Expensive after-hours answering services.",
       "p3": "HelmSmart is our answer. The same AI infrastructure and product philosophy behind CloseBoss — rebuilt from the ground up for every small business that needs a smarter front office."
     },
@@ -186,8 +185,8 @@
     },
     "cta": {
       "title": "Ready to take the helm?",
-      "subtitle": "14-day free trial — no credit card required.",
-      "primary": "Start free trial",
+      "subtitle": "Free during beta — no credit card required.",
+      "primary": "Start free",
       "secondary": "Talk to us"
     }
   },
@@ -288,28 +287,35 @@
       }
     },
     "cta": {
-      "title": "Start your free trial today",
-      "subtitle": "No credit card required. Set up in minutes. Cancel any time.",
+      "title": "Start free today",
+      "subtitle": "Free during beta. No credit card required. Set up in minutes.",
       "button": "Get started for free"
     }
   },
   "pricing": {
     "meta": {
       "title": "Pricing — HelmSmart",
-      "description": "Simple, transparent plans for small businesses. 14-day free trial, no credit card."
+      "description": "HelmSmart is free during beta — every feature, no credit card. Here's what paid plans will cost after beta."
     },
     "hero": {
-      "title": "Simple, transparent pricing",
-      "subtitle": "All plans include a 14-day free trial. No credit card required."
+      "title": "Free while we're in beta",
+      "subtitle": "Every feature, no credit card required. AI call minutes are included during beta, too.",
+      "cta": "Start free",
+      "note": "After beta, AI calls will be billed at $0.10 per minute."
     },
-    "mostPopular": "Most Popular",
+    "afterBeta": {
+      "title": "Planned pricing after beta",
+      "subtitle": "The plans we'll offer when beta ends. During beta, you pay nothing.",
+      "voice": "All plans: AI calls at $0.10 per minute after beta."
+    },
+    "recommended": "Recommended",
     "perMonth": "/month",
     "plans": {
       "starter": {
         "name": "Starter",
         "price": "$29",
         "description": "Perfect for solo operators",
-        "cta": "Start free trial",
+        "cta": "Start free",
         "features": {
           "f1": "Smart Inbox",
           "f2": "Basic Invoicing",
@@ -322,7 +328,7 @@
         "name": "Growth",
         "price": "$79",
         "description": "For growing small businesses",
-        "cta": "Start free trial",
+        "cta": "Start free",
         "features": {
           "f1": "Everything in Starter",
           "f2": "AI Receptionist",
@@ -354,25 +360,29 @@
     "faq": {
       "title": "Frequently asked questions",
       "items": {
+        "beta": {
+          "question": "What does HelmSmart cost during beta?",
+          "answer": "Nothing. During beta every feature is free, with no credit card required — and that includes the minutes your AI receptionist spends on calls."
+        },
+        "afterBeta": {
+          "question": "What happens when beta ends?",
+          "answer": "The plans on this page are our planned pricing for after beta, with AI calls billed at $0.10 per minute. HelmSmart doesn't ask for a card during beta, so nothing can be charged automatically. To keep using it after beta, you'll choose a plan and add a payment method."
+        },
         "cancel": {
           "question": "Can I cancel anytime?",
-          "answer": "Yes. HelmSmart has no long-term contracts. You can cancel your subscription at any time from your account settings and you will not be charged again."
-        },
-        "afterTrial": {
-          "question": "What happens after the trial?",
-          "answer": "When your 14-day free trial ends, we will ask you to add a payment method to continue. You will never be charged automatically during the trial period."
+          "answer": "Yes. Paid plans after beta have no long-term contract, and you can cancel at any time. During beta there's nothing to cancel — you aren't being charged."
         },
         "alwaysOn": {
           "question": "Is the voice AI really available 24/7?",
-          "answer": "Yes. The AI Voice Receptionist is powered by Retell AI and answers calls around the clock — nights, weekends, and holidays — so you never miss a customer. It also cuts the cost of after-hours answering services, replacing expensive on-call staff or third-party call centers."
+          "answer": "Yes. Once it's set up, the AI receptionist answers calls around the clock — nights, weekends, and holidays — so you never miss a customer. It also cuts the cost of after-hours answering services, replacing expensive on-call staff or third-party call centers."
         },
         "refunds": {
           "question": "Do you offer refunds?",
-          "answer": "We offer a 30-day money-back guarantee on all paid plans. If you are not satisfied for any reason, contact us within 30 days of your first charge and we will issue a full refund."
+          "answer": "Paid plans after beta come with a 30-day money-back guarantee. If you're not satisfied for any reason, contact us within 30 days of your first charge and we'll issue a full refund."
         }
       }
     },
-    "stillQuestions": "Still have questions? <a>Chat with us.</a>"
+    "stillQuestions": "Still have questions? <a>Email us.</a>"
   },
   "faq": {
     "meta": {
@@ -393,15 +403,15 @@
           },
           "setup": {
             "q": "How do I set up the voice receptionist?",
-            "a": "Connect your Twilio number or use Retell AI, then configure your business hours and appointment types in the Voice settings. The setup wizard walks you through each step in minutes."
+            "a": "In your receptionist settings: enter the business phone number your callers dial, set your business hours, add the services you book (with how long each one takes), and switch the receptionist on. A checklist shows anything still missing, and one click verifies that your number is connected, so calls actually reach the receptionist. Connecting Google Calendar is optional — it lets the receptionist offer only the times you're free."
           },
           "technical": {
             "q": "Do I need technical skills?",
             "a": "No. Everything is configured through a simple dashboard. No coding, no complex integrations — just fill in your business details and you're live."
           },
-          "trial": {
-            "q": "Is there a free trial?",
-            "a": "Yes. You get 14 days free with full access to all features. No credit card required to start."
+          "beta": {
+            "q": "Is HelmSmart free to try?",
+            "a": "Yes. HelmSmart is free during beta — every feature, no credit card required. The minutes your AI receptionist spends on calls are included while we're in beta."
           }
         }
       },
@@ -431,15 +441,15 @@
         "items": {
           "changePlans": {
             "q": "Can I change plans anytime?",
-            "a": "Yes. Upgrades take effect immediately. Downgrades take effect at the start of your next billing cycle so you never lose access mid-period."
+            "a": "After beta, yes: upgrades take effect immediately, and downgrades take effect at the start of your next billing cycle so you never lose access mid-period. During beta everyone has every feature, so there's no plan to change."
           },
           "voiceCharge": {
             "q": "What is the $0.10/min voice charge?",
-            "a": "Voice calls are billed at $0.10 per minute on top of your base plan. This covers both the AI processing and telephony costs. You only pay for calls that are actually handled."
+            "a": "After beta, calls handled by your AI receptionist will be billed at $0.10 per minute on top of your plan. That covers both the AI and the phone-line costs, and you only pay for calls that are actually handled. During beta, call minutes are included at no charge."
           },
           "contract": {
             "q": "Is there a contract?",
-            "a": "No contracts, no commitments. HelmSmart is month-to-month and you can cancel anytime from your account settings."
+            "a": "No contracts, no commitments. Paid plans after beta are month-to-month, and you can cancel anytime. During beta there's nothing to pay."
           }
         }
       },
@@ -451,8 +461,8 @@
             "a": "Yes. HelmSmart connects via OAuth for a full two-way sync. The voice receptionist checks real-time availability and writes confirmed bookings directly to your calendar."
           },
           "phone": {
-            "q": "What phone providers work?",
-            "a": "Twilio numbers work out of the box — you can bring an existing number or provision a new one. Retell AI powers the voice AI layer for natural, low-latency conversations."
+            "q": "Which phone numbers work?",
+            "a": "The receptionist answers your business number once that number is connected to HelmSmart's voice system through Twilio, the phone carrier we use. The setup checklist shows whether your number is connected, and names what's missing if it isn't. If your number is with another carrier, or you'd like help connecting it, contact us."
           },
           "import": {
             "q": "Can I import my existing clients?",
@@ -557,7 +567,7 @@
     "back": "Back to blog",
     "cta": {
       "title": "Ready to put this into practice?",
-      "subtitle": "Start your 14-day free trial — no credit card required.",
+      "subtitle": "HelmSmart is free during beta — no credit card required.",
       "button": "Get started for free"
     }
   },
@@ -617,7 +627,7 @@
       "email": "Please provide a valid email address",
       "failed": "Failed to send message. Please try again or email contact@helmsmart.ai"
     },
-    "demoNote": "Looking to schedule a demo? <a>Get a personalized quote</a> or check our <a>FAQ</a>.",
+    "demoNote": "Want to see it in action? <a>Book a demo</a> or check our <a>FAQ</a>.",
     "business": {
       "title": "Business information",
       "subtitle": "Operating company & mailing address",
@@ -636,17 +646,17 @@
   },
   "sales": {
     "meta": {
-      "title": "Get a Demo — HelmSmart",
-      "description": "Schedule a personalized demo of HelmSmart for your business."
+      "title": "Book a demo — HelmSmart",
+      "description": "Book a personalized demo of HelmSmart for your business."
     },
     "hero": {
-      "title": "Let's find the right plan for your business",
+      "title": "Book a demo",
       "subtitle": "Tell us about your needs and we'll show you how HelmSmart can save you time and money."
     },
     "stats": {
-      "trial": {
-        "value": "14 days",
-        "label": "Free trial, no card needed"
+      "beta": {
+        "value": "Free",
+        "label": "During beta — no card needed"
       },
       "response": {
         "value": "24h",
@@ -654,10 +664,10 @@
       },
       "refund": {
         "value": "30 days",
-        "label": "Money-back guarantee"
+        "label": "Money-back guarantee on paid plans after beta"
       }
     },
-    "footerNote": "Not ready to chat? <a>Check out our pricing</a> or start with a <a>free trial</a>.",
+    "footerNote": "Not ready to talk? <a>See our pricing</a> or <a>start free</a>.",
     "form": {
       "name": {
         "label": "Full name *",

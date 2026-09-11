@@ -4,10 +4,13 @@ import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
 
 const CLOSEBOSS_URL = "https://www.closebossai.com";
+// Links inside running text are underlined: colour alone does not mark a link
+// for a reader who cannot tell indigo from grey (WCAG 1.4.1, link-in-text-block).
+const IN_TEXT_LINK = "text-indigo-600 underline underline-offset-2 hover:text-indigo-700";
 const CLOSEBOSS_LINK = {
   href: CLOSEBOSS_URL,
   external: true,
-  className: "text-indigo-600 hover:text-indigo-700 font-medium",
+  className: `${IN_TEXT_LINK} font-medium`,
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -104,7 +107,7 @@ export default async function PrivacyPage() {
             <p className="text-gray-600 mt-3">
               <strong>{t("privacy.sections.contact.emailLabel")}</strong> privacy@helmsmart.ai<br />
               <strong>{t("privacy.sections.contact.webLabel")}</strong>{" "}
-              <Link href="/contact" className="text-indigo-600 hover:text-indigo-700">helmsmart.ai/contact</Link>
+              <Link href="/contact" className={IN_TEXT_LINK}>helmsmart.ai/contact</Link>
             </p>
           </div>
         </div>
@@ -112,7 +115,7 @@ export default async function PrivacyPage() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             {rich(t("privacy.footerNote"), {
-              links: [{ ...CLOSEBOSS_LINK, className: "text-indigo-600 hover:text-indigo-700" }],
+              links: [{ ...CLOSEBOSS_LINK, className: IN_TEXT_LINK }],
             })}
           </p>
         </div>

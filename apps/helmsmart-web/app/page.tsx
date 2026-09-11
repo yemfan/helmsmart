@@ -4,7 +4,7 @@
  */
 
 import Link from "next/link";
-import { Phone, PhoneOutgoing, Inbox, Receipt, Calendar, Users, Sunrise, Sparkles, CheckCircle, Star } from "lucide-react";
+import { Phone, PhoneOutgoing, Inbox, Receipt, Calendar, Users, Sunrise, Sparkles, CheckCircle } from "lucide-react";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { getServerT } from "@/lib/i18n/server";
@@ -24,7 +24,12 @@ const FEATURES = [
   { key: "briefing", icon: Sunrise, color: "text-sky-600 bg-sky-50" },
 ];
 
-const STATS = ["alwaysOn", "booking", "saved"];
+// Capabilities the code can show, not outcomes nobody measured. The band used
+// to read "< 2 min to book" and "10+ hours saved per week" — numbers with no
+// source. Each of these is checkable: the receptionist has no business-hours
+// gate on answering, SUPPORTED_LOCALES is en / zh-Hans / es, and the Retell
+// webhook stores every call's summary and transcript on voice_sessions.
+const STATS = ["alwaysOn", "languages", "transcripts"];
 
 export default async function RootPage() {
   const t = await getServerT("site");
@@ -41,7 +46,7 @@ export default async function RootPage() {
           </div>
           <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:py-32">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700">
-              <Star className="h-4 w-4 fill-indigo-400 text-indigo-400" />
+              <Sparkles className="h-4 w-4 text-indigo-500" aria-hidden="true" />
               {t("landing.badge")}
             </div>
             <h1 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
@@ -52,10 +57,12 @@ export default async function RootPage() {
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/signup" className="inline-flex items-center rounded-xl bg-indigo-600 px-7 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
-                {t("landing.hero.startTrial")}
+                {t("landing.hero.startFree")}
               </Link>
-              <Link href="/login?next=/calendar/book" className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-7 py-3.5 text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-                {t("landing.hero.schedule")}
+              {/* The public demo-request form. This used to be /login?next=/calendar/book —
+                  the signed-in staff booking form — so a prospect got a sign-in wall. */}
+              <Link href="/contact/sales" className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-7 py-3.5 text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
+                {t("landing.hero.bookDemo")}
               </Link>
               <a href="#features" className="inline-flex items-center rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
                 {t("landing.hero.seeHow")}
@@ -121,25 +128,21 @@ export default async function RootPage() {
           </div>
         </section>
 
-        {/* TESTIMONIAL */}
+        {/* EXAMPLE SCENARIO — an illustration of the product, not a customer
+            quote. It sat under "Real businesses. Real results." with five stars
+            and a named owner of a named business, none of whom exists. The
+            words are kept; what they claimed to be is not. */}
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-3xl px-6 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{t("landing.testimonial.title")}</h2>
-            <div className="mt-12 rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
-              <div className="flex justify-center gap-1 mb-6">
-                {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />)}
-              </div>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{t("landing.example.title")}</h2>
+            <figure className="mt-12 rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
+              <figcaption className="mb-6 inline-flex rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                {t("landing.example.label")}
+              </figcaption>
               <blockquote className="text-lg leading-relaxed text-gray-700 italic">
-                &ldquo;{t("landing.testimonial.quote")}&rdquo;
+                &ldquo;{t("landing.example.quote")}&rdquo;
               </blockquote>
-              <div className="mt-6 flex items-center justify-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">SK</div>
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-900">{t("landing.testimonial.author")}</p>
-                  <p className="text-xs text-gray-500">{t("landing.testimonial.role")}</p>
-                </div>
-              </div>
-            </div>
+            </figure>
           </div>
         </section>
 

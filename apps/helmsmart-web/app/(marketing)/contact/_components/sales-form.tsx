@@ -105,9 +105,12 @@ export default function SalesFormComponent() {
         <label className="block text-sm font-medium text-gray-700 mb-3">
           {t("sales.form.interest.label")}
         </label>
-        <div className="space-y-2">
+        {/* The row is the target, not the 16px box: a click anywhere on the
+            label toggles the checkbox, and a 36px row clears WCAG 2.2's 24px
+            minimum (2.5.8) without enlarging the box itself. */}
+        <div className="space-y-0.5">
           {interestOptions.map((id) => (
-            <label key={id} className="flex items-center gap-3 cursor-pointer">
+            <label key={id} className="flex min-h-9 items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="interested"

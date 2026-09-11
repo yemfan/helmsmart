@@ -51,7 +51,7 @@ export default async function AboutPage() {
                     {
                       href: CLOSEBOSS_URL,
                       external: true,
-                      className: "font-semibold text-indigo-600 hover:text-indigo-700",
+                      className: "font-semibold text-indigo-600 underline underline-offset-2 hover:text-indigo-700",
                     },
                   ],
                 })}
