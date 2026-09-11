@@ -105,7 +105,15 @@
     "notes": "Notas",
     "amountDue": "Monto a pagar",
     "footer": "Pago seguro procesado por Stripe · Factura {{number}}",
-    "payNow": "Pagar ahora"
+    "payNow": "Pagar ahora",
+    "checkout": {
+      "missingInvoice": "Este enlace de pago está incompleto. Ábralo de nuevo desde su factura.",
+      "notConfigured": "El pago en línea no está disponible para esta factura en este momento. Comuníquese con la empresa que se la envió.",
+      "notFound": "No encontramos esta factura. Revise el enlace o comuníquese con la empresa que se la envió.",
+      "nothingDue": "No hay nada que pagar en esta factura.",
+      "belowMinimum": "El total de esta factura ({{amount}}) es inferior al pago mínimo con tarjeta de {{minimum}}. Comuníquese con la empresa para pagar de otra forma.",
+      "failed": "No pudimos iniciar el pago. Inténtelo de nuevo en unos minutos."
+    }
   },
   "portal": {
     "badge": "Portal del cliente",
