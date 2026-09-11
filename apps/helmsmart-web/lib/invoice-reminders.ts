@@ -1,6 +1,4 @@
-import { sendEmail, FROM_ADDRESS } from "@/lib/email";
-import twilio from "twilio";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import { outcomeForLog, sendEmailGuarded, sendSmsGuarded } from "@/lib/outbound-send";
 import { localizeOutbound, type Lang } from "@/lib/language";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
@@ -93,8 +91,6 @@ export async function sendReminderForInvoice(
   </td></tr></table>
 </body></html>`;
 
-  const fromEmail = FROM_ADDRESS;
-
   // Org context (Twilio sender + owner English-assist) and the client's language.
   const { data: orgRow } = await db
     .from("organizations")
@@ -110,51 +106,50 @@ export async function sendReminderForInvoice(
   // email (with the owner's copy when multi-language assist is on).
   const emailText = lang === "en" ? text : await localizeOutbound(text, lang, verifyIn);
   const emailSubject = lang === "en" ? subject : await localizeOutbound(subject, lang, null);
-  if (lang === "en") {
-    await sendEmail({ to: client.email, subject, html, text });
-  } else {
-    await sendEmail({ to: client.email, subject: emailSubject, text: emailText });
-  }
-
-  await db.from("messages").insert({
-    organization_id: inv.organization_id,
-    client_id: inv.client_id,
-    channel: "email",
-    direction: "outbound",
-    from_address: fromEmail,
-    to_address: client.email,
-    subject: emailSubject,
-    body: emailText,
-    read: true,
-    sent_at: new Date().toISOString(),
+  /*
+   * The email is TRANSACTIONAL: a reminder about an invoice this client was
+   * already billed, carrying its payment link. An email opt-out does not stop
+   * it (see `optOutCovers` in @helm/dna-communication) — the switch on the
+   * client page says so. It is recorded as the automatic reminder it is, not
+   * as a message the owner typed.
+   */
+  const emailOutcome = await sendEmailGuarded({
+    db,
+    orgId: inv.organization_id,
+    clientId: inv.client_id,
+    to: client.email,
+    ...(lang === "en" ? { subject, html, text } : { subject: emailSubject, text: emailText }),
+    purpose: "transactional",
+    sentBy: "reminder",
+    logSubject: emailSubject,
+    logBody: emailText,
   });
+  // Resend refused it: the caller sees the failure, as before.
+  if (!emailOutcome.ok) {
+    throw new Error(emailOutcome.reason === "provider" ? emailOutcome.detail : outcomeForLog(emailOutcome));
+  }
 
   // Also nudge by SMS when the client has a phone and the org has a Twilio
   // number. Texts get read far faster than email — the real "get paid faster"
-  // lever. Failure here is non-fatal; the email reminder already went out.
+  // lever. A text opt-out DOES stop this one: every text passes the guard.
+  // Refused or failed is non-fatal; the email reminder already went out.
   if (client.phone && orgRow?.twilio_number) {
     const smsFrom = orgRow.twilio_number;
     const smsEnglish = `Hi ${clientName}, invoice ${inv.invoice_number} for $${amount} is ${
       overdue > 0 ? `${overdue} day${overdue === 1 ? "" : "s"} past due` : "due soon"
     }. Pay online: ${payUrl}`;
     const smsBody = lang === "en" ? smsEnglish : await localizeOutbound(smsEnglish, lang, verifyIn);
-    try {
-      const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-      await twilioClient.messages.create({ ...(twilioSender(smsFrom) ?? { from: smsFrom }), ...twilioStatusCallback(), to: client.phone, body: smsBody });
-      await db.from("messages").insert({
-        organization_id: inv.organization_id,
-        client_id: inv.client_id,
-        channel: "sms",
-        direction: "outbound",
-        from_address: smsFrom,
-        to_address: client.phone,
-        body: smsBody,
-        read: true,
-        sent_at: new Date().toISOString(),
-      });
-    } catch {
-      // SMS failed — email reminder already sent, so not fatal.
-    }
+    const smsOutcome = await sendSmsGuarded({
+      db,
+      orgId: inv.organization_id,
+      clientId: inv.client_id,
+      to: client.phone,
+      body: smsBody,
+      fromNumber: smsFrom,
+      purpose: "transactional",
+      sentBy: "reminder",
+    });
+    if (!smsOutcome.ok) console.warn("[invoice-reminders] SMS nudge not sent:", outcomeForLog(smsOutcome));
   }
 
   await db

@@ -36,13 +36,17 @@ export function InboxCompose({ clients, onClose, onSent }: Props) {
 
     startTransition(async () => {
       try {
+        let result;
         if (channel === "email") {
           if (!selectedClient?.email) { setError(t("compose.errors.noEmail")); return; }
-          await sendEmail(clientId, selectedClient.email, subject || t("compose.noSubject"), body.trim());
+          result = await sendEmail(clientId, selectedClient.email, subject || t("compose.noSubject"), body.trim());
         } else {
           if (!selectedClient?.phone) { setError(t("compose.errors.noPhone")); return; }
-          await sendSms(clientId, selectedClient.phone, body.trim());
+          result = await sendSms(clientId, selectedClient.phone, body.trim());
         }
+        // The server's sentence is translated where it is written, and it is
+        // the one that says why — "opted out of text messages on Sep 3".
+        if (!result.ok) { setError(result.error); return; }
         onSent();
         onClose();
       } catch (e: unknown) {
@@ -134,7 +138,7 @@ export function InboxCompose({ clients, onClose, onSent }: Props) {
           </div>
 
           {error && (
-            <p className="text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2">{error}</p>
+            <p className="text-xs text-rose-600" role="alert">{error}</p>
           )}
         </div>
 

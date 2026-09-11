@@ -18,7 +18,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/translator";
 import { Resend } from "resend";
-import { sendEmail, FROM_ADDRESS } from "@/lib/email";
+import { outcomeForLog, sendEmailGuarded } from "@/lib/outbound-send";
 import { createServiceClient } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { analyzeInbound, translateTo, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
@@ -238,28 +238,23 @@ export async function POST(request: NextRequest) {
         org.auto_reply_msg?.trim() ||
         "Thanks for reaching out! We got your message and will get back to you shortly.";
       const ackBody = await localizeOutbound(ackEnglish, lang, assist ? ownerLang : null);
-      const fromEmail = FROM_ADDRESS;
       const ackSubject = data.subject ? `Re: ${data.subject}` : "We received your message";
-      try {
-        // Throws if Resend rejects the ack, so the outbound row below isn't
-        // written for mail that never left — a phantom row would also
-        // suppress retries via the 4h rate-limit check above.
-        await sendEmail({ to: senderEmail, subject: ackSubject, text: ackBody });
-        await supabase.from("messages").insert({
-          organization_id: org.id,
-          client_id: client?.id ?? null,
-          channel: "email",
-          direction: "outbound",
-          from_address: fromEmail,
-          to_address: senderEmail,
-          subject: ackSubject,
-          body: ackBody,
-          read: true,
-          sent_at: new Date().toISOString(),
-        });
-      } catch {
-        // ack failed — inbound is still captured + owner notified
-      }
+      // Through the consent guard: a sender who opted out of email gets no
+      // auto-acknowledgement. The outbound row is only written for mail that
+      // actually left — a phantom row would also suppress retries via the 4h
+      // rate-limit check above. Refused or failed, the inbound is still
+      // captured and the owner notified.
+      const sent = await sendEmailGuarded({
+        db: supabase,
+        orgId: org.id,
+        clientId: client?.id ?? null,
+        to: senderEmail,
+        subject: ackSubject,
+        text: ackBody,
+        purpose: "automated",
+        sentBy: "auto_reply",
+      });
+      if (!sent.ok) console.warn("[resend inbound] auto-acknowledgement not sent:", outcomeForLog(sent));
     }
   }
 

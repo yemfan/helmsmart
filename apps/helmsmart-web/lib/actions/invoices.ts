@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { insertInvoiceWithLines } from "@helm/dna-finance";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
-import { sendEmail, FROM_ADDRESS } from "@/lib/email";
+import { sendEmailGuarded } from "@/lib/outbound-send";
 import { createNotification } from "@/lib/actions/notifications";
 import { refreshClientLifetimeValue } from "@/lib/actions/clients";
 import { runAutomations } from "@/lib/automation-engine";
@@ -204,30 +204,24 @@ export async function sendInvoice(invoiceId: string) {
   </table>
 </body></html>`;
 
-  const fromEmail = FROM_ADDRESS;
-
-  // Throws if Resend rejects the send, so the messages row and the
-  // invoice's "sent" status below are only written for mail that left.
-  await sendEmail({
+  // Through the shared send path, which records the messages row as the
+  // person's own send. An invoice is TRANSACTIONAL, so an email opt-out does
+  // not stop it. A rejected send throws, as before, so the invoice's "sent"
+  // status below is only written for mail that left.
+  const sent = await sendEmailGuarded({
+    db: supabase,
+    orgId,
+    clientId: inv.client_id,
     to: clientArr.email,
     subject: `Invoice ${inv.invoice_number} — $${Number(inv.total).toFixed(2)} due ${inv.due_date}`,
     html,
     text: body,
+    purpose: "transactional",
+    sentBy: "person",
+    logSubject: `Invoice ${inv.invoice_number}`,
+    logBody: body,
   });
-
-  // Log outbound email in messages
-  await supabase.from("messages").insert({
-    organization_id: orgId,
-    client_id: inv.client_id,
-    channel: "email",
-    direction: "outbound",
-    from_address: fromEmail,
-    to_address: clientArr.email,
-    subject: `Invoice ${inv.invoice_number}`,
-    body,
-    read: true,
-    sent_at: new Date().toISOString(),
-  });
+  if (!sent.ok) throw new Error(sent.reason === "provider" ? sent.detail : t("invoices.errors.sendFailed"));
 
   await supabase
     .from("invoices")

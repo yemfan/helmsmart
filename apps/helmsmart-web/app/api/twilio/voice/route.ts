@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { verifyTwilioSignature, formParams } from "@/lib/twilio-verify";
 import twilio from "twilio";
@@ -101,22 +101,24 @@ async function handleRequest(request: NextRequest) {
 
         // Passive SMS auto-reply. The realtime voice agent runs on the
         // Retell-owned number directly, so this fallback route only handles SMS.
+        // Through the consent guard: a caller who opted out of texts is not
+        // texted, and the call stays logged with auto_replied=false.
         if (org.auto_reply && org.auto_reply_msg) {
-          const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-          try {
-            await twilioClient.messages.create({ ...(twilioSender(to) ?? { from: to }), ...twilioStatusCallback(), to: from, body: org.auto_reply_msg });
-            await supabase.from("messages").insert({
-              organization_id: org.id,
-              channel: "sms",
-              direction: "outbound",
-              from_address: to,
-              to_address: from,
-              body: org.auto_reply_msg,
-              read: true,
-              sent_at: new Date().toISOString(),
-            });
+          const sent = await sendSmsGuarded({
+            db: supabase,
+            orgId: org.id,
+            clientId: client?.id ?? null,
+            to: from,
+            body: org.auto_reply_msg,
+            fromNumber: to,
+            purpose: "automated",
+            sentBy: "missed_call_text",
+          });
+          if (sent.ok) {
             await supabase.from("calls").update({ auto_replied: true, reply_body: org.auto_reply_msg }).eq("twilio_call_sid", callSid);
-          } catch (_) { /* SMS failed — call still logged */ }
+          } else {
+            console.warn("[twilio voice] missed-call text not sent:", outcomeForLog(sent));
+          }
         }
       } catch (err) {
         console.error("Twilio webhook background task error:", err);

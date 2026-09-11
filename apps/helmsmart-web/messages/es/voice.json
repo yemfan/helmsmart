@@ -139,7 +139,9 @@
       "noAgent": "Todavía no hay ningún agente de voz conectado a su número.",
       "noneSelected": "No hay contactos seleccionados.",
       "noneReachable": "No hay contactos localizables: necesitan un número de teléfono.",
-      "alreadyQueued": "Esos contactos ya están en cola o se les está llamando."
+      "alreadyQueued": "Esos contactos ya están en cola o se les está llamando.",
+      "allOptedOut": "Todos los contactos que eligió pidieron no recibir llamadas, así que no se programó ninguna.",
+      "consentUnavailable": "No pudimos verificar quién pidió no recibir llamadas, así que no se marcó a nadie. Intente de nuevo en un minuto."
     }
   },
   "settings": {

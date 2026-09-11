@@ -132,7 +132,9 @@
       "noAgent": "你的号码尚未关联语音助理。",
       "noneSelected": "未选择任何联系人。",
       "noneReachable": "没有可拨打的联系人 —— 他们需要有电话号码。",
-      "alreadyQueued": "这些联系人已在队列中或正在拨打。"
+      "alreadyQueued": "这些联系人已在队列中或正在拨打。",
+      "allOptedOut": "你选择的联系人都已拒绝接听电话，因此没有加入任何呼叫。",
+      "consentUnavailable": "暂时无法确认哪些联系人拒绝接听电话，因此没有拨打任何人。请一分钟后再试。"
     }
   },
   "settings": {

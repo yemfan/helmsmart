@@ -4,8 +4,8 @@ import { createNotificationService } from "@/lib/actions/notifications";
 import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
 import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
-import twilio from "twilio";
-import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
+import { twilioSender } from "@/lib/twilio-sender";
+import { outcomeForLog, sendSmsGuarded } from "@/lib/outbound-send";
 import { sendEmail } from "@/lib/email";
 import { orgOwnerRecipients } from "@/lib/org-recipients";
 import { translatorFor } from "@/lib/i18n/translator";
@@ -393,30 +393,27 @@ export async function notifyBooking(
   // Not gated on org.twilioNumber any more: with a Messaging Service configured
   // the send doesn't need one, and the receptionist may well be answering on a
   // voice-only number.
-  const sender = twilioSender(org.twilioNumber);
-  if (!sender || !booked.bookedLabel) return;
+  if (!twilioSender(org.twilioNumber) || !booked.bookedLabel) return;
 
-  const client = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
-
-  /** Send one SMS and record it, without letting a failure end the booking. */
-  const send = async (to: string, body: string, clientId: string | null) => {
-    try {
-      const sms = await client.messages.create({ ...sender, ...twilioStatusCallback(), to, body });
-      await db.from("messages").insert({
-        organization_id: org.orgId,
-        client_id: clientId,
-        channel: "sms",
-        direction: "outbound",
-        from_address: org.twilioNumber ?? "messaging-service",
-        to_address: to,
-        body,
-        read: true,
-        external_id: sms.sid,
-        sent_at: new Date().toISOString(),
-      });
-    } catch (e) {
-      console.error("[receptionist] booking SMS error:", to, e);
-    }
+  /**
+   * Send one SMS and record it, without letting a failure end the booking.
+   * Through the consent guard: a caller who opted out of texts is not texted
+   * a confirmation. The business's own alert phone is not a client, so no
+   * client's consent applies to it.
+   */
+  const send = async (to: string, body: string, clientId: string | null, recipient: "client" | "business") => {
+    const sent = await sendSmsGuarded({
+      db,
+      orgId: org.orgId,
+      clientId,
+      to,
+      body,
+      fromNumber: org.twilioNumber,
+      purpose: "automated",
+      sentBy: "receptionist",
+      recipient,
+    });
+    if (!sent.ok) console.error("[receptionist] booking SMS not sent:", to, outcomeForLog(sent));
   };
 
   // ── The caller ──
@@ -431,7 +428,7 @@ export async function notifyBooking(
     const body =
       `You're confirmed for ${booked.bookedLabel}. See you then! — ${org.orgName}` +
       `\nTo reschedule or cancel, reply CANCEL${link ? `, use ${link}` : ""}${callBack}.`;
-    await send(callerNumber, body, await matchOrCreateClient(org.orgId, callerNumber));
+    await send(callerNumber, body, await matchOrCreateClient(org.orgId, callerNumber), "client");
   }
 
   // ── The business ──
@@ -448,7 +445,7 @@ export async function notifyBooking(
     // client_id null on purpose: this is a message to the business about a
     // client, not a message to that client. Threading it under the caller
     // would put the owner's own alert in the caller's conversation.
-    await send(alertTo, `New appointment booked by your AI receptionist: ${booked.bookedLabel}.${who}`, null);
+    await send(alertTo, `New appointment booked by your AI receptionist: ${booked.bookedLabel}.${who}`, null, "business");
   }
 
   await emailBookingAlert(db, org, callerNumber, booked.bookedLabel);

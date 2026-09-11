@@ -217,18 +217,23 @@
     "title": "Preferencias de comunicación",
     "saved": "¡Guardado!",
     "optOuts": {
-      "title": "Exclusiones de notificaciones",
+      "title": "Exclusiones",
       "sms": {
-        "label": "Mensajes SMS",
-        "description": "Excluir de los mensajes de texto"
+        "label": "No quiere recibir mensajes de texto",
+        "description": "Ningún mensaje de texto: ni suyo, ni de Auto Pilot, ni respuestas automáticas, textos por llamadas perdidas, recordatorios o campañas. Se activa solo cuando el cliente responde STOP y se desactiva cuando responde START."
       },
       "email": {
-        "label": "Correo electrónico",
-        "description": "Excluir de los mensajes de correo"
+        "label": "No quiere recibir correos",
+        "description": "Ni campañas, ni automatizaciones, ni respuestas automáticas, ni correos de la bandeja de entrada. Las facturas, recibos, cotizaciones, estados de cuenta, enlaces de pago y recordatorios de pago sí se envían: son registros de negocios que ya hizo con usted."
       },
       "calls": {
-        "label": "Llamadas telefónicas",
-        "description": "Excluir de las llamadas telefónicas"
+        "label": "No quiere recibir llamadas",
+        "description": "Ni llamadas con IA ni llamadas automáticas de recordatorio."
+      },
+      "since": {
+        "stopReply": "Respondió STOP el {{date}}.",
+        "carrier": "Su operador informó una respuesta STOP el {{date}}.",
+        "unsubscribed": "Se dio de baja el {{date}}."
       }
     },
     "contact": {
@@ -252,6 +257,30 @@
       "notes": "Notas adicionales",
       "notesPlaceholder": "p. ej., «prefiere el correo después de las 5 p. m.», «no llamar los lunes»"
     }
+  },
+  "consent": {
+    "someone": "Este contacto",
+    "denied": {
+      "sms": {
+        "stopReply": "{{name}} pidió no recibir mensajes de texto el {{date}} (respondió STOP).",
+        "carrier": "{{name}} pidió no recibir mensajes de texto el {{date}} (su operador informó una respuesta STOP).",
+        "unsubscribed": "{{name}} pidió no recibir mensajes de texto el {{date}}.",
+        "marked": "{{name}} tiene activada la opción de no recibir mensajes de texto."
+      },
+      "email": {
+        "unsubscribed": "{{name}} se dio de baja del correo el {{date}}.",
+        "marked": "{{name}} tiene activada la opción de no recibir correos."
+      },
+      "call": {
+        "marked": "{{name}} tiene activada la opción de no recibir llamadas."
+      }
+    },
+    "alternative": {
+      "text": "Todavía puede enviarle un mensaje de texto a {{name}}.",
+      "email": "Todavía puede enviarle un correo a {{name}}.",
+      "textOrEmail": "Todavía puede enviarle un mensaje de texto o un correo a {{name}}."
+    },
+    "withAlternative": "{{reason}} {{alternative}}"
   },
   "brief": {
     "title": "Informe del cliente con IA",
