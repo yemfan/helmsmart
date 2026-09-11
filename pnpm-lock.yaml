@@ -869,7 +869,11 @@ importers:
         specifier: ^2.99.2
         version: 2.100.1
 
-  packages/dna-marketing: {}
+  packages/dna-marketing:
+    devDependencies:
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.37)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   packages/dna-operations:
     dependencies:
