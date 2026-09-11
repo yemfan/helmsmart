@@ -1,19 +1,33 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
-import { LogoMark } from "@helm/ui";
+import { Avatar } from "@helm/ui";
 import { Toggle } from "@/components/ui/toggle";
 import { formatPhoneDisplay } from "@/lib/phone-display";
 import { isMessageSender, senderLabel } from "@/lib/message-provenance";
+import {
+  ASK_MARK_KEYSHORTCUTS,
+  askMarkRequested,
+  isAskMarkShortcut,
+  onAskMarkRequest,
+  urlWithoutAskMark,
+} from "@/lib/ask-mark";
+import { useAskMarkShortcutLabel } from "@/components/use-ask-mark-shortcut";
 
 /**
- * HelmSmart AI — a floating assistant panel (draggable + resizable on desktop,
- * a full-screen sheet below `md`). Two kinds of tabs:
- *   • "AI Guide" — free-form business chat (streams from /api/ask).
+ * Ask Mark — the one place the owner talks to the AI team. Mark, the AI COO,
+ * is its face. A floating panel (draggable + resizable on desktop, a
+ * full-screen sheet below `md`) with two kinds of tabs:
+ *   • "Ask" — questions about the business, answered by Mark from its live
+ *     data (streams from /api/ask). He answers; he doesn't act.
  *   • per-client SMS tabs — search a client, draft an SMS with Claude, see the
  *     thread, and send it to the recipient the button names.
+ *
+ * One panel, several ways in: its launcher, the sidebar's "Ask Mark" button,
+ * Ctrl+/ (⌘/), and `/ask` → `/home?ask=1` — all through `lib/ask-mark.ts`.
  *
  * Auto Pilot (per client) makes the inbound SMS webhook reply to that client's
  * texts by itself. It is turned on only through a confirmation that says
@@ -64,8 +78,11 @@ type ContactTab = {
   autoPilotError: string | null;
 };
 
-/** Keys under `aiPanel.quickPrompts` — the question is translated at render. */
-const QUICK_PROMPT_KEYS = ["overdue", "cashFlow", "topClients", "focus"];
+/**
+ * Keys under `aiPanel.quickPrompts` — the question is translated at render.
+ * Each is one the live snapshot in /api/ask can actually answer.
+ */
+const QUICK_PROMPT_KEYS = ["overdue", "cashFlow", "topExpenses", "activeClients"];
 
 /** How long the send button says "Sent!" before returning to its resting label. */
 const SENT_LABEL_MS = 2500;
@@ -142,6 +159,11 @@ function useIsSheet(): boolean {
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/** Still in the document, laid out, and not hidden (e.g. inside a closed drawer). */
+function isOnScreen(el: HTMLElement): boolean {
+  return el.isConnected && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden";
+}
+
 const PANEL_POSITION_STORAGE_KEY = "helmsmart.ai-panel.position.v1";
 const PANEL_SIZE_STORAGE_KEY = "helmsmart.ai-panel.size.v1";
 const PANEL_MIN_STORAGE_KEY = "helmsmart.ai-panel.minimized.v1";
@@ -167,16 +189,16 @@ function clampToViewport(p: PanelPosition): PanelPosition {
 }
 
 export function HelmSmartAiPanel({
-  productName = "HelmSmart",
-  logoLetter = "H",
+  markAvatar,
 }: {
-  /** Pack-driven branding so the assistant matches the active vertical (e.g. "DoctorSmart AI"). */
-  productName?: string;
-  logoLetter?: string;
-} = {}) {
+  /** Mark's avatar id — the business's pick, else his roster default (`lib/mark-avatar.ts`). */
+  markAvatar: string;
+}) {
   const { t } = useTranslation("home");
   const [open, setOpen] = useState(false);
   const sheet = useIsSheet();
+  const shortcut = useAskMarkShortcutLabel();
+  const searchParams = useSearchParams();
 
   const [activeTabId, setActiveTabId] = useState<string>("guide");
   const [contactTabs, setContactTabs] = useState<ContactTab[]>([]);
@@ -193,6 +215,56 @@ export function HelmSmartAiPanel({
   const panelRef = useRef<HTMLDivElement>(null);
   const wasOpenRef = useRef(false);
   const titleId = useId();
+  const askInputRef = useRef<HTMLInputElement>(null);
+  /** What had focus when the panel opened, to hand focus back to on close. */
+  const openerRef = useRef<HTMLElement | null>(null);
+  const openRef = useRef(false);
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  /**
+   * Every way in except the launcher lands here — the sidebar button, the
+   * shortcut, `/ask`: open (and un-minimize) on the Ask view, with the cursor
+   * in the question box.
+   */
+  const openAsk = useCallback(() => {
+    if (!openRef.current) {
+      const active = document.activeElement;
+      openerRef.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    setActiveTabId("guide");
+    setMinimized(false);
+    setOpen(true);
+    // Already open, so the focus effect below won't run again.
+    if (openRef.current) requestAnimationFrame(() => askInputRef.current?.focus());
+  }, []);
+
+  // The sidebar button asks through a typed window event (`lib/ask-mark.ts`).
+  useEffect(
+    () => onAskMarkRequest((action) => (action === "open" ? openAsk() : setOpen(false))),
+    [openAsk],
+  );
+
+  // Ctrl+/ (⌘/ on a Mac), from anywhere in the dashboard.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!isAskMarkShortcut(e)) return;
+      e.preventDefault();
+      openAsk();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openAsk]);
+
+  // `/ask` redirects to `/home?ask=1`: open, then take the param back out of
+  // the address so a reload doesn't reopen the panel.
+  useEffect(() => {
+    if (!askMarkRequested(searchParams?.toString() ?? "")) return;
+    openAsk();
+    const cleaned = urlWithoutAskMark(window.location.href);
+    if (cleaned !== null) window.history.replaceState(null, "", cleaned);
+  }, [searchParams, openAsk]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -265,15 +337,21 @@ export function HelmSmartAiPanel({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Focus: into the sheet when it opens (so a screen reader announces it and
-  // Tab starts inside), and back to the launcher when the panel closes.
+  // Focus: into the panel when it opens — the sheet itself on a phone (so a
+  // screen reader announces it and Tab starts inside, without raising the
+  // keyboard), the question box on a desktop — and, when it closes, back to
+  // whatever opened it if that is still on screen, else to the launcher.
   useEffect(() => {
     if (open) {
       wasOpenRef.current = true;
       if (sheet) panelRef.current?.focus();
+      else (askInputRef.current ?? panelRef.current)?.focus();
     } else if (wasOpenRef.current) {
       wasOpenRef.current = false;
-      launcherRef.current?.focus();
+      const opener = openerRef.current;
+      openerRef.current = null;
+      if (opener && isOnScreen(opener)) opener.focus();
+      else launcherRef.current?.focus();
     }
   }, [open, sheet]);
 
@@ -394,7 +472,7 @@ export function HelmSmartAiPanel({
     [],
   );
 
-  // ── AI Guide (free-form chat) state ─────────────────────────────
+  // ── Ask (Mark answers) state ────────────────────────────────────
   const [guideMessages, setGuideMessages] = useState<GuideMessage[]>([]);
   const [guideInput, setGuideInput] = useState("");
   const [guideLoading, setGuideLoading] = useState(false);
@@ -663,9 +741,11 @@ export function HelmSmartAiPanel({
         onClick={() => setOpen(true)}
         className="fixed right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B1D33] shadow-lg ring-1 ring-blue-400/30 transition-transform hover:scale-105 hover:ring-blue-300/50"
         style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
-        aria-label={t("aiPanel.open", { product: productName })}
+        aria-label={t("aiPanel.open")}
+        aria-keyshortcuts={ASK_MARK_KEYSHORTCUTS}
+        title={t("aiPanel.openHint", { shortcut })}
       >
-        <LogoMark letter={logoLetter} color="#fff" size={40} />
+        <Avatar id={markAvatar} size={52} />
       </button>
     );
   }
@@ -713,14 +793,14 @@ export function HelmSmartAiPanel({
         style={sheet ? { paddingTop: "calc(0.75rem + env(safe-area-inset-top, 0px))" } : undefined}
       >
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/95 ring-1 ring-white/40">
-            <LogoMark letter={logoLetter} size={28} />
+          <span className="shrink-0 rounded-full bg-white/95 ring-2 ring-white/40">
+            <Avatar id={markAvatar} size={36} />
           </span>
           <div className="min-w-0">
             <p id={titleId} className="truncate text-sm font-bold">
-              {t("aiPanel.title", { product: productName })}
+              {t("aiPanel.title")}
             </p>
-            <p className="truncate text-[11px] opacity-80">{t("aiPanel.subtitle")}</p>
+            <p className="text-[11px] leading-snug opacity-90">{t("aiPanel.subtitle")}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -728,11 +808,7 @@ export function HelmSmartAiPanel({
             <button
               onClick={() => setMinimized((v) => !v)}
               className="inline-flex h-7 w-7 items-center justify-center rounded text-white/80 hover:bg-white/10 hover:text-white"
-              aria-label={
-                minimized
-                  ? t("aiPanel.expand", { product: productName })
-                  : t("aiPanel.minimize", { product: productName })
-              }
+              aria-label={minimized ? t("aiPanel.expand") : t("aiPanel.minimize")}
               title={minimized ? t("aiPanel.expandShort") : t("aiPanel.minimizeShort")}
             >
               {minimized ? (
@@ -747,7 +823,7 @@ export function HelmSmartAiPanel({
             className={`inline-flex items-center justify-center rounded leading-none text-white/80 hover:bg-white/10 hover:text-white ${
               sheet ? "h-11 w-11 text-3xl" : "h-7 w-7 text-xl"
             }`}
-            aria-label={t("aiPanel.close", { product: productName })}
+            aria-label={t("aiPanel.close")}
           >
             &times;
           </button>
@@ -757,7 +833,7 @@ export function HelmSmartAiPanel({
       {!isMinimized ? (
         <>
           <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 bg-gray-50 px-2 py-1">
-            <TabPill label={t("aiPanel.guideTab")} active={activeTabId === "guide"} onClick={() => setActiveTabId("guide")} closeLabel={t("aiPanel.closeTab")} />
+            <TabPill label={t("aiPanel.askTab")} active={activeTabId === "guide"} onClick={() => setActiveTabId("guide")} closeLabel={t("aiPanel.closeTab")} />
             {contactTabs.map((tab) => (
               <TabPill
                 key={tab.tabId}
@@ -782,7 +858,7 @@ export function HelmSmartAiPanel({
 
           {activeTabId === "guide" ? (
             <GuideTabBody
-              productName={productName}
+              inputRef={askInputRef}
               messages={guideMessages}
               loading={guideLoading}
               input={guideInput}
@@ -897,9 +973,9 @@ function TabPill({
   );
 }
 
-// ── Guide tab body ────────────────────────────────────────────────
+// ── Ask tab body (Mark answers) ───────────────────────────────────
 function GuideTabBody({
-  productName,
+  inputRef,
   messages,
   loading,
   input,
@@ -908,7 +984,8 @@ function GuideTabBody({
   scrollRef,
   quickPrompts,
 }: {
-  productName: string;
+  /** The question box — the Ask Mark entry points put the cursor here. */
+  inputRef: React.RefObject<HTMLInputElement | null>;
   messages: GuideMessage[];
   loading: boolean;
   input: string;
@@ -973,6 +1050,7 @@ function GuideTabBody({
       </div>
       <div className="flex gap-2 border-t border-gray-100 px-3 py-3">
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -981,8 +1059,8 @@ function GuideTabBody({
               send(input);
             }
           }}
-          placeholder={t("aiPanel.askPlaceholder", { product: productName })}
-          aria-label={t("aiPanel.askPlaceholder", { product: productName })}
+          placeholder={t("aiPanel.askPlaceholder")}
+          aria-label={t("aiPanel.askPlaceholder")}
           // 16px below md so iOS doesn't zoom the sheet when the field takes focus.
           className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-blue-400 focus:outline-none md:text-sm"
           disabled={loading}
@@ -1371,7 +1449,7 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
   );
 }
 
-// ── Lightweight Markdown renderer for AI Guide replies ────────────
+// ── Lightweight Markdown renderer for Mark's answers ──────────────
 function renderInline(text: string): React.ReactNode[] {
   return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
     i % 2 === 1 ? (

@@ -58,8 +58,9 @@
     "switchAccount": "Cambiar de cuenta",
     "logOut": "Cerrar sesión"
   },
-  "aiEmployee": {
-    "coo": "Mark, director de operaciones con IA"
+  "askMark": {
+    "button": "Preguntar a Mark",
+    "hint": "Preguntar a Mark ({{shortcut}})"
   },
   "menu": {
     "navigation": "Navegación principal",

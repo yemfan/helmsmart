@@ -148,7 +148,8 @@
     "cost_cents": "Cost",
     "revenue_cents": "Revenue",
     "conversion_rate": "Conversion Rate",
-    "funnel_sessions": "Funnel Sessions"
+    "funnel_sessions": "Funnel Sessions",
+    "questions_answered": "Questions Answered"
   },
   "commandCenter": {
     "metaTitle": "Command Center",
@@ -260,22 +261,7 @@
     "tasksDue_other": "{{count}} tasks need attention today"
   },
   "ask": {
-    "metaTitle": "Ask AI",
-    "title": "Ask AI",
-    "subtitle": "Live data from your business",
-    "newChat": "New chat",
-    "emptyTitle": "Your AI Business Assistant",
-    "emptyBody": "Ask anything about your clients, invoices, revenue, or expenses. I have access to your live business data.",
-    "suggested": {
-      "outstandingRevenue": "What's my outstanding revenue this month?",
-      "activeClients": "How many active clients do I have?",
-      "topExpenses": "What are my top expense categories?",
-      "overdueInvoices": "Do I have any overdue invoices?",
-      "netIncome": "What was my net income this month?"
-    },
-    "placeholder": "Ask about your business…",
     "error": "Sorry, something went wrong. Please try again.",
-    "footer": "Based on live data · Enter to send · Shift+Enter for new line",
     "errors": {
       "unauthorized": "Sign in again to ask about your business.",
       "notConfigured": "AI is not configured yet — add an Anthropic API key.",
@@ -287,16 +273,17 @@
     "uncategorized": "Uncategorized"
   },
   "aiPanel": {
-    "open": "Open {{product}} AI",
-    "close": "Close {{product}} AI",
-    "expand": "Expand {{product}} AI",
-    "minimize": "Minimize {{product}} AI",
+    "open": "Ask Mark",
+    "openHint": "Ask Mark ({{shortcut}})",
+    "close": "Close Ask Mark",
+    "expand": "Expand Ask Mark",
+    "minimize": "Minimize Ask Mark",
     "expandShort": "Expand",
     "minimizeShort": "Minimize",
-    "title": "{{product}} AI",
-    "subtitle": "Guide + per-client SMS drafting",
+    "title": "Mark",
+    "subtitle": "AI COO · answers from your business data, drafts texts to clients",
     "dragHint": "Drag to reposition · Double-click to reset position + size",
-    "guideTab": "AI Guide",
+    "askTab": "Ask",
     "newContactTab": "New contact tab",
     "closeTab": "Close tab",
     "tabNotFound": "Tab not found.",
@@ -306,14 +293,14 @@
     "resizeHeightHint": "Drag to resize height",
     "resizePanel": "Resize panel",
     "resizeHint": "Drag to resize",
-    "tryAsking": "Try asking:",
+    "tryAsking": "Try asking Mark:",
     "quickPrompts": {
-      "overdue": "What invoices are overdue?",
+      "overdue": "Do I have any overdue invoices?",
       "cashFlow": "How's my cash flow this month?",
-      "topClients": "Who are my top clients?",
-      "focus": "What should I focus on today?"
+      "topExpenses": "What am I spending the most on this month?",
+      "activeClients": "How many active clients do I have?"
     },
-    "askPlaceholder": "Ask {{product}} AI…",
+    "askPlaceholder": "Ask Mark about your business…",
     "send": "Send",
     "noResponse": "No response — please try again.",
     "networkError": "Network error. Please try again.",
@@ -322,7 +309,6 @@
     "threadNetworkError": "Network error loading thread.",
     "draftFailed": "The draft couldn't be written. Try again.",
     "sendFailed": "The text wasn't sent. Try again.",
-    "dialogLabel": "{{product}} AI assistant",
     "contact": {
       "newTab": "New contact tab",
       "fallbackName": "Contact",

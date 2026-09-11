@@ -58,8 +58,9 @@
     "switchAccount": "Switch account",
     "logOut": "Log out"
   },
-  "aiEmployee": {
-    "coo": "Mark, AI COO"
+  "askMark": {
+    "button": "Ask Mark",
+    "hint": "Ask Mark ({{shortcut}})"
   },
   "menu": {
     "navigation": "Main navigation",

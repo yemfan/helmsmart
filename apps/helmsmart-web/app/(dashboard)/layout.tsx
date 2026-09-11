@@ -5,6 +5,7 @@ import { getUnreadCount, getRecentNotifications } from "@/lib/actions/notificati
 import { NotificationsBell } from "@/components/notifications-bell";
 import { HelmSmartAiPanel } from "@/components/helmsmart-ai-panel";
 import { getActivePack } from "@/lib/packs";
+import { markAvatarId } from "@/lib/mark-avatar";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -12,11 +13,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const supabase = await createClient();
 
-  // Load notification data + current user email server-side
-  const [unreadCount, notifications, { data: { user } }] = await Promise.all([
+  // Load notification data + current user email server-side, and Mark's avatar
+  // for the Ask Mark panel (RLS-scoped; falls back to his roster default).
+  const [unreadCount, notifications, { data: { user } }, markAvatar] = await Promise.all([
     getUnreadCount(orgId),
     getRecentNotifications(orgId, 20),
     supabase.auth.getUser(),
+    orgId ? markAvatarId(supabase, orgId) : Promise.resolve(null),
   ]);
 
   const pack = await getActivePack();
@@ -31,6 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         productName={pack.productName}
         logoLetter={pack.logoLetter}
         terms={pack.terms}
+        askMarkAvatar={markAvatar}
         notificationsSlot={
           <NotificationsBell
             orgId={orgId}
@@ -42,7 +46,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <main id="main-content" className="flex-1 min-w-0 min-h-0 overflow-auto">
         {children}
       </main>
-      {orgId ? <HelmSmartAiPanel productName={pack.productName} logoLetter={pack.logoLetter} /> : null}
+      {/* Ask Mark — the one panel; the sidebar button, the launcher, the shortcut and /ask all open it. */}
+      {markAvatar ? <HelmSmartAiPanel markAvatar={markAvatar} /> : null}
     </div>
   );
 }

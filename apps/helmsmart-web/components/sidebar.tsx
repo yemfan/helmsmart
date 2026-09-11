@@ -10,12 +10,14 @@ import {
   ChevronUp, KeyRound, RefreshCw, Camera, FileText, FileCheck, Receipt, Star,
   FileInput, GitBranch, MessageCircle,
 } from "lucide-react";
-import { Sidebar as HelmUiSidebar, type NavSection } from "@helm/ui";
+import { Avatar, Sidebar as HelmUiSidebar, type NavSection } from "@helm/ui";
 import { useTranslation } from "react-i18next";
 import { signOut } from "@/lib/actions/auth";
+import { ASK_MARK_KEYSHORTCUTS, requestAskMark } from "@/lib/ask-mark";
 import { ChangePasswordModal } from "@/components/change-password-modal";
 import { AvatarUploadModal } from "@/components/avatar-upload-modal";
 import { LanguageToggle } from "@/components/language-toggle";
+import { useAskMarkShortcutLabel } from "@/components/use-ask-mark-shortcut";
 
 const ICON = 16;
 
@@ -90,11 +92,19 @@ interface Props {
   productName?: string;
   logoLetter?: string;
   terms?: Record<string, string>;
+  /**
+   * Mark's avatar id. When set, the sidebar shows the "Ask Mark" button, which
+   * opens the Ask Mark panel the dashboard layout mounts beside it. Leave it
+   * unset where no panel is mounted — a button that opens nothing is worse
+   * than no button.
+   */
+  askMarkAvatar?: string | null;
 }
 
-export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarUrl, productName = "HelmSmart", logoLetter = "H", terms = {} }: Props) {
+export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarUrl, productName = "HelmSmart", logoLetter = "H", terms = {}, askMarkAvatar }: Props) {
   const pathname = usePathname();
   const { t } = useTranslation("nav");
+  const shortcut = useAskMarkShortcutLabel();
 
   // Longest-prefix match so e.g. /books/invoices keeps "Books" highlighted.
   const activeHref = ALL_HREFS
@@ -129,7 +139,17 @@ export function Sidebar({ unreadCount = 0, notificationsSlot, userEmail, avatarU
       activeHref={activeHref}
       linkComponent={Link}
       notificationsSlot={notificationsSlot}
-      aiEmployee={{ name: t("aiEmployee.coo") }}
+      aiEmployee={
+        askMarkAvatar
+          ? {
+              name: t("askMark.button"),
+              hint: t("askMark.hint", { shortcut }),
+              keyShortcuts: ASK_MARK_KEYSHORTCUTS,
+              icon: <Avatar id={askMarkAvatar} size={22} />,
+              onClick: () => requestAskMark("open"),
+            }
+          : undefined
+      }
       footer={userEmail ? <UserFooter userEmail={userEmail} avatarUrl={avatarUrl} /> : undefined}
       labels={{ navigation: t("menu.navigation"), openMenu: t("menu.open"), closeMenu: t("menu.close") }}
     />

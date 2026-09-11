@@ -1,8 +1,10 @@
-// Attribute real receptionist work to Emma (the AI Receptionist) in the AI Workforce
-// runtime, so the Executive Command Center can show what she actually did. Every
-// function here is BEST-EFFORT: it resolves Emma for the org, records to the runtime,
-// and swallows all errors — a workforce hiccup must never break a live call or booking.
-// If the org hasn't seeded its workforce yet, getEmployee returns null and we no-op.
+// Attribute real work to the AI employee who did it, in the AI Workforce runtime, so
+// the Executive Command Center can show what each actually did: Emma (the AI
+// Receptionist) for calls and bookings, Mark (the AI COO) for the questions he answers
+// in the Ask Mark panel. Every function here is BEST-EFFORT: it resolves the employee
+// for the org, records to the runtime, and swallows all errors — a workforce hiccup
+// must never break a live call, a booking or an answer. If the org hasn't seeded its
+// workforce yet, getEmployee returns null and we no-op.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@helm/data/types";
@@ -11,6 +13,25 @@ import { getEmployee, startRun, completeRun, incrementMetric } from "@helm/ai-wo
 type Db = SupabaseClient<Database>;
 
 const EMMA = "emma";
+const MARK = "mark";
+
+/** Mark's daily KPI: questions the owner asked in Ask Mark that he answered. */
+export const MARK_QUESTIONS_METRIC = "questions_answered";
+
+/**
+ * Count one answered question toward Mark's questions_answered KPI. `/api/ask` calls
+ * this from `after()`, once the answer has finished streaming — so it can neither
+ * delay nor fail the answer — and only when an answer actually arrived.
+ */
+export async function recordMarkAnswer(db: Db, orgId: string): Promise<void> {
+  try {
+    const mark = await getEmployee(db, orgId, MARK);
+    if (!mark) return;
+    await incrementMetric(db, orgId, { employeeId: mark.id, metricKey: MARK_QUESTIONS_METRIC });
+  } catch (e) {
+    console.error("[workforce] recordMarkAnswer failed:", e);
+  }
+}
 
 /** Bump Emma's appointments_booked KPI for one successful receptionist booking. */
 export async function recordEmmaBooking(db: Db, orgId: string): Promise<void> {

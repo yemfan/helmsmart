@@ -148,7 +148,8 @@
     "cost_cents": "Costo",
     "revenue_cents": "Ingresos",
     "conversion_rate": "Tasa de conversión",
-    "funnel_sessions": "Sesiones del embudo"
+    "funnel_sessions": "Sesiones del embudo",
+    "questions_answered": "Preguntas respondidas"
   },
   "commandCenter": {
     "metaTitle": "Centro de mando",
@@ -260,22 +261,7 @@
     "tasksDue_other": "{{count}} tareas necesitan atención hoy"
   },
   "ask": {
-    "metaTitle": "Preguntar a la IA",
-    "title": "Preguntar a la IA",
-    "subtitle": "Datos en vivo de su negocio",
-    "newChat": "Nueva conversación",
-    "emptyTitle": "Su asistente de negocio con IA",
-    "emptyBody": "Pregunte lo que quiera sobre sus clientes, facturas, ingresos o gastos. Tengo acceso a los datos en vivo de su negocio.",
-    "suggested": {
-      "outstandingRevenue": "¿Cuánto tengo pendiente de cobro este mes?",
-      "activeClients": "¿Cuántos clientes activos tengo?",
-      "topExpenses": "¿Cuáles son mis principales categorías de gasto?",
-      "overdueInvoices": "¿Tengo alguna factura vencida?",
-      "netIncome": "¿Cuál fue mi beneficio neto este mes?"
-    },
-    "placeholder": "Pregunte sobre su negocio…",
     "error": "Lo sentimos, algo salió mal. Inténtelo de nuevo.",
-    "footer": "Basado en datos en vivo · Intro para enviar · Mayús+Intro para una nueva línea",
     "errors": {
       "unauthorized": "Inicie sesión de nuevo para consultar los datos de su negocio.",
       "notConfigured": "La IA aún no está configurada: agregue una clave de API de Anthropic.",
@@ -287,16 +273,17 @@
     "uncategorized": "Sin categoría"
   },
   "aiPanel": {
-    "open": "Abrir {{product}} AI",
-    "close": "Cerrar {{product}} AI",
-    "expand": "Ampliar {{product}} AI",
-    "minimize": "Minimizar {{product}} AI",
+    "open": "Preguntar a Mark",
+    "openHint": "Preguntar a Mark ({{shortcut}})",
+    "close": "Cerrar el panel de Mark",
+    "expand": "Ampliar el panel de Mark",
+    "minimize": "Minimizar el panel de Mark",
     "expandShort": "Ampliar",
     "minimizeShort": "Minimizar",
-    "title": "{{product}} AI",
-    "subtitle": "Guía + redacción de SMS por cliente",
+    "title": "Mark",
+    "subtitle": "Director de operaciones con IA · responde con los datos de su negocio y redacta textos para sus clientes",
     "dragHint": "Arrastre para moverlo · Haga doble clic para restablecer la posición y el tamaño",
-    "guideTab": "Guía de IA",
+    "askTab": "Preguntar",
     "newContactTab": "Nueva pestaña de contacto",
     "closeTab": "Cerrar la pestaña",
     "tabNotFound": "No se encontró la pestaña.",
@@ -306,14 +293,14 @@
     "resizeHeightHint": "Arrastre para ajustar la altura",
     "resizePanel": "Ajustar el tamaño del panel",
     "resizeHint": "Arrastre para ajustar el tamaño",
-    "tryAsking": "Puede preguntar, por ejemplo:",
+    "tryAsking": "Puede preguntarle a Mark, por ejemplo:",
     "quickPrompts": {
-      "overdue": "¿Qué facturas están vencidas?",
+      "overdue": "¿Tengo alguna factura vencida?",
       "cashFlow": "¿Cómo va mi flujo de caja este mes?",
-      "topClients": "¿Quiénes son mis mejores clientes?",
-      "focus": "¿En qué debería centrarme hoy?"
+      "topExpenses": "¿En qué estoy gastando más este mes?",
+      "activeClients": "¿Cuántos clientes activos tengo?"
     },
-    "askPlaceholder": "Pregunte a {{product}} AI…",
+    "askPlaceholder": "Pregúntele a Mark sobre su negocio…",
     "send": "Enviar",
     "noResponse": "No hubo respuesta: inténtelo de nuevo.",
     "networkError": "Error de red. Inténtelo de nuevo.",
@@ -322,7 +309,6 @@
     "threadNetworkError": "Error de red al cargar la conversación.",
     "draftFailed": "No se pudo redactar el borrador. Inténtelo de nuevo.",
     "sendFailed": "El mensaje no se envió. Inténtelo de nuevo.",
-    "dialogLabel": "Asistente {{product}} AI",
     "contact": {
       "newTab": "Nueva pestaña de contacto",
       "fallbackName": "Contacto",

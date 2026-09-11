@@ -1,11 +1,13 @@
 /**
  * POST /api/ask
  *
- * Streaming AI business assistant. Injects live business data from Supabase
- * into the system prompt, then streams a Claude response back as plain text.
+ * Mark's answers in the Ask Mark panel. Injects live business data from
+ * Supabase into the system prompt, then streams a Claude response back as
+ * plain text. A complete answer is counted as Mark's work (`questions_answered`)
+ * after the response has finished.
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
@@ -13,17 +15,19 @@ import { orgCurrency } from "@/lib/books-currency";
 import { moneyFormatter } from "@/lib/books-format";
 import { languageDirective } from "@/lib/i18n/directives";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { recordMarkAnswer } from "@/lib/workforce-attribution";
 
 type Message = { role: "user" | "assistant"; content: string };
+type Db = Awaited<ReturnType<typeof createClient>>;
 
 // ─── Business context builder ──────────────────────────────────────────────────
 
 async function buildContext(
+  supabase: Db,
   orgId: string,
   tr: (key: string, opts?: Record<string, unknown>) => string,
   money: (value: number) => string,
 ): Promise<string> {
-  const supabase = await createClient();
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
@@ -140,18 +144,38 @@ export async function POST(request: NextRequest) {
 
   const currency = await orgCurrency(orgId);
   const money = moneyFormatter(locale, currency);
-  const context = await buildContext(orgId, t, money);
+  const supabase = await createClient();
+  const context = await buildContext(supabase, orgId, t, money);
   const anthropic = new Anthropic({ apiKey });
+
+  /*
+   * A complete answer is Mark's work, and the Command Center counts it. The
+   * count is written in `after()` — once the response has finished — so the
+   * owner never waits on it, and `recordMarkAnswer` swallows its own failures
+   * (and no-ops for an org that never seeded its workforce), so it can't break
+   * an answer. A stream that errored, produced nothing, or was abandoned by
+   * the client isn't counted.
+   */
+  let settle: (answered: boolean) => void = () => {};
+  const answered = new Promise<boolean>((resolve) => {
+    settle = resolve;
+  });
+  after(async () => {
+    if (await answered) await recordMarkAnswer(supabase, orgId);
+  });
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
+      let text = "";
+      let ok = false;
       try {
         const stream = anthropic.messages.stream({
           model: "claude-haiku-4-5",
           max_tokens: 1024,
           // The owner reads this answer, so it comes back in their language.
-          system: `You are an AI business assistant with access to real-time data from the user's business. Answer concisely and specifically. Format currency as ${currency}. Use bullet points for lists.${languageDirective(
+          // Mark answers; he does not act (yet), and must not say he did.
+          system: `You are Mark, the AI Chief Operating Officer on this business's AI team, answering the owner's questions about their business. Answer from the live snapshot below, concisely and specifically; if it doesn't hold what they asked, say so instead of guessing. Format currency as ${currency}. Use bullet points for lists. You can't take actions from this chat — you don't send messages, change records or hand work to other AI employees — so never say you did or will; if asked, say plainly that you can't do that from here yet.${languageDirective(
             locale,
           )}\n\nToday's live business snapshot:\n\n${context}`,
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
@@ -162,17 +186,24 @@ export async function POST(request: NextRequest) {
             chunk.type === "content_block_delta" &&
             chunk.delta.type === "text_delta"
           ) {
+            text += chunk.delta.text;
             controller.enqueue(encoder.encode(chunk.delta.text));
           }
         }
+        ok = text.trim().length > 0;
       } catch (err) {
         const msg = err instanceof Error ? err.message : "";
         controller.enqueue(
           encoder.encode(`\n\n${t("ask.errors.stream", { message: msg || t("ask.error") })}`),
         );
       } finally {
+        settle(ok);
         controller.close();
       }
+    },
+    cancel() {
+      // The owner closed the panel mid-answer: not an answer they received.
+      settle(false);
     },
   });
 

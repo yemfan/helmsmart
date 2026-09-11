@@ -58,8 +58,9 @@
     "switchAccount": "切换账户",
     "logOut": "退出登录"
   },
-  "aiEmployee": {
-    "coo": "Mark，AI 首席运营官"
+  "askMark": {
+    "button": "向 Mark 提问",
+    "hint": "向 Mark 提问（{{shortcut}}）"
   },
   "menu": {
     "navigation": "主导航",
