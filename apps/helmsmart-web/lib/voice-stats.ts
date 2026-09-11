@@ -27,11 +27,10 @@
  *   - minutes             → voice_sessions.duration_seconds (the AI's talk time)
  *   - texted back         → calls.auto_replied
  *
- * Pure and dependency-light on purpose: the page fetches, this decides.
+ * Pure and dependency-light on purpose: lib/voice-window fetches, this decides.
  */
 
 import { addDaysISO, safeTimezone, todayInTimezone } from "@repo/voice/datetime";
-import { phoneLast10 } from "@repo/voice/phone";
 
 /** The window every number on /voice describes. Labelled on the page. */
 export const VOICE_PERIOD_DAYS = 30;
@@ -231,29 +230,4 @@ export function summarizeCalls(rows: Pick<MergedCall, "session" | "call">[]): Vo
   stats.answeredByAi = stats.booked + stats.messagesTaken;
   stats.estCostCents = stats.billableMinutes * VOICE_RATE_CENTS_PER_MINUTE;
   return stats;
-}
-
-/**
- * The shapes one US number is commonly stored in, so a client typed in by hand
- * as "(415) 555-0143" is found for a caller ID of "+14155550143". Used as an
- * exact `in (...)` filter; callers confirm the hit with phoneLast10.
- */
-export function phoneMatchVariants(input: string | null | undefined): string[] {
-  const raw = (input ?? "").trim();
-  const d = phoneLast10(raw);
-  if (!d) return raw ? [raw] : [];
-  const [a, b, c] = [d.slice(0, 3), d.slice(3, 6), d.slice(6)];
-  return Array.from(
-    new Set([
-      raw,
-      `+1${d}`,
-      d,
-      `1${d}`,
-      `(${a}) ${b}-${c}`,
-      `${a}-${b}-${c}`,
-      `${a}.${b}.${c}`,
-      `+1 (${a}) ${b}-${c}`,
-      `+1 ${a}-${b}-${c}`,
-    ]),
-  );
 }

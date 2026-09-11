@@ -37,7 +37,8 @@
       "notSetUp": "未设置",
       "configure": "配置",
       "monitorTitle": "查看虚拟通话",
-      "monitorLabel": "累计处理通话数",
+      "monitorLabel_other": "AI 已接听 · 最近 {{count}} 天",
+      "statsError": "暂时无法加载通话统计，请刷新页面重试。",
       "viewCalls": "查看通话"
     },
     "sms": {

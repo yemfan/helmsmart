@@ -8,7 +8,11 @@ import { Phone, MessageSquare, Mail, Settings, ArrowRight, CheckCircle2, Plus } 
 type Channel = "voice" | "sms" | "email";
 
 interface Props {
-  voice: { configured: boolean; callsHandled: number };
+  /**
+   * `answeredByAi` is the /voice headline for the same window (lib/voice-window),
+   * or null when it couldn't be loaded.
+   */
+  voice: { configured: boolean; answeredByAi: number | null; periodDays: number };
   sms: { active: boolean; number: string | null };
   email: { sent: number; reached: number };
 }
@@ -82,8 +86,9 @@ export function MarketingOverview({ voice, sms, email }: Props) {
               />
               <MonitorCard
                 title={t("overview.voice.monitorTitle")}
-                metric={String(voice.callsHandled)}
-                metricLabel={t("overview.voice.monitorLabel")}
+                metric={voice.answeredByAi === null ? "—" : String(voice.answeredByAi)}
+                metricLabel={t("overview.voice.monitorLabel", { count: voice.periodDays })}
+                error={voice.answeredByAi === null ? t("overview.voice.statsError") : undefined}
                 href="/voice"
                 cta={t("overview.voice.viewCalls")}
               />
@@ -185,12 +190,15 @@ function MonitorCard({
   title,
   metric,
   metricLabel,
+  error,
   href,
   cta,
 }: {
   title: string;
   metric: string;
   metricLabel: string;
+  /** Why the metric is missing — shown instead of letting "—" read as zero. */
+  error?: string;
   href: string;
   cta: string;
 }) {
@@ -198,7 +206,12 @@ function MonitorCard({
     <div className="rounded-xl border border-slate-200 p-5 flex flex-col">
       <h3 className="text-sm font-semibold text-slate-800 mb-2">{title}</h3>
       <p className="text-2xl font-semibold text-slate-800 font-mono">{metric}</p>
-      <p className="text-xs text-slate-400 mt-0.5 mb-4 truncate">{metricLabel}</p>
+      <p className={`text-xs text-slate-400 mt-0.5 truncate ${error ? "" : "mb-4"}`}>{metricLabel}</p>
+      {error && (
+        <p className="text-xs text-rose-600 mt-1 mb-4" role="alert">
+          {error}
+        </p>
+      )}
       <Link
         href={href}
         className="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700"

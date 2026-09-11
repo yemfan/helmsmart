@@ -12,7 +12,7 @@ import { translatorFor } from "@/lib/i18n/translator";
 import { userUiLocales } from "@/lib/i18n/userLocale";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
-import { phoneLast10 } from "@repo/voice/phone";
+import { phoneLast10, phoneMatchVariants } from "@/lib/phone";
 import { GENERAL_BUSINESS_PROFILE } from "@repo/voice/vertical";
 import {
   NO_UPCOMING_APPOINTMENT_TEXT,
@@ -241,24 +241,27 @@ export type ToolCtx = { db: ServiceClient; orgId: string; fromNumber: string };
 /**
  * Upcoming appointments for THIS caller, soonest first.
  *
- * Matched on the last ten digits of the phone, not an exact string: a client
- * added by hand may be stored as "(626) 755-7917" while the caller ID arrives as
- * "+16267557917", and an exact match finds neither. Cancellation hard-deletes the
- * row, so anything still here and still in the future is live.
+ * A client added by hand may be stored as "(626) 755-7917" while the caller ID
+ * arrives as "+16267557917", so the client is found by phoneMatchVariants — the
+ * same shapes /voice and consent look up. This used to be a suffix `ilike` on
+ * the last ten digits, which only matches when those digits are contiguous at
+ * the end: "+16267557917" yes, "(626) 755-7917" no — the very case it was
+ * written for. Cancellation hard-deletes the row, so anything still here and
+ * still in the future is live.
  */
 async function upcomingForCaller(
   db: ServiceClient,
   orgId: string,
   fromNumber: string
 ): Promise<{ title: string | null; start_at: string }[]> {
-  const last10 = phoneLast10(fromNumber);
-  if (!last10) return [];
+  // A withheld or unreadable caller ID is nobody's number.
+  if (!phoneLast10(fromNumber)) return [];
 
   const { data: clients } = await db
     .from("clients")
     .select("id")
     .eq("organization_id", orgId)
-    .ilike("phone", `%${last10}`);
+    .in("phone", phoneMatchVariants(fromNumber));
   const ids = (clients ?? []).map((c) => c.id as string);
   if (ids.length === 0) return [];
 

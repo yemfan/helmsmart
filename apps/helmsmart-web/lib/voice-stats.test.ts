@@ -4,7 +4,6 @@ import {
   billableMinutes,
   classifyCall,
   mergeCallLog,
-  phoneMatchVariants,
   startOfDayUtc,
   summarizeCalls,
   talkMinutes,
@@ -174,22 +173,5 @@ describe("classifyCall", () => {
   it("reads the plain line's own statuses", () => {
     expect(classifyCall({ session: null, call: call({ id: "c", status: "answered" }) })).toBe("answered");
     expect(classifyCall({ session: null, call: call({ id: "c", status: "missed" }) })).toBe("missed");
-  });
-});
-
-describe("phoneMatchVariants", () => {
-  it("covers caller-ID and hand-typed shapes of one US number", () => {
-    const v = phoneMatchVariants("+14155550143");
-    expect(v).toContain("+14155550143");
-    expect(v).toContain("(415) 555-0143");
-    expect(v).toContain("415-555-0143");
-    expect(v).toContain("4155550143");
-    expect(new Set(v).size).toBe(v.length);
-  });
-
-  it("passes through a number it can't read and drops an empty one", () => {
-    expect(phoneMatchVariants("12345")).toEqual(["12345"]);
-    expect(phoneMatchVariants("")).toEqual([]);
-    expect(phoneMatchVariants(null)).toEqual([]);
   });
 });

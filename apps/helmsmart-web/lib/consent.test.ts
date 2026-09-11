@@ -12,7 +12,6 @@ import {
   loadConsent,
   loadOrgOptOuts,
   optOutState,
-  phoneVariants,
   recordSmsOptOut,
   type LoadedConsent,
 } from "./consent";
@@ -29,19 +28,6 @@ const priya = {
   phone: "(626) 555-0101",
   email: "priya@example.com",
 };
-
-describe("phoneVariants", () => {
-  it("covers the shapes one number is stored in", () => {
-    const v = phoneVariants("+16265550101");
-    for (const shape of ["+16265550101", "6265550101", "(626) 555-0101", "626-555-0101"]) {
-      expect(v).toContain(shape);
-    }
-  });
-  it("is empty for nothing", () => {
-    expect(phoneVariants(null)).toEqual([]);
-    expect(phoneVariants("  ")).toEqual([]);
-  });
-});
 
 describe("loadConsent", () => {
   it("reads all three sources for a client, matching the number however it was typed", async () => {
