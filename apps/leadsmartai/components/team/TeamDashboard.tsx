@@ -34,6 +34,9 @@ import type { Announcement } from "@/lib/teams/billboard";
 import { BillboardPanel } from "./BillboardPanel";
 import type { BoardPost } from "@/lib/teams/board";
 import { OfficeBoardPanel } from "./OfficeBoardPanel";
+import type { Completion, Training } from "@/lib/teams/training";
+import { DEFAULT_ACCOUNT_TIMEZONE } from "@/lib/agent/timezone";
+import { TeamTrainingPanel } from "./TeamTrainingPanel";
 
 type SeatUsageProps = { used: number; cap: number | null; full: boolean };
 
@@ -63,6 +66,10 @@ export function TeamDashboard({
   myLicense = null,
   billboard = [],
   board_posts = [],
+  trainings = [],
+  trainingCompletions = [],
+  today = "",
+  timeZone = DEFAULT_ACCOUNT_TIMEZONE,
 }: {
   currentAgentId: string;
   isOwner: boolean;
@@ -85,6 +92,14 @@ export function TeamDashboard({
   billboard?: Announcement[];
   /** Everyone: the office board, newest first. */
   board_posts?: BoardPost[];
+  /** Everyone: the office's training classes. */
+  trainings?: Training[];
+  /** Managers: every completion on the team; members: their own. */
+  trainingCompletions?: Completion[];
+  /** YYYY-MM-DD in timeZone: what "overdue" is judged against. */
+  today?: string;
+  /** The viewer's account timezone. */
+  timeZone?: string;
   /** Names and emails by agent id, for the lists. */
   directory?: MemberDirectory;
 }) {
@@ -135,6 +150,18 @@ export function TeamDashboard({
         isOwner={isOwner}
         members={roster.members}
         directory={directory}
+      />
+
+      <TeamTrainingPanel
+        teamId={roster.team.id}
+        currentAgentId={currentAgentId}
+        canManage={canManage}
+        members={roster.members}
+        directory={directory}
+        initialTrainings={trainings}
+        initialCompletions={trainingCompletions}
+        today={today}
+        timeZone={timeZone}
       />
 
       <TeamScorecardPanel teamId={roster.team.id} directory={directory} />
