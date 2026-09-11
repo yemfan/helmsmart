@@ -321,10 +321,9 @@
     "requestFailed": "请求失败",
     "threadLoadFailed": "无法加载会话。",
     "threadNetworkError": "加载会话时出现网络错误。",
-    "draftFailed": "起草失败。",
-    "sendFailed": "发送失败。",
-    "toggleFailed": "切换失败。",
-    "sent": "已发送。",
+    "draftFailed": "草稿没能生成，请再试一次。",
+    "sendFailed": "短信没有发出，请再试一次。",
+    "dialogLabel": "{{product}} AI 助手",
     "contact": {
       "newTab": "新建联系人标签页",
       "fallbackName": "联系人",
@@ -343,12 +342,13 @@
       "drafting": "起草中…"
     },
     "draft": {
-      "label": "草稿（可编辑）",
-      "send": "发送短信",
+      "label": "短信内容（可编辑）",
+      "placeholder": "在上方生成草稿，或自己输入短信内容。",
+      "sendTo": "发送给 {{name}} · {{phone}}",
+      "sendToNumber": "发送到 {{phone}}",
       "sending": "发送中…",
-      "noPhone": "没有留存电话",
-      "autoPilotSending": "自动驾驶发送中…",
-      "autoPilotWill": "自动驾驶将发送这条草稿。"
+      "sentBang": "已发送！",
+      "noPhone": "没有留存电话"
     },
     "thread": {
       "label": "短信会话",
@@ -359,7 +359,15 @@
     },
     "autoPilot": {
       "label": "自动驾驶",
-      "title": "自动驾驶 —— 自动发送草稿，并自动回复该客户的来信短信。"
+      "switchLabel": "为 {{name}} 开启自动驾驶",
+      "onHint": "正在自动回复 {{name}} 的短信。",
+      "confirmTitle": "为 {{name}} 开启自动驾驶？",
+      "confirmReplies": "自动驾驶会用对方的语言自动回复 {{name}} 的短信。",
+      "confirmLabelled": "每条回复都会在此会话中标注“自动驾驶”，并列入首页的 AI 动态。",
+      "confirmOptOut": "已退订短信的联系人绝不会收到消息。",
+      "confirmTurnOn": "开启自动驾驶",
+      "enableFailed": "没能为 {{name}} 开启自动驾驶，目前仍是关闭状态。请再试一次。",
+      "disableFailed": "没能为 {{name}} 关闭自动驾驶，目前仍在开启状态。请再试一次。"
     },
     "smsStatus": {
       "delivered": "已送达",
@@ -373,6 +381,43 @@
       "scheduled": "已排期",
       "sending": "发送中",
       "sent": "已发送"
+    }
+  },
+  "aiActivity": {
+    "title": "AI 动态",
+    "window": "最近 7 天",
+    "empty": "最近 7 天你的 AI 团队还没有处理任何事务——接通电话号码后就会开始工作。",
+    "setUpReceptionist": "设置 AI 前台接待",
+    "emptyConnected": "最近 7 天你的 AI 团队没有动态。接听的电话、预约和自动短信一发生就会显示在这里。",
+    "openReceptionist": "打开 AI 前台接待",
+    "someone": "某位联系人",
+    "platformGeneral": "社交媒体",
+    "row": {
+      "answeredCall": "{{who}} 接听了 {{caller}} 的来电",
+      "calledContact": "{{who}} 给 {{name}} 打了电话",
+      "reminderCall": "给 {{name}} 的提醒电话",
+      "reminderText": "已向 {{name}} 发送提醒短信",
+      "missedCallText": "已向 {{caller}} 发送未接来电短信",
+      "published": "{{who}} 在 {{platform}} 发布了一条帖子",
+      "draftedForApproval": "{{who}} 为 {{name}} 起草了一条短信，等待你批准",
+      "remindersForApproval": "{{who}} 准备好了付款提醒，等待你批准",
+      "waitingApproval": "{{who}} 正在等待你批准",
+      "bookedByText": "{{who}} 通过短信为 {{name}} 完成了预约",
+      "autoPilotReplied": "自动驾驶回复了 {{name}}",
+      "callNotPlaced": "{{who}} 给 {{name}} 的电话没有拨出",
+      "reminderCallNotPlaced": "给 {{name}} 的提醒电话没有拨出",
+      "reminderTextNotSent": "给 {{name}} 的提醒短信没有发出"
+    },
+    "detail": {
+      "booked": "已预约 {{when}}",
+      "bookedNoTime": "已预约",
+      "texts_other": "{{count}} 条短信"
+    },
+    "purpose": {
+      "follow_up": "跟进",
+      "survey": "调查",
+      "promo": "促销",
+      "demo": "演示"
     }
   },
   "search": {

@@ -11,6 +11,7 @@ import {
   GitBranch, FileInput,
 } from "lucide-react";
 import { RevenueChart, type ChartMonth } from "@/components/revenue-chart";
+import { AiActivity } from "@/components/ai-activity";
 import { getReceivablesAging, getCashFlowForecast } from "@/lib/actions/reports";
 import { getOrCreateDailyBriefing } from "@/lib/briefing";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
@@ -494,6 +495,8 @@ export default async function HomePage() {
               ))}
             </ul>
           )}
+
+          <AiActivity orgId={orgId} />
         </div>
 
         {/* Quick actions */}

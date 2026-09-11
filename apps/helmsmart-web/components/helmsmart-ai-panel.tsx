@@ -1,17 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { LogoMark } from "@helm/ui";
+import { Toggle } from "@/components/ui/toggle";
+import { formatPhoneDisplay } from "@/lib/phone-display";
 
 /**
- * HelmSmart AI — a floating, draggable/resizable assistant panel.
- * Two kinds of tabs:
+ * HelmSmart AI — a floating assistant panel (draggable + resizable on desktop,
+ * a full-screen sheet below `md`). Two kinds of tabs:
  *   • "AI Guide" — free-form business chat (streams from /api/ask).
  *   • per-client SMS tabs — search a client, draft an SMS with Claude, see the
- *     thread, send via Twilio, and toggle per-client Auto Pilot (auto-reply to
- *     inbound SMS, handled in the Twilio webhook).
+ *     thread, and send it to the recipient the button names.
+ *
+ * Auto Pilot (per client) makes the inbound SMS webhook reply to that client's
+ * texts by itself. It is turned on only through a confirmation that says
+ * exactly that, and the switch shows what `clients.auto_pilot` holds — never
+ * a state the write didn't reach. It does NOT send drafts written here: a
+ * draft always goes out through the Send button, to the person it names.
  * Adapted from the LeadSmart AI assistant; rewired to smbai's clients + Claude.
  */
 
@@ -23,6 +30,8 @@ type ThreadMessage = {
   direction: "inbound" | "outbound";
   created_at: string;
   twilio_status?: string | null;
+  /** Who sent an outbound text (`messages.sent_by`), when the endpoint reports it. */
+  sent_by?: string | null;
 };
 
 type ContactOption = {
@@ -39,16 +48,32 @@ type ContactTab = {
   draft: string;
   drafting: boolean;
   sending: boolean;
+  /** The send button reads "Sent!" for a moment after a send succeeds. */
+  justSent: boolean;
+  /** What `clients.auto_pilot` holds, as last confirmed by the server. */
   autoPilot: boolean;
+  autoPilotPending: boolean;
+  /** The "turn on Auto Pilot?" explanation is open. */
+  confirmingAutoPilot: boolean;
   thread: ThreadMessage[];
   threadLoading: boolean;
-  message: string | null;
-  errorMessage: string | null;
-  errorMoreInfo?: string | null;
+  threadError: string | null;
+  draftError: string | null;
+  sendError: string | null;
+  autoPilotError: string | null;
 };
 
 /** Keys under `aiPanel.quickPrompts` — the question is translated at render. */
 const QUICK_PROMPT_KEYS = ["overdue", "cashFlow", "topClients", "focus"];
+
+/** `messages.sent_by` values that mean "Auto Pilot wrote and sent this". */
+const AUTO_PILOT_SENDERS = new Set(["auto_pilot"]);
+
+/** How long the send button says "Sent!" before returning to its resting label. */
+const SENT_LABEL_MS = 2500;
+
+/** Tailwind's `md` is 48rem; below it the panel is a full-screen sheet. */
+const SHEET_QUERY = "(max-width: 767.98px)";
 
 function newContactTab(): ContactTab {
   return {
@@ -58,16 +83,20 @@ function newContactTab(): ContactTab {
     draft: "",
     drafting: false,
     sending: false,
+    justSent: false,
     autoPilot: false,
+    autoPilotPending: false,
+    confirmingAutoPilot: false,
     thread: [],
     threadLoading: false,
-    message: null,
-    errorMessage: null,
+    threadError: null,
+    draftError: null,
+    sendError: null,
+    autoPilotError: null,
   };
 }
 
 const STATUS_FAILURE = new Set(["failed", "undelivered", "blocked", "rejected"]);
-const STATUS_PROVISIONAL = new Set(["queued", "accepted", "scheduled", "sending", "sent"]);
 const STATUS_SUCCESS = new Set(["delivered", "received"]);
 
 /**
@@ -90,8 +119,30 @@ function statusBadge(
 
 function contactLabel(c: ContactOption | null, t: TFunction<"home">): string {
   if (!c) return t("aiPanel.contact.newTab");
-  return c.name?.trim() || c.email?.trim() || c.phone?.trim() || t("aiPanel.contact.fallbackName");
+  return (
+    c.name?.trim() ||
+    c.email?.trim() ||
+    formatPhoneDisplay(c.phone) ||
+    t("aiPanel.contact.fallbackName")
+  );
 }
+
+/** True below `md`. Starts false so the server render and first paint agree. */
+function useIsSheet(): boolean {
+  const [sheet, setSheet] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia(SHEET_QUERY);
+    const sync = () => setSheet(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return sheet;
+}
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const PANEL_POSITION_STORAGE_KEY = "helmsmart.ai-panel.position.v1";
 const PANEL_SIZE_STORAGE_KEY = "helmsmart.ai-panel.size.v1";
@@ -127,6 +178,7 @@ export function HelmSmartAiPanel({
 } = {}) {
   const { t } = useTranslation("home");
   const [open, setOpen] = useState(false);
+  const sheet = useIsSheet();
 
   const [activeTabId, setActiveTabId] = useState<string>("guide");
   const [contactTabs, setContactTabs] = useState<ContactTab[]>([]);
@@ -138,6 +190,11 @@ export function HelmSmartAiPanel({
   const [resizing, setResizing] = useState(false);
 
   const [minimized, setMinimized] = useState(false);
+
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const wasOpenRef = useRef(false);
+  const titleId = useId();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -209,6 +266,58 @@ export function HelmSmartAiPanel({
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Focus: into the sheet when it opens (so a screen reader announces it and
+  // Tab starts inside), and back to the launcher when the panel closes.
+  useEffect(() => {
+    if (open) {
+      wasOpenRef.current = true;
+      if (sheet) panelRef.current?.focus();
+    } else if (wasOpenRef.current) {
+      wasOpenRef.current = false;
+      launcherRef.current?.focus();
+    }
+  }, [open, sheet]);
+
+  // The sheet covers the page; the page behind it must not scroll under a finger.
+  useEffect(() => {
+    if (!open || !sheet) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open, sheet]);
+
+  /** On the sheet: Escape closes it and Tab stays inside it. */
+  const onPanelKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!sheet) return;
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const root = panelRef.current;
+      if (!root) return;
+      const items = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null,
+      );
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === root)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [sheet],
+  );
 
   const onHeaderPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).closest("button")) return;
@@ -357,6 +466,12 @@ export function HelmSmartAiPanel({
     setContactTabs((prev) => prev.map((t) => (t.tabId === tabId ? { ...t, ...patch } : t)));
   }, []);
 
+  const sentTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    const timers = sentTimers.current;
+    return () => timers.forEach((h) => clearTimeout(h));
+  }, []);
+
   const openNewContactTab = useCallback(() => {
     const t = newContactTab();
     setContactTabs((prev) => [...prev, t]);
@@ -370,7 +485,7 @@ export function HelmSmartAiPanel({
 
   const loadThread = useCallback(
     async (tabId: string, contactId: string) => {
-      updateTab(tabId, { threadLoading: true });
+      updateTab(tabId, { threadLoading: true, threadError: null });
       try {
         const res = await fetch(`/api/sms/messages?clientId=${encodeURIComponent(contactId)}`);
         const body = await res.json();
@@ -381,10 +496,10 @@ export function HelmSmartAiPanel({
             threadLoading: false,
           });
         } else {
-          updateTab(tabId, { threadLoading: false, errorMessage: body.error ?? t("aiPanel.threadLoadFailed") });
+          updateTab(tabId, { threadLoading: false, threadError: t("aiPanel.threadLoadFailed") });
         }
       } catch {
-        updateTab(tabId, { threadLoading: false, errorMessage: t("aiPanel.threadNetworkError") });
+        updateTab(tabId, { threadLoading: false, threadError: t("aiPanel.threadNetworkError") });
       }
     },
     [updateTab, t],
@@ -392,7 +507,15 @@ export function HelmSmartAiPanel({
 
   const onPickContact = useCallback(
     async (tabId: string, contact: ContactOption) => {
-      updateTab(tabId, { contact, draft: "", message: null, errorMessage: null });
+      updateTab(tabId, {
+        contact,
+        draft: "",
+        justSent: false,
+        confirmingAutoPilot: false,
+        draftError: null,
+        sendError: null,
+        autoPilotError: null,
+      });
       await loadThread(tabId, contact.id);
     },
     [loadThread, updateTab],
@@ -401,22 +524,29 @@ export function HelmSmartAiPanel({
   const generateDraft = useCallback(
     async (tab: ContactTab) => {
       if (!tab.contact || !tab.prompt.trim()) return;
-      updateTab(tab.tabId, { drafting: true, message: null, errorMessage: null });
+      updateTab(tab.tabId, { drafting: true, draftError: null });
       try {
         const res = await fetch("/api/sms/draft", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ clientId: tab.contact.id, prompt: tab.prompt.trim() }),
         });
-        const body = await res.json();
-        if (!body.ok) throw new Error(body.error ?? t("aiPanel.draftFailed"));
-        updateTab(tab.tabId, { draft: String(body.draft ?? ""), drafting: false });
+        const body = await res.json().catch(() => null);
+        if (body?.ok) {
+          updateTab(tab.tabId, { draft: String(body.draft ?? ""), drafting: false, justSent: false });
+          return;
+        }
+        // A refusal (4xx) carries a reason written for the owner — the contact
+        // opted out, say. A 5xx carries the model provider's error, which isn't
+        // written for anyone, so that case gets our own sentence.
+        const reason =
+          res.status >= 400 && res.status < 500 && typeof body?.error === "string" && body.error.trim()
+            ? body.error.trim()
+            : t("aiPanel.draftFailed");
+        updateTab(tab.tabId, { drafting: false, draftError: reason });
       } catch (e) {
         console.error("AI panel: draft SMS", e);
-        updateTab(tab.tabId, {
-          drafting: false,
-          errorMessage: t("aiPanel.draftFailed"),
-        });
+        updateTab(tab.tabId, { drafting: false, draftError: t("aiPanel.draftFailed") });
       }
     },
     [updateTab, t],
@@ -425,7 +555,7 @@ export function HelmSmartAiPanel({
   const sendDraft = useCallback(
     async (tab: ContactTab) => {
       if (!tab.contact || !tab.draft.trim() || !tab.contact.phone) return;
-      updateTab(tab.tabId, { sending: true, message: null, errorMessage: null });
+      updateTab(tab.tabId, { sending: true, sendError: null, justSent: false });
       try {
         const res = await fetch("/api/sms/send", {
           method: "POST",
@@ -436,75 +566,105 @@ export function HelmSmartAiPanel({
             body: tab.draft.trim(),
           }),
         });
-        const body = await res.json();
-        if (!body.success) {
-          updateTab(tab.tabId, {
-            sending: false,
-            errorMessage: body.error ?? t("aiPanel.sendFailed"),
-          });
+        const body = await res.json().catch(() => null);
+        if (!body?.success) {
+          // Shown as the endpoint wrote it: /api/sms/* returns the reason for
+          // the owner to read ("Priya opted out of texts on Sep 3"), and that
+          // reason is more useful than any sentence this panel could guess.
+          const reason =
+            typeof body?.error === "string" && body.error.trim() ? body.error.trim() : t("aiPanel.sendFailed");
+          updateTab(tab.tabId, { sending: false, sendError: reason });
           return;
         }
-        updateTab(tab.tabId, { sending: false, draft: "", prompt: "", message: t("aiPanel.sent"), errorMoreInfo: null });
+        updateTab(tab.tabId, { sending: false, justSent: true, draft: "", prompt: "" });
+        const prev = sentTimers.current.get(tab.tabId);
+        if (prev) clearTimeout(prev);
+        sentTimers.current.set(
+          tab.tabId,
+          setTimeout(() => {
+            sentTimers.current.delete(tab.tabId);
+            updateTab(tab.tabId, { justSent: false });
+          }, SENT_LABEL_MS),
+        );
         await loadThread(tab.tabId, tab.contact.id);
       } catch (e) {
         console.error("AI panel: send SMS", e);
-        updateTab(tab.tabId, {
-          sending: false,
-          errorMessage: t("aiPanel.sendFailed"),
-        });
+        updateTab(tab.tabId, { sending: false, sendError: t("aiPanel.sendFailed") });
       }
     },
     [loadThread, updateTab, t],
   );
 
-  const toggleAutoPilot = useCallback(
+  /** What the database holds for this client's Auto Pilot, or null if unreadable. */
+  const readAutoPilot = useCallback(async (contactId: string): Promise<boolean | null> => {
+    try {
+      const res = await fetch(`/api/sms/messages?clientId=${encodeURIComponent(contactId)}`);
+      const body = await res.json();
+      return body?.ok ? Boolean(body.autoPilot) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  /**
+   * Write Auto Pilot and show only what landed. The switch moves when the
+   * server confirms a row changed; on anything else it shows what the database
+   * holds (re-read, since a dropped connection can hide a write that did land)
+   * and says why.
+   */
+  const writeAutoPilot = useCallback(
     async (tab: ContactTab, next: boolean) => {
       if (!tab.contact) return;
-      updateTab(tab.tabId, { autoPilot: next, message: null, errorMessage: null });
+      const contact = tab.contact;
+      updateTab(tab.tabId, { autoPilotPending: true, confirmingAutoPilot: false, autoPilotError: null });
+      let ok = false;
       try {
         const res = await fetch("/api/sms/auto-pilot", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ clientId: tab.contact.id, enabled: next }),
+          body: JSON.stringify({ clientId: contact.id, enabled: next }),
         });
-        const body = await res.json();
-        if (!body.ok) throw new Error(body.error ?? t("aiPanel.toggleFailed"));
+        const body = await res.json().catch(() => null);
+        ok = res.ok && body?.ok === true;
       } catch (e) {
-        console.error("AI panel: toggle auto-pilot", e);
-        updateTab(tab.tabId, {
-          autoPilot: !next,
-          errorMessage: t("aiPanel.toggleFailed"),
-        });
+        console.error("AI panel: auto-pilot write", e);
       }
+      if (ok) {
+        updateTab(tab.tabId, { autoPilot: next, autoPilotPending: false });
+        return;
+      }
+      const holds = (await readAutoPilot(contact.id)) ?? !next;
+      updateTab(tab.tabId, {
+        autoPilot: holds,
+        autoPilotPending: false,
+        autoPilotError:
+          holds === next
+            ? null
+            : t(next ? "aiPanel.autoPilot.enableFailed" : "aiPanel.autoPilot.disableFailed", {
+                name: contactLabel(contact, t),
+              }),
+      });
     },
-    [updateTab, t],
+    [readAutoPilot, updateTab, t],
   );
 
-  // After draft generation, if Auto Pilot is on, send immediately.
-  const lastAutoSentRef = useRef<string>("");
-  useEffect(() => {
-    if (!open) return;
-    for (const t of contactTabs) {
-      if (
-        t.autoPilot &&
-        t.draft.trim() &&
-        !t.drafting &&
-        !t.sending &&
-        t.contact?.phone &&
-        lastAutoSentRef.current !== `${t.tabId}:${t.draft}`
-      ) {
-        lastAutoSentRef.current = `${t.tabId}:${t.draft}`;
-        void sendDraft(t);
-      }
-    }
-  }, [contactTabs, open, sendDraft]);
+  /** Turning on asks first; turning off doesn't need to. */
+  const requestAutoPilot = useCallback(
+    (tab: ContactTab, next: boolean) => {
+      if (next) updateTab(tab.tabId, { confirmingAutoPilot: true, autoPilotError: null });
+      else void writeAutoPilot(tab, false);
+    },
+    [updateTab, writeAutoPilot],
+  );
 
   // ── Floating button (closed state) ──────────────────────────────
   if (!open) {
     return (
       <button
+        ref={launcherRef}
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B1D33] shadow-lg ring-1 ring-blue-400/30 transition-transform hover:scale-105 hover:ring-blue-300/50"
+        className="fixed right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B1D33] shadow-lg ring-1 ring-blue-400/30 transition-transform hover:scale-105 hover:ring-blue-300/50"
+        style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
         aria-label={t("aiPanel.open", { product: productName })}
       >
         <LogoMark letter={logoLetter} color="#fff" size={40} />
@@ -513,57 +673,82 @@ export function HelmSmartAiPanel({
   }
 
   const activeContactTab = contactTabs.find((t) => t.tabId === activeTabId) ?? null;
+  // The sheet has no minimized state: it is either the whole screen or closed.
+  const isMinimized = minimized && !sheet;
 
   const positionedClass = position ? "" : "bottom-6 right-6";
   const sizeStyle: React.CSSProperties = size
-    ? { width: size.width, height: minimized ? "auto" : size.height, maxHeight: "92vh" }
-    : { width: PANEL_DEFAULT_WIDTH, height: minimized ? "auto" : PANEL_DEFAULT_HEIGHT, maxHeight: "92vh" };
-  const positionedStyle: React.CSSProperties = {
-    ...sizeStyle,
-    ...(position ? { top: position.y, left: position.x, bottom: "auto", right: "auto" } : {}),
-  };
+    ? { width: size.width, height: isMinimized ? "auto" : size.height, maxHeight: "92vh" }
+    : { width: PANEL_DEFAULT_WIDTH, height: isMinimized ? "auto" : PANEL_DEFAULT_HEIGHT, maxHeight: "92vh" };
+  const panelStyle: React.CSSProperties = sheet
+    ? {
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingLeft: "env(safe-area-inset-left, 0px)",
+        paddingRight: "env(safe-area-inset-right, 0px)",
+      }
+    : {
+        ...sizeStyle,
+        ...(position ? { top: position.y, left: position.x, bottom: "auto", right: "auto" } : {}),
+      };
 
   return (
     <div
-      className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ${positionedClass} ${dragging || resizing ? "select-none" : ""}`}
-      style={positionedStyle}
+      ref={panelRef}
+      role="dialog"
+      aria-modal={sheet ? true : undefined}
+      aria-labelledby={titleId}
+      tabIndex={-1}
+      onKeyDown={onPanelKeyDown}
+      className={`fixed z-50 flex flex-col overflow-hidden bg-white focus:outline-none ${
+        sheet ? "inset-0" : `rounded-2xl border border-gray-200 shadow-2xl ${positionedClass}`
+      } ${dragging || resizing ? "select-none" : ""}`}
+      style={panelStyle}
     >
-      {/* Header — also the drag handle. */}
+      {/* Header — the drag handle on desktop; on the sheet it only holds the title and Close. */}
       <div
-        onPointerDown={onHeaderPointerDown}
-        onDoubleClick={resetPosition}
-        title={t("aiPanel.dragHint")}
-        className={`flex items-center justify-between gap-3 bg-[#1E88E5] px-4 py-3 text-white touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        onPointerDown={sheet ? undefined : onHeaderPointerDown}
+        onDoubleClick={sheet ? undefined : resetPosition}
+        title={sheet ? undefined : t("aiPanel.dragHint")}
+        className={`flex items-center justify-between gap-3 bg-[#1E88E5] px-4 py-3 text-white ${
+          sheet ? "" : `touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`
+        }`}
+        style={sheet ? { paddingTop: "calc(0.75rem + env(safe-area-inset-top, 0px))" } : undefined}
       >
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/95 ring-1 ring-white/40">
             <LogoMark letter={logoLetter} size={28} />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold">{t("aiPanel.title", { product: productName })}</p>
+            <p id={titleId} className="truncate text-sm font-bold">
+              {t("aiPanel.title", { product: productName })}
+            </p>
             <p className="truncate text-[11px] opacity-80">{t("aiPanel.subtitle")}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <button
-            onClick={() => setMinimized((v) => !v)}
-            className="inline-flex h-7 w-7 items-center justify-center rounded text-white/80 hover:bg-white/10 hover:text-white"
-            aria-label={
-              minimized
-                ? t("aiPanel.expand", { product: productName })
-                : t("aiPanel.minimize", { product: productName })
-            }
-            title={minimized ? t("aiPanel.expandShort") : t("aiPanel.minimizeShort")}
-          >
-            {minimized ? (
-              <span aria-hidden className="block h-2.5 w-2.5 rounded-sm border border-white" />
-            ) : (
-              <span aria-hidden className="block h-px w-3.5 bg-white" />
-            )}
-          </button>
+          {sheet ? null : (
+            <button
+              onClick={() => setMinimized((v) => !v)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded text-white/80 hover:bg-white/10 hover:text-white"
+              aria-label={
+                minimized
+                  ? t("aiPanel.expand", { product: productName })
+                  : t("aiPanel.minimize", { product: productName })
+              }
+              title={minimized ? t("aiPanel.expandShort") : t("aiPanel.minimizeShort")}
+            >
+              {minimized ? (
+                <span aria-hidden className="block h-2.5 w-2.5 rounded-sm border border-white" />
+              ) : (
+                <span aria-hidden className="block h-px w-3.5 bg-white" />
+              )}
+            </button>
+          )}
           <button
             onClick={() => setOpen(false)}
-            className="inline-flex h-7 w-7 items-center justify-center rounded text-xl leading-none text-white/80 hover:bg-white/10 hover:text-white"
+            className={`inline-flex items-center justify-center rounded leading-none text-white/80 hover:bg-white/10 hover:text-white ${
+              sheet ? "h-11 w-11 text-3xl" : "h-7 w-7 text-xl"
+            }`}
             aria-label={t("aiPanel.close", { product: productName })}
           >
             &times;
@@ -571,7 +756,7 @@ export function HelmSmartAiPanel({
         </div>
       </div>
 
-      {!minimized ? (
+      {!isMinimized ? (
         <>
           <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 bg-gray-50 px-2 py-1">
             <TabPill label={t("aiPanel.guideTab")} active={activeTabId === "guide"} onClick={() => setActiveTabId("guide")} closeLabel={t("aiPanel.closeTab")} />
@@ -614,41 +799,46 @@ export function HelmSmartAiPanel({
               updateTab={updateTab}
               generateDraft={generateDraft}
               sendDraft={sendDraft}
-              toggleAutoPilot={toggleAutoPilot}
+              requestAutoPilot={requestAutoPilot}
+              confirmAutoPilot={(tab) => void writeAutoPilot(tab, true)}
               onPickContact={onPickContact}
             />
           ) : (
             <div className="flex-1 p-4 text-sm text-gray-500">{t("aiPanel.tabNotFound")}</div>
           )}
 
-          <div
-            onPointerDown={startResize("e")}
-            title={t("aiPanel.resizeWidthHint")}
-            aria-label={t("aiPanel.resizeWidth")}
-            className={`absolute right-0 top-14 bottom-4 w-1.5 cursor-ew-resize touch-none rounded-full transition-colors ${
-              resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
-            }`}
-          />
-          <div
-            onPointerDown={startResize("s")}
-            title={t("aiPanel.resizeHeightHint")}
-            aria-label={t("aiPanel.resizeHeight")}
-            className={`absolute bottom-0 left-3 right-4 h-1.5 cursor-ns-resize touch-none rounded-full transition-colors ${
-              resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
-            }`}
-          />
-          <div
-            onPointerDown={startResize("se")}
-            title={t("aiPanel.resizeHint")}
-            aria-label={t("aiPanel.resizePanel")}
-            className={`absolute bottom-0 right-0 h-4 w-4 cursor-nwse-resize touch-none ${
-              resizing ? "bg-blue-200/50" : "hover:bg-blue-200/40"
-            }`}
-            style={{
-              backgroundImage:
-                "linear-gradient(135deg, transparent 0 45%, rgba(100,116,139,0.55) 45% 55%, transparent 55% 65%, rgba(100,116,139,0.55) 65% 75%, transparent 75% 85%, rgba(100,116,139,0.55) 85% 95%, transparent 95%)",
-            }}
-          />
+          {sheet ? null : (
+            <>
+              <div
+                onPointerDown={startResize("e")}
+                title={t("aiPanel.resizeWidthHint")}
+                aria-label={t("aiPanel.resizeWidth")}
+                className={`absolute right-0 top-14 bottom-4 w-1.5 cursor-ew-resize touch-none rounded-full transition-colors ${
+                  resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
+                }`}
+              />
+              <div
+                onPointerDown={startResize("s")}
+                title={t("aiPanel.resizeHeightHint")}
+                aria-label={t("aiPanel.resizeHeight")}
+                className={`absolute bottom-0 left-3 right-4 h-1.5 cursor-ns-resize touch-none rounded-full transition-colors ${
+                  resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
+                }`}
+              />
+              <div
+                onPointerDown={startResize("se")}
+                title={t("aiPanel.resizeHint")}
+                aria-label={t("aiPanel.resizePanel")}
+                className={`absolute bottom-0 right-0 h-4 w-4 cursor-nwse-resize touch-none ${
+                  resizing ? "bg-blue-200/50" : "hover:bg-blue-200/40"
+                }`}
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, transparent 0 45%, rgba(100,116,139,0.55) 45% 55%, transparent 55% 65%, rgba(100,116,139,0.55) 65% 75%, transparent 75% 85%, rgba(100,116,139,0.55) 85% 95%, transparent 95%)",
+                }}
+              />
+            </>
+          )}
         </>
       ) : null}
     </div>
@@ -794,7 +984,9 @@ function GuideTabBody({
             }
           }}
           placeholder={t("aiPanel.askPlaceholder", { product: productName })}
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+          aria-label={t("aiPanel.askPlaceholder", { product: productName })}
+          // 16px below md so iOS doesn't zoom the sheet when the field takes focus.
+          className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-blue-400 focus:outline-none md:text-sm"
           disabled={loading}
         />
         <button
@@ -815,46 +1007,85 @@ function ContactTabBody({
   updateTab,
   generateDraft,
   sendDraft,
-  toggleAutoPilot,
+  requestAutoPilot,
+  confirmAutoPilot,
   onPickContact,
 }: {
   tab: ContactTab;
   updateTab: (tabId: string, patch: Partial<ContactTab>) => void;
   generateDraft: (tab: ContactTab) => void;
   sendDraft: (tab: ContactTab) => void;
-  toggleAutoPilot: (tab: ContactTab, next: boolean) => void;
+  requestAutoPilot: (tab: ContactTab, next: boolean) => void;
+  confirmAutoPilot: (tab: ContactTab) => void;
   onPickContact: (tabId: string, contact: ContactOption) => void;
 }) {
   const { t } = useTranslation("home");
   const threadRef = useRef<HTMLDivElement>(null);
+  const promptId = useId();
+  const draftId = useId();
   useEffect(() => {
     if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
   }, [tab.thread]);
+
+  const name = contactLabel(tab.contact, t);
+  const personName = tab.contact?.name?.trim() || "";
+  const phone = formatPhoneDisplay(tab.contact?.phone);
+
+  // The send button names who the text goes to — the one thing worth being
+  // sure of before a message leaves the business.
+  const sendLabel = tab.sending
+    ? t("aiPanel.draft.sending")
+    : tab.justSent
+      ? t("aiPanel.draft.sentBang")
+      : !phone
+        ? t("aiPanel.draft.noPhone")
+        : personName
+          ? t("aiPanel.draft.sendTo", { name: personName, phone })
+          : t("aiPanel.draft.sendToNumber", { phone });
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="space-y-2 border-b border-gray-100 px-3 py-3">
         {tab.contact ? (
-          <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-gray-900">{contactLabel(tab.contact, t)}</p>
-              <p className="truncate text-[11px] text-gray-500">
-                {tab.contact.phone || t("aiPanel.contact.noPhone")}
-                {tab.contact.email ? ` · ${tab.contact.email}` : ""}
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <AutoPilotSwitch checked={tab.autoPilot} onChange={(v) => toggleAutoPilot(tab, v)} />
+          <>
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-gray-900">{name}</p>
+                <p className="truncate text-[11px] text-gray-500">
+                  {phone || t("aiPanel.contact.noPhone")}
+                  {tab.contact.email ? ` · ${tab.contact.email}` : ""}
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={() => updateTab(tab.tabId, { contact: null, draft: "", thread: [] })}
-                className="text-xs text-gray-400 hover:text-gray-700"
+                onClick={() =>
+                  updateTab(tab.tabId, {
+                    contact: null,
+                    draft: "",
+                    thread: [],
+                    autoPilot: false,
+                    confirmingAutoPilot: false,
+                    justSent: false,
+                    threadError: null,
+                    draftError: null,
+                    sendError: null,
+                    autoPilotError: null,
+                  })
+                }
+                className="shrink-0 text-xs text-gray-400 hover:text-gray-700"
                 title={t("aiPanel.contact.changeTitle")}
               >
                 {t("aiPanel.contact.change")}
               </button>
             </div>
-          </div>
+            <AutoPilotControl
+              tab={tab}
+              name={name}
+              onToggle={(next) => requestAutoPilot(tab, next)}
+              onConfirm={() => confirmAutoPilot(tab)}
+              onCancel={() => updateTab(tab.tabId, { confirmingAutoPilot: false })}
+            />
+          </>
         ) : (
           <ContactPicker onPick={(c) => onPickContact(tab.tabId, c)} />
         )}
@@ -864,15 +1095,16 @@ function ContactTabBody({
         {tab.contact ? (
           <>
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
+              <label htmlFor={promptId} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
                 {t("aiPanel.prompt.label")}
               </label>
               <textarea
+                id={promptId}
                 value={tab.prompt}
                 onChange={(e) => updateTab(tab.tabId, { prompt: e.target.value })}
                 rows={2}
                 placeholder={t("aiPanel.prompt.placeholder")}
-                className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+                className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-blue-400 focus:outline-none md:text-sm"
               />
               <button
                 type="button"
@@ -882,62 +1114,51 @@ function ContactTabBody({
               >
                 {tab.drafting ? t("aiPanel.prompt.drafting") : t("aiPanel.prompt.generate")}
               </button>
+              {tab.draftError ? (
+                <p className="mt-1 text-xs text-rose-600" role="alert">
+                  {tab.draftError}
+                </p>
+              ) : null}
             </div>
 
-            {tab.draft ? (
-              <div>
-                <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                  {t("aiPanel.draft.label")}
-                </label>
-                <textarea
-                  value={tab.draft}
-                  onChange={(e) => updateTab(tab.tabId, { draft: e.target.value })}
-                  rows={3}
-                  className="w-full resize-y rounded-lg border border-amber-200 bg-amber-50/40 px-3 py-2 text-sm focus:border-amber-400 focus:outline-none"
-                />
-                {!tab.autoPilot ? (
-                  <button
-                    type="button"
-                    onClick={() => sendDraft(tab)}
-                    disabled={tab.sending || !tab.contact?.phone}
-                    className="mt-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
-                  >
-                    {tab.sending
-                      ? t("aiPanel.draft.sending")
-                      : tab.contact?.phone
-                        ? t("aiPanel.draft.send")
-                        : t("aiPanel.draft.noPhone")}
-                  </button>
-                ) : (
-                  <p className="mt-1 text-[11px] text-amber-700">
-                    {tab.sending ? t("aiPanel.draft.autoPilotSending") : t("aiPanel.draft.autoPilotWill")}
-                  </p>
-                )}
-              </div>
-            ) : null}
-
-            {tab.errorMessage ? (
-              <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-800">
-                {tab.errorMessage}
-              </p>
-            ) : null}
-
-            {tab.message ? (
-              <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-800">
-                {tab.message}
-              </p>
-            ) : null}
+            <div>
+              <label htmlFor={draftId} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                {t("aiPanel.draft.label")}
+              </label>
+              <textarea
+                id={draftId}
+                value={tab.draft}
+                onChange={(e) => updateTab(tab.tabId, { draft: e.target.value, justSent: false, sendError: null })}
+                rows={3}
+                placeholder={t("aiPanel.draft.placeholder")}
+                className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-blue-400 focus:outline-none md:text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => sendDraft(tab)}
+                disabled={tab.sending || tab.justSent || !phone || !tab.draft.trim()}
+                className="mt-1 max-w-full truncate rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {sendLabel}
+              </button>
+              {tab.sendError ? (
+                <p className="mt-1 text-xs text-rose-600" role="alert">
+                  {tab.sendError}
+                </p>
+              ) : null}
+            </div>
 
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
+              <p className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
                 {tab.threadLoading ? t("aiPanel.thread.labelLoading") : t("aiPanel.thread.label")}
-              </label>
+              </p>
               <div ref={threadRef} className="space-y-1.5 rounded-lg border border-gray-100 bg-gray-50/60 p-2 max-h-44 overflow-y-auto">
-                {tab.thread.length === 0 && !tab.threadLoading && (
+                {tab.thread.length === 0 && !tab.threadLoading && !tab.threadError && (
                   <p className="px-1 py-2 text-center text-[11px] text-gray-400">{t("aiPanel.thread.empty")}</p>
                 )}
                 {tab.thread.map((m) => {
                   const badge = m.direction === "outbound" ? statusBadge(m.twilio_status, t) : null;
+                  const byAutoPilot = m.direction === "outbound" && !!m.sent_by && AUTO_PILOT_SENDERS.has(m.sent_by);
                   return (
                     <div key={m.id} className={`max-w-[85%] ${m.direction === "outbound" ? "ml-auto" : "mr-auto"}`}>
                       <div
@@ -951,26 +1172,36 @@ function ContactTabBody({
                       >
                         <div className="whitespace-pre-wrap">{m.message}</div>
                       </div>
-                      {badge ? (
-                        <div
-                          className={`mt-0.5 flex justify-end pr-0.5 text-[10px] font-medium ${
-                            badge.tone === "ok"
-                              ? "text-emerald-700"
-                              : badge.tone === "error"
-                                ? "text-rose-700"
-                                : "text-gray-500"
-                          }`}
-                          title={t("aiPanel.thread.statusTitle", {
-                            status: m.twilio_status ?? t("aiPanel.thread.statusUnknown"),
-                          })}
-                        >
-                          {badge.label}
+                      {badge || byAutoPilot ? (
+                        <div className="mt-0.5 flex justify-end gap-1.5 pr-0.5 text-[10px] font-medium">
+                          {byAutoPilot ? <span className="text-gray-500">{t("aiPanel.autoPilot.label")}</span> : null}
+                          {badge ? (
+                            <span
+                              className={
+                                badge.tone === "ok"
+                                  ? "text-emerald-700"
+                                  : badge.tone === "error"
+                                    ? "text-rose-700"
+                                    : "text-gray-500"
+                              }
+                              title={t("aiPanel.thread.statusTitle", {
+                                status: m.twilio_status ?? t("aiPanel.thread.statusUnknown"),
+                              })}
+                            >
+                              {badge.label}
+                            </span>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
                   );
                 })}
               </div>
+              {tab.threadError ? (
+                <p className="mt-1 text-xs text-rose-600" role="alert">
+                  {tab.threadError}
+                </p>
+              ) : null}
             </div>
           </>
         ) : (
@@ -979,6 +1210,91 @@ function ContactTabBody({
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Auto Pilot: the house switch, and the explanation before it turns on ──
+function AutoPilotControl({
+  tab,
+  name,
+  onToggle,
+  onConfirm,
+  onCancel,
+}: {
+  tab: ContactTab;
+  /** The contact's display name, already resolved. */
+  name: string;
+  onToggle: (next: boolean) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const { t } = useTranslation("home");
+  const headingId = useId();
+  const switchRef = useRef<HTMLSpanElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (tab.confirmingAutoPilot) confirmRef.current?.focus();
+  }, [tab.confirmingAutoPilot]);
+
+  const cancel = () => {
+    onCancel();
+    // The explanation unmounts; put focus back on the switch that opened it.
+    requestAnimationFrame(() => switchRef.current?.querySelector<HTMLElement>('[role="switch"]')?.focus());
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <span ref={switchRef} className="inline-flex">
+          <Toggle
+            size="sm"
+            checked={tab.autoPilot}
+            disabled={tab.autoPilotPending || tab.confirmingAutoPilot}
+            onChange={onToggle}
+            label={t("aiPanel.autoPilot.switchLabel", { name })}
+          />
+        </span>
+        <span className="text-xs font-medium text-gray-700">{t("aiPanel.autoPilot.label")}</span>
+      </div>
+      {tab.autoPilot && !tab.autoPilotError ? (
+        <p className="mt-1 text-[11px] text-gray-500">{t("aiPanel.autoPilot.onHint", { name })}</p>
+      ) : null}
+      {tab.autoPilotError ? (
+        <p className="mt-1 text-xs text-rose-600" role="alert">
+          {tab.autoPilotError}
+        </p>
+      ) : null}
+      {tab.confirmingAutoPilot ? (
+        <div role="group" aria-labelledby={headingId} className="mt-2 rounded-lg border border-gray-200 bg-white p-3">
+          <p id={headingId} className="text-sm font-semibold text-gray-900">
+            {t("aiPanel.autoPilot.confirmTitle", { name })}
+          </p>
+          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-xs text-gray-600">
+            <li>{t("aiPanel.autoPilot.confirmReplies", { name })}</li>
+            <li>{t("aiPanel.autoPilot.confirmLabelled")}</li>
+            <li>{t("aiPanel.autoPilot.confirmOptOut")}</li>
+          </ul>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              ref={confirmRef}
+              type="button"
+              onClick={onConfirm}
+              className="rounded-lg bg-[#1E88E5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1872c9]"
+            >
+              {t("aiPanel.autoPilot.confirmTurnOn")}
+            </button>
+            <button
+              type="button"
+              onClick={cancel}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+            >
+              {t("common:actions.cancel")}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1021,7 +1337,8 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
         }}
         onFocus={() => setOpen(true)}
         placeholder={t("aiPanel.contact.searchPlaceholder")}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+        aria-label={t("aiPanel.contact.searchPlaceholder")}
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-blue-400 focus:outline-none md:text-sm"
       />
       {open && q.trim() ? (
         <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
@@ -1041,29 +1358,12 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
               className="block w-full border-b border-gray-50 px-3 py-2 text-left text-sm hover:bg-blue-50 last:border-b-0"
             >
               <div className="truncate font-medium text-gray-900">{contactLabel(c, t)}</div>
-              <div className="truncate text-[11px] text-gray-500">{c.phone || c.email || c.id}</div>
+              <div className="truncate text-[11px] text-gray-500">{formatPhoneDisplay(c.phone) || c.email || c.id}</div>
             </button>
           ))}
         </div>
       ) : null}
     </div>
-  );
-}
-
-// ── Auto Pilot switch ─────────────────────────────────────────────
-function AutoPilotSwitch({ checked, onChange }: { checked: boolean; onChange: (next: boolean) => void }) {
-  const { t } = useTranslation("home");
-  return (
-    <label
-      className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
-        checked ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700"
-      }`}
-      title={t("aiPanel.autoPilot.title")}
-    >
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
-      <span aria-hidden>{checked ? "🛫" : "✈️"}</span>
-      <span>{t("aiPanel.autoPilot.label")}</span>
-    </label>
   );
 }
 

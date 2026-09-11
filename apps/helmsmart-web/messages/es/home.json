@@ -321,10 +321,9 @@
     "requestFailed": "La solicitud falló",
     "threadLoadFailed": "No se pudo cargar la conversación.",
     "threadNetworkError": "Error de red al cargar la conversación.",
-    "draftFailed": "No se pudo redactar el borrador.",
-    "sendFailed": "No se pudo enviar.",
-    "toggleFailed": "No se pudo cambiar el estado.",
-    "sent": "Enviado.",
+    "draftFailed": "No se pudo redactar el borrador. Inténtelo de nuevo.",
+    "sendFailed": "El mensaje no se envió. Inténtelo de nuevo.",
+    "dialogLabel": "Asistente {{product}} AI",
     "contact": {
       "newTab": "Nueva pestaña de contacto",
       "fallbackName": "Contacto",
@@ -343,12 +342,13 @@
       "drafting": "Redactando…"
     },
     "draft": {
-      "label": "Borrador (editable)",
-      "send": "Enviar SMS",
+      "label": "Mensaje (editable)",
+      "placeholder": "Genere un borrador arriba o escriba su propio mensaje.",
+      "sendTo": "Enviar a {{name}} · {{phone}}",
+      "sendToNumber": "Enviar a {{phone}}",
       "sending": "Enviando…",
-      "noPhone": "Sin teléfono registrado",
-      "autoPilotSending": "El piloto automático está enviando…",
-      "autoPilotWill": "El piloto automático enviará este borrador."
+      "sentBang": "¡Enviado!",
+      "noPhone": "Sin teléfono registrado"
     },
     "thread": {
       "label": "Conversación de SMS",
@@ -359,7 +359,15 @@
     },
     "autoPilot": {
       "label": "Piloto automático",
-      "title": "Piloto automático: envía los borradores y responde solo a los SMS entrantes de este cliente."
+      "switchLabel": "Piloto automático para {{name}}",
+      "onHint": "Respondiendo automáticamente a los mensajes de {{name}}.",
+      "confirmTitle": "¿Activar el piloto automático para {{name}}?",
+      "confirmReplies": "El piloto automático responderá automáticamente a los mensajes de {{name}}, en su idioma.",
+      "confirmLabelled": "Cada respuesta aparece marcada como “Piloto automático” en esta conversación y en la actividad de IA de su panel.",
+      "confirmOptOut": "Nunca se envían mensajes a los contactos que pidieron no recibir textos.",
+      "confirmTurnOn": "Activar el piloto automático",
+      "enableFailed": "No se activó el piloto automático para {{name}}; sigue desactivado. Inténtelo de nuevo.",
+      "disableFailed": "No se desactivó el piloto automático para {{name}}; sigue activado. Inténtelo de nuevo."
     },
     "smsStatus": {
       "delivered": "Entregado",
@@ -373,6 +381,44 @@
       "scheduled": "Programado",
       "sending": "Enviando",
       "sent": "Enviado"
+    }
+  },
+  "aiActivity": {
+    "title": "Actividad de IA",
+    "window": "Últimos 7 días",
+    "empty": "Su equipo de IA no ha atendido nada en los últimos 7 días; empieza a trabajar cuando conecte un número de teléfono.",
+    "setUpReceptionist": "Configurar la recepcionista con IA",
+    "emptyConnected": "Su equipo de IA no tuvo actividad en los últimos 7 días. Las llamadas atendidas, las citas y los mensajes automáticos aparecen aquí en cuanto ocurren.",
+    "openReceptionist": "Abrir la recepcionista con IA",
+    "someone": "alguien",
+    "platformGeneral": "redes sociales",
+    "row": {
+      "answeredCall": "{{who}} atendió una llamada de {{caller}}",
+      "calledContact": "{{who}} llamó a {{name}}",
+      "reminderCall": "Llamada de recordatorio a {{name}}",
+      "reminderText": "Recordatorio por mensaje enviado a {{name}}",
+      "missedCallText": "Mensaje por llamada perdida enviado a {{caller}}",
+      "published": "{{who}} publicó en {{platform}}",
+      "draftedForApproval": "{{who}} redactó un mensaje para {{name}} que espera su aprobación",
+      "remindersForApproval": "{{who}} preparó recordatorios de pago que esperan su aprobación",
+      "waitingApproval": "{{who}} espera su aprobación",
+      "bookedByText": "{{who}} agendó una cita con {{name}} por mensaje",
+      "autoPilotReplied": "El piloto automático respondió a {{name}}",
+      "callNotPlaced": "No se realizó la llamada de {{who}} a {{name}}",
+      "reminderCallNotPlaced": "No se realizó la llamada de recordatorio a {{name}}",
+      "reminderTextNotSent": "No se envió el recordatorio por mensaje a {{name}}"
+    },
+    "detail": {
+      "booked": "cita: {{when}}",
+      "bookedNoTime": "agendó una cita",
+      "texts_one": "{{count}} mensaje",
+      "texts_other": "{{count}} mensajes"
+    },
+    "purpose": {
+      "follow_up": "seguimiento",
+      "survey": "encuesta",
+      "promo": "promoción",
+      "demo": "demostración"
     }
   },
   "search": {
