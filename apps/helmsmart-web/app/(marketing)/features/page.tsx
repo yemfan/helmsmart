@@ -56,7 +56,7 @@ const features: Feature[] = [
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     placeholderColor: "bg-blue-200",
-    bullets: ["b1", "b2", "b3", "b4", "b5"],
+    bullets: ["b1", "b2", "b3", "b4", "b5", "b6"],
   },
   {
     id: "smart-inbox",

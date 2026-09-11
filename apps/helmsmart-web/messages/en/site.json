@@ -73,7 +73,7 @@
     },
     "features": {
       "title": "Everything you need to run your business",
-      "subtitle": "Powerful tools, one simple platform.",
+      "subtitle": "Mark leads your AI team: Emma answers calls, Sarah follows up, Emily drafts your social posts, Alex keeps invoices moving, and Tim writes your weekly digest.",
       "items": {
         "receptionist": {
           "title": "AI Receptionist",
@@ -84,8 +84,8 @@
           "description": "Your AI makes the calls you don't have time for — appointment confirmations & reminders, lead and past-client follow-ups, surveys, and promos. Every call logged."
         },
         "assistant": {
-          "title": "HelmSmart AI Assistant",
-          "description": "A co-pilot on every screen: ask plain-English questions about your business and get answers from your live data, or have it draft and send the perfect text to any client."
+          "title": "Ask Mark, your AI COO",
+          "description": "Ask anything about your business and Mark answers from your live data. Ask him to remind a client about an invoice or text a client, and he hands it to the right teammate — nothing goes out until you approve it."
         },
         "inbox": {
           "title": "Smart Inbox",
@@ -224,14 +224,15 @@
         }
       },
       "ai-assistant": {
-        "headline": "HelmSmart AI Assistant",
-        "subheadline": "Your business co-pilot, one tap away",
+        "headline": "Ask Mark, your AI COO",
+        "subheadline": "The captain of your AI team, one tap away",
         "bullets": {
           "b1": "Ask plain-English questions — \"what's overdue?\", \"how's cash flow?\", \"who should I follow up with?\"",
           "b2": "Answers come from your live business data, not generic advice",
-          "b3": "Drafts the perfect text to any client in seconds — then sends it for you",
-          "b4": "Auto Pilot can reply to a client's incoming texts automatically, in their language",
-          "b5": "Floats on every screen, so help is always within reach"
+          "b3": "Ask him to remind a client about an invoice or text a client, and he hands it to the right teammate — nothing goes out until you approve it",
+          "b4": "Auto Pilot replies to incoming texts automatically, in the client's language — only for the clients you switch it on for",
+          "b5": "Floats on every screen, so help is always within reach",
+          "b6": "Anything he can't do yet, he tells you plainly and hands back to you with the next step"
         }
       },
       "smart-inbox": {
@@ -333,7 +334,7 @@
           "f1": "Everything in Starter",
           "f2": "AI Receptionist",
           "f3": "AI Concierge (confirmations, follow-ups, surveys)",
-          "f4": "HelmSmart AI Assistant",
+          "f4": "Ask Mark, your AI COO",
           "f5": "Missed-call text-back & Auto Pilot",
           "f6": "Bookkeeping & expenses",
           "f7": "AI Daily Briefing",
@@ -686,7 +687,7 @@
         "options": {
           "voice": "AI Receptionist",
           "outbound": "AI Concierge",
-          "ai-assistant": "HelmSmart AI Assistant",
+          "ai-assistant": "Ask Mark, your AI COO",
           "inbox": "Smart Inbox",
           "invoicing": "Invoicing & Bookkeeping",
           "calendar": "Calendar & Scheduling",
