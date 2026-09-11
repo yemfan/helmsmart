@@ -37,7 +37,9 @@ import {
   loadConsent,
   recordSmsOptOut,
   ConsentLookupError,
+  CallNotAllowedError,
   describeDenial,
+  type CallGuard,
   type ConsentTarget,
   type LoadedConsent,
   type Translate,
@@ -287,11 +289,6 @@ export async function sendSmsAsOrg(
 
 // ─── Calls ────────────────────────────────────────────────────────────────────
 
-export type CallGuard =
-  | { ok: true }
-  | { ok: false; reason: "opted_out"; decision: ConsentDenied; consent: LoadedConsent }
-  | { ok: false; reason: "consent_unavailable" };
-
 /** May the product place a call to this client? AI outbound calls and reminder calls ask this. */
 export async function guardCall(db: Db, orgId: string, target: ConsentTarget): Promise<CallGuard> {
   try {
@@ -304,13 +301,11 @@ export async function guardCall(db: Db, orgId: string, target: ConsentTarget): P
   }
 }
 
-/** Thrown by `placeOutboundCall` when the guard refuses; carries the reason. */
-export class CallNotAllowedError extends Error {
-  constructor(readonly guard: Exclude<CallGuard, { ok: true }>) {
-    super(guard.reason === "opted_out" ? "Contact opted out of calls." : "Couldn't check call consent.");
-    this.name = "CallNotAllowedError";
-  }
-}
+// `CallGuard` and `CallNotAllowedError` live in lib/consent.ts, so the call
+// actions can recognise a refusal without importing this module's Twilio and
+// `server-only` email dependencies. Re-exported for callers of the send path.
+export { CallNotAllowedError };
+export type { CallGuard };
 
 // ─── What the owner is told ───────────────────────────────────────────────────
 

@@ -419,3 +419,27 @@ export function optOutState(inputs: ConsentInputs): Record<ConsentChannel, Chann
   };
   return { sms: state("sms"), email: state("email"), call: state("call") };
 }
+
+// ─── Calls ────────────────────────────────────────────────────────────────────
+
+/** The consent guard's answer for a call. `guardCall` in lib/outbound-send.ts produces it. */
+export type CallGuard =
+  | { ok: true }
+  | { ok: false; reason: "opted_out"; decision: ConsentDenied; consent: LoadedConsent }
+  | { ok: false; reason: "consent_unavailable" };
+
+/**
+ * Thrown by `placeOutboundCall` when the guard refuses; carries the reason.
+ *
+ * Lives here rather than beside `guardCall` so the call actions can recognise a
+ * refusal without importing the send path. That module pulls in Twilio and the
+ * `server-only` email helper, and importing it from `lib/actions/outbound.ts`
+ * made every importer of those actions — and every test of them — load the
+ * whole outbound stack.
+ */
+export class CallNotAllowedError extends Error {
+  constructor(readonly guard: Exclude<CallGuard, { ok: true }>) {
+    super(guard.reason === "opted_out" ? "Contact opted out of calls." : "Couldn't check call consent.");
+    this.name = "CallNotAllowedError";
+  }
+}

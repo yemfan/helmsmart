@@ -15,8 +15,10 @@ import {
   enqueueCalls,
   drainOutboundQueue,
 } from "@/lib/outbound-queue";
-import { CallNotAllowedError } from "@/lib/outbound-send";
-import { describeDenial, inputsFor, loadOrgOptOuts, type OrgOptOuts } from "@/lib/consent";
+// From lib/consent, not lib/outbound-send: this action only needs to recognise
+// a refused call, and the send path would drag Twilio and the `server-only`
+// email helper into every importer of these actions.
+import { CallNotAllowedError, describeDenial, inputsFor, loadOrgOptOuts, type OrgOptOuts } from "@/lib/consent";
 
 type CallResult = { ok: true; name: string } | { ok: false; error: string };
 /** `optedOut`: how many of the picked contacts were left out because they opted out of calls. */
