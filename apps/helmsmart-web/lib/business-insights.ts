@@ -12,6 +12,7 @@ import { pctChange } from "@/lib/metrics-format";
 import { moneyFormatter } from "@/lib/books-format";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { translatorFor } from "@/lib/i18n/server";
+import { addDays, calendarDate } from "@/lib/org-date";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -31,6 +32,8 @@ export interface InsightItem {
 export interface InsightReader {
   locale: string | null | undefined;
   currency: string | null | undefined;
+  /** `organizations.timezone` — the org's "today" and the week's bounds. */
+  timeZone?: string | null;
 }
 
 export interface BusinessInsight {
@@ -67,14 +70,16 @@ const DAY = 86_400_000;
 async function gatherMetrics(
   db: SupabaseClient,
   orgId: string,
-  now: Date
+  now: Date,
+  timeZone: string | null | undefined,
 ): Promise<WeekMetrics> {
   const todayIso = now.toISOString();
   const weekAgo = new Date(now.getTime() - 7 * DAY).toISOString();
   const twoWeeksAgo = new Date(now.getTime() - 14 * DAY).toISOString();
-  const today = todayIso.slice(0, 10);
-  const weekAgoDate = weekAgo.slice(0, 10);
-  const nextWeekDate = new Date(now.getTime() + 7 * DAY).toISOString().slice(0, 10);
+  // Calendar dates are the org's; the instants above stay instants.
+  const today = calendarDate(timeZone, now);
+  const weekAgoDate = addDays(today, -7);
+  const nextWeekDate = addDays(today, 7);
 
   const [
     paidThisWeekRes,
@@ -164,10 +169,11 @@ export async function generateBusinessInsight(
     return { ok: false, error: t("weeklyInsights.errors.notConfigured") };
   }
 
-  const periodEnd = now.toISOString().slice(0, 10);
-  const periodStart = new Date(now.getTime() - 7 * DAY).toISOString().slice(0, 10);
+  // "Today is …" and the week's bounds, in the org's own day.
+  const periodEnd = calendarDate(reader.timeZone, now);
+  const periodStart = addDays(periodEnd, -7);
 
-  const m = await gatherMetrics(db, orgId, now);
+  const m = await gatherMetrics(db, orgId, now, reader.timeZone);
 
   const fmt = moneyFormatter(reader.locale, reader.currency, { maximumFractionDigits: 0 });
 

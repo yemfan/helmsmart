@@ -28,6 +28,7 @@ import { dispatchTool } from "@helm/ai-workforce";
 import { createSmsReceptionistRegistry, type ToolTextResult } from "@/lib/workforce-tools";
 import { enforceAutonomy } from "@/lib/workforce-gating";
 import { logInboundSMSCommunication, logSMSCommunication } from "@/lib/integrations/communication-auto-logger";
+import { orgTodayFor } from "@/lib/org-timezone";
 
 // The SMS receptionist uses Sonnet for reliable multi-step tool-use (qualify →
 // check_availability → book_appointment), same as the live-call path.
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
         client_id: client?.id ?? null,
         title: `${intentLabel(analysis.intent)} from ${from} — reply needed`,
         notes: (translationEn || body).slice(0, 500),
-        due_date: new Date().toISOString().slice(0, 10),
+        due_date: await orgTodayFor(supabase, org.id),
         priority: analysis.priority === "high" ? "high" : "normal",
         status: "open",
       });

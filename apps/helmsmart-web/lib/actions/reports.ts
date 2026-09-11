@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { aggregatePnL, agingBucket, daysPastDue, type PnLJournalLine } from "@helm/dna-intelligence";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 export interface PnLRow {
   account_id: string;
@@ -290,7 +291,7 @@ export interface ReceivablesAging {
 export async function getReceivablesAging(): Promise<ReceivablesAging> {
   const t = await getServerT("books");
   const orgId = (await getMemberOrgId()) ?? "";
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
   const emptyTotals: AgingTotals = { current: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90_plus: 0, total: 0 };
 
   if (!orgId) {
@@ -393,7 +394,7 @@ function forecastBucket(daysUntilDue: number): ForecastBucket {
 
 export async function getCashFlowForecast(): Promise<CashFlowForecast> {
   const orgId = (await getMemberOrgId()) ?? "";
-  const today = new Date().toISOString().slice(0, 10);
+  const today = await orgToday(orgId);
 
   const emptyPeriods: ForecastPeriod[] = FORECAST_ORDER.map((k) => ({
     key: k, label: FORECAST_LABELS[k], inflow: 0, outflow: 0, net: 0, projectedBalance: 0,

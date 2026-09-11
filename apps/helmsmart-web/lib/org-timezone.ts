@@ -3,7 +3,9 @@ import "server-only";
 import { cookies } from "next/headers";
 import { safeTimezone } from "@repo/voice/datetime";
 
-import { createClient, type createServiceClientFor } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { createClient } from "@/lib/supabase/server";
 import { calendarDate } from "@/lib/org-date";
 
 /**
@@ -41,15 +43,15 @@ export async function orgToday(orgId?: string): Promise<string> {
   return calendarDate(await orgTimezone(orgId));
 }
 
-type ServiceDb = ReturnType<typeof createServiceClientFor>;
-
 /**
  * Each org's date at `at`, for a cron holding rows from many orgs — one query
  * for the batch. An org it cannot read gets the schema default, the same as
  * `calendarDate` does for a bad zone.
+ *
+ * Takes any Supabase client: a cron's service client, or a webhook's.
  */
 export async function orgTodays(
-  db: ServiceDb,
+  db: SupabaseClient,
   orgIds: string[],
   at: Date = new Date(),
 ): Promise<(orgId: string) => string> {
@@ -57,6 +59,17 @@ export async function orgTodays(
   const { data } = ids.length
     ? await db.from("organizations").select("id, timezone").in("id", ids)
     : { data: [] };
-  const tzOf = new Map((data ?? []).map((o) => [o.id as string, o.timezone as string | null]));
+  const tzOf = new Map(
+    ((data ?? []) as { id: string; timezone: string | null }[]).map((o) => [o.id, o.timezone]),
+  );
   return (orgId) => calendarDate(tzOf.get(orgId), at);
+}
+
+/**
+ * One org's date, for code that has a Supabase client and an org id but no
+ * cookie — a webhook, an AI tool call, a background job. With a request
+ * behind it, use `orgToday()`.
+ */
+export async function orgTodayFor(db: SupabaseClient, orgId: string, at: Date = new Date()): Promise<string> {
+  return (await orgTodays(db, [orgId], at))(orgId);
 }

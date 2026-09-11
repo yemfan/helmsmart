@@ -12,6 +12,7 @@ import { translatorFor } from "@/lib/i18n/translator";
 import { userUiLocales } from "@/lib/i18n/userLocale";
 import type { ReceptionistContext } from "@repo/voice/prompt";
 import { safeTimezone, todayInTimezone } from "@repo/voice/datetime";
+import { orgTodayFor } from "@/lib/org-timezone";
 import { phoneLast10, phoneMatchVariants } from "@/lib/phone";
 import { GENERAL_BUSINESS_PROFILE } from "@repo/voice/vertical";
 import {
@@ -328,7 +329,7 @@ export async function runReceptionistTool(name: string, input: unknown, ctx: Too
         { who: callerName || ctx.fromNumber },
       ),
       notes: `From ${ctx.fromNumber}: ${reason}`,
-      due_date: new Date().toISOString().slice(0, 10),
+      due_date: await orgTodayFor(ctx.db, ctx.orgId),
       priority: "high",
       status: "open",
     });

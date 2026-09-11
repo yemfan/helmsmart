@@ -7,6 +7,7 @@ import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { DEFAULT_LOCALE, intlLocale } from "@leadsmart/i18n";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -76,7 +77,8 @@ export async function generateClientBrief(
 
   // ── Gather context ──────────────────────────────────────────────────────────
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The org's date: "due today" and "N day(s) ago" in the brief count in its day.
+  const today = await orgToday(orgId);
 
   const [
     clientRes,

@@ -23,6 +23,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/notifications-service";
 import { analyzeInbound, translateTo, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
+import { orgTodayFor } from "@/lib/org-timezone";
 
 export const runtime = "nodejs";
 
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
         sender: senderEmail || taskT("generated.emailFallback", { defaultValue: "email" }),
       }),
       notes: (translationEn || body || "").slice(0, 500),
-      due_date: new Date().toISOString().slice(0, 10),
+      due_date: await orgTodayFor(supabase, org.id),
       priority: analysis.priority === "high" ? "high" : "normal",
       status: "open",
     });

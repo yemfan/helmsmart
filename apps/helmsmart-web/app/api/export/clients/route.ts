@@ -7,6 +7,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 function csvEscape(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return "";
@@ -56,7 +57,7 @@ export async function GET() {
   }
 
   const csv = lines.join("\r\n");
-  const now  = new Date().toISOString().slice(0, 10);
+  const now  = await orgToday(orgId);
 
   return new NextResponse(csv, {
     headers: {

@@ -96,6 +96,7 @@ export async function GET(request: NextRequest) {
       const result = await generateBusinessInsight(db, org.id, now, {
         locale,
         currency: (org.currency as string | null) ?? DEFAULT_CURRENCY,
+        timeZone: org.timezone as string | null,
       });
       if (!result.ok) {
         errors.push(`${org.id}: ${result.error}`);

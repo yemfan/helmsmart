@@ -30,6 +30,8 @@ vi.mock("@/lib/i18n/server", () => ({
 
 const revalidatePath = vi.fn();
 vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidatePath(p) }));
+// server-only, and its read of `organizations` is not what these tests pin.
+vi.mock("@/lib/org-timezone", () => ({ orgToday: async () => "2026-09-11" }));
 
 // ─── A Supabase double ──────────────────────────────────────────────────────
 

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActivePack } from "@/lib/packs";
 import { checkEligibility, type EligibilityResult } from "@/lib/integrations/stedi";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 /**
  * Run a real-time insurance eligibility check for a patient and store the result.
@@ -46,6 +47,8 @@ export async function checkPatientEligibility(clientId: string): Promise<Eligibi
     lastName: client.last_name ?? "",
     dateOfBirth: client.date_of_birth,
     memberId: client.insurance_member_id,
+    // Coverage is checked for the practice's today, not the UTC date.
+    dateOfService: await orgToday(orgId),
   });
 
   await supabase.from("eligibility_checks").insert({

@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { translatorFor } from "@/lib/i18n/server";
 import { moneyFormatter } from "@/lib/books-format";
+import { orgTodayFor } from "@/lib/org-timezone";
 
 // Plain server module. Turns the dashboard's signals into a plain-English
 // "what needs you today" briefing, cached once per org per day.
@@ -77,7 +78,9 @@ export async function getOrCreateDailyBriefing(
 ): Promise<Briefing> {
   const s = signals;
   const db = await createServiceClient();
-  const today = new Date().toISOString().slice(0, 10);
+  // The org's own day: keyed by the UTC date, a US owner's "morning" briefing
+  // was regenerated at 5 PM Pacific and dated tomorrow.
+  const today = await orgTodayFor(db, orgId);
   const money = moneyFormatter(reader.locale, reader.currency, { maximumFractionDigits: 0 });
 
   // Cached once per org per day per language.

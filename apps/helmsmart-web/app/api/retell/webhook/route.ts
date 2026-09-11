@@ -29,6 +29,8 @@ import { createNotificationService } from "@/lib/notifications-service";
 import { classifyMissed } from "@/lib/missed-call";
 import { logCallCommunication } from "@/lib/integrations/communication-auto-logger";
 import { notifySlackMissedCall } from "@/lib/integrations/slack";
+import { orgTodayFor } from "@/lib/org-timezone";
+import { addDays } from "@/lib/org-date";
 
 type TranscriptTurn = { role?: string; content?: string };
 type Db = Awaited<ReturnType<typeof createServiceClient>>;
@@ -68,7 +70,9 @@ async function createInboundFollowUpTask(
   const ln = (client?.last_name ?? "").trim();
   if (fn && fn.toLowerCase() !== "caller") who = ln ? `${fn} ${ln}` : fn;
 
-  const dueDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  // Tomorrow in the business's day — "now + 24h" in UTC was two days out for an
+  // evening call in the US, and the day after that in the UTC date.
+  const dueDate = addDays(await orgTodayFor(db, args.orgId), 1);
   // No request behind a webhook, so the language comes from the business.
   const t = translatorFor(await orgWriteLocale(args.orgId, db), "tasks");
   await db.from("tasks").insert({

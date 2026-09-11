@@ -15,6 +15,7 @@ import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { translatorFor } from "@/lib/i18n/translator";
 import { getAvailability, bookAppointment, matchOrCreateClient, type BookResult } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
+import { orgTodayFor } from "@/lib/org-timezone";
 
 // ─── Tool input/output shapes ────────────────────────────────────────────────
 
@@ -116,7 +117,7 @@ export function createSmsReceptionistRegistry(fromNumber: string): ReturnType<ty
             { who: caller_name || fromNumber },
           ),
           notes: `From ${fromNumber}: ${reason}`,
-          due_date: new Date().toISOString().slice(0, 10),
+          due_date: await orgTodayFor(ctx.db, ctx.orgId),
           priority: "high",
           status: "open",
         });

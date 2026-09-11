@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getServerT } from "@/lib/i18n/server";
 import { createProject } from "./projects";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgToday } from "@/lib/org-timezone";
 
 export interface TemplateTask {
   title: string;
@@ -174,7 +175,7 @@ export async function createProjectFromTemplate(
   // Create the project
   let projectId: string;
   try {
-    const startDate = overrides.startDate || new Date().toISOString().slice(0, 10);
+    const startDate = overrides.startDate || (await orgToday(orgId));
     const endDate = tpl.default_duration_days
       ? new Date(new Date(startDate).getTime() + tpl.default_duration_days * 86_400_000)
           .toISOString()
@@ -199,7 +200,7 @@ export async function createProjectFromTemplate(
   const defaultTasks = (tpl.default_tasks ?? []) as TemplateTask[];
   if (defaultTasks.length > 0) {
     const db = await createServiceClient();
-    const startDate = overrides.startDate || new Date().toISOString().slice(0, 10);
+    const startDate = overrides.startDate || (await orgToday(orgId));
 
     await db.from("tasks").insert(
       defaultTasks.map((task) => {
