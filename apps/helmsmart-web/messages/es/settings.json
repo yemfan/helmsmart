@@ -53,8 +53,8 @@
       "help": "Un resumen de los lunes con el efectivo, las cuentas por cobrar, las facturas de proveedor y las tareas, enviado por correo a los propietarios y administradores."
     },
     "englishAssist": {
-      "label": "Mostrarme también el inglés (asistencia multilingüe)",
-      "help": "Traduce al inglés los mensajes de clientes que no estén en inglés en su bandeja de entrada y envía las respuestas y los recordatorios en dos idiomas (el del cliente + inglés) para que usted pueda leer lo que salió."
+      "label": "Traducir para mí (asistencia multilingüe)",
+      "help": "Traduce a su idioma, en la bandeja de entrada, los mensajes de clientes escritos en otro idioma, y agrega a las respuestas en otro idioma una copia en el suyo para que pueda revisar lo que se envió."
     },
     "save": "Guardar cambios"
   },
@@ -75,7 +75,7 @@
       "cancelled": "Cancelada",
       "unpaid": "Sin pagar",
       "incomplete": "Incompleta",
-      "incomplete_expired": "Caducada",
+      "incomplete_expired": "Expirada",
       "paused": "En pausa"
     },
     "trialEnds": "termina el {{date}}",
@@ -131,7 +131,7 @@
     "notifyHeading": "Avisarme cuando",
     "toggles": {
       "slack_notify_new_lead": {
-        "label": "Se añade un cliente potencial",
+        "label": "Se agrega un contacto nuevo",
         "description": "Cuando se crea un cliente manualmente o mediante un formulario"
       },
       "slack_notify_form_submission": {
@@ -140,7 +140,7 @@
       },
       "slack_notify_missed_call": {
         "label": "Hay una llamada perdida",
-        "description": "Cuando el recepcionista con IA registra una llamada entrante perdida"
+        "description": "Cuando la recepcionista con IA registra una llamada entrante perdida"
       },
       "slack_notify_approval": {
         "label": "La IA necesita una aprobación",
@@ -198,11 +198,11 @@
     "pendingTitle": "Invitaciones pendientes",
     "unknownUser": "Desconocido",
     "you": "usted",
-    "invitedAs": "Invitado como {{role}} · caduca en {{days}} d",
+    "invitedAs": "Invitado como {{role}} · expira en {{days}} d",
     "roles": {
       "owner": "Propietario",
       "admin": "Administrador",
-      "bookkeeper": "Contable",
+      "bookkeeper": "Contador",
       "viewer": "Lector"
     },
     "roleDescriptions": {

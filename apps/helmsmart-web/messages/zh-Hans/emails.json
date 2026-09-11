@@ -22,7 +22,7 @@
     },
     "tasks": {
       "label": "待办任务",
-      "overdue": "{{count}} 项已逾期",
+      "overdue_other": "{{count}} 项已逾期",
       "onTrack": "进展正常"
     },
     "openDashboard": "打开仪表板 →",

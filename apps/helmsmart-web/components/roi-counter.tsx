@@ -54,7 +54,7 @@ export async function RoiCounter({ autoTexted, bookedViaSms }: Props) {
           <p className="text-xs text-slate-400 mt-0.5">
             {autoTexted === 0
               ? t("roi.noMissedCalls")
-              : t("roi.conversionSub", { booked: bookedViaSms, total: autoTexted })}
+              : t("roi.conversionSub", { booked: bookedViaSms, total: autoTexted, count: autoTexted })}
           </p>
         </div>
       </div>

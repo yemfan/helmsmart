@@ -113,7 +113,7 @@ export function EmailCampaignAnalytics({
             {t("email.analytics.recipientsTitle", { count: recipients.length })}
           </h2>
           <div className="text-xs text-slate-500">
-            {t("email.analytics.summary", { delivered, opened: opens, clicked: clicks })}
+            {[t("email.analytics.summaryDelivered", { count: delivered }), t("email.analytics.summaryOpened", { count: opens }), t("email.analytics.summaryClicked", { count: clicks })].join(" · ")}
           </div>
         </div>
         {recipients.length === 0 ? (

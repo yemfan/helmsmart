@@ -6,7 +6,7 @@
   },
   "statuses": {
     "all": "Todos",
-    "lead": "Cliente potencial",
+    "lead": "Contacto nuevo",
     "prospect": "Prospecto",
     "active": "Activo",
     "inactive": "Inactivo",
@@ -21,10 +21,10 @@
   },
   "estimateStatus": {
     "draft": "Borrador",
-    "sent": "Enviado",
-    "accepted": "Aceptado",
-    "declined": "Rechazado",
-    "expired": "Caducado"
+    "sent": "Enviada",
+    "accepted": "Aceptada",
+    "declined": "Rechazada",
+    "expired": "Expirada"
   },
   "projectStatus": {
     "active": "Activo",
@@ -43,7 +43,12 @@
     "daysAgo": "hace {{n}} d"
   },
   "list": {
-    "summary": "{{active}} activos · {{leads}} clientes potenciales · {{prospects}} prospectos",
+    "summaryActive_one": "{{count}} activo",
+    "summaryActive_other": "{{count}} activos",
+    "summaryLeads_one": "{{count}} contacto nuevo",
+    "summaryLeads_other": "{{count}} contactos nuevos",
+    "summaryProspects_one": "{{count}} prospecto",
+    "summaryProspects_other": "{{count}} prospectos",
     "import": "Importar",
     "export": "Exportar",
     "searchPlaceholder": "Buscar clientes…",
@@ -57,7 +62,7 @@
     },
     "empty": {
       "titleFiltered": "Ningún cliente coincide con sus filtros",
-      "hintFiltered": "Pruebe a ampliar la búsqueda o el filtro.",
+      "hintFiltered": "Intente ampliar la búsqueda o el filtro.",
       "title": "Aún no hay clientes",
       "hint": "Agregue su primer cliente para empezar a registrar clientes potenciales, contactos e ingresos."
     }
@@ -100,8 +105,8 @@
       "empty": "Aún no hay facturas"
     },
     "estimates": {
-      "title": "Presupuestos",
-      "empty": "Aún no hay presupuestos"
+      "title": "Cotizaciones",
+      "empty": "Aún no hay cotizaciones"
     },
     "projects": {
       "title": "Proyectos",
@@ -136,7 +141,7 @@
     "tagsLabel": "Etiquetas (separadas por comas)",
     "notes": "Notas",
     "statusOptions": {
-      "lead": "Cliente potencial",
+      "lead": "Contacto nuevo",
       "prospect": "Prospecto",
       "active": "Cliente activo",
       "inactive": "Inactivo",
@@ -154,7 +159,12 @@
       "notes": "Cualquier contexto adicional…",
       "notesShort": "Cualquier contexto sobre este cliente…"
     },
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "language": "Idioma",
+    "languageHint": "Idioma en el que este cliente recibe mensajes, correos, facturas y recordatorios.",
+    "languageOptions": {
+      "auto": "Detectar según sus mensajes"
+    }
   },
   "notes": {
     "title": "Notas y actividad",
@@ -274,7 +284,8 @@
       "optional": "Opcional:",
       "statusValues": "(lead/prospect/active/inactive)",
       "tagsHint": "(separadas por comas)",
-      "downloadTemplate": "Descargar plantilla"
+      "downloadTemplate": "Descargar plantilla",
+      "moreColumns": "También: language (en, es o zh). Puede usar los nombres de columna en español: nombre, apellido, correo, teléfono, estado (contacto nuevo, prospecto, activo, inactivo), etiquetas, notas, idioma."
     },
     "drop": {
       "hint": "Arrastre aquí su archivo CSV, o haga clic para buscarlo",
@@ -282,7 +293,8 @@
     },
     "preview": {
       "title": "Vista previa",
-      "valid": "{{n}} válidas",
+      "valid_one": "{{n}} válida",
+      "valid_other": "{{n}} válidas",
       "willSkip": "{{n}} se omitirán",
       "showing": "Mostrando las primeras 50 de {{n}} filas",
       "rowError": "Se requiere un nombre o una empresa",

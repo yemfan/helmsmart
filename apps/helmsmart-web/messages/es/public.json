@@ -6,18 +6,18 @@
         "body": "Este enlace de invitación no es válido o ha sido revocado."
       },
       "accepted": {
-        "title": "Ya se ha aceptado",
-        "body": "Esta invitación ya se ha utilizado. Pruebe a iniciar sesión directamente."
+        "title": "Ya fue aceptada",
+        "body": "Esta invitación ya se utilizó. Intente iniciar sesión directamente."
       },
       "expired": {
-        "title": "Invitación caducada",
-        "body": "Esta invitación ha caducado. Pida al administrador de su equipo que le envíe una nueva."
+        "title": "Invitación expirada",
+        "body": "Esta invitación expiró. Pida al administrador de su equipo que le envíe una nueva."
       },
       "signIn": "Ir a iniciar sesión"
     },
     "invited": {
-      "title": "¡Está invitado!",
-      "body": "{{org}} le ha invitado a unirse a su espacio de trabajo como {{role}}.",
+      "title": "¡Tiene una invitación!",
+      "body": "{{org}} le envió una invitación para unirse a su espacio de trabajo como {{role}}.",
       "sentTo": "Enviada a {{email}}",
       "signUp": "Crear una cuenta y unirse",
       "signIn": "Iniciar sesión con una cuenta existente"
@@ -25,14 +25,14 @@
     "roles": {
       "owner": "propietario",
       "admin": "administrador",
-      "bookkeeper": "contable",
+      "bookkeeper": "contador",
       "viewer": "lector"
     },
     "accept": {
       "button": "Aceptar y unirse a {{org}}",
       "joining": "Uniéndose…",
-      "done": "Ya está dentro. Redirigiendo a su espacio de trabajo…",
-      "error": "No hemos podido aceptar esta invitación. Inténtelo de nuevo."
+      "done": "¡Listo! Redirigiendo a su espacio de trabajo…",
+      "error": "No pudimos aceptar esta invitación. Inténtelo de nuevo."
     }
   },
   "invoice": {
@@ -46,7 +46,7 @@
     "description": "Descripción",
     "qty": "Cant.",
     "unitPrice": "Precio unitario",
-    "amount": "Importe",
+    "amount": "Monto",
     "subtotal": "Subtotal",
     "tax": "Impuesto ({{rate}} %)",
     "total": "Total",
@@ -84,18 +84,18 @@
       "title": "Pago recibido",
       "on": "Pagada el {{date}}"
     },
-    "overdue": "Esta factura está vencida. Le rogamos que la pague lo antes posible.",
+    "overdue": "Esta factura está vencida. Por favor, páguela lo antes posible.",
     "void": "Esta factura ha sido anulada y ya no se puede pagar.",
     "label": "Factura",
     "issued": "Emitida el {{date}}",
     "due": "Vence el {{date}}",
     "billTo": "Facturar a",
-    "clientFallback": "Cliente estimado",
+    "clientFallback": "Estimado cliente",
     "table": {
       "description": "Descripción",
       "qty": "Cant.",
       "price": "Precio",
-      "amount": "Importe"
+      "amount": "Monto"
     },
     "totals": {
       "subtotal": "Subtotal",
@@ -103,7 +103,7 @@
       "totalDue": "Total a pagar"
     },
     "notes": "Notas",
-    "amountDue": "Importe a pagar",
+    "amountDue": "Monto a pagar",
     "footer": "Pago seguro procesado por Stripe · Factura {{number}}",
     "payNow": "Pagar ahora"
   },
@@ -113,21 +113,21 @@
     "subtitle": "Aquí tiene un resumen de su cuenta con {{org}}.",
     "clientFallback": "Cliente",
     "kpi": {
-      "paid": "Importe pagado",
+      "paid": "Monto pagado",
       "outstanding": "Pendiente de pago"
     },
-    "estimatesWaiting_one": "✍️ {{count}} presupuesto pendiente de su aprobación",
-    "estimatesWaiting_other": "✍️ {{count}} presupuestos pendientes de su aprobación",
+    "estimatesWaiting_one": "✍️ {{count}} cotización pendiente de su aprobación",
+    "estimatesWaiting_other": "✍️ {{count}} cotizaciones pendientes de su aprobación",
     "review": "Revisar →",
     "sections": {
       "appointments": "Próximas citas",
       "invoices": "Facturas",
-      "estimates": "Presupuestos"
+      "estimates": "Cotizaciones"
     },
     "todayAt": "Hoy a las {{time}}",
-    "issued": "Emitido el {{date}}",
+    "issued": "Emitida el {{date}}",
     "due": "Vence el {{date}}",
-    "expires": "Caduca el {{date}}",
+    "expires": "Expira el {{date}}",
     "payNow": "Pagar ahora",
     "empty": "Todavía no hay nada que mostrar. Vuelva pronto.",
     "poweredBy": "Con tecnología de HelmSmart",
@@ -141,9 +141,9 @@
     "estimateStatus": {
       "draft": "Borrador",
       "sent": "Pendiente de aprobación",
-      "accepted": "Aceptado",
-      "declined": "Rechazado",
-      "expired": "Caducado"
+      "accepted": "Aceptada",
+      "declined": "Rechazada",
+      "expired": "Expirada"
     }
   },
   "reschedule": {
@@ -156,9 +156,9 @@
     "slots": {
       "none": "No hay horarios libres ese día. Pruebe con otro día de arriba.",
       "unavailable": "Ese horario ya no está disponible. Elija otro, por favor.",
-      "error": "Algo ha salido mal. Inténtelo de nuevo.",
+      "error": "Algo salió mal. Inténtelo de nuevo.",
       "doneTitle": "Su cita ha cambiado ✓",
-      "doneBody": "Nuevo horario: {{when}}. Le hemos enviado una confirmación."
+      "doneBody": "Nuevo horario: {{when}}. Le enviamos una confirmación."
     }
   }
 }

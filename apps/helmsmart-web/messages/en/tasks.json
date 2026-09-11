@@ -23,7 +23,8 @@
     "title": "Tasks",
     "count_one": "{{count}} task",
     "count_other": "{{count}} tasks",
-    "overdue": "· {{count}} overdue",
+    "overdue_one": "· {{count}} overdue",
+    "overdue_other": "· {{count}} overdue",
     "recurringLink": "Recurring",
     "allPriorities": "All priorities",
     "tabs": {
@@ -68,7 +69,8 @@
   },
   "recurring": {
     "title": "Recurring tasks",
-    "subtitle": "{{count}} active · auto-create to-dos on a schedule",
+    "subtitle_one": "{{count}} active · auto-create to-dos on a schedule",
+    "subtitle_other": "{{count}} active · auto-create to-dos on a schedule",
     "backToTasks": "Tasks",
     "new": "New recurring",
     "emptyTitle": "No recurring tasks yet",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
+import { parseContactLanguage } from "@/lib/i18n/contactLocale";
 
 type Status = "lead" | "prospect" | "active" | "inactive" | "archived";
 const VALID_STATUSES: Status[] = ["lead", "prospect", "active", "inactive", "archived"];
@@ -15,6 +16,7 @@ interface ClientRow {
   status?: Status;
   tags?: string;
   notes?: string;
+  preferred_language?: string | null;
 }
 
 export async function POST(req: NextRequest) {
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
       ? r.tags.split(",").map((t) => t.trim()).filter(Boolean)
       : [],
     notes: r.notes?.trim() || null,
+    preferred_language: parseContactLanguage(r.preferred_language),
   }));
 
   // Batch insert in chunks of 100

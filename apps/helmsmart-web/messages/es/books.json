@@ -69,7 +69,7 @@
         "client": "Cliente / Número",
         "issued": "Emitida",
         "due": "Vence",
-        "amount": "Importe",
+        "amount": "Monto",
         "status": "Estado"
       }
     },
@@ -90,7 +90,7 @@
         "description": "Descripción",
         "qty": "Cant.",
         "unitPrice": "Precio unitario",
-        "amount": "Importe"
+        "amount": "Monto"
       },
       "subtotal": "Subtotal",
       "taxAt": "Impuesto ({{rate}}%)",
@@ -141,11 +141,11 @@
         "description": "Descripción",
         "qty": "Cant.",
         "unitPrice": "Precio unitario",
-        "amount": "Importe"
+        "amount": "Monto"
       },
       "descriptionPlaceholder": "Descripción del servicio o producto",
       "revenueAccountOptional": "Cuenta de ingresos (opcional)",
-      "addLineItem": "Añadir línea",
+      "addLineItem": "Agregar línea",
       "subtotal": "Subtotal",
       "tax": "Impuesto",
       "total": "Total",
@@ -155,7 +155,7 @@
       "createInvoice": "Crear factura",
       "errors": {
         "dueDateRequired": "La fecha de vencimiento es obligatoria.",
-        "noLineItems": "Añada al menos una línea.",
+        "noLineItems": "Agregue al menos una línea.",
         "saveFailed": "No se pudo guardar la factura. Inténtelo de nuevo."
       }
     },
@@ -195,7 +195,7 @@
       "columns": {
         "client": "Cliente / Programación",
         "frequency": "Frecuencia",
-        "amount": "Importe",
+        "amount": "Monto",
         "nextInvoice": "Próxima factura",
         "status": "Estado"
       }
@@ -212,14 +212,14 @@
       "optional": "(opcional)",
       "titlePlaceholder": "Cuota mensual, mantenimiento del sitio web…",
       "lineItems": "Líneas",
-      "addItem": "Añadir línea",
+      "addItem": "Agregar línea",
       "columns": {
         "description": "Descripción",
         "qty": "Cant.",
         "price": "Precio"
       },
       "itemPlaceholder": "Descripción del servicio",
-      "taxRate": "Tipo impositivo (%)",
+      "taxRate": "Tasa de impuesto (%)",
       "subtotal": "Subtotal",
       "taxAt": "Impuesto ({{rate}}%)",
       "perInvoice": "Por factura",
@@ -227,115 +227,115 @@
       "notesPlaceholder": "Condiciones de pago, instrucciones de entrega…",
       "create": "Crear factura periódica",
       "errors": {
-        "noLineItems": "Añada al menos una línea."
+        "noLineItems": "Agregue al menos una línea."
       }
     },
     "stripe": {
       "success": "El pago se completó correctamente; la factura se marcará como pagada en breve.",
-      "cancelled": "El pago se canceló. No se ha cobrado la factura."
+      "cancelled": "El pago se canceló. No se cobró la factura."
     }
   },
   "estimates": {
     "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
-    "workflowTitle": "Presupuesto — {{amount}}",
+    "workflowTitle": "Cotización — {{amount}}",
     "projectNameFallback": "Proyecto {{number}}",
     "meta": {
-      "list": "Presupuestos · Contabilidad",
-      "new": "Nuevo presupuesto · Contabilidad",
-      "detail": "Presupuesto · Contabilidad",
-      "templates": "Plantillas de presupuesto · Contabilidad"
+      "list": "Cotizaciones · Contabilidad",
+      "new": "Nueva cotización · Contabilidad",
+      "detail": "Cotización · Contabilidad",
+      "templates": "Plantillas de cotización · Contabilidad"
     },
     "status": {
       "draft": "Borrador",
-      "sent": "Enviado",
-      "accepted": "Aceptado",
-      "declined": "Rechazado",
-      "expired": "Caducado"
+      "sent": "Enviada",
+      "accepted": "Aceptada",
+      "declined": "Rechazada",
+      "expired": "Expirada"
     },
     "list": {
-      "newEstimate": "Nuevo presupuesto",
+      "newEstimate": "Nueva cotización",
       "kpi": {
         "pending": "Pendientes",
-        "accepted": "Aceptados",
+        "accepted": "Aceptadas",
         "totalSent": "Total enviado",
-        "sentCount_one": "{{count}} enviado",
-        "sentCount_other": "{{count}} enviados",
-        "estimateCount_one": "{{count}} presupuesto",
-        "estimateCount_other": "{{count}} presupuestos",
-        "totalCount_one": "{{count}} presupuesto en total",
-        "totalCount_other": "{{count}} presupuestos en total"
+        "sentCount_one": "{{count}} enviada",
+        "sentCount_other": "{{count}} enviadas",
+        "estimateCount_one": "{{count}} cotización",
+        "estimateCount_other": "{{count}} cotizaciones",
+        "totalCount_one": "{{count}} cotización en total",
+        "totalCount_other": "{{count}} cotizaciones en total"
       },
       "columns": {
         "client": "Cliente / Número",
-        "issued": "Emitido",
-        "expires": "Caduca",
-        "amount": "Importe",
+        "issued": "Emitida",
+        "expires": "Expira",
+        "amount": "Monto",
         "status": "Estado"
       },
       "empty": {
-        "title": "Aún no hay presupuestos",
-        "body": "Cree y envíe presupuestos profesionales a sus clientes. Los presupuestos aceptados se convierten en facturas con un solo clic.",
-        "cta": "Crear presupuesto"
+        "title": "Aún no hay cotizaciones",
+        "body": "Cree y envíe cotizaciones profesionales a sus clientes. Las cotizaciones aceptadas se convierten en facturas con un solo clic.",
+        "cta": "Crear cotización"
       }
     },
     "new": {
-      "back": "Volver a presupuestos",
-      "title": "Nuevo presupuesto",
+      "back": "Volver a cotizaciones",
+      "title": "Nueva cotización",
       "manageTemplates": "Gestionar plantillas →"
     },
     "detail": {
-      "back": "Presupuestos",
-      "orgFallback": "Presupuesto",
+      "back": "Cotizaciones",
+      "orgFallback": "Cotización",
       "unknownClient": "Cliente desconocido",
       "noClient": "Sin cliente",
       "issueDate": "Fecha de emisión",
-      "validUntil": "Válido hasta",
+      "validUntil": "Válida hasta",
       "client": "Cliente",
       "columns": {
         "description": "Descripción",
         "qty": "Cant.",
         "price": "Precio",
-        "amount": "Importe"
+        "amount": "Monto"
       },
       "subtotal": "Subtotal",
       "taxWithRate": "Impuesto ({{rate}}%)",
       "total": "Total",
       "notes": "Notas",
-      "convertedToInvoice": "Convertido en factura",
+      "convertedToInvoice": "Convertida en factura",
       "viewInvoice": "Ver factura →",
-      "convertedToProject": "Se creó un proyecto a partir de este presupuesto",
+      "convertedToProject": "Se creó un proyecto a partir de esta cotización",
       "viewProject": "Ver proyecto →",
       "actionsHeading": "Acciones",
       "detailsHeading": "Detalles",
       "number": "Número",
       "statusLabel": "Estado",
-      "issued": "Emitido",
-      "expires": "Caduca"
+      "issued": "Emitida",
+      "expires": "Expira"
     },
     "actions": {
       "noClientEmail": "El cliente no tiene dirección de correo electrónico",
-      "send": "Enviar presupuesto",
-      "resend": "Reenviar presupuesto",
-      "markAccepted": "Marcar como aceptado",
-      "markDeclined": "Marcar como rechazado",
+      "send": "Enviar cotización",
+      "resend": "Reenviar cotización",
+      "markAccepted": "Marcar como aceptada",
+      "markDeclined": "Marcar como rechazada",
       "convertToInvoice": "Convertir en factura",
       "createProject": "Crear proyecto"
     },
     "templates": {
-      "back": "Volver a presupuestos",
-      "title": "Plantillas de presupuesto",
-      "newEstimate": "Nuevo presupuesto",
+      "back": "Volver a cotizaciones",
+      "title": "Plantillas de cotización",
+      "newEstimate": "Nueva cotización",
       "lineCount_one": "{{count}} línea",
       "lineCount_other": "{{count}} líneas",
       "subtotalAmount": "{{amount}} de subtotal",
       "taxRate": "{{rate}} % de impuesto",
-      "footnote": "Las plantillas aparecen en el selector “Empezar desde una plantilla” al crear un presupuesto nuevo.",
+      "footnote": "Las plantillas aparecen en el selector “Empezar desde una plantilla” al crear una cotización nueva.",
       "confirmDelete": "¿Eliminar la plantilla “{{name}}”? Esta acción no se puede deshacer.",
       "deleteTitle": "Eliminar plantilla",
       "empty": {
         "title": "Aún no hay plantillas",
-        "body": "Cree un presupuesto y haga clic en “Guardar como plantilla” para reutilizar sus líneas.",
-        "cta": "Crear un presupuesto →"
+        "body": "Cree una cotización y haga clic en “Guardar como plantilla” para reutilizar sus líneas.",
+        "cta": "Crear una cotización →"
       }
     },
     "builder": {
@@ -344,20 +344,20 @@
       "aiDraft": "Redactar",
       "aiHint": "La IA completa las líneas y una nota de alcance; revise y edite antes de enviar.",
       "startFromTemplate": "Empezar desde una plantilla",
-      "blankEstimate": "— Presupuesto en blanco —",
+      "blankEstimate": "— Cotización en blanco —",
       "client": "Cliente",
       "noClient": "Sin cliente",
-      "validUntil": "Válido hasta (fecha de caducidad)",
+      "validUntil": "Válida hasta (fecha de vencimiento)",
       "lineItems": "Líneas",
-      "addLine": "Añadir línea",
+      "addLine": "Agregar línea",
       "columns": {
         "description": "Descripción",
         "qty": "Cant.",
         "unitPrice": "Precio unitario",
-        "amount": "Importe"
+        "amount": "Monto"
       },
       "descriptionPlaceholder": "Servicio o producto",
-      "taxRate": "Tipo impositivo (%)",
+      "taxRate": "Tasa de impuesto (%)",
       "subtotal": "Subtotal",
       "taxWithRate": "Impuesto ({{rate}}%)",
       "total": "Total",
@@ -366,25 +366,25 @@
       "notesPlaceholder": "Alcance del trabajo, condiciones, supuestos…",
       "saveAsTemplate": "Guardar como plantilla",
       "templateSaved": "Plantilla guardada",
-      "create": "Crear presupuesto",
+      "create": "Crear cotización",
       "templateNamePrompt": "Guarde estas líneas como plantilla. Nombre de la plantilla:",
       "errors": {
-        "expiryRequired": "La fecha de caducidad es obligatoria",
-        "lineRequired": "Añada al menos una línea",
-        "linesBeforeTemplate": "Añada líneas antes de guardar una plantilla",
+        "expiryRequired": "La fecha de vencimiento es obligatoria",
+        "lineRequired": "Agregue al menos una línea",
+        "linesBeforeTemplate": "Agregue líneas antes de guardar una plantilla",
         "templateSaveFailed": "No se pudo guardar la plantilla",
-        "draftFailed": "No se pudo redactar el presupuesto"
+        "draftFailed": "No se pudo redactar la cotización"
       }
     },
     "errors": {
       "noOrg": "No hay ninguna empresa seleccionada",
-      "notFound": "No se encontró el presupuesto",
+      "notFound": "No se encontró la cotización",
       "clientNoEmail": "El cliente no tiene dirección de correo electrónico",
       "projectCreateFailed": "No se pudo crear el proyecto",
-      "describeJob": "Describa el trabajo que quiere presupuestar",
-      "draftFailed": "No se pudo redactar un presupuesto: pruebe a añadir más detalle",
+      "describeJob": "Describa el trabajo que quiere cotizar",
+      "draftFailed": "No se pudo redactar una cotización: intente agregar más detalles",
       "templateNameRequired": "El nombre de la plantilla es obligatorio",
-      "lineRequired": "Añada al menos una línea",
+      "lineRequired": "Agregue al menos una línea",
       "templateSaveFailed": "No se pudo guardar la plantilla"
     }
   },
@@ -452,7 +452,7 @@
       "descriptionPlaceholder": "¿A qué corresponde esta factura?",
       "category": "Categoría (cuenta de gastos)",
       "noExpenseAccounts": "No hay cuentas de gastos: complete la configuración inicial para generar su plan de cuentas.",
-      "amount": "Importe ({{currency}}) *",
+      "amount": "Monto ({{currency}}) *",
       "billDate": "Fecha de la factura",
       "dueDate": "Fecha de vencimiento *",
       "note": "Registrar una factura de proveedor solo anota la obligación. El gasto se contabiliza en sus libros cuando la marca como pagada.",
@@ -485,7 +485,8 @@
       "newRecurring": "Nueva periódica",
       "paused": "Pausada",
       "next": "Próxima {{date}}",
-      "net": "Plazo {{days}} días",
+      "net_one": "Plazo de {{days}} día",
+      "net_other": "Plazo de {{days}} días",
       "last": "Última {{date}}",
       "resume": "Reanudar",
       "pause": "Pausar",
@@ -510,7 +511,7 @@
     "errors": {
       "noOrg": "No hay ninguna empresa seleccionada",
       "vendorRequired": "El proveedor es obligatorio",
-      "invalidAmount": "Introduzca un importe válido",
+      "invalidAmount": "Introduzca un monto válido",
       "dueDateRequired": "La fecha de vencimiento es obligatoria",
       "firstRunDateRequired": "La fecha de la primera ejecución es obligatoria",
       "saveFailed": "No se pudo guardar la factura de proveedor",
@@ -545,8 +546,8 @@
       },
       "empty": {
         "title": "Aún no hay proveedores",
-        "body": "Añada las personas y empresas a las que paga. Su gasto se acumula automáticamente a partir de las facturas de proveedor con un nombre coincidente.",
-        "cta": "Añadir el primer proveedor"
+        "body": "Agregue las personas y empresas a las que paga. Su gasto se acumula automáticamente a partir de las facturas de proveedor con un nombre coincidente.",
+        "cta": "Agregar el primer proveedor"
       }
     },
     "row": {
@@ -564,7 +565,7 @@
       "notesPlaceholder": "Número de cuenta, condiciones de pago, contacto…",
       "is1099": "Contratista 1099",
       "is1099Hint": "— incluir en el informe 1099 de fin de año",
-      "add": "Añadir proveedor"
+      "add": "Agregar proveedor"
     },
     "report1099": {
       "title": "Informe de contratistas 1099",
@@ -734,7 +735,7 @@
       "time": {
         "totalHours": "Horas totales",
         "billableHours": "Horas facturables",
-        "billableAmount": "Importe facturable",
+        "billableAmount": "Monto facturable",
         "uninvoiced": "Sin facturar",
         "readyToInvoice": "listo para facturar",
         "fullyInvoiced": "todo facturado",
@@ -885,7 +886,8 @@
   "accounts": {
     "metaTitle": "Cuentas · Contabilidad",
     "subtitle": "Contabilidad con IA — base de efectivo, partida doble",
-    "activeCount": "{{active}} de {{total}} cuentas activas",
+    "activeCount_one": "{{active}} de {{total}} cuenta activa",
+    "activeCount_other": "{{active}} de {{total}} cuentas activas",
     "title": "Plan de cuentas",
     "autoGenerated": "Generado automáticamente según su tipo de entidad.",
     "taxReviewWarning": "⚠ Los códigos de línea fiscal requieren la revisión de un contador antes de usarse.",
@@ -944,12 +946,13 @@
       "vendor": "Proveedor",
       "reference": "Referencia",
       "dueDate": "Fecha de vencimiento",
-      "amount": "Importe",
+      "amount": "Monto",
       "status": "Estado"
     },
     "status": {
       "current": "Al corriente",
-      "daysOverdue": "{{days}} días de retraso"
+      "daysOverdue_one": "{{days}} día de retraso",
+      "daysOverdue_other": "{{days}} días de retraso"
     },
     "cards": {
       "totalReceivable": "Total por cobrar",
@@ -983,7 +986,7 @@
         "date": "Fecha",
         "description": "Descripción",
         "account": "Cuenta",
-        "amount": "Importe"
+        "amount": "Monto"
       },
       "total": "Total"
     },
@@ -994,21 +997,21 @@
       "back": "Gastos"
     },
     "modal": {
-      "trigger": "Añadir gasto",
+      "trigger": "Agregar gasto",
       "triggerHint": "Entrada manual",
-      "title": "Añadir gasto",
+      "title": "Agregar gasto",
       "close": "Cerrar"
     },
     "form": {
       "details": "Datos del gasto",
       "date": "Fecha",
-      "amount": "Importe",
+      "amount": "Monto",
       "description": "Descripción",
       "descriptionPlaceholder": "p. ej. material de oficina en Staples",
       "expenseAccount": "Cuenta de gastos",
       "suggest": "Sugerir",
       "suggestHint": "Deje que la IA elija la mejor cuenta",
-      "suggestHintDisabled": "Añada primero una descripción",
+      "suggestHintDisabled": "Agregue primero una descripción",
       "suggestReason": "{{account}} — {{reason}}",
       "suggestNoMatch": "No hay ninguna coincidencia fiable; elíjala manualmente.",
       "suggestFailed": "No se pudo sugerir una categoría.",
@@ -1021,7 +1024,7 @@
       "optionalSuffix": " (opcional)",
       "noProject": "Sin proyecto (gasto general)",
       "projectHint": "Se descuenta del beneficio del proyecto",
-      "required": "La fecha, el importe, la descripción y la cuenta de gastos son obligatorios.",
+      "required": "La fecha, el monto, la descripción y la cuenta de gastos son obligatorios.",
       "saveFailed": "No se pudo guardar el gasto",
       "save": "Registrar gasto"
     },
@@ -1056,7 +1059,7 @@
       "csv": {
         "metaTitle": "Importar gastos",
         "title": "Importar gastos",
-        "subtitle": "Suba un CSV para añadir varios gastos a la vez: importe desde hojas de cálculo, exportaciones bancarias o software de contabilidad",
+        "subtitle": "Suba un CSV para agregar varios gastos a la vez: importe desde hojas de cálculo, exportaciones bancarias o software de contabilidad",
         "formatTitle": "Formato CSV",
         "formatRequired": "Columnas obligatorias: date (YYYY-MM-DD), amount, description.",
         "formatOptional": "Columna opcional: category — por ejemplo “Meals & Entertainment”, que se asocia automáticamente con su plan de cuentas.",
@@ -1072,7 +1075,7 @@
         "skipCount_other": "{{count}} se omitirán",
         "columns": {
           "date": "Fecha",
-          "amount": "Importe",
+          "amount": "Monto",
           "description": "Descripción",
           "category": "Categoría"
         },
@@ -1089,7 +1092,8 @@
         "importing_one": "Importando {{count}} gasto…",
         "importing_other": "Importando {{count}} gastos…",
         "importAction_one": "Importar {{count}} gasto",
-        "importAction_other": "Importar {{count}} gastos"
+        "importAction_other": "Importar {{count}} gastos",
+        "spanishHeaders": "También puede usar los nombres de columna en español: fecha, monto, descripción, categoría."
       },
       "ofx": {
         "metaTitle": "Importar extracto OFX/QFX",
@@ -1105,7 +1109,7 @@
         "notOfx": "Suba un archivo .ofx o .qfx",
         "noTransactions": "No se encontraron transacciones en este archivo OFX. Compruebe que contenga bloques STMTTRN.",
         "noValidRows": "No hay transacciones válidas para importar",
-        "invalidRow": "Fecha o importe no válidos",
+        "invalidRow": "Fecha o monto no válidos",
         "preview": "Transacciones",
         "toImport_one": "{{count}} para importar",
         "toImport_other": "{{count}} para importar",
@@ -1113,7 +1117,7 @@
         "skippedCount_other": "{{count}} omitidas",
         "columns": {
           "date": "Fecha",
-          "amount": "Importe",
+          "amount": "Monto",
           "description": "Descripción",
           "memo": "Nota"
         },
@@ -1143,7 +1147,7 @@
         "date": "Fecha",
         "description": "Descripción",
         "category": "Categoría",
-        "amount": "Importe",
+        "amount": "Monto",
         "action": "Acción"
       },
       "emptyPending": "No hay transacciones que revisar 🎉",
@@ -1193,7 +1197,7 @@
       "linkRetry": "La vinculación bancaria falló. Inténtelo de nuevo.",
       "unauthorized": "Vuelva a iniciar sesión.",
       "noOrganization": "No se encontró ninguna empresa.",
-      "missingPublicToken": "Esa vinculación bancaria no se completó. Pruebe a conectarla de nuevo.",
+      "missingPublicToken": "Esa vinculación bancaria no se completó. Intente conectarla de nuevo.",
       "linkTokenFailed": "No se pudo iniciar la conexión bancaria. Inténtelo de nuevo.",
       "saveConnectionFailed": "No se pudo guardar la conexión bancaria. Inténtelo de nuevo.",
       "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo."

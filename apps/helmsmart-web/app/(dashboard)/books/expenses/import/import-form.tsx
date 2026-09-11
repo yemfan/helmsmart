@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { EXPENSE_HEADER_ALIASES, canonicalHeaders } from "@/lib/csv-headers";
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { moneyFormatter } from "@/lib/books-format";
 
@@ -61,9 +62,10 @@ function parseRows(text: string): ParsedRow[] {
   const lines = parseCsv(text);
   if (lines.length < 2) return [];
 
-  // Normalise header names. These are COLUMN NAMES the parser matches on —
-  // spreadsheet input, never copy, so they stay in the source in English.
-  const headers = lines[0].map((h) => h.toLowerCase().trim().replace(/\s+/g, "_"));
+  // These are COLUMN NAMES the parser matches on — spreadsheet input, never
+  // copy. English or Spanish, compared without case or accents; the names each
+  // column answers to are in lib/csv-headers.ts.
+  const headers = canonicalHeaders(lines[0], EXPENSE_HEADER_ALIASES);
 
   const col = (row: string[], name: string) => {
     const idx = headers.indexOf(name);
@@ -198,6 +200,9 @@ export function ImportForm({ currency = "USD" }: { currency?: string }) {
           </p>
           <p className="text-xs text-indigo-700 leading-relaxed">
             {t("expenses.import.csv.formatOptional")}
+          </p>
+          <p className="text-xs text-indigo-700 leading-relaxed">
+            {t("expenses.import.csv.spanishHeaders")}
           </p>
         </div>
         <button

@@ -119,6 +119,24 @@ guard catches.
 - **`es` with no region tag**, formatted through `es-US`: the customers are US
   small businesses, so the currency is USD and the date order is the one their
   bank statements use.
+- **US Hispanic Spanish, not Castilian.** The readers are US business owners
+  and their customers, most of Mexican and Central American origin. Write the
+  Spanish their bank, their kids' school and their phone carrier write:
+  `monto` not `importe`, `cotización` not `presupuesto` (a quote; a project
+  *budget* is still `presupuesto`), `celular` not `móvil`, `contador` not
+  `contable`, `agregar` not `añadir`, `expirar` not `caducar`, `calificado` not
+  `cualificado`, `tasa de impuesto` not `tipo impositivo`, and the preterite for
+  something that just happened (`Le enviamos`, `Algo salió mal`) rather than the
+  Spain perfect (`Le hemos enviado`, `Algo ha salido mal`). `Pruebe a…` is
+  `Intente…`. The first pass shipped Castilian; a native-speaker review on
+  2026-09-10 found 175 strings a US reader would stumble on.
+- **Gender follows the persona.** The AI team are people with names: Emma is
+  `la recepcionista`, Emily is `directora de marketing`, Sarah is `ejecutiva de
+  ventas`. A role title is sentence case, like every other heading.
+- **Sidebar labels get 108px** (13px Geist, measured). A Spanish nav label that
+  wraps gets a shorter nav-only form (`Mensajes`, `Análisis`, `Por pagar`) —
+  the nav bundle is keyed by the English label, so this does not touch the page
+  heading unless that page uses `PageTitle` with the same key.
 - **Usted, not tú.** This is business software addressing a business owner.
   Commands to the app stay in the infinitive on buttons (`Guardar cambios`,
   `Cancelar`), which is the convention every Spanish-language SaaS uses, and
@@ -139,7 +157,7 @@ Fixed terms, matching the Chinese glossary one for one:
 | --- | --- |
 | Books | Contabilidad |
 | Invoices | Facturas |
-| Quotes / Estimates | Presupuestos |
+| Quotes / Estimates | Cotizaciones |
 | Bills | Facturas de proveedor |
 | Expenses | Gastos |
 | Vendors | Proveedores |
@@ -153,7 +171,7 @@ Fixed terms, matching the Chinese glossary one for one:
 | Reports | Informes |
 | Clients | Clientes |
 | Pipeline | Embudo de ventas |
-| Timesheets | Partes de horas |
+| Timesheets | Hojas de horas |
 | Workflows | Flujos de trabajo |
 | Automations | Automatizaciones |
 | Inbox | Bandeja de entrada |
@@ -174,6 +192,14 @@ Fixed terms, matching the Chinese glossary one for one:
 | Sign in | Iniciar sesión |
 | Sign up | Crear cuenta |
 | Log out | Cerrar sesión |
+| Amount | Monto |
+| Bookkeeper | Contador |
+| Expired | Expirado / expirada |
+| Lead (status, stage) | Contacto nuevo |
+| Prospect | Prospecto |
+| Qualified | Calificado |
+| Add | Agregar |
+| Tax rate | Tasa de impuesto |
 
 ## Owner-facing AI text
 

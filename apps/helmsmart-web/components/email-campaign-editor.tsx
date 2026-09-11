@@ -9,7 +9,7 @@ import { ArrowLeft, Send, Clock, Users, AlertCircle, Eye, Repeat } from "lucide-
 import { createEmailCampaign, updateEmailCampaign, sendEmailCampaignNow, deleteEmailCampaign } from "@/lib/actions/email-campaigns";
 // Bodies and subjects the org sends to ITS customers — see the module header
 // for why they are not translated. Only the template NAME is copy.
-import { EMAIL_TEMPLATES } from "@/lib/marketing-content";
+import { emailTemplates } from "@/lib/marketing-content";
 
 // Values are the stored segment vocabulary; labels come from
 // `email.editor.segments.<value>Label` / `…Desc`.
@@ -42,7 +42,7 @@ export function EmailCampaignEditor({ campaignId, initialValues, status }: Props
   const [name, setName]               = useState(initialValues?.name ?? "");
   const [subject, setSubject]         = useState(initialValues?.subject ?? "");
   const [previewText, setPreviewText] = useState(initialValues?.previewText ?? "");
-  const [bodyHtml, setBodyHtml]       = useState(initialValues?.bodyHtml ?? EMAIL_TEMPLATES[0].body);
+  const [bodyHtml, setBodyHtml]       = useState(initialValues?.bodyHtml ?? emailTemplates(i18n.language)[0].body);
   const [fromName, setFromName]       = useState(initialValues?.fromName ?? "");
   const [replyTo, setReplyTo]         = useState(initialValues?.replyTo ?? "");
   const [targetSegment, setTargetSegment] = useState(initialValues?.targetSegment ?? "all");
@@ -248,7 +248,7 @@ export function EmailCampaignEditor({ campaignId, initialValues, status }: Props
                 <div>
                   <p className="text-xs font-medium text-slate-500 mb-2">{t("email.editor.loadTemplate")}</p>
                   <div className="flex gap-2 flex-wrap">
-                    {EMAIL_TEMPLATES.map((tpl) => (
+                    {emailTemplates(i18n.language).map((tpl) => (
                       <button key={tpl.key} type="button" onClick={() => { setBodyHtml(tpl.body); setSubject(tpl.subject); }}
                         disabled={isPending}
                         className="text-xs px-2.5 py-1 border border-slate-200 rounded-full text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50">

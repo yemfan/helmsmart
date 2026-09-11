@@ -17,6 +17,7 @@ interface Props {
     source: string;
     notes: string;
     tags: string;
+    preferred_language: string;
   };
 }
 

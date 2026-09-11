@@ -2,6 +2,8 @@ import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
 import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import { localizeOutbound, type Lang } from "@/lib/language";
+import { orgWriteLocale } from "@/lib/i18n/userLocale";
+import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Plain server module (NOT "use server") so it can take a Supabase client
@@ -101,11 +103,13 @@ export async function sendReminderForInvoice(
     .single();
   const assist = !!orgRow?.owner_english_assist;
   const lang: Lang = (client.preferred_language as Lang | null) ?? "en";
+  // With multi-language assist on, the owner gets a copy in their own language.
+  const verifyIn = assist ? contactLanguageFor(await orgWriteLocale(inv.organization_id, db)) : null;
 
   // English clients keep the rich HTML email; non-English get a localized text
-  // email (bilingual when owner English-assist is on).
-  const emailText = lang === "en" ? text : await localizeOutbound(text, lang, assist);
-  const emailSubject = lang === "en" ? subject : await localizeOutbound(subject, lang, false);
+  // email (with the owner's copy when multi-language assist is on).
+  const emailText = lang === "en" ? text : await localizeOutbound(text, lang, verifyIn);
+  const emailSubject = lang === "en" ? subject : await localizeOutbound(subject, lang, null);
   if (lang === "en") {
     await sendEmail({ to: client.email, subject, html, text });
   } else {
@@ -133,7 +137,7 @@ export async function sendReminderForInvoice(
     const smsEnglish = `Hi ${clientName}, invoice ${inv.invoice_number} for $${amount} is ${
       overdue > 0 ? `${overdue} day${overdue === 1 ? "" : "s"} past due` : "due soon"
     }. Pay online: ${payUrl}`;
-    const smsBody = lang === "en" ? smsEnglish : await localizeOutbound(smsEnglish, lang, assist);
+    const smsBody = lang === "en" ? smsEnglish : await localizeOutbound(smsEnglish, lang, verifyIn);
     try {
       const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
       await twilioClient.messages.create({ ...(twilioSender(smsFrom) ?? { from: smsFrom }), ...twilioStatusCallback(), to: client.phone, body: smsBody });

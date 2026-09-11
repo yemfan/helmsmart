@@ -471,7 +471,8 @@
     "bookedSub": "Appointments recovered",
     "conversion": "Conversion",
     "noMissedCalls": "No missed calls yet",
-    "conversionSub": "{{booked}} of {{total}} leads booked"
+    "conversionSub_one": "{{booked}} of {{total}} lead booked",
+    "conversionSub_other": "{{booked}} of {{total}} leads booked"
   },
   "revenueChart": {
     "empty": "No transaction data yet",

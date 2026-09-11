@@ -23,7 +23,7 @@
     "title": "任务",
     "count_one": "{{count}} 项任务",
     "count_other": "{{count}} 项任务",
-    "overdue": "· {{count}} 项逾期",
+    "overdue_other": "· {{count}} 项逾期",
     "recurringLink": "周期任务",
     "allPriorities": "全部优先级",
     "tabs": {
@@ -68,7 +68,7 @@
   },
   "recurring": {
     "title": "周期任务",
-    "subtitle": "{{count}} 个进行中 · 按计划自动创建待办",
+    "subtitle_other": "{{count}} 个进行中 · 按计划自动创建待办",
     "backToTasks": "任务",
     "new": "新建周期任务",
     "emptyTitle": "还没有周期任务",

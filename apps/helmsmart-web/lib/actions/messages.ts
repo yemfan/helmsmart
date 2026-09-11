@@ -9,9 +9,10 @@ import { sendEmail as sendEmailViaResend, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
 import { twilioSender, twilioStatusCallback } from "@/lib/twilio-sender";
 import Anthropic from "@anthropic-ai/sdk";
-import { detectLanguage, languageName, type Lang } from "@/lib/language";
+import { detectLanguage, replyLanguageRule, type Lang } from "@/lib/language";
+import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import { normalizePhoneE164 } from "@/lib/phone";
-import { getServerT } from "@/lib/i18n/server";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -241,6 +242,7 @@ export async function draftReply(
 
   const orgName = org?.name ?? "our business";
   const assist = !!org?.owner_english_assist;
+  const ownerLang = contactLanguageFor(await getServerLocale());
 
   const recent = (msgs ?? []).slice().reverse(); // chronological
   if (!recent.length) throw new Error(t("errors.nothingToReplyTo"));
@@ -251,12 +253,7 @@ export async function draftReply(
     if (lastInbound?.body) lang = await detectLanguage(lastInbound.body);
   }
 
-  const langRule =
-    lang === "en"
-      ? "Write the reply in English."
-      : assist
-        ? `Write the reply in ${languageName(lang)}, then add an English translation after a blank line.`
-        : `Write the reply entirely in ${languageName(lang)}.`;
+  const langRule = replyLanguageRule(lang, ownerLang, assist, "the reply");
 
   const transcript = recent
     .map((m) => `${m.direction === "inbound" ? clientName : orgName}: ${m.body}`)

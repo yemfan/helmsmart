@@ -11,13 +11,7 @@ import {
 import { createForm, updateForm, deleteForm, type FormField } from "@/lib/actions/forms";
 // Seed content that becomes the org's OWN public form — see the module
 // header for why it follows their visitors' language, not the owner's UI.
-import {
-  DEFAULT_FORM_FIELDS,
-  DEFAULT_FORM_SLUG,
-  DEFAULT_FORM_TITLE,
-  DEFAULT_SUCCESS_MESSAGE,
-  NEW_FIELD_LABEL,
-} from "@/lib/marketing-content";
+import { formStarter } from "@/lib/marketing-content";
 
 // Values are the stored field-type vocabulary the public renderer reads; the
 // labels come from `forms.builder.fieldTypes.<value>`.
@@ -54,17 +48,19 @@ interface Props {
 
 export function FormBuilderEditor({ formId, initialValues }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
+  // A new form starts in the owner's language; an existing one keeps its own.
+  const starter = formStarter(i18n.language);
   const [isPending, startTransition] = useTransition();
 
-  const [title, setTitle] = useState(initialValues?.title ?? DEFAULT_FORM_TITLE);
+  const [title, setTitle] = useState(initialValues?.title ?? starter.title);
   const [description, setDescription] = useState(initialValues?.description ?? "");
-  const [slug, setSlug] = useState(initialValues?.slug ?? DEFAULT_FORM_SLUG);
+  const [slug, setSlug] = useState(initialValues?.slug ?? starter.slug);
   const [fields, setFields] = useState<FormField[]>(
-    initialValues?.fields ?? DEFAULT_FORM_FIELDS
+    initialValues?.fields ?? starter.fields
   );
   const [successMessage, setSuccessMessage] = useState(
-    initialValues?.successMessage ?? DEFAULT_SUCCESS_MESSAGE
+    initialValues?.successMessage ?? starter.successMessage
   );
   const [autoCreateClient, setAutoCreateClient] = useState(
     initialValues?.autoCreateClient ?? true
@@ -89,7 +85,7 @@ export function FormBuilderEditor({ formId, initialValues }: Props) {
       {
         id: generateFieldId(),
         type: "text",
-        label: NEW_FIELD_LABEL,
+        label: starter.newFieldLabel,
         placeholder: "",
         required: false,
       },

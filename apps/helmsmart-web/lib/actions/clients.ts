@@ -12,6 +12,7 @@ import {
   deleteClient as deleteClientRevenue,
 } from "@helm/dna-revenue";
 import { getServerT } from "@/lib/i18n/server";
+import { parseContactLanguage } from "@/lib/i18n/contactLocale";
 
 /**
  * Recalculates and updates a client's lifetime_value from paid invoices.
@@ -71,6 +72,7 @@ export async function createClient_(
     source: (formData.get("source") as string)?.trim() || null,
     notes: (formData.get("notes") as string)?.trim() || null,
     tags: tags.length ? tags : null,
+    preferred_language: parseContactLanguage(formData.get("preferred_language")),
   });
 
   if (error) {
@@ -138,6 +140,7 @@ export async function updateClient(
       source: (formData.get("source") as string)?.trim() || null,
       notes: (formData.get("notes") as string)?.trim() || null,
       tags: tags.length ? tags : null,
+      preferred_language: parseContactLanguage(formData.get("preferred_language")),
     })
     .eq("id", clientId);
 

@@ -121,8 +121,8 @@
     "thisContact": "este contacto",
     "aiCall": "Llamada con IA",
     "disclosure": "Las llamadas avisan de que son de IA y solo se marcan entre las 8:00 y las 21:00, hora local.",
-    "surveyDetailRequired": "Añada primero las preguntas de la encuesta.",
-    "promoDetailRequired": "Añada primero el mensaje del aviso.",
+    "surveyDetailRequired": "Agregue primero las preguntas de la encuesta.",
+    "promoDetailRequired": "Agregue primero el mensaje del aviso.",
     "confirmOne": "¿Realizar una llamada con IA a {{name}}, al {{phone}}?\n\nEl agente de IA le llamará ahora en su nombre.",
     "confirmAll_one": "¿Realizar una llamada con IA a {{count}} contacto?\n\nSe marcará en segundo plano, de forma escalonada y solo dentro del horario de llamadas.",
     "confirmAll_other": "¿Realizar llamadas con IA a {{count}} contactos?\n\nSe marcarán en segundo plano, de forma escalonada y solo dentro del horario de llamadas.",
@@ -146,7 +146,7 @@
   "settings": {
     "title": "Agente de voz con IA",
     "subtitle": "Atiende sus llamadas con Claude cuando usted no está disponible",
-    "toggleNeedsNumber": "Añada primero un número de teléfono: el agente no tiene dónde atender.",
+    "toggleNeedsNumber": "Agregue primero un número de teléfono: el agente no tiene dónde atender.",
     "needsNumber": "El agente de voz necesita un número de teléfono para poder atender llamadas.",
     "connected": "Conectado a {{number}}",
     "notAnswered": "Su recepcionista no atiende las llamadas al {{number}}",
@@ -156,7 +156,7 @@
     "sharedNotice_other": "Tenga en cuenta que este número también lo usan otras {{count}} cuentas. Hoy las llamadas se atienden como su negocio, pero eso puede cambiar si esas cuentas cambian su configuración.",
     "agentName": {
       "label": "Nombre del agente",
-      "hint": "(cómo se llama a sí mismo el recepcionista)",
+      "hint": "(cómo se llama a sí misma la recepcionista)",
       "placeholder": "p. ej. María",
       "help": "Se usa cuando el agente se presenta. Déjelo en blanco para que no dé ningún nombre."
     },
@@ -164,8 +164,8 @@
       "label": "Nombre comercial",
       "hint": "(el nombre con el que opera — opcional)",
       "placeholder": "El nombre de su negocio",
-      "help": "El nombre comercial que anuncia el recepcionista. Déjelo en blanco para usar el nombre de la cuenta: la facturación y las facturas conservan siempre el nombre de la cuenta.",
-      "helpWithName": "El nombre comercial que anuncia el recepcionista. Déjelo en blanco para usar el nombre de la cuenta ({{name}}): la facturación y las facturas conservan siempre el nombre de la cuenta."
+      "help": "El nombre comercial que anuncia la recepcionista. Déjelo en blanco para usar el nombre de la cuenta: la facturación y las facturas conservan siempre el nombre de la cuenta.",
+      "helpWithName": "El nombre comercial que anuncia la recepcionista. Déjelo en blanco para usar el nombre de la cuenta ({{name}}): la facturación y las facturas conservan siempre el nombre de la cuenta."
     },
     "greeting": {
       "label": "Saludo de apertura",
@@ -181,7 +181,7 @@
     "bookingAlert": {
       "label": "Enviarme un SMS cuando se agende una cita",
       "hint": "(opcional)",
-      "help": "Su propio móvil. El recepcionista le envía la cita por SMS en cuanto se agenda, para que no tenga que estar pendiente de la aplicación. Déjelo en blanco para no recibir ningún SMS."
+      "help": "Su propio celular. La recepcionista le envía la cita por SMS en cuanto se agenda, para que no tenga que estar pendiente de la aplicación. Déjelo en blanco para no recibir ningún SMS."
     },
     "save": "Guardar la configuración",
     "saved": "¡Guardado!",
@@ -190,7 +190,7 @@
   "config": {
     "calendar": {
       "title": "Calendario",
-      "description": "Conecte Google Calendar para que el recepcionista agende en su calendario real y solo ofrezca horas en las que de verdad está libre.",
+      "description": "Conecte Google Calendar para que la recepcionista agende en su calendario real y solo ofrezca horas en las que de verdad está libre.",
       "notConfigured": "Google Calendar todavía no está configurado en el servidor. Hasta que lo esté, las citas usan el calendario propio de HelmSmart.",
       "connected": "Conectado",
       "connectedWithEmail": "Conectado · {{email}}",
@@ -200,7 +200,7 @@
     },
     "hours": {
       "title": "Horario comercial",
-      "description": "El recepcionista solo agenda dentro de este horario.",
+      "description": "La recepcionista solo agenda dentro de este horario.",
       "days": {
         "mon": "lunes",
         "tue": "martes",
@@ -219,24 +219,24 @@
     },
     "appointmentTypes": {
       "title": "Tipos de cita",
-      "description": "Lo que el recepcionista puede agendar: cada tipo con su duración, para que el hueco del calendario sea el correcto.",
+      "description": "Lo que la recepcionista puede agendar: cada tipo con su duración, para que el hueco del calendario sea el correcto.",
       "empty": "Aún no hay tipos de cita.",
       "minutes": "{{count}} min",
       "namePlaceholder": "p. ej. Consulta",
       "minUnit": "min",
-      "add": "Añadir"
+      "add": "Agregar"
     },
     "knowledge": {
       "title": "Base de conocimiento",
-      "description": "Productos, servicios, precios, políticas, preguntas frecuentes: aquello con lo que responde el recepcionista. Si no está aquí, el agente toma un mensaje en vez de adivinar.",
+      "description": "Productos, servicios, precios, políticas, preguntas frecuentes: aquello con lo que responde la recepcionista. Si no está aquí, el agente toma un mensaje en vez de adivinar.",
       "empty": "Aún no hay entradas de conocimiento.",
       "titlePlaceholder": "Tema (p. ej. Precios, Servicios, Estacionamiento)",
-      "contentPlaceholder": "¿Qué debe saber el recepcionista sobre esto?",
-      "add": "Añadir entrada"
+      "contentPlaceholder": "¿Qué debe saber la recepcionista sobre esto?",
+      "add": "Agregar entrada"
     }
   },
   "setup": {
-    "title": "Configuración del recepcionista",
+    "title": "Configuración de la recepcionista",
     "description": "Todo lo de abajo tiene que estar listo para que el agente atienda y agende.",
     "badge": {
       "needsSetup": "Falta configurar",
@@ -251,9 +251,9 @@
       "numberFix": "Escriba arriba el número al que llaman sus clientes y luego apunte ese número hacia nosotros en la consola de su operador.",
       "hours": "Horario comercial definido",
       "hoursFix": "Defina los días y las horas de apertura en la sección Horario comercial, más abajo.",
-      "typesOk": "Tipos de cita añadidos ({{count}})",
+      "typesOk": "Tipos de cita agregados ({{count}})",
       "typesMissing": "Sin tipos de cita",
-      "typesFix": "Añada al menos un servicio (con su duración) en Tipos de cita, más abajo.",
+      "typesFix": "Agregue al menos un servicio (con su duración) en Tipos de cita, más abajo.",
       "agent": "Agente de voz activado",
       "agentFix": "Active el interruptor Agente de voz con IA de arriba.",
       "calendarOk": "Google Calendar conectado",
@@ -294,7 +294,7 @@
   },
   "wizard": {
     "connectedTitle": "Número conectado — {{number}}",
-    "connectedBody": "Se ha vinculado a su agente automáticamente. Complete la lista de abajo y luego llame para probarlo.",
+    "connectedBody": "Se vinculó a su agente automáticamente. Complete la lista de abajo y luego llame para probarlo.",
     "buyTab": "Comprar un número",
     "importTab": "Conectar uno existente",
     "buyHint": "Compraremos un número y lo conectaremos a su recepcionista automáticamente. Se factura a unos $2 al mes.",
@@ -343,7 +343,7 @@
     "disconnectCalendar": "No se pudo desconectar Google Calendar.",
     "missingApiKey": "RETELL_API_KEY no está definida en el servidor.",
     "missingFunctionSecret": "RETELL_FUNCTION_SECRET no está definida en el servidor.",
-    "missingAgentId": "RETELL_AGENT_ID no está definida en el servidor: añada el id del agente recepcionista compartido.",
+    "missingAgentId": "RETELL_AGENT_ID no está definida en el servidor: agregue el id del agente recepcionista compartido.",
     "noOrganization": "No hay ninguna empresa seleccionada.",
     "alreadyHasNumber": "Este negocio ya tiene un número conectado.",
     "invalidAreaCode": "Escriba un código de área de EE. UU. válido, de 3 dígitos (por ejemplo, 626).",

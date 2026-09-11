@@ -38,3 +38,31 @@ import { SUPPORTED_LOCALES, type SupportedLocale } from "./config";
 export function contactLocale(value: string | null | undefined): SupportedLocale | null {
   return resolveLocale(value, SUPPORTED_LOCALES);
 }
+
+/**
+ * The codes `clients.preferred_language` holds. The messaging code reads them —
+ * SMS drafts, auto-replies, invoice reminders, the printed invoice — so a
+ * contact's language is one of these three, never an app locale like "zh-Hans".
+ */
+export const CONTACT_LANGUAGES = ["en", "es", "zh"] as const;
+export type ContactLanguage = (typeof CONTACT_LANGUAGES)[number];
+
+/** Each language in its own words: a picker lists them so every reader finds theirs. */
+export const CONTACT_LANGUAGE_NAMES: Record<ContactLanguage, string> = {
+  en: "English",
+  es: "Español",
+  zh: "简体中文",
+};
+
+/** The contact code for an app locale — "zh-Hans" is stored as "zh"; anything unknown is English. */
+export function contactLanguageFor(locale: string | null | undefined): ContactLanguage {
+  const resolved = contactLocale(locale);
+  return resolved === "zh-Hans" ? "zh" : resolved === "es" ? "es" : "en";
+}
+
+/** A submitted value as a storable code, or null for "detect from their messages". */
+export function parseContactLanguage(value: unknown): ContactLanguage | null {
+  return typeof value === "string" && (CONTACT_LANGUAGES as readonly string[]).includes(value)
+    ? (value as ContactLanguage)
+    : null;
+}

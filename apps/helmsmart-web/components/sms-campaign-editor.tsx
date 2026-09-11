@@ -10,7 +10,7 @@ import {
 import { createSMSCampaign, updateSMSCampaign, sendSMSCampaignNow, deleteSMSCampaign } from "@/lib/actions/sms-campaigns";
 // Message bodies the org sends to ITS customers — see the module header for
 // why they are not translated (the STOP wording is a carrier requirement).
-import { SMS_TEMPLATES } from "@/lib/marketing-content";
+import { smsTemplates } from "@/lib/marketing-content";
 
 // Values are the stored segment vocabulary; labels come from
 // `sms.editor.segments.<value>Label` / `…Desc`.
@@ -30,7 +30,7 @@ interface Props {
 
 export function SMSCampaignEditor({ campaignId, initialValues, status }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
   const [isPending, startTransition] = useTransition();
 
   const [name, setName] = useState(initialValues?.name ?? "");
@@ -207,7 +207,7 @@ export function SMSCampaignEditor({ campaignId, initialValues, status }: Props) 
             <div className="mb-3">
               <p className="text-xs font-medium text-slate-500 mb-2">{t("sms.editor.quickTemplates")}</p>
               <div className="flex flex-wrap gap-2">
-                {SMS_TEMPLATES.map((tpl) => (
+                {smsTemplates(i18n.language).map((tpl) => (
                   <button
                     key={tpl.key}
                     type="button"

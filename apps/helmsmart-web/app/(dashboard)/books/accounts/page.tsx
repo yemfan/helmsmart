@@ -50,7 +50,7 @@ export default async function AccountsPage() {
           <PageTitle base="Books" />
           <p className="text-sm text-slate-500 mt-0.5">{t("accounts.subtitle")}</p>
         </div>
-        <p className="text-xs text-slate-400">{t("accounts.activeCount", { active, total })}</p>
+        <p className="text-xs text-slate-400">{t("accounts.activeCount", { active, total, count: total })}</p>
       </div>
 
       <BooksNav />

@@ -87,11 +87,11 @@ export default async function ClientsPage({
         <div>
           <PageTitle base="Clients" />
           <p className="text-sm text-slate-500 mt-0.5">
-            {t("list.summary", {
-              active: counts.active ?? 0,
-              leads: counts.lead ?? 0,
-              prospects: counts.prospect ?? 0,
-            })}
+            {[
+              t("list.summaryActive", { count: counts.active ?? 0 }),
+              t("list.summaryLeads", { count: counts.lead ?? 0 }),
+              t("list.summaryProspects", { count: counts.prospect ?? 0 }),
+            ].join(" · ")}
           </p>
         </div>
         <Link

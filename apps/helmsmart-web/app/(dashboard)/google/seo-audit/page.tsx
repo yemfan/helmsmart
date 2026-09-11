@@ -128,7 +128,7 @@ export default async function SEOAuditPage() {
             <p className="text-sm font-medium text-indigo-700 uppercase">{t("google.seo.score")}</p>
             <p className="text-5xl font-bold text-indigo-900 mt-2">{score}%</p>
             <p className="text-sm text-indigo-600 mt-2">
-              {t("google.seo.summary", { pass: passCount, warn: warnCount, fail: failCount })}
+              {[t("google.seo.summaryPass", { count: passCount }), t("google.seo.summaryWarn", { count: warnCount }), t("google.seo.summaryFail", { count: failCount })].join(" · ")}
             </p>
           </div>
           <div className="text-6xl font-bold text-indigo-200">

@@ -39,7 +39,7 @@
     },
     "addAsClient": "添加为客户",
     "addAsClientTitle": "根据这段会话创建客户",
-    "translationLabel": "英文",
+    "translationLabel": "译文",
     "draftWithAi": "用 AI 起草",
     "replyPlaceholder": {
       "email": "用邮件回复…（⌘↵ 发送）",
