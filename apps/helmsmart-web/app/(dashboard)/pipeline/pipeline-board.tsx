@@ -519,8 +519,8 @@ export function PipelineBoard({ initialClients, title, owner }: { initialClients
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-slate-100 bg-white flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-8 py-6 border-b border-slate-100 bg-white flex-shrink-0">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             {owner ? <div className="mb-3">{owner}</div> : null}
             <h1 className="text-2xl font-semibold text-slate-900">{title ?? t("board.title")}</h1>
@@ -528,7 +528,7 @@ export function PipelineBoard({ initialClients, title, owner }: { initialClients
               {t("board.subtitle", { count: activeClients.length })}
             </p>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             {pipelineValue > 0 && (
               <div className="text-right">
                 <p className="text-xs text-slate-500">{t("board.pipelineValue")}</p>

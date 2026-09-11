@@ -152,7 +152,9 @@ export function NotificationsBell({ orgId, initialCount, initialNotifications }:
       </button>
 
       {open && (
-        <div className="absolute left-full ml-2 top-0 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+        // Below `lg` the bell sits at the right end of the top bar, so the
+        // panel drops down under it; at `lg` it opens beside the sidebar.
+        <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] lg:right-auto lg:left-full lg:top-0 lg:ml-2 lg:mt-0 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <h3 className="text-sm font-semibold text-slate-800">{t("notifications.title")}</h3>
             {unread.length === 0 && (

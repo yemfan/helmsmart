@@ -31,9 +31,9 @@ export default async function WorkflowsPage() {
   const recent  = recentRequests.slice(0, 10);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">{t("list.subtitle")}</p>
@@ -75,7 +75,7 @@ export default async function WorkflowsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-[1fr_360px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6">
         {/* Workflows list */}
         <div>
           <h2 className="text-sm font-semibold text-slate-700 mb-3">{t("list.configured")}</h2>

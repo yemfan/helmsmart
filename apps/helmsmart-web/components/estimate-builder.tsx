@@ -243,7 +243,7 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
           </select>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
         {/* Client */}
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
@@ -299,6 +299,9 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
           </button>
         </div>
 
+        {/* The line table keeps its columns and scrolls inside itself on a phone. */}
+        <div className="overflow-x-auto">
+        <div className="min-w-[32rem]">
         {/* Column headers */}
         <div className="grid grid-cols-[1fr_80px_100px_100px_36px] gap-3 mb-2 px-1">
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
@@ -367,10 +370,12 @@ export function EstimateBuilder({ clients, preselectedClientId, templates, curre
             </div>
           ))}
         </div>
+        </div>
+        </div>
       </div>
 
       {/* Tax + totals */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1.5">
             {t("estimates.builder.taxRate")}

@@ -61,5 +61,10 @@
   "aiEmployee": {
     "coo": "Mark，AI 首席运营官"
   },
+  "menu": {
+    "navigation": "主导航",
+    "open": "打开菜单",
+    "close": "关闭菜单"
+  },
   "skipToContent": "跳转到正文"
 }

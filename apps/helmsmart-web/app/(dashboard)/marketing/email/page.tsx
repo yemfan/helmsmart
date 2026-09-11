@@ -31,9 +31,9 @@ export default async function EmailCampaignsPage() {
   const totalSent = sent.reduce((s, c) => s + (c.delivered_count ?? 0), 0);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("email.list.title")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -50,7 +50,7 @@ export default async function EmailCampaignsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg border border-slate-200 p-4">
           <p className="text-xs font-medium text-slate-600 uppercase">{t("email.list.totalSent")}</p>
           <p className="text-2xl font-bold text-slate-900 mt-2">{totalSent.toLocaleString(intl)}</p>

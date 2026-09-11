@@ -42,7 +42,7 @@ export function MarketingOverview({ voice, sms, email }: Props) {
       <h2 className="text-sm font-semibold text-slate-700 mb-3">{t("overview.title")}</h2>
       <div className="bg-white rounded-xl border border-slate-200">
         {/* Channel tabs + the active channel's "create new" action */}
-        <div className="flex items-center justify-between border-b border-slate-100 pr-3">
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pr-3">
           <div className="flex">
             {TABS.map(({ key, icon: Icon }) => (
               <button
@@ -61,7 +61,7 @@ export function MarketingOverview({ voice, sms, email }: Props) {
           </div>
           <Link
             href={CREATE_HREF[tab]}
-            className="flex items-center gap-1.5 shrink-0 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex items-center gap-1.5 shrink-0 m-3 sm:m-0 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             {t(`overview.create.${tab}`)}

@@ -405,12 +405,12 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
   return (
     <div>
       {/* Header row */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h2 className="text-base font-semibold text-slate-800">{t("bills.list.title")}</h2>
           <p className="text-sm text-slate-500 mt-0.5">{t("bills.list.subtitle")}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/books/bills/recurring"
             className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-indigo-700 transition-colors"
@@ -429,7 +429,7 @@ export function BillsClient({ initialBills, expenseAccounts, bankAccounts, vendo
       </div>
 
       {/* A/P KPIs */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <Kpi
           label={t("bills.list.kpi.totalOwed")}
           value={fmt(totalOwed)}
