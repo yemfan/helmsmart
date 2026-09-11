@@ -65,7 +65,8 @@
     "auto_reply": "Auto-reply",
     "missed_call_text": "Missed-call text",
     "reminder": "Automatic reminder",
-    "receptionist": "AI receptionist"
+    "receptionist": "AI receptionist",
+    "ai_team": "AI team · approved by you"
   },
   "consent": {
     "sms": {

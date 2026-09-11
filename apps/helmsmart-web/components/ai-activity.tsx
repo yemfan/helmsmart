@@ -13,6 +13,7 @@ import {
   clientDisplayName,
   type ActivityRow,
   type ActivityWho,
+  type ApprovalFeedRow,
   type CallRow,
   type QueueRow,
   type RunRow,
@@ -20,6 +21,8 @@ import {
   type TextRow,
   type VoiceSessionRow,
 } from "@/lib/ai-activity";
+import { listExecutedApprovals } from "@/lib/ai-team/approvals";
+import { pickDetails } from "@/lib/ai-team/approval-view";
 
 /**
  * "What did my AI do?" — the last week of work the AI team did on the owner's
@@ -50,7 +53,7 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     const supabase = await createClient();
     const since = new Date(now.getTime() - ACTIVITY_WINDOW_DAYS * 86_400_000).toISOString();
 
-    const [voiceRes, callsRes, postsRes, runsRes, queueRes, textsRes, orgRes, employees] = await Promise.all([
+    const [voiceRes, callsRes, postsRes, runsRes, queueRes, textsRes, orgRes, employees, approvalRows, viewer] = await Promise.all([
       supabase
         .from("voice_sessions")
         .select("id, call_sid, direction, purpose, status, from_number, to_number, client_id, booked_event_id, created_at")
@@ -105,6 +108,9 @@ export async function AiActivity({ orgId }: { orgId: string }) {
         .limit(200),
       supabase.from("organizations").select("timezone, twilio_number").eq("id", orgId).maybeSingle(),
       listEmployees(supabase, orgId).catch(() => []),
+      // What the owner approved and the team then did (never throws).
+      listExecutedApprovals(supabase, orgId, since),
+      supabase.auth.getUser().then((r) => r.data.user?.id ?? null, () => null),
     ]);
 
     for (const [name, res] of Object.entries({ voiceRes, callsRes, postsRes, runsRes, queueRes, textsRes })) {
@@ -121,6 +127,17 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     const runs = ((runsRes.data ?? []) as unknown as (Omit<RunRow, "employee_slug"> & { employee_id: string })[])
       .map(({ employee_id, ...r }) => ({ ...r, employee_slug: slugById.get(employee_id) ?? "" }))
       .filter((r) => r.employee_slug);
+
+    const approvals: ApprovalFeedRow[] = approvalRows
+      .filter((a) => a.executed_at)
+      .map((a) => ({
+        id: a.id,
+        employee_slug: a.employee_slug,
+        action_key: a.action_key,
+        client_name: pickDetails(a.details).clientName ?? null,
+        decided_by: a.decided_by,
+        executed_at: a.executed_at as string,
+      }));
 
     const clientIds = new Set<string>();
     for (const s of voiceSessions) if (s.client_id) clientIds.add(s.client_id);
@@ -171,7 +188,19 @@ export async function AiActivity({ orgId }: { orgId: string }) {
     });
 
     rows = buildActivityFeed(
-      { voiceSessions, calls, socialPosts, runs, queue, texts, clientNames, eventStarts, employees: employeeInfo },
+      {
+        voiceSessions,
+        calls,
+        socialPosts,
+        runs,
+        queue,
+        texts,
+        approvals,
+        viewerId: viewer,
+        clientNames,
+        eventStarts,
+        employees: employeeInfo,
+      },
       { t, when: (iso) => whenFmt.format(new Date(iso)) },
       { now },
     );

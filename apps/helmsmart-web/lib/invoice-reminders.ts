@@ -4,6 +4,7 @@ import { orgWriteLocale } from "@/lib/i18n/userLocale";
 import { contactLanguageFor } from "@/lib/i18n/contactLocale";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { daysBetween } from "@/lib/org-date";
+import type { MessageSender } from "@/lib/message-provenance";
 
 // Plain server module (NOT "use server") so it can take a Supabase client
 // argument and be shared by both the manual server action (cookie client) and
@@ -46,9 +47,18 @@ function reminderTone(overdue: number): { label: string; line: string; urgent: b
 export async function sendReminderForInvoice(
   db: SupabaseClient,
   inv: ReminderInvoice,
-  /** The org's date (`YYYY-MM-DD`), so "N days past due" counts in its day, not UTC's. */
-  opts?: { today?: string }
+  opts?: {
+    /** The org's date (`YYYY-MM-DD`), so "N days past due" counts in its day, not UTC's. */
+    today?: string;
+    /**
+     * Who the `messages` rows say sent it. An automatic reminder (the manual
+     * button, the dunning cron) is "reminder"; one Alex proposed and the owner
+     * approved in Ask Mark is "ai_team".
+     */
+    sentBy?: Extract<MessageSender, "reminder" | "ai_team">;
+  }
 ): Promise<{ sent: boolean; reason?: string }> {
+  const sentBy = opts?.sentBy ?? "reminder";
   const clientRaw = inv.clients;
   const client = Array.isArray(clientRaw) ? clientRaw[0] : clientRaw;
   if (!client?.email) return { sent: false, reason: "Client has no email address" };
@@ -123,7 +133,7 @@ export async function sendReminderForInvoice(
     to: client.email,
     ...(lang === "en" ? { subject, html, text } : { subject: emailSubject, text: emailText }),
     purpose: "transactional",
-    sentBy: "reminder",
+    sentBy,
     logSubject: emailSubject,
     logBody: emailText,
   });
@@ -150,7 +160,7 @@ export async function sendReminderForInvoice(
       body: smsBody,
       fromNumber: smsFrom,
       purpose: "transactional",
-      sentBy: "reminder",
+      sentBy,
     });
     if (!smsOutcome.ok) console.warn("[invoice-reminders] SMS nudge not sent:", outcomeForLog(smsOutcome));
   }

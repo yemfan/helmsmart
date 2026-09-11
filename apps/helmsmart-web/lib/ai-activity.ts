@@ -45,6 +45,8 @@ type TextKind = "autoPilot" | "receptionist" | "reminder";
  *   auto_reply        the business's canned reply: the owner wrote it once
  *   missed_call_text  listed from `calls.auto_replied`, which knows the call it
  *                     answers; a line from here too would count it twice
+ *   ai_team           listed from `ai_approvals`, which knows which specialist
+ *                     proposed it and that the owner approved it
  */
 const TEXT_KIND: Record<MessageSender, TextKind | null> = {
   person: null,
@@ -53,6 +55,7 @@ const TEXT_KIND: Record<MessageSender, TextKind | null> = {
   missed_call_text: null,
   reminder: "reminder",
   receptionist: "receptionist",
+  ai_team: null,
 };
 
 /** The `sent_by` values worth selecting for the feed — the component filters on these. */
@@ -124,6 +127,17 @@ export type TextRow = {
   sent_at: string;
 };
 
+/** An AI-team approval that ran (`ai_approvals`, status executed). */
+export type ApprovalFeedRow = {
+  id: string;
+  employee_slug: string;
+  action_key: string;
+  /** `details.clientName`, read out of the jsonb by the caller. */
+  client_name: string | null;
+  decided_by: string | null;
+  executed_at: string;
+};
+
 export type ActivityInput = {
   voiceSessions: VoiceSessionRow[];
   calls: CallRow[];
@@ -131,6 +145,10 @@ export type ActivityInput = {
   runs: RunRow[];
   queue: QueueRow[];
   texts: TextRow[];
+  /** Approved AI-team actions that ran. */
+  approvals?: ApprovalFeedRow[];
+  /** Who is reading, so an approval they made reads "approved by you". */
+  viewerId?: string | null;
   /** client id → display name (see `clientDisplayName`); absent when there's no real name. */
   clientNames: Record<string, string>;
   /** event id → start time (ISO), for "booked Tue 3:00 PM". */
@@ -283,14 +301,23 @@ export function buildActivityFeed(
     if (r.channel === "voice") continue;
     const who = employee(r.employee_slug);
     const name = r.subject_type === "contact" && r.subject_id ? person(r.subject_id, null) : null;
-    if (r.status === "escalated") {
+    const action = typeof r.outcome?.action === "string" ? r.outcome.action : null;
+    const title = typeof r.outcome?.title === "string" ? r.outcome.title : typeof r.outcome?.summary === "string" ? r.outcome.summary : null;
+    if (r.status === "escalated" && action === "hand_off_to_owner" && title) {
+      // Mark handed something back: it is on the owner's task list.
+      rows.push({ key: `run:${r.id}`, at: r.started_at, who, text: t("aiActivity.row.handedOff", { who: who.name, title }), detail: null, href: "/tasks" });
+    } else if (r.status === "escalated") {
+      // An act_with_approval employee's proposal: it waits on /home, under
+      // "Needs your approval", with the approvals Mark lines up.
       const text =
         r.channel === "sms" && name
           ? t("aiActivity.row.draftedForApproval", { who: who.name, name })
           : r.channel === "email" && r.subject_type === "invoice"
             ? t("aiActivity.row.remindersForApproval", { who: who.name })
             : t("aiActivity.row.waitingApproval", { who: who.name });
-      rows.push({ key: `run:${r.id}`, at: r.started_at, who, text, detail: null, href: "/tasks" });
+      rows.push({ key: `run:${r.id}`, at: r.started_at, who, text, detail: null, href: "/home" });
+    } else if (r.status === "succeeded" && action === "create_task" && title) {
+      rows.push({ key: `run:${r.id}`, at: r.started_at, who, text: t("aiActivity.row.taskAdded", { who: who.name, title }), detail: null, href: "/tasks" });
     } else if (r.status === "succeeded" && r.channel === "sms" && r.outcome?.booked === true && name) {
       rows.push({
         key: `run:${r.id}`,
@@ -301,6 +328,32 @@ export function buildActivityFeed(
         href: "/calendar",
       });
     }
+  }
+
+  // What the owner approved and the team then did. The specialist's run and
+  // the `messages` row (sent_by "ai_team") record the same send, so neither
+  // gets a line of its own — this one says whose work it was AND who said yes.
+  for (const a of input.approvals ?? []) {
+    const who = employee(a.employee_slug);
+    const name = a.client_name || t("aiActivity.someone");
+    const text =
+      a.action_key === "text_client"
+        ? t("aiActivity.row.approvedText", { who: who.name, name })
+        : a.action_key === "send_invoice_reminder"
+          ? t("aiActivity.row.approvedReminder", { who: who.name, name })
+          : null;
+    if (!text) continue;
+    rows.push({
+      key: `approval:${a.id}`,
+      at: a.executed_at,
+      who,
+      text,
+      detail:
+        a.decided_by && a.decided_by === input.viewerId
+          ? t("aiActivity.detail.approvedByYou")
+          : t("aiActivity.detail.approvedByTeammate"),
+      href: a.action_key === "text_client" ? "/inbox" : "/books/invoices",
+    });
   }
 
   // The queue adds only what nothing else records: work that never went out.

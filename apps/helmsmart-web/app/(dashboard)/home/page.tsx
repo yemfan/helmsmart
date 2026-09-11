@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { RevenueChart, type ChartMonth } from "@/components/revenue-chart";
 import { AiActivity } from "@/components/ai-activity";
+import { NeedsApproval } from "@/components/needs-approval";
 import { getReceivablesAging, getCashFlowForecast } from "@/lib/actions/reports";
 import { getOrCreateDailyBriefing } from "@/lib/briefing";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
@@ -496,6 +497,7 @@ export default async function HomePage() {
             </ul>
           )}
 
+          <NeedsApproval orgId={orgId} />
           <AiActivity orgId={orgId} />
         </div>
 

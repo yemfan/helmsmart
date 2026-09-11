@@ -5,10 +5,11 @@
  * work accordingly:
  *
  *   autonomous       → execute inside executeRun; returns "executed"
- *   act_with_approval → create a to-do TASK for the owner + escalateRun + notify;
- *                       returns "escalated". No external action is taken — the
- *                       owner reads the task and acts manually. (We deliberately
- *                       dropped the separate Approvals inbox + approve-and-send.)
+ *   act_with_approval → park the proposed work as an `ai_approvals` row (the
+ *                       same approvals the Ask Mark panel and /home show) +
+ *                       escalateRun + notify; returns "escalated" with the
+ *                       approval's id. Nothing is executed here: the owner
+ *                       decides from the "Needs your approval" list.
  *   suggest          → no side effects; returns "skipped"
  *
  * The caller supplies `execute(runId)` — the actual work callback. For
@@ -21,8 +22,8 @@
  */
 
 import { createNotificationService } from "@/lib/notifications-service";
-import { insertTask } from "@helm/dna-operations";
 import { notifySlackApprovalPending } from "@/lib/integrations/slack";
+import { insertApproval } from "@/lib/ai-team/approvals";
 import {
   getEmployee,
   startRun,
@@ -56,9 +57,9 @@ export interface GatingOptions {
   toolKey: string;
   /** The tool's input arguments (informational). */
   toolInput: Record<string, unknown>;
-  /** Human-readable description — becomes the task title + notification body. */
+  /** Human-readable description — becomes the approval's summary + the notification body. */
   description: string;
-  /** Optional detail for the task notes (e.g. the drafted message the owner should send). */
+  /** Optional detail shown with the approval (e.g. the drafted message the owner should send). */
   taskNote?: string;
 }
 
@@ -87,30 +88,42 @@ export async function enforceAutonomy(
     return { status: "skipped" };
   }
 
-  // ── act_with_approval: hand off to the owner as a to-do task ───────────────
-  // No external action is taken. The employee's suggestion becomes a task the
-  // owner can read and act on, instead of a separate approve-and-send inbox.
+  // ── act_with_approval: park it for the owner's decision ────────────────────
+  // Nothing external happens here. The proposed work becomes an `ai_approvals`
+  // row — the one approvals object, shown on /home under "Needs your
+  // approval". Its action key is the employee's tool, which the AI-team
+  // registry does not run, so the owner handles it and marks it done (or
+  // declines it) rather than approving a send.
   if (autonomy === "act_with_approval") {
     const runId = await startRun(db, orgId, { employeeId: employee.id, ...opts.runInput });
-    const clientId =
-      opts.runInput.subjectType === "contact" ? opts.runInput.subjectId ?? undefined : undefined;
-    await insertTask(db, orgId, {
-      title: opts.description,
-      notes: opts.taskNote,
-      client_id: clientId,
-      priority: "high",
+    const approval = await insertApproval(db, orgId, {
+      employeeSlug,
+      actionKey: opts.toolKey,
+      params: opts.toolInput,
+      summary: opts.description,
+      details: { kind: "manual", note: opts.taskNote ?? null },
+      source: {
+        kind: "autonomy_gate",
+        run_id: runId,
+        channel: opts.runInput.channel ?? null,
+        subject_type: opts.runInput.subjectType ?? null,
+        subject_id: opts.runInput.subjectId ?? null,
+        subject: opts.approvalSubject,
+      },
     });
-    await escalateRun(db, orgId, runId, `Handed off to the owner as a task: ${opts.toolKey}`);
+    await escalateRun(db, orgId, runId, `Waiting for the owner's approval: ${opts.toolKey}`, {
+      outcome: { approval_id: approval.id },
+    });
     await createNotificationService(orgId, {
       type: "system",
-      title: `${employee.name} created a task for you`,
+      title: `${employee.name} needs your approval`,
       // No body key: `description` is the caller's own sentence about the work
-      // it wanted done, composed wherever the tool lives. It is the task's
-      // title too, and it stays in whatever language it arrived in.
+      // it wanted done, composed wherever the tool lives. It is the approval's
+      // summary too, and it stays in whatever language it arrived in.
       body: opts.description.slice(0, 120),
-      titleKey: "notifications.events.employeeCreatedTask",
+      titleKey: "notifications.events.employeeNeedsApproval",
       params: { employee: employee.name },
-      link: "/tasks",
+      link: "/home",
     });
 
     // Slack notification (fire-and-forget)
@@ -118,10 +131,10 @@ export async function enforceAutonomy(
     void notifySlackApprovalPending(orgId, {
       employeeName: employee.name,
       description: opts.description.slice(0, 200),
-      approvalsUrl: `${appUrl}/tasks`,
+      approvalsUrl: `${appUrl}/home`,
     });
 
-    return { status: "escalated", runId };
+    return { status: "escalated", runId, approvalId: approval.id };
   }
 
   // ── autonomous: execute inside a tracked run ──────────────────────────────

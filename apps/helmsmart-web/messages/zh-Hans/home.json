@@ -266,11 +266,56 @@
       "unauthorized": "请重新登录后再查询业务数据。",
       "notConfigured": "AI 尚未配置 —— 请添加 Anthropic API 密钥。",
       "invalidRequest": "无法读取该请求，请再试一次。",
-      "noMessages": "请先输入你的问题。",
-      "stream": "[错误：{{message}}]"
+      "noMessages": "请先输入你的问题。"
     },
     "yourBusiness": "你的公司",
-    "uncategorized": "未分类"
+    "uncategorized": "未分类",
+    "roundLimit": "这个请求我已经做到了单次能做的步数上限。告诉我下一步做什么，我从这里接着来。",
+    "budget": "这个请求太大，一次做不完。请拆成几个小问题，我逐个处理。",
+    "refusal": "这个我帮不上忙。"
+  },
+  "aiApprovals": {
+    "title": "等待你批准",
+    "summary": {
+      "sendInvoiceReminder": "{{who}} 将通过邮件向 {{name}} 发送 {{invoice}} 的付款提醒 · {{amount}}",
+      "textClient": "{{who}} 将给 {{name}}（{{phone}}）发短信"
+    },
+    "card": {
+      "emailTo": "邮件发给 {{name}} · {{email}}",
+      "overdue_other": "逾期 {{count}} 天",
+      "messageLabel": "短信内容",
+      "approve": "批准",
+      "decline": "拒绝",
+      "approving": "发送中…",
+      "declining": "处理中…",
+      "sent": "已发送！",
+      "declined": "已拒绝",
+      "markDone": "标记为已完成",
+      "done": "已完成",
+      "manualHint": "{{who}} 暂时无法在这里完成这件事 —— 请你亲自处理，然后标记为已完成。",
+      "expired": "已过期 —— 这项提议已超过 7 天。如果仍然需要，请再问一次 Mark。",
+      "failed": "未发送"
+    },
+    "errors": {
+      "notFound": "这项提议已不存在。",
+      "alreadyDecided": "这项提议已经处理过了，不能重复批准。",
+      "expired": "这项提议已超过 7 天，不能再批准。如果仍然需要，请再问一次 Mark。",
+      "forbidden": "你的角色不能批准这项操作。请让所有者或管理员处理。",
+      "emptyMessage": "请先写好短信内容再发送。",
+      "messageTooLong": "短信请控制在 {{max}} 个字符以内。",
+      "failed": "没有成功，请再试一次。",
+      "reminderFailed": "付款提醒邮件没有发出，请再试一次。",
+      "noEmail": "{{name}} 没有邮箱地址，无法发送付款提醒。",
+      "noPhone": "{{name}} 没有可发短信的电话号码。",
+      "notUnpaid": "{{invoice}} 已不再等待付款，所以没有发送提醒。",
+      "clientGone": "该客户已不在这家公司的客户列表中。",
+      "invoiceGone": "该发票已不在这家公司名下。",
+      "unavailable": "审批功能暂时不可用，请稍后再试。",
+      "network": "网络错误，请再试一次。"
+    },
+    "handoff": {
+      "nextStep": "下一步：{{step}}"
+    }
   },
   "aiPanel": {
     "open": "向 Mark 提问",
@@ -281,7 +326,8 @@
     "expandShort": "展开",
     "minimizeShort": "最小化",
     "title": "Mark",
-    "subtitle": "AI 首席运营官 · 根据业务数据回答问题，为客户起草短信",
+    "subtitle": "AI 首席运营官 · 根据业务数据回答问题，把工作分派给团队",
+    "openWithApprovals_other": "向 Mark 提问 —— {{count}} 项等待你批准",
     "dragHint": "拖动可移动位置 · 双击可重置位置和尺寸",
     "askTab": "提问",
     "newContactTab": "新建联系人标签页",
@@ -393,9 +439,15 @@
       "reminderCallNotPlaced": "给 {{name}} 的提醒电话没有拨出",
       "reminderTextNotSent": "给 {{name}} 的提醒短信没有发出",
       "bookingConfirmationText": "{{who}} 向 {{name}} 发送了预约确认短信",
-      "paymentReminderText": "已向 {{name}} 发送付款提醒短信"
+      "paymentReminderText": "已向 {{name}} 发送付款提醒短信",
+      "approvedText": "{{who}} 给 {{name}} 发了短信",
+      "approvedReminder": "{{who}} 向 {{name}} 发送了付款提醒",
+      "taskAdded": "{{who}} 添加了任务：{{title}}",
+      "handedOff": "{{who}} 把一项任务交给了你：{{title}}"
     },
     "detail": {
+      "approvedByYou": "经你批准",
+      "approvedByTeammate": "经团队成员批准",
       "booked": "已预约 {{when}}",
       "bookedNoTime": "已预约",
       "texts_other": "{{count}} 条短信"
@@ -468,6 +520,7 @@
       "appointmentCancelled": "客户已取消预约",
       "appointmentCancelledBody": "{{caller}} — 原定 {{when}}",
       "employeeCreatedTask": "{{employee}} 为你创建了一个任务",
+      "employeeNeedsApproval": "{{employee}} 需要你的批准",
       "newGoogleReviews_other": "Google Business 上有 {{count}} 条新评价",
       "newGoogleReviewsBody": "打开 Google Business 后台回复评价，提升口碑。",
       "weeklyInsight": "Tim 的每周经营洞察已生成",

@@ -11,8 +11,22 @@ import { describe, expect, it } from "vitest";
 import { MESSAGE_SENDERS } from "./message-provenance";
 
 const ROOT = join(__dirname, "..");
-const MIGRATION = join(ROOT, "supabase", "migrations", "20260912000000_messages_sent_by.sql");
+const MIGRATIONS = join(ROOT, "supabase", "migrations");
 const CHOKE_POINT = "lib/outbound-send.ts";
+
+/**
+ * The migration that defines the CHECK last — the one the database ends up
+ * with. Widening the set means a new migration, so reading a fixed file name
+ * would keep grading the first version of the list forever.
+ */
+function latestSentByMigration(): string {
+  const files = readdirSync(MIGRATIONS)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .filter((f) => /add constraint messages_sent_by_check/.test(readFileSync(join(MIGRATIONS, f), "utf8")));
+  expect(files.length, "no migration defines messages_sent_by_check").toBeGreaterThan(0);
+  return join(MIGRATIONS, files[files.length - 1]);
+}
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
@@ -41,7 +55,7 @@ const sources = () =>
 
 describe("messages.sent_by", () => {
   it("the migration's CHECK allows exactly MESSAGE_SENDERS", () => {
-    const sql = readFileSync(MIGRATION, "utf8");
+    const sql = readFileSync(latestSentByMigration(), "utf8");
     const check = sql.match(/sent_by in \(([^)]*)\)/);
     expect(check, "no CHECK list found in the migration").not.toBeNull();
     const allowed = [...check![1].matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
