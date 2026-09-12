@@ -263,6 +263,18 @@
     "tasksDue_one": "{{count}} tarea necesita atención hoy",
     "tasksDue_other": "{{count}} tareas necesitan atención hoy"
   },
+  "activation": {
+    "title": "Termina de configurar tu recepcionista con IA",
+    "progress": "{{done}} de {{total}} listos; en total son unos cinco minutos.",
+    "steps": {
+      "basics": "Cuéntale a Emma sobre tu negocio",
+      "script": "Revisa lo que Emma dice en una llamada",
+      "hours": "Define tu horario y qué se puede agendar",
+      "number": "Conecta el número al que llama la gente",
+      "call": "Escúchala contestar tu primera llamada"
+    },
+    "continue": "Continuar donde lo dejaste"
+  },
   "ask": {
     "error": "Lo sentimos, algo salió mal. Inténtelo de nuevo.",
     "errors": {

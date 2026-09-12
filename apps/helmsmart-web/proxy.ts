@@ -15,7 +15,7 @@ import { LOCALE_HEADER, LOCALE_PATH_HEADER } from "@/lib/i18n/headers";
 const DASHBOARD_SEGMENTS = [
   "/ai-team", "/approvals", "/ask", "/automations", "/books", "/calendar", "/clients", "/command-center",
   "/home", "/inbox", "/marketing", "/pipeline", "/projects", "/reception",
-  "/reports", "/settings", "/social", "/tasks", "/timesheets", "/voice",
+  "/reports", "/settings", "/setup", "/social", "/tasks", "/timesheets", "/voice",
 ];
 
 // Routes only accessible when logged OUT

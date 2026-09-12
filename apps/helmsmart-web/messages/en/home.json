@@ -263,6 +263,18 @@
     "tasksDue_one": "{{count}} task needs attention today",
     "tasksDue_other": "{{count}} tasks need attention today"
   },
+  "activation": {
+    "title": "Finish setting up your AI receptionist",
+    "progress": "{{done}} of {{total}} done — about five minutes in total.",
+    "steps": {
+      "basics": "Tell Emma about your business",
+      "script": "Check what Emma says on a call",
+      "hours": "Set your hours and what people can book",
+      "number": "Connect the number people call",
+      "call": "Hear her answer your first call"
+    },
+    "continue": "Pick up where you left off"
+  },
   "ask": {
     "error": "Sorry, something went wrong. Please try again.",
     "errors": {

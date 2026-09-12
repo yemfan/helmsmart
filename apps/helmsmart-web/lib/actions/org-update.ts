@@ -20,7 +20,19 @@ import { getServerT } from "@/lib/i18n/server";
  * is no way to distinguish a forbidden update from a successful one; with it,
  * an empty array is the signal.
  */
-export type OrgUpdateResult = { ok: true } | { ok: false; error: string };
+/**
+ * `code` is Postgres's own, carried up UNTRANSLATED and only for branching.
+ *
+ * Not every failure is the same failure. `42703` (column does not exist) means
+ * a migration has not been applied — the caller may have a second place to put
+ * the value, and telling the owner "you may not have permission" would be a
+ * lie. A refusal has no code, because RLS does not error: it matches zero rows.
+ * Never show this to anyone; `error` is the sentence for that.
+ */
+export type OrgUpdateResult = { ok: true } | { ok: false; error: string; code?: string };
+
+/** Postgres: the column named in the statement does not exist. */
+export const UNDEFINED_COLUMN = "42703";
 
 export async function updateOrg(
   orgId: string,
@@ -41,7 +53,7 @@ export async function updateOrg(
     // not something the owner can act on, and it is always English.
     console.error(`[${context}] organizations update failed:`, error.message);
     const t = await getServerT("settings");
-    return { ok: false, error: t("errors.orgUpdateFailed") };
+    return { ok: false, error: t("errors.orgUpdateFailed"), code: error.code };
   }
 
   if (!data || data.length === 0) {
