@@ -47,6 +47,11 @@ vi.mock("@/lib/outbound-queue", () => ({
 vi.mock("@/lib/integrations/slack", () => ({ notifySlack: vi.fn(), notifySlackNewLead: vi.fn() }));
 vi.mock("@/lib/automation-engine", () => ({ runAutomations: vi.fn() }));
 vi.mock("@/components/role-guard", () => ({ checkActionPermission: async () => null }));
+// server-only; `createEvent` reads it to turn a wall clock into an instant.
+vi.mock("@/lib/org-timezone", () => ({
+  orgTimezone: async () => "America/Los_Angeles",
+  orgToday: async () => "2026-09-12",
+}));
 vi.mock("@/lib/google-business", () => ({ replyToGoogleReview: vi.fn() }));
 vi.mock("@/lib/google-calendar", () => ({
   syncEventToGoogle: vi.fn(),
@@ -390,7 +395,7 @@ describe("events", () => {
   it("a failed create throws the owner's copy, not Postgres's", async () => {
     writeResult = DB_ERROR;
     await expect(
-      createEvent({ title: "x", type: "meeting", color: "indigo", startAt: "2026-09-10T09:00:00", allDay: false }),
+      createEvent({ title: "x", type: "meeting", color: "indigo", date: "2026-09-10", time: "09:00", allDay: false }),
     ).rejects.toThrow(en("tasks")("errors.eventCreateFailed"));
   });
 });

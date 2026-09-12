@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { CalendarGrid } from "@/components/calendar-grid";
 import { getServerT } from "@/lib/i18n/server";
+import { orgTimezone } from "@/lib/org-timezone";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("tasks");
@@ -19,7 +20,8 @@ export default async function CalendarPage() {
   const start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
   const end   = new Date(now.getFullYear(), now.getMonth() + 3, 0).toISOString();
 
-  const [{ data: events }, { data: clients }] = await Promise.all([
+  const [timeZone, { data: events }, { data: clients }] = await Promise.all([
+    orgTimezone(orgId),
     supabase
       .from("events")
       .select(`id, title, type, color, start_at, end_at, all_day, completed, client_id, google_event_id,
@@ -74,6 +76,7 @@ export default async function CalendarPage() {
       <CalendarGrid
         events={safeEvents}
         clients={(clients ?? []) as { id: string; first_name: string | null; last_name: string | null }[]}
+        timeZone={timeZone}
       />
     </div>
   );

@@ -112,7 +112,8 @@ export default async function ClientPortalPage({
   const events    = eventsRes.data ?? [];
 
   // The business's date: overdue and expired here match its own dashboard.
-  const today = calendarDate(orgRes.data?.timezone as string | null | undefined);
+  const timeZone = (orgRes.data?.timezone as string | null) ?? undefined;
+  const today = calendarDate(timeZone);
   const totalPaid        = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + Number(i.total), 0);
   const totalOutstanding = invoices.filter((i) => i.status === "sent" || i.status === "overdue").reduce((s, i) => s + Number(i.total), 0);
   const openEstimates    = estimates.filter((e) => e.status === "sent");
@@ -192,15 +193,14 @@ export default async function ClientPortalPage({
           <Section title={t("portal.sections.appointments")}>
             {events.map((evt, i) => {
               const evtDate = new Date(evt.start_at);
-              // UTC slice on purpose: the calendar saves the typed time with no
-              // offset, which Postgres reads as UTC, so this is the day picked.
-              // Same rule as the dashboard's home page.
-              const isToday = evtDate.toISOString().slice(0, 10) === today;
+              // The business's clock: `start_at` is an instant, and the client
+              // is being told when to turn up where the business is.
+              const isToday = calendarDate(timeZone, evtDate) === today;
               const dateStr = isToday
                 ? t("portal.todayAt", {
-                    time: evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit" }),
+                    time: evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit", timeZone }),
                   })
-                : evtDate.toLocaleDateString(intlLocale(locale), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+                : evtDate.toLocaleDateString(intlLocale(locale), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone });
               const isLast = i === events.length - 1;
               return (
                 <div key={evt.id} style={{ padding: "14px 20px", borderBottom: isLast ? "none" : "1px solid #f8fafc", display: "flex", alignItems: "center", gap: 14 }}>

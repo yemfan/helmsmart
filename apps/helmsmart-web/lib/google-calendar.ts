@@ -1,5 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
-import { addDays } from "@/lib/org-date";
+import { addDays, calendarDate } from "@/lib/org-date";
+import { safeTimezone } from "@repo/voice/datetime";
 
 // Per-org Google Calendar integration — OAuth token refresh, event upsert/delete,
 // and free/busy availability. Mirrors LeadSmart's lib/google-calendar but keyed
@@ -142,14 +143,18 @@ export async function syncEventToGoogle(params: {
   googleEventId?: string | null;
   title: string;
   description?: string;
-  startAt: string; // ISO datetime or date
-  endAt?: string | null; // ISO datetime or date
+  startAt: string; // ISO instant
+  endAt?: string | null; // ISO instant
   allDay: boolean;
+  /** `organizations.timezone` — whose clock Google should show this in. */
+  timeZone?: string;
 }): Promise<{ googleEventId: string | null }> {
   const accessToken = await getValidToken(params.orgId);
   if (!accessToken) return { googleEventId: params.googleEventId || null };
 
-  const tz = "America/New_York";
+  // The business's zone, not a hardcoded one: an org in Los Angeles had its
+  // events written to Google as New York times.
+  const tz = safeTimezone(params.timeZone);
 
   // Convert all_day events to Google's date format (YYYY-MM-DD)
   // For all_day events, endAt should be exclusive (next day)
@@ -157,8 +162,9 @@ export async function syncEventToGoogle(params: {
   let endSpec: Record<string, string>;
 
   if (params.allDay) {
-    // Extract date part from ISO string (handles both YYYY-MM-DD and YYYY-MM-DDTHH:MM:SS)
-    const dateStr = params.startAt.split("T")[0];
+    // The day this instant falls on in the org's zone — an all-day event is
+    // stored as local midnight, which in UTC can be the day before.
+    const dateStr = calendarDate(tz, new Date(params.startAt));
     startSpec = { date: dateStr };
 
     // For all-day events, end date should be the day after — as date-string

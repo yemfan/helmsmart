@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, ChevronDown, Grid3x3
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@leadsmart/i18n";
 import { createEvent, toggleEventComplete, deleteEvent } from "@/lib/actions/events";
+import { calendarDate } from "@/lib/org-date";
 
 type EventType = "appointment" | "task" | "meeting" | "reminder";
 type EventColor = "indigo" | "emerald" | "rose" | "amber" | "slate";
@@ -48,20 +49,31 @@ const TYPE_DOT: Record<EventType, string> = {
 
 const TYPE_FILTERS: ("all" | EventType)[] = ["all", ...EVENT_TYPES];
 
-// Local YYYY-MM-DD for a Date (avoids the UTC shift toISOString would cause).
-function isoDate(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients: Client[] }) {
+export function CalendarGrid({
+  events,
+  clients,
+  timeZone,
+}: {
+  events: CalEvent[];
+  clients: Client[];
+  /** `organizations.timezone`. Events are instants; this is the clock they are read on. */
+  timeZone: string;
+}) {
   const { t, i18n } = useTranslation("tasks");
   const locale = intlLocale(i18n.language);
-  const now  = new Date();
+  // The business's today — the grid opens on its month, and highlights its day,
+  // wherever the person looking at it happens to be.
+  const today = calendarDate(timeZone);
+  const todayYear = Number(today.slice(0, 4));
+  const todayMonth = Number(today.slice(5, 7)) - 1;
+  const todayDay = Number(today.slice(8, 10));
+  /** The day an event falls on in the business's zone. */
+  const dayOf = (e: CalEvent) => calendarDate(timeZone, new Date(e.start_at));
   const [viewMode, setViewMode] = useState<"month" | "list">("month");
-  const [year, setYear]   = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth());
+  const [year, setYear]   = useState(todayYear);
+  const [month, setMonth] = useState(todayMonth);
   const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState({ title: "", type: "appointment" as EventType, color: "indigo" as EventColor, date: isoDate(now), time: "09:00", duration: 60, allDay: false, clientId: "", description: "" });
+  const [form, setForm] = useState({ title: "", type: "appointment" as EventType, color: "indigo" as EventColor, date: today, time: "09:00", duration: 60, allDay: false, clientId: "", description: "" });
   const [isPending, startTransition] = useTransition();
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -96,7 +108,9 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
 
   function eventsForDay(day: number) {
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return visibleEvents.filter((e) => e.start_at.startsWith(iso));
+    // By the day it falls on here, not by the text of the stored instant: a
+    // 7 PM Pacific event is stored as the next day in UTC.
+    return visibleEvents.filter((e) => dayOf(e) === iso);
   }
 
   function openCreate(iso: string) {
@@ -111,27 +125,19 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
 
   function submitCreate() {
     if (!form.title.trim() || !form.date) return;
-    const startAt = form.allDay
-      ? `${form.date}T00:00:00`
-      : `${form.date}T${form.time}:00`;
-    const endAt = form.allDay
-      ? null
-      : (() => {
-          const [h, m] = form.time.split(":").map(Number);
-          const end = new Date(0);
-          end.setHours(h, m + form.duration);
-          return `${form.date}T${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}:00`;
-        })();
 
     setCreateError(null);
     startTransition(async () => {
       try {
+        // The wall clock goes over as a wall clock. `createEvent` knows the
+        // organization, so it is what turns this into an instant.
         await createEvent({
           title: form.title,
           type: form.type,
           color: form.color,
-          startAt,
-          endAt: endAt ?? undefined,
+          date: form.date,
+          time: form.time,
+          durationMinutes: form.allDay ? undefined : form.duration,
           allDay: form.allDay,
           clientId: form.clientId || null,
           description: form.description || undefined,
@@ -186,13 +192,13 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={() => openCreate(isoDate(new Date()))}
+            onClick={() => openCreate(today)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" /> {t("calendar.newEvent")}
           </button>
           <button
-            onClick={() => { setYear(now.getFullYear()); setMonth(now.getMonth()); }}
+            onClick={() => { setYear(todayYear); setMonth(todayMonth); }}
             className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
           >
             {t("calendar.today")}
@@ -270,7 +276,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
             {Array.from({ length: rows * 7 }, (_, i) => {
               const day = i - startPad + 1;
               const isValid = day >= 1 && day <= lastDay.getDate();
-              const isToday = isValid && year === now.getFullYear() && month === now.getMonth() && day === now.getDate();
+              const isToday = isValid && year === todayYear && month === todayMonth && day === todayDay;
               const dayEvents = isValid ? eventsForDay(day) : [];
 
               return (
@@ -304,7 +310,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                           >
                             {!ev.all_day && (
                               <span className="opacity-70 mr-1">
-                                {new Date(ev.start_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
+                                {new Date(ev.start_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit", timeZone })}
                               </span>
                             )}
                             {ev.title}
@@ -331,10 +337,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
           <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
             {visibleEvents
-              .filter((e) => {
-                const eDate = new Date(e.start_at);
-                return eDate.getFullYear() === year && eDate.getMonth() === month;
-              })
+              .filter((e) => dayOf(e).slice(0, 7) === `${year}-${String(month + 1).padStart(2, "0")}`)
               .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime())
               .map((ev) => {
                 const startDate = new Date(ev.start_at);
@@ -349,7 +352,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                     : t("calendar.durationMinutes", { minutes: durationMins });
                 const timeStr = ev.all_day
                   ? t("calendar.allDay")
-                  : startDate.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+                  : startDate.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit", timeZone });
 
                 return (
                   // A div (not button) so the nested "+" button below is valid
@@ -372,7 +375,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                         {ev.title}
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        {startDate.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" })} · {timeStr}
+                        {startDate.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric", timeZone })} · {timeStr}
                       </p>
                       {ev.clients && (
                         <p className="text-xs text-slate-400 mt-1">
@@ -386,7 +389,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCreate(startDate.getDate());
+                        openCreate(dayOf(ev));
                       }}
                       aria-label={t("calendar.newEvent")}
                       className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
@@ -396,10 +399,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                   </div>
                 );
               })}
-            {visibleEvents.filter((e) => {
-              const eDate = new Date(e.start_at);
-              return eDate.getFullYear() === year && eDate.getMonth() === month;
-            }).length === 0 && (
+            {visibleEvents.filter((e) => dayOf(e).slice(0, 7) === `${year}-${String(month + 1).padStart(2, "0")}`).length === 0 && (
               <div className="flex-1 flex items-center justify-center text-slate-400">
                 <p className="text-sm">{t(`calendar.empty.${typeFilter}`)}</p>
               </div>
@@ -544,7 +544,7 @@ export function CalendarGrid({ events, clients }: { events: CalEvent[]; clients:
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {selectedEvent.all_day ? t("calendar.allDay") : new Date(selectedEvent.start_at).toLocaleTimeString(locale, {
-                    hour: "numeric", minute: "2-digit", weekday: "short", month: "short", day: "numeric",
+                    hour: "numeric", minute: "2-digit", weekday: "short", month: "short", day: "numeric", timeZone,
                   })}
                 </p>
                 {selectedEvent.clients && (
