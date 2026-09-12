@@ -12,6 +12,13 @@ interface Props {
   children?: (props: { open: () => void; isReady: boolean; isLoading: boolean }) => React.ReactNode;
   /** Extra Tailwind classes for the default button variant. */
   className?: string;
+  /**
+   * UPDATE MODE. The `bank_connections` row to repair, when this button
+   * offers to fix a bank that stopped importing rather than to link a new
+   * one. Plaid reopens Link on the item that connection already holds, so
+   * there is no new item and nothing to exchange — see `onSuccess`.
+   */
+  connectionId?: string;
 }
 
 /**
@@ -25,8 +32,11 @@ interface Props {
  *   <PlaidLink>
  *     {({ open, isReady }) => <button onClick={open} disabled={!isReady}>Connect</button>}
  *   </PlaidLink>
+ *
+ * Usage (update mode — repair a bank that stopped importing):
+ *   <PlaidLink connectionId={conn.id} />
  */
-export function PlaidLink({ children, className = "" }: Props) {
+export function PlaidLink({ children, className = "", connectionId }: Props) {
   const router = useRouter();
   const { t } = useTranslation("books");
   const [linkToken, setLinkToken] = useState<string | null>(null);
@@ -40,7 +50,11 @@ export function PlaidLink({ children, className = "" }: Props) {
     setFetchingToken(true);
     setError(null);
     try {
-      const res = await fetch("/api/plaid/create-link-token", { method: "POST" });
+      const res = await fetch("/api/plaid/create-link-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(connectionId ? { connection_id: connectionId } : {}),
+      });
       const data = await res.json() as { link_token?: string; error?: string };
       if (!res.ok || !data.link_token) throw new Error(data.error ?? t("transactions.plaid.tokenFailed"));
       setLinkToken(data.link_token);
@@ -50,13 +64,33 @@ export function PlaidLink({ children, className = "" }: Props) {
     } finally {
       setFetchingToken(false);
     }
-  }, [linkToken, fetchingToken, t]);
+  }, [linkToken, fetchingToken, connectionId, t]);
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
     async (publicToken, metadata) => {
       setExchanging(true);
       setError(null);
       try {
+        /*
+         * UPDATE MODE NEVER EXCHANGES. Plaid repaired the existing item in
+         * place, so the access token we already hold keeps working, and
+         * spending this public token on exchange-token would create a SECOND
+         * connection row for the same bank. What actually needs doing is
+         * clearing the `status: 'error'` / `error_code` that `plaid-sync`
+         * wrote — the reason `syncBankConnections` is still skipping it.
+         */
+        if (connectionId) {
+          const repairRes = await fetch("/api/plaid/repair-connection", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ connection_id: connectionId }),
+          });
+          const repaired = await repairRes.json() as { connection_id?: string; error?: string };
+          if (!repairRes.ok) throw new Error(repaired.error ?? t("transactions.plaid.repairFailed"));
+          router.refresh();
+          return;
+        }
+
         const res = await fetch("/api/plaid/exchange-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -79,13 +113,17 @@ export function PlaidLink({ children, className = "" }: Props) {
         router.refresh();
       } catch (e) {
         console.error("exchange Plaid public token", e);
-        setError(t("transactions.plaid.linkRetry"));
+        // Two different failures: one bank never got linked, the other is
+        // linked and still not importing. "Bank link failed" is wrong for the
+        // second, and an error that misnames what happened sends the owner
+        // looking in the wrong place.
+        setError(t(connectionId ? "transactions.plaid.repairFailed" : "transactions.plaid.linkRetry"));
       } finally {
         setExchanging(false);
         setLinkToken(null); // invalidate token after use
       }
     },
-    [router, t]
+    [router, connectionId, t]
   );
 
   const onExit = useCallback<PlaidLinkOnExit>((err) => {

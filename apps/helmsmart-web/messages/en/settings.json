@@ -84,7 +84,21 @@
   "financial": {
     "bank": {
       "description": "Link a bank via Plaid to import the last 90 days of transactions (AI-categorized), then map each account to a chart-of-accounts entry so it posts to the double-entry journal.",
-      "empty": "No bank accounts linked yet — use the Link Bank button above to connect one."
+      "empty": "No bank accounts linked yet — use the Link Bank button above to connect one.",
+      "reconnect": "Reconnect",
+      "unnamedInstitution": "your bank",
+      "reconnecting": "Reconnecting…",
+      "reconnectFailed": "Couldn't finish reconnecting {{institution}}. Try again.",
+      "connectionError": {
+        "loginRequired": "{{institution}} needs you to sign in again before it can send new transactions. Nothing is importing until you do.",
+        "permissionRevoked": "Access to {{institution}} was turned off at the bank, so transactions have stopped importing. Reconnect to grant it again.",
+        "expiring": "Your {{institution}} login is about to expire. Reconnect now to keep transactions importing without a gap.",
+        "credentialsChanged": "{{institution}} didn't accept the saved sign-in — usually a changed password or a new security question. Reconnect with the current details.",
+        "locked": "{{institution}} locked the account after too many sign-in attempts. Unlock it with the bank first, then reconnect here.",
+        "institutionDown": "{{institution}} isn't responding to Plaid right now. This clears on its own — transactions catch up once the bank is back, and reconnecting won't speed it up.",
+        "notSupported": "Plaid no longer supports transaction imports from {{institution}}. Reconnecting won't help — remove this bank and link a different one.",
+        "unknown": "{{institution}} stopped importing transactions and reported: {{code}}. Try reconnecting — if it keeps failing, send that code to support."
+      }
     },
     "rates": {
       "hourly": "Default hourly rate",

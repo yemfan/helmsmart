@@ -84,7 +84,21 @@
   "financial": {
     "bank": {
       "description": "通过 Plaid 关联银行账户，导入最近 90 天的交易记录（由 AI 自动归类），再把每个账户映射到会计科目表中的科目，交易即可入复式记账日记账。",
-      "empty": "尚未关联任何银行账户 —— 点击上方的「关联银行」按钮即可连接。"
+      "empty": "尚未关联任何银行账户 —— 点击上方的「关联银行」按钮即可连接。",
+      "reconnect": "重新连接",
+      "unnamedInstitution": "你的银行",
+      "reconnecting": "正在重新连接…",
+      "reconnectFailed": "未能完成 {{institution}} 的重新连接。请再试一次。",
+      "connectionError": {
+        "loginRequired": "{{institution}} 需要你重新登录后才能继续发送新交易。在此之前不会导入任何数据。",
+        "permissionRevoked": "{{institution}} 在银行端撤销了访问授权，交易已停止导入。重新连接即可重新授权。",
+        "expiring": "你的 {{institution}} 登录即将过期。现在重新连接，交易导入就不会中断。",
+        "credentialsChanged": "{{institution}} 不接受已保存的登录信息——通常是密码变更或新增了安全问题。请用当前的信息重新连接。",
+        "locked": "由于登录尝试次数过多，{{institution}} 锁定了该账户。请先在银行端解锁，然后在这里重新连接。",
+        "institutionDown": "{{institution}} 目前没有响应 Plaid。这会自行恢复——银行恢复后交易会补上，重新连接也不会更快。",
+        "notSupported": "Plaid 已不再支持从 {{institution}} 导入交易。重新连接没有用——请移除这家银行，改为关联另一家。",
+        "unknown": "{{institution}} 已停止导入交易，报告的错误为：{{code}}。可以先尝试重新连接——如果仍然失败，请把该代码发给支持团队。"
+      }
     },
     "rates": {
       "hourly": "默认小时费率",

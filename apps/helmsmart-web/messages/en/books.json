@@ -1218,7 +1218,10 @@
       "linkTokenFailed": "Couldn't start the bank connection. Try again.",
       "saveConnectionFailed": "Couldn't save the bank connection. Try again.",
       "exchangeFailed": "Couldn't finish connecting your bank. Try again.",
-      "syncFailed": "Couldn't sync your bank transactions. Try again in a few minutes."
+      "syncFailed": "Couldn't sync your bank transactions. Try again in a few minutes.",
+      "missingConnection": "No bank connection was given.",
+      "connectionNotFound": "That bank connection is no longer there.",
+      "repairFailed": "Couldn't reconnect that bank. Try again."
     },
     "errors": {
       "missingId": "Missing transaction ID.",

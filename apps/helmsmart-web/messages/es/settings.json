@@ -84,7 +84,21 @@
   "financial": {
     "bank": {
       "description": "Vincule un banco a través de Plaid para importar los últimos 90 días de transacciones (clasificadas con IA) y después asigne cada cuenta a una entrada del plan de cuentas para que se registre en el libro diario por partida doble.",
-      "empty": "Todavía no hay ninguna cuenta bancaria vinculada: use el botón Vincular banco de arriba para conectar una."
+      "empty": "Todavía no hay ninguna cuenta bancaria vinculada: use el botón Vincular banco de arriba para conectar una.",
+      "reconnect": "Volver a conectar",
+      "unnamedInstitution": "tu banco",
+      "reconnecting": "Volviendo a conectar…",
+      "reconnectFailed": "No se pudo terminar de volver a conectar {{institution}}. Inténtalo de nuevo.",
+      "connectionError": {
+        "loginRequired": "{{institution}} necesita que inicies sesión de nuevo antes de poder enviar transacciones nuevas. Hasta entonces no se importa nada.",
+        "permissionRevoked": "El acceso a {{institution}} se desactivó en el banco, así que las transacciones dejaron de importarse. Vuelve a conectar para concederlo otra vez.",
+        "expiring": "Tu inicio de sesión de {{institution}} está a punto de caducar. Vuelve a conectar ahora para que las transacciones sigan importándose sin interrupciones.",
+        "credentialsChanged": "{{institution}} no aceptó el inicio de sesión guardado: suele ser un cambio de contraseña o una nueva pregunta de seguridad. Vuelve a conectar con los datos actuales.",
+        "locked": "{{institution}} bloqueó la cuenta tras demasiados intentos de inicio de sesión. Desbloquéala primero con el banco y después vuelve a conectar aquí.",
+        "institutionDown": "{{institution}} no responde a Plaid en este momento. Se resuelve solo: las transacciones se pondrán al día cuando el banco vuelva, y volver a conectar no lo acelera.",
+        "notSupported": "Plaid ya no admite la importación de transacciones de {{institution}}. Volver a conectar no sirve: quita este banco y vincula otro.",
+        "unknown": "{{institution}} dejó de importar transacciones e informó: {{code}}. Prueba a volver a conectar; si sigue fallando, envía ese código al soporte."
+      }
     },
     "rates": {
       "hourly": "Tarifa por hora predeterminada",

@@ -9,6 +9,7 @@ import { SettingsTabs } from "@/components/settings-tabs";
 import { SocialConnections } from "@/components/social-connections";
 import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 import { PlaidLink } from "@/components/plaid-link";
+import { BankConnectionAlert } from "@/components/bank-connection-alert";
 import { BillingRatesForm } from "@/components/billing-rates-form";
 import { ReceptionSettings } from "@/components/reception-settings";
 import { NpiSetting } from "@/components/npi-setting";
@@ -55,7 +56,9 @@ export default async function SettingsPage() {
       .single(),
     supabase
       .from("bank_accounts")
-      .select("id, name, type, subtype, mask, coa_account_id, institution:bank_connections(institution_name)")
+      .select(
+        "id, name, type, subtype, mask, coa_account_id, connection_id, institution:bank_connections(institution_name, status, error_code)",
+      )
       .eq("organization_id", orgId)
       .eq("is_active", true),
     supabase
@@ -76,6 +79,43 @@ export default async function SettingsPage() {
   const connectedProviders = (
     tokensRes.error ? [] : ((tokensRes.data as { provider: string }[]) ?? [])
   ).map((t) => t.provider);
+
+  /*
+   * Banks that have stopped importing. `lib/plaid-sync.ts` sets a connection to
+   * `status: 'error'` with Plaid's code the moment a sync is refused, and
+   * `syncBankConnections` then skips it on every later run — so until this read
+   * existed, the feed went quiet while the Financial tab carried on listing the
+   * accounts as though they were current.
+   *
+   * One line per CONNECTION, not per account: a single login covers every
+   * account behind it, so repeating the sentence under each would read as
+   * several separate problems with several separate fixes.
+   */
+  type ConnectionHealth = {
+    institution_name: string | null;
+    status: string | null;
+    error_code: string | null;
+  };
+  const healthOf = (institution: unknown): ConnectionHealth | null =>
+    Array.isArray(institution)
+      ? ((institution[0] as ConnectionHealth) ?? null)
+      : ((institution as ConnectionHealth) ?? null);
+
+  const brokenConnections = [
+    ...new Map(
+      (bankAccounts ?? [])
+        .map((ba) => [ba.connection_id as string, healthOf(ba.institution)] as const)
+        .filter(([id, health]) => !!id && health?.status === "error")
+        .map(([id, health]) => [
+          id,
+          {
+            connectionId: id,
+            institutionName: health?.institution_name ?? null,
+            errorCode: health?.error_code ?? null,
+          },
+        ]),
+    ).values(),
+  ];
 
   const isMedical = (await getActivePack()).id === "medical";
 
@@ -167,6 +207,18 @@ export default async function SettingsPage() {
               <div className="mb-4">
                 <PlaidLink />
               </div>
+              {brokenConnections.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {brokenConnections.map((c) => (
+                    <BankConnectionAlert
+                      key={c.connectionId}
+                      connectionId={c.connectionId}
+                      institutionName={c.institutionName}
+                      errorCode={c.errorCode}
+                    />
+                  ))}
+                </div>
+              )}
               {bankAccounts?.length ? (
                 <div className="space-y-3">
                   {bankAccounts.map((ba) => (
