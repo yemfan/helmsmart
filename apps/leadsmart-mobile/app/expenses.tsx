@@ -25,7 +25,7 @@ import {
   deleteMobileExpense,
   uploadMobileReceipt,
   type MobileApiFailure,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 

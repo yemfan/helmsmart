@@ -1,14 +1,14 @@
 import { apiFetch } from "@leadsmart/api-client";
-import { getLeadsmartApiBaseUrl } from "./env";
+import { getCloseBossApiBaseUrl } from "./env";
 
 type SummaryJson = { ok?: boolean; error?: string };
 
 /**
- * Optional connectivity check against LeadSmart AI (cookie auth won’t apply until you add tokens).
+ * Optional connectivity check against CloseBoss (cookie auth won’t apply until you add tokens).
  * Returns a short status string for the home screen.
  */
-export async function pingLeadsmartApi(): Promise<string> {
-  const base = getLeadsmartApiBaseUrl();
+export async function pingCloseBossApi(): Promise<string> {
+  const base = getCloseBossApiBaseUrl();
   if (!base) {
     return "Set EXPO_PUBLIC_LEADSMART_API_URL to enable API checks.";
   }

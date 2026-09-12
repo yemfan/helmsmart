@@ -18,7 +18,7 @@ import {
   fetchMobileRecurrences,
   updateMobileRecurrence,
   type MobileRecurrence,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

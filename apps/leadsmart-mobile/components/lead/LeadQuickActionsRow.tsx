@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { presentAiQuickReplyPlaceholder } from "../../lib/lead/aiQuickReplyPlaceholder";
 import { buildMailtoUrl, buildSmsUrl, buildTelUrl, normalizePhoneForLinking } from "../../lib/lead/contactLinking";
 import { openExternalUrl } from "../../lib/lead/openExternalUrl";
-import { postMobileClickToCall } from "../../lib/leadsmartMobileApi";
+import { postMobileClickToCall } from "../../lib/closeBossMobileApi";
 import { hapticButtonPress, hapticError, hapticSuccess } from "../../lib/haptics";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";

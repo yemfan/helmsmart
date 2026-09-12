@@ -32,7 +32,7 @@ function canFire(): boolean {
   // Android respects the user's system vibration toggle via
   // the native layer, but the Taptic fidelity there is rough
   // enough that we'd rather stay silent unless the user opts
-  // in. iOS is where LeadSmart's target users spend their day.
+  // in. iOS is where CloseBoss's target users spend their day.
   if (Platform.OS !== "ios") return false;
 
   const now = Date.now();

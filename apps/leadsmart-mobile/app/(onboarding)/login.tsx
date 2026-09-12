@@ -14,11 +14,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { getLeadsmartApiBaseUrl, getSupabaseAnonKey, getSupabaseUrl } from "../../lib/env";
+import { getCloseBossApiBaseUrl, getSupabaseAnonKey, getSupabaseUrl } from "../../lib/env";
 import { useOnboardingStyles } from "../../lib/onboarding/styles";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
-import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
+import { useCloseBossSession } from "../../lib/session/CloseBossSessionContext";
 import { BackRow } from "../../components/onboarding/BackRow";
 import { HOME_ROUTE } from "../../lib/homeRoute";
 
@@ -81,7 +81,7 @@ export default function OnboardingLoginScreen() {
     signInWithGoogleOAuth,
     signInWithAppleOAuth,
     onboardingComplete,
-  } = useLeadsmartSession();
+  } = useCloseBossSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
@@ -90,7 +90,7 @@ export default function OnboardingLoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const apiUrl = getLeadsmartApiBaseUrl();
+  const apiUrl = getCloseBossApiBaseUrl();
   const oauthAvailable = Boolean(getSupabaseUrl().trim() && getSupabaseAnonKey().trim());
 
   function goAfterSignIn() {

@@ -19,7 +19,7 @@ import {
   type MobileWeeklyDay,
   type MobileWeeklyMediaType,
   type MobileWeeklyScheduleData,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import { hapticButtonPress, hapticError, hapticSuccess } from "../lib/haptics";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";

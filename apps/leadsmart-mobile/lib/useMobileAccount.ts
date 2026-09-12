@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { fetchMobileAccount, type MobileAccount } from "./leadsmartMobileApi";
+import { fetchMobileAccount, type MobileAccount } from "./closeBossMobileApi";
 
 /**
  * Who is signed in, for the header avatar and the profile card.

@@ -17,7 +17,7 @@ import {
   fetchMobileLikelyBuyers,
   fetchMobileLikelySellers,
   type MobileSphereRow,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import { hapticButtonPress } from "../lib/haptics";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";

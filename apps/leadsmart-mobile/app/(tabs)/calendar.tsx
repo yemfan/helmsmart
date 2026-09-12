@@ -27,8 +27,8 @@ import {
   fetchMobileReminders,
   patchMobileCalendarEvent,
   patchMobileTask,
-} from "../../lib/leadsmartMobileApi";
-import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
+import type { MobileApiFailure } from "../../lib/closeBossMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 import {

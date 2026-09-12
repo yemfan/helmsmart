@@ -1,4 +1,4 @@
-/** In-memory JWT for synchronous reads from `getLeadsmartAccessToken` (hydrated from SecureStore on launch). */
+/** In-memory JWT for synchronous reads from `getCloseBossAccessToken` (hydrated from SecureStore on launch). */
 let cachedAccessToken = "";
 
 export function setCachedAccessToken(token: string): void {

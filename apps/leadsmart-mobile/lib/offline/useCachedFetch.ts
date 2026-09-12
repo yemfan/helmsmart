@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MobileApiFailure } from "../leadsmartMobileApi";
+import type { MobileApiFailure } from "../closeBossMobileApi";
 import { useNetwork } from "./NetworkContext";
 import { cacheRead, cacheWrite } from "./readCache";
 

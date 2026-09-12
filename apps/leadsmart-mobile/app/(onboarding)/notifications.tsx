@@ -5,7 +5,7 @@ import { Platform, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useOnboardingStyles } from "../../lib/onboarding/styles";
-import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
+import { useCloseBossSession } from "../../lib/session/CloseBossSessionContext";
 import { BackRow } from "../../components/onboarding/BackRow";
 import { HOME_ROUTE } from "../../lib/homeRoute";
 
@@ -13,7 +13,7 @@ export default function OnboardingNotificationsScreen() {
   const router = useRouter();
   const s = useOnboardingStyles();
   const { t } = useTranslation("onboarding");
-  const { markOnboardingComplete } = useLeadsmartSession();
+  const { markOnboardingComplete } = useCloseBossSession();
   const [busy, setBusy] = useState(false);
 
   const finishToInbox = async () => {

@@ -229,7 +229,7 @@
     "presentationOpenFail": "We built it, but this device couldn't open the link. Find it under Presentations on the dashboard."
   },
   "coaching": {
-    "leadsmartAiCoaching": "LEADSMART AI COACHING",
+    "closeBossCoaching": "CLOSEBOSS COACHING",
     "producerDevelopmentBuiltIn": "Producer development, built in.",
     "dailyPlansWeeklyPlaybooksMonthly": "Daily plans, weekly playbooks, monthly reviews — tied to a real annual transaction target.",
     "manageEnrollmentOnWeb": "Manage enrollment on web",

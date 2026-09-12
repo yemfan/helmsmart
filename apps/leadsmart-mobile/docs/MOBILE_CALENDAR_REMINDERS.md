@@ -4,7 +4,7 @@
 
 The mobile app adds a **Calendar** tab plus schedule/booking sections on **lead detail**. Data lives in CRM tables (`lead_calendar_events`, `lead_booking_links`) scoped by agent and lead. External calendar sync is modeled with `calendar_provider`, `external_event_id`, and `external_calendar_id` (Google first; Outlook can use the same columns with `calendar_provider = 'outlook'`).
 
-## API routes (LeadSmart CRM)
+## API routes (CloseBoss CRM)
 
 | Method | Path | Purpose |
 |--------|------|---------|
@@ -24,7 +24,7 @@ Apply migration `20260464000000_lead_calendar_booking.sql` (creates `lead_calend
 
 - **Tab:** `app/(tabs)/calendar.tsx` — appointments, overdue tasks, follow-ups; **New** appointment (requires lead ID).
 - **Lead detail:** `app/lead/[id].tsx` — next appointment, saved booking links, **Schedule** / **Booking link** actions.
-- **API client:** `lib/leadsmartMobileApi.ts` — `fetchMobileCalendarEvents`, `postMobileCalendarEvent`, `patchMobileCalendarEvent`, `postMobileBookingLink`, `fetchMobileReminders`; lead detail parsing includes `next_appointment` and `booking_links`.
+- **API client:** `lib/closeBossMobileApi.ts` — `fetchMobileCalendarEvents`, `postMobileCalendarEvent`, `patchMobileCalendarEvent`, `postMobileBookingLink`, `fetchMobileReminders`; lead detail parsing includes `next_appointment` and `booking_links`.
 - **Components:** `components/calendar/*` — `AppointmentCard`, `AppointmentComposerModal`, `BookingLinkCard`, `BookingLinkComposerModal`, `ReminderCard`.
 
 ## CRM timeline / activity
@@ -32,7 +32,7 @@ Apply migration `20260464000000_lead_calendar_booking.sql` (creates `lead_calend
 - Creating an appointment or booking link updates **`leads.last_activity_at`**.
 - Booking rows include **`metadata_json`** (`source: mobile`, timestamps) for dashboards or future timeline UI.
 
-## LeadSmart AI web dashboard (`apps/leadsmartai`)
+## CloseBoss web dashboard (`apps/leadsmartai`)
 
 The CRM dashboard uses the **same tables and server helpers** with cookie/session auth:
 

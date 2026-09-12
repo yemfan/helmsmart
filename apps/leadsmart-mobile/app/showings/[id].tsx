@@ -28,7 +28,7 @@ import {
   type MobileShowingListItem,
   type MobileShowingReaction,
   type MobileShowingStatus,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { useCachedFetch } from "../../lib/offline/useCachedFetch";
 import {
   hapticButtonPress,

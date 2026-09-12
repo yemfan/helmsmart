@@ -12,7 +12,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { postMobileBookingLink } from "../../lib/leadsmartMobileApi";
+import { postMobileBookingLink } from "../../lib/closeBossMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 import { hapticError, hapticSuccess } from "../../lib/haptics";

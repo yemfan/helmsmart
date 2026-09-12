@@ -107,7 +107,7 @@ export async function replayQueue(): Promise<{ replayed: number; failed: number 
     postMobileSmsSend,
     patchMobileTask,
     patchLeadPipelineStage,
-  } = await import("../leadsmartMobileApi");
+  } = await import("../closeBossMobileApi");
 
   let replayed = 0;
   let failed = 0;

@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseAnonKey, getSupabaseUrl } from "./env";
 
 /**
- * Browserless Supabase client for Realtime: same project as LeadSmart AI web.
+ * Browserless Supabase client for Realtime: same project as CloseBoss web.
  * Pass the same Supabase access JWT used for `/api/mobile/*` (Bearer).
  *
  * Realtime applies RLS; see migration `20260460000000_mobile_message_realtime_rls.sql`.

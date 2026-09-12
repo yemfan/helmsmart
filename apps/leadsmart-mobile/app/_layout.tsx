@@ -13,11 +13,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { i18n, initI18n } from "../lib/i18n";
 import { NetworkProvider } from "../lib/offline/NetworkContext";
-import { LeadsmartSessionProvider } from "../lib/session/LeadsmartSessionContext";
-import { useLeadsmartPush } from "../lib/useLeadsmartPush";
+import { CloseBossSessionProvider } from "../lib/session/CloseBossSessionContext";
+import { useCloseBossPush } from "../lib/useCloseBossPush";
 
 function RootNavigation() {
-  useLeadsmartPush();
+  useCloseBossPush();
   // Header titles were English literals while every tab label was translated.
   const { t } = useTranslation("nav");
 
@@ -82,11 +82,11 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <I18nextProvider i18n={i18n}>
         <NetworkProvider>
-          <LeadsmartSessionProvider>
+          <CloseBossSessionProvider>
             <BottomSheetModalProvider>
               <RootNavigation />
             </BottomSheetModalProvider>
-          </LeadsmartSessionProvider>
+          </CloseBossSessionProvider>
         </NetworkProvider>
       </I18nextProvider>
     </GestureHandlerRootView>

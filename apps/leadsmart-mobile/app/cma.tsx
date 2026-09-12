@@ -17,7 +17,7 @@ import {
   generateMobileCma,
   type MobileCmaComp,
   type MobileCmaReport,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

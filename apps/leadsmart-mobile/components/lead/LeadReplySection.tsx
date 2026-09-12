@@ -7,7 +7,7 @@ import {
   postMobileEmailSend,
   postMobileSmsAiReply,
   postMobileSmsSend,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 import { defaultEmailReplySubject, EmailReplyModal } from "./EmailReplyModal";

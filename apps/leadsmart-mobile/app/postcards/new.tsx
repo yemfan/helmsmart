@@ -20,7 +20,7 @@ import {
   type MobilePostcardChannel,
   type MobilePostcardTemplate,
   type MobilePostcardTemplateKey,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

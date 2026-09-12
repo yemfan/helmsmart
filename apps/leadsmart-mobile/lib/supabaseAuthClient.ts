@@ -5,7 +5,7 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "./env";
 let client: SupabaseClient | null = null;
 
 /**
- * Supabase Auth client for the mobile app (same project as LeadSmart AI web).
+ * Supabase Auth client for the mobile app (same project as CloseBoss web).
  * Persists session in AsyncStorage so `access_token` is available without pasting a JWT.
  */
 export function getSupabaseAuthClient(): SupabaseClient | null {

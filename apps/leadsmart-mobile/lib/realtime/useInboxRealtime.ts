@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { getLeadsmartAccessToken } from "../env";
+import { getCloseBossAccessToken } from "../env";
 import { createMobileSupabaseClient } from "../supabaseMobile";
 import { debounceFn } from "./debounce";
 
@@ -12,7 +12,7 @@ const DEBOUNCE_MS = 450;
 export function useInboxRealtime(onRefresh: () => void, enabled: boolean) {
   const onRefreshRef = useRef(onRefresh);
   onRefreshRef.current = onRefresh;
-  const token = getLeadsmartAccessToken();
+  const token = getCloseBossAccessToken();
 
   useEffect(() => {
     if (!enabled || !token) return;
@@ -43,7 +43,7 @@ export function useInboxRealtime(onRefresh: () => void, enabled: boolean) {
       )
       .subscribe((status) => {
         if (status === "CHANNEL_ERROR") {
-          console.warn("[LeadSmart AI] inbox realtime channel error");
+          console.warn("[CloseBoss] inbox realtime channel error");
         }
       });
 

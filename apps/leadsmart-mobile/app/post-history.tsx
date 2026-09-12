@@ -20,7 +20,7 @@ import {
   refreshMobilePostMetrics,
   type MobilePostMetrics,
   type MobilePublishedPost,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

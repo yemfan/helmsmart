@@ -35,7 +35,7 @@ import type {
   MobileTaskPriority,
   MobileTaskStatus,
 } from "@leadsmart/shared";
-import { getLeadsmartAccessToken, getLeadsmartApiBaseUrl } from "./env";
+import { getCloseBossAccessToken, getCloseBossApiBaseUrl } from "./env";
 import { MOBILE_API_PATHS } from "./mobileEndpoints";
 import type { MobileSocialPlatform } from "./socialPlatform";
 import { createMobileSupabaseClient } from "./supabaseMobile";
@@ -120,8 +120,8 @@ function parseMobileFailure(
 type MobileConfig = { base: string; token: string };
 
 function requireConfig(): MobileApiFailure | MobileConfig {
-  const base = getLeadsmartApiBaseUrl();
-  const token = getLeadsmartAccessToken();
+  const base = getCloseBossApiBaseUrl();
+  const token = getCloseBossAccessToken();
   if (!base) {
     return { ok: false, status: 0, message: "Set EXPO_PUBLIC_LEADSMART_API_URL (CloseBoss API base URL)." };
   }
@@ -273,7 +273,7 @@ async function mobileDelete<T extends MobileJsonError>(
 }
 
 /**
- * Delete the signed-in agent's LeadSmart account. Revokes Supabase auth and
+ * Delete the signed-in agent's CloseBoss account. Revokes Supabase auth and
  * marks the agent row for purge. Apple Guideline 5.1.1(v) / Play account
  * deletion policy — see Settings → Delete account.
  */
@@ -567,7 +567,7 @@ export async function fetchMobileLeadDetail(
 type PushRegisterJson = MobileJsonError & { ok?: boolean; success?: boolean };
 
 /**
- * Register this device’s Expo push token with LeadSmart AI (`POST /api/mobile/push/register`).
+ * Register this device’s Expo push token with CloseBoss (`POST /api/mobile/push/register`).
  */
 export async function registerMobileExpoPushToken(
   expoPushToken: string
@@ -3001,7 +3001,7 @@ export async function uploadMobileIntroVideo(input: {
   fileName?: string;
   contentType?: string;
 }): Promise<{ ok: true; path: string } | MobileApiFailure> {
-  const token = getLeadsmartAccessToken();
+  const token = getCloseBossAccessToken();
   if (!token) return { ok: false, status: 401, message: "You are not signed in." };
 
   // 1) Mint a signed upload URL (agent-scoped private prefix).

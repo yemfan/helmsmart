@@ -13,12 +13,12 @@ import {
   Text,
   View,
 } from "react-native";
-import { useLeadsmartSession } from "../../lib/session/LeadsmartSessionContext";
+import { useCloseBossSession } from "../../lib/session/CloseBossSessionContext";
 import {
   fetchMobileNotificationPreferences,
   patchMobileNotificationPreferences,
   saveUiLanguage,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { getSupabaseAuthClient } from "../../lib/supabaseAuthClient";
 import { setStoredLocale } from "../../lib/i18n";
 import { useThemeTokens } from "../../lib/useThemeTokens";
@@ -39,7 +39,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { signOut } = useLeadsmartSession();
+  const { signOut } = useCloseBossSession();
   const { t, i18n } = useTranslation(["settings", "common"]);
   const [email, setEmail] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
@@ -246,7 +246,7 @@ export default function SettingsScreen() {
        * Re-entry path back into the onboarding walkthrough. Users
        * who swiped past the value slides on their first launch had
        * no way to see them again — this button lets them revisit
-       * the "why LeadSmart" pitch and notification permissions.
+       * the "why CloseBoss" pitch and notification permissions.
        * It enters the onboarding stack at the value screen (not
        * welcome), which avoids the "Get started" CTA repeating
        * while still showing the back button.

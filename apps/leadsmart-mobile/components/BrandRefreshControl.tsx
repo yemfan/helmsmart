@@ -6,7 +6,7 @@ import { useThemeTokens } from "../lib/useThemeTokens";
  *
  * The platform default `RefreshControl` uses iOS system-gray on
  * iOS and Material grey on Android. Both look out of place in
- * LeadSmart's blue brand palette and particularly bad in dark
+ * CloseBoss's blue brand palette and particularly bad in dark
  * mode where the gray spinner gets lost against the slate-900
  * background. This wrapper threads the active theme's accent
  * color through both `tintColor` (iOS) and `colors`

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { getLeadsmartApiBaseUrl } from "../lib/env";
+import { getCloseBossApiBaseUrl } from "../lib/env";
 import type { AiActionGateReason } from "../lib/aiActionGate";
 
 /**
@@ -37,7 +37,7 @@ export function AiActionGateBanner({
   const ctaA11y = t(`ai_gate.${variant}.cta_a11y`);
 
   const onUpgrade = () => {
-    const base = getLeadsmartApiBaseUrl();
+    const base = getCloseBossApiBaseUrl();
     const url = base
       ? `${base}/dashboard/billing`
       : "https://www.closebossai.com/dashboard/billing";

@@ -1,4 +1,4 @@
-# Supabase (LeadSmart mobile)
+# Supabase (CloseBoss mobile)
 
 This folder mirrors **`apps/leadsmartai/supabase/migrations`** so you can run the CLI from the mobile app directory. The **database is the same** as the Next.js app—keep migrations in sync when adding new `.sql` files (copy both places or add only under `leadsmartai` and re-copy).
 
