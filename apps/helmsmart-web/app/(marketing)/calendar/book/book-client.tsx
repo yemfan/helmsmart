@@ -7,6 +7,7 @@ import { intlLocale } from "@leadsmart/i18n";
 import { ChevronLeft, Check, Calendar, Clock, User } from "lucide-react";
 import { createEvent } from "@/lib/actions/events";
 import { addDays, calendarDate } from "@/lib/org-date";
+import { zonedToUtc } from "@repo/voice/datetime";
 import type { BusinessHours, AppointmentType } from "@/lib/receptionist";
 import { rich } from "../../_rich";
 
@@ -15,7 +16,11 @@ type DayKey = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 const JS_DAY_TO_KEY: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 interface TimeSlot {
+  /** The day in the business's zone, `YYYY-MM-DD`. */
   date: string;
+  /** The wall clock in the business's zone, `HH:MM` — what gets booked. */
+  time: string;
+  /** The same moment as an instant, for overlap checks against stored events. */
   startAt: string;
   endAt: string;
 }
@@ -56,28 +61,40 @@ function computeSlots(
     const close = cH * 60 + cM;
 
     while (cur + durationMinutes <= close) {
-      const sH = String(Math.floor(cur / 60)).padStart(2, "0");
-      const sM = String(cur % 60).padStart(2, "0");
+      const time = `${String(Math.floor(cur / 60)).padStart(2, "0")}:${String(cur % 60).padStart(2, "0")}`;
       const eMin = cur + durationMinutes;
-      const eH = String(Math.floor(eMin / 60)).padStart(2, "0");
-      const eMStr = String(eMin % 60).padStart(2, "0");
-      const startAt = `${dateStr}T${sH}:${sM}:00`;
-      const endAt = `${dateStr}T${eH}:${eMStr}:00`;
+      const endTime = `${String(Math.floor(eMin / 60)).padStart(2, "0")}:${String(eMin % 60).padStart(2, "0")}`;
+      // Instants, so a slot is compared with stored events on the same scale.
+      // As naive strings this compared "2026-09-13T09:00:00" with a stored
+      // "2026-09-13T16:00:00+00:00" and every real conflict slipped through.
+      const startMs = zonedToUtc(dateStr, time, timeZone).getTime();
+      const endMs = zonedToUtc(dateStr, endTime, timeZone).getTime();
 
-      const conflict = events.some(
-        (e) => startAt < (e.end_at ?? e.start_at) && endAt > e.start_at
-      );
-      if (!conflict) slots.push({ date: dateStr, startAt, endAt });
+      const conflict = events.some((e) => {
+        const evStart = new Date(e.start_at).getTime();
+        const evEnd = e.end_at ? new Date(e.end_at).getTime() : evStart;
+        return startMs < evEnd && endMs > evStart;
+      });
+      if (!conflict) {
+        slots.push({
+          date: dateStr,
+          time,
+          startAt: new Date(startMs).toISOString(),
+          endAt: new Date(endMs).toISOString(),
+        });
+      }
       cur += durationMinutes;
     }
   }
   return slots;
 }
 
-function fmtTime(iso: string, locale: string) {
+/** A slot's time on the business's clock — the one the appointment is in. */
+function fmtTime(iso: string, locale: string, timeZone: string) {
   return new Date(iso).toLocaleTimeString(intlLocale(locale), {
     hour: "numeric",
     minute: "2-digit",
+    timeZone,
   });
 }
 
@@ -150,8 +167,9 @@ export function BookClient({
         title,
         type: "appointment",
         color: "indigo",
-        startAt: selectedSlot.startAt,
-        endAt: selectedSlot.endAt,
+        date: selectedSlot.date,
+        time: selectedSlot.time,
+        durationMinutes: selectedType?.duration_minutes ?? 60,
         allDay: false,
         clientId: selectedClientId,
       });
@@ -170,7 +188,7 @@ export function BookClient({
           <p className="text-gray-600 text-sm mb-6">
             {t("book.done.summary", {
               date: selectedSlot ? fmtDate(selectedSlot.date, locale) : "",
-              time: selectedSlot ? fmtTime(selectedSlot.startAt, locale) : "",
+              time: selectedSlot ? fmtTime(selectedSlot.startAt, locale, timeZone) : "",
               client: getClientName(selectedClientId),
             })}
           </p>
@@ -323,7 +341,7 @@ export function BookClient({
                             : "border-gray-200 bg-white text-gray-900 hover:border-indigo-300"
                         }`}
                       >
-                        {fmtTime(s.startAt, locale)}
+                        {fmtTime(s.startAt, locale, timeZone)}
                       </button>
                     ))}
                   </div>
@@ -345,12 +363,12 @@ export function BookClient({
                   {selectedType
                     ? t("book.summary.whenWithDuration", {
                         date: fmtDate(selectedSlot.date, locale),
-                        time: fmtTime(selectedSlot.startAt, locale),
+                        time: fmtTime(selectedSlot.startAt, locale, timeZone),
                         duration: duration(selectedType.duration_minutes),
                       })
                     : t("book.summary.when", {
                         date: fmtDate(selectedSlot.date, locale),
-                        time: fmtTime(selectedSlot.startAt, locale),
+                        time: fmtTime(selectedSlot.startAt, locale, timeZone),
                       })}
                 </div>
               </div>

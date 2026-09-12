@@ -20,6 +20,7 @@ import { orgCurrency } from "@/lib/books-currency";
 import { dateFormatter, dateOnly, moneyFormatter } from "@/lib/books-format";
 import { orgTimezone } from "@/lib/org-timezone";
 import { addDays, calendarDate, firstOfMonth } from "@/lib/org-date";
+import { zonedToUtc } from "@repo/voice/datetime";
 import { intlLocale } from "@leadsmart/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -167,8 +168,8 @@ async function getDashboardData(orgId: string, locale: string, timeZone: string)
       .eq("organization_id", orgId)
       .eq("completed", false)
       .gte("start_at", new Date().toISOString())
-      // Wall-clock-as-UTC, like the start_at values the calendar writes (see below).
-      .lte("start_at", `${sevenDaysOut}T23:59:59.999Z`)
+      // The end of that day on the business's clock — events are instants.
+      .lte("start_at", zonedToUtc(sevenDaysOut, "23:59", timeZone).toISOString())
       .order("start_at", { ascending: true })
       .limit(6),
 
@@ -1093,16 +1094,13 @@ export default async function HomePage() {
                   : null;
 
                 const evtDate = new Date(evt.start_at);
-                // UTC slice on purpose. The calendar saves the time the owner
-                // typed with no offset (`${date}T09:00:00`, calendar-grid.tsx),
-                // which Postgres reads as UTC — so this recovers the day they
-                // picked. Converting to the org zone would move evening events
-                // back a day.
-                const evtDateStr = evtDate.toISOString().slice(0, 10);
+                // The day and time on the business's clock: `start_at` is an
+                // instant, so an evening event is stored as tomorrow in UTC.
+                const evtDateStr = calendarDate(timeZone, evtDate);
                 const isEvtToday = evtDateStr === todayStr;
                 const timeStr = evt.all_day
                   ? t("dashboard.events.allDay")
-                  : evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit" });
+                  : evtDate.toLocaleTimeString(intlLocale(locale), { hour: "numeric", minute: "2-digit", timeZone });
 
                 return (
                   <Link

@@ -7,7 +7,8 @@ import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { languageDirectiveForJson } from "@/lib/i18n/directives";
 import { DEFAULT_LOCALE, intlLocale } from "@leadsmart/i18n";
 import { getMemberOrgId } from "@/lib/auth/org-context";
-import { orgToday } from "@/lib/org-timezone";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate } from "@/lib/org-date";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -78,7 +79,8 @@ export async function generateClientBrief(
   // ── Gather context ──────────────────────────────────────────────────────────
 
   // The org's date: "due today" and "N day(s) ago" in the brief count in its day.
-  const today = await orgToday(orgId);
+  const timeZone = await orgTimezone(orgId);
+  const today = calendarDate(timeZone);
 
   const [
     clientRes,
@@ -257,7 +259,8 @@ export async function generateClientBrief(
     `## Upcoming Events`,
     events.length
       ? events
-          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString(intlLocale(locale), { weekday: "long", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}`)
+          // An appointment's time is the business's clock, not the server's.
+          .map((e) => `- ${e.title} on ${new Date(e.start_at).toLocaleDateString(intlLocale(locale), { weekday: "long", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone })}`)
           .join("\n")
       : "No upcoming appointments.",
     "",

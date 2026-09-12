@@ -5,20 +5,46 @@ import { getServerT } from "@/lib/i18n/server";
 import { revalidatePath } from "next/cache";
 import { syncEventToGoogle, deleteGoogleEvent, isGoogleCalendarConnected } from "@/lib/google-calendar";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { orgTimezone } from "@/lib/org-timezone";
+import { zonedToUtc } from "@repo/voice/datetime";
 
+/**
+ * An event is an INSTANT, and it is stored as one.
+ *
+ * This used to take `startAt` as a string and hand it to a `timestamptz`
+ * column. The calendar sent the wall clock the owner typed with no offset
+ * ("2026-09-12T09:00:00"), Postgres read that as UTC, and a 9 AM meeting
+ * became 2 AM Pacific — every screen then had to pretend the UTC clock was
+ * the local one. So the wall clock arrives here as what it is (a date, a time
+ * and the all-day flag) and this action, which knows the organization, is
+ * what turns it into an instant.
+ */
 export async function createEvent(data: {
   title: string;
   description?: string;
   location?: string;
   type: "appointment" | "task" | "meeting" | "reminder";
   color: "indigo" | "emerald" | "rose" | "amber" | "slate";
-  startAt: string;   // ISO string
-  endAt?: string;
+  /** Wall-clock date in the org's timezone, `YYYY-MM-DD`. */
+  date: string;
+  /** Wall-clock start in the org's timezone, `HH:MM`. Ignored when `allDay`. */
+  time?: string;
+  /** Length in minutes; omitted (or all-day) leaves `end_at` empty. */
+  durationMinutes?: number;
   allDay: boolean;
   clientId?: string | null;
 }) {
   const orgId = await getMemberOrgId();
   if (!orgId) throw new Error((await getServerT("tasks"))("errors.noOrg"));
+
+  const timeZone = await orgTimezone(orgId);
+  // All-day starts at local midnight, so the day it belongs to is the day the
+  // owner picked, read back in the same zone.
+  const startAt = zonedToUtc(data.date, data.allDay ? "00:00" : (data.time || "00:00"), timeZone);
+  const endAt =
+    !data.allDay && data.durationMinutes
+      ? new Date(startAt.getTime() + data.durationMinutes * 60_000)
+      : null;
 
   const supabase = await createClient();
   const { data: insertedEvent, error } = await supabase.from("events").insert({
@@ -29,8 +55,8 @@ export async function createEvent(data: {
     location: data.location ?? null,
     type: data.type,
     color: data.color,
-    start_at: data.startAt,
-    end_at: data.endAt ?? null,
+    start_at: startAt.toISOString(),
+    end_at: endAt?.toISOString() ?? null,
     all_day: data.allDay,
   }).select("id").single();
 
@@ -49,9 +75,10 @@ export async function createEvent(data: {
         orgId,
         title: data.title,
         description: data.description,
-        startAt: data.startAt,
-        endAt: data.endAt,
+        startAt: startAt.toISOString(),
+        endAt: endAt?.toISOString(),
         allDay: data.allDay,
+        timeZone,
       });
 
       // Update event with google_event_id if sync succeeded
@@ -79,7 +106,9 @@ export async function updateEvent(
     location: string;
     type: string;
     color: string;
+    /** An instant (ISO with an offset), never a bare wall clock — see `createEvent`. */
     start_at: string;
+    /** An instant (ISO with an offset), never a bare wall clock. */
     end_at: string;
     all_day: boolean;
     completed: boolean;
@@ -117,6 +146,7 @@ export async function updateEvent(
         startAt: data.start_at || currentEvent.start_at,
         endAt: data.end_at || currentEvent.end_at,
         allDay: data.all_day !== undefined ? data.all_day : currentEvent.all_day,
+        timeZone: await orgTimezone(orgId),
       });
     } catch (syncError) {
       // Log sync error but don't fail event update
