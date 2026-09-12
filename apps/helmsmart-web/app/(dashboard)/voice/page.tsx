@@ -8,6 +8,7 @@ import { Phone, MessageSquare, Calendar, Clock, DollarSign, Settings } from "luc
 import { intlLocale } from "@leadsmart/i18n";
 import { safeTimezone } from "@repo/voice/datetime";
 import { MissedCallTextBack } from "@/components/missed-call-text-back";
+import { NumberWiringStatus } from "@/components/number-wiring-status";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { phoneLast10, phoneMatchVariants } from "@/lib/phone";
 import {
@@ -217,6 +218,22 @@ export default async function AiReceptionistPage() {
           </a>
         </p>
       )}
+
+      {/*
+        The switch being on is not the same as the phone being answered.
+        This page reported only the switch, so an org whose number was never
+        wired to the agent saw a clean dashboard with zero calls on it and no
+        reason given. `problems` keeps it quiet when everything is fine.
+      */}
+      {org?.twilio_number ? (
+        <div className="mb-6">
+          <NumberWiringStatus
+            number={org.twilio_number as string}
+            variant="problems"
+            manualHref="/settings#receptionist-setup"
+          />
+        </div>
+      ) : null}
 
       {/* Inbound call stats — one labelled window */}
       <section className="mb-8">

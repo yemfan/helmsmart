@@ -149,7 +149,7 @@
     "subtitle": "Atiende sus llamadas cuando usted no está disponible",
     "toggleNeedsNumber": "Agregue primero un número de teléfono: el agente no tiene dónde atender.",
     "needsNumber": "El agente de voz necesita un número de teléfono para poder atender llamadas.",
-    "connected": "Conectado a {{number}}",
+    "numberOnFile": "Número de teléfono registrado: {{number}}",
     "notAnswered": "Su recepcionista no atiende las llamadas al {{number}}",
     "sharedWarning_one": "Este número lo comparte otra cuenta, y es esa cuenta la que lo atiende, así que quien llama oye ese negocio y no el suyo. Su configuración de abajo se guarda, pero no se usará hasta que el número sea solo suyo.",
     "sharedWarning_other": "Este número lo comparten otras {{count}} cuentas, y una de ellas lo atiende, así que quien llama oye ese negocio y no el suyo. Su configuración de abajo se guarda, pero no se usará hasta que el número sea solo suyo.",
@@ -260,16 +260,11 @@
       "calendarOk": "Google Calendar conectado",
       "calendarOptional": "Google Calendar (opcional)",
       "calendarFix": "Conecte Google Calendar abajo para ofrecer solo las horas en las que de verdad está libre.",
-      "calendarFixUnconfigured": "Opcional: conecte un calendario para evitar citas duplicadas."
+      "calendarFixUnconfigured": "Opcional: conecte un calendario para evitar citas duplicadas.",
+      "numberNotAnswering": "Número guardado, pero las llamadas no se atienden — {{number}}",
+      "numberUnverified": "Número guardado — {{number}} (todavía sin comprobar)",
+      "numberWiringFix": "Vea la sección del número de teléfono, arriba: ahí se explica qué falla y cómo arreglarlo."
     },
-    "verify": "Verificar la conexión",
-    "verifying": "Comprobando Retell…",
-    "verifyHint": "Confirma que en Retell su número está vinculado al agente con el webhook de entrada.",
-    "verifyOk": "Conexión correcta: agente y webhook de entrada confirmados en Retell.",
-    "verifyUnknownNumber": "Retell no reconoce este número.",
-    "verifyMissing": "El número aparece en Retell, pero {{missing}} no está bien configurado allí.",
-    "missingWebhook": "el webhook de entrada",
-    "missingAgent": "el vínculo con el agente",
     "manual": {
       "summary": "¿Prefiere configurar Retell a mano?",
       "step1": "En su número de Retell, en Inbound Call Agent, seleccione el agente compartido.",
@@ -288,29 +283,84 @@
     "saving": "Guardando…",
     "saveFailed": "No se pudo guardar ese número.",
     "wiredOk": "Guardado y conectado: el agente atenderá este número.",
-    "savedNotAnswering": "Guardado, pero todavía no atiende llamadas",
-    "notInProvider": "Este número todavía no está en el proveedor de voz.",
-    "notAttached": "No está vinculado al agente recepcionista.",
-    "webhookWrong": "Su webhook de entrada no apunta aquí."
+    "savedNotAnswering": "Guardado, pero las llamadas a este número todavía no se atienden",
+    "savedNotChecked": "Guardado. No pudimos comprobar si las llamadas a este número se atienden."
   },
-  "wizard": {
-    "connectedTitle": "Número conectado — {{number}}",
-    "connectedBody": "Se vinculó a su agente automáticamente. Complete la lista de abajo y luego llame para probarlo.",
-    "buyTab": "Comprar un número",
-    "importTab": "Conectar uno existente",
-    "buyHint": "Compraremos un número y lo conectaremos a su recepcionista automáticamente. Se factura a unos $2 al mes.",
-    "areaCode": "Código de área",
-    "tollFree": "Número gratuito",
-    "getNumber": "Obtener mi número",
-    "gettingNumber": "Obteniendo su número…",
-    "importHint": "¿Ya tiene un número? Conéctelo a través de su enlace troncal SIP de Twilio: nosotros vinculamos el agente por usted.",
-    "phoneNumber": "Número de teléfono",
-    "terminationUri": "URI de terminación SIP",
-    "sipUser": "Usuario SIP (opcional)",
-    "sipPass": "Contraseña SIP (opcional)",
-    "connectNumber": "Conectar el número",
-    "connecting": "Conectando…",
-    "genericError": "Algo salió mal."
+  "numberSetup": {
+    "title": "Consiga su número de teléfono",
+    "description": "Su recepcionista con IA necesita un número para atender. Elija cómo quiere conseguirlo.",
+    "yourNumber": "Su número de teléfono",
+    "recommended": "Recomendado",
+    "ownerOnly": "Solo el propietario o un administrador puede cambiar el número de teléfono del negocio.",
+    "buy": {
+      "title": "Consiga un número con HelmSmart",
+      "subtitle": "Un número nuevo que su recepcionista atiende de inmediato",
+      "how": "Compramos el número y lo conectamos a su recepcionista con IA en un solo paso, así que empieza a atender en cuanto lo tenga.",
+      "cost": "Esto es una compra. Agrega un número de teléfono a su cuenta y se cobra todos los meses mientras lo conserve; los números gratuitos cuestan más que los locales. No se compra nada hasta que pulse el botón de abajo.",
+      "areaCode": "Código de área",
+      "areaCodeHelp": "Use el código de área que sus clientes reconocen y buscaremos un número disponible con él. Para un número gratuito, use un prefijo gratuito como 800, 888 o 877.",
+      "tollFree": "Que sea gratuito",
+      "action": "Conseguir este número",
+      "working": "Consiguiendo su número…",
+      "failed": "Ahora mismo no pudimos conseguir un número."
+    },
+    "forward": {
+      "title": "Conserve el número de su negocio",
+      "subtitle": "Desvíe su línea actual a HelmSmart desde su operador telefónico",
+      "how": "HelmSmart no desvía llamadas; lo hace su operador telefónico. Usted consigue un número de HelmSmart y luego le pide a su operador que envíe a ese número las llamadas de su línea actual. Sus clientes siguen marcando el número que ya anuncia.",
+      "step1": "Consiga primero un número de HelmSmart. Ese es el número al que se desviarán sus llamadas.",
+      "step2": "Abra la aplicación o la cuenta en línea del operador con el que tiene la línea de su negocio.",
+      "step3": "Active el desvío de llamadas hacia su número de HelmSmart. Casi todos los operadores permiten desviar todas las llamadas o solo las que usted no contesta; desviar solo las no contestadas deja que su propio teléfono suene primero.",
+      "step4": "Llame al número de su negocio desde otro teléfono para comprobar que la recepcionista atiende.",
+      "carrierNote": "La forma de activar el desvío cambia según el operador. En muchos operadores móviles de EE. UU. se marca *72 seguido del número para activarlo y *73 para desactivarlo, pero consulte las instrucciones de su propio proveedor: las líneas fijas, el VoIP y las centralitas de empresa lo hacen de maneras distintas.",
+      "startHere": "Conseguir un número de HelmSmart"
+    },
+    "import": {
+      "title": "Avanzado: conecte un número de Twilio que ya sea suyo",
+      "subtitle": "Para cuentas con su propio enlace troncal SIP elástico de Twilio",
+      "how": "Si ya tiene un número en su propia cuenta de Twilio, podemos apuntarlo a su recepcionista a través de su enlace troncal SIP. El enlace troncal debe estar configurado antes en Twilio. A la mayoría de los negocios les conviene más una de las opciones de arriba.",
+      "phoneNumber": "Número de teléfono",
+      "phoneNumberHelp": "En formato internacional completo, con el código de país; por ejemplo, +16265551234.",
+      "terminationUri": "URI de terminación SIP",
+      "terminationUriHelp": "De su enlace troncal SIP elástico de Twilio, en Termination; por ejemplo, sutroncal.pstn.twilio.com.",
+      "sipUser": "Usuario SIP (opcional)",
+      "sipPass": "Contraseña SIP (opcional)",
+      "sipAuthHelp": "Solo hacen falta si su enlace troncal se autentica con credenciales. Deje ambos en blanco si se autentica por dirección IP.",
+      "action": "Conectar este número",
+      "working": "Conectando…",
+      "failed": "No se pudo conectar ese número."
+    },
+    "manual": {
+      "title": "Escriba un número que ya llegue a HelmSmart",
+      "subtitle": "Para cuentas que comparten una línea que alguien ya configuró"
+    },
+    "change": {
+      "summary": "Cambiar o reemplazar este número",
+      "body": "Para usar otro número, quite primero {{number}} y luego elija cómo quiere conseguir el nuevo.",
+      "remove": "Quitar este número",
+      "removing": "Quitando…",
+      "removeFailed": "No se pudo quitar ese número.",
+      "keepsNumber": "Quitarlo aquí solo lo desconecta de HelmSmart. Si le compramos el número, seguirá en su cuenta hasta que lo dé de baja con el operador."
+    }
+  },
+  "wiring": {
+    "checking": "Comprobando si las llamadas a este número se atienden…",
+    "checkAgain": "Comprobar de nuevo",
+    "wired": "Su recepcionista con IA atiende las llamadas a {{number}}.",
+    "notConnected": "{{number}} todavía no está conectado a su recepcionista con IA: las llamadas a este número no se atenderán.",
+    "notChecked": "Todavía sin comprobar.",
+    "couldNotCheck": "No pudimos comprobar si las llamadas a {{number}} se atienden.",
+    "reason": {
+      "notInProvider": "El número no está registrado con nuestro proveedor de voz.",
+      "agentNotBound": "No está vinculado a su agente recepcionista.",
+      "webhookElsewhere": "Su webhook de llamadas entrantes apunta a otro sitio y no a HelmSmart.",
+      "misconfigured": "Está configurado de una forma que no reconocemos."
+    },
+    "reconnect": "Reconectar este número",
+    "reconnecting": "Reconectando…",
+    "reconnectFailed": "No se pudo reconectar ese número.",
+    "manualFix": "Este no lo podemos arreglar por usted: no es un número que administremos.",
+    "manualFixLink": "Configurarlo a mano"
   },
   "autoReply": {
     "title": "Configuración de la respuesta automática",
@@ -355,6 +405,8 @@
     "importFailed": "No se pudo importar ese número.",
     "noNumberConnected": "Todavía no hay ningún número conectado.",
     "verifyFailed": "No se pudo comprobar el número con Retell.",
+    "cannotRebindUnknown": "Este número no está registrado con nuestro proveedor de voz, así que no podemos reconectarlo desde aquí.",
+    "rebindFailed": "Ahora mismo no se pudo reconectar ese número.",
     "numberNotStored": "El número {{number}} se aprovisionó, pero no se pudo guardar en la empresa: {{reason}}"
   }
 }

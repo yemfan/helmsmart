@@ -7,6 +7,7 @@ import { ReceptionistSetup } from "@/components/receptionist-setup";
 import { defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
 import { isGoogleCalendarConfigured, isGoogleCalendarConnected, getConnectedGoogleAccount } from "@/lib/google-calendar";
 import { getActivePack } from "@/lib/packs";
+import { getMyRole, hasPermission } from "@/lib/rbac";
 
 /**
  * All AI voice-agent configuration, surfaced inside the global Settings page so
@@ -101,9 +102,20 @@ export async function VoiceAgentSettingsSection() {
 
   const pack = await getActivePack();
 
+  /*
+   * Buying a number spends the account's money and importing one moves where
+   * every inbound call lands, so both are owner/admin work — `settings.write`
+   * is held by those two roles only. `lib/actions/voice-setup.ts` refuses
+   * regardless; this just avoids putting a control in front of someone whose
+   * only possible outcome is a refusal.
+   */
+  const role = await getMyRole();
+  const canManageNumber = role ? hasPermission(role, "settings.write") : false;
+
   return (
     <div className="space-y-8">
       <VoiceSettings
+        canManage={canManageNumber}
         contextExample={pack.voiceContextExample}
         enabled={org?.voice_agent_enabled ?? false}
         agentName={org?.voice_agent_name ?? ""}
@@ -126,7 +138,7 @@ export async function VoiceAgentSettingsSection() {
         googleEmail={googleEmail}
       />
 
-      <ReceptionistSetup status={setupStatus} />
+      <ReceptionistSetup status={setupStatus} canManage={canManageNumber} />
     </div>
   );
 }

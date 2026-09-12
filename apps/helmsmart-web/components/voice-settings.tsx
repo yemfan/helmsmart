@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { Mic, Save, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
+import { NumberWiringStatus } from "@/components/number-wiring-status";
+import { ReceptionistNumberSetup } from "@/components/receptionist-number-setup";
 import { saveVoiceSettings } from "@/lib/actions/social";
 
 // Generic small-business example, shown when the active pack doesn't supply its own.
@@ -37,9 +38,11 @@ interface Props {
   answersThisOrg?: boolean;
   /** Where to text the owner when the receptionist books. Blank = don't. */
   bookingAlertPhone?: string;
+  /** Owner/admin — may buy or import a number. Enforced again in the action. */
+  canManage?: boolean;
 }
 
-export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true, bookingAlertPhone = "" }: Props) {
+export function VoiceSettings({ enabled, agentName, businessName, orgName, greeting, prompt, twilioNumber, contextExample, sharedWith = 0, answersThisOrg = true, bookingAlertPhone = "", canManage = true }: Props) {
   const { t } = useTranslation("voice");
   const [isEnabled, setIsEnabled] = useState(enabled);
   const [agentNameText, setAgentName] = useState(agentName ?? "");
@@ -115,24 +118,42 @@ export function VoiceSettings({ enabled, agentName, businessName, orgName, greet
       */}
       {!twilioNumber ? (
         <div className="space-y-3">
-          <div className="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-sm text-amber-700">
-            ⚠ {t("settings.needsNumber")}
-          </div>
-          <ReceptionistNumberSimple current={null} />
+          <p className="text-sm text-amber-700">{t("settings.needsNumber")}</p>
+          {/*
+            The whole flow, here, where the need is discovered. Sending someone
+            to another card to unblock the one they are already looking at is a
+            detour, not an instruction — and the box that used to sit here only
+            recorded a number, which is what made a screen full of settings sit
+            over a receptionist that could not answer.
+          */}
+          <ReceptionistNumberSetup
+            current={null}
+            canManage={canManage}
+            manualHref="#receptionist-manual-wiring"
+          />
         </div>
       ) : (
         <div className="space-y-2">
           {/*
-            "Connected" only earns the green when calls to this number are
-            actually answered as this account. A number can be claimed by
-            several accounts, and the receptionist serves exactly one of them —
-            so a confident green tick over someone else's receptionist is the
-            same lie as a toggle that saves nothing.
+            Two different facts, and the card used to assert readiness from
+            neither of them properly.
+
+            1. Does the provider route this number to our agent at all? Only the
+               provider knows, so `NumberWiringStatus` asks it. This card used to
+               turn emerald the moment a number existed in a column — "Connected
+               to +1…" over a line Retell had never heard of.
+            2. Which account does it answer AS? A number can be claimed by
+               several orgs and the receptionist serves exactly one.
+
+            Both have to hold, and each says its own sentence.
           */}
           {answersThisOrg ? (
-            <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 flex items-center gap-2">
-              <Zap className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-sm text-emerald-700">{t("settings.connected", { number: twilioNumber })}</span>
+            <div className="space-y-1.5">
+              <p className="text-sm text-slate-600 flex items-center gap-2">
+                <Zap className="w-3.5 h-3.5 text-slate-400" />
+                {t("settings.numberOnFile", { number: twilioNumber })}
+              </p>
+              <NumberWiringStatus number={twilioNumber} manualHref="#receptionist-setup" />
             </div>
           ) : (
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
