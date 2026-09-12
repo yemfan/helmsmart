@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Platform, StatusBar, StyleSheet } from "react-native";
+import { Image, Platform, StatusBar, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens, useIsDarkMode } from "../../lib/useThemeTokens";
@@ -19,6 +19,15 @@ import { type } from "../../lib/typography";
  * Every colour comes from `useThemeTokens()` so the chrome follows the OS
  * dark-mode setting live.
  */
+/*
+ * Max's portrait, not an icon. The tab is the way in to a named colleague —
+ * the roster, the Boss tab header and the web sidebar all show his face — and
+ * a generic sparkle made the one tab with a person behind it look like a
+ * feature. Dimmed rather than tinted when inactive: a photograph cannot take
+ * the active colour the way a glyph can.
+ */
+const MAX_AVATAR = require("../../assets/team/max.png");
+
 const VISIBLE_TABS = ["boss", "tasks", "deals", "calendar", "more"] as const;
 
 export default function TabsLayout() {
@@ -32,7 +41,19 @@ export default function TabsLayout() {
       <OfflineBanner />
       <Tabs
         tabBar={(props) => (
-          <FloatingTabBar {...(props as unknown as Omit<FloatingTabBarProps, "visible">)} visible={VISIBLE_TABS} />
+          <FloatingTabBar
+            {...(props as unknown as Omit<FloatingTabBarProps, "visible">)}
+            visible={VISIBLE_TABS}
+            tint={{
+              // One colour per destination, drawn from the same tokens the
+              // More screen's tiles use so the two surfaces agree.
+              boss: tokens.accent,
+              tasks: tokens.success,
+              deals: tokens.warning,
+              calendar: tokens.infoAccent,
+              more: tokens.textMuted,
+            }}
+          />
         )}
         screenListeners={{
           // Light "selection changed" tick on every tab press.
@@ -75,8 +96,19 @@ export default function TabsLayout() {
           options={{
             title: t("tabs.boss"),
             tabBarLabel: t("tabs.boss"),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="sparkles-outline" size={size} color={color} />
+            tabBarIcon: ({ focused, size }) => (
+              <Image
+                source={MAX_AVATAR}
+                accessibilityIgnoresInvertColors
+                style={[
+                  {
+                    width: size + 4,
+                    height: size + 4,
+                    borderRadius: (size + 4) / 2,
+                  },
+                  !focused && { opacity: 0.5 },
+                ]}
+              />
             ),
           }}
         />

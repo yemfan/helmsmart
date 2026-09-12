@@ -137,6 +137,9 @@ export default function CmaScreen() {
             <View style={styles.flex1}>
               <Text style={styles.label}>{t("cma.condition")}</Text>
               <View style={styles.conditionRow}>
+                {/* Value stays English — it is sent to the API. Only the
+                    label is translated, and it must not wrap: at a third of
+                    the row "Average" broke into "Averag / e". */}
                 {["Below", "Average", "Above"].map((c) => {
                   const active = condition === c;
                   return (
@@ -152,12 +155,15 @@ export default function CmaScreen() {
                       ]}
                     >
                       <Text
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.8}
                         style={[
                           styles.conditionText,
                           active && styles.conditionTextActive,
                         ]}
                       >
-                        {c}
+                        {t(`cma.conditions.${c.toLowerCase()}`)}
                       </Text>
                     </Pressable>
                   );
@@ -411,7 +417,7 @@ function createStyles(t: ThemeTokens) {
     },
     conditionBtnActive: { borderColor: t.accent, backgroundColor: t.accentPressed },
     conditionBtnPressed: { opacity: 0.85 },
-    conditionText: { fontSize: 12, fontWeight: "600", color: t.text },
+    conditionText: { fontSize: 12, fontWeight: "600", color: t.text, textAlign: "center" },
     conditionTextActive: { color: t.accent },
 
     inlineError: { marginTop: 12, fontSize: 13, color: t.dangerTitle },

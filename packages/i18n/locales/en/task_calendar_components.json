@@ -14,6 +14,17 @@
       "medium": "Medium",
       "high": "High",
       "urgent": "Urgent"
+    },
+    "types": {
+      "call": "Call",
+      "follow_up": "Follow-up",
+      "voice_follow_up": "After a call",
+      "hub_follow_up": "From your hub",
+      "missed_call_callback": "Missed call",
+      "boss_playbook": "Playbook",
+      "boss_instruction": "From Max",
+      "boss_handoff": "Handed to you",
+      "support_ticket": "Support"
     }
   },
   "task_composer": {

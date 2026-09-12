@@ -144,7 +144,7 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
         <View style={s.pillRow}>
           {FINANCING.map((f) => (
             <Pressable key={f} style={[s.pill, financingType === f && s.pillOn]} onPress={() => setFinancingType(financingType === f ? null : f)}>
-              <Text style={[s.pillText, financingType === f && s.pillTextOn]}>{f}</Text>
+              <Text style={[s.pillText, financingType === f && s.pillTextOn]}>{t(`offerDesk.financingOptions.${f}`)}</Text>
             </Pressable>
           ))}
         </View>
@@ -153,7 +153,7 @@ function BuildOffer({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
         <View style={s.pillRow}>
           {HEAT.map((h) => (
             <Pressable key={h} style={[s.pill, marketHeat === h && s.pillOn]} onPress={() => setMarketHeat(marketHeat === h ? null : h)}>
-              <Text style={[s.pillText, marketHeat === h && s.pillTextOn]}>{h}</Text>
+              <Text style={[s.pillText, marketHeat === h && s.pillTextOn]}>{t(`offerDesk.heatOptions.${h}`)}</Text>
             </Pressable>
           ))}
         </View>
@@ -469,7 +469,7 @@ const createStyles = (t: ThemeTokens) =>
     pillRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
     pill: { borderWidth: 1, borderColor: t.border, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: t.surface },
     pillOn: { backgroundColor: t.accent, borderColor: t.accent },
-    pillText: { fontSize: 13, color: t.textSecondary, textTransform: "capitalize" },
+    pillText: { fontSize: 13, color: t.textSecondary },
     pillTextOn: { color: t.textOnAccent, fontWeight: "600" },
     primaryBtn: { backgroundColor: t.accent, borderRadius: 12, paddingVertical: 14, alignItems: "center", marginTop: 4 },
     primaryBtnText: { color: t.textOnAccent, fontSize: 15, fontWeight: "700" },

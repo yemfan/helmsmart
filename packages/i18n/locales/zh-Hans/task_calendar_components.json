@@ -14,6 +14,17 @@
       "medium": "中",
       "high": "高",
       "urgent": "紧急"
+    },
+    "types": {
+      "call": "电话",
+      "follow_up": "跟进",
+      "voice_follow_up": "通话后跟进",
+      "hub_follow_up": "来自主页",
+      "missed_call_callback": "未接来电",
+      "boss_playbook": "剧本",
+      "boss_instruction": "来自 Max",
+      "boss_handoff": "转交给您",
+      "support_ticket": "支持"
     }
   },
   "task_composer": {

@@ -214,7 +214,12 @@
     "title": "CMA",
     "back": "返回",
     "addressLabel": "地址 *",
-    "addressPlaceholder": "例如：123 Main St, Austin TX 78701"
+    "addressPlaceholder": "例如：123 Main St, Austin TX 78701",
+    "conditions": {
+      "below": "偏低",
+      "average": "一般",
+      "above": "偏高"
+    }
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI 教练",
@@ -416,6 +421,17 @@
     "netToSeller": "卖方净得",
     "addressPlaceholder": "例如：123 Oak St, Alhambra",
     "days": "{{count}} 天",
-    "allListings": "← 全部房源"
+    "allListings": "← 全部房源",
+    "financingOptions": {
+      "cash": "全现金",
+      "conventional": "常规贷款",
+      "fha": "FHA 贷款",
+      "va": "VA 贷款"
+    },
+    "heatOptions": {
+      "hot": "火热",
+      "balanced": "平稳",
+      "cool": "冷淡"
+    }
   }
 }

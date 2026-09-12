@@ -111,6 +111,79 @@ describe("mobile runtime key domains", () => {
     expect(src).toMatch(/post_history\.triggers\.\$\{k\}`,\s*\{\s*defaultValue:\s*""/);
   });
 
+  /**
+   * Three more families, all found the same way — by reading App Store
+   * screenshots, not by any check in this directory. `task_type` printed
+   * "hub_follow_up" beside a due date; the offer desk relied on CSS
+   * `text-transform: capitalize` over raw slugs, which renders "fha" as
+   * "Fha" and "va" as "Va" to an audience that reads FHA and VA daily.
+   */
+  it("translates every task type the server writes", () => {
+    const kinds = [
+      "call", "follow_up", "voice_follow_up", "hub_follow_up",
+      "missed_call_callback", "boss_playbook", "boss_instruction",
+      "boss_handoff", "support_ticket",
+    ];
+    const missing: string[] = [];
+    for (const locale of LOCALE_NAMES) {
+      const b = JSON.parse(
+        readFileSync(join(LOCALES, locale, "task_calendar_components.json"), "utf8"),
+      ) as Json;
+      for (const k of kinds) {
+        if (typeof at(b, `task_card.types.${k}`) !== "string") {
+          missing.push(`${locale}: task_card.types.${k}`);
+        }
+      }
+    }
+    expect(missing, `\n${missing.join("\n")}\n`).toEqual([]);
+  });
+
+  it("translates the offer-desk and CMA option chips, acronyms intact", () => {
+    const expected: Array<[string, string | null]> = [
+      ["offerDesk.financingOptions.cash", null],
+      ["offerDesk.financingOptions.conventional", null],
+      ["offerDesk.financingOptions.fha", null],
+      ["offerDesk.financingOptions.va", null],
+      ["offerDesk.heatOptions.hot", null],
+      ["offerDesk.heatOptions.balanced", null],
+      ["offerDesk.heatOptions.cool", null],
+      ["cma.conditions.below", null],
+      ["cma.conditions.average", null],
+      ["cma.conditions.above", null],
+    ];
+    const missing: string[] = [];
+    for (const locale of LOCALE_NAMES) {
+      const b = bundle(locale);
+      for (const [key] of expected) {
+        if (typeof at(b, key) !== "string") missing.push(`${locale}: ${key}`);
+      }
+    }
+    expect(missing, `\n${missing.join("\n")}\n`).toEqual([]);
+    // The casing is the point: these must not be re-derived from the slug.
+    const en = bundle("en");
+    expect(at(en, "offerDesk.financingOptions.fha")).toBe("FHA");
+    expect(at(en, "offerDesk.financingOptions.va")).toBe("VA");
+  });
+
+  /**
+   * Scoped to `pillText` on purpose. Two other styles in that file capitalize
+   * AI-written prose (an offer strategy, a contingency note), where it is
+   * harmless. The bug was capitalizing a FIXED SLUG: the financing and
+   * market-heat chips rendered `{f}` and `{h}` straight from
+   * ["cash","conventional","fha","va"], so CSS produced "Fha" and "Va".
+   */
+  it("does not title-case the option chips with CSS", () => {
+    const src = readFileSync(join(MOBILE, "app", "(tabs)", "offer-desk.tsx"), "utf8");
+    const pillText = src.match(/pillText:\s*\{[^}]*\}/);
+    expect(pillText, "pillText style not found").toBeTruthy();
+    expect(pillText![0], "capitalize on pillText turns fha into Fha").not.toMatch(
+      /textTransform/,
+    );
+    // And the chips must go through t(), not render the slug directly.
+    expect(src).toMatch(/offerDesk\.financingOptions\.\$\{f\}/);
+    expect(src).toMatch(/offerDesk\.heatOptions\.\$\{h\}/);
+  });
+
   it("resolves the two values from the bug report", () => {
     for (const locale of LOCALE_NAMES) {
       const b = bundle(locale);

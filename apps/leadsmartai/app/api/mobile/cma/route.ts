@@ -62,8 +62,16 @@ export async function POST(req: Request) {
       {
         ok: false,
         success: false,
+        /*
+         * Was: "The agent may need to import MLS or use a Zillow/Redfin link
+         * first." Written in the third person ABOUT the person reading it —
+         * the agent is the reader, not a bystander — and it named a fix
+         * ("use a link") that this screen offers no way to do. It now says
+         * what happened, where the data comes from, and what the reader can
+         * actually do next.
+         */
         error:
-          "Property not found in our data. The agent may need to import MLS or use a Zillow/Redfin link first.",
+          "We don't have sales data for that address yet. Import your MLS export on the CloseBoss dashboard, then try again.",
         code: "property_not_found",
       },
       { status: 404 },

@@ -38,6 +38,15 @@ export function TaskCard({
   const compact = variant === "compact";
   // i18next falls back to the raw priority string if a key is
   // missing — keeps the pill non-empty for unexpected values.
+  /*
+   * The raw column reached the screen: an overdue task read "Overdue
+   * hub_follow_up". Unknown kinds render NOTHING rather than a slug — the
+   * hint is decoration beside a due date, and a snake_case identifier tells
+   * the agent less than the empty space does.
+   */
+  const typeLabel = task.task_type
+    ? t(`task_card.types.${task.task_type}`, { defaultValue: "" }) || null
+    : null;
   const priorityLabel = t(`task_card.priority.${task.priority}`, {
     defaultValue: task.priority,
   });
@@ -59,7 +68,7 @@ export function TaskCard({
       ) : null}
       <View style={styles.metaRow}>
         <Text style={styles.due}>{formatTaskDueLabel(task.due_at)}</Text>
-        {task.task_type ? <Text style={styles.typeHint}>{task.task_type}</Text> : null}
+        {typeLabel ? <Text style={styles.typeHint}>{typeLabel}</Text> : null}
       </View>
       {open && onComplete ? (
         <Pressable
