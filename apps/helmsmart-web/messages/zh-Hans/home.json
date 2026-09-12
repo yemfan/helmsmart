@@ -596,6 +596,7 @@
     "commandCenter": "在指挥中心查看团队总量",
     "workingNote": "{{name}} 正在工作。",
     "draftNote": "{{name}} 还没有开始 —— 在下方选择 {{name}} 的工作方式并保存。",
+    "draftNoteNoDial": "{{name}} 还没有开始。",
     "pausedNote": "{{name}} 已停用，不会执行任何操作。",
     "limitsHeading": "{{name}} 可以做什么",
     "workHeading": "近期工作",

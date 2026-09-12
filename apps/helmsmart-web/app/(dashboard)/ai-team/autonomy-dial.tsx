@@ -29,14 +29,15 @@ export function AutonomyDial({
   slug: string;
   name: string;
   levels: AutonomyLevel[];
-  current: AutonomyLevel;
+  /** The level to show as chosen — `null` when the stored one is not offered. */
+  current: AutonomyLevel | null;
   /** Owner or admin. Anyone else sees the setting and cannot move it. */
   canChange: boolean;
 }) {
   const { t } = useTranslation("home");
   const router = useRouter();
-  const [saved, setSaved] = useState<AutonomyLevel>(current);
-  const [choice, setChoice] = useState<AutonomyLevel>(current);
+  const [saved, setSaved] = useState<AutonomyLevel | null>(current);
+  const [choice, setChoice] = useState<AutonomyLevel | null>(current);
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -45,6 +46,7 @@ export function AutonomyDial({
   const group = `autonomy-${slug}`;
 
   function save() {
+    if (!choice) return;
     setError(null);
     start(async () => {
       let result: Awaited<ReturnType<typeof setEmployeeAutonomyAction>>;
@@ -105,7 +107,7 @@ export function AutonomyDial({
           <button
             type="button"
             onClick={save}
-            disabled={pending || (!dirty && !confirmed)}
+            disabled={pending || !choice || (!dirty && !confirmed)}
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700 disabled:opacity-40"
           >
             {pending

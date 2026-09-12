@@ -87,6 +87,27 @@ export function levelsFor(slug: string, owners: DialOwners): AutonomyLevel[] {
   );
 }
 
+/**
+ * Which of the offered levels the dial should show as chosen.
+ *
+ * The stored level is not always one a teammate is offered: Mark ships on
+ * `act_with_approval`, and a teammate whose work never leaves the business is
+ * not offered it — there would be nothing to approve. For that work
+ * "ask me first" and "go ahead" are the same behaviour, so "go ahead" is what
+ * the row actually means and what the dial says.
+ *
+ * `null` where nothing offered matches: better an unselected dial than one
+ * showing a level the row does not hold.
+ */
+export function displayLevel(
+  level: AutonomyLevel,
+  levels: readonly AutonomyLevel[],
+): AutonomyLevel | null {
+  if (levels.includes(level)) return level;
+  if (level === "act_with_approval" && levels.includes("autonomous")) return "autonomous";
+  return null;
+}
+
 /** The roster's default for a slug — what a business starts on. */
 export function defaultAutonomy(slug: string): AutonomyLevel {
   const fromRoster = getBlueprint(slug)?.permissions.autonomy;

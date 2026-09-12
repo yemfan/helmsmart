@@ -44,7 +44,7 @@ export async function TeammateCard({
   status: string;
   avatar: string;
   levels: AutonomyLevel[];
-  current: AutonomyLevel;
+  current: AutonomyLevel | null;
   canChange: boolean;
   metrics: Record<string, number>;
   work: ActivityRow[];
@@ -69,7 +69,11 @@ export async function TeammateCard({
           <p className="mt-2 text-sm text-slate-600">{t(`aiTeam.job.${slug}`)}</p>
           <p className="mt-1 text-xs text-slate-500">
             {status === "draft"
-              ? t("aiTeam.draftNote", { name })
+              ? // Without a dial there is nothing below to pick, so don't send
+                // the owner looking for a control that isn't there.
+                levels.length > 0
+                ? t("aiTeam.draftNote", { name })
+                : t("aiTeam.draftNoteNoDial", { name })
               : status === "paused"
                 ? t("aiTeam.pausedNote", { name })
                 : t("aiTeam.workingNote", { name })}

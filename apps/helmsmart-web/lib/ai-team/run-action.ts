@@ -166,7 +166,8 @@ export async function runAction(
         status: "failed",
         error:
           `${teammate} is set to go ahead, but ${action.key} did not get through: ${decided.error} ` +
-          `It is on the owner's approvals list as a proposal; do not try again.`,
+          `It was not confirmed as sent, and it is recorded on the owner's approvals list either way — ` +
+          `tell them the reason plainly and do not try again.`,
       };
     }
 

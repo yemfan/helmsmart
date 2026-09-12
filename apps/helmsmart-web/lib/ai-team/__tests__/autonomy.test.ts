@@ -10,6 +10,7 @@ import {
   autonomyOf,
   defaultAutonomy,
   dialOwners,
+  displayLevel,
   levelsFor,
   setStoredAutonomy,
   storedAutonomy,
@@ -83,6 +84,18 @@ describe("the level in force", () => {
 
   it("ignores a value that is not a level", () => {
     expect(autonomyOf({ permissions: { autonomy: "whatever" } }, "sarah")).toBe("act_with_approval");
+  });
+
+  it("shows a level the teammate is not offered as the one it behaves like", () => {
+    // Mark ships on act_with_approval and is offered two levels. For work that
+    // never leaves the business, "ask me first" IS "go ahead" — so that is what
+    // the dial shows, rather than nothing at all.
+    const internalOnly = levelsFor("mark", { internal: new Set(["mark"]), outbound: new Set() });
+    expect(displayLevel("act_with_approval", internalOnly)).toBe("autonomous");
+    expect(displayLevel("suggest", internalOnly)).toBe("suggest");
+    // Nothing offered matches: an unselected dial beats one showing a level the
+    // row does not hold.
+    expect(displayLevel("suggest", ["act_with_approval", "autonomous"])).toBeNull();
   });
 
   it("reads the stored row, and survives a database that will not answer", async () => {

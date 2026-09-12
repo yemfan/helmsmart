@@ -603,6 +603,7 @@
     "commandCenter": "Ver los totales del equipo en el Centro de mando",
     "workingNote": "{{name}} está trabajando.",
     "draftNote": "{{name}} todavía no empezó — elija abajo cómo trabaja {{name}} y guarde.",
+    "draftNoteNoDial": "{{name}} todavía no empezó.",
     "pausedNote": "{{name}} está apagado y no actuará.",
     "limitsHeading": "Qué puede hacer {{name}}",
     "workHeading": "Trabajo reciente",

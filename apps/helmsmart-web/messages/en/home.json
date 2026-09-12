@@ -603,6 +603,7 @@
     "commandCenter": "See the team's totals in the Command Center",
     "workingNote": "{{name}} is working.",
     "draftNote": "{{name}} hasn't started yet — pick how {{name}} works below and save.",
+    "draftNoteNoDial": "{{name}} hasn't started yet.",
     "pausedNote": "{{name}} is switched off and won't act.",
     "limitsHeading": "What {{name}} may do",
     "workHeading": "Recent work",

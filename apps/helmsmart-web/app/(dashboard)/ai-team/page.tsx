@@ -11,7 +11,8 @@ import { addDays } from "@/lib/org-date";
 import { loadActivityFeed } from "@/lib/ai-activity.load";
 import type { ActivityRow } from "@/lib/ai-activity";
 import { ALL_ACTIONS } from "@/lib/ai-team/registry";
-import { autonomyOf, dialOwners, levelsFor } from "@/lib/ai-team/autonomy";
+import { autonomyOf, dialOwners, displayLevel, levelsFor } from "@/lib/ai-team/autonomy";
+import { TEAM_SLUGS } from "@/lib/ai-team/faces";
 import { SeedWorkforceButton } from "./seed-workforce-button";
 import { TeammateCard } from "./teammate-card";
 
@@ -64,6 +65,14 @@ export default async function AiTeamPage() {
     loadActivityFeed({ orgId, t, locale, windowDays: WINDOW_DAYS, limit: 200 }),
   ]);
 
+  // Roster order, not the directory's order by department: the owner meets
+  // the captain first and the specialists after him, the way the team is
+  // described everywhere else. Anyone not on the roster goes last.
+  const roster = new Map(TEAM_SLUGS.map((slug, i) => [slug, i]));
+  const team = [...employees].sort(
+    (a, b) => (roster.get(a.slug) ?? TEAM_SLUGS.length) - (roster.get(b.slug) ?? TEAM_SLUGS.length),
+  );
+
   const owners = dialOwners(ALL_ACTIONS);
   const metricsById = new Map(summary.employees.map((e) => [e.employeeId, e.metrics]));
 
@@ -98,7 +107,9 @@ export default async function AiTeamPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          {employees.map((e) => (
+          {team.map((e) => {
+            const levels = levelsFor(e.slug, owners);
+            return (
             <TeammateCard
               key={e.id}
               employeeId={e.id}
@@ -107,8 +118,8 @@ export default async function AiTeamPage() {
               role={e.role}
               status={e.status}
               avatar={e.avatar ?? getBlueprint(e.slug)?.avatar ?? defaultAvatarForSeed(e.slug)}
-              levels={levelsFor(e.slug, owners)}
-              current={autonomyOf(e, e.slug)}
+              levels={levels}
+              current={displayLevel(autonomyOf(e, e.slug), levels)}
               canChange={canChange}
               metrics={metricsById.get(e.id) ?? {}}
               work={workBySlug.get(e.slug) ?? []}
@@ -116,7 +127,8 @@ export default async function AiTeamPage() {
               locale={locale}
               timeZone={activity?.timeZone ?? "UTC"}
             />
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
