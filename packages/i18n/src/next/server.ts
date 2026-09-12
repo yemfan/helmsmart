@@ -12,26 +12,46 @@ export type ServerI18nConfig<L extends Locale> = {
   defaultLocale: L;
   /** The locales this app ships bundles for — what the picker offers and what the cookie may hold. */
   supported: readonly L[];
+  /**
+   * Request header carrying a locale the app's own proxy resolved from the URL
+   * path, e.g. `/zh/pricing` -> "zh-Hans". Checked BEFORE the cookie, because a
+   * locale in the URL is the most explicit request there is: somebody followed a
+   * Chinese link, or a crawler asked for the Chinese page. A cookie from an
+   * earlier visit must not override it, or a shared link would open in the
+   * reader's own language and the URL would be a lie.
+   *
+   * Optional. An app with no locale-prefixed routes leaves it unset and
+   * resolution is cookie -> Accept-Language exactly as before.
+   */
+  localeHeaderName?: string;
 };
 
 /**
  * Server-side locale resolution + `t()` for Server Components and Route
  * Handlers, bound to one app's resources and cookie.
  *
- * Cookie wins over the Accept-Language header so a reader who manually picked
- * Chinese stays in Chinese even when their browser default is English. The
- * cookie is set client-side after the language picker fires — see
- * `setLocaleCookie()` from `createClientI18n`.
+ * Order: the URL (via `localeHeaderName`, when the app sets one), then the
+ * cookie, then Accept-Language, then the default. Cookie beats Accept-Language
+ * so a reader who picked Chinese stays in Chinese on an English browser; the URL
+ * beats the cookie so a link means what it says. The cookie is set client-side
+ * after the language picker fires — see `setLocaleCookie()` from
+ * `createClientI18n`.
  */
 export function createServerI18n<L extends Locale>(config: ServerI18nConfig<L>) {
   const translatorFor = createTranslator(config);
 
   async function getServerLocale(): Promise<L> {
+    const headerList = await headers();
+
+    if (config.localeHeaderName) {
+      const fromPath = resolveLocale(headerList.get(config.localeHeaderName), config.supported);
+      if (fromPath) return fromPath;
+    }
+
     const cookieStore = await cookies();
     const fromCookie = resolveLocale(cookieStore.get(config.cookieName)?.value, config.supported);
     if (fromCookie) return fromCookie;
 
-    const headerList = await headers();
     const accept = headerList.get("accept-language");
     if (accept) {
       // Accept-Language: "zh-CN,zh;q=0.9,en-US;q=0.8" — walk left-to-

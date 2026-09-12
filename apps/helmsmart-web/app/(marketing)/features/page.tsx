@@ -12,10 +12,12 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/features"),
     title: t("features.meta.title"),
     description: t("features.meta.description"),
   };

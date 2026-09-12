@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 const CLOSEBOSS_URL = "https://www.closebossai.com";
 // Links inside running text are underlined: colour alone does not mark a link
@@ -16,6 +17,7 @@ const CLOSEBOSS_LINK = {
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/privacy"),
     title: t("privacy.meta.title"),
     description: t("privacy.meta.description"),
   };

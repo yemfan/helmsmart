@@ -3,7 +3,7 @@
 import { localeDisplayName, localeShortLabel } from "@leadsmart/i18n";
 import { useTranslation } from "react-i18next";
 
-import { useSetLocale } from "@/lib/i18n/client";
+import { useLocaleSwitch } from "@/lib/i18n/useLocaleSwitch";
 import { SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n/config";
 
 /**
@@ -26,7 +26,7 @@ export function LanguageToggle({
   tone?: "light" | "dark";
 }) {
   const { t, i18n } = useTranslation("common");
-  const setLocale = useSetLocale();
+  const setLocale = useLocaleSwitch();
   const current = (i18n.language as SupportedLocale) ?? "en";
   const dark = tone === "dark";
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 const CLOSEBOSS_URL = "https://www.closebossai.com";
 
@@ -11,6 +12,7 @@ const VALUES = ["pain", "works", "clarity", "corner"];
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/about"),
     title: t("about.meta.title"),
     description: t("about.meta.description"),
   };

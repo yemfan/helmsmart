@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 /**
  * Root page — public landing for guests, redirect to /home for authenticated users.
  * Includes MarketingNav + MarketingFooter directly (outside the (marketing) route group).
@@ -9,6 +10,11 @@ import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "./(marketing)/_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: await pageAlternates("/") };
+}
 
 // Copy lives in `site.landing.*`; these arrays hold only the key and the styling.
 const STEPS = ["call", "invoice", "briefing"];

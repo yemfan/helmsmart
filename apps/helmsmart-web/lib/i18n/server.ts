@@ -8,6 +8,7 @@ import {
   SUPPORTED_LOCALES,
   resources,
 } from "./config";
+import { LOCALE_HEADER } from "./headers";
 
 /**
  * Server-side locale + `t()` for Server Components and Route Handlers.
@@ -15,7 +16,7 @@ import {
  *   const t = await getServerT("settings");
  *   <h1>{t("title")}</h1>
  *
- * Resolution: cookie → Accept-Language → English. A key resolves locale →
+ * Resolution: URL prefix (/zh, /es) → cookie → Accept-Language → English. A key resolves locale →
  * `defaultValue` → English → the key itself (loud, on purpose — a key in NO
  * bundle is a bug, a key missing from one bundle is not). Plurals work the
  * same way they do in `useTranslation`: `t("items", { count })` picks
@@ -29,4 +30,8 @@ export const { getServerLocale, getServerT, translatorFor } = createServerI18n({
   resources,
   defaultLocale: DEFAULT_LOCALE,
   supported: SUPPORTED_LOCALES,
+  // Set by `proxy.ts` for /zh/* and /es/* — the URL outranks the cookie, so a
+  // shared Chinese link opens in Chinese even for a reader whose last visit
+  // left the cookie on English.
+  localeHeaderName: LOCALE_HEADER,
 });

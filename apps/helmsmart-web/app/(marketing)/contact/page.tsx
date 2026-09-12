@@ -3,10 +3,12 @@ import { Mail, Clock, Building2 } from "lucide-react";
 import ContactFormComponent from "./_components/contact-form";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/contact"),
     title: t("contact.meta.title"),
     description: t("contact.meta.description"),
   };
