@@ -7,8 +7,12 @@ import { Avatar, AvatarPicker } from "@helm/ui";
 import { setEmployeeAvatarAction } from "@/lib/actions/workforce";
 
 /**
- * The avatar shown for an AI employee on the workforce board. Click it to pick a
- * different persona from the 20-avatar gallery; the choice persists per employee.
+ * The face an AI teammate wears. Click it to pick a different persona from the
+ * 20-avatar gallery; the choice persists per employee.
+ *
+ * The new face shows at once, and goes back to the old one if the write did
+ * not reach a row — a picker left showing a persona the database never took is
+ * the same lie as a banner that says "Saved." over an unchanged row.
  */
 export function EmployeeAvatarPicker({
   employeeId,
@@ -22,14 +26,28 @@ export function EmployeeAvatarPicker({
   const { t } = useTranslation("home");
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(value);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const router = useRouter();
 
   function choose(id: string) {
+    const previous = current;
     setCurrent(id);
+    setError(null);
     setOpen(false);
     start(async () => {
-      await setEmployeeAvatarAction(employeeId, id);
+      let result: Awaited<ReturnType<typeof setEmployeeAvatarAction>>;
+      try {
+        result = await setEmployeeAvatarAction(employeeId, id);
+      } catch (e) {
+        console.error("saving an AI teammate's avatar", e);
+        result = { ok: false, error: t("aiTeam.errors.saveFailed") };
+      }
+      if (!result.ok) {
+        setCurrent(previous);
+        setError(result.error);
+        return;
+      }
       router.refresh();
     });
   }
@@ -43,7 +61,7 @@ export function EmployeeAvatarPicker({
         title={t("commandCenter.avatar.change", { name })}
         className="rounded-full ring-2 ring-transparent hover:ring-slate-200 transition disabled:opacity-60"
       >
-        <Avatar id={current} size={40} alt={name} />
+        <Avatar id={current} size={48} alt={name} />
       </button>
 
       {open && (
@@ -56,6 +74,12 @@ export function EmployeeAvatarPicker({
             <AvatarPicker value={current} onSelect={choose} size={48} disabled={pending} />
           </div>
         </>
+      )}
+
+      {error && (
+        <p className="absolute left-0 top-full mt-1 w-40 text-xs text-rose-600" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

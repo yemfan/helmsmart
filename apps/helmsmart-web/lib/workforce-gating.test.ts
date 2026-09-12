@@ -10,7 +10,11 @@ import { beforeEach, describe, it, expect, vi, type MockedFunction } from "vites
 
 // ── Lightweight mock for @helm/ai-workforce ──────────────────────────────────
 
-vi.mock("@helm/ai-workforce", () => ({
+vi.mock("@helm/ai-workforce", async (importOriginal) => ({
+  // The roster is real: `lib/ai-team/autonomy.ts` falls back to the blueprint's
+  // level when a row says nothing, and a stubbed roster would make that branch
+  // agree with whatever the stub invented.
+  ...(await importOriginal<typeof import("@helm/ai-workforce")>()),
   getEmployee: vi.fn(),
   startRun: vi.fn().mockResolvedValue("run-123"),
   completeRun: vi.fn().mockResolvedValue(undefined),
@@ -132,13 +136,50 @@ describe("enforceAutonomy", () => {
     expect(execute).not.toHaveBeenCalled();
   });
 
-  it("returns skipped without calling execute for suggest", async () => {
+  it("does nothing and parks nothing for suggest — but tells the owner", async () => {
     (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(makeEmployee("suggest"));
     const execute = vi.fn();
-    const result = await enforceAutonomy(makeDb(), "org-1", "emma", { ...baseOpts, execute });
+    const propose = vi.fn();
+    const db = makeDb();
+    const result = await enforceAutonomy(db, "org-1", "emma", { ...baseOpts, execute, propose });
+
     expect(result.status).toBe("skipped");
     expect(execute).not.toHaveBeenCalled();
-    expect(startRun).not.toHaveBeenCalled();
+    // Nothing is drafted and nothing is queued: no approval row, no card.
+    expect(propose).not.toHaveBeenCalled();
+    expect((db as unknown as { from: MockedFunction<(t: string) => unknown> }).from).not.toHaveBeenCalled();
+
+    // "Tell me what you'd do" has to tell someone. The run records the
+    // suggestion and a notification carries it to the owner.
+    expect(completeRun).toHaveBeenCalledWith(
+      expect.anything(),
+      "org-1",
+      "run-123",
+      expect.objectContaining({
+        status: "succeeded",
+        outcome: { suggested: true, summary: baseOpts.description },
+      }),
+    );
+    expect(createNotificationService).toHaveBeenCalledWith(
+      "org-1",
+      expect.objectContaining({
+        titleKey: "notifications.events.employeeSuggested",
+        params: { employee: "Emma" },
+        link: "/ai-team",
+      }),
+    );
+  });
+
+  it("falls back to the roster's level when the row's permissions say nothing", async () => {
+    // An empty `permissions` blob used to mean free rein. Emma's roster
+    // default IS autonomous, so she still answers — but the value now comes
+    // from the blueprint rather than from a hard-coded "act freely".
+    const noPermissions = { ...makeEmployee("suggest"), permissions: {} };
+    (getEmployee as MockedFunction<typeof getEmployee>).mockResolvedValueOnce(noPermissions);
+    const execute = vi.fn().mockResolvedValue({ tokensUsed: 0, costCents: 0 });
+    const result = await enforceAutonomy(makeDb(), "org-1", "emma", { ...baseOpts, execute });
+    expect(result.status).toBe("executed");
+    expect(execute).toHaveBeenCalledWith("run-123");
   });
 
   it("parks the drafted action itself for act_with_approval with propose — an approval the registry runs", async () => {

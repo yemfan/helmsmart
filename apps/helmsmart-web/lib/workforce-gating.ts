@@ -10,7 +10,15 @@
  *                       escalateRun + notify; returns "escalated" with the
  *                       approval's id. Nothing is sent here: the owner
  *                       decides from the "Needs your approval" list.
- *   suggest          → no side effects; returns "skipped"
+ *   suggest          → nothing is sent and no card is made, but the owner is
+ *                       TOLD: the run is recorded as a suggestion and a
+ *                       notification says what would have happened. A level
+ *                       called "tell me what you'd do" that told nobody
+ *                       anything was the same silence as being switched off.
+ *
+ * The level itself comes from `lib/ai-team/autonomy.ts`, so this path and
+ * Mark's tool loop read one value the same way — the row when the owner has
+ * set it, the roster's default when they have not.
  *
  * The caller supplies `execute(runId)` — the actual work callback. For
  * autonomous employees this is called with a fresh run id. For others it is
@@ -32,6 +40,7 @@
 import { createNotificationService } from "@/lib/notifications-service";
 import { notifySlackApprovalPending } from "@/lib/integrations/slack";
 import { insertApproval, type NewApproval } from "@/lib/ai-team/approvals";
+import { autonomyOf } from "@/lib/ai-team/autonomy";
 import type { ApprovalDetails } from "@/lib/ai-team/approval-view";
 import {
   getEmployee,
@@ -115,11 +124,26 @@ export async function enforceAutonomy(
     return { status: "no_employee" };
   }
 
-  const autonomy = employee.permissions.autonomy ?? "autonomous";
+  const autonomy = autonomyOf(employee, employeeSlug);
 
-  // ── suggest: propose only, no execution ──────────────────────────────────
+  // ── suggest: nothing happens, and the owner hears about it ───────────────
   if (autonomy === "suggest") {
-    return { status: "skipped" };
+    const runId = await startRun(db, orgId, { employeeId: employee.id, ...opts.runInput });
+    await completeRun(db, orgId, runId, {
+      status: "succeeded",
+      outcome: { suggested: true, summary: opts.description },
+    });
+    await createNotificationService(orgId, {
+      type: "system",
+      title: `${employee.name} would have handled this`,
+      // The caller's own sentence about the work, in whatever language it
+      // arrived in — the same rule the approval notification follows.
+      body: opts.description.slice(0, 120),
+      titleKey: "notifications.events.employeeSuggested",
+      params: { employee: employee.name },
+      link: "/ai-team",
+    });
+    return { status: "skipped", runId };
   }
 
   // ── act_with_approval: park it for the owner's decision ────────────────────

@@ -174,7 +174,10 @@
     "board": {
       "emptyTitle": "Aún no hay empleados de IA",
       "emptyBody": "Contrate en un clic su equipo administrativo de IA de seis integrantes: una recepcionista, una ejecutiva de ventas y cuatro directores de departamento. Empiezan en borrador para que pueda revisar a cada uno antes de activarlo.",
-      "noActivity": "Aún no hay actividad"
+      "noActivity": "Aún no hay actividad",
+      "meetTheTeam": "Conozca al equipo",
+      "teamCount_one": "{{count}} empleado de IA trabaja para usted.",
+      "teamCount_other": "{{count}} empleados de IA trabajan para usted."
     },
     "seed": {
       "cta": "Formar su equipo de IA",
@@ -369,6 +372,7 @@
     "minimize": "Minimizar el panel de Mark",
     "expandShort": "Ampliar",
     "minimizeShort": "Minimizar",
+    "meetTheTeam": "Conozca al equipo",
     "title": "Mark",
     "subtitle": "Director de operaciones con IA · responde con los datos de su negocio y reparte el trabajo al equipo",
     "openWithApprovals_one": "Preguntar a Mark — {{count}} espera su aprobación",
@@ -570,6 +574,7 @@
       "appointmentCancelledBody": "{{caller}} — era {{when}}",
       "employeeCreatedTask": "{{employee}} creó una tarea para usted",
       "employeeNeedsApproval": "{{employee}} necesita su aprobación",
+      "employeeSuggested": "{{employee}} tiene una sugerencia para usted",
       "newGoogleReviews_one": "{{count}} reseña nueva en Google Business",
       "newGoogleReviews_other": "{{count}} reseñas nuevas en Google Business",
       "newGoogleReviewsBody": "Revise su panel de Google Business para responder y mejorar su reputación.",
@@ -590,6 +595,105 @@
     "empty": "Aún no hay datos de transacciones",
     "revenue": "Ingresos",
     "expenses": "Gastos"
+  },
+  "aiTeam": {
+    "metaTitle": "Equipo de IA",
+    "title": "Su equipo de IA",
+    "subtitle": "Quién trabaja para usted, qué puede hacer cada uno y qué ha hecho.",
+    "commandCenter": "Ver los totales del equipo en el Centro de mando",
+    "workingNote": "{{name}} está trabajando.",
+    "draftNote": "{{name}} todavía no empezó — elija abajo cómo trabaja {{name}} y guarde.",
+    "pausedNote": "{{name}} está apagado y no actuará.",
+    "limitsHeading": "Qué puede hacer {{name}}",
+    "workHeading": "Trabajo reciente",
+    "scoreHeading": "Últimos 30 días",
+    "noScore": "Todavía no hay nada contabilizado",
+    "dial": {
+      "legend": "Cómo trabaja {{name}}",
+      "save": "Guardar",
+      "readOnly": "Solo un propietario o un administrador puede cambiar esto."
+    },
+    "levels": {
+      "suggest": "Solo sugerir — dígame qué haría",
+      "act_with_approval": "Pregúnteme primero — hágalo cuando yo apruebe",
+      "autonomous": "Adelante — y muéstreme qué hizo"
+    },
+    "meaning": {
+      "mark": {
+        "suggest": "Mark responde sus preguntas y le dice qué agregaría a su lista. No agrega nada por su cuenta.",
+        "act_with_approval": "Mark prepara el trabajo, y todo lo que llegaría a un cliente espera en su lista de aprobaciones.",
+        "autonomous": "Mark agrega las tareas y reparte el trabajo a quien corresponde. Lo que cada uno puede enviar después es su propia configuración."
+      },
+      "tim": {
+        "suggest": "Tim le cuenta lo que encontró y le deja la decisión a usted.",
+        "act_with_approval": "Los informes de Tim esperan su aprobación antes de que los vea alguien más.",
+        "autonomous": "Tim informa lo que encuentra apenas lo encuentra, sin preguntar antes."
+      },
+      "emily": {
+        "suggest": "Emily le dice qué publicaría y escribiría. No sale nada.",
+        "act_with_approval": "Emily escribe las publicaciones y esperan en su lista de aprobaciones hasta que usted diga que sí.",
+        "autonomous": "Emily publica y envía por su cuenta. Todo lo que hace aparece en la lista de abajo."
+      },
+      "alex": {
+        "suggest": "Alex le dice a quién cobrar y qué diría el recordatorio. No envía nada.",
+        "act_with_approval": "Alex escribe el recordatorio y espera en su lista de aprobaciones hasta que usted diga que sí.",
+        "autonomous": "Alex envía el recordatorio por correo él mismo, y aparece en la lista de abajo con lo que decía."
+      },
+      "sarah": {
+        "suggest": "Sarah le dice a quién enviar un mensaje y qué diría. No se envía nada.",
+        "act_with_approval": "Sarah redacta el mensaje y espera en su lista de aprobaciones hasta que usted diga que sí.",
+        "autonomous": "Sarah envía el mensaje ella misma, y aparece en la lista de abajo con lo que decía."
+      },
+      "emma": {
+        "act_with_approval": "Emma sigue contestando todas las llamadas — no puede dejar a alguien esperando. Esto es sobre sus mensajes: los redacta y esperan su aprobación.",
+        "autonomous": "Emma contesta y responde ella misma, de día y de noche. Todo lo que hace aparece en la lista de abajo."
+      }
+    },
+    "noDial": {
+      "mark": "Todavía no hay ajuste para Mark — nada de lo que hace por su cuenta sale del negocio.",
+      "tim": "No hay ajuste para Tim: solo informa, así que no hay nada que frenar.",
+      "emily": "Emily todavía no actúa por su cuenta — usted escribe sus campañas con ella en las páginas de Marketing y Redes sociales.",
+      "alex": "Todavía no hay ajuste para Alex — no tiene nada que pueda hacer por su cuenta.",
+      "sarah": "Todavía no hay ajuste para Sarah — no tiene nada que pueda hacer por su cuenta.",
+      "emma": "Todavía no hay ajuste para Emma — no tiene nada que pueda hacer por su cuenta."
+    },
+    "job": {
+      "mark": "Mark es con quien usted habla. Responde preguntas sobre el negocio con sus números en vivo, agrega tareas y reparte el trabajo a quien corresponde.",
+      "tim": "Tim lee sus números y le dice qué cambió — ingresos, trabajos ganados y perdidos, y dónde está frenado el dinero.",
+      "emily": "Emily planea y escribe su marketing — las publicaciones, las campañas y los textos que las acompañan.",
+      "alex": "Alex vigila lo que le deben — quién está vencido, por cuánto, y el recordatorio que hace que la factura se pague.",
+      "sarah": "Sarah trabaja sus contactos nuevos — encuentra a la persona correcta, le escribe y agenda la reunión.",
+      "emma": "Emma contesta sus llamadas a toda hora, agenda citas y toma el mensaje cuando no puede."
+    },
+    "limits": {
+      "mark": "Mark agrega y asigna tareas y reparte el trabajo al resto del equipo. Nunca le escribe ni le manda correos a un cliente.",
+      "tim": "Tim solo lee. No escribe nada, no envía nada y no gasta nada.",
+      "emily": "Emily redacta y programa su marketing. Nunca le escribe ni le manda correos a un cliente uno por uno.",
+      "alex": "Alex puede enviar por correo un recordatorio de pago de una factura de este negocio. Nunca mueve dinero y nunca manda mensajes de texto.",
+      "sarah": "Sarah puede escribirle a un cliente que no haya cancelado los mensajes. Nunca envía facturas ni gasta dinero.",
+      "emma": "Emma contesta llamadas y mensajes y agenda, mueve o cancela citas. Nunca envía facturas ni gasta dinero."
+    },
+    "emptyWork": {
+      "mark": "Mark todavía no hizo nada.",
+      "tim": "Tim todavía no envió un análisis — su primer resumen llega cuando haya una semana de números.",
+      "emily": "Emily todavía no publicó nada — conecte una cuenta de redes sociales y podrá empezar.",
+      "alex": "Alex todavía no cobró ninguna factura — envíe una y él la vigila.",
+      "sarah": "Sarah todavía no le escribió a nadie — agregue un cliente con celular y podrá empezar.",
+      "emma": "Emma todavía no contestó una llamada — configure la recepcionista con IA y ella contestará."
+    },
+    "setUp": {
+      "mark": "Pregúntele algo",
+      "tim": "Abrir Análisis del negocio",
+      "emily": "Abrir Redes sociales",
+      "alex": "Abrir Facturas",
+      "sarah": "Abrir Clientes",
+      "emma": "Configurar la recepcionista"
+    },
+    "errors": {
+      "invalidLevel": "Ese no es uno de los ajustes que ofrece este integrante.",
+      "notSeeded": "Este integrante todavía no está dado de alta en su negocio.",
+      "saveFailed": "Eso no se guardó. Intente de nuevo en un momento."
+    }
   },
   "errors": {
     "notAuthenticated": "Su sesión ha expirado. Vuelva a iniciar sesión para continuar.",

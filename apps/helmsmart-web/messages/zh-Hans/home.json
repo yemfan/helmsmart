@@ -174,7 +174,9 @@
     "board": {
       "emptyTitle": "还没有 AI 员工",
       "emptyBody": "一键组建六人 AI 后台团队 —— 一位前台接待、一位销售拓展，外加四位部门总监。他们默认处于草稿状态，你可以逐个查看后再启用。",
-      "noActivity": "暂无活动"
+      "noActivity": "暂无活动",
+      "meetTheTeam": "认识团队成员",
+      "teamCount_other": "有 {{count}} 位 AI 员工在为你工作。"
     },
     "seed": {
       "cta": "组建你的 AI 团队",
@@ -368,6 +370,7 @@
     "minimize": "最小化 Mark 面板",
     "expandShort": "展开",
     "minimizeShort": "最小化",
+    "meetTheTeam": "认识团队成员",
     "title": "Mark",
     "subtitle": "AI 首席运营官 · 根据业务数据回答问题，把工作分派给团队",
     "openWithApprovals_other": "向 Mark 提问 —— {{count}} 项等待你批准",
@@ -565,6 +568,7 @@
       "appointmentCancelledBody": "{{caller}} — 原定 {{when}}",
       "employeeCreatedTask": "{{employee}} 为你创建了一个任务",
       "employeeNeedsApproval": "{{employee}} 需要你的批准",
+      "employeeSuggested": "{{employee}} 有一条建议给你",
       "newGoogleReviews_other": "Google Business 上有 {{count}} 条新评价",
       "newGoogleReviewsBody": "打开 Google Business 后台回复评价，提升口碑。",
       "weeklyInsight": "Tim 的每周经营洞察已生成",
@@ -584,6 +588,105 @@
     "empty": "还没有交易数据",
     "revenue": "收入",
     "expenses": "支出"
+  },
+  "aiTeam": {
+    "metaTitle": "AI 团队",
+    "title": "你的 AI 团队",
+    "subtitle": "谁在为你工作、各自可以做什么、以及他们做过什么。",
+    "commandCenter": "在指挥中心查看团队总量",
+    "workingNote": "{{name}} 正在工作。",
+    "draftNote": "{{name}} 还没有开始 —— 在下方选择 {{name}} 的工作方式并保存。",
+    "pausedNote": "{{name}} 已停用，不会执行任何操作。",
+    "limitsHeading": "{{name}} 可以做什么",
+    "workHeading": "近期工作",
+    "scoreHeading": "最近 30 天",
+    "noScore": "还没有计入任何数据",
+    "dial": {
+      "legend": "{{name}} 的工作方式",
+      "save": "保存",
+      "readOnly": "只有所有者或管理员可以更改。"
+    },
+    "levels": {
+      "suggest": "只提建议 —— 告诉我你会怎么做",
+      "act_with_approval": "先问我 —— 我批准后再做",
+      "autonomous": "放手去做 —— 做完告诉我"
+    },
+    "meaning": {
+      "mark": {
+        "suggest": "Mark 回答你的问题，并说出他会加进清单的事项，但不会自己添加。",
+        "act_with_approval": "Mark 会把工作安排好，凡是会触达客户的都留在你的待批准列表里。",
+        "autonomous": "Mark 会自己创建任务并把工作分派给对应的同事。他们各自能发出什么，由各自的设置决定。"
+      },
+      "tim": {
+        "suggest": "Tim 把他发现的情况告诉你，决定权在你。",
+        "act_with_approval": "Tim 的报告要经你批准，别人才能看到。",
+        "autonomous": "Tim 发现什么就报告什么，不需要事先请示。"
+      },
+      "emily": {
+        "suggest": "Emily 告诉你她会发什么、写什么，但不会发出任何内容。",
+        "act_with_approval": "Emily 写好帖子后留在你的待批准列表里，等你点头。",
+        "autonomous": "Emily 自己发布和发送，做过的事都会出现在下面的列表里。"
+      },
+      "alex": {
+        "suggest": "Alex 告诉你该催谁、催款内容会怎么写，但不会发出去。",
+        "act_with_approval": "Alex 写好催款提醒后留在你的待批准列表里，等你点头。",
+        "autonomous": "Alex 自己把催款邮件发出去，内容会出现在下面的列表里。"
+      },
+      "sarah": {
+        "suggest": "Sarah 告诉你该给谁发短信、内容会怎么写，但不会发出去。",
+        "act_with_approval": "Sarah 拟好短信后留在你的待批准列表里，等你点头。",
+        "autonomous": "Sarah 自己把短信发出去，内容会出现在下面的列表里。"
+      },
+      "emma": {
+        "act_with_approval": "Emma 仍然会接听每一通来电 —— 她没法让来电者等着。这里说的是短信：她先拟好回复，等你批准。",
+        "autonomous": "Emma 自己接听、自己回复，全天候。她做过的事都会出现在下面的列表里。"
+      }
+    },
+    "noDial": {
+      "mark": "Mark 暂时没有这项设置 —— 他自己做的事都不会离开这家企业。",
+      "tim": "Tim 没有这项设置：他只做汇报，没有什么需要拦住。",
+      "emily": "Emily 还不能独立行动 —— 你在营销和社交页面和她一起撰写内容。",
+      "alex": "Alex 暂时没有这项设置 —— 他还没有可以独立完成的工作。",
+      "sarah": "Sarah 暂时没有这项设置 —— 她还没有可以独立完成的工作。",
+      "emma": "Emma 暂时没有这项设置 —— 她还没有可以独立完成的工作。"
+    },
+    "job": {
+      "mark": "Mark 是你直接对话的人。他用实时数据回答关于业务的问题、创建任务，并把工作分派给对应的同事。",
+      "tim": "Tim 读你的数字，告诉你发生了什么变化 —— 收入、成交与流失，以及钱卡在哪里。",
+      "emily": "Emily 规划并撰写你的营销内容 —— 帖子、活动，以及配套的文案。",
+      "alex": "Alex 盯着别人欠你的钱 —— 谁逾期了、逾期多少，以及能把发票催回来的那封提醒。",
+      "sarah": "Sarah 负责新线索 —— 找到对的联系人、发短信，把会面排进日历。",
+      "emma": "Emma 全天候接听你的来电、预约时间，接不了的时候帮你记下留言。"
+    },
+    "limits": {
+      "mark": "Mark 可以创建和指派任务，把工作转给团队其他成员。他从不亲自给客户发短信或邮件。",
+      "tim": "Tim 只读取数据。他不写入、不发送、不花钱。",
+      "emily": "Emily 撰写并安排营销内容。她不会逐个给客户发短信或邮件。",
+      "alex": "Alex 可以就本企业开出的发票发送催款邮件。他不经手资金，也不发短信。",
+      "sarah": "Sarah 可以给没有退订短信的客户发短信。她不发发票，也不花钱。",
+      "emma": "Emma 接听电话和短信，并预约、改期或取消约期。她不发发票，也不花钱。"
+    },
+    "emptyWork": {
+      "mark": "Mark 还没有做过任何事。",
+      "tim": "Tim 还没有发出洞察 —— 积累一周数据后会有第一份摘要。",
+      "emily": "Emily 还没有发布过内容 —— 连接一个社交账号后她就可以开始。",
+      "alex": "Alex 还没有催过发票 —— 发出一张发票，他就会盯着。",
+      "sarah": "Sarah 还没有给任何人发过短信 —— 添加一位带手机号的客户后她就可以开始。",
+      "emma": "Emma 还没有接过电话 —— 设置好 AI 前台接待，她就会接听。"
+    },
+    "setUp": {
+      "mark": "问他点什么",
+      "tim": "打开经营洞察",
+      "emily": "打开社交",
+      "alex": "打开发票",
+      "sarah": "打开客户",
+      "emma": "设置前台接待"
+    },
+    "errors": {
+      "invalidLevel": "这不是该成员可选的设置之一。",
+      "notSeeded": "这位成员还没有在你的企业里建好。",
+      "saveFailed": "没有保存成功，请稍后再试。"
+    }
   },
   "errors": {
     "notAuthenticated": "登录已过期，请重新登录后继续。",

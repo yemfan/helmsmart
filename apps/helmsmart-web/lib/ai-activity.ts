@@ -206,11 +206,12 @@ export function clientDisplayName(
 export function buildActivityFeed(
   input: ActivityInput,
   fmt: ActivityFormat,
-  opts: { now?: Date; limit?: number } = {},
+  /** `windowDays` defaults to the dashboard's week; the AI Team page asks for a month. */
+  opts: { now?: Date; limit?: number; windowDays?: number } = {},
 ): ActivityRow[] {
   const { t } = fmt;
   const now = opts.now ?? new Date();
-  const since = now.getTime() - ACTIVITY_WINDOW_DAYS * 86_400_000;
+  const since = now.getTime() - (opts.windowDays ?? ACTIVITY_WINDOW_DAYS) * 86_400_000;
   const rows: ActivityRow[] = [];
 
   const employee = (slug: string): Extract<ActivityWho, { kind: "employee" }> => {

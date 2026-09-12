@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { defaultAvatarForSeed } from "@helm/ui";
-import { getBlueprint } from "@helm/ai-workforce";
-import { getWorkforceSummary, getWorkforce } from "@/lib/actions/workforce";
+import { getWorkforceSummary } from "@/lib/actions/workforce";
 import { createClient } from "@/lib/supabase/server";
 import { CommandCenterView } from "./command-center-view";
 import { WorkforceBoard } from "./workforce-board";
@@ -28,9 +26,8 @@ export default async function CommandCenterPage() {
   const todayStr = await orgToday(orgId);
   const fromStr = addDays(todayStr, -29);
 
-  const [summary, employees, overdueRes, tasksRes, currency, orgRes] = await Promise.all([
+  const [summary, overdueRes, tasksRes, currency, orgRes] = await Promise.all([
     getWorkforceSummary(fromStr, todayStr),
-    getWorkforce(),
     supabase.from("invoices").select("id, total").eq("organization_id", orgId).eq("status", "sent").lt("due_date", todayStr),
     supabase.from("tasks").select("id, priority").eq("organization_id", orgId).eq("status", "open"),
     orgCurrency(orgId),
@@ -52,15 +49,6 @@ export default async function CommandCenterPage() {
     urgentTasks: allTasks.filter((t) => t.priority === "urgent" || t.priority === "high").length,
   };
 
-  // Each employee's avatar: their chosen one → the role-fit default from the roster
-  // blueprint → a stable hash fallback (for non-roster employees).
-  const avatarById: Record<string, string> = Object.fromEntries(
-    employees.map((e) => [
-      e.id,
-      e.avatar ?? getBlueprint(e.slug)?.avatar ?? defaultAvatarForSeed(e.slug),
-    ])
-  );
-
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-6">
@@ -72,7 +60,7 @@ export default async function CommandCenterPage() {
 
       <div className="mt-10">
         <h2 className="text-lg font-semibold text-slate-900 mb-4">{t("commandCenter.workforceHeading")}</h2>
-        <WorkforceBoard summary={summary} avatarById={avatarById} />
+        <WorkforceBoard summary={summary} />
       </div>
 
       <TodaySummary data={todayData} />

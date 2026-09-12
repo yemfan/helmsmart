@@ -34,7 +34,7 @@ export function SeedWorkforceButton() {
         <Sparkles className="w-4 h-4" />
         {pending ? t("commandCenter.seed.pending") : t("commandCenter.seed.cta")}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-xs text-rose-600" role="alert">{error}</p>}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { connForHost } from "@/lib/pack-host";
 
 // Routes that require an authenticated user + an org.
 const DASHBOARD_SEGMENTS = [
-  "/approvals", "/ask", "/automations", "/books", "/calendar", "/clients", "/command-center",
+  "/ai-team", "/approvals", "/ask", "/automations", "/books", "/calendar", "/clients", "/command-center",
   "/home", "/inbox", "/marketing", "/pipeline", "/projects", "/reception",
   "/reports", "/settings", "/social", "/tasks", "/timesheets", "/voice",
 ];

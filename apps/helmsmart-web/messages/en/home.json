@@ -174,7 +174,10 @@
     "board": {
       "emptyTitle": "No AI employees yet",
       "emptyBody": "Hire your six-person AI back office — a receptionist, an SDR, and four department directors — in one click. They start in draft so you can review each before switching them on.",
-      "noActivity": "No activity yet"
+      "noActivity": "No activity yet",
+      "meetTheTeam": "Meet the team",
+      "teamCount_one": "{{count}} AI employee works for you.",
+      "teamCount_other": "{{count}} AI employees work for you."
     },
     "seed": {
       "cta": "Set up your AI workforce",
@@ -371,6 +374,7 @@
     "minimizeShort": "Minimize",
     "title": "Mark",
     "subtitle": "AI COO · answers from your business data, hands work to the team",
+    "meetTheTeam": "Meet the team",
     "openWithApprovals_one": "Ask Mark — {{count}} waiting for your approval",
     "openWithApprovals_other": "Ask Mark — {{count}} waiting for your approval",
     "dragHint": "Drag to reposition · Double-click to reset position + size",
@@ -570,6 +574,7 @@
       "appointmentCancelledBody": "{{caller}} — was {{when}}",
       "employeeCreatedTask": "{{employee}} created a task for you",
       "employeeNeedsApproval": "{{employee}} needs your approval",
+      "employeeSuggested": "{{employee}} has a suggestion for you",
       "newGoogleReviews_one": "{{count}} new review on Google Business",
       "newGoogleReviews_other": "{{count}} new reviews on Google Business",
       "newGoogleReviewsBody": "Check your Google Business dashboard to respond and boost your reputation.",
@@ -590,6 +595,105 @@
     "empty": "No transaction data yet",
     "revenue": "Revenue",
     "expenses": "Expenses"
+  },
+  "aiTeam": {
+    "metaTitle": "AI Team",
+    "title": "Your AI team",
+    "subtitle": "Who works for you, what each of them may do, and what they've done.",
+    "commandCenter": "See the team's totals in the Command Center",
+    "workingNote": "{{name}} is working.",
+    "draftNote": "{{name}} hasn't started yet — pick how {{name}} works below and save.",
+    "pausedNote": "{{name}} is switched off and won't act.",
+    "limitsHeading": "What {{name}} may do",
+    "workHeading": "Recent work",
+    "scoreHeading": "Last 30 days",
+    "noScore": "Nothing counted yet",
+    "dial": {
+      "legend": "How {{name}} works",
+      "save": "Save",
+      "readOnly": "Only an owner or an admin can change this."
+    },
+    "levels": {
+      "suggest": "Suggest only — tell me what you'd do",
+      "act_with_approval": "Ask me first — do it once I approve",
+      "autonomous": "Go ahead — and show me what you did"
+    },
+    "meaning": {
+      "mark": {
+        "suggest": "Mark answers your questions and says what he'd put on your list. He adds nothing himself.",
+        "act_with_approval": "Mark lines the work up, and anything that would reach a customer waits on your approvals list.",
+        "autonomous": "Mark adds the tasks and hands work to whoever it belongs to. What each of them may then send is their own setting."
+      },
+      "tim": {
+        "suggest": "Tim tells you what he found and leaves the decision to you.",
+        "act_with_approval": "Tim's reports wait for your approval before anyone else sees them.",
+        "autonomous": "Tim reports what he finds as he finds it, without asking first."
+      },
+      "emily": {
+        "suggest": "Emily tells you what she'd post and write. Nothing goes out.",
+        "act_with_approval": "Emily writes the posts and they wait on your approvals list until you say yes.",
+        "autonomous": "Emily posts and sends herself. Everything she does shows in the list below."
+      },
+      "alex": {
+        "suggest": "Alex tells you who to chase and what the reminder would say. He sends nothing.",
+        "act_with_approval": "Alex writes the reminder and it waits on your approvals list until you say yes.",
+        "autonomous": "Alex emails the reminder himself, and it shows in the list below with what it said."
+      },
+      "sarah": {
+        "suggest": "Sarah tells you who to text and what she'd say. Nothing is sent.",
+        "act_with_approval": "Sarah drafts the text and it waits on your approvals list until you say yes.",
+        "autonomous": "Sarah sends the text herself, and it shows in the list below with what it said."
+      },
+      "emma": {
+        "act_with_approval": "Emma still answers every call — she can't put a caller on hold. This is about her texts: she drafts the reply and it waits for your approval.",
+        "autonomous": "Emma answers and replies herself, day and night. Everything she does shows in the list below."
+      }
+    },
+    "noDial": {
+      "mark": "There is no setting for Mark yet — nothing he does on his own reaches anyone outside the business.",
+      "tim": "There is no setting for Tim: he only ever reports, so there is nothing to hold back.",
+      "emily": "Emily doesn't act on her own yet — you write her campaigns with her on the Marketing and Social pages.",
+      "alex": "There is no setting for Alex yet — he has nothing he can do on his own.",
+      "sarah": "There is no setting for Sarah yet — she has nothing she can do on her own.",
+      "emma": "There is no setting for Emma yet — she has nothing she can do on her own."
+    },
+    "job": {
+      "mark": "Mark is the one you talk to. He answers questions about the business from your live numbers, adds tasks and hands work to whoever it belongs to.",
+      "tim": "Tim reads your numbers and tells you what changed — revenue, jobs won and lost, and where the money is stuck.",
+      "emily": "Emily plans and writes your marketing — the posts, the campaigns and the words that go with them.",
+      "alex": "Alex watches what you're owed — who is overdue, by how much, and the reminder that gets the invoice paid.",
+      "sarah": "Sarah works your new leads — she finds the right contact, texts them and gets the meeting into the calendar.",
+      "emma": "Emma answers your calls around the clock, books appointments and takes a message when she can't."
+    },
+    "limits": {
+      "mark": "Mark adds and assigns tasks and passes work to the rest of the team. He never texts or emails a customer himself.",
+      "tim": "Tim only ever reads. He writes nothing, sends nothing and spends nothing.",
+      "emily": "Emily drafts and schedules your marketing. She never texts or emails a client one by one.",
+      "alex": "Alex can email a payment reminder about an invoice this business issued. He never moves money and he never texts.",
+      "sarah": "Sarah can text a client who hasn't opted out of messages. She never sends invoices and never spends money.",
+      "emma": "Emma answers calls and texts and books, moves or cancels appointments. She never sends invoices and never spends money."
+    },
+    "emptyWork": {
+      "mark": "Mark hasn't done anything yet.",
+      "tim": "Tim hasn't sent an insight yet — his first digest arrives once there's a week of numbers.",
+      "emily": "Emily hasn't published anything yet — connect a social account and she can start.",
+      "alex": "Alex hasn't chased an invoice yet — send one and he'll watch it.",
+      "sarah": "Sarah hasn't texted anyone yet — add a client with a mobile number and she can start.",
+      "emma": "Emma hasn't answered a call yet — set up the AI receptionist and she'll pick up."
+    },
+    "setUp": {
+      "mark": "Ask him something",
+      "tim": "Open Insights",
+      "emily": "Open Social",
+      "alex": "Open Invoices",
+      "sarah": "Open Clients",
+      "emma": "Set up the receptionist"
+    },
+    "errors": {
+      "invalidLevel": "That isn't one of the settings this teammate offers.",
+      "notSeeded": "This teammate isn't set up in your business yet.",
+      "saveFailed": "That didn't save. Try again in a moment."
+    }
   },
   "errors": {
     "notAuthenticated": "Your session has expired. Sign in again to continue.",

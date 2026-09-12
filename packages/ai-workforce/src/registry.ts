@@ -57,13 +57,18 @@ export async function listEmployeeTools(db: Db, orgId: string, employeeId: strin
 /**
  * Set an employee's persona avatar. Merges into the config jsonb (preserving other
  * keys), so no schema change is needed. RLS scopes the write to the caller's org.
+ *
+ * Returns whether a row actually changed. Through the RLS client an update a
+ * policy forbids matches zero rows and comes back with no error at all, so the
+ * rows are asked for back — otherwise "saved nothing" and "saved" are the same
+ * value, and the picker goes on showing a face the database never took.
  */
 export async function setEmployeeAvatar(
   db: Db,
   orgId: string,
   employeeId: string,
   avatar: string,
-): Promise<void> {
+): Promise<boolean> {
   const { data: existing, error: readErr } = await db
     .from("ai_employees")
     .select("config")
@@ -71,14 +76,17 @@ export async function setEmployeeAvatar(
     .eq("id", employeeId)
     .maybeSingle();
   if (readErr) throw new Error(readErr.message);
+  if (!existing) return false;
 
-  const config = { ...((existing?.config as Record<string, unknown>) ?? {}), avatar };
-  const { error } = await db
+  const config = { ...((existing.config as Record<string, unknown>) ?? {}), avatar };
+  const { data, error } = await db
     .from("ai_employees")
     .update({ config: config as unknown as Json })
     .eq("organization_id", orgId)
-    .eq("id", employeeId);
+    .eq("id", employeeId)
+    .select("id"); // ← load-bearing
   if (error) throw new Error(error.message);
+  return (data?.length ?? 0) > 0;
 }
 
 export interface SeedResult {
