@@ -38,6 +38,56 @@ const config: NextConfig = {
     NEXT_PUBLIC_SMBAI_SUPABASE_ANON_KEY:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwbXdzbm9vc3Vpa255emR4Z3RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NDU5MTgsImV4cCI6MjA5NTQyMTkxOH0.eAn1vPTAHXj_4OMd9T50LcazrxnvMxkcfFs-de98SNg",
   },
+  /**
+   * Cache the marketing pages at the edge.
+   *
+   * These answer `private, no-store` on every request because the root layout
+   * reads the locale cookie, which makes every route in the app dynamic. The
+   * pages hold nothing private — they are the same bytes for everyone.
+   *
+   * Setting this from the proxy did NOT work (#1789, reverted in #1791): for a
+   * rewrite the rendered route supplies the response and its own `no-store`
+   * wins. Headers declared here are applied by the platform routing layer
+   * instead, which is a different mechanism and may outrank it. Measured on a
+   * deployment, not assumed — a self-hosted `next start` already disagreed
+   * with Vercel once on exactly this question.
+   *
+   * Safe only because of the work in #1789 that survived: the language of a
+   * marketing response is fixed by its URL, and a reader who wants another
+   * language is redirected to their own before the cache is consulted. One
+   * shared copy per URL is therefore correct for everybody.
+   *
+   * The paths are listed one by one rather than matched by a wildcard. A
+   * pattern here would be a standing invitation to cache something private the
+   * next time a route is added under a path that happens to match.
+   */
+  async headers() {
+    const MARKETING = [
+      "/",
+      "/features",
+      "/pricing",
+      "/faq",
+      "/about",
+      "/contact",
+      "/contact/sales",
+      "/privacy",
+      "/terms",
+    ];
+    const localized = MARKETING.flatMap((p) => [
+      p,
+      p === "/" ? "/zh" : "/zh" + p,
+      p === "/" ? "/es" : "/es" + p,
+    ]);
+    return localized.map((source) => ({
+      source,
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      ],
+    }));
+  },
 };
 
 export default config;
