@@ -20,6 +20,7 @@ function training(over: Partial<Training> = {}): Training {
     title: "Fair housing refresher",
     description: null,
     required: true,
+    mode: "classroom",
     startsAt: null,
     location: null,
     materialsUrl: null,
@@ -35,8 +36,40 @@ describe("parseTrainingInput", () => {
     const r = parseTrainingInput({ title: "  Contract writing 101 ", required: "1", startsAt: "2026-09-20T17:00:00.000Z", location: " Room B ", dueOn: "2026-09-30", description: "" });
     expect(r).toEqual({
       ok: true,
-      training: { title: "Contract writing 101", description: null, required: true, startsAt: "2026-09-20T17:00:00.000Z", location: "Room B", materialsUrl: null, dueOn: "2026-09-30" },
+      training: { title: "Contract writing 101", description: null, required: true, mode: "classroom", startsAt: "2026-09-20T17:00:00.000Z", location: "Room B", materialsUrl: null, dueOn: "2026-09-30" },
     });
+  });
+
+  it("treats a class with no mode as a classroom, the shape everything had before modes", () => {
+    const r = parseTrainingInput({ title: "x" });
+    expect(r.ok && r.training.mode).toBe("classroom");
+  });
+
+  it("rejects a mode it does not know", () => {
+    expect(parseTrainingInput({ title: "x", mode: "webinar" })).toEqual({ ok: false, field: "mode", reason: "invalid" });
+  });
+
+  it("requires a join link that is actually a link on an online class", () => {
+    expect(parseTrainingInput({ title: "x", mode: "online", location: "Zoom, ask Dana" })).toEqual({ ok: false, field: "location", reason: "bad_url" });
+    const ok = parseTrainingInput({ title: "x", mode: "online", location: "https://zoom.us/j/123", startsAt: "2026-09-20T17:00:00.000Z" });
+    expect(ok.ok && ok.training.location).toBe("https://zoom.us/j/123");
+  });
+
+  it("insists a virtual class has a course to open", () => {
+    expect(parseTrainingInput({ title: "x", mode: "virtual" })).toEqual({ ok: false, field: "materialsUrl", reason: "required" });
+  });
+
+  it("keeps a virtual class self-paced, dropping any date or room it was given", () => {
+    const r = parseTrainingInput({
+      title: "x",
+      mode: "virtual",
+      materialsUrl: "https://classes.swipendone.com/c/DWnZVpuk",
+      startsAt: "2026-09-20T17:00:00.000Z",
+      location: "Room B",
+    });
+    expect(r.ok && r.training.startsAt).toBe(null);
+    expect(r.ok && r.training.location).toBe(null);
+    expect(r.ok && r.training.materialsUrl).toBe("https://classes.swipendone.com/c/DWnZVpuk");
   });
 
   it("drops a due date from an optional class", () => {

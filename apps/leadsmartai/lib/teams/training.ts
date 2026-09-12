@@ -20,13 +20,27 @@
 
 import type { TeamMembership } from "./types";
 
+/**
+ * How the class is delivered. `virtual` is always self-paced — the course is
+ * the class — so it never carries a date; `online` keeps its join link in
+ * `location`, which is what the panel already turns into a "Join link".
+ */
+export type TrainingMode = "classroom" | "online" | "virtual";
+export const TRAINING_MODES: TrainingMode[] = ["classroom", "online", "virtual"];
+
+export function isTrainingMode(v: unknown): v is TrainingMode {
+  return typeof v === "string" && (TRAINING_MODES as string[]).includes(v);
+}
+
 export type Training = {
   id: string;
   title: string;
   description: string | null;
   required: boolean;
-  /** ISO instant of a scheduled class; null = self-paced. */
+  mode: TrainingMode;
+  /** ISO instant of a scheduled class; null = self-paced (always null when virtual). */
   startsAt: string | null;
+  /** A room or address when classroom; the join link when online. */
   location: string | null;
   materialsUrl: string | null;
   /** YYYY-MM-DD, mandatory classes only. */
@@ -47,6 +61,7 @@ export type TrainingInput = {
   title: string;
   description: string | null;
   required: boolean;
+  mode: TrainingMode;
   startsAt: string | null;
   location: string | null;
   materialsUrl: string | null;
@@ -59,10 +74,10 @@ export const LOCATION_MAX = 300;
 export const TRAINING_MAX_ITEMS = 200;
 export const NEW_MEMBER_GRACE_DAYS = 30;
 
-export type TrainingField = "title" | "description" | "location" | "materialsUrl" | "startsAt" | "dueOn";
+export type TrainingField = "title" | "description" | "location" | "materialsUrl" | "startsAt" | "dueOn" | "mode";
 export type TrainingParse =
   | { ok: true; training: TrainingInput }
-  | { ok: false; field: TrainingField; reason: "required" | "too_long" | "bad_url" | "bad_date" };
+  | { ok: false; field: TrainingField; reason: "required" | "too_long" | "bad_url" | "bad_date" | "invalid" };
 
 function isHttpUrl(v: string): boolean {
   try {
@@ -91,6 +106,7 @@ export function parseTrainingInput(raw: {
   title?: unknown;
   description?: unknown;
   required?: unknown;
+  mode?: unknown;
   startsAt?: unknown;
   location?: unknown;
   materialsUrl?: unknown;
@@ -99,12 +115,20 @@ export function parseTrainingInput(raw: {
   const title = String(raw.title ?? "").trim();
   if (!title) return { ok: false, field: "title", reason: "required" };
   if (title.length > TITLE_MAX) return { ok: false, field: "title", reason: "too_long" };
+  // Absent means classroom — the shape every class had before modes existed.
+  const modeRaw = String(raw.mode ?? "").trim() || "classroom";
+  if (!isTrainingMode(modeRaw)) return { ok: false, field: "mode", reason: "invalid" };
+  const mode: TrainingMode = modeRaw;
   const description = String(raw.description ?? "").trim() || null;
   if (description && description.length > DESCRIPTION_MAX) return { ok: false, field: "description", reason: "too_long" };
-  const location = String(raw.location ?? "").trim() || null;
+  let location = String(raw.location ?? "").trim() || null;
   if (location && location.length > LOCATION_MAX) return { ok: false, field: "location", reason: "too_long" };
+  // Online means "join by link", so a location that is not one is a dead end.
+  if (mode === "online" && location && !isHttpUrl(location)) return { ok: false, field: "location", reason: "bad_url" };
   const materialsUrl = String(raw.materialsUrl ?? "").trim() || null;
   if (materialsUrl && !isHttpUrl(materialsUrl)) return { ok: false, field: "materialsUrl", reason: "bad_url" };
+  // A virtual class IS its course: without the link the Start button leads nowhere.
+  if (mode === "virtual" && !materialsUrl) return { ok: false, field: "materialsUrl", reason: "required" };
   const startsRaw = String(raw.startsAt ?? "").trim();
   let startsAt: string | null = null;
   if (startsRaw) {
@@ -112,12 +136,18 @@ export function parseTrainingInput(raw: {
     if (Number.isNaN(ms)) return { ok: false, field: "startsAt", reason: "bad_date" };
     startsAt = new Date(ms).toISOString();
   }
+  // Self-paced by definition. Keeping a date here would give "is this scheduled?"
+  // two answers that can disagree.
+  if (mode === "virtual") {
+    startsAt = null;
+    location = null;
+  }
   const required = truthy(raw.required);
   const dueRaw = String(raw.dueOn ?? "").trim();
   if (dueRaw && !isCalendarDate(dueRaw)) return { ok: false, field: "dueOn", reason: "bad_date" };
   // A due date only means something on a mandatory class.
   const dueOn = required && dueRaw ? dueRaw : null;
-  return { ok: true, training: { title, description, required, startsAt, location, materialsUrl, dueOn } };
+  return { ok: true, training: { title, description, required, mode, startsAt, location, materialsUrl, dueOn } };
 }
 
 /** The calendar date (YYYY-MM-DD) of an instant in a timezone. */

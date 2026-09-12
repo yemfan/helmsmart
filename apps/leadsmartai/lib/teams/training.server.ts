@@ -1,13 +1,14 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { TRAINING_MAX_ITEMS, type Completion, type Training, type TrainingInput } from "./training";
+import { isTrainingMode, TRAINING_MAX_ITEMS, type Completion, type Training, type TrainingInput } from "./training";
 
 type TrainingRow = {
   id: string;
   title: string;
   description: string | null;
   required: boolean;
+  mode: string | null;
   starts_at: string | null;
   location: string | null;
   materials_url: string | null;
@@ -18,7 +19,7 @@ type TrainingRow = {
 
 type CompletionRow = { training_id: string; agent_id: unknown; completed_at: string; recorded_by_agent_id: unknown };
 
-const TRAINING_COLS = "id, title, description, required, starts_at, location, materials_url, due_on, created_by_agent_id, created_at";
+const TRAINING_COLS = "id, title, description, required, mode, starts_at, location, materials_url, due_on, created_by_agent_id, created_at";
 
 function toTraining(r: TrainingRow): Training {
   return {
@@ -26,6 +27,8 @@ function toTraining(r: TrainingRow): Training {
     title: r.title,
     description: r.description,
     required: r.required,
+    // Rows written before the column existed read as classroom, same as the default.
+    mode: isTrainingMode(r.mode) ? r.mode : "classroom",
     startsAt: r.starts_at,
     location: r.location,
     materialsUrl: r.materials_url,
@@ -85,6 +88,7 @@ export async function addTraining(teamId: string, byAgentId: string, t: Training
       title: t.title,
       description: t.description,
       required: t.required,
+      mode: t.mode,
       starts_at: t.startsAt,
       location: t.location,
       materials_url: t.materialsUrl,
