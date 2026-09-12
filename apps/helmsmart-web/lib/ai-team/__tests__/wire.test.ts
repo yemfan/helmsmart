@@ -8,13 +8,11 @@ import { z } from "zod";
 import { toJsonSchema } from "../json-schema";
 import { createAskEventParser, encodeAskEvent, historyForModel, sanitizeHistory } from "../ask-stream";
 import {
-  approvalFingerprint,
   effectiveStatus,
   isExpired,
   isUnconfirmed,
   pickDetails,
   toApprovalView,
-  type ApprovalDetails,
   type ApprovalRow,
   type ApprovalView,
 } from "../approval-view";
@@ -150,33 +148,6 @@ describe("the approval view", () => {
     const dismissed = approved({ status: "failed", error: "Dismissed…", result: { status: "unconfirmed" } });
     expect(toApprovalView(dismissed, {}, now)).toMatchObject({ status: "failed", dismissed: true });
     expect(toApprovalView(approved({ status: "failed", result: { status: "rejected" } }), {}, now).dismissed).toBe(false);
-  });
-});
-
-describe("the approval fingerprint", () => {
-  const shown = pickDetails(textProposal().details);
-  const fp = (d: Partial<ApprovalDetails>) => approvalFingerprint("text_client", { ...shown, ...d });
-
-  it("is stable, and blind to whitespace around the message and to descriptive fields", () => {
-    expect(fp({})).toMatch(/^[0-9a-f]{64}$/);
-    expect(fp({ message: "  Running 10 minutes late!\n" })).toBe(fp({}));
-    expect(fp({ clientName: "P. Shah", daysOverdue: 3 })).toBe(fp({}));
-  });
-
-  it("changes with the recipient, the destination, the amount, the invoice and the message", () => {
-    const base = fp({});
-    for (const change of [
-      { clientId: "aaaaaaaa-0000-4000-8000-000000000001" },
-      { phone: "(415) 555-0999" },
-      { email: "priya@example.com" },
-      { amount: 1200 },
-      { currency: "EUR" },
-      { invoiceId: "bbbbbbbb-0000-4000-8000-000000001042" },
-      { message: "Running 15 minutes late!" },
-    ]) {
-      expect(fp(change), JSON.stringify(change)).not.toBe(base);
-    }
-    expect(approvalFingerprint("send_invoice_reminder", shown)).not.toBe(base);
   });
 });
 

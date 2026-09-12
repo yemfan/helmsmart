@@ -38,13 +38,13 @@ import {
   APPROVABLE_ACTIONS,
   EDITABLE_ACTIONS,
   UNCONFIRMED_RESULT,
-  approvalFingerprint,
   expiryCutoff,
   isExpired,
   isUnconfirmed,
   pickDetails,
   type ApprovalRow,
 } from "./approval-view";
+import { approvalFingerprint } from "./fingerprint.server";
 import { APPROVAL_COLUMNS, loadApproval } from "./approvals";
 import type { ActionContext, ActionResult, AnyAction, ApprovalEdits, PreviewResult } from "./types";
 

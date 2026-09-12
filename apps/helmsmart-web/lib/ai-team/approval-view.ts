@@ -6,9 +6,8 @@
  * the route, the server action and the home page all build the same view.
  * What an action DOES lives in `./actions/*` (server-only); this file knows
  * only which action keys exist and which of them the owner can edit.
+ * The approval fingerprint both sides compute lives in `./fingerprint.ts`.
  */
-import { sha256Hex } from "./sha256";
-
 export const APPROVAL_STATUSES = ["proposed", "approved", "declined", "executed", "failed", "expired"] as const;
 export type ApprovalStatus = (typeof APPROVAL_STATUSES)[number];
 
@@ -191,34 +190,6 @@ export function pickDetails(raw: unknown): ApprovalDetails {
     daysOverdue: num(d.daysOverdue),
     note: str(d.note),
   };
-}
-
-/**
- * What approving would actually do, as one hash: who it goes to (the client's
- * id), where (phone and email), for how much, and the exact message.
- *
- * The card sends this for the details it SHOWED, with the message the owner
- * confirmed; the server recomputes it from the action's preview against the
- * data as it is now, and from the row's stored details. All three must agree
- * or nothing is sent. Names and "days overdue" are left out: they describe
- * the recipient, they don't choose one.
- */
-export function approvalFingerprint(actionKey: string, d: ApprovalDetails): string {
-  const text = (v: unknown): string | null => (typeof v === "string" && v.trim() ? v.trim() : null);
-  const amount = typeof d.amount === "number" && Number.isFinite(d.amount) ? d.amount : null;
-  return sha256Hex(
-    JSON.stringify([
-      "approval-v1",
-      actionKey,
-      text(d.clientId),
-      text(d.invoiceId),
-      text(d.phone),
-      text(d.email),
-      amount,
-      text(d.currency),
-      text(d.message),
-    ]),
-  );
 }
 
 export function toApprovalView(row: ApprovalRow, team: Record<string, TeamFace>, now: Date): ApprovalView {

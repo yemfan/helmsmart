@@ -39,7 +39,8 @@ import { decideApprovalCore, dismissUnconfirmedCore, type DecideDeps, type Decid
 import { defaultRunDeps, getAction } from "../registry";
 import { runAction } from "../run-action";
 import { listUnconfirmedApprovals } from "../approvals";
-import { approvalFingerprint, pickDetails, toApprovalView, type ApprovalRow } from "../approval-view";
+import { pickDetails, toApprovalView, type ApprovalRow } from "../approval-view";
+import { approvalFingerprint } from "../fingerprint.server";
 import { fakeDb, type FakeDb } from "./fake-db";
 import { ORG, USER, testContext } from "./context";
 import { DANA, PRIYA, PROPOSAL, STRANGER, seedTables, textProposal } from "./seed";
