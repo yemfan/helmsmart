@@ -307,9 +307,16 @@ export function TeamTrainingPanel({ teamId, currentAgentId, canManage, members, 
               {k("joinLink")}
             </a>
           ) : null}
+          {/* The class itself: a self-paced course, a deck, whatever the office linked.
+              It is the one thing an agent comes here to do, so it reads as the action. */}
           {item.materialsUrl ? (
-            <a href={item.materialsUrl} target="_blank" rel="noreferrer" className={smallButton}>
-              {k("materials")}
+            <a
+              href={item.materialsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-8 items-center rounded-lg bg-blue-600 px-3 text-xs font-medium text-white hover:bg-blue-700"
+            >
+              {mine ? k("startAgain") : k("start")}
             </a>
           ) : null}
           {canManage ? (
