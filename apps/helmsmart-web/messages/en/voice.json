@@ -149,7 +149,7 @@
     "subtitle": "Answers your calls when you're unavailable",
     "toggleNeedsNumber": "Add a phone number first — the agent has nothing to answer on.",
     "needsNumber": "The voice agent needs a phone number before it can answer calls.",
-    "connected": "Connected to {{number}}",
+    "numberOnFile": "Phone number on file: {{number}}",
     "notAnswered": "Calls to {{number}} are not answered by your receptionist",
     "sharedWarning_one": "This number is shared with another account, and that account answers it — so callers hear that business, not yours. Your settings below are saved, but they will not be used until this number is yours alone.",
     "sharedWarning_other": "This number is shared with {{count}} other accounts, and one of those answers it — so callers hear that business, not yours. Your settings below are saved, but they will not be used until this number is yours alone.",
@@ -260,16 +260,11 @@
       "calendarOk": "Google Calendar connected",
       "calendarOptional": "Google Calendar (optional)",
       "calendarFix": "Connect Google Calendar below to only offer times you're actually free.",
-      "calendarFixUnconfigured": "Optional — connect a calendar to avoid double-booking."
+      "calendarFixUnconfigured": "Optional — connect a calendar to avoid double-booking.",
+      "numberNotAnswering": "Phone number saved, but calls aren't answered — {{number}}",
+      "numberUnverified": "Phone number saved — {{number}} (not checked yet)",
+      "numberWiringFix": "See the phone number section above — it says what's wrong and how to fix it."
     },
-    "verify": "Verify wiring",
-    "verifying": "Checking Retell…",
-    "verifyHint": "Confirms Retell has your number bound to the agent with the inbound webhook.",
-    "verifyOk": "Wired correctly — agent and inbound webhook confirmed in Retell.",
-    "verifyUnknownNumber": "Retell doesn't recognize this number.",
-    "verifyMissing": "Number found, but {{missing}} isn't set right in Retell.",
-    "missingWebhook": "inbound webhook",
-    "missingAgent": "agent binding",
     "manual": {
       "summary": "Prefer to wire Retell manually?",
       "step1": "On your Retell number, under Inbound Call Agent, set the shared agent.",
@@ -288,29 +283,84 @@
     "saving": "Saving…",
     "saveFailed": "Couldn't save that number.",
     "wiredOk": "Saved and wired — the agent will answer this number.",
-    "savedNotAnswering": "Saved, but not answering calls yet",
-    "notInProvider": "This number isn't in the voice provider yet.",
-    "notAttached": "It isn't attached to the receptionist agent.",
-    "webhookWrong": "Its inbound webhook doesn't point here."
+    "savedNotAnswering": "Saved, but calls to it aren't answered yet",
+    "savedNotChecked": "Saved. We couldn't check whether calls to it are answered."
   },
-  "wizard": {
-    "connectedTitle": "Number connected — {{number}}",
-    "connectedBody": "It's wired to your agent automatically. Finish the checklist below, then call it to test.",
-    "buyTab": "Buy a number",
-    "importTab": "Connect existing",
-    "buyHint": "We'll buy a number and wire it to your receptionist automatically. Billed at about $2/month.",
-    "areaCode": "Area code",
-    "tollFree": "Toll-free",
-    "getNumber": "Get my number",
-    "gettingNumber": "Getting your number…",
-    "importHint": "Already have a number? Connect it via its Twilio SIP trunk — we'll wire the agent for you.",
-    "phoneNumber": "Phone number",
-    "terminationUri": "SIP termination URI",
-    "sipUser": "SIP username (optional)",
-    "sipPass": "SIP password (optional)",
-    "connectNumber": "Connect number",
-    "connecting": "Connecting…",
-    "genericError": "Something went wrong."
+  "numberSetup": {
+    "title": "Get your phone number",
+    "description": "Your AI receptionist needs a number to answer. Choose how you want to get one.",
+    "yourNumber": "Your phone number",
+    "recommended": "Recommended",
+    "ownerOnly": "Only an owner or admin can change the business phone number.",
+    "buy": {
+      "title": "Get a number from HelmSmart",
+      "subtitle": "A new number your receptionist answers straight away",
+      "how": "We buy the number and connect it to your AI receptionist in one step, so it starts answering the moment you have it.",
+      "cost": "This is a purchase. It adds a phone number to your account, billed every month for as long as you keep it — toll-free numbers cost more than local ones. Nothing is bought until you press the button below.",
+      "areaCode": "Area code",
+      "areaCodeHelp": "Use the area code your customers recognise, and we'll find an available number in it. For a toll-free number, use a toll-free prefix such as 800, 888 or 877.",
+      "tollFree": "Make it toll-free",
+      "action": "Get this number",
+      "working": "Getting your number…",
+      "failed": "Couldn't get a number right now."
+    },
+    "forward": {
+      "title": "Keep your current business number",
+      "subtitle": "Forward your existing line to HelmSmart at your phone provider",
+      "how": "HelmSmart doesn't forward calls — your phone provider does. You get a HelmSmart number, then tell your carrier to send calls from your existing line to it. Your customers keep dialling the number you already advertise.",
+      "step1": "Get a HelmSmart number first. That's the number your calls will be forwarded to.",
+      "step2": "Open the app or online account for the carrier your business line is with.",
+      "step3": "Turn on call forwarding to your HelmSmart number. Most carriers let you forward every call, or only the ones you don't pick up — forwarding only unanswered calls lets your own phone ring first.",
+      "step4": "Call your business number from another phone to check the receptionist answers.",
+      "carrierNote": "How you switch forwarding on differs by carrier. On many US mobile carriers it's *72 followed by the number to start and *73 to stop, but check your own provider's instructions — landlines, VoIP and business phone systems each do it differently.",
+      "startHere": "Get a HelmSmart number"
+    },
+    "import": {
+      "title": "Advanced — connect a Twilio number you own",
+      "subtitle": "For accounts with their own Twilio Elastic SIP Trunk",
+      "how": "If you already own a number in your own Twilio account, we can point it at your receptionist over its SIP trunk. The trunk has to be set up in Twilio first. Most businesses want one of the options above instead.",
+      "phoneNumber": "Phone number",
+      "phoneNumberHelp": "In full international form, including the country code — for example +16265551234.",
+      "terminationUri": "SIP termination URI",
+      "terminationUriHelp": "From your Twilio Elastic SIP Trunk, under Termination — for example yourtrunk.pstn.twilio.com.",
+      "sipUser": "SIP username (optional)",
+      "sipPass": "SIP password (optional)",
+      "sipAuthHelp": "Only needed if your trunk authenticates with credentials. Leave both blank if it authenticates by IP address.",
+      "action": "Connect this number",
+      "working": "Connecting…",
+      "failed": "Couldn't connect that number."
+    },
+    "manual": {
+      "title": "Enter a number that already reaches HelmSmart",
+      "subtitle": "For accounts sharing a line that someone has already set up"
+    },
+    "change": {
+      "summary": "Change or replace this number",
+      "body": "To use a different number, remove {{number}} first, then choose how you want to get the new one.",
+      "remove": "Remove this number",
+      "removing": "Removing…",
+      "removeFailed": "Couldn't remove that number.",
+      "keepsNumber": "Removing it here only disconnects it from HelmSmart. If we bought the number for you, it stays on your account until you release it with the carrier."
+    }
+  },
+  "wiring": {
+    "checking": "Checking whether calls to it are answered…",
+    "checkAgain": "Check again",
+    "wired": "Calls to {{number}} are answered by your AI receptionist.",
+    "notConnected": "{{number}} isn't connected to your AI receptionist yet — calls to it won't be answered.",
+    "notChecked": "Not checked yet.",
+    "couldNotCheck": "Couldn't check whether calls to {{number}} are answered.",
+    "reason": {
+      "notInProvider": "The number isn't registered with our voice provider.",
+      "agentNotBound": "It isn't attached to your receptionist agent.",
+      "webhookElsewhere": "Its incoming-call webhook points somewhere other than HelmSmart.",
+      "misconfigured": "It's set up in a way we don't recognise."
+    },
+    "reconnect": "Reconnect this number",
+    "reconnecting": "Reconnecting…",
+    "reconnectFailed": "Couldn't reconnect that number.",
+    "manualFix": "We can't repair this one for you — it isn't a number we manage.",
+    "manualFixLink": "Set it up by hand"
   },
   "autoReply": {
     "title": "Auto-reply settings",
@@ -355,6 +405,8 @@
     "importFailed": "Couldn't import that number.",
     "noNumberConnected": "No number connected yet.",
     "verifyFailed": "Couldn't check the number with Retell.",
+    "cannotRebindUnknown": "This number isn't registered with our voice provider, so we can't reconnect it from here.",
+    "rebindFailed": "Couldn't reconnect that number right now.",
     "numberNotStored": "Number {{number}} was provisioned but could not be saved to the organization: {{reason}}"
   }
 }

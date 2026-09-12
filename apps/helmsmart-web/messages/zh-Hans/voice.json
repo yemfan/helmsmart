@@ -142,7 +142,7 @@
     "subtitle": "你不方便接听时，由 AI 前台接待代接来电",
     "toggleNeedsNumber": "请先添加电话号码——助理还没有可接听的号码。",
     "needsNumber": "语音助理需要一个电话号码才能接听来电。",
-    "connected": "已连接到 {{number}}",
+    "numberOnFile": "已登记的电话号码：{{number}}",
     "notAnswered": "拨打 {{number}} 的来电并非由你的前台接待接听",
     "sharedWarning_other": "该号码还被另外 {{count}} 个账户使用，并且由其中一个账户接听——所以来电方听到的是那家企业，而不是你。下方的设置会保存，但在该号码归你独享之前不会生效。",
     "sharedNotice_other": "请注意：该号码还被另外 {{count}} 个账户使用。目前来电以你的企业名义接听，但对方修改设置后可能发生变化。",
@@ -251,16 +251,11 @@
       "calendarOk": "已连接 Google 日历",
       "calendarOptional": "Google 日历（选填）",
       "calendarFix": "在下方连接 Google 日历，只提供你确实空闲的时段。",
-      "calendarFixUnconfigured": "选填——连接日历可避免重复预约。"
+      "calendarFixUnconfigured": "选填——连接日历可避免重复预约。",
+      "numberNotAnswering": "号码已保存，但来电无人接听——{{number}}",
+      "numberUnverified": "号码已保存——{{number}}（尚未检查）",
+      "numberWiringFix": "请看上方的电话号码部分，那里会说明问题出在哪里以及如何解决。"
     },
-    "verify": "验证配置",
-    "verifying": "正在检查 Retell…",
-    "verifyHint": "确认 Retell 中的号码已绑定到助理并配置了入线 Webhook。",
-    "verifyOk": "配置正确——已在 Retell 确认助理绑定与入线 Webhook。",
-    "verifyUnknownNumber": "Retell 不认识该号码。",
-    "verifyMissing": "已找到号码，但 Retell 中的{{missing}}配置不正确。",
-    "missingWebhook": "入线 Webhook",
-    "missingAgent": "助理绑定",
     "manual": {
       "summary": "想手动配置 Retell？",
       "step1": "在 Retell 号码的 Inbound Call Agent 中，选择共享助理。",
@@ -279,29 +274,84 @@
     "saving": "保存中…",
     "saveFailed": "无法保存该号码。",
     "wiredOk": "已保存并配置完成——助理会接听该号码。",
-    "savedNotAnswering": "已保存，但尚未能接听来电",
-    "notInProvider": "该号码还不在语音服务商中。",
-    "notAttached": "它尚未绑定到前台接待助理。",
-    "webhookWrong": "它的入线 Webhook 没有指向这里。"
+    "savedNotAnswering": "已保存，但打到这个号码的来电还无人接听",
+    "savedNotChecked": "已保存。我们无法确认打到这个号码的来电是否有人接听。"
   },
-  "wizard": {
-    "connectedTitle": "号码已连接——{{number}}",
-    "connectedBody": "已自动绑定到你的助理。完成下方的清单后，拨个电话测试一下。",
-    "buyTab": "购买号码",
-    "importTab": "连接已有号码",
-    "buyHint": "我们会购买一个号码并自动绑定到你的前台接待。费用约 $2/月。",
-    "areaCode": "区号",
-    "tollFree": "免费电话",
-    "getNumber": "获取号码",
-    "gettingNumber": "正在获取号码…",
-    "importHint": "已有号码？通过它的 Twilio SIP 中继连接——我们会帮你绑定助理。",
-    "phoneNumber": "电话号码",
-    "terminationUri": "SIP 终接 URI",
-    "sipUser": "SIP 用户名（选填）",
-    "sipPass": "SIP 密码（选填）",
-    "connectNumber": "连接号码",
-    "connecting": "连接中…",
-    "genericError": "出现问题，请稍后重试。"
+  "numberSetup": {
+    "title": "获取你的电话号码",
+    "description": "AI 前台接待需要一个号码才能接听来电。请选择获取号码的方式。",
+    "yourNumber": "你的电话号码",
+    "recommended": "推荐",
+    "ownerOnly": "只有企业所有者或管理员可以更改企业电话号码。",
+    "buy": {
+      "title": "从 HelmSmart 获取号码",
+      "subtitle": "一个全新号码，前台接待立即就能接听",
+      "how": "我们会一步完成购买号码并把它连接到你的 AI 前台接待，号码一到手就能开始接听。",
+      "cost": "这是一笔消费。它会在你的账户上增加一个电话号码，只要继续使用就按月收费；免费电话（Toll-free）比本地号码更贵。在你点击下面的按钮之前，不会购买任何东西。",
+      "areaCode": "区号",
+      "areaCodeHelp": "填写客户熟悉的区号，我们会在该区号下找一个可用号码。如果要免费电话，请填 800、888、877 之类的免费号段前缀。",
+      "tollFree": "设为免费电话",
+      "action": "获取这个号码",
+      "working": "正在获取号码…",
+      "failed": "暂时无法获取号码。"
+    },
+    "forward": {
+      "title": "继续使用你现在的企业号码",
+      "subtitle": "在你的电话运营商那里，把现有线路转接到 HelmSmart",
+      "how": "HelmSmart 不会转接来电，转接是由你的电话运营商完成的。你先获取一个 HelmSmart 号码，再让运营商把现有线路的来电转到这个号码。客户照旧拨打你一直在宣传的号码。",
+      "step1": "先获取一个 HelmSmart 号码，来电将被转接到这个号码。",
+      "step2": "打开你企业线路所属运营商的手机应用或网上账户。",
+      "step3": "开启呼叫转移，目标设为你的 HelmSmart 号码。多数运营商支持转移全部来电，或只转移你没接的来电——只转移未接来电可以让你自己的电话先响。",
+      "step4": "用另一部手机拨打你的企业号码，确认前台接待会接听。",
+      "carrierNote": "开启转移的方式因运营商而异。在美国不少移动运营商上，拨 *72 加号码可开启、拨 *73 可关闭，但请以你自己运营商的说明为准——固话、VoIP 和企业电话系统的做法各不相同。",
+      "startHere": "获取 HelmSmart 号码"
+    },
+    "import": {
+      "title": "高级——连接你自己的 Twilio 号码",
+      "subtitle": "适用于拥有自己 Twilio 弹性 SIP 中继的账户",
+      "how": "如果你自己的 Twilio 账户里已经有号码，我们可以通过它的 SIP 中继把它指向你的前台接待。请先在 Twilio 中配置好中继。大多数企业更适合上面的方式。",
+      "phoneNumber": "电话号码",
+      "phoneNumberHelp": "请填写含国家代码的完整国际格式，例如 +16265551234。",
+      "terminationUri": "SIP 终接 URI",
+      "terminationUriHelp": "在你的 Twilio 弹性 SIP 中继的 Termination 中查看，例如 yourtrunk.pstn.twilio.com。",
+      "sipUser": "SIP 用户名（选填）",
+      "sipPass": "SIP 密码（选填）",
+      "sipAuthHelp": "只有当你的中继使用凭据认证时才需要填写。如果按 IP 地址认证，两项都留空。",
+      "action": "连接这个号码",
+      "working": "连接中…",
+      "failed": "无法连接该号码。"
+    },
+    "manual": {
+      "title": "输入一个已经能接入 HelmSmart 的号码",
+      "subtitle": "适用于共用一条已配置好线路的账户"
+    },
+    "change": {
+      "summary": "更换或替换这个号码",
+      "body": "要使用别的号码，请先移除 {{number}}，然后选择获取新号码的方式。",
+      "remove": "移除这个号码",
+      "removing": "移除中…",
+      "removeFailed": "无法移除该号码。",
+      "keepsNumber": "在这里移除只是断开它与 HelmSmart 的连接。如果这个号码是我们为你购买的，在你向运营商退订之前，它仍留在你的账户上。"
+    }
+  },
+  "wiring": {
+    "checking": "正在检查打到这个号码的来电是否有人接听…",
+    "checkAgain": "重新检查",
+    "wired": "打到 {{number}} 的来电由你的 AI 前台接待接听。",
+    "notConnected": "{{number}} 还没有连接到你的 AI 前台接待——打到这个号码的来电不会有人接听。",
+    "notChecked": "尚未检查。",
+    "couldNotCheck": "我们无法确认打到 {{number}} 的来电是否有人接听。",
+    "reason": {
+      "notInProvider": "该号码没有在我们的语音服务商处登记。",
+      "agentNotBound": "它没有绑定到你的前台接待助理。",
+      "webhookElsewhere": "它的来电 Webhook 指向了别处，而不是 HelmSmart。",
+      "misconfigured": "它的配置我们无法识别。"
+    },
+    "reconnect": "重新连接这个号码",
+    "reconnecting": "重新连接中…",
+    "reconnectFailed": "无法重新连接该号码。",
+    "manualFix": "这个号码我们无法代为修复——它不是由我们管理的号码。",
+    "manualFixLink": "手动配置"
   },
   "autoReply": {
     "title": "自动回复设置",
@@ -346,6 +396,8 @@
     "importFailed": "无法导入该号码。",
     "noNumberConnected": "尚未连接号码。",
     "verifyFailed": "无法在 Retell 中校验该号码。",
+    "cannotRebindUnknown": "该号码没有在我们的语音服务商处登记，因此无法在这里重新连接。",
+    "rebindFailed": "暂时无法重新连接该号码。",
     "numberNotStored": "号码 {{number}} 已开通，但未能保存到企业：{{reason}}"
   }
 }

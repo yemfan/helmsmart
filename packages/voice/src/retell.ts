@@ -101,6 +101,35 @@ export async function importRetellNumber(input: {
   return { phoneNumber: data.phone_number };
 }
 
+/**
+ * Re-point a number the provider already holds at our agent + inbound webhook.
+ *
+ * The repair half of the "Verify wiring" check. Buying and importing wire a
+ * number as a side effect, so the only numbers that need this are ones whose
+ * binding was changed afterwards — by hand in the Retell console, or by an
+ * app-URL move that left the webhook on the old host. It creates nothing and
+ * costs nothing, which is why it is safe to offer as a button.
+ */
+export async function updateRetellNumber(input: {
+  phoneNumber: string; // E.164 — must already exist at the provider
+  agentId: string;
+  inboundWebhookUrl: string;
+  nickname?: string;
+}): Promise<{ phoneNumber: string }> {
+  const data = await retellFetch<PhoneNumberResponse>(
+    `/update-phone-number/${encodeURIComponent(input.phoneNumber)}`,
+    {
+      method: "PATCH",
+      body: {
+        inbound_agents: [{ agent_id: input.agentId, weight: 1 }],
+        inbound_webhook_url: input.inboundWebhookUrl,
+        nickname: input.nickname,
+      },
+    }
+  );
+  return { phoneNumber: data.phone_number ?? input.phoneNumber };
+}
+
 /** Read a number's current wiring (for the "Verify wiring" check). */
 export async function getRetellNumber(phoneNumber: string): Promise<{
   found: boolean;

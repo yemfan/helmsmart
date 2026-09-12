@@ -4,11 +4,24 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { updateOrg } from "@/lib/actions/org-update";
 import { normalizePhoneE164 } from "@/lib/phone";
-import { createRetellNumber, importRetellNumber, getRetellNumber } from "@/lib/retell";
+import { createRetellNumber, importRetellNumber, getRetellNumber, updateRetellNumber } from "@/lib/retell";
 import { getServerT } from "@/lib/i18n/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
+import { checkActionPermission } from "@/components/role-guard";
 
 type ActionResult = { ok: boolean; number?: string; error?: string };
+
+/**
+ * Buying, importing and re-binding a number are owner/admin work.
+ *
+ * The first of those spends the account's money and the other two change where
+ * every inbound call lands, so none of them belong to a bookkeeper or a viewer
+ * who happens to open Settings. `settings.write` is held by owner and admin
+ * only (`lib/permissions.ts`).
+ */
+async function requireNumberAdmin(): Promise<{ ok: false; error: string } | null> {
+  return checkActionPermission("settings.write");
+}
 
 /**
  * Canonical inbound-webhook URL Retell should call on each inbound call. Built
@@ -67,6 +80,8 @@ async function storeNumber(orgId: string, e164: string): Promise<void> {
 /** Buy a new number and auto-wire it to the agent + inbound webhook. */
 export async function provisionNumber(input: { areaCode: string; tollFree?: boolean }): Promise<ActionResult> {
   const t = await getServerT("voice");
+  const denied = await requireNumberAdmin();
+  if (denied) return denied;
   const env = await retellEnv();
   if (!env.ok) return { ok: false, error: env.error };
 
@@ -104,6 +119,8 @@ export async function importExistingNumber(input: {
   sipPass?: string;
 }): Promise<ActionResult> {
   const t = await getServerT("voice");
+  const denied = await requireNumberAdmin();
+  if (denied) return denied;
   const env = await retellEnv();
   if (!env.ok) return { ok: false, error: env.error };
 
@@ -160,5 +177,44 @@ export async function verifyNumberWiring(): Promise<{
     return { ok: info.found && webhookOk && agentOk, numberFound: info.found, webhookOk, agentOk };
   } catch (e) {
     return { ok: false, numberFound: false, webhookOk: false, agentOk: false, error: e instanceof Error ? e.message : t("errors.verifyFailed") };
+  }
+}
+
+/**
+ * Repair a number the provider holds but has bound somewhere else.
+ *
+ * The fix offered next to "this number isn't connected to your receptionist".
+ * It buys nothing and imports nothing — it re-points an existing number at our
+ * agent and our inbound webhook, which is exactly the state buying it would
+ * have left it in. A number the provider has never heard of cannot be repaired
+ * from here, and saying so is more use than a button that fails: that org is
+ * sent to the manual URLs instead.
+ */
+export async function rebindNumber(): Promise<ActionResult> {
+  const t = await getServerT("voice");
+  const denied = await requireNumberAdmin();
+  if (denied) return denied;
+  const env = await retellEnv();
+  if (!env.ok) return { ok: false, error: env.error };
+
+  const org = await currentOrg();
+  if (!org) return { ok: false, error: t("errors.noOrganization") };
+  if (!org.twilio_number) return { ok: false, error: t("errors.noNumberConnected") };
+
+  try {
+    const info = await getRetellNumber(org.twilio_number);
+    if (!info.found) return { ok: false, error: t("errors.cannotRebindUnknown") };
+
+    await updateRetellNumber({
+      phoneNumber: org.twilio_number,
+      agentId: env.agentId,
+      inboundWebhookUrl: inboundWebhookUrl(),
+      nickname: org.name,
+    });
+    revalidatePath("/voice");
+    revalidatePath("/settings");
+    return { ok: true, number: org.twilio_number };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : t("errors.rebindFailed") };
   }
 }

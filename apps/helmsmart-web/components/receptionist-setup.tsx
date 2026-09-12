@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { CheckCircle2, AlertCircle, Copy, Check, PhoneCall, ShieldCheck, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, AlertCircle, Copy, Check, PhoneCall } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ReceptionistNumberSimple } from "@/components/receptionist-number-simple";
-import { verifyNumberWiring } from "@/lib/actions/voice-setup";
+import { NumberWiringStatus } from "@/components/number-wiring-status";
+import { ReceptionistNumberSetup } from "@/components/receptionist-number-setup";
+import { describeWiring, isReceptionistReady, type WiringResult } from "@/lib/voice/number-wiring";
 
 export type SetupStatus = {
   numberOk: boolean;
@@ -61,7 +62,7 @@ function Item({ ok, label, fix }: { ok: boolean; label: string; fix: string }) {
   );
 }
 
-export function ReceptionistSetup({ status }: { status: SetupStatus }) {
+export function ReceptionistSetup({ status, canManage = true }: { status: SetupStatus; canManage?: boolean }) {
   const { t } = useTranslation("voice");
   /**
    * Everything the APP controls. Necessary for the agent to work, and nowhere
@@ -71,8 +72,11 @@ export function ReceptionistSetup({ status }: { status: SetupStatus }) {
    */
   const appReady = status.numberOk && status.hoursOk && status.typesOk && status.agentEnabled;
 
-  const [verifying, startVerify] = useTransition();
-  const [verifyMsg, setVerifyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  /**
+   * The provider's answer, reported up by `NumberWiringStatus` so the badge and
+   * the status line cannot disagree. `null` while the check is in flight.
+   */
+  const [wiring, setWiring] = useState<WiringResult | null>(null);
 
   /**
    * "Ready" means a caller gets answered, and only the provider can confirm
@@ -81,64 +85,58 @@ export function ReceptionistSetup({ status }: { status: SetupStatus }) {
    * single call. Unverified is not the same as working, so it does not claim to
    * be.
    */
+  const verdict = describeWiring(wiring);
   const badge = !appReady
     ? { text: t("setup.badge.needsSetup"), cls: "text-amber-700 bg-amber-50" }
-    : verifyMsg === null
-      ? { text: t("setup.badge.notVerified"), cls: "text-slate-600 bg-slate-100" }
-      : verifyMsg.ok
-        ? { text: t("setup.badge.ready"), cls: "text-emerald-700 bg-emerald-50" }
-        : { text: t("setup.badge.notAnswering"), cls: "text-rose-700 bg-rose-50" };
-
-  // Check on load once the app-side boxes are ticked, so the badge is truthful
-  // without waiting for someone to press a button they have no reason to press.
-  useEffect(() => {
-    if (appReady && verifyMsg === null) handleVerify();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appReady]);
-
-  function handleVerify() {
-    setVerifyMsg(null);
-    startVerify(async () => {
-      const r = await verifyNumberWiring();
-      if (r.ok) {
-        setVerifyMsg({ ok: true, text: t("setup.verifyOk") });
-      } else if (!r.numberFound) {
-        setVerifyMsg({ ok: false, text: r.error ?? t("setup.verifyUnknownNumber") });
-      } else {
-        const missing = [
-          !r.webhookOk && t("setup.missingWebhook"),
-          !r.agentOk && t("setup.missingAgent"),
-        ].filter(Boolean).join(" + ");
-        setVerifyMsg({ ok: false, text: t("setup.verifyMissing", { missing }) });
-      }
-    });
-  }
+    : isReceptionistReady(appReady, wiring)
+      ? { text: t("setup.badge.ready"), cls: "text-emerald-700 bg-emerald-50" }
+      : verdict.state === "unwired"
+        ? { text: t("setup.badge.notAnswering"), cls: "text-rose-700 bg-rose-50" }
+        : { text: t("setup.badge.notVerified"), cls: "text-slate-600 bg-slate-100" };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 mb-8">
+    <div id="receptionist-setup" className="bg-white border border-slate-200 rounded-xl p-6 mb-8 scroll-mt-6">
       <div className="flex items-center gap-2 mb-1">
         <PhoneCall className="w-4 h-4 text-indigo-500" />
         <h3 className="text-sm font-semibold text-slate-800">{t("setup.title")}</h3>
         <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
-          {verifying && verifyMsg === null ? t("setup.badge.checking") : badge.text}
+          {badge.text}
         </span>
       </div>
       <p className="text-xs text-slate-500 mb-4">{t("setup.description")}</p>
 
       {/*
-        Enter the number you already own — the CloseBoss shape. The buy/import
-        wizard is kept in the repo for when per-tenant numbers come back; see
-        receptionist-number-simple.tsx for why it was set aside rather than
-        deleted.
+        Getting a number, and keeping it honest afterwards. Always mounted —
+        this used to appear only when no number was set, so an owner with a
+        wrong or unwired number had nowhere on the screen to change it.
       */}
-      {!status.numberOk && <ReceptionistNumberSimple current={status.number} />}
+      <ReceptionistNumberSetup
+        current={status.number}
+        canManage={canManage}
+        manualHref="#receptionist-manual-wiring"
+        onWiring={setWiring}
+      />
 
       {/* What the app controls */}
       <ul className="divide-y divide-slate-100 mb-5">
+        {/*
+          A recorded number is not an answered one. This line used to tick green
+          off `numberOk` alone — the same claim the badge used to make — so the
+          checklist read "Phone number connected" over a number the provider had
+          never heard of.
+        */}
         <Item
-          ok={status.numberOk}
-          label={status.numberOk ? t("setup.items.numberOk", { number: status.number }) : t("setup.items.numberMissing")}
-          fix={t("setup.items.numberFix")}
+          ok={status.numberOk && verdict.state === "wired"}
+          label={
+            !status.numberOk
+              ? t("setup.items.numberMissing")
+              : verdict.state === "wired"
+                ? t("setup.items.numberOk", { number: status.number })
+                : verdict.state === "unwired"
+                  ? t("setup.items.numberNotAnswering", { number: status.number })
+                  : t("setup.items.numberUnverified", { number: status.number })
+          }
+          fix={status.numberOk ? t("setup.items.numberWiringFix") : t("setup.items.numberFix")}
         />
         <Item
           ok={status.hoursOk}
@@ -162,45 +160,27 @@ export function ReceptionistSetup({ status }: { status: SetupStatus }) {
         />
       </ul>
 
-      {status.numberOk ? (
-        /* Connected → let them confirm the wiring is actually right in Retell */
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <button
-              onClick={handleVerify}
-              disabled={verifying}
-              className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:border-slate-300 disabled:opacity-50 text-sm text-slate-700 rounded-lg transition-colors"
-            >
-              {verifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4 text-indigo-500" />}
-              {verifying ? t("setup.verifying") : t("setup.verify")}
-            </button>
-            {verifyMsg && (
-              <span className={`text-xs flex items-center gap-1.5 ${verifyMsg.ok ? "text-emerald-700" : "text-amber-700"}`}>
-                {verifyMsg.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
-                {verifyMsg.text}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-slate-400 mt-2">{t("setup.verifyHint")}</p>
+      {/*
+        The by-hand fallback, now always available. It used to be hidden as soon
+        as a number was recorded, which is exactly backwards: the org that needs
+        these URLs is the one whose saved number the provider will not let us
+        repair. `NumberWiringStatus` links here by this id.
+      */}
+      <details id="receptionist-manual-wiring" className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+        <summary className="text-xs font-semibold text-slate-600 uppercase tracking-wide cursor-pointer">{t("setup.manual.summary")}</summary>
+        <ol className="text-xs text-slate-600 space-y-1.5 my-3 list-decimal list-inside">
+          <li>{t("setup.manual.step1")}</li>
+          <li>{t("setup.manual.step2")}</li>
+          <li>{t("setup.manual.step3")}</li>
+        </ol>
+        <div className="space-y-2.5">
+          <CopyField label={t("setup.manual.inboundLabel")} value={status.inboundUrl} copyLabel={t("setup.manual.copy")} />
+          <CopyField label={t("setup.manual.functionLabel")} value={status.functionUrl} copyLabel={t("setup.manual.copy")} />
         </div>
-      ) : (
-        /* No number → manual fallback for operators wiring Retell by hand */
-        <details className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-          <summary className="text-xs font-semibold text-slate-600 uppercase tracking-wide cursor-pointer">{t("setup.manual.summary")}</summary>
-          <ol className="text-xs text-slate-600 space-y-1.5 my-3 list-decimal list-inside">
-            <li>{t("setup.manual.step1")}</li>
-            <li>{t("setup.manual.step2")}</li>
-            <li>{t("setup.manual.step3")}</li>
-          </ol>
-          <div className="space-y-2.5">
-            <CopyField label={t("setup.manual.inboundLabel")} value={status.inboundUrl} copyLabel={t("setup.manual.copy")} />
-            <CopyField label={t("setup.manual.functionLabel")} value={status.functionUrl} copyLabel={t("setup.manual.copy")} />
-          </div>
-          <p className="text-xs text-slate-400 mt-2">
-            {t("setup.manual.note")}
-          </p>
-        </details>
-      )}
+        <p className="text-xs text-slate-400 mt-2">
+          {t("setup.manual.note")}
+        </p>
+      </details>
     </div>
   );
 }
