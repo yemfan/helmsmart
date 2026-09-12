@@ -5,8 +5,8 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
-import { getLeadsmartAccessToken } from "./env";
-import { registerMobileExpoPushToken } from "./leadsmartMobileApi";
+import { getCloseBossAccessToken } from "./env";
+import { registerMobileExpoPushToken } from "./closeBossMobileApi";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -94,13 +94,13 @@ function navigateFromPushData(
 }
 
 /**
- * Registers the Expo push token with the LeadSmart AI API when JWT + API URL are set,
+ * Registers the Expo push token with the CloseBoss API when JWT + API URL are set,
  * and routes when the user taps a notification.
  */
-export function useLeadsmartPush() {
+export function useCloseBossPush() {
   const router = useRouter();
   const lastRegisteredToken = useRef<string | null>(null);
-  const accessToken = getLeadsmartAccessToken();
+  const accessToken = getCloseBossAccessToken();
 
   useEffect(() => {
     const sub = Notifications.addNotificationResponseReceivedListener((response) => {
@@ -160,7 +160,7 @@ export function useLeadsmartPush() {
       const reg = await registerMobileExpoPushToken(tokenResult.data);
       if (reg.ok === false) {
         lastRegisteredToken.current = null;
-        console.warn("[LeadSmart AI] push token registration failed:", reg.message);
+        console.warn("[CloseBoss] push token registration failed:", reg.message);
       }
     })();
 

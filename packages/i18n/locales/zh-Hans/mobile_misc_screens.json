@@ -229,7 +229,7 @@
     "presentationOpenFail": "报告已生成，但此设备无法打开链接。可在网页版「报告」中查看。"
   },
   "coaching": {
-    "leadsmartAiCoaching": "LEADSMART AI 教练",
+    "closeBossCoaching": "CLOSEBOSS 教练",
     "producerDevelopmentBuiltIn": "内置的业绩成长体系。",
     "dailyPlansWeeklyPlaybooksMonthly": "每日计划、每周方案、每月复盘 —— 全部围绕真实的年度成交目标。",
     "manageEnrollmentOnWeb": "在网页端管理报名",

@@ -1,6 +1,6 @@
 # Mobile pipeline & tasks integration
 
-## API surface (LeadSmart CRM)
+## API surface (CloseBoss CRM)
 
 | Method | Path | Purpose |
 |--------|------|---------|
@@ -27,10 +27,10 @@ Buckets on `GET /api/mobile/tasks` use **UTC calendar days** for “today” vs 
 
 - **Tasks tab:** `app/(tabs)/tasks.tsx` — loading, pull-to-refresh, empty state, section errors on complete.
 - **Lead detail:** `app/lead/[id].tsx` — `PipelineStagePicker`, next-task `TaskCard`, `TaskComposerModal` (demo lead hides CRM pipeline/tasks).
-- **API client:** `lib/leadsmartMobileApi.ts` — `fetchMobileTasks`, `postMobileTask`, `patchMobileTask`, `patchLeadPipelineStage`, extended `fetchMobileLeadDetail` parsing with safe defaults for older servers.
+- **API client:** `lib/closeBossMobileApi.ts` — `fetchMobileTasks`, `postMobileTask`, `patchMobileTask`, `patchLeadPipelineStage`, extended `fetchMobileLeadDetail` parsing with safe defaults for older servers.
 
 ## Deploy checklist
 
-1. Apply Supabase migrations that add `lead_tasks` columns used by mobile (`completed_at`, `metadata_json`, indexes as shipped in the LeadSmart AI migration set).
+1. Apply Supabase migrations that add `lead_tasks` columns used by mobile (`completed_at`, `metadata_json`, indexes as shipped in the CloseBoss migration set).
 2. Ensure `crm_pipeline_stages` rows exist for the agent so `listMobilePipelineStages` can resolve all six mobile slugs.
 3. Point the Expo app at a CRM build that exposes the routes above (`EXPO_PUBLIC_LEADSMART_API_URL` + bearer token).

@@ -18,7 +18,7 @@ import {
   fetchMobileShowings,
   type MobileShowingListItem,
   type MobileShowingStatus,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { useCachedFetch } from "../../lib/offline/useCachedFetch";
 import { hapticRowTap } from "../../lib/haptics";
 import { useThemeTokens } from "../../lib/useThemeTokens";

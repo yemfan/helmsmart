@@ -51,8 +51,8 @@ import {
   patchLeadPipelineStage,
   patchMobileCalendarEvent,
   patchMobileTask,
-} from "../../lib/leadsmartMobileApi";
-import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
+import type { MobileApiFailure } from "../../lib/closeBossMobileApi";
 import { useLeadDetailRealtime } from "../../lib/realtime/useLeadDetailRealtime";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";

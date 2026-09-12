@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { fetchMobileLeads } from "../leadsmartMobileApi";
+import { fetchMobileLeads } from "../closeBossMobileApi";
 import { signInWithApple, signInWithGoogle } from "../oauthMobile";
 import { getSupabaseAuthClient } from "../supabaseAuthClient";
 import { readOnboardingComplete, writeOnboardingComplete } from "./onboardingFlag";
@@ -9,11 +9,11 @@ import { consumeShouldClearSessionOnLaunch, setClearSessionOnNextLaunch } from "
 import { clearStoredAccessToken, readStoredAccessToken, writeStoredAccessToken } from "./secureToken";
 import { clearCachedAccessToken, setCachedAccessToken } from "./tokenCache";
 
-type LeadsmartSessionValue = {
+type CloseBossSessionValue = {
   ready: boolean;
   accessToken: string | null;
   onboardingComplete: boolean;
-  /** Email + password against the same Supabase project as LeadSmart AI web (preferred). */
+  /** Email + password against the same Supabase project as CloseBoss web (preferred). */
   signInWithEmailPassword: (email: string, password: string, rememberDevice?: boolean) => Promise<void>;
   /** Persist JWT after validating against the mobile API (fallback / dev). */
   signInWithToken: (token: string, rememberDevice?: boolean) => Promise<void>;
@@ -23,9 +23,9 @@ type LeadsmartSessionValue = {
   markOnboardingComplete: () => Promise<void>;
 };
 
-const LeadsmartSessionContext = createContext<LeadsmartSessionValue | null>(null);
+const CloseBossSessionContext = createContext<CloseBossSessionValue | null>(null);
 
-export function LeadsmartSessionProvider({ children }: { children: ReactNode }) {
+export function CloseBossSessionProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
@@ -227,13 +227,13 @@ export function LeadsmartSessionProvider({ children }: { children: ReactNode }) 
     ]
   );
 
-  return <LeadsmartSessionContext.Provider value={value}>{children}</LeadsmartSessionContext.Provider>;
+  return <CloseBossSessionContext.Provider value={value}>{children}</CloseBossSessionContext.Provider>;
 }
 
-export function useLeadsmartSession(): LeadsmartSessionValue {
-  const ctx = useContext(LeadsmartSessionContext);
+export function useCloseBossSession(): CloseBossSessionValue {
+  const ctx = useContext(CloseBossSessionContext);
   if (!ctx) {
-    throw new Error("useLeadsmartSession must be used within LeadsmartSessionProvider");
+    throw new Error("useCloseBossSession must be used within CloseBossSessionProvider");
   }
   return ctx;
 }

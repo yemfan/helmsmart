@@ -6328,7 +6328,7 @@
       "overdue": "Overdue",
       "upcoming": "Upcoming",
       "stuckCronsHint": "no run in expected window",
-      "platformOverviewSub": "Business performance across PropertyToolsAI and LeadSmart AI.",
+      "platformOverviewSub": "Business performance across PropertyToolsAI and CloseBoss.",
       "portalDesc": "Platform administration and operational tools. Open the full dashboard for day-to-day work.",
       "signupsIntro": "Where new agent accounts come from. Attribution is captured going forward — accounts created before tracking show as “Unknown”."
     },
@@ -6414,7 +6414,7 @@
       "descDownline": "Your full hierarchy — every associate under you, their pipeline, their production, their licensing status.",
       "descFieldTraining": "New-associate onboarding and licensing path — track each recruit's progress from BPM to first sale.",
       "descInbox": "Unified SMS + email inbox. AI handles routine replies; you handle the ones that matter.",
-      "descIntegrations": "Connect your existing carrier portals, illustrators, e-app providers, and calendar so LeadSmart AI fits into the workflow you already have.",
+      "descIntegrations": "Connect your existing carrier portals, illustrators, e-app providers, and calendar so CloseBoss fits into the workflow you already have.",
       "descOverrides": "Hierarchical override commissions — earned, advanced, charged back, and projected from your downline's production.",
       "descPolicyholders": "Your book of business — every active policy, carrier, anniversary, and beneficiary in one place.",
       "descProduction": "Team production — submitted, issued, placed — rolled up by hierarchy tier with month-over-month trend.",
@@ -7578,7 +7578,7 @@
       "formatHint": "PNG, JPG, or WebP · up to 8MB each"
     },
     "adminSignups": {
-      "eyebrow": "LeadSmart AI · Admin"
+      "eyebrow": "CloseBoss · Admin"
     },
     "aiEmailModal": {
       "eyebrow": "AI Email · {{model}}",

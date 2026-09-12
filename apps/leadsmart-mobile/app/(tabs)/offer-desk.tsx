@@ -24,7 +24,7 @@ import {
   type MobileContractReview,
   type MobileOfferCompareSummary,
   type MobileOfferForSummary,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 
 /**
  * Offer desk (mobile) — three AI tools from the web offer desk:

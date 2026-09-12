@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { getLeadsmartAccessToken } from "../env";
+import { getCloseBossAccessToken } from "../env";
 import { createMobileSupabaseClient } from "../supabaseMobile";
 import { debounceFn } from "./debounce";
 
@@ -19,7 +19,7 @@ export function useLeadDetailRealtime(
 ) {
   const onRefreshRef = useRef(onRefresh);
   onRefreshRef.current = onRefresh;
-  const token = getLeadsmartAccessToken();
+  const token = getCloseBossAccessToken();
 
   useEffect(() => {
     if (!enabled || !token || !leadId?.trim()) return;
@@ -66,7 +66,7 @@ export function useLeadDetailRealtime(
       )
       .subscribe((status) => {
         if (status === "CHANNEL_ERROR") {
-          console.warn("[LeadSmart AI] lead detail realtime channel error");
+          console.warn("[CloseBoss] lead detail realtime channel error");
         }
       });
 

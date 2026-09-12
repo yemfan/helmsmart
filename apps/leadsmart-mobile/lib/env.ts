@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import { getCachedAccessToken } from "./session/tokenCache";
 
 /** Base URL for `apps/leadsmartai` (Next) API routes, without trailing slash. */
-export function getLeadsmartApiBaseUrl(): string {
+export function getCloseBossApiBaseUrl(): string {
   const fromEnv = process.env.EXPO_PUBLIC_LEADSMART_API_URL;
   if (typeof fromEnv === "string" && fromEnv.trim()) {
     return fromEnv.trim().replace(/\/$/, "");
@@ -15,7 +15,7 @@ export function getLeadsmartApiBaseUrl(): string {
 }
 
 /** JWT for mobile API routes (`getUserFromRequest` bearer path). */
-export function getLeadsmartAccessToken(): string {
+export function getCloseBossAccessToken(): string {
   const fromSession = getCachedAccessToken();
   if (fromSession) return fromSession;
 

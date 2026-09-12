@@ -38,7 +38,7 @@ All routes use `requireMobileAgent` (Bearer JWT, same as other `/api/mobile/*` r
 
 - **Types:** `MobileSmsSendResponseDto`, `MobileEmailSendResponseDto`, `MobileSmsAiReplyResponseDto`, `MobileEmailAiReplyResponseDto` in `@leadsmart/shared` (`types/mobile-api.ts`).
 - **Paths:** `MOBILE_API_PATHS` in `lib/mobileEndpoints.ts`.
-- **Client:** `postMobileSmsSend`, `postMobileEmailSend`, `postMobileSmsAiReply`, `postMobileEmailAiReply` in `lib/leadsmartMobileApi.ts` using `@leadsmart/api-client` `apiFetchJson`.
+- **Client:** `postMobileSmsSend`, `postMobileEmailSend`, `postMobileSmsAiReply`, `postMobileEmailAiReply` in `lib/closeBossMobileApi.ts` using `@leadsmart/api-client` `apiFetchJson`.
 
 ## 5. Integration notes
 

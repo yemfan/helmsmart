@@ -1,5 +1,5 @@
 /**
- * Shared palette for LeadSmart mobile screens.
+ * Shared palette for CloseBoss mobile screens.
  *
  * Two full token sets (`lightTheme` / `darkTheme`) with identical
  * shape so the `useThemeTokens()` hook can swap between them based

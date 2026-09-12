@@ -25,7 +25,7 @@ import {
   initMobileTikTokConnect,
   initMobileYouTubeConnect,
   type MobileConnection,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

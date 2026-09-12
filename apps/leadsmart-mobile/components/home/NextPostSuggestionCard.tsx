@@ -15,7 +15,7 @@ import { hapticButtonPress } from "../../lib/haptics";
 import {
   fetchMobileNextPostSuggestions,
   type MobileNextPostSuggestion,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 

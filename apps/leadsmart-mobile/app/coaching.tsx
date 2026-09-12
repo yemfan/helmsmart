@@ -19,10 +19,10 @@ import {
   fetchMobileCoaching,
   type MobileCoachingProgram,
   type MobileCoachingProgramStatus,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import { useCachedFetch } from "../lib/offline/useCachedFetch";
 import { hapticButtonPress } from "../lib/haptics";
-import { getLeadsmartApiBaseUrl } from "../lib/env";
+import { getCloseBossApiBaseUrl } from "../lib/env";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 
@@ -56,14 +56,14 @@ export default function CoachingScreen() {
 
   const onUpgrade = useCallback(() => {
     hapticButtonPress();
-    const base = getLeadsmartApiBaseUrl();
+    const base = getCloseBossApiBaseUrl();
     if (!base) return;
     void Linking.openURL(`${base}/agent/pricing`);
   }, []);
 
   const onManage = useCallback(() => {
     hapticButtonPress();
-    const base = getLeadsmartApiBaseUrl();
+    const base = getCloseBossApiBaseUrl();
     if (!base) return;
     void Linking.openURL(`${base}/dashboard/settings#coaching`);
   }, []);
@@ -79,7 +79,7 @@ export default function CoachingScreen() {
         refreshControl={<BrandRefreshControl refreshing={loading} onRefresh={refresh} />}
       >
         <View style={styles.heroBlock}>
-          <Text style={styles.eyebrow}>{t("coaching.leadsmartAiCoaching")}</Text>
+          <Text style={styles.eyebrow}>{t("coaching.closeBossCoaching")}</Text>
           <Text style={styles.title}>{t("coaching.producerDevelopmentBuiltIn")}</Text>
           <Text style={styles.subtitle}>
             {t("coaching.dailyPlansWeeklyPlaybooksMonthly")}

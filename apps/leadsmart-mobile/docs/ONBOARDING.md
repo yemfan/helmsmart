@@ -1,4 +1,4 @@
-# LeadSmart mobile — onboarding
+# CloseBoss mobile — onboarding
 
 ## 1. Screens (Expo Router)
 
@@ -15,11 +15,11 @@ Stack layout: `app/(onboarding)/_layout.tsx` (header hidden). Root stack registe
 
 ## 2. Routing logic
 
-- **`LeadsmartSessionProvider`** (`lib/session/LeadsmartSessionContext.tsx`) hydrates:
+- **`CloseBossSessionProvider`** (`lib/session/CloseBossSessionContext.tsx`) hydrates:
   - Supabase session from **AsyncStorage** via `getSupabaseAuthClient()` (`lib/supabaseAuthClient.ts`) — access token refresh on `TOKEN_REFRESHED`
   - Legacy JWT from **SecureStore** if no Supabase session (older paste-only installs)
   - Onboarding flag from **AsyncStorage** (`leadsmart_onboarding_v1_complete`)
-- **`getLeadsmartAccessToken()`** (`lib/env.ts`) checks **in-memory cache** first (set on hydrate / login), then env/extra fallbacks for dev.
+- **`getCloseBossAccessToken()`** (`lib/env.ts`) checks **in-memory cache** first (set on hydrate / login), then env/extra fallbacks for dev.
 - **`app/index.tsx`**:
   1. Wait `ready`
   2. If `!onboardingComplete` → `Redirect` to `/(onboarding)/welcome`
@@ -36,7 +36,7 @@ Shared tokens live in `lib/onboarding/styles.ts` (`onboardingStyles`): typograph
 
 ### Push notifications
 
-`lib/useLeadsmartPush.ts` **no longer calls** `requestPermissionsAsync()` automatically. The onboarding **notifications** screen is the primary prompt; after the user grants permission, `useLeadsmartPush` registers the Expo token when `getPermissionsAsync() === "granted"`.
+`lib/useCloseBossPush.ts` **no longer calls** `requestPermissionsAsync()` automatically. The onboarding **notifications** screen is the primary prompt; after the user grants permission, `useCloseBossPush` registers the Expo token when `getPermissionsAsync() === "granted"`.
 
 ### Demo lead
 
@@ -58,4 +58,4 @@ Clear app data, or remove AsyncStorage key `leadsmart_onboarding_v1_complete` an
 
 ### Sign out (future)
 
-Call `signOut()` from `useLeadsmartSession()` (clears token); optionally reset onboarding flag for QA.
+Call `signOut()` from `useCloseBossSession()` (clears token); optionally reset onboarding flag for QA.

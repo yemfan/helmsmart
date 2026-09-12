@@ -24,7 +24,7 @@ import { darkTheme, lightTheme, type ThemeTokens } from "./theme";
  * token set actually changes, not on every render.
  *
  * When `scheme` is `null` (iOS silent-switch or Android before
- * first user choice) we fall back to light — matching the LeadSmart
+ * first user choice) we fall back to light — matching the CloseBoss
  * web app which also defaults to light until the user opts in.
  */
 export function useThemeTokens(): ThemeTokens {

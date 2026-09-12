@@ -7,7 +7,7 @@ import { hapticSelectionChange } from "../../lib/haptics";
 import {
   fetchBossTeam,
   type MobileBossAssistant,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import {
   ASSISTANT_BOSS_TYPE,
   ASSISTANT_ORDER,

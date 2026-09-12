@@ -1,7 +1,7 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
 /**
- * Merges with `app.json`. Use `EXPO_PUBLIC_LEADSMART_API_URL` for the LeadSmart AI web API
+ * Merges with `app.json`. Use `EXPO_PUBLIC_LEADSMART_API_URL` for the CloseBoss web API
  * (e.g. `https://your-leadsmart.vercel.app` — no trailing slash).
  *
  * EAS cannot auto-inject `extra.eas.projectId` into TypeScript config — set
@@ -33,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     ...config.extra,
     leadsmartApiUrl: envFirst(process.env.EXPO_PUBLIC_LEADSMART_API_URL),
-    /** Dev: Supabase JWT for `Authorization: Bearer` (same session as LeadSmart AI web). */
+    /** Dev: Supabase JWT for `Authorization: Bearer` (same session as CloseBoss web). */
     leadsmartAccessToken: envFirst(process.env.EXPO_PUBLIC_LEADSMART_ACCESS_TOKEN),
     supabaseUrl: envFirst(process.env.EXPO_PUBLIC_SUPABASE_URL),
     supabaseAnonKey: envFirst(process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY),

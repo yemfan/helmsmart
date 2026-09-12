@@ -34,7 +34,7 @@ import {
   type MobileQuickPostPlatform,
   type MobileQuickPostTrigger,
   type MobileSubject,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

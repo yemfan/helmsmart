@@ -40,7 +40,7 @@ import {
   type MobileBossInstruction,
   type MobileBossRecommendation,
   type MobileBossTask,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 
 // Max's portrait — the same persona the web app shows beside his replies.
 // (Was the app icon, which made the captain look like a different product.)

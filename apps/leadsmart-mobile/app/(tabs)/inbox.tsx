@@ -15,10 +15,10 @@ import { BrandRefreshControl } from "../../components/BrandRefreshControl";
 import { InboxRowSkeleton, SkeletonList } from "../../components/Skeleton";
 import { FadeIn } from "../../components/Reveal";
 import { formatShortDateTime } from "../../lib/format";
-import { getLeadsmartAccessToken } from "../../lib/env";
+import { getCloseBossAccessToken } from "../../lib/env";
 import { DEMO_LEAD_ID, getDemoInboxThread } from "../../lib/demoLead";
-import { fetchMobileInbox, fetchMobileLeads } from "../../lib/leadsmartMobileApi";
-import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
+import { fetchMobileInbox, fetchMobileLeads } from "../../lib/closeBossMobileApi";
+import type { MobileApiFailure } from "../../lib/closeBossMobileApi";
 import { useInboxRealtime } from "../../lib/realtime/useInboxRealtime";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
@@ -160,7 +160,7 @@ export default function InboxScreen() {
     setThreads(next);
   }, []);
 
-  const accessToken = getLeadsmartAccessToken();
+  const accessToken = getCloseBossAccessToken();
   useInboxRealtime(
     useCallback(() => {
       void silentRefresh();

@@ -1,4 +1,4 @@
-/** Relative paths for LeadSmart CRM mobile routes (prefix with API base URL). */
+/** Relative paths for CloseBoss CRM mobile routes (prefix with API base URL). */
 export const MOBILE_API_PATHS = {
   inbox: "/api/mobile/inbox",
   dashboard: "/api/mobile/dashboard",

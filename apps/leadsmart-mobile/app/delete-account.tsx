@@ -10,8 +10,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { deleteMobileAccount } from "../lib/leadsmartMobileApi";
-import { useLeadsmartSession } from "../lib/session/LeadsmartSessionContext";
+import { deleteMobileAccount } from "../lib/closeBossMobileApi";
+import { useCloseBossSession } from "../lib/session/CloseBossSessionContext";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 import { hapticError, hapticWarning } from "../lib/haptics";
@@ -20,7 +20,7 @@ export default function DeleteAccountScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { signOut } = useLeadsmartSession();
+  const { signOut } = useCloseBossSession();
   const { t } = useTranslation(["settings", "common"]);
 
   const confirmToken = t("delete_account.confirm_token");

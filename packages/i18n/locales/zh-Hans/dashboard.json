@@ -6328,7 +6328,7 @@
       "overdue": "逾期",
       "upcoming": "即将到期",
       "stuckCronsHint": "未在预期时间窗内运行",
-      "platformOverviewSub": "PropertyToolsAI 与 LeadSmart AI 的整体经营表现。",
+      "platformOverviewSub": "PropertyToolsAI 与 CloseBoss 的整体经营表现。",
       "portalDesc": "平台管理与运维工具。日常工作请打开完整控制台。",
       "signupsIntro": "新经纪人账号的来源。归因从启用跟踪后开始记录 — 在此之前创建的账号显示为「未知」。"
     },
@@ -7578,7 +7578,7 @@
       "formatHint": "PNG、JPG 或 WebP · 每张不超过 8MB"
     },
     "adminSignups": {
-      "eyebrow": "LeadSmart AI · 管理后台"
+      "eyebrow": "CloseBoss · 管理后台"
     },
     "aiEmailModal": {
       "eyebrow": "AI 邮件 · {{model}}",

@@ -1,7 +1,7 @@
 import { Redirect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenLoading } from "../components/ScreenLoading";
-import { useLeadsmartSession } from "../lib/session/LeadsmartSessionContext";
+import { useCloseBossSession } from "../lib/session/CloseBossSessionContext";
 import { HOME_ROUTE } from "../lib/homeRoute";
 
 /**
@@ -13,7 +13,7 @@ import { HOME_ROUTE } from "../lib/homeRoute";
  * login sent people to Inbox. One home for every entry now.
  */
 export default function Index() {
-  const { ready, accessToken, onboardingComplete } = useLeadsmartSession();
+  const { ready, accessToken, onboardingComplete } = useCloseBossSession();
   const { t } = useTranslation("common");
 
   if (!ready) {

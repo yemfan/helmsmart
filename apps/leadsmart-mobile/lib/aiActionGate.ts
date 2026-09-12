@@ -1,4 +1,4 @@
-import type { MobileApiFailure } from "./leadsmartMobileApi";
+import type { MobileApiFailure } from "./closeBossMobileApi";
 
 /**
  * Mobile mirror of `apps/leadsmartai/lib/entitlements/aiActionGate.ts`.

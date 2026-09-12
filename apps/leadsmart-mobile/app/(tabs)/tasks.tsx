@@ -14,8 +14,8 @@ import { ErrorBanner } from "../../components/ErrorBanner";
 import { ScreenLoading } from "../../components/ScreenLoading";
 import { BrandRefreshControl } from "../../components/BrandRefreshControl";
 import { TaskCard } from "../../components/tasks/TaskCard";
-import { fetchMobileTasks, patchMobileTask } from "../../lib/leadsmartMobileApi";
-import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
+import { fetchMobileTasks, patchMobileTask } from "../../lib/closeBossMobileApi";
+import type { MobileApiFailure } from "../../lib/closeBossMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 

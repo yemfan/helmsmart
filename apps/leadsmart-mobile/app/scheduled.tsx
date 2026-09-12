@@ -19,7 +19,7 @@ import {
   cancelMobileScheduledPost,
   fetchMobileScheduledPosts,
   type MobileScheduledPost,
-} from "../lib/leadsmartMobileApi";
+} from "../lib/closeBossMobileApi";
 import {
   hapticButtonPress,
   hapticError,

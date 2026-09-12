@@ -6,7 +6,7 @@ bar stays as-is; this redesign only touches `(tabs)/index.tsx`.
 
 Visual reference: card-tile grid with colored icon backgrounds, grouped
 by supercategory (Work / Engage / Analyze / Manage), inspired by the
-real-estate super-app style. **Branding is LeadSmart-only** — no
+real-estate super-app style. **Branding is CloseBoss-only** — no
 brokerage co-branding in v1.6 (see APP_STORE_REVIEW.md for the
 trademark policy).
 

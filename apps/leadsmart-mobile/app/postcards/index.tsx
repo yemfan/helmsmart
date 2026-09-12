@@ -18,7 +18,7 @@ import {
   fetchMobilePostcards,
   type MobilePostcardSend,
   type MobilePostcardTemplateKey,
-} from "../../lib/leadsmartMobileApi";
+} from "../../lib/closeBossMobileApi";
 import { useCachedFetch } from "../../lib/offline/useCachedFetch";
 import { hapticButtonPress, hapticRowTap } from "../../lib/haptics";
 import { useThemeTokens } from "../../lib/useThemeTokens";
