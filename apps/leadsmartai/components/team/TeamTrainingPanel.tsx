@@ -15,10 +15,12 @@ import {
   summarizeMember,
   TITLE_MAX,
   trackedMembers,
+  TRAINING_MODES,
   type CellStatus,
   type Completion,
   type MemberState,
   type Training,
+  type TrainingMode,
 } from "@/lib/teams/training";
 import type { TeamMembership } from "@/lib/teams/types";
 import type { MemberDirectory } from "@/lib/teams/directory.server";
@@ -71,6 +73,7 @@ function AddForm({ teamId, onAdded }: { teamId: string; onAdded: (t: Training) =
   const { t } = useTranslation("dashboard");
   const k = (s: string, vars?: Record<string, unknown>) => t(`pages.teamTraining.${s}`, vars);
   const [required, setRequired] = useState(true);
+  const [mode, setMode] = useState<TrainingMode>("classroom");
   const [title, setTitle] = useState("");
   const [when, setWhen] = useState("");
   const [location, setLocation] = useState("");
@@ -80,6 +83,8 @@ function AddForm({ teamId, onAdded }: { teamId: string; onAdded: (t: Training) =
   const [pending, startTransition] = useTransition();
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A virtual class is its course: no room, no start time, and the link is the class.
+  const isVirtual = mode === "virtual";
 
   return (
     <form
@@ -92,12 +97,13 @@ function AddForm({ teamId, onAdded }: { teamId: string; onAdded: (t: Training) =
           fd.set("teamId", teamId);
           fd.set("title", title);
           fd.set("required", required ? "1" : "0");
+          fd.set("mode", mode);
           // datetime-local has no zone: read it in the browser's own, send an instant.
-          if (when) {
+          if (when && !isVirtual) {
             const d = new Date(when);
             fd.set("startsAt", Number.isNaN(d.getTime()) ? when : d.toISOString());
           }
-          fd.set("location", location);
+          fd.set("location", isVirtual ? "" : location);
           fd.set("materialsUrl", materialsUrl);
           fd.set("dueOn", required ? dueOn : "");
           fd.set("description", description);
@@ -130,25 +136,50 @@ function AddForm({ teamId, onAdded }: { teamId: string; onAdded: (t: Training) =
           </button>
         ))}
       </div>
+      <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={k("modeLabel")}>
+        {TRAINING_MODES.map((m) => (
+          <button
+            key={m}
+            type="button"
+            role="radio"
+            aria-checked={mode === m}
+            onClick={() => setMode(m)}
+            className={`inline-flex min-h-8 items-center rounded-full px-3 text-xs font-medium transition ${mode === m ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"}`}
+          >
+            {k(`mode.${m}`)}
+          </button>
+        ))}
+      </div>
+      <p className="-mt-1 text-xs text-slate-500 dark:text-slate-400">{k(`modeHint.${mode}`)}</p>
       <label className="block">
         <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{k("titleLabel")}</span>
         <input className={input} value={title} maxLength={TITLE_MAX} onChange={(e) => setTitle(e.target.value)} placeholder={k("titlePlaceholder")} required />
       </label>
+      {isVirtual ? null : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{k("whenLabel")}</span>
+            <input className={input} type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
+            <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{k("whenHint")}</span>
+          </label>
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{mode === "online" ? k("joinLinkLabel") : k("locationLabel")}</span>
+            <input
+              className={input}
+              type={mode === "online" ? "url" : "text"}
+              value={location}
+              maxLength={LOCATION_MAX}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder={mode === "online" ? "https://…" : k("locationPlaceholder")}
+            />
+          </label>
+        </div>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{k("whenLabel")}</span>
-          <input className={input} type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
-          <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{k("whenHint")}</span>
-        </label>
-        <label className="block">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{k("locationLabel")}</span>
-          <input className={input} value={location} maxLength={LOCATION_MAX} onChange={(e) => setLocation(e.target.value)} placeholder={k("locationPlaceholder")} />
-        </label>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{k("materialsLabel")}</span>
-          <input className={input} type="url" value={materialsUrl} onChange={(e) => setMaterialsUrl(e.target.value)} placeholder="https://…" />
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{isVirtual ? k("classLinkLabel") : k("materialsLabel")}</span>
+          <input className={input} type="url" value={materialsUrl} onChange={(e) => setMaterialsUrl(e.target.value)} placeholder="https://…" required={isVirtual} />
+          {isVirtual ? <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{k("classLinkHint")}</span> : null}
         </label>
         {required ? (
           <label className="block">
@@ -259,6 +290,9 @@ export function TeamTrainingPanel({ teamId, currentAgentId, canManage, members, 
     const doneCount = tracked.filter((m) => completions.has(ckey(item.id, m.agentId))).length;
     const locationIsLink = isUrl(item.location);
     const meta: ReactNode[] = [];
+    // Lead with how it is delivered: whether you have to drive somewhere is the
+    // first thing an agent needs from this line.
+    meta.push(<span key="mode">{k(`mode.${item.mode}`)}</span>);
     meta.push(<span key="when">{item.startsAt ? fmtWhen(item.startsAt) : k("selfPaced")}</span>);
     if (item.location && !locationIsLink) meta.push(<span key="where">{item.location}</span>);
     if (item.dueOn) meta.push(<span key="due">{k("due", { date: fmtDay(item.dueOn) })}</span>);

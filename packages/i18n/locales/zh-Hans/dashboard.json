@@ -8463,6 +8463,17 @@
       "openForm": "添加课程",
       "closeForm": "关闭",
       "typeLabel": "必修或选修",
+      "modeLabel": "培训形式",
+      "mode": {
+        "classroom": "线下课堂",
+        "online": "线上直播",
+        "virtual": "自学课程"
+      },
+      "modeHint": {
+        "classroom": "线下面授，需要到指定地点。",
+        "online": "线上直播，通过链接参加。",
+        "virtual": "自学课程，经纪人可自行安排时间完成。"
+      },
       "mandatory": "必修",
       "optional": "选修",
       "mandatoryCount": "必修 · {{count}}",
@@ -8474,6 +8485,9 @@
       "locationLabel": "地点（可选）",
       "locationPlaceholder": "会议室、地址或会议链接",
       "materialsLabel": "资料链接（可选）",
+      "joinLinkLabel": "参加链接",
+      "classLinkLabel": "课程链接",
+      "classLinkHint": "经纪人将打开的课程。使用 SwipenDone 课程可保存学习进度。",
       "dueLabel": "截止日期（可选）",
       "dueHint": "未设截止日期时，以上课日期为准。之后加入的经纪人有 30 天时间完成。",
       "descriptionLabel": "课程内容（可选）",
@@ -8528,6 +8542,9 @@
         "description_too_long": "课程内容请控制在 2,000 字以内。",
         "location_too_long": "地点请控制在 300 字以内。",
         "materialsUrl_bad_url": "这看起来不是有效的网址。",
+        "mode_invalid": "请选择线下课堂、线上直播或自学课程。",
+        "materialsUrl_required": "请填写课程链接：自学课程需要一个可打开的课程。",
+        "location_bad_url": "线上直播需要一个可点击参加的链接。",
         "startsAt_bad_date": "请选择有效的日期和时间。",
         "dueOn_bad_date": "请选择有效的截止日期。",
         "failed": "暂时无法保存。",

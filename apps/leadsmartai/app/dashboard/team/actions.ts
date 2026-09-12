@@ -565,6 +565,7 @@ export async function addTraining(formData: FormData) {
     title: formData.get("title"),
     description: formData.get("description"),
     required: formData.get("required"),
+    mode: formData.get("mode"),
     startsAt: formData.get("startsAt"),
     location: formData.get("location"),
     materialsUrl: formData.get("materialsUrl"),

@@ -8463,6 +8463,17 @@
       "openForm": "Add a class",
       "closeForm": "Close",
       "typeLabel": "Mandatory or optional",
+      "modeLabel": "How it happens",
+      "mode": {
+        "classroom": "Classroom",
+        "online": "Online",
+        "virtual": "Virtual"
+      },
+      "modeHint": {
+        "classroom": "In person, at a room or an address.",
+        "online": "A live session people join by link.",
+        "virtual": "A self-paced course agents take on their own time."
+      },
       "mandatory": "Mandatory",
       "optional": "Optional",
       "mandatoryCount": "Mandatory · {{count}}",
@@ -8474,6 +8485,9 @@
       "locationLabel": "Where (optional)",
       "locationPlaceholder": "Conference room, an address, or a meeting link",
       "materialsLabel": "Materials link (optional)",
+      "joinLinkLabel": "Join link",
+      "classLinkLabel": "Class link",
+      "classLinkHint": "The course agents will open. A SwipenDone class keeps their progress.",
       "dueLabel": "Due by (optional)",
       "dueHint": "Without a due date, the class date is the deadline. Agents who join later get 30 days.",
       "descriptionLabel": "What it covers (optional)",
@@ -8528,6 +8542,9 @@
         "description_too_long": "Keep the description under 2,000 characters.",
         "location_too_long": "Keep the location under 300 characters.",
         "materialsUrl_bad_url": "That doesn't look like a web address.",
+        "mode_invalid": "Pick classroom, online or virtual.",
+        "materialsUrl_required": "Add the class link — a virtual class needs a course to open.",
+        "location_bad_url": "An online class needs a link people can join.",
         "startsAt_bad_date": "Pick a valid date and time.",
         "dueOn_bad_date": "Pick a valid due date.",
         "failed": "We couldn't save that right now.",
