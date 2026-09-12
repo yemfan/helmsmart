@@ -71,3 +71,14 @@ jobs:
       # against the app most likely to have caused it.
       - name: Run @repo/voice tests
         run: pnpm --filter @repo/voice run test
+
+      # Same hole, same fix, for two more shared packages whose test files ran
+      # nowhere: @helm/dna-marketing (Meta/Threads Graph payloads, publish-time
+      # planning) had no scripts at all, and @leadsmart/shared (the prompt-cache
+      # helpers the AI tool loops use) only typechecked its test, never ran it.
+      # Steps of this job for the same required-check reason as the one above.
+      - name: Run @helm/dna-marketing tests
+        run: pnpm --filter @helm/dna-marketing run test
+
+      - name: Run @leadsmart/shared tests
+        run: pnpm --filter @leadsmart/shared run test
