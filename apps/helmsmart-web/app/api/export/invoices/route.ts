@@ -9,7 +9,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getMemberOrgId } from "@/lib/auth/org-context";
-import { orgToday } from "@/lib/org-timezone";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate } from "@/lib/org-date";
 
 function csvEscape(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return "";
@@ -48,8 +49,10 @@ export async function GET(request: NextRequest) {
   const { data: invoices, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Overdue by the org's own date, the same one its Books screens use.
-  const today = await orgToday(orgId);
+  // Overdue by the org's own date, the same one its Books screens use. The zone
+  // is also what turns `paid_at` — an instant — into the day the org was paid.
+  const tz = await orgTimezone(orgId);
+  const today = calendarDate(tz);
 
   const lines = [
     row("Invoice #", "Client", "Email", "Status", "Issue Date", "Due Date", "Subtotal", "Tax", "Total", "Paid At"),
@@ -78,7 +81,7 @@ export async function GET(request: NextRequest) {
       Number(inv.subtotal).toFixed(2),
       Number(inv.tax_amount).toFixed(2),
       Number(inv.total).toFixed(2),
-      inv.paid_at ? new Date(inv.paid_at).toLocaleDateString("en-US") : "",
+      inv.paid_at ? new Date(inv.paid_at).toLocaleDateString("en-US", { timeZone: tz }) : "",
     ));
   }
 
