@@ -33,12 +33,30 @@ export async function getWorkforce(): Promise<AiEmployee[]> {
   return listEmployees(supabase, orgId);
 }
 
-/** Assign a persona avatar (one of the 20) to an AI employee. */
-export async function setEmployeeAvatarAction(employeeId: string, avatar: string): Promise<void> {
-  if (!/^persona-\d{2}$/.test(avatar)) throw new Error((await getServerT("home"))("errors.invalidAvatar"));
+/**
+ * Assign a persona avatar (one of the 20) to an AI employee.
+ *
+ * Answers whether the row moved rather than throwing: the picker shows the new
+ * face at once, and a refusal has to put the old one back with a reason.
+ */
+export async function setEmployeeAvatarAction(
+  employeeId: string,
+  avatar: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getServerT("home");
+  if (!/^persona-\d{2}$/.test(avatar)) return { ok: false, error: t("errors.invalidAvatar") };
   const { orgId, supabase } = await orgScope();
-  await setEmployeeAvatar(supabase, orgId, employeeId, avatar);
+  let changed: boolean;
+  try {
+    changed = await setEmployeeAvatar(supabase, orgId, employeeId, avatar);
+  } catch (e) {
+    console.error("[workforce] saving an avatar failed", e);
+    return { ok: false, error: t("aiTeam.errors.saveFailed") };
+  }
+  if (!changed) return { ok: false, error: t("aiTeam.errors.saveFailed") };
+  revalidatePath("/ai-team");
   revalidatePath("/command-center");
+  return { ok: true };
 }
 
 /** Daily AI-workforce metrics across a date range — the Command Center's KPI source. */

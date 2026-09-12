@@ -19,6 +19,7 @@ const sendReminderForInvoice = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/invoice-reminders", () => ({ sendReminderForInvoice }));
 
 import { runAction, type RunDeps } from "../run-action";
+import type { AutonomyLevel } from "../autonomy";
 import { insertApproval } from "../approvals";
 import { defineAction, type AnyAction } from "../types";
 import { findClients } from "../actions/read";
@@ -28,12 +29,18 @@ import { fakeDb, type FakeDb } from "./fake-db";
 import { ORG, testContext } from "./context";
 import { DANA, INV_1042, INV_OTHER, PRIYA, STRANGER, seedTables } from "./seed";
 
-/** The production wiring, with the run recorder as a spy. `_db` only documents which fake the test runs on. */
-function deps(actions: AnyAction[], _db?: FakeDb) {
+/**
+ * The production wiring, with the run recorder as a spy. `_db` only documents
+ * which fake the test runs on. `autonomy` stands in for the dial the owner set
+ * — "ask me first" unless a test says otherwise, which is where every
+ * teammate who can reach a customer starts.
+ */
+function deps(actions: AnyAction[], _db?: FakeDb, autonomy: AutonomyLevel = "act_with_approval") {
   const d = {
     getAction: (k: string) => actions.find((a) => a.key === k) ?? null,
     createApproval: vi.fn<RunDeps["createApproval"]>((db, orgId, a) => insertApproval(db, orgId, a)),
     recordRun: vi.fn<RunDeps["recordRun"]>(async () => {}),
+    autonomyOf: vi.fn<NonNullable<RunDeps["autonomyOf"]>>(async () => autonomy),
   };
   return d satisfies RunDeps;
 }
@@ -140,6 +147,89 @@ describe("outbound actions", () => {
     const out = await runAction(testContext(db), "send_invoice_reminder", { invoice_id: INV_1042 }, deps([sendInvoiceReminder], db));
     expect(out.status).toBe("rejected");
     expect(db.tables.ai_approvals).toHaveLength(0);
+  });
+});
+
+describe("the autonomy dial", () => {
+  it("'ask me first': the text becomes a proposal and nothing is sent", async () => {
+    const db = fakeDb(seedTables());
+    const out = await runAction(
+      testContext(db),
+      "text_client",
+      { client_id: PRIYA, message: "Running 10 minutes late" },
+      deps([textClient], db, "act_with_approval"),
+    );
+    expect(out.status).toBe("proposed");
+    expect(sendSmsAsOrg).not.toHaveBeenCalled();
+    expect(db.tables.ai_approvals).toHaveLength(1);
+    expect(db.tables.ai_approvals[0]).toMatchObject({ status: "proposed", source: { autonomy: "act_with_approval" } });
+  });
+
+  it("'go ahead': the text is sent, and the row records what went out", async () => {
+    sendSmsAsOrg.mockResolvedValue({ ok: true, sid: "SM1" });
+    const db = fakeDb(seedTables());
+    const d = deps([textClient], db, "autonomous");
+    const out = await runAction(
+      testContext(db),
+      "text_client",
+      { client_id: PRIYA, message: "Running 10 minutes late" },
+      d,
+    );
+
+    expect(out.status).toBe("completed");
+    expect(sendSmsAsOrg).toHaveBeenCalledTimes(1);
+    // It went out through the approval, so the owner can still see exactly
+    // what was sent — and the AI activity feed reads executed rows.
+    expect(db.tables.ai_approvals).toHaveLength(1);
+    expect(db.tables.ai_approvals[0]).toMatchObject({
+      status: "executed",
+      source: { autonomy: "autonomous", went_ahead: true },
+      details: { clientName: "Priya Shah", message: "Running 10 minutes late" },
+    });
+    expect(db.tables.ai_approvals[0].executed_at).toBeTruthy();
+    expect(d.recordRun).toHaveBeenCalledWith(expect.anything(), ORG, "sarah", expect.objectContaining({ status: "succeeded" }));
+  });
+
+  it("'suggest only': nothing is sent, nothing is queued, and the model is told to say what it would have done", async () => {
+    const db = fakeDb(seedTables());
+    const d = deps([textClient], db, "suggest");
+    const out = await runAction(testContext(db), "text_client", { client_id: PRIYA, message: "hi" }, d);
+
+    expect(out.status).toBe("rejected");
+    expect(out.status === "rejected" && out.reason).toMatch(/suggest only/);
+    expect(sendSmsAsOrg).not.toHaveBeenCalled();
+    expect(db.tables.ai_approvals).toHaveLength(0);
+    expect(d.createApproval).not.toHaveBeenCalled();
+  });
+
+  it("'suggest only' holds back internal work too — no task is created", async () => {
+    const db = fakeDb(seedTables());
+    const d = deps([createTask], db, "suggest");
+    const out = await runAction(testContext(db), "create_task", { title: "Call the supplier" }, d);
+    expect(out.status).toBe("rejected");
+    expect(db.tables.tasks).toHaveLength(0);
+    expect(d.recordRun).not.toHaveBeenCalled();
+  });
+
+  it("never holds back a read — the dial is about acting, not looking", async () => {
+    const db = fakeDb(seedTables());
+    const d = deps([findClients], db, "suggest");
+    const out = await runAction(testContext(db), "find_clients", { query: "Dana Lee" }, d);
+    expect(out.status).toBe("completed");
+    expect(d.autonomyOf).not.toHaveBeenCalled();
+  });
+
+  it("'go ahead' still parks it when the signed-in member could not send it themselves", async () => {
+    const db = fakeDb(seedTables());
+    const out = await runAction(
+      testContext(db, { role: "viewer" }),
+      "text_client",
+      { client_id: PRIYA, message: "hi" },
+      deps([textClient], db, "autonomous"),
+    );
+    expect(out.status).toBe("proposed");
+    expect(sendSmsAsOrg).not.toHaveBeenCalled();
+    expect(db.tables.ai_approvals[0].status).toBe("proposed");
   });
 });
 

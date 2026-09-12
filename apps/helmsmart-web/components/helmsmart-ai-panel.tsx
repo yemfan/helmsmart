@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
@@ -848,7 +849,18 @@ export function HelmSmartAiPanel({
             <p id={titleId} className="truncate text-sm font-bold">
               {t("aiPanel.title")}
             </p>
-            <p className="text-[11px] leading-snug opacity-90">{t("aiPanel.subtitle")}</p>
+            <p className="text-[11px] leading-snug opacity-90">
+              {t("aiPanel.subtitle")}{" "}
+              {/* Mark is a captain, and the owner can see who he captains.
+                  `stopPropagation` keeps the header's drag from eating the click. */}
+              <Link
+                href="/ai-team"
+                onPointerDown={(e) => e.stopPropagation()}
+                className="underline underline-offset-2 hover:opacity-100"
+              >
+                {t("aiPanel.meetTheTeam")}
+              </Link>
+            </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">

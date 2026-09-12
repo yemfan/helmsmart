@@ -84,6 +84,15 @@ const runDeps = (): RunDeps => ({
   getAction: (k) => [scheduleAiCall, draftSocialPost, bookAppointmentAction, checkAvailability].find((a) => a.key === k) ?? null,
   createApproval: (client, orgId, a) => insertApproval(client, orgId, a),
   recordRun: vi.fn(async () => {}),
+  /*
+   * These are tests about each ACTION — what it previews, what it refuses, what
+   * approving it does. The owner's autonomy dial decides whether a proposal is
+   * also run on the spot (`lib/ai-team/autonomy.ts`), and Emma ships on "go
+   * ahead", so without pinning it here `book_appointment` would book rather
+   * than park and every assertion below would be about the dial instead.
+   * The dial has its own tests in `autonomy.test.ts` and `run-action.test.ts`.
+   */
+  autonomyOf: async () => "act_with_approval",
 });
 
 const decideDeps = (): DecideDeps => ({

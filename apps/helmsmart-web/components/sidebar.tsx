@@ -32,6 +32,7 @@ const navSections: { title: string; items: { label: string; href: string; icon: 
     title: "Workspace",
     items: [
       { label: "Dashboard",      href: "/home",           icon: <LayoutDashboard size={ICON} /> },
+      { label: "AI Team",        href: "/ai-team",        icon: <Users size={ICON} /> },
       { label: "Command Center", href: "/command-center", icon: <Bot size={ICON} /> },
       { label: "Insights",       href: "/insights",       icon: <BarChart2 size={ICON} /> },
       { label: "Inbox",          href: "/inbox",          icon: <Inbox size={ICON} /> },

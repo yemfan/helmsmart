@@ -87,6 +87,10 @@ export async function runEvalCase(c: EvalCase, model: MarkModel): Promise<EvalRe
       } satisfies ApprovalRow;
     },
     recordRun: async () => {},
+    // The evals ask what the captain DECIDES, not how one business set its
+    // dials. Every teammate is on "ask me first", so a proposal is still a
+    // proposal — and nothing here reaches for the database the harness blocks.
+    autonomyOf: async () => "act_with_approval",
   };
 
   const result = await runMarkLoop({
