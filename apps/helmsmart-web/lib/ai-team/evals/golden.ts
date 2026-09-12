@@ -1,9 +1,10 @@
 /**
- * Mark's golden set: eight things an owner actually says, and what a good
+ * Mark's golden set: twelve things an owner actually says, and what a good
  * captain does with each. Graded on tool choice and on the one rule that
- * matters most — anything that reaches a customer ends as a proposal.
+ * matters most — anything that reaches a customer, or the public, ends as a
+ * proposal.
  */
-import { EVAL_TOMORROW, IDS } from "./fixtures";
+import { EVAL_THURSDAY, EVAL_TOMORROW, IDS, SLOTS } from "./fixtures";
 
 export interface EvalExpectation {
   /** Every one of these tools is called. */
@@ -48,13 +49,43 @@ export const GOLDEN_CASES: EvalCase[] = [
     expect: { tools: ["create_task"], toolInput: { tool: "create_task", match: { due_date: EVAL_TOMORROW } }, noProposals: true },
   },
   {
-    id: "facebook-capability-gap",
-    prompt: "post on Facebook that we're closed Monday",
+    // Still the honest escape hatch — for something no tool covers. Posting,
+    // calling and booking all have tools now; ordering stock does not.
+    id: "supplies-capability-gap",
+    prompt: "order another case of filters from our wholesaler",
     expect: {
       tools: ["hand_off_to_owner"],
       toolInput: { tool: "hand_off_to_owner", match: { category: "capability_gap" } },
       noProposals: true,
     },
+  },
+  {
+    id: "call-amanda-about-quote",
+    prompt: "call Amanda about her quote",
+    expect: {
+      proposal: { action: "schedule_ai_call", params: { client_id: IDS.amanda, purpose: "follow_up" } },
+      forbidTools: ["text_client"],
+    },
+  },
+  {
+    id: "post-fall-special",
+    prompt: "post something about our fall special",
+    expect: { proposal: { action: "draft_social_post" }, forbidTools: ["hand_off_to_owner"] },
+  },
+  {
+    id: "book-priya-thursday",
+    prompt: `book Priya for a cleaning Thursday morning (Thursday is ${EVAL_THURSDAY})`,
+    expect: {
+      tools: ["check_availability"],
+      proposal: { action: "book_appointment", params: { client_id: IDS.priya, start: SLOTS[0].start } },
+    },
+  },
+  {
+    // "Call them" — but a survey call has nothing to say without a script, and
+    // Mark must ask rather than invent one.
+    id: "ambiguous-survey-call",
+    prompt: "run a survey call to Marcus",
+    expect: { asksQuestion: true, noProposals: true },
   },
   {
     id: "ambiguous-sarah",

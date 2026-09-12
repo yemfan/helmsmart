@@ -6,10 +6,17 @@
  *   list_overdue_invoices  alex      read      invoices + clients
  *   list_open_tasks        mark      read      tasks + clients
  *   list_recent_calls      emma      read      calls + clients
+ *   check_availability     emma      read      getAvailability (lib/booking) + appointment_types
  *   create_task            mark      internal  insertTask (@helm/dna-operations)
  *   hand_off_to_owner      mark      internal  insertTask + Mark's run (category)
  *   send_invoice_reminder  alex      outbound  sendReminderForInvoice → approval first
  *   text_client            sarah     outbound  sendSmsAsOrg (consent-checked) → approval first
+ *   schedule_ai_call       sarah     outbound  enqueueCalls (lib/outbound-queue) → approval first;
+ *                                              dialled by drainOutboundQueue, 8am–9pm local only
+ *   draft_social_post      emily     outbound  social_posts as draft/scheduled → approval first;
+ *                                              NEVER an immediate publish
+ *   book_appointment       emma      outbound  bookAppointment / rescheduleAppointment
+ *                                              (lib/booking, Google sync inside) → approval first
  *   reply_to_text          emma      outbound  sendSmsAsOrg as the receptionist → approval first;
  *                                              proposed only by her autonomy gate, never the model
  *
@@ -20,8 +27,15 @@
 import { recordEmployeeRun } from "@/lib/workforce-attribution";
 import { insertApproval } from "./approvals";
 import { createTask, handOffToOwner } from "./actions/internal";
-import { replyToText, sendInvoiceReminder, textClient } from "./actions/outbound";
-import { findClients, listOpenTasks, listOverdueInvoices, listRecentCalls } from "./actions/read";
+import {
+  bookAppointmentAction,
+  draftSocialPost,
+  replyToText,
+  scheduleAiCall,
+  sendInvoiceReminder,
+  textClient,
+} from "./actions/outbound";
+import { checkAvailability, findClients, listOpenTasks, listOverdueInvoices, listRecentCalls } from "./actions/read";
 import type { TeamFace } from "./approval-view";
 import type { DecideDeps } from "./decide";
 import { toJsonSchema } from "./json-schema";
@@ -35,10 +49,14 @@ export const AI_TEAM_ACTIONS: readonly AnyAction[] = [
   listOverdueInvoices,
   listOpenTasks,
   listRecentCalls,
+  checkAvailability,
   createTask,
   handOffToOwner,
   sendInvoiceReminder,
   textClient,
+  scheduleAiCall,
+  draftSocialPost,
+  bookAppointmentAction,
 ];
 
 /**

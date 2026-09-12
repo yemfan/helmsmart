@@ -43,10 +43,14 @@ export const ACTION_KEYS = {
   listOverdueInvoices: "list_overdue_invoices",
   listOpenTasks: "list_open_tasks",
   listRecentCalls: "list_recent_calls",
+  checkAvailability: "check_availability",
   createTask: "create_task",
   handOffToOwner: "hand_off_to_owner",
   sendInvoiceReminder: "send_invoice_reminder",
   textClient: "text_client",
+  scheduleAiCall: "schedule_ai_call",
+  draftSocialPost: "draft_social_post",
+  bookAppointment: "book_appointment",
   /** Emma's reply to a customer's text, parked by her autonomy gate — never one of Mark's tools. */
   replyToText: "reply_to_text",
 } as const;
@@ -55,11 +59,23 @@ export const ACTION_KEYS = {
 export const APPROVABLE_ACTIONS: ReadonlySet<string> = new Set([
   ACTION_KEYS.sendInvoiceReminder,
   ACTION_KEYS.textClient,
+  ACTION_KEYS.scheduleAiCall,
+  ACTION_KEYS.draftSocialPost,
+  ACTION_KEYS.bookAppointment,
   ACTION_KEYS.replyToText,
 ]);
 
-/** Approvals whose text the owner may change before saying yes. */
-export const EDITABLE_ACTIONS: ReadonlySet<string> = new Set([ACTION_KEYS.textClient, ACTION_KEYS.replyToText]);
+/**
+ * Approvals whose text the owner may change before saying yes. A text and a
+ * social post are words the owner may want in their own voice; a call's purpose
+ * and an appointment's slot are choices, not prose, so they are approved or
+ * declined as proposed.
+ */
+export const EDITABLE_ACTIONS: ReadonlySet<string> = new Set([
+  ACTION_KEYS.textClient,
+  ACTION_KEYS.replyToText,
+  ACTION_KEYS.draftSocialPost,
+]);
 
 /**
  * `messages.intent` on a reply of Emma's that the owner approved. Her other
@@ -68,9 +84,13 @@ export const EDITABLE_ACTIONS: ReadonlySet<string> = new Set([ACTION_KEYS.textCl
  */
 export const APPROVED_REPLY_INTENT = "approved_reply";
 
+/** The `kind`s a card knows how to lay out. Anything else falls back to the summary. */
+export const DETAIL_KINDS = ["text", "invoice_reminder", "manual", "call", "social", "appointment"] as const;
+export type DetailKind = (typeof DETAIL_KINDS)[number];
+
 /** What the owner is shown before deciding. Every field optional: it is read back from jsonb. */
 export type ApprovalDetails = {
-  kind?: "text" | "invoice_reminder" | "manual";
+  kind?: DetailKind;
   /** Who it goes to — the id behind `clientName`, part of the fingerprint. */
   clientId?: string | null;
   clientName?: string | null;
@@ -83,8 +103,38 @@ export type ApprovalDetails = {
   amount?: number | null;
   currency?: string | null;
   daysOverdue?: number | null;
-  /** A free-text note from the proposer (an autonomy-gated employee's description). */
+  /**
+   * A free-text note from the proposer: an autonomy-gated employee's
+   * description, or what an AI call should cover. Part of what the caller
+   * hears, so it is fingerprinted.
+   */
   note?: string | null;
+
+  // ── An AI call (`schedule_ai_call`) ──────────────────────────────────────
+  /** The queue's purpose key — `follow_up`, `appointment_reminder`, `survey`, `promo`. */
+  callPurpose?: string | null;
+
+  // ── A social post (`draft_social_post`) ──────────────────────────────────
+  /** The platform key — `linkedin`, `facebook`, `threads`, … The post text is `message`. */
+  network?: string | null;
+  /** When the post goes out, ISO. Null means it is saved as a draft, never auto-published. */
+  scheduledFor?: string | null;
+
+  // ── An appointment (`book_appointment`) ──────────────────────────────────
+  appointmentType?: string | null;
+  /** The exact slot, ISO. What is booked. */
+  slotStart?: string | null;
+  /** The same slot written out in the business's timezone — display only, derived from `slotStart`. */
+  slotLabel?: string | null;
+  /** When this moves an existing appointment: the slot it moves off, as a label. Display only. */
+  reschedulesFrom?: string | null;
+
+  /**
+   * Context the owner needs to judge the proposal, never part of what is sent:
+   * the customer's text that Emma is replying to. Display only — deliberately
+   * outside the fingerprint (see `./fingerprint.ts`).
+   */
+  incomingMessage?: string | null;
 };
 
 /** One `ai_approvals` row, as selected. */
@@ -175,7 +225,7 @@ const num = (v: unknown): number | null => (typeof v === "number" && Number.isFi
 /** Read `details` back out of jsonb without trusting its shape. */
 export function pickDetails(raw: unknown): ApprovalDetails {
   const d = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
-  const kind = d.kind === "text" || d.kind === "invoice_reminder" || d.kind === "manual" ? d.kind : undefined;
+  const kind = (DETAIL_KINDS as readonly string[]).includes(d.kind as string) ? (d.kind as DetailKind) : undefined;
   return {
     kind,
     clientId: str(d.clientId),
@@ -189,6 +239,14 @@ export function pickDetails(raw: unknown): ApprovalDetails {
     currency: str(d.currency),
     daysOverdue: num(d.daysOverdue),
     note: str(d.note),
+    callPurpose: str(d.callPurpose),
+    network: str(d.network),
+    scheduledFor: str(d.scheduledFor),
+    appointmentType: str(d.appointmentType),
+    slotStart: str(d.slotStart),
+    slotLabel: str(d.slotLabel),
+    reschedulesFrom: str(d.reschedulesFrom),
+    incomingMessage: str(d.incomingMessage),
   };
 }
 

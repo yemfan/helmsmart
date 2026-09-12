@@ -205,7 +205,10 @@ export async function decideApprovalCore(
     }
     const parsed = action.input.safeParse(candidate);
     if (!parsed.success) {
-      const message = (candidate as { message?: unknown })?.message;
+      // The edited text, whatever the action calls it — a text's `message`, a
+      // social post's `content`. Both reach here through the same edit field.
+      const edited = candidate as { message?: unknown; content?: unknown } | null;
+      const message = typeof edited?.message === "string" ? edited.message : edited?.content;
       const error =
         typeof message === "string" && message.trim() === ""
           ? t("aiApprovals.errors.emptyMessage")

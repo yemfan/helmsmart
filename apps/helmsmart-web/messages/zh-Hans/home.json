@@ -279,10 +279,31 @@
     "summary": {
       "sendInvoiceReminder": "{{who}} 将通过邮件向 {{name}} 发送 {{invoice}} 的付款提醒 · {{amount}}",
       "textClient": "{{who}} 将给 {{name}}（{{phone}}）发短信",
-      "replyToText": "{{who}} 将回复 {{name}}（{{phone}}）的短信"
+      "replyToText": "{{who}} 将回复 {{name}}（{{phone}}）的短信",
+      "scheduleAiCall": "{{who}} 将安排 AI 致电 {{name}}（{{phone}}），内容是{{purpose}}",
+      "draftSocialPostScheduled": "{{who}} 将把一条 {{network}} 帖子定时到 {{when}} 发布",
+      "draftSocialPostDraft": "{{who}} 将把一条 {{network}} 帖子存为草稿",
+      "bookAppointment": "{{who}} 将为 {{name}} 预约 {{type}}，时间是 {{when}}",
+      "bookAppointmentMove": "{{who}} 将把 {{name}} 的 {{type}} 改到 {{when}}"
+    },
+    "callPurpose": {
+      "follow_up": "回访",
+      "appointment_reminder": "预约提醒",
+      "survey": "问卷回访",
+      "promo": "促销推介"
     },
     "card": {
       "emailTo": "邮件发给 {{name}} · {{email}}",
+      "incomingLabel": "对方来信",
+      "callNote": "通话内容：{{note}}",
+      "quietHours": "通话只在你店里当地时间早上 8 点到晚上 9 点之间拨出。",
+      "postLabel": "帖子",
+      "postAt": "发布时间：{{when}}",
+      "postDraft": "已存为草稿——在有人发送之前不会对外发布。",
+      "topic": "需求：{{topic}}",
+      "movesFrom": "会把目前在 {{when}} 的预约挪走。",
+      "confirmationLabel": "确认短信",
+      "noConfirmation": "不会发确认短信——{{name}} 没有可发短信的号码。",
       "overdue_other": "逾期 {{count}} 天",
       "messageLabel": "短信内容",
       "approve": "批准",
@@ -311,7 +332,16 @@
       "failed": "没有成功，请再试一次。",
       "reminderFailed": "付款提醒邮件没有发出，请再试一次。",
       "noEmail": "{{name}} 没有邮箱地址，无法发送付款提醒。",
-      "noPhone": "{{name}} 没有可发短信的电话号码。",
+      "noPhone": "{{name}} 没有留存电话号码。",
+      "callDetailNeeded": "问卷或促销电话需要一条说明，写清楚要问什么或推介什么。请告诉 Mark 通话内容。",
+      "callQueueFailed": "这通电话没能排进队列，请再试一次。",
+      "callAlreadyQueued": "{{name}} 已经有一通同类电话在排队等待拨出。",
+      "socialNotConnected": "还没有连接任何社交账号，所以没有地方可发。请在「设置 → 营销」里连接一个。",
+      "networkNotConnected": "{{network}} 尚未连接。目前已连接：{{connected}}。",
+      "postTimePast": "这个发布时间已经过了。请让 Mark 换一个。",
+      "socialSaveFailed": "帖子没能保存，请再试一次。",
+      "slotPast": "这个时间已经过了。请让 Mark 换一个。",
+      "slotTaken": "这个时间已被占用——请让 Mark 换一个。",
       "notUnpaid": "{{invoice}} 已不再等待付款，所以没有发送提醒。",
       "clientGone": "该客户已不在这家公司的客户列表中。",
       "invoiceGone": "该发票已不在这家公司名下。",
@@ -325,6 +355,9 @@
     },
     "handoff": {
       "nextStep": "下一步：{{step}}"
+    },
+    "booking": {
+      "confirmation": "您的预约已确认：{{when}}。到时见！"
     }
   },
   "aiPanel": {

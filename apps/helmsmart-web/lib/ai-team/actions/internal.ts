@@ -80,7 +80,7 @@ export const handOffToOwner = defineAction({
   riskClass: "internal",
   permission: "clients.read",
   description:
-    "Hand a request back to the owner as a task when the team should NOT or CANNOT do it: it needs the owner personally (moving money, signing, account or security changes) — needs_action; it isn't something this business software does — out_of_scope; it stayed unclear even after you asked one question — unclear; or the team should be able to do it but has no tool for it yet (for example posting on social media, placing a call, booking an appointment from chat) — capability_gap. Never invent a result or pretend a tool exists; prefer acting when a tool fits, or asking ONE clarifying question when a detail is missing.",
+    "Hand a request back to the owner as a task when the team should NOT or CANNOT do it: it needs the owner personally (moving money, signing, account or security changes) — needs_action; it isn't something this business software does — out_of_scope; it stayed unclear even after you asked one question — unclear; or the team should be able to do it but has no tool for it yet (for example running a paid ad campaign, ordering supplies, or issuing a refund) — capability_gap. Never invent a result or pretend a tool exists; prefer acting when a tool fits, or asking ONE clarifying question when a detail is missing.",
   input: z.object({
     summary: z.string().min(3).max(200).describe("What the owner asked for, in one line, in the owner's language. Becomes the task title."),
     why: z.string().min(3).max(500).describe("Why this needs the owner rather than the team, in the owner's language."),

@@ -40,6 +40,12 @@ export interface ActionContext {
   role: OrgRole | null;
   /** The business's date, `YYYY-MM-DD` (not UTC's). */
   today: string;
+  /**
+   * The business's IANA timezone. What "8am" and "Thursday morning" mean here:
+   * an AI call's quiet hours and an appointment's slot are both the owner's
+   * local clock, never the server's.
+   */
+  timezone: string;
   locale: string;
   currency: string;
   /**
@@ -91,7 +97,7 @@ export interface ActionDef<I = unknown> {
   description: string;
   input: z.ZodType<I, z.ZodTypeDef, unknown>;
   /** The channel an outbound action reaches the customer on (for its run record). */
-  channel?: "sms" | "email";
+  channel?: "sms" | "email" | "voice" | "social" | "calendar";
   /** What an outbound action is about, for the specialist's run — known even when the send fails. */
   subjectOf?: (params: I) => Subject | null;
   /**

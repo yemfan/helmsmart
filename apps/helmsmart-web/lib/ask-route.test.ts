@@ -53,7 +53,10 @@ vi.mock("@/lib/i18n/server", () => ({
 }));
 vi.mock("@/lib/i18n/directives", () => ({ languageDirective: () => "" }));
 vi.mock("@/lib/books-currency", () => ({ orgCurrency: async () => "USD" }));
-vi.mock("@/lib/org-timezone", () => ({ orgToday: async () => "2026-09-11" }));
+vi.mock("@/lib/org-timezone", () => ({
+  orgToday: async () => "2026-09-11",
+  orgTimezone: async () => "America/New_York",
+}));
 vi.mock("@/lib/books-format", () => ({ moneyFormatter: () => (n: number) => `$${n}` }));
 
 const recordMarkAnswer = vi.hoisted(() => vi.fn());
@@ -136,10 +139,20 @@ describe("POST /api/ask", () => {
     expect(args.system[0]).toMatchObject({ type: "text", cache_control: { type: "ephemeral" } });
     const system = String(args.system[0].text);
     expect(system).toContain("You are Mark");
-    expect(system).toContain("PROPOSAL, not a send");
+    expect(system).toContain("PROPOSAL, not an action");
     expect(system).toContain("ask ONE short question");
     expect(args.tools.map((t) => t.name)).toEqual(
-      expect.arrayContaining(["find_clients", "create_task", "hand_off_to_owner", "send_invoice_reminder", "text_client"]),
+      expect.arrayContaining([
+        "find_clients",
+        "create_task",
+        "hand_off_to_owner",
+        "send_invoice_reminder",
+        "text_client",
+        "check_availability",
+        "schedule_ai_call",
+        "draft_social_post",
+        "book_appointment",
+      ]),
     );
   });
 

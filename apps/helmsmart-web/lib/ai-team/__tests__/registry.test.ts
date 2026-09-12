@@ -71,8 +71,11 @@ describe("the AI team's registry", () => {
     }
     // The business's own name for the employee.
     expect(tools.find((t) => t.name === "send_invoice_reminder")?.description).toContain("[Owned by Alexandra, AI Finance Director.]");
+    // Every outbound tool tells the model, in its own verb, that calling it
+    // does not do the thing — it parks a proposal. The rule is enforced in
+    // `runAction`; this is the model being told the same thing.
     for (const t of tools.filter((x) => APPROVABLE_ACTIONS.has(x.name))) {
-      expect(t.description).toMatch(/never sends by itself/);
+      expect(t.description, t.name).toMatch(/never (sends|dials|posts|books) by itself/);
     }
   });
 });
