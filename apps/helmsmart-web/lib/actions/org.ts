@@ -4,6 +4,13 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { updateOrg } from "@/lib/actions/org-update";
+import {
+  PROFILE_TITLE,
+  isEmptyProfile,
+  renderProfile,
+  type BusinessProfile,
+} from "@/lib/business-profile";
 import { getServerT } from "@/lib/i18n/server";
 import { getAccountsForEntityType } from "@/lib/data/chart-of-accounts-seed";
 
@@ -121,63 +128,68 @@ export async function createOrg(
   // 'nonprofit' entity type and the `website` column. Done AFTER membership (so
   // the owner UPDATE policy applies) and best-effort + isolated: a not-yet-run
   // migration only means these persist later, never that a signup fails.
+  //
+  // Each goes through `updateOrg`, which asks for the rows back. Discarding
+  // the result made a refused write indistinguishable from a successful one,
+  // which mattered most for `website`: it is now READ — the guided setup
+  // drafts Emma's briefing from it — so a website that silently failed to save
+  // would show up later as a setup step that had nothing to work with and no
+  // explanation. Still best-effort and still isolated: a not-yet-run migration
+  // means these persist later, never that a signup fails.
   if (entityType !== insertEntityType) {
-    const { error } = await supabase
-      .from("organizations")
-      .update({ entity_type: entityType })
-      .eq("id", orgId);
-    if (error) {
-      console.error(
-        "createOrg: could not set entity_type (is migration 00085 applied?):",
-        error.message,
-      );
+    const res = await updateOrg(orgId, { entity_type: entityType }, "createOrg:entityType");
+    if (!res.ok) {
+      console.error("createOrg: could not set entity_type (is migration 00085 applied?):", res.error);
     }
   }
   if (website) {
-    const { error } = await supabase
-      .from("organizations")
-      .update({ website })
-      .eq("id", orgId);
-    if (error) {
-      console.error(
-        "createOrg: could not save website (is migration 00085 applied?):",
-        error.message,
-      );
+    const res = await updateOrg(orgId, { website }, "createOrg:website");
+    if (!res.ok) {
+      console.error("createOrg: could not save website (is migration 00085 applied?):", res.error);
     }
   }
 
   // Business-profile fields (migration 00086). Isolated from the website update
   // so each persists independently once its migration lands; best-effort.
-  const profile: Record<string, string> = {};
-  if (businessCategory) profile.business_category = businessCategory;
-  if (businessDescription) profile.business_description = businessDescription;
-  if (businessLocation) profile.business_location = businessLocation;
-  if (Object.keys(profile).length > 0) {
-    const { error } = await supabase.from("organizations").update(profile).eq("id", orgId);
-    if (error) {
+  const columns: Record<string, string> = {};
+  if (businessCategory) columns.business_category = businessCategory;
+  if (businessDescription) columns.business_description = businessDescription;
+  if (businessLocation) columns.business_location = businessLocation;
+  if (Object.keys(columns).length > 0) {
+    const res = await updateOrg(orgId, columns, "createOrg:businessProfile");
+    if (!res.ok) {
       console.error(
         "createOrg: could not save business profile (is migration 00086 applied?):",
-        error.message,
+        res.error,
       );
     }
+  }
 
-    // Mirror the profile into knowledge_base so the EXISTING content generator
-    // (buildBusinessContext reads knowledge_base) uses it immediately — no new
-    // plumbing needed. Non-fatal: context is optional.
-    const kbLines: string[] = [];
-    if (businessCategory) kbLines.push(`Category: ${businessCategory}.`);
-    if (businessLocation) kbLines.push(`Based in ${businessLocation}.`);
-    if (businessDescription) kbLines.push(businessDescription);
-    if (kbLines.length > 0) {
-      const { error: kbErr } = await supabase.from("knowledge_base").insert({
-        organization_id: orgId,
-        title: "Business profile",
-        content: kbLines.join("\n"),
-        sort: 0,
-      });
-      if (kbErr) {
-        console.error("createOrg: could not seed knowledge_base profile:", kbErr.message);
-      }
+  /*
+   * Mirror the profile into knowledge_base.
+   *
+   * This used to run only when one of the 00086 columns was filled in, and it
+   * left the WEBSITE out — which on Core, where none of those columns exist,
+   * meant the website a new owner typed was written precisely nowhere. It is
+   * the one field the guided setup reads, so it is now part of the mirror and
+   * the mirror is written whenever there is anything to say. Non-fatal: an org
+   * with no profile is a thinner first draft, not a failed signup.
+   */
+  const profile: BusinessProfile = {
+    website: website ?? "",
+    category: businessCategory ?? "",
+    location: businessLocation ?? "",
+    description: businessDescription ?? "",
+  };
+  if (!isEmptyProfile(profile)) {
+    const { error: kbErr } = await supabase.from("knowledge_base").insert({
+      organization_id: orgId,
+      title: PROFILE_TITLE,
+      content: renderProfile(profile),
+      sort: 0,
+    });
+    if (kbErr) {
+      console.error("createOrg: could not seed knowledge_base profile:", kbErr.message);
     }
   }
 
@@ -196,5 +208,16 @@ export async function createOrg(
   const cookieStore = await cookies();
   cookieStore.set(ORG_COOKIE, orgId, COOKIE_OPTS);
 
-  redirect("/home");
+  /*
+   * Into the guided setup, not onto the dashboard.
+   *
+   * /home for a minutes-old account is a finance dashboard of zeros: no
+   * revenue, no invoices, no clients, and nothing on it that tells the owner
+   * what to do next. /setup carries on from the form they just filled in and
+   * ends at a call their AI receptionist answered. Anyone who wants the
+   * dashboard can skip every step and be there in five clicks; where they are
+   * up to is read back off their own rows, so the route is resumable rather
+   * than a one-shot they can fall out of.
+   */
+  redirect("/setup");
 }

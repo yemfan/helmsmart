@@ -8,12 +8,15 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@helm/data/types";
-import { getEmployee, startRun, completeRun, incrementMetric } from "@helm/ai-workforce";
+import { getEmployee, startRun, completeRun, incrementMetric, recordMetric } from "@helm/ai-workforce";
 
 type Db = SupabaseClient<Database>;
 
 const EMMA = "emma";
 const MARK = "mark";
+
+/** How many of the five activation steps this org has finished. */
+export const SETUP_PROGRESS_METRIC = "setup_steps_complete";
 
 /** Mark's daily KPI: questions the owner asked in Ask Mark that he answered. */
 export const MARK_QUESTIONS_METRIC = "questions_answered";
@@ -114,5 +117,29 @@ export async function attributeCallToEmma(db: Db, orgId: string, args: CallAttri
     await incrementMetric(db, orgId, { employeeId: emma.id, metricKey: "calls_answered" });
   } catch (e) {
     console.error("[workforce] attributeCallToEmma failed:", e);
+  }
+}
+
+/**
+ * How far the owner has got setting Emma up, as a daily number.
+ *
+ * `recordMetric` sets an EXACT value rather than bumping a counter, on purpose:
+ * the progress is recomputed from the org's own rows every time a setup step
+ * saves, so re-recording the same number is a no-op and a step completed twice
+ * cannot inflate it. Best-effort like the rest of this file — an org with no
+ * seeded workforce records nothing, and a failed write never reaches the save
+ * the owner was actually doing.
+ */
+export async function recordSetupProgress(db: Db, orgId: string, stepsDone: number): Promise<void> {
+  try {
+    const emma = await getEmployee(db, orgId, EMMA);
+    if (!emma) return;
+    await recordMetric(db, orgId, {
+      employeeId: emma.id,
+      metricKey: SETUP_PROGRESS_METRIC,
+      metricValue: stepsDone,
+    });
+  } catch (e) {
+    console.error("[workforce] recordSetupProgress failed:", e);
   }
 }

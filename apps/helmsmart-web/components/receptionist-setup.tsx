@@ -20,7 +20,8 @@ export type SetupStatus = {
   functionUrl: string;
 };
 
-function CopyField({ label, value, copyLabel }: { label: string; value: string; copyLabel: string }) {
+/** A read-only value with a copy button. Also used by the guided setup's number step. */
+export function CopyField({ label, value, copyLabel }: { label: string; value: string; copyLabel: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex flex-col gap-1">

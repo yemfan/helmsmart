@@ -262,6 +262,18 @@
     "tasksDue_one": "今天有 {{count}} 项任务需要处理",
     "tasksDue_other": "今天有 {{count}} 项任务需要处理"
   },
+  "activation": {
+    "title": "把 AI 接待员设置完",
+    "progress": "已完成 {{done}}/{{total}}，全部加起来大约五分钟。",
+    "steps": {
+      "basics": "把你的生意讲给 Emma 听",
+      "script": "看看 Emma 在电话里会怎么说",
+      "hours": "设置营业时间和可预约的项目",
+      "number": "接通客人拨打的号码",
+      "call": "听她接起你的第一通电话"
+    },
+    "continue": "从上次的地方继续"
+  },
   "ask": {
     "error": "抱歉，出了点问题，请再试一次。",
     "errors": {

@@ -13,6 +13,7 @@ import {
 import { RevenueChart, type ChartMonth } from "@/components/revenue-chart";
 import { AiActivity } from "@/components/ai-activity";
 import { NeedsApproval } from "@/components/needs-approval";
+import { ActivationChecklist } from "@/components/activation-checklist";
 import { getReceivablesAging, getCashFlowForecast } from "@/lib/actions/reports";
 import { getOrCreateDailyBriefing } from "@/lib/briefing";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
@@ -498,6 +499,13 @@ export default async function HomePage() {
             </ul>
           )}
 
+          {/*
+            Above the approvals, because for a brand-new account this is the
+            only thing on the page with anything to say: the KPIs are zeros and
+            nothing has been approved yet. It disappears of its own accord once
+            the receptionist has taken a call.
+          */}
+          <ActivationChecklist orgId={orgId} />
           <NeedsApproval orgId={orgId} />
           <AiActivity orgId={orgId} />
         </div>
