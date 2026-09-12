@@ -1245,7 +1245,7 @@ export async function createMobilePresentation(
   if (res.ok === false) return res;
   const id = res.data.presentation_id;
   if (!id) return { ok: false, status: 200, message: "The presentation came back without an id." };
-  const base = getLeadsmartApiBaseUrl().replace(/\/+$/, "");
+  const base = getCloseBossApiBaseUrl().replace(/\/+$/, "");
   return { ok: true, presentationId: id, url: `${base}/presentation/${id}` };
 }
 

@@ -23,7 +23,7 @@ import {
   hapticError,
   hapticSuccess,
 } from "../lib/haptics";
-import { createMobilePresentation } from "../lib/leadsmartMobileApi";
+import { createMobilePresentation } from "../lib/closeBossMobileApi";
 import { openExternalUrl } from "../lib/lead/openExternalUrl";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";

@@ -9,7 +9,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { FadeIn } from "../../components/Reveal";
 import { LeadRowSkeleton, SkeletonList } from "../../components/Skeleton";
-import { fetchMobileTransactions, type MobileTransaction } from "../../lib/leadsmartMobileApi";
+import { fetchMobileTransactions, type MobileTransaction } from "../../lib/closeBossMobileApi";
 import { useCachedFetch } from "../../lib/offline/useCachedFetch";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
