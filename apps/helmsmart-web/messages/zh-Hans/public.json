@@ -113,7 +113,15 @@
     "notes": "备注",
     "amountDue": "应付金额",
     "footer": "由 Stripe 安全处理付款 · 发票 {{number}}",
-    "payNow": "立即付款"
+    "payNow": "立即付款",
+    "checkout": {
+      "missingInvoice": "此付款链接不完整，请从发票中重新打开。",
+      "notConfigured": "此发票目前无法在线付款，请联系开具发票的商家。",
+      "notFound": "找不到此发票。请检查链接，或联系开具发票的商家。",
+      "nothingDue": "此发票没有需要支付的金额。",
+      "belowMinimum": "此发票的总额（{{amount}}）低于刷卡付款的最低金额 {{minimum}}。请联系商家改用其他方式付款。",
+      "failed": "暂时无法发起付款，请几分钟后再试。"
+    }
   },
   "portal": {
     "badge": "客户门户",

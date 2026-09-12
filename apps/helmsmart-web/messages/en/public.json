@@ -113,7 +113,15 @@
     "notes": "Notes",
     "amountDue": "Amount due",
     "footer": "Secure payment processed by Stripe · Invoice {{number}}",
-    "payNow": "Pay now"
+    "payNow": "Pay now",
+    "checkout": {
+      "missingInvoice": "This payment link is incomplete. Please open it again from your invoice.",
+      "notConfigured": "Online payment isn't available for this invoice right now. Please contact the business that sent it.",
+      "notFound": "We couldn't find this invoice. Check the link, or contact the business that sent it.",
+      "nothingDue": "There's nothing to pay on this invoice.",
+      "belowMinimum": "This invoice's total ({{amount}}) is below the minimum card payment of {{minimum}}. Please contact the business to pay another way.",
+      "failed": "We couldn't start the payment. Please try again in a few minutes."
+    }
   },
   "portal": {
     "badge": "Client Portal",
