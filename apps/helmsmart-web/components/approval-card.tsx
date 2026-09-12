@@ -10,10 +10,10 @@ import { moneyFormatter } from "@/lib/books-format";
 import {
   ACTION_KEYS,
   MESSAGE_MAX,
-  approvalFingerprint,
   type ApprovalView,
   type DecideApprovalResult,
 } from "@/lib/ai-team/approval-view";
+import { approvalFingerprintAsync } from "@/lib/ai-team/fingerprint";
 
 /**
  * One thing the AI team wants to do for a customer, waiting for the owner.
@@ -90,13 +90,25 @@ export function ApprovalCard({
       setError(t("aiApprovals.errors.emptyMessage"));
       return;
     }
-    // What this card shows, with the message as the owner left it.
-    const fingerprint =
-      decision === "approve" && view.executable
-        ? approvalFingerprint(view.actionKey, { ...d, message: view.editable ? message : d.message })
-        : undefined;
     setPending(decision);
     setError(null);
+    // What this card shows, with the message as the owner left it.
+    let fingerprint: string | undefined;
+    if (decision === "approve" && view.executable) {
+      try {
+        fingerprint = await approvalFingerprintAsync(view.actionKey, {
+          ...d,
+          message: view.editable ? message : d.message,
+        });
+      } catch (e) {
+        // No Web Crypto here, so we cannot prove what was shown — and the
+        // server refuses an approval it cannot check. Say so, don't send.
+        console.error("fingerprinting an approval", e);
+        setPending(null);
+        setError(t("aiApprovals.errors.failed"));
+        return;
+      }
+    }
     let res: DecideApprovalResult;
     try {
       res = await decideApproval(view.id, decision, { message: view.editable ? message : undefined, fingerprint });

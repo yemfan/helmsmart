@@ -122,6 +122,9 @@ describe("client/server import boundary", () => {
     expect([...mods.values()].filter((m) => m.directive === "use client").length).toBeGreaterThan(50);
     expect(serverOnly.has("lib/supabase/server.ts")).toBe(true);
     expect(serverOnly.has("lib/auth/org-context.ts")).toBe(true);
+    // The card hashes with `crypto.subtle`; only the server reaches node:crypto.
+    expect(serverOnly.has("lib/ai-team/fingerprint.server.ts")).toBe(true);
+    expect(serverOnly.has("lib/ai-team/fingerprint.ts")).toBe(false);
   });
 
   it("no \"use client\" module value-imports server-only code", () => {
