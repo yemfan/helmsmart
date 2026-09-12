@@ -32,6 +32,35 @@ import { approvalFingerprintAsync } from "@/lib/ai-team/fingerprint";
  * that is no longer what would go out. A send that never reported back is
  * shown as unconfirmed and can only be dismissed — never re-sent.
  */
+/**
+ * A call's purpose to its bundle key. A literal map, not `` t(`…${value}`) ``:
+ * a key built from a stored value renders itself when the value is anything the
+ * bundle doesn't have, and no i18n guard can see that coming.
+ */
+const CALL_PURPOSE_KEYS: Record<string, string> = {
+  follow_up: "aiApprovals.callPurpose.follow_up",
+  appointment_reminder: "aiApprovals.callPurpose.appointment_reminder",
+  survey: "aiApprovals.callPurpose.survey",
+  promo: "aiApprovals.callPurpose.promo",
+};
+
+/** Network names are brands — the same word in every language. */
+const NETWORK_LABELS: Record<string, string> = {
+  linkedin: "LinkedIn",
+  facebook: "Facebook",
+  instagram: "Instagram",
+  threads: "Threads",
+  x: "X",
+};
+const networkLabel = (network: string) => NETWORK_LABELS[network] ?? network;
+
+/** An instant in the reader's language — the post's own time, as the browser reads it. */
+function formatInstant(locale: string, iso: string): string {
+  const ms = Date.parse(iso);
+  if (!Number.isFinite(ms)) return iso;
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(ms));
+}
+
 export function ApprovalCard({
   approval,
   onDecided,
@@ -59,6 +88,11 @@ export function ApprovalCard({
   const d = view.details;
   const who = view.employee.name;
   const amount = typeof d.amount === "number" ? moneyFormatter(i18n.language, d.currency)(d.amount) : "";
+  // A call's purpose is one of four known keys, never free text from the
+  // database — so the label is looked up through a map rather than by building
+  // a key out of a value, which would print the raw key when it doesn't match.
+  const purposeLabel = d.callPurpose && CALL_PURPOSE_KEYS[d.callPurpose] ? t(CALL_PURPOSE_KEYS[d.callPurpose]) : d.callPurpose;
+  const postWhen = d.scheduledFor ? formatInstant(i18n.language, d.scheduledFor) : null;
   const summary =
     view.actionKey === ACTION_KEYS.sendInvoiceReminder && d.clientName && d.invoiceNumber
       ? t("aiApprovals.summary.sendInvoiceReminder", { who, name: d.clientName, invoice: d.invoiceNumber, amount })
@@ -66,7 +100,20 @@ export function ApprovalCard({
         ? t("aiApprovals.summary.textClient", { who, name: d.clientName, phone: d.phone })
         : view.actionKey === ACTION_KEYS.replyToText && d.clientName && d.phone
           ? t("aiApprovals.summary.replyToText", { who, name: d.clientName, phone: d.phone })
-          : view.summary;
+          : view.actionKey === ACTION_KEYS.scheduleAiCall && d.clientName && d.phone && purposeLabel
+            ? t("aiApprovals.summary.scheduleAiCall", { who, name: d.clientName, phone: d.phone, purpose: purposeLabel })
+            : view.actionKey === ACTION_KEYS.draftSocialPost && d.network
+              ? postWhen
+                ? t("aiApprovals.summary.draftSocialPostScheduled", { who, network: networkLabel(d.network), when: postWhen })
+                : t("aiApprovals.summary.draftSocialPostDraft", { who, network: networkLabel(d.network) })
+              : view.actionKey === ACTION_KEYS.bookAppointment && d.clientName && d.slotLabel && d.appointmentType
+                ? t(d.reschedulesFrom ? "aiApprovals.summary.bookAppointmentMove" : "aiApprovals.summary.bookAppointment", {
+                    who,
+                    name: d.clientName,
+                    type: d.appointmentType,
+                    when: d.slotLabel,
+                  })
+                : view.summary;
 
   const proposed = view.status === "proposed";
   const unconfirmed = view.status === "unconfirmed";
@@ -174,11 +221,31 @@ export function ApprovalCard({
             </p>
           ) : null}
 
-          {d.kind === "text" ? (
+          {/* What the customer said, above the reply that answers it. Quiet
+              text: it is context for the decision, not the decision. */}
+          {d.incomingMessage ? (
+            <div className="border-l-2 border-slate-200 pl-2.5">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{t("aiApprovals.card.incomingLabel")}</p>
+              <p className="whitespace-pre-wrap text-xs text-slate-600">{d.incomingMessage}</p>
+            </div>
+          ) : null}
+
+          {d.kind === "call" ? (
+            <>
+              {d.note ? <p className="text-xs text-slate-600">{t("aiApprovals.card.callNote", { note: d.note })}</p> : null}
+              <p className="text-xs text-slate-500">{t("aiApprovals.card.quietHours")}</p>
+            </>
+          ) : null}
+
+          {d.kind === "social" && d.note ? (
+            <p className="text-xs text-slate-500">{t("aiApprovals.card.topic", { topic: d.note })}</p>
+          ) : null}
+
+          {d.kind === "text" || d.kind === "social" || (d.kind === "appointment" && d.message) ? (
             proposed && view.editable ? (
               <div>
                 <label htmlFor={messageId} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-slate-500">
-                  {t("aiApprovals.card.messageLabel")}
+                  {t(d.kind === "social" ? "aiApprovals.card.postLabel" : "aiApprovals.card.messageLabel")}
                 </label>
                 <textarea
                   id={messageId}
@@ -188,15 +255,39 @@ export function ApprovalCard({
                     setMessage(e.target.value);
                     setError(null);
                   }}
-                  rows={3}
+                  rows={d.kind === "social" ? 5 : 3}
                   disabled={!!pending}
                   // 16px below md so iOS doesn't zoom the sheet when the field takes focus.
                   className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-800 focus:border-blue-400 focus:outline-none md:text-sm"
                 />
               </div>
             ) : d.message ? (
-              <p className="whitespace-pre-wrap rounded-md bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">{d.message}</p>
+              <>
+                {d.kind === "appointment" ? (
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                    {t("aiApprovals.card.confirmationLabel")}
+                  </p>
+                ) : null}
+                <p className="whitespace-pre-wrap rounded-md bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">{d.message}</p>
+              </>
             ) : null
+          ) : null}
+
+          {d.kind === "social" ? (
+            <p className="text-xs text-slate-500">
+              {postWhen ? t("aiApprovals.card.postAt", { when: postWhen }) : t("aiApprovals.card.postDraft")}
+            </p>
+          ) : null}
+
+          {d.kind === "appointment" ? (
+            <>
+              {d.reschedulesFrom ? (
+                <p className="text-xs text-slate-600">{t("aiApprovals.card.movesFrom", { when: d.reschedulesFrom })}</p>
+              ) : null}
+              {!d.message && d.clientName ? (
+                <p className="text-xs text-slate-500">{t("aiApprovals.card.noConfirmation", { name: d.clientName })}</p>
+              ) : null}
+            </>
           ) : null}
 
           {!view.executable && d.note ? <p className="text-xs text-slate-600">{d.note}</p> : null}

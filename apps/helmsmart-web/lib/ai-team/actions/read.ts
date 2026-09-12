@@ -10,9 +10,12 @@ import { z } from "zod";
 import { moneyFormatter } from "@/lib/books-format";
 import { daysBetween } from "@/lib/org-date";
 import { formatPhoneDisplay } from "@/lib/phone-display";
+import { getAvailability } from "@/lib/booking";
 import { ACTION_KEYS } from "../approval-view";
 import { CLIENT_COLUMNS, UNPAID_INVOICE_STATUSES, clientName, type OrgClient } from "../entities";
 import { defineAction, type ActionContext } from "../types";
+
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const FIND_LIMIT = 10;
 
@@ -210,5 +213,73 @@ export const listRecentCalls = defineAction({
       called_at: r.called_at,
     }));
     return { status: "done", summary: `${calls.length} call${calls.length === 1 ? "" : "s"}.`, data: { calls } };
+  },
+});
+
+/** The appointment types this business offers, as the owner configured them. */
+async function appointmentTypes(ctx: ActionContext): Promise<Array<{ name: string; duration_minutes: number }>> {
+  const { data, error } = await ctx.db
+    .from("appointment_types")
+    .select("name, duration_minutes")
+    .eq("organization_id", ctx.orgId)
+    .eq("active", true)
+    .order("sort", { ascending: true })
+    .limit(25);
+  if (error) throw new Error(`appointment types lookup failed: ${error.message}`);
+  return (data ?? []) as Array<{ name: string; duration_minutes: number }>;
+}
+
+/**
+ * The openings Emma would offer a caller, from the same `getAvailability` her
+ * phone and SMS tools use — the business's hours, its existing appointments and
+ * its Google calendar, in its own timezone.
+ *
+ * `book_appointment` will not take a slot this did not return, so Mark must
+ * come here first. It is the `find_clients` of the calendar: look, then act.
+ */
+export const checkAvailability = defineAction({
+  key: ACTION_KEYS.checkAvailability,
+  employee: "emma",
+  riskClass: "read",
+  permission: "pipeline.read",
+  description:
+    "Find the open appointment slots on a date: the exact `start` of each opening, and a label for it in the business's timezone. ALWAYS use this before proposing book_appointment, and only ever offer or book a `start` it returned — never invent a time. Also returns the appointment types this business offers; if the owner's words don't match one, ask which they mean. Resolve relative dates (\"Thursday\", \"tomorrow\") against today's date in the prompt.",
+  input: z.object({
+    appointment_type: z.string().min(1).max(100).describe("The service the customer wants, as this business names it."),
+    date: z.string().regex(DATE).describe("The day to look at, YYYY-MM-DD in the business's calendar."),
+  }),
+  async execute({ appointment_type, date }, ctx) {
+    const types = await appointmentTypes(ctx);
+    if (types.length === 0) {
+      return {
+        status: "rejected",
+        reason:
+          "This business has no appointment types set up, so nothing can be booked yet. Tell the owner they can add them in Settings, and offer to leave them a task instead.",
+      };
+    }
+    const availability = await getAvailability(ctx.orgId, appointment_type, date);
+    if (availability.closed) {
+      return {
+        status: "done",
+        summary: `Closed on ${date}.`,
+        data: { date, closed: true, slots: [], appointment_types: types, note: "The business is closed that day. Ask the owner for another day." },
+      };
+    }
+    const slots = availability.slots.map((s) => ({ start: s.startISO, label: s.label }));
+    return {
+      status: "done",
+      summary: `${slots.length} opening${slots.length === 1 ? "" : "s"} on ${date}.`,
+      data: {
+        date,
+        closed: false,
+        duration_minutes: availability.durationMinutes,
+        slots,
+        appointment_types: types,
+        note:
+          slots.length === 0
+            ? "Nothing is open that day. Offer another day; do not invent a time."
+            : "Book only with one of these exact `start` values.",
+      },
+    };
   },
 });

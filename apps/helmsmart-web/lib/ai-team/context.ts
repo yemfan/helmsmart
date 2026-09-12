@@ -9,7 +9,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { listEmployees } from "@helm/ai-workforce";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
-import { orgToday } from "@/lib/org-timezone";
+import { orgTimezone, orgToday } from "@/lib/org-timezone";
 import type { OrgRole } from "@/lib/permissions";
 import { teamFaces } from "./faces";
 import type { ActionContext } from "./types";
@@ -20,13 +20,14 @@ export async function buildActionContext(args: {
   userId: string | null;
   role: OrgRole | null;
 }): Promise<ActionContext> {
-  const [locale, home, inbox, clients, currency, today, employees] = await Promise.all([
+  const [locale, home, inbox, clients, currency, today, timezone, employees] = await Promise.all([
     getServerLocale(),
     getServerT("home"),
     getServerT("inbox"),
     getServerT("clients"),
     orgCurrency(args.orgId),
     orgToday(args.orgId),
+    orgTimezone(args.orgId),
     listEmployees(args.db, args.orgId).catch(() => []),
   ]);
   return {
@@ -35,6 +36,7 @@ export async function buildActionContext(args: {
     userId: args.userId,
     role: args.role,
     today,
+    timezone,
     locale,
     currency,
     i18n: { home, inbox, clients },

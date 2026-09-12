@@ -21,6 +21,7 @@ export function testContext(db: FakeDb, over: Partial<ActionContext> & { role?: 
     userId: USER,
     role: "owner",
     today: "2026-09-11",
+    timezone: "America/New_York",
     locale: "en",
     currency: "USD",
     i18n: {

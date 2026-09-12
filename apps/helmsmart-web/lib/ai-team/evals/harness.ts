@@ -15,7 +15,7 @@ import { runMarkLoop, type MarkModel } from "../mark-loop";
 import { toolsForModel } from "../registry";
 import { runAction, type RunDeps } from "../run-action";
 import type { ActionContext } from "../types";
-import { EVAL_SNAPSHOT, EVAL_TODAY, syntheticActions } from "./fixtures";
+import { EVAL_SNAPSHOT, EVAL_TIMEZONE, EVAL_TODAY, syntheticActions } from "./fixtures";
 import type { EvalCase } from "./golden";
 
 export interface EvalResult {
@@ -53,6 +53,7 @@ export async function runEvalCase(c: EvalCase, model: MarkModel): Promise<EvalRe
     userId: "eval-owner",
     role: "owner",
     today: EVAL_TODAY,
+    timezone: EVAL_TIMEZONE,
     locale: "en",
     currency: "USD",
     i18n: {

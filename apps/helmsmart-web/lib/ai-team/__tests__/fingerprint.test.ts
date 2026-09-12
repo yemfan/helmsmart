@@ -82,4 +82,51 @@ describe("the approval fingerprint", () => {
     }
     expect(approvalFingerprint("send_invoice_reminder", shown)).not.toBe(base);
   });
+
+  /**
+   * The specialists added after v1 hash fields v1 never had. The suffix is
+   * emitted only when one of them is set — which is what keeps the vectors
+   * above, and every proposal already waiting for an owner, exactly as they
+   * were.
+   */
+  describe("the fields the later specialists decide on", () => {
+    it("leaves an older action's bytes untouched", () => {
+      expect(fingerprintInput("text_client", shown)).not.toMatch(/null,null,null,null,null,null\]$/);
+      // Explicit nulls for every new field hash the same as not mentioning them.
+      expect(
+        fp({ callPurpose: null, network: null, scheduledFor: null, appointmentType: null, slotStart: null, note: null }),
+      ).toBe(fp({}));
+    });
+
+    it("changes with the purpose of a call, the network and time of a post, and the slot of a booking", () => {
+      const base = fp({});
+      for (const change of [
+        { note: "Ask how the repair went." },
+        { callPurpose: "follow_up" },
+        { network: "linkedin" },
+        { scheduledFor: "2026-09-20T17:00:00.000Z" },
+        { appointmentType: "Cleaning" },
+        { slotStart: "2026-09-17T16:00:00.000Z" },
+      ]) {
+        expect(fp(change), JSON.stringify(change)).not.toBe(base);
+      }
+      // Two calls that differ only in purpose are two different calls.
+      expect(fp({ callPurpose: "survey" })).not.toBe(fp({ callPurpose: "promo" }));
+    });
+
+    it("ignores the context a card shows but nobody receives", () => {
+      const booking: ApprovalDetails = {
+        clientId: "aaaaaaaa-0000-4000-8000-000000000002",
+        appointmentType: "Cleaning",
+        slotStart: "2026-09-17T16:00:00.000Z",
+        message: "You're confirmed for Thursday, September 17 at 9 AM. See you then!",
+      };
+      const bare = approvalFingerprint("book_appointment", booking);
+      expect(approvalFingerprint("book_appointment", { ...booking, slotLabel: "Thursday, September 17 at 9 AM" })).toBe(bare);
+      expect(approvalFingerprint("book_appointment", { ...booking, reschedulesFrom: "Tuesday at 2 PM" })).toBe(bare);
+      expect(approvalFingerprint("reply_to_text", { ...shown, incomingMessage: "are you open Saturday?" })).toBe(
+        approvalFingerprint("reply_to_text", shown),
+      );
+    });
+  });
 });

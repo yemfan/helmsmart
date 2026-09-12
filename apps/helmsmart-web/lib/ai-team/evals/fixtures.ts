@@ -13,6 +13,9 @@ import type { ActionResult, AnyAction, PreviewResult } from "../types";
 
 export const EVAL_TODAY = "2026-09-11";
 export const EVAL_TOMORROW = "2026-09-12";
+/** A Thursday, the day the booking case asks about. */
+export const EVAL_THURSDAY = "2026-09-17";
+export const EVAL_TIMEZONE = "America/Los_Angeles";
 
 export const IDS = {
   dana: "e0000000-0000-4000-8000-000000000001",
@@ -20,6 +23,7 @@ export const IDS = {
   sarahLee: "e0000000-0000-4000-8000-000000000003",
   sarahKim: "e0000000-0000-4000-8000-000000000004",
   marcus: "e0000000-0000-4000-8000-000000000005",
+  amanda: "e0000000-0000-4000-8000-000000000006",
   inv1042: "f0000000-0000-4000-8000-000000001042",
   inv1051: "f0000000-0000-4000-8000-000000001051",
 } as const;
@@ -30,6 +34,7 @@ export const CLIENTS = [
   { id: IDS.sarahLee, name: "Sarah Lee", phone: "(415) 555-0177", email: "slee@example.com", preferred_language: "en" },
   { id: IDS.sarahKim, name: "Sarah Kim", phone: "(415) 555-0188", email: "skim@example.com", preferred_language: "en" },
   { id: IDS.marcus, name: "Marcus Chen", phone: "(415) 555-0122", email: "marcus@example.com", preferred_language: "en" },
+  { id: IDS.amanda, name: "Amanda Ruiz", phone: "(415) 555-0164", email: "amanda@example.com", preferred_language: "en" },
 ];
 
 export const INVOICES = [
@@ -42,6 +47,21 @@ export const TASKS = [
   { id: "task-2", title: "Send Dana the revised quote", due_date: "2026-09-09", overdue: true, priority: "high", status: "open", client_name: "Dana Lee" },
 ];
 
+/** The openings `check_availability` offers for the Thursday the booking case asks about. */
+export const SLOTS = [
+  { start: "2026-09-17T16:00:00.000Z", label: "Thursday, September 17 at 9 AM" },
+  { start: "2026-09-17T17:30:00.000Z", label: "Thursday, September 17 at 10:30 AM" },
+  { start: "2026-09-17T20:00:00.000Z", label: "Thursday, September 17 at 1 PM" },
+];
+
+export const APPOINTMENT_TYPES = [
+  { name: "Cleaning", duration_minutes: 60 },
+  { name: "Repair", duration_minutes: 90 },
+];
+
+/** This business has connected LinkedIn and Facebook, and nothing else. */
+export const CONNECTED_NETWORKS = ["linkedin", "facebook"];
+
 export const CALLS = [
   { id: "call-1", caller: "Priya Shah", client_id: IDS.priya, status: "answered", texted_back: false, called_at: "2026-09-10T15:12:00Z" },
   { id: "call-2", caller: "(628) 555-0110", client_id: null, status: "missed", texted_back: true, called_at: "2026-09-09T18:40:00Z" },
@@ -50,8 +70,8 @@ export const CALLS = [
 export const EVAL_SNAPSHOT = `Organization: Bayview Plumbing
 Today: ${EVAL_TODAY} | Month-to-date: 2026-09-01 to ${EVAL_TODAY}
 
-CLIENTS (5 total)
-  Active: 5  |  Leads: 0  |  Prospects: 0  |  Inactive: 0
+CLIENTS (6 total)
+  Active: 6  |  Leads: 0  |  Prospects: 0  |  Inactive: 0
 
 INVOICES
   Outstanding (unpaid): 2 invoices · $1,650.00
@@ -119,6 +139,71 @@ const SYNTHETIC: Record<string, Impl> = {
       return c
         ? { ok: true, summary: `Sarah will text ${c.name} at ${c.phone}`, details: { kind: "text", clientName: c.name, phone: c.phone, message: String(p.message) } }
         : { ok: false, reason: "That client id is not a client of this business. Look them up with find_clients." };
+    },
+  },
+  check_availability: {
+    execute: async (p) => {
+      const date = String(p.date ?? "");
+      const slots = date === EVAL_THURSDAY ? SLOTS : [];
+      return done(`${slots.length} openings on ${date}.`, {
+        date,
+        closed: false,
+        slots,
+        appointment_types: APPOINTMENT_TYPES,
+        note:
+          slots.length === 0
+            ? "Nothing is open that day. Offer another day; do not invent a time."
+            : "Book only with one of these exact `start` values.",
+      });
+    },
+  },
+  schedule_ai_call: {
+    preview: async (p) => {
+      const c = clientById(p.client_id);
+      if (!c) return { ok: false, reason: "That client id is not a client of this business. Look them up with find_clients." };
+      const purpose = String(p.purpose ?? "");
+      if ((purpose === "survey" || purpose === "promo") && !p.note) {
+        return { ok: false, reason: `A ${purpose} call needs a note saying what to ask or offer.` };
+      }
+      return {
+        ok: true,
+        summary: `Sarah will have an AI call ${c.name} at ${c.phone} about ${purpose}`,
+        details: { kind: "call", clientId: c.id, clientName: c.name, phone: c.phone, callPurpose: purpose, note: (p.note as string) ?? null },
+      };
+    },
+  },
+  draft_social_post: {
+    preview: async (p) => {
+      const network = String(p.network ?? "").toLowerCase();
+      if (!CONNECTED_NETWORKS.includes(network)) {
+        return { ok: false, reason: `${network} isn't connected for this business. Connected right now: ${CONNECTED_NETWORKS.join(", ")}.` };
+      }
+      const when = (p.scheduled_at as string) ?? null;
+      return {
+        ok: true,
+        summary: when ? `Emily will schedule a ${network} post for ${when}` : `Emily will save a ${network} post as a draft`,
+        details: { kind: "social", network, message: String(p.content), scheduledFor: when },
+      };
+    },
+  },
+  book_appointment: {
+    preview: async (p) => {
+      const c = clientById(p.client_id);
+      if (!c) return { ok: false, reason: "That client id is not a client of this business. Look them up with find_clients." };
+      const slot = SLOTS.find((s) => s.start === p.start);
+      if (!slot) return { ok: false, reason: "That time is no longer open. Call check_availability again and offer another slot." };
+      return {
+        ok: true,
+        summary: `Emma will book ${String(p.appointment_type)} for ${c.name} at ${slot.label}`,
+        details: {
+          kind: "appointment",
+          clientId: c.id,
+          clientName: c.name,
+          appointmentType: String(p.appointment_type),
+          slotStart: slot.start,
+          slotLabel: slot.label,
+        },
+      };
     },
   },
 };

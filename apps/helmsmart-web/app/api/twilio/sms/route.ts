@@ -257,6 +257,7 @@ export async function POST(request: NextRequest) {
         lang,
         assist,
         ownerLang,
+        inboundBody: body,
       });
     } else if (org.auto_reply && !isKeyword) {
       // Opt-out (STOP/unsubscribe/…): message is still captured + triaged, but no auto-reply (TCPA).
@@ -455,8 +456,10 @@ async function runAutoPilotReply(opts: {
   lang: Lang;
   assist: boolean;
   ownerLang: Lang;
+  /** The text that triggered this reply — shown to the owner on Emma's approval card. */
+  inboundBody: string;
 }) {
-  const { supabase, orgId, orgName, clientId, from, to, lang, assist, ownerLang } = opts;
+  const { supabase, orgId, orgName, clientId, from, to, lang, assist, ownerLang, inboundBody } = opts;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return;
@@ -623,7 +626,16 @@ async function runAutoPilotReply(opts: {
       const usage = { tokensUsed: draft.tokensUsed, costCents: draft.costCents };
       const message = cleanReply(draft.replyText);
       if (!message) return { proposal: null, usage };
-      return { proposal: await receptionistReplyProposal(supabase, orgId, { clientId, message, employeeName }), usage };
+      return {
+        proposal: await receptionistReplyProposal(supabase, orgId, {
+          clientId,
+          message,
+          employeeName,
+          // The text she is answering, shown above her draft on the approval card.
+          incomingMessage: inboundBody,
+        }),
+        usage,
+      };
     },
     execute: async () => {
       const result = await runAgentLoop();

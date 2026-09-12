@@ -27,11 +27,17 @@ import type { ApprovalDetails } from "./approval-view";
  *
  * Changing anything here invalidates every proposal already waiting for an
  * owner, so the shape is versioned and the order is fixed.
+ *
+ * The specialists added after v1 — an AI call, a social post, an appointment —
+ * decide on fields v1 never had, so those are appended as a SUFFIX that is
+ * emitted only when at least one of them is set. An invoice reminder or a text
+ * therefore hashes byte-for-byte what it hashed before, and the proposals
+ * already waiting for an owner survive this change.
  */
 export function fingerprintInput(actionKey: string, d: ApprovalDetails): string {
   const text = (v: unknown): string | null => (typeof v === "string" && v.trim() ? v.trim() : null);
   const amount = typeof d.amount === "number" && Number.isFinite(d.amount) ? d.amount : null;
-  return JSON.stringify([
+  const base = [
     "approval-v1",
     actionKey,
     text(d.clientId),
@@ -41,7 +47,20 @@ export function fingerprintInput(actionKey: string, d: ApprovalDetails): string 
     amount,
     text(d.currency),
     text(d.message),
-  ]);
+  ];
+  // What an AI call says and to what end, which network a post goes out on and
+  // when, which slot is being taken. `slotLabel`, `reschedulesFrom` and
+  // `incomingMessage` are NOT here: they explain the action to the owner, they
+  // are not part of it.
+  const extra = [
+    text(d.note),
+    text(d.callPurpose),
+    text(d.network),
+    text(d.scheduledFor),
+    text(d.appointmentType),
+    text(d.slotStart),
+  ];
+  return JSON.stringify(extra.some((v) => v !== null) ? [...base, ...extra] : base);
 }
 
 const toHex = (buffer: ArrayBuffer): string =>

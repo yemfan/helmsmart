@@ -13,7 +13,7 @@ vi.mock("@/lib/invoice-reminders", () => ({ sendReminderForInvoice: vi.fn() }));
 import type { MarkModel, ModelToolUse } from "../mark-loop";
 import { runEvalCase } from "../evals/harness";
 import { GOLDEN_CASES, type EvalCase } from "../evals/golden";
-import { EVAL_TOMORROW, IDS } from "../evals/fixtures";
+import { EVAL_THURSDAY, EVAL_TOMORROW, IDS, SLOTS } from "../evals/fixtures";
 
 type Step = { text?: string; tool?: [string, unknown] };
 
@@ -57,14 +57,33 @@ const GOOD: Record<string, Step[]> = {
     { tool: ["create_task", { title: "Call the plumber supplier", due_date: EVAL_TOMORROW }] },
     { text: "Added: call the plumber supplier, due tomorrow." },
   ],
-  "facebook-capability-gap": [
+  "supplies-capability-gap": [
     {
       tool: [
         "hand_off_to_owner",
-        { summary: "Post on Facebook that we're closed Monday", why: "The team can't post to social media from here yet.", category: "capability_gap" },
+        { summary: "Order a case of filters from the wholesaler", why: "The team can't place supplier orders yet.", category: "capability_gap" },
       ],
     },
-    { text: "I can't post to Facebook from here yet — it's on your task list." },
+    { text: "I can't order from your wholesaler yet — it's on your task list." },
+  ],
+  "call-amanda-about-quote": [
+    { tool: ["find_clients", { query: "Amanda" }] },
+    { tool: ["schedule_ai_call", { client_id: IDS.amanda, purpose: "follow_up", note: "Follow up on the quote we sent." }] },
+    { text: "Sarah has an AI follow-up call to Amanda ready — approve it below and it goes out in calling hours." },
+  ],
+  "post-fall-special": [
+    { tool: ["draft_social_post", { network: "facebook", content: "Fall special: 15% off drain cleaning through October.", topic: "fall special" }] },
+    { text: "Emily drafted a Facebook post about the fall special — approve it below and it lands in your Social queue." },
+  ],
+  "book-priya-thursday": [
+    { tool: ["find_clients", { query: "Priya" }] },
+    { tool: ["check_availability", { appointment_type: "Cleaning", date: EVAL_THURSDAY }] },
+    { tool: ["book_appointment", { client_id: IDS.priya, appointment_type: "Cleaning", start: SLOTS[0].start }] },
+    { text: "Emma has Thursday 9 AM ready for Priya — approve it below." },
+  ],
+  "ambiguous-survey-call": [
+    { tool: ["find_clients", { query: "Marcus" }] },
+    { text: "What should the survey ask Marcus?" },
   ],
   "ambiguous-sarah": [
     { tool: ["find_clients", { query: "Sarah" }] },
@@ -77,8 +96,8 @@ const GOOD: Record<string, Step[]> = {
 const byId = (id: string): EvalCase => GOLDEN_CASES.find((c) => c.id === id)!;
 
 describe("Mark's golden set (scripted model)", () => {
-  it("covers eight commands, each with a good script", () => {
-    expect(GOLDEN_CASES).toHaveLength(8);
+  it("covers twelve commands, each with a good script", () => {
+    expect(GOLDEN_CASES).toHaveLength(12);
     expect(Object.keys(GOOD).sort()).toEqual(GOLDEN_CASES.map((c) => c.id).sort());
   });
 
@@ -113,11 +132,56 @@ describe("Mark's golden set (scripted model)", () => {
 
   it("fails a captain who invents a tool instead of handing off", async () => {
     const res = await runEvalCase(
-      byId("facebook-capability-gap"),
-      scripted([{ tool: ["post_to_facebook", { text: "Closed Monday" }] }, { text: "Posted!" }]),
+      byId("supplies-capability-gap"),
+      scripted([{ tool: ["order_supplies", { item: "filters" }] }, { text: "Ordered!" }]),
     );
     expect(res.passed).toBe(false);
-    expect(res.toolCalls[0]).toMatchObject({ name: "post_to_facebook", status: "failed" });
+    expect(res.toolCalls[0]).toMatchObject({ name: "order_supplies", status: "failed" });
+  });
+
+  it("fails a captain who books a time the calendar never offered", async () => {
+    const res = await runEvalCase(
+      byId("book-priya-thursday"),
+      scripted([
+        { tool: ["check_availability", { appointment_type: "Cleaning", date: EVAL_THURSDAY }] },
+        { tool: ["book_appointment", { client_id: IDS.priya, appointment_type: "Cleaning", start: "2026-09-17T15:00:00.000Z" }] },
+        { text: "Booked for 8 AM." },
+      ]),
+    );
+    expect(res.passed).toBe(false);
+    expect(res.toolCalls.at(-1)).toMatchObject({ name: "book_appointment", status: "rejected" });
+  });
+
+  it("fails a captain who posts to a network this business never connected", async () => {
+    const res = await runEvalCase(
+      byId("post-fall-special"),
+      scripted([
+        { tool: ["draft_social_post", { network: "threads", content: "Fall special!" }] },
+        { text: "Drafted for Threads." },
+      ]),
+    );
+    expect(res.passed).toBe(false);
+    expect(res.toolCalls[0]).toMatchObject({ name: "draft_social_post", status: "rejected" });
+  });
+
+  it("a social post and a booking only ever propose — never a publish, never a booking", async () => {
+    const post = await runEvalCase(
+      byId("post-fall-special"),
+      scripted([{ tool: ["draft_social_post", { network: "linkedin", content: "Fall special!" }] }, { text: "Posted!" }]),
+    );
+    expect(post.toolCalls).toEqual([expect.objectContaining({ name: "draft_social_post", status: "proposed" })]);
+    expect(post.proposals.map((p) => p.action)).toEqual(["draft_social_post"]);
+
+    const booking = await runEvalCase(
+      byId("book-priya-thursday"),
+      scripted([
+        { tool: ["check_availability", { appointment_type: "Cleaning", date: EVAL_THURSDAY }] },
+        { tool: ["book_appointment", { client_id: IDS.priya, appointment_type: "Cleaning", start: SLOTS[0].start }] },
+        { text: "Booked!" },
+      ]),
+    );
+    expect(booking.proposals.map((p) => p.action)).toEqual(["book_appointment"]);
+    expect(booking.failures).toEqual([]);
   });
 
   it("fails a captain who reminds the wrong invoice", async () => {

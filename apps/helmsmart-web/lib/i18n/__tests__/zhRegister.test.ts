@@ -51,6 +51,12 @@ const CUSTOMER_FACING: Record<string, string> = {
   "voice:outbound.surveyPlaceholder":
     "the AI asking a customer to rate the service they received",
   "voice:outbound.promoPlaceholder": "the AI offering a customer a booking",
+  /*
+   * The text a client gets when Emma's booking is approved. The owner reads
+   * the card it is quoted on — in 你, like the rest of the card — but the
+   * sentence itself is sent to the client, who is a customer.
+   */
+  "home:aiApprovals.booking.confirmation": "texted to the client when their appointment is booked",
   "marketing:campaigns.detail.greeting":
     "the greeting line of a campaign email, addressed to the client",
   "marketing:campaigns.form.bodyPlaceholder":

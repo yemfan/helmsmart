@@ -279,10 +279,31 @@
     "summary": {
       "sendInvoiceReminder": "{{who}} enviará por correo un recordatorio de pago a {{name}} por {{invoice}} · {{amount}}",
       "textClient": "{{who}} le enviará un texto a {{name}} al {{phone}}",
-      "replyToText": "{{who}} le responderá a {{name}} al {{phone}}"
+      "replyToText": "{{who}} le responderá a {{name}} al {{phone}}",
+      "scheduleAiCall": "{{who}} hará que una llamada con IA contacte a {{name}} al {{phone}} sobre {{purpose}}",
+      "draftSocialPostScheduled": "{{who}} programará una publicación en {{network}} para {{when}}",
+      "draftSocialPostDraft": "{{who}} guardará una publicación de {{network}} como borrador",
+      "bookAppointment": "{{who}} reservará {{type}} para {{name}} el {{when}}",
+      "bookAppointmentMove": "{{who}} moverá la cita de {{type}} de {{name}} al {{when}}"
+    },
+    "callPurpose": {
+      "follow_up": "un seguimiento",
+      "appointment_reminder": "un recordatorio de cita",
+      "survey": "una encuesta",
+      "promo": "una promoción"
     },
     "card": {
       "emailTo": "Correo para {{name}} · {{email}}",
+      "incomingLabel": "Escribieron",
+      "callNote": "La llamada tratará: {{note}}",
+      "quietHours": "Las llamadas solo salen entre las 8:00 y las 21:00, hora local de tu negocio.",
+      "postLabel": "Publicación",
+      "postAt": "Sale el {{when}}",
+      "postDraft": "Guardada como borrador: no sale nada hasta que alguien la envíe.",
+      "topic": "Pedido: {{topic}}",
+      "movesFrom": "Mueve la cita que ahora está el {{when}}.",
+      "confirmationLabel": "Texto de confirmación",
+      "noConfirmation": "Sin texto de confirmación: {{name}} no tiene un número al que podamos escribir.",
       "overdue_one": "{{count}} día de retraso",
       "overdue_other": "{{count}} días de retraso",
       "messageLabel": "Mensaje",
@@ -312,7 +333,16 @@
       "failed": "No se pudo completar. Inténtelo de nuevo.",
       "reminderFailed": "No se envió el correo de recordatorio. Inténtelo de nuevo.",
       "noEmail": "{{name}} no tiene correo electrónico, así que no se puede enviar el recordatorio.",
-      "noPhone": "{{name}} no tiene un número de teléfono para enviarle textos.",
+      "noPhone": "{{name}} no tiene un número de teléfono registrado.",
+      "callDetailNeeded": "Una llamada de encuesta o promoción necesita una nota con lo que se preguntará u ofrecerá. Dile a Mark de qué debe tratar.",
+      "callQueueFailed": "No se pudo poner la llamada en cola. Inténtalo de nuevo.",
+      "callAlreadyQueued": "{{name}} ya tiene una llamada de este tipo esperando a salir.",
+      "socialNotConnected": "Todavía no hay ninguna cuenta social conectada, así que no hay dónde publicar. Conecta una en Configuración → Marketing.",
+      "networkNotConnected": "{{network}} no está conectada. Conectadas ahora mismo: {{connected}}.",
+      "postTimePast": "Esa hora de publicación ya pasó. Pídele otra a Mark.",
+      "socialSaveFailed": "No se pudo guardar la publicación. Inténtalo de nuevo.",
+      "slotPast": "Esa hora ya pasó. Pídele otra a Mark.",
+      "slotTaken": "Esa hora ya está ocupada: pídele otra a Mark.",
       "notUnpaid": "{{invoice}} ya no está pendiente de pago, así que no se envió ningún recordatorio.",
       "clientGone": "Ese cliente ya no está en este negocio.",
       "invoiceGone": "Esa factura ya no está en este negocio.",
@@ -326,6 +356,9 @@
     },
     "handoff": {
       "nextStep": "Siguiente paso: {{step}}"
+    },
+    "booking": {
+      "confirmation": "Tu cita del {{when}} está confirmada. ¡Nos vemos!"
     }
   },
   "aiPanel": {

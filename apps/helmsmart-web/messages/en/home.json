@@ -279,10 +279,31 @@
     "summary": {
       "sendInvoiceReminder": "{{who}} will email a payment reminder to {{name}} for {{invoice}} · {{amount}}",
       "textClient": "{{who}} will text {{name}} at {{phone}}",
-      "replyToText": "{{who}} will reply to {{name}} at {{phone}}"
+      "replyToText": "{{who}} will reply to {{name}} at {{phone}}",
+      "scheduleAiCall": "{{who}} will have an AI call {{name}} at {{phone}} about {{purpose}}",
+      "draftSocialPostScheduled": "{{who}} will schedule a {{network}} post for {{when}}",
+      "draftSocialPostDraft": "{{who}} will save a {{network}} post as a draft",
+      "bookAppointment": "{{who}} will book {{type}} for {{name}} at {{when}}",
+      "bookAppointmentMove": "{{who}} will move {{name}}'s {{type}} to {{when}}"
+    },
+    "callPurpose": {
+      "follow_up": "a follow-up",
+      "appointment_reminder": "an appointment reminder",
+      "survey": "a survey",
+      "promo": "a promotion"
     },
     "card": {
       "emailTo": "Email to {{name}} · {{email}}",
+      "incomingLabel": "They wrote",
+      "callNote": "The call covers: {{note}}",
+      "quietHours": "Calls only go out between 8am and 9pm, your business's local time.",
+      "postLabel": "Post",
+      "postAt": "Goes out {{when}}",
+      "postDraft": "Saved as a draft — nothing goes out until someone sends it.",
+      "topic": "Asked for: {{topic}}",
+      "movesFrom": "Moves the appointment currently at {{when}}.",
+      "confirmationLabel": "Confirmation text",
+      "noConfirmation": "No confirmation text — {{name}} has no number we can text.",
       "overdue_one": "{{count}} day overdue",
       "overdue_other": "{{count}} days overdue",
       "messageLabel": "Message",
@@ -312,7 +333,16 @@
       "failed": "That didn't go through. Try again.",
       "reminderFailed": "The reminder email didn't go out. Try again.",
       "noEmail": "{{name}} has no email address, so the reminder can't be sent.",
-      "noPhone": "{{name}} has no phone number to text.",
+      "noPhone": "{{name}} has no phone number on file.",
+      "callDetailNeeded": "A survey or promotion call needs a note saying what to ask or offer. Tell Mark what it should cover.",
+      "callQueueFailed": "The call couldn't be queued. Try again.",
+      "callAlreadyQueued": "{{name}} already has a call of this kind waiting to go out.",
+      "socialNotConnected": "No social account is connected yet, so there's nowhere to post. Connect one under Settings → Marketing.",
+      "networkNotConnected": "{{network}} isn't connected. Connected right now: {{connected}}.",
+      "postTimePast": "That posting time has already passed. Ask Mark for a later one.",
+      "socialSaveFailed": "The post couldn't be saved. Try again.",
+      "slotPast": "That time has already passed. Ask Mark for another.",
+      "slotTaken": "That time was taken — ask Mark for another.",
       "notUnpaid": "{{invoice}} isn't waiting on payment any more, so no reminder was sent.",
       "clientGone": "That client is no longer in this business.",
       "invoiceGone": "That invoice is no longer in this business.",
@@ -326,6 +356,9 @@
     },
     "handoff": {
       "nextStep": "Next step: {{step}}"
+    },
+    "booking": {
+      "confirmation": "You're confirmed for {{when}}. See you then!"
     }
   },
   "aiPanel": {
