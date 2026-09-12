@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 // Links inside running text are underlined: colour alone does not mark a link
 // for a reader who cannot tell indigo from grey (WCAG 1.4.1, link-in-text-block).
@@ -16,6 +17,7 @@ const PRIVACY_LINK = { href: "/privacy", className: LINK_CLASS };
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/terms"),
     title: t("terms.meta.title"),
     description: t("terms.meta.description"),
   };

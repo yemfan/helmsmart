@@ -2,6 +2,8 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { connForHost } from "@/lib/pack-host";
+import { isLocalizedPath, splitLocalePath } from "@/lib/i18n/routing";
+import { LOCALE_HEADER, LOCALE_PATH_HEADER } from "@/lib/i18n/headers";
 
 // Routes that require an authenticated user + an org.
 const DASHBOARD_SEGMENTS = [
@@ -15,6 +17,33 @@ const AUTH_SEGMENTS = ["/login", "/signup"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  /*
+   * Locale-prefixed marketing URLs: /zh/pricing renders /pricing in Chinese.
+   *
+   * A REWRITE, not a redirect — the reader keeps the URL they followed, and one
+   * route tree serves all three languages. The locale travels as a request
+   * header that `getServerLocale()` checks before the cookie, so a Chinese link
+   * opens in Chinese even for someone whose last visit set the cookie to
+   * English. The unprefixed path is passed along too, because a page needs it
+   * to name its own canonical and its `hreflang` siblings.
+   *
+   * ONLY FOR PUBLISHED LOCALIZED PATHS. This branch returns early, before the
+   * auth guards below, so accepting any prefixed path here would let /zh/home
+   * rewrite to /home and skip the dashboard check entirely — an auth bypass
+   * spelled with a language prefix. `isLocalizedPath` confines it to the public
+   * marketing pages the sitemap actually advertises; /zh/home stays a 404,
+   * which is what it should be.
+   */
+  const { locale, path } = splitLocalePath(pathname);
+  if (locale && isLocalizedPath(path)) {
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    const headers = new Headers(request.headers);
+    headers.set(LOCALE_HEADER, locale);
+    headers.set(LOCALE_PATH_HEADER, path);
+    return NextResponse.rewrite(url, { request: { headers } });
+  }
 
   let response = NextResponse.next({ request });
 

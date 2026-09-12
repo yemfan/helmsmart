@@ -3,10 +3,12 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
 import { rich } from "../_rich";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/pricing"),
     title: t("pricing.meta.title"),
     description: t("pricing.meta.description"),
   };

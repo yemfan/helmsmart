@@ -4,7 +4,7 @@ import { localeDisplayName } from "@leadsmart/i18n";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { useSetLocale } from "@/lib/i18n/client";
+import { useLocaleSwitch } from "@/lib/i18n/useLocaleSwitch";
 import { SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n/config";
 
 /**
@@ -18,7 +18,7 @@ import { SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n/config";
  */
 export function LanguagePanel() {
   const { t, i18n } = useTranslation("settings");
-  const setLocale = useSetLocale();
+  const setLocale = useLocaleSwitch();
   const current = (i18n.language as SupportedLocale) ?? "en";
 
   return (

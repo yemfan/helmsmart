@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
+import { pageAlternates } from "@/lib/i18n/pageAlternates";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT("site");
   return {
+    alternates: await pageAlternates("/faq"),
     title: t("faq.meta.title"),
     description: t("faq.meta.description"),
   };
