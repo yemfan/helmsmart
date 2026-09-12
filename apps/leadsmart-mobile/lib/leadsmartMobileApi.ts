@@ -1138,8 +1138,116 @@ export type MobileCmaReport = {
   estimatedValue: number;
   low: number;
   high: number;
-  strategies: MobileCmaStrategies;
+  /**
+   * Null when the valuation engine had no basis for pricing strategies. The
+   * screen hides that section rather than showing invented days-on-market.
+   */
+  strategies: MobileCmaStrategies | null;
+  /** AI-estimate disclaimer, shown verbatim under the value. */
+  disclaimer?: string | null;
+  /** Sources the AI cited for the comps. */
+  sources?: Array<{ title: string; url: string }>;
+  confidenceScore?: number | null;
 };
+
+export type MobilePresentation = { presentationId: string; url: string };
+
+// ── Deals: transactions · listings · offers ──────────────────────
+// Read-only lists. The shapes mirror the server's list items, loosely typed
+// where the server sends more than these screens read.
+
+export type MobileTransaction = {
+  id: string;
+  property_address: string | null;
+  contact_name: string | null;
+  transaction_type: string | null;
+  status: string | null;
+  purchase_price: number | null;
+  closing_date: string | null;
+  /** The date it actually closed; the screen prefers it once it has one. */
+  closing_date_actual: string | null;
+  task_total: number | null;
+  task_completed: number | null;
+  task_overdue: number | null;
+};
+
+export type MobileListing = {
+  id: string;
+  property_address: string;
+  city: string | null;
+  state: string | null;
+  status: string | null;
+  list_price: number | null;
+  listing_start_date: string | null;
+  closing_date: string | null;
+  showings_total: number | null;
+  showings_upcoming: number | null;
+};
+
+export type MobileOffer = {
+  id: string;
+  property_address: string;
+  contact_name: string | null;
+  status: string | null;
+  offer_price: number;
+  /** Where a countered offer stands now — the price that matters. */
+  current_price: number | null;
+  list_price: number | null;
+  counter_count: number | null;
+  created_at: string | null;
+};
+
+export async function fetchMobileTransactions(): Promise<
+  { ok: true; transactions: MobileTransaction[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { transactions?: MobileTransaction[] }>(
+    MOBILE_API_PATHS.transactions,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, transactions: res.data.transactions ?? [] };
+}
+
+export async function fetchMobileListings(): Promise<
+  { ok: true; listings: MobileListing[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { listings?: MobileListing[] }>(
+    MOBILE_API_PATHS.listings,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, listings: res.data.listings ?? [] };
+}
+
+export async function fetchMobileOffers(): Promise<
+  { ok: true; offers: MobileOffer[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { offers?: MobileOffer[] }>(
+    MOBILE_API_PATHS.offers,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, offers: res.data.offers ?? [] };
+}
+
+/**
+ * Build a seller presentation for an address and hand back its public link.
+ *
+ * Reuses the web route: it reuses a recent CMA snapshot for the address when
+ * there is one, so running this right after a CMA does not pay for a second
+ * web search. The viewer at /presentation/<id> is public, so the agent can
+ * open or share it straight from the phone.
+ */
+export async function createMobilePresentation(
+  address: string,
+): Promise<{ ok: true } & MobilePresentation | MobileApiFailure> {
+  const res = await mobilePost<MobileJsonError & { presentation_id?: string; success?: boolean }>(
+    MOBILE_API_PATHS.presentation,
+    { address },
+  );
+  if (res.ok === false) return res;
+  const id = res.data.presentation_id;
+  if (!id) return { ok: false, status: 200, message: "The presentation came back without an id." };
+  const base = getLeadsmartApiBaseUrl().replace(/\/+$/, "");
+  return { ok: true, presentationId: id, url: `${base}/presentation/${id}` };
+}
 
 type CmaJson = MobileJsonError &
   Partial<MobileCmaReport> & {

@@ -34,9 +34,18 @@ export type FloatingTabBarProps = {
   };
   /** Routes shown on the bar, in order. Everything else stays reachable by push. */
   visible: readonly string[];
+  /**
+   * Route name to its own colour. The bar used one accent for whichever tab
+   * was active, which made five destinations look like one control with a
+   * moving highlight; the More screen's tiles have carried a colour each for
+   * a while, so the bar was the odd one out. Each tab keeps its colour
+   * whether or not it is active — the lifted well and full opacity say which
+   * one you are on.
+   */
+  tint?: Record<string, string>;
 };
 
-export function FloatingTabBar({ state, descriptors, navigation, visible }: FloatingTabBarProps) {
+export function FloatingTabBar({ state, descriptors, navigation, visible, tint }: FloatingTabBarProps) {
   const tokens = useThemeTokens();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
@@ -52,7 +61,7 @@ export function FloatingTabBar({ state, descriptors, navigation, visible }: Floa
         {routes.map((route) => {
           const { options } = descriptors[route.key] ?? { options: {} };
           const focused = route.key === activeKey;
-          const color = focused ? tokens.accent : tokens.neutralScale[400];
+          const color = tint?.[route.name] ?? tokens.accent;
           const label =
             typeof options.tabBarLabel === "string"
               ? options.tabBarLabel
@@ -70,7 +79,14 @@ export function FloatingTabBar({ state, descriptors, navigation, visible }: Floa
               accessibilityLabel={options.tabBarAccessibilityLabel ?? label}
               style={styles.item}
             >
-              <View style={[styles.well, focused && styles.wellActive]}>
+              <View
+                style={[
+                  styles.well,
+                  focused && styles.wellActive,
+                  focused && wellTint(color),
+                  !focused && styles.itemIdle,
+                ]}
+              >
                 {options.tabBarIcon?.({ focused, color, size: 22 })}
                 <Text style={[styles.label, { color }]} numberOfLines={1}>
                   {label}
@@ -82,6 +98,15 @@ export function FloatingTabBar({ state, descriptors, navigation, visible }: Floa
       </View>
     </View>
   );
+}
+
+/**
+ * A 10%-alpha wash of the tab's own colour behind the active tab. Only for
+ * `#rrggbb` tokens — anything else (rgba, a named colour) keeps the neutral
+ * well rather than producing an invalid colour string.
+ */
+function wellTint(color: string): { backgroundColor: string } | null {
+  return /^#[0-9a-f]{6}$/i.test(color) ? { backgroundColor: color + "1A" } : null;
 }
 
 const createStyles = (theme: ThemeTokens) =>
@@ -115,5 +140,8 @@ const createStyles = (theme: ThemeTokens) =>
       gap: 2,
     },
     wellActive: { backgroundColor: theme.accentLight },
+    // Colour stays, presence recedes: the inactive tabs read as available
+    // rather than disabled.
+    itemIdle: { opacity: 0.55 },
     label: { fontSize: 10, fontWeight: "600" },
   });

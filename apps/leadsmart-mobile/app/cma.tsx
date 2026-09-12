@@ -23,6 +23,8 @@ import {
   hapticError,
   hapticSuccess,
 } from "../lib/haptics";
+import { createMobilePresentation } from "../lib/leadsmartMobileApi";
+import { openExternalUrl } from "../lib/lead/openExternalUrl";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 
@@ -57,6 +59,7 @@ export default function CmaScreen() {
   const [report, setReport] = useState<MobileCmaReport | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [creatingPresentation, setCreatingPresentation] = useState(false);
 
   const onGenerate = useCallback(async () => {
     const trimmed = address.trim();
@@ -92,6 +95,28 @@ export default function CmaScreen() {
     hapticSuccess();
     setReport(res);
   }, [address, sqft, condition]);
+
+  /**
+   * Build the seller presentation for the address we just valued and open it.
+   *
+   * The server reuses a recent CMA snapshot for the same address, so this
+   * does not pay for a second web search right after a CMA. The viewer is a
+   * public link, which is the point — the agent sends it to the seller.
+   */
+  const onCreatePresentation = useCallback(async () => {
+    if (!report) return;
+    setCreatingPresentation(true);
+    setError(null);
+    const res = await createMobilePresentation(report.subject.address);
+    setCreatingPresentation(false);
+    if (res.ok === false) {
+      hapticError();
+      setError(res.message);
+      return;
+    }
+    hapticSuccess();
+    await openExternalUrl(res.url, t("cma.presentationOpenFail"));
+  }, [report]);
 
   return (
     <KeyboardAvoidingView
@@ -137,6 +162,9 @@ export default function CmaScreen() {
             <View style={styles.flex1}>
               <Text style={styles.label}>{t("cma.condition")}</Text>
               <View style={styles.conditionRow}>
+                {/* Value stays English — it is sent to the API. Only the
+                    label is translated, and it must not wrap: at a third of
+                    the row "Average" broke into "Averag / e". */}
                 {["Below", "Average", "Above"].map((c) => {
                   const active = condition === c;
                   return (
@@ -152,12 +180,15 @@ export default function CmaScreen() {
                       ]}
                     >
                       <Text
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.8}
                         style={[
                           styles.conditionText,
                           active && styles.conditionTextActive,
                         ]}
                       >
-                        {c}
+                        {t(`cma.conditions.${c.toLowerCase()}`)}
                       </Text>
                     </Pressable>
                   );
@@ -189,7 +220,15 @@ export default function CmaScreen() {
         </View>
 
         {/* Report */}
-        {report ? <ReportView report={report} styles={styles} tokens={tokens} /> : null}
+        {report ? (
+          <ReportView
+            report={report}
+            styles={styles}
+            tokens={tokens}
+            onCreatePresentation={() => void onCreatePresentation()}
+            creatingPresentation={creatingPresentation}
+          />
+        ) : null}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -199,10 +238,14 @@ function ReportView({
   report,
   styles,
   tokens,
+  onCreatePresentation,
+  creatingPresentation,
 }: {
   report: MobileCmaReport;
   styles: ReturnType<typeof createStyles>;
   tokens: ThemeTokens;
+  onCreatePresentation: () => void;
+  creatingPresentation: boolean;
 }) {
   const { t } = useTranslation("mobile_misc_screens");
   return (
@@ -231,37 +274,44 @@ function ReportView({
           Avg ${report.avgPricePerSqft.toFixed(0)}/sqft across{" "}
           {report.comps.length} comp{report.comps.length === 1 ? "" : "s"}
         </Text>
+        {report.disclaimer ? (
+          <Text style={styles.disclaimer}>{report.disclaimer}</Text>
+        ) : null}
       </View>
 
-      {/* Strategies */}
+      {/* Strategies — absent when the engine had no basis for them. */}
+      {report.strategies ? (
+      <>
       <View style={styles.divider} />
       <Text style={styles.sectionHeading}>{t("cma.pricingStrategies")}</Text>
       <View style={styles.strategyRow}>
         <StrategyCard
           label={t("cma.aggressive")}
-          price={report.strategies.aggressive}
-          dom={report.strategies.daysOnMarket.aggressive}
+          price={report.strategies!.aggressive}
+          dom={report.strategies!.daysOnMarket.aggressive}
           tone="amber"
           styles={styles}
           tokens={tokens}
         />
         <StrategyCard
           label={t("cma.market")}
-          price={report.strategies.market}
-          dom={report.strategies.daysOnMarket.market}
+          price={report.strategies!.market}
+          dom={report.strategies!.daysOnMarket.market}
           tone="blue"
           styles={styles}
           tokens={tokens}
         />
         <StrategyCard
           label={t("cma.premium")}
-          price={report.strategies.premium}
-          dom={report.strategies.daysOnMarket.premium}
+          price={report.strategies!.premium}
+          dom={report.strategies!.daysOnMarket.premium}
           tone="green"
           styles={styles}
           tokens={tokens}
         />
       </View>
+      </>
+      ) : null}
 
       {/* Comps */}
       <View style={styles.divider} />
@@ -286,6 +336,31 @@ function ReportView({
           <Text style={styles.summaryText}>{report.summary}</Text>
         </>
       ) : null}
+
+      {/* The next thing an agent does with a value they trust. */}
+      <Pressable
+        onPress={onCreatePresentation}
+        disabled={creatingPresentation}
+        accessibilityRole="button"
+        accessibilityLabel={t("cma.createPresentation")}
+        accessibilityState={{ disabled: creatingPresentation }}
+        style={({ pressed }) => [
+          styles.presentationBtn,
+          pressed && styles.presentationBtnPressed,
+          creatingPresentation && styles.presentationBtnBusy,
+        ]}
+      >
+        {creatingPresentation ? (
+          <ActivityIndicator color={tokens.textOnAccent} />
+        ) : (
+          <Ionicons name="easel-outline" size={16} color={tokens.textOnAccent} />
+        )}
+        <Text style={styles.presentationBtnText}>
+          {creatingPresentation
+            ? t("cma.creatingPresentation")
+            : t("cma.createPresentation")}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -411,10 +486,30 @@ function createStyles(t: ThemeTokens) {
     },
     conditionBtnActive: { borderColor: t.accent, backgroundColor: t.accentPressed },
     conditionBtnPressed: { opacity: 0.85 },
-    conditionText: { fontSize: 12, fontWeight: "600", color: t.text },
+    conditionText: { fontSize: 12, fontWeight: "600", color: t.text, textAlign: "center" },
     conditionTextActive: { color: t.accent },
 
     inlineError: { marginTop: 12, fontSize: 13, color: t.dangerTitle },
+    disclaimer: {
+      marginTop: 10,
+      fontSize: 11,
+      lineHeight: 15,
+      color: t.textSubtle,
+    },
+    presentationBtn: {
+      marginTop: 20,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      paddingVertical: 14,
+      borderRadius: 12,
+      backgroundColor: t.accent,
+      minHeight: 48,
+    },
+    presentationBtnPressed: { opacity: 0.85 },
+    presentationBtnBusy: { opacity: 0.6 },
+    presentationBtnText: { fontSize: 15, fontWeight: "700", color: t.textOnAccent },
 
     generateBtn: {
       marginTop: 16,

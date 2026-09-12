@@ -214,7 +214,19 @@
     "title": "CMA",
     "back": "返回",
     "addressLabel": "地址 *",
-    "addressPlaceholder": "例如：123 Main St, Austin TX 78701"
+    "addressPlaceholder": "例如：123 Main St, Austin TX 78701",
+    "conditions": {
+      "below": "偏低",
+      "average": "一般",
+      "above": "偏高"
+    },
+    "createPresentation": "生成卖方报告",
+    "creatingPresentation": "正在生成报告…",
+    "presentationReady": "报告已生成",
+    "presentationReadyBody": "正在打开——此链接可分享给任何人查看。",
+    "presentationFailed": "无法生成报告",
+    "open": "打开",
+    "presentationOpenFail": "报告已生成，但此设备无法打开链接。可在网页版「报告」中查看。"
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI 教练",
@@ -416,6 +428,77 @@
     "netToSeller": "卖方净得",
     "addressPlaceholder": "例如：123 Oak St, Alhambra",
     "days": "{{count}} 天",
-    "allListings": "← 全部房源"
+    "allListings": "← 全部房源",
+    "financingOptions": {
+      "cash": "全现金",
+      "conventional": "常规贷款",
+      "fha": "FHA 贷款",
+      "va": "VA 贷款"
+    },
+    "heatOptions": {
+      "hot": "火热",
+      "balanced": "平稳",
+      "cool": "冷淡"
+    }
+  },
+  "transactions": {
+    "title": "交易",
+    "back": "交易中心",
+    "load_failed": "无法加载交易",
+    "empty_title": "暂无交易",
+    "empty_body": "在网页版接受报价并创建交易后，会显示在这里。",
+    "no_address": "无地址",
+    "closing": "{{date}} 过户",
+    "tasks": "已完成 {{done}}/{{total}} 项任务",
+    "overdue_one": "{{count}} 项逾期",
+    "overdue_other": "{{count}} 项逾期",
+    "status": {
+      "active": "进行中",
+      "pending": "待处理",
+      "closed": "已完成",
+      "terminated": "已终止"
+    },
+    "types": {
+      "buyer_rep": "买方",
+      "listing_rep": "卖方",
+      "dual": "双方代理"
+    },
+    "closed_on": "{{date}} 已过户"
+  },
+  "listings": {
+    "title": "房源",
+    "back": "交易中心",
+    "load_failed": "无法加载房源",
+    "empty_title": "暂无房源",
+    "empty_body": "在网页版上传房源后，会连同看房情况显示在这里。",
+    "listed": "{{date}} 上市",
+    "showings_one": "{{count}} 次看房",
+    "showings_other": "{{count}} 次看房",
+    "upcoming": "{{count}} 次待看",
+    "status": {
+      "active": "在售",
+      "pending": "待处理",
+      "closed": "已成交",
+      "terminated": "已终止"
+    }
+  },
+  "offers": {
+    "title": "报价",
+    "back": "交易中心",
+    "load_failed": "无法加载报价",
+    "empty_title": "暂无报价",
+    "empty_body": "您生成的报价，以及通过邮件转入的报价，都会显示在这里。",
+    "vs_list": "挂牌价 {{price}}",
+    "counters_one": "{{count}} 次还价",
+    "counters_other": "{{count}} 次还价",
+    "status": {
+      "draft": "草稿",
+      "submitted": "已提交",
+      "countered": "已还价",
+      "accepted": "已接受",
+      "rejected": "已拒绝",
+      "withdrawn": "已撤回",
+      "expired": "已过期"
+    }
   }
 }

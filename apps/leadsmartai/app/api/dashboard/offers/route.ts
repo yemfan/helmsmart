@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import {
+  getAgentContextFromRequest,
+  getCurrentAgentContext,
+} from "@/lib/dashboardService";
 import {
   createOffer,
   listOffersForAgent,
@@ -23,9 +26,16 @@ const VALID_STATUS_FILTERS = new Set([
   "all",
 ]);
 
+/*
+ * Bearer-aware: `getAgentContextFromRequest` prefers an Authorization header
+ * and falls back to the cookie session, so the CloseBoss app reads this list
+ * through the same route the dashboard does. Duplicating it under
+ * /api/mobile would have meant two queries to keep in step, and they drift —
+ * the mobile CMA spent months answering a different question from the web's.
+ */
 export async function GET(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const url = new URL(req.url);
     const contactId = url.searchParams.get("contactId") || undefined;
     const rawStatus = url.searchParams.get("status");

@@ -1,11 +1,42 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import {
+  getAgentContextFromRequest,
+  getCurrentAgentContext,
+} from "@/lib/dashboardService";
 import {
   createListing,
+  listListingsForAgent,
   type CreateListingInput,
 } from "@/lib/listings/service";
 
 export const runtime = "nodejs";
+
+/*
+ * Bearer-aware: `getAgentContextFromRequest` prefers an Authorization header
+ * and falls back to the cookie session, so the CloseBoss app reads this list
+ * through the same route the dashboard does. Duplicating it under
+ * /api/mobile would have meant two queries to keep in step, and they drift —
+ * the mobile CMA spent months answering a different question from the web's.
+ */
+/**
+ * GET /api/dashboard/listings
+ * The agent's listings, newest first, with showing counters.
+ *
+ * This route only ever had a POST — the dashboard page reads the service
+ * directly as a server component, so nothing needed the list over HTTP until
+ * the app's Deals tab did.
+ */
+export async function GET(req: Request) {
+  try {
+    const { agentId } = await getAgentContextFromRequest(req);
+    const listings = await listListingsForAgent(String(agentId));
+    return NextResponse.json({ ok: true, listings });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Server error";
+    console.error("GET /api/dashboard/listings:", err);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
 
 /**
  * POST /api/dashboard/listings
