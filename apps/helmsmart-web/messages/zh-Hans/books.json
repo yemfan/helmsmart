@@ -1188,7 +1188,10 @@
       "linkTokenFailed": "无法开始关联银行，请重试。",
       "saveConnectionFailed": "保存银行连接失败，请重试。",
       "exchangeFailed": "完成银行关联失败，请重试。",
-      "syncFailed": "同步银行交易失败，请几分钟后重试。"
+      "syncFailed": "同步银行交易失败，请几分钟后重试。",
+      "missingConnection": "没有指定要重新连接的银行。",
+      "connectionNotFound": "该银行连接已不存在。",
+      "repairFailed": "未能重新连接这家银行。请再试一次。"
     },
     "errors": {
       "missingId": "缺少交易 ID。",

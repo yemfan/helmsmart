@@ -1218,7 +1218,10 @@
       "linkTokenFailed": "No se pudo iniciar la conexión bancaria. Inténtelo de nuevo.",
       "saveConnectionFailed": "No se pudo guardar la conexión bancaria. Inténtelo de nuevo.",
       "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo.",
-      "syncFailed": "No se pudieron sincronizar las transacciones bancarias. Inténtelo de nuevo en unos minutos."
+      "syncFailed": "No se pudieron sincronizar las transacciones bancarias. Inténtelo de nuevo en unos minutos.",
+      "missingConnection": "No se indicó ninguna conexión bancaria.",
+      "connectionNotFound": "Esa conexión bancaria ya no existe.",
+      "repairFailed": "No se pudo volver a conectar ese banco. Inténtalo de nuevo."
     },
     "errors": {
       "missingId": "Falta el ID de la transacción.",
