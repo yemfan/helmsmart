@@ -440,5 +440,65 @@
       "balanced": "平稳",
       "cool": "冷淡"
     }
+  },
+  "transactions": {
+    "title": "交易",
+    "back": "交易中心",
+    "load_failed": "无法加载交易",
+    "empty_title": "暂无交易",
+    "empty_body": "在网页版接受报价并创建交易后，会显示在这里。",
+    "no_address": "无地址",
+    "closing": "{{date}} 过户",
+    "tasks": "已完成 {{done}}/{{total}} 项任务",
+    "overdue_one": "{{count}} 项逾期",
+    "overdue_other": "{{count}} 项逾期",
+    "status": {
+      "active": "进行中",
+      "pending": "待处理",
+      "closed": "已完成",
+      "terminated": "已终止"
+    },
+    "types": {
+      "buyer_rep": "买方",
+      "listing_rep": "卖方",
+      "dual": "双方代理"
+    },
+    "closed_on": "{{date}} 已过户"
+  },
+  "listings": {
+    "title": "房源",
+    "back": "交易中心",
+    "load_failed": "无法加载房源",
+    "empty_title": "暂无房源",
+    "empty_body": "在网页版上传房源后，会连同看房情况显示在这里。",
+    "listed": "{{date}} 上市",
+    "showings_one": "{{count}} 次看房",
+    "showings_other": "{{count}} 次看房",
+    "upcoming": "{{count}} 次待看",
+    "status": {
+      "active": "在售",
+      "pending": "待处理",
+      "closed": "已成交",
+      "terminated": "已终止"
+    }
+  },
+  "offers": {
+    "title": "报价",
+    "back": "交易中心",
+    "load_failed": "无法加载报价",
+    "empty_title": "暂无报价",
+    "empty_body": "您生成的报价，以及通过邮件转入的报价，都会显示在这里。",
+    "vs_list": "挂牌价 {{price}}",
+    "counters_one": "{{count}} 次还价",
+    "counters_other": "{{count}} 次还价",
+    "status": {
+      "draft": "草稿",
+      "submitted": "已提交",
+      "countered": "已还价",
+      "accepted": "已接受",
+      "rejected": "已拒绝",
+      "withdrawn": "已撤回",
+      "expired": "已过期"
+    }
   }
 }

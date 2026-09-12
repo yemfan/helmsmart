@@ -10,27 +10,51 @@ import { useThemeTokens } from "../../lib/useThemeTokens";
 
 /**
  * Deals tab — the mobile counterpart of the web sidebar's "Deals" group
- * (Listings · Showings · Offers · Transactions). Only the parts that have a
- * mobile screen are listed: showings, and the offer desk (build an offer,
- * review a contract, compare offers). Listings and transactions are web-only
- * today and are deliberately absent rather than shown as dead tiles.
+ * (Listings · Showings · Offers · Transactions), now complete, followed by
+ * the two AI tools that live in this group on mobile.
+ *
+ * It shipped with three tiles and a comment saying listings and transactions
+ * were "web-only today and deliberately absent rather than shown as dead
+ * tiles" — which was the right call then. The screens exist now, so the
+ * tiles do.
  */
 const DEAL_TILES: readonly (HomeFeatureTileConfig & {
-  colorKey: "accent" | "success" | "warning";
+  colorKey: "accent" | "success" | "orange" | "warning" | "danger" | "infoAccent";
 })[] = [
+  {
+    key: "listings",
+    labelKey: "v2.tiles.listings",
+    iconName: "home-outline",
+    href: "/listings",
+    colorKey: "accent",
+  },
   {
     key: "showings",
     labelKey: "v2.tiles.showings",
     iconName: "eye-outline",
     href: "/showings",
-    colorKey: "accent",
+    colorKey: "infoAccent",
+  },
+  {
+    key: "offers",
+    labelKey: "v2.tiles.offers",
+    iconName: "pricetags-outline",
+    href: "/offers",
+    colorKey: "orange",
+  },
+  {
+    key: "transactions",
+    labelKey: "v2.tiles.transactions",
+    iconName: "briefcase-outline",
+    href: "/transactions",
+    colorKey: "success",
   },
   {
     key: "offer_desk",
     labelKey: "v2.tiles.offer_desk",
     iconName: "document-text-outline",
     href: "/(tabs)/offer-desk",
-    colorKey: "success",
+    colorKey: "danger",
   },
   {
     key: "cma",

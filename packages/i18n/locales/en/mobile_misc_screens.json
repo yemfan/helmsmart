@@ -440,5 +440,65 @@
       "balanced": "Balanced",
       "cool": "Cool"
     }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "back": "Deals",
+    "load_failed": "Couldn't load transactions",
+    "empty_title": "No transactions yet",
+    "empty_body": "A deal appears here once you start one from an accepted offer on the dashboard.",
+    "no_address": "No address",
+    "closing": "Closes {{date}}",
+    "tasks": "{{done}} of {{total}} tasks done",
+    "overdue_one": "{{count}} overdue",
+    "overdue_other": "{{count}} overdue",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "closed": "Closed",
+      "terminated": "Terminated"
+    },
+    "types": {
+      "buyer_rep": "Buyer",
+      "listing_rep": "Seller",
+      "dual": "Both sides"
+    },
+    "closed_on": "Closed {{date}}"
+  },
+  "listings": {
+    "title": "Listings",
+    "back": "Deals",
+    "load_failed": "Couldn't load listings",
+    "empty_title": "No listings yet",
+    "empty_body": "Upload a listing on the dashboard and it shows up here with its showing activity.",
+    "listed": "Listed {{date}}",
+    "showings_one": "{{count}} showing",
+    "showings_other": "{{count}} showings",
+    "upcoming": "{{count}} upcoming",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "closed": "Closed",
+      "terminated": "Terminated"
+    }
+  },
+  "offers": {
+    "title": "Offers",
+    "back": "Deals",
+    "load_failed": "Couldn't load offers",
+    "empty_title": "No offers yet",
+    "empty_body": "Offers you build, or ones forwarded in by email, appear here.",
+    "vs_list": "List {{price}}",
+    "counters_one": "{{count}} counter",
+    "counters_other": "{{count}} counters",
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "countered": "Countered",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn",
+      "expired": "Expired"
+    }
   }
 }

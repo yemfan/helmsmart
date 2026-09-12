@@ -74,7 +74,10 @@
       "notifications": "Notifications",
       "connect_platforms": "Connect Platforms",
       "digital_twin": "Digital Twin",
-      "offer_desk": "Offer Desk"
+      "offer_desk": "Offer Desk",
+      "listings": "Listings",
+      "offers": "Offers",
+      "transactions": "Transactions"
     },
     "tab_subtitle": {
       "work": "Leads, tasks, calendar, showings, and posting.",

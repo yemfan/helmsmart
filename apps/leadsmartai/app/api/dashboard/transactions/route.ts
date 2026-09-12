@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import {
+  getAgentContextFromRequest,
+  getCurrentAgentContext,
+} from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   createTransaction,
@@ -14,9 +17,16 @@ export const runtime = "nodejs";
  * List all transactions for the signed-in agent, with task-completion
  * counters for the list view.
  */
-export async function GET() {
+/*
+ * Bearer-aware: `getAgentContextFromRequest` prefers an Authorization header
+ * and falls back to the cookie session, so the CloseBoss app reads this list
+ * through the same route the dashboard does. Duplicating it under
+ * /api/mobile would have meant two queries to keep in step, and they drift —
+ * the mobile CMA spent months answering a different question from the web's.
+ */
+export async function GET(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const items = await listTransactionsForAgent(String(agentId));
     return NextResponse.json({ ok: true, transactions: items });
   } catch (err) {

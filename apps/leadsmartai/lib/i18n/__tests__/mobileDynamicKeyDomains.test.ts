@@ -30,6 +30,8 @@ import { describe, expect, it } from "vitest";
 
 const LOCALES = join(__dirname, "..", "..", "..", "..", "..", "packages", "i18n", "locales");
 const MOBILE = join(__dirname, "..", "..", "..", "..", "leadsmart-mobile");
+/** The web's own type files — the source of the enums the app renders. */
+const WEB_LIB = join(__dirname, "..", "..");
 const NS = "mobile_misc_screens";
 const LOCALE_NAMES = ["en", "zh-Hans"] as const;
 
@@ -182,6 +184,70 @@ describe("mobile runtime key domains", () => {
     // And the chips must go through t(), not render the slug directly.
     expect(src).toMatch(/offerDesk\.financingOptions\.\$\{f\}/);
     expect(src).toMatch(/offerDesk\.heatOptions\.\$\{h\}/);
+  });
+
+  /**
+   * The Deals group — Listings · Showings · Offers · Transactions — landed on
+   * mobile with three status/type domains, every one of them a database enum
+   * read straight into a key. Exactly the shape that printed
+   * `platforms.threads`, so the unions are parsed out of the SERVER types
+   * they come from: adding a status to `lib/offers/types.ts` without
+   * translating it fails here rather than on a phone.
+   *
+   * Listings are included because `listListingsForAgent` maps the listings
+   * table's own six states down to TransactionStatus for the badge UI, so the
+   * app sees the same four values.
+   */
+  it("translates every deal status and transaction type", () => {
+    const union = (file: string[], name: string): string[] => {
+      const src = readFileSync(join(WEB_LIB, ...file), "utf8");
+      const block = src.match(new RegExp(`export type ${name} =([^;]*);`));
+      expect(block, `${name} union not found in ${file.join("/")}`).toBeTruthy();
+      const values = [...block![1].matchAll(/"([a-z_]+)"/g)].map((m) => m[1]);
+      expect(values.length, `${name} parsed as empty`).toBeGreaterThan(1);
+      return values;
+    };
+
+    const domains: Array<[string, string[]]> = [
+      ["transactions.status", union(["transactions", "types.ts"], "TransactionStatus")],
+      ["transactions.types", union(["transactions", "types.ts"], "TransactionType")],
+      ["listings.status", union(["transactions", "types.ts"], "TransactionStatus")],
+      ["offers.status", union(["offers", "types.ts"], "OfferStatus")],
+    ];
+
+    const missing: string[] = [];
+    for (const locale of LOCALE_NAMES) {
+      const b = bundle(locale);
+      for (const [prefix, values] of domains) {
+        for (const v of values) {
+          if (typeof at(b, `${prefix}.${v}`) !== "string") {
+            missing.push(`${locale}: ${prefix}.${v}`);
+          }
+        }
+      }
+    }
+    expect(missing, `\n${missing.join("\n")}\n`).toEqual([]);
+  });
+
+  /**
+   * And the screens must route those values through `t()` with a defaultValue,
+   * so a value the bundle has not caught up with renders as nothing rather
+   * than as its own slug — the same contract `platformLabel` keeps.
+   */
+  it("keeps a no-slug fallback on the three deal screens", () => {
+    const screens: Array<[string[], string]> = [
+      [["app", "transactions", "index.tsx"], "transactions.status"],
+      [["app", "listings", "index.tsx"], "listings.status"],
+      [["app", "offers", "index.tsx"], "offers.status"],
+    ];
+    for (const [file, prefix] of screens) {
+      const src = readFileSync(join(MOBILE, ...file), "utf8");
+      // Single-quoted on purpose: the needle contains both a ${...} and a
+      // backtick, and neither is ours to interpolate.
+      expect(src, `${file.join("/")} must resolve ${prefix} through t()`).toContain(
+        prefix + '.${row.status}`, { defaultValue: "" }',
+      );
+    }
   });
 
   it("resolves the two values from the bug report", () => {

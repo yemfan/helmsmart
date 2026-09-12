@@ -1152,6 +1152,81 @@ export type MobileCmaReport = {
 
 export type MobilePresentation = { presentationId: string; url: string };
 
+// ── Deals: transactions · listings · offers ──────────────────────
+// Read-only lists. The shapes mirror the server's list items, loosely typed
+// where the server sends more than these screens read.
+
+export type MobileTransaction = {
+  id: string;
+  property_address: string | null;
+  contact_name: string | null;
+  transaction_type: string | null;
+  status: string | null;
+  purchase_price: number | null;
+  closing_date: string | null;
+  /** The date it actually closed; the screen prefers it once it has one. */
+  closing_date_actual: string | null;
+  task_total: number | null;
+  task_completed: number | null;
+  task_overdue: number | null;
+};
+
+export type MobileListing = {
+  id: string;
+  property_address: string;
+  city: string | null;
+  state: string | null;
+  status: string | null;
+  list_price: number | null;
+  listing_start_date: string | null;
+  closing_date: string | null;
+  showings_total: number | null;
+  showings_upcoming: number | null;
+};
+
+export type MobileOffer = {
+  id: string;
+  property_address: string;
+  contact_name: string | null;
+  status: string | null;
+  offer_price: number;
+  /** Where a countered offer stands now — the price that matters. */
+  current_price: number | null;
+  list_price: number | null;
+  counter_count: number | null;
+  created_at: string | null;
+};
+
+export async function fetchMobileTransactions(): Promise<
+  { ok: true; transactions: MobileTransaction[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { transactions?: MobileTransaction[] }>(
+    MOBILE_API_PATHS.transactions,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, transactions: res.data.transactions ?? [] };
+}
+
+export async function fetchMobileListings(): Promise<
+  { ok: true; listings: MobileListing[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { listings?: MobileListing[] }>(
+    MOBILE_API_PATHS.listings,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, listings: res.data.listings ?? [] };
+}
+
+export async function fetchMobileOffers(): Promise<
+  { ok: true; offers: MobileOffer[] } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileJsonError & { offers?: MobileOffer[] }>(
+    MOBILE_API_PATHS.offers,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, offers: res.data.offers ?? [] };
+}
+
 /**
  * Build a seller presentation for an address and hand back its public link.
  *
