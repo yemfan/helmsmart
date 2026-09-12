@@ -1218,7 +1218,10 @@
       "linkTokenFailed": "No se pudo iniciar la conexión bancaria. Inténtelo de nuevo.",
       "saveConnectionFailed": "No se pudo guardar la conexión bancaria. Inténtelo de nuevo.",
       "exchangeFailed": "No se pudo terminar de conectar su banco. Inténtelo de nuevo.",
-      "syncFailed": "No se pudieron sincronizar las transacciones bancarias. Inténtelo de nuevo en unos minutos."
+      "syncFailed": "No se pudieron sincronizar las transacciones bancarias. Inténtelo de nuevo en unos minutos.",
+      "webhookUnverified": "No se pudo verificar que esta solicitud venga de Plaid, así que no se cambió nada.",
+      "webhookMalformed": "No se pudo leer esta actualización bancaria, así que no se cambió nada.",
+      "webhookFailed": "No se pudo registrar esta actualización bancaria en este momento, así que no se cambió nada."
     },
     "errors": {
       "missingId": "Falta el ID de la transacción.",

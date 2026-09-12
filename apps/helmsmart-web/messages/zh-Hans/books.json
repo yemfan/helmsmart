@@ -1188,7 +1188,10 @@
       "linkTokenFailed": "无法开始关联银行，请重试。",
       "saveConnectionFailed": "保存银行连接失败，请重试。",
       "exchangeFailed": "完成银行关联失败，请重试。",
-      "syncFailed": "同步银行交易失败，请几分钟后重试。"
+      "syncFailed": "同步银行交易失败，请几分钟后重试。",
+      "webhookUnverified": "无法验证此请求来自 Plaid，因此未做任何更改。",
+      "webhookMalformed": "无法读取此银行更新，因此未做任何更改。",
+      "webhookFailed": "暂时无法记录此银行更新，因此未做任何更改。"
     },
     "errors": {
       "missingId": "缺少交易 ID。",
