@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { connForHost } from "@/lib/pack-host";
 import {
-  MARKETING_CACHE_CONTROL,
   isLocalizedPath,
   localizedPath,
   negotiateLocale,
@@ -45,15 +44,15 @@ export async function proxy(request: NextRequest) {
   const { locale, path } = splitLocalePath(pathname);
   if (isLocalizedPath(path)) {
     /*
-     * One language per URL, so the CDN can hold these.
+     * One language per URL.
      *
-     * A marketing page used to be `private, no-store` on every request — the
-     * root layout reads the locale cookie, that makes every route dynamic, and
-     * a dynamic route gets `no-store`. Caching it was not a matter of adding a
-     * header: while the cookie could change the language of a URL, one cached
-     * copy would have been wrong for somebody.
+     * This began as an attempt to make these pages cacheable, and that half did
+     * not work — see the note below. What it does achieve stands on its own: the
+     * language of a marketing page is decided by its URL and nothing else, so a
+     * link a reader copies out of the address bar opens the same way for whoever
+     * they send it to.
      *
-     * So the language is decided by the URL and nothing else here:
+     * The language is decided by the URL and nothing else here:
      *
      *   /zh/pricing   renders Chinese, always, for everyone
      *   /pricing      renders the DEFAULT locale, always, for everyone
@@ -65,9 +64,27 @@ export async function proxy(request: NextRequest) {
      * app there is no header and the cookie still decides, which is what the
      * dashboard needs.
      *
-     * This is also why the redirect has to happen here rather than in a page:
-     * Vercel runs routing middleware before the edge cache, so only readers
-     * this branch lets through ever reach the cached copy.
+     * WHY THESE ARE STILL NOT CACHED. Every response here is now identical for
+     * every reader of a given URL, which is the hard precondition for a shared
+     * cache — and it is still not enough. Setting `Cache-Control` on the
+     * responses below has no effect on Vercel: for a rewrite or a pass-through
+     * the rendered route supplies the response, and a dynamic route's own
+     * `private, no-store` wins. Middleware headers only stick on responses
+     * middleware GENERATES, which is why the 307 below really does carry
+     * `no-store`.
+     *
+     * Measured both ways, which is the only reason this is stated rather than
+     * assumed: a self-hosted `next start` keeps the middleware header, and
+     * Vercel does not. The header was tried, shipped, observed inert in
+     * production, and removed.
+     *
+     * The real fix is to stop these routes being dynamic, and they are dynamic
+     * because the ROOT LAYOUT reads the locale cookie. Moving the locale into a
+     * route segment (`app/[locale]/…`) would let them prerender per language and
+     * be cached properly. That is a route-tree refactor, not a header, and it is
+     * worth doing on its own terms. `export const revalidate` is NOT the
+     * shortcut: combined with a root layout that reads cookies it has already
+     * taken this app down once in production.
      */
     if (locale) {
       const url = request.nextUrl.clone();
@@ -75,9 +92,7 @@ export async function proxy(request: NextRequest) {
       const headers = new Headers(request.headers);
       headers.set(LOCALE_HEADER, locale);
       headers.set(LOCALE_PATH_HEADER, path);
-      const rewritten = NextResponse.rewrite(url, { request: { headers } });
-      rewritten.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
-      return rewritten;
+      return NextResponse.rewrite(url, { request: { headers } });
     }
 
     // A bare path. Does this reader want a language that has its own URL?
@@ -99,9 +114,7 @@ export async function proxy(request: NextRequest) {
     const headers = new Headers(request.headers);
     headers.set(LOCALE_HEADER, DEFAULT_LOCALE);
     headers.set(LOCALE_PATH_HEADER, path);
-    const passthrough = NextResponse.next({ request: { headers } });
-    passthrough.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
-    return passthrough;
+    return NextResponse.next({ request: { headers } });
   }
 
   let response = NextResponse.next({ request });

@@ -5,7 +5,6 @@ import {
   LOCALE_PREFIX,
   LOCALIZED_PATHS,
   isLocalizedPath,
-  MARKETING_CACHE_CONTROL,
   localeAlternates,
   localizedPath,
   negotiateLocale,
@@ -201,30 +200,5 @@ describe("negotiating a language for a bare path", () => {
     // If `en` ever gained a prefix, /pricing would redirect to /en/pricing,
     // which would redirect again.
     expect(localizedPath("/pricing", "en")).toBe("/pricing");
-  });
-});
-
-describe("marketing cache policy", () => {
-  /** The header split into its directives, which is how a cache reads it. */
-  const directives = MARKETING_CACHE_CONTROL.split(",").map((d) => d.trim());
-  const value = (name: string) =>
-    directives.find((d) => d.startsWith(name + "="))?.split("=")[1];
-
-  it("is shareable, which is the whole point", () => {
-    // These pages were `private, no-store` on every request — every one an
-    // X-Vercel-Cache MISS. A shared cache needs `public` and an `s-maxage`;
-    // without both, the CDN holds nothing.
-    expect(directives).toContain("public");
-    expect(directives).not.toContain("private");
-    expect(directives).not.toContain("no-store");
-    expect(Number(value("s-maxage"))).toBeGreaterThan(0);
-  });
-
-  it("lets the browser revalidate while the CDN serves", () => {
-    // max-age=0 keeps the BROWSER honest while s-maxage lets the shared cache
-    // answer. Without the first, a reader could hold a stale page for an hour
-    // after a deploy.
-    expect(value("max-age")).toBe("0");
-    expect(Number(value("stale-while-revalidate"))).toBeGreaterThan(0);
   });
 });
