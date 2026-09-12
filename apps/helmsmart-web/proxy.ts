@@ -10,13 +10,10 @@ import {
 } from "@/lib/i18n/routing";
 import { DEFAULT_LOCALE, I18N_COOKIE_NAME } from "@/lib/i18n/config";
 import { LOCALE_HEADER, LOCALE_PATH_HEADER } from "@/lib/i18n/headers";
-
-// Routes that require an authenticated user + an org.
-const DASHBOARD_SEGMENTS = [
-  "/ai-team", "/approvals", "/ask", "/automations", "/books", "/calendar", "/clients", "/command-center",
-  "/home", "/inbox", "/marketing", "/pipeline", "/projects", "/reception",
-  "/reports", "/settings", "/social", "/tasks", "/timesheets", "/voice",
-];
+// Routes that require an authenticated user + an org. The list lives beside
+// the route tree it guards, and dashboard-segments.test.ts holds the two to
+// each other so a new page cannot ship without its guard.
+import { DASHBOARD_SEGMENTS } from "@/lib/auth/dashboard-segments";
 
 // Routes only accessible when logged OUT
 const AUTH_SEGMENTS = ["/login", "/signup"];

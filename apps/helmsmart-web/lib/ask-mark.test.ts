@@ -3,8 +3,6 @@
  * `lib/ask-mark.ts` — the sidebar button and the shortcut by a typed window
  * event, `/ask` by a redirect the panel recognises on arrival.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const redirect = vi.hoisted(() =>
@@ -26,6 +24,7 @@ import {
   urlWithoutAskMark,
   type AskMarkAction,
 } from "@/lib/ask-mark";
+import { DASHBOARD_SEGMENTS } from "@/lib/auth/dashboard-segments";
 
 describe("open / close requests", () => {
   it("delivers open and close from any entry point to the panel's listener", () => {
@@ -112,11 +111,9 @@ describe("/ask", () => {
 
   it("still sends a signed-out visitor to /login first", () => {
     // proxy.ts decides auth by DASHBOARD_SEGMENTS; the segment has to stay listed.
-    const src = readFileSync(path.resolve(__dirname, "..", "proxy.ts"), "utf8");
-    const start = src.indexOf("const DASHBOARD_SEGMENTS");
-    expect(start).toBeGreaterThan(-1);
-    const block = src.slice(start, src.indexOf("];", start));
-    expect(block).toContain('"/ask"');
+    // (The list is checked against the whole route tree in
+    // lib/auth/dashboard-segments.test.ts; this only pins /ask's own guard.)
+    expect(DASHBOARD_SEGMENTS).toContain("/ask");
   });
 });
 
