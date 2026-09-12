@@ -1,4 +1,6 @@
-import type { SupportedLocale } from "./config";
+import { resolveLocale } from "@leadsmart/i18n";
+
+import { SUPPORTED_LOCALES, type SupportedLocale } from "./config";
 
 /**
  * Locale-prefixed URLs for the public marketing pages.
@@ -77,6 +79,47 @@ export const LOCALIZED_PATHS = [
 export function isLocalizedPath(path: string): boolean {
   return (LOCALIZED_PATHS as readonly string[]).includes(path);
 }
+
+/**
+ * The locale an `Accept-Language` header asks for, or null.
+ *
+ * A copy of what `getServerLocale()` does with the same header, because the
+ * proxy has to make the same judgement one layer earlier — before the render,
+ * to decide whether this reader belongs on a prefixed URL — and the proxy
+ * cannot call a `server-only` module.
+ */
+export function negotiateLocale(acceptLanguage: string | null): SupportedLocale | null {
+  if (!acceptLanguage) return null;
+  for (const entry of acceptLanguage.split(",")) {
+    const tag = entry.split(";")[0]?.trim();
+    if (!tag) continue;
+    const resolved = resolveLocale(tag, SUPPORTED_LOCALES);
+    if (resolved) return resolved;
+  }
+  return null;
+}
+
+/**
+ * `Cache-Control` for a public marketing page.
+ *
+ * These pages were `private, no-store` on every request — measured on
+ * production, every one of them an `X-Vercel-Cache: MISS`. Not because they
+ * hold anything private, but because the root layout reads the locale cookie,
+ * which makes every route in the app dynamic, which makes Next send
+ * `no-store`.
+ *
+ * They are cacheable now for one reason: the language of a marketing response
+ * is decided by its URL alone. A prefixed path carries its locale; a bare path
+ * is pinned to the default locale, and any reader who wants another language is
+ * redirected to their prefix BEFORE the cache is consulted. So the response for
+ * a given URL is the same for everybody, which is the only condition under
+ * which a shared cache is safe.
+ *
+ * `stale-while-revalidate` is the long one on purpose: marketing copy changes
+ * on deploys, and a deploy invalidates the cache anyway.
+ */
+export const MARKETING_CACHE_CONTROL =
+  "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 /** Split a request path into its locale prefix and the path Next should render. */
 export function splitLocalePath(pathname: string): {

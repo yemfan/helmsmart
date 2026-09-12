@@ -1,8 +1,15 @@
-import type { Metadata } from "next";
 /**
- * Root page — public landing for guests, redirect to /home for authenticated users.
+ * Root page — the public landing page, identical for everyone.
+ *
+ * It used to say it redirected authenticated users to /home. It does not, and
+ * has no auth code at all — the proxy does the routing. The claim mattered:
+ * this page is served from a shared CDN cache now, which is only sound because
+ * nothing here varies per reader, and a comment saying otherwise is exactly
+ * what would stop someone trusting that.
  * Includes MarketingNav + MarketingFooter directly (outside the (marketing) route group).
  */
+
+import type { Metadata } from "next";
 
 import Link from "next/link";
 import { Phone, PhoneOutgoing, Inbox, Receipt, Calendar, Users, Sunrise, Sparkles, CheckCircle } from "lucide-react";

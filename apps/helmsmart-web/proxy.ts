@@ -2,7 +2,14 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { connForHost } from "@/lib/pack-host";
-import { isLocalizedPath, splitLocalePath } from "@/lib/i18n/routing";
+import {
+  MARKETING_CACHE_CONTROL,
+  isLocalizedPath,
+  localizedPath,
+  negotiateLocale,
+  splitLocalePath,
+} from "@/lib/i18n/routing";
+import { DEFAULT_LOCALE, I18N_COOKIE_NAME } from "@/lib/i18n/config";
 import { LOCALE_HEADER, LOCALE_PATH_HEADER } from "@/lib/i18n/headers";
 
 // Routes that require an authenticated user + an org.
@@ -36,13 +43,65 @@ export async function proxy(request: NextRequest) {
    * which is what it should be.
    */
   const { locale, path } = splitLocalePath(pathname);
-  if (locale && isLocalizedPath(path)) {
-    const url = request.nextUrl.clone();
-    url.pathname = path;
+  if (isLocalizedPath(path)) {
+    /*
+     * One language per URL, so the CDN can hold these.
+     *
+     * A marketing page used to be `private, no-store` on every request — the
+     * root layout reads the locale cookie, that makes every route dynamic, and
+     * a dynamic route gets `no-store`. Caching it was not a matter of adding a
+     * header: while the cookie could change the language of a URL, one cached
+     * copy would have been wrong for somebody.
+     *
+     * So the language is decided by the URL and nothing else here:
+     *
+     *   /zh/pricing   renders Chinese, always, for everyone
+     *   /pricing      renders the DEFAULT locale, always, for everyone
+     *
+     * and a reader who wants another language is sent to their own URL first.
+     * The locale header is set on BOTH branches, including the bare one — that
+     * is what stops the cookie from varying a cached response, because
+     * `getServerLocale()` reads the header before the cookie. Elsewhere in the
+     * app there is no header and the cookie still decides, which is what the
+     * dashboard needs.
+     *
+     * This is also why the redirect has to happen here rather than in a page:
+     * Vercel runs routing middleware before the edge cache, so only readers
+     * this branch lets through ever reach the cached copy.
+     */
+    if (locale) {
+      const url = request.nextUrl.clone();
+      url.pathname = path;
+      const headers = new Headers(request.headers);
+      headers.set(LOCALE_HEADER, locale);
+      headers.set(LOCALE_PATH_HEADER, path);
+      const rewritten = NextResponse.rewrite(url, { request: { headers } });
+      rewritten.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
+      return rewritten;
+    }
+
+    // A bare path. Does this reader want a language that has its own URL?
+    const preferred =
+      negotiateLocale(request.cookies.get(I18N_COOKIE_NAME)?.value ?? null) ??
+      negotiateLocale(request.headers.get("accept-language"));
+
+    if (preferred && preferred !== DEFAULT_LOCALE) {
+      // 307, not 301: this depends on the reader, not on the resource, and the
+      // bare URL stays the canonical English page. `no-store` because the
+      // decision is per-reader and must never be cached for the next one.
+      const target = request.nextUrl.clone();
+      target.pathname = localizedPath(path, preferred);
+      const redirect = NextResponse.redirect(target, 307);
+      redirect.headers.set("Cache-Control", "private, no-store");
+      return redirect;
+    }
+
     const headers = new Headers(request.headers);
-    headers.set(LOCALE_HEADER, locale);
+    headers.set(LOCALE_HEADER, DEFAULT_LOCALE);
     headers.set(LOCALE_PATH_HEADER, path);
-    return NextResponse.rewrite(url, { request: { headers } });
+    const passthrough = NextResponse.next({ request: { headers } });
+    passthrough.headers.set("Cache-Control", MARKETING_CACHE_CONTROL);
+    return passthrough;
   }
 
   let response = NextResponse.next({ request });
