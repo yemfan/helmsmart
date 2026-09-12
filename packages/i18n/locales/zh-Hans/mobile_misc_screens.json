@@ -219,7 +219,14 @@
       "below": "偏低",
       "average": "一般",
       "above": "偏高"
-    }
+    },
+    "createPresentation": "生成卖方报告",
+    "creatingPresentation": "正在生成报告…",
+    "presentationReady": "报告已生成",
+    "presentationReadyBody": "正在打开——此链接可分享给任何人查看。",
+    "presentationFailed": "无法生成报告",
+    "open": "打开",
+    "presentationOpenFail": "报告已生成，但此设备无法打开链接。可在网页版「报告」中查看。"
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI 教练",

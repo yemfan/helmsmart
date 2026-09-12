@@ -95,4 +95,8 @@ export const MOBILE_API_PATHS = {
   // Dual-auth (Bearer-aware). Durable copy of the language picker's choice,
   // for server work that has no request to read it from.
   uiLanguage: "/api/dashboard/ui-language",
+  // Also dual-auth: consumeTokensForTool reads the Bearer and hands the same
+  // identity to getCurrentAgentContext, so the app calls the web route
+  // directly rather than duplicating the presentation builder.
+  presentation: "/api/generate-presentation",
 } as const;

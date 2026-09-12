@@ -219,7 +219,14 @@
       "below": "Below",
       "average": "Average",
       "above": "Above"
-    }
+    },
+    "createPresentation": "Create seller presentation",
+    "creatingPresentation": "Building the presentation…",
+    "presentationReady": "Presentation ready",
+    "presentationReadyBody": "Opening it now — the link works for anyone you share it with.",
+    "presentationFailed": "Couldn't build the presentation",
+    "open": "Open",
+    "presentationOpenFail": "We built it, but this device couldn't open the link. Find it under Presentations on the dashboard."
   },
   "coaching": {
     "leadsmartAiCoaching": "LEADSMART AI COACHING",

@@ -1138,8 +1138,41 @@ export type MobileCmaReport = {
   estimatedValue: number;
   low: number;
   high: number;
-  strategies: MobileCmaStrategies;
+  /**
+   * Null when the valuation engine had no basis for pricing strategies. The
+   * screen hides that section rather than showing invented days-on-market.
+   */
+  strategies: MobileCmaStrategies | null;
+  /** AI-estimate disclaimer, shown verbatim under the value. */
+  disclaimer?: string | null;
+  /** Sources the AI cited for the comps. */
+  sources?: Array<{ title: string; url: string }>;
+  confidenceScore?: number | null;
 };
+
+export type MobilePresentation = { presentationId: string; url: string };
+
+/**
+ * Build a seller presentation for an address and hand back its public link.
+ *
+ * Reuses the web route: it reuses a recent CMA snapshot for the address when
+ * there is one, so running this right after a CMA does not pay for a second
+ * web search. The viewer at /presentation/<id> is public, so the agent can
+ * open or share it straight from the phone.
+ */
+export async function createMobilePresentation(
+  address: string,
+): Promise<{ ok: true } & MobilePresentation | MobileApiFailure> {
+  const res = await mobilePost<MobileJsonError & { presentation_id?: string; success?: boolean }>(
+    MOBILE_API_PATHS.presentation,
+    { address },
+  );
+  if (res.ok === false) return res;
+  const id = res.data.presentation_id;
+  if (!id) return { ok: false, status: 200, message: "The presentation came back without an id." };
+  const base = getLeadsmartApiBaseUrl().replace(/\/+$/, "");
+  return { ok: true, presentationId: id, url: `${base}/presentation/${id}` };
+}
 
 type CmaJson = MobileJsonError &
   Partial<MobileCmaReport> & {
