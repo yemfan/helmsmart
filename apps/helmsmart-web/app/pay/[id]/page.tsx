@@ -139,7 +139,7 @@ export default async function PayInvoicePage({
                 <p className="font-semibold text-sm">{t("pay.paid.title")}</p>
                 {inv.paid_at && (
                   <p className="text-xs mt-0.5 text-emerald-700">
-                    {t("pay.paid.on", { date: longDate(new Date(inv.paid_at)) })}
+                    {t("pay.paid.on", { date: longDate(calendarDate(org?.timezone, new Date(inv.paid_at))) })}
                   </p>
                 )}
               </div>

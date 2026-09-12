@@ -9,7 +9,8 @@ import { StripeResultBanner } from "@/components/stripe-result-banner";
 import { InvoiceTimesheetImport } from "@/components/invoice-timesheet-import";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { orgCurrency } from "@/lib/books-currency";
-import { orgToday } from "@/lib/org-timezone";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate } from "@/lib/org-date";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -95,7 +96,10 @@ export default async function InvoiceDetailPage({
     amount: number; sort_order: number; chart_of_accounts: unknown;
   }[]).sort((a, b) => a.sort_order - b.sort_order);
 
-  const today = await orgToday(orgId);
+  // `paid_at` is an instant, so it needs the org's zone to become a date: a
+  // payment taken at 5 PM Pacific is already tomorrow in UTC.
+  const tz = await orgTimezone(orgId);
+  const today = calendarDate(tz);
   const effectiveStatus =
     inv.status === "sent" && inv.due_date < today ? "overdue" : inv.status;
 
@@ -172,7 +176,7 @@ export default async function InvoiceDetailPage({
               </span></p>
               {inv.paid_at && (
                 <p><span className="text-slate-400">{t("invoices.detail.paid")}</span> <span className="text-emerald-600 font-medium">
-                  {longDate(new Date(inv.paid_at))}
+                  {longDate(calendarDate(tz, new Date(inv.paid_at)))}
                 </span></p>
               )}
             </div>

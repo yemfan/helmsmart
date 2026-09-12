@@ -47,7 +47,8 @@ import { getServerT } from "@/lib/i18n/server";
 import { translatorFor } from "@/lib/i18n/translator";
 import { contactLocale } from "@/lib/i18n/contactLocale";
 import { orgCurrency } from "@/lib/books-currency";
-import { orgToday } from "@/lib/org-timezone";
+import { orgTimezone } from "@/lib/org-timezone";
+import { calendarDate } from "@/lib/org-date";
 import { dateFormatter, moneyFormatter } from "@/lib/books-format";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { PrintButton } from "./print-button";
@@ -268,7 +269,12 @@ export default async function InvoicePrintPage({
     ? [client.first_name, client.last_name].filter(Boolean).join(" ") || client.company || "—"
     : "—";
 
-  const today = await orgToday(orgId);
+  // Both dates below are the BUSINESS's, never UTC. `issue_date` and `due_date`
+  // are date columns and carry their own day, but `paid_at` is an instant: a
+  // payment taken at 5 PM Pacific is 00:00 UTC the next day, and printing that
+  // on the invoice tells the client they paid a day after they did.
+  const tz = await orgTimezone(orgId);
+  const today = calendarDate(tz);
   const isOverdue = inv.status === "sent" && inv.due_date < today;
 
   // These styles share `<body>` with the root layout now, so every rule is
@@ -331,7 +337,7 @@ export default async function InvoicePrintPage({
                 <div style={{ marginTop: 12 }}>
                   <div className="label">{doc("invoice.paidOn")}</div>
                   <div className="date-val" style={{ color: "#16a34a" }}>
-                    {fmtDate(new Date(inv.paid_at))}
+                    {fmtDate(calendarDate(tz, new Date(inv.paid_at)))}
                   </div>
                 </div>
               )}
