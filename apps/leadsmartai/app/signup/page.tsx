@@ -18,6 +18,7 @@ import {
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
 import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LoadingText } from "@/components/ui/LoadingText";
+import { oauthQueryParams } from "@/lib/auth/oauthParams";
 
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
 // the POSTs to /api/consent/sms — the `sms_consent_version` string must
@@ -313,6 +314,7 @@ function SignupForm() {
         provider,
         options: {
           redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}&provider=${provider}`,
+          queryParams: oauthQueryParams(provider),
         },
       });
       if (oauthError) throw oauthError;

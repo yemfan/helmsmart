@@ -11,6 +11,7 @@ import { resolveRoleHomePath, START_FREE_AGENT_PATH } from "@/lib/rolePortalPath
 import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 import { useAuth } from "@/components/AuthProvider";
 import { KeepSignedInCheckbox } from "@/components/KeepSignedInCheckbox";
+import { oauthQueryParams } from "@/lib/auth/oauthParams";
 
 export default function LoginPage() {
   return (
@@ -180,6 +181,7 @@ function LoginPageInner() {
         provider,
         options: {
           redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}&provider=${provider}`,
+          queryParams: oauthQueryParams(provider),
         },
       });
       if (oauthError) throw oauthError;
