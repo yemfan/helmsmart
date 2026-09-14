@@ -13,6 +13,7 @@ import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsume
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
 import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
+import { oauthQueryParams } from "@/lib/auth/oauthParams";
 
 type Mode = "login" | "signup";
 
@@ -111,6 +112,7 @@ export default function AuthModal({
         provider,
         options: {
           redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          queryParams: oauthQueryParams(provider),
         },
       });
       if (oauthError) throw oauthError;
